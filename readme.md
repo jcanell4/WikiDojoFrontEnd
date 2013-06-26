@@ -1,0 +1,1 @@
+DokuwikiFrontEndDojo is a Dojo API to write a front-end supporting a template dokuwiki to customize its design. DokuwikiFrontEndDojo uses Ajax calls to require and retrieve data from server. The generated Ajax calls  require the existence of a dokuwiki's plugin named ajaxcommand. You can found this pugin in the github repository sited in jcanell4/DokuwikiAjaxCommand.
