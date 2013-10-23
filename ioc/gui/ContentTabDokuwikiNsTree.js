@@ -13,17 +13,16 @@ define([
 	,"dojo/NodeList-dom" // NodeList.style
 ], function(declare, query, template, Request, ContentPane, _LayoutWidget,
                 _TemplatedMixin, JsonRest, Tree, aspect, ObjectStoreModel){
-    var ContentTabDokuwikiPage = declare("ioc.gui.ContentTabDokuwikiNsTree", 
+    var ret = declare("ioc.gui.ContentTabDokuwikiNsTree", 
                               [ContentPane, _TemplatedMixin, _LayoutWidget, 
                                   Request], {
 	// summary:
         templateString: template
        ,treeDataSource: null
-       ,pageDataSource: null
+       /*,pageDataSource: null*/
        ,rootValue: "_"
        ,tree: null
 //       ,widgetsInTemplate: true
-
        ,buildRendering: function(){
            this.inherited(arguments);
            var vid = this.id;
@@ -34,12 +33,12 @@ define([
                 /*id: vid+"_nTree"
                ,*/model: new ObjectStoreModel({
                     store: new JsonRest({
-                        target: tds
+                       target: tds                       
                        ,getChildren: function(object){
                             return this.get(object.id).then(function(fullObject){
                                     return fullObject.children;
                             }, function(error){
-                                    console.log(error);
+//                                    console.log(error);
                             });
                         }
                     })
@@ -62,6 +61,7 @@ define([
                 }
            });
            var tree = this.tree;
+//           this.tree.model.store.query(this.getSectok());
            aspect.after(this.tree, "_adjustWidths", function(){
 //               tree._adjustWidths();
                var parentNode = tree.domNode.parentNode;
@@ -73,7 +73,17 @@ define([
             this.inherited(arguments);
             this.tree.placeAt(this.id+"_tree")
             this.tree.startup();
-	}/*,*/
+       }
+       ,setTreeDatasource: function(/*String*/ urlStr){
+           this.treeDataSource=urlStr;
+           this.updateSectok();
+       }
+       ,updateSectok: function(/*String*/ sectok){
+           if(!sectok){
+               sectok = this.getSectok();
+           }
+           this.tree.model.store.target=this.treeDataSource+sectok+"/";
+       }
     });
-    return ContentTabDokuwikiPage;
+    return ret;
 });

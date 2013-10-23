@@ -1,24 +1,60 @@
 define([
 	"dojo/_base/declare" // declare
+       ,"dijit/registry" //search widgets by id
        ,"ioc/dokuwiki/runRender"
        ,"ioc/dokuwiki/listHeadings"
        ,"ioc/dokuwiki/runQuiz"
        ,"dojo/dom"
        ,"dojo/query"
+       ,"dojo/dom-style"
        ,"dijit/Dialog"
        ,"dojo/_base/lang"
        ,"dojo/_base/array"
-], function(declare, runRender, listHeadings, runQuiz, dom, query, Dialog, 
-                                                                 lang, array){
+       ,"ioc/wiki30/SectokManager"
+], function(declare, registry, runRender, listHeadings, runQuiz, dom, query
+                             ,domStyle, Dialog, lang, array, SectokManager){
     var ret = declare("ioc.wiki30.Dispatcher", [], {
-        containerNodeId: null
+        globalState:null
+       ,sectokManager:new SectokManager()
+       ,containerNodeId: null
        ,infoNodeId:null
+       ,toUpdateSectok:new Array()
        ,diag: new Dialog({
                         title: "ERROR",
                         style: "width: 300px"
                     })
        ,constructor:function(/*Object*/ pAttributes){
            lang.mixin(this, pAttributes);
+        }
+       ,startup: function(){
+           /*TO DO. Set the globalState to different components*/
+        }
+       ,getSectok:function(strUrl){
+           return (this.sectokManager.getSectok(strUrl));
+       }
+       ,putSectok:function(strUrl, sectok){
+           if(!sectok){
+               sectok=strUrl;
+               strUrl=undefined;
+           }
+           this.sectokManager.putSectok(strUrl, sectok);
+           array.forEach(this.toUpdateSectok, function(responseItem){
+                    responseItem.updateSectok();
+           });             
+           
+       }
+       ,processLogin: function(result){
+           if(!result){
+            this.diag.set("ALERTA", "Usuari o contrasenya incorrecta");
+            this.diag.show();               
+           }
+       }
+       ,processSectok: function(result){
+           this.putSectok(result);
+       }
+
+       ,processError: function(error){
+           this._processError(error.response.text);
         }
        ,processResponse: function(response){
           var req = this;
@@ -32,44 +68,70 @@ define([
         }
        ,_processResponse: function(response){
             if(response.type==="data"){
-                this._showContent(response.value);
+                this._processContent(response.value);
             }else if(response.type==="title"){
-                this._showTitle(response.value);
+                this._processTitle(response.value);
             }else if(response.type==="command"){
                 this._processCommand(response.value);
             }else if(response.type==="error"){
-                this._showError(response.value);
+                this._processError(response.value);
+            }else if(response.type==="info"){
+                this._processInfo(response.value);
+            }else if(response.type==="sectok"){
+                this.processSectok(response.value);
+            }else if(response.type==="login"){
+                this.processLogin(response.value);
+            }else if(response.type==="alert"){
+                this._processAlert(response.value);
             }else{
-                this._showAlert(/*TO DO: internationalization*/
-                                        "Missatge incomprensible");
+                this._processAlert(/*TO DO: internationalization*/
+                                 "Missatge incomprensible");
             }
         }        
-       ,_showContent:function(content){
+       ,_processContent:function(content){
             dom.byId(this.containerNodeId).innerHTML=content;
             /*TO CHANGE*/
             listHeadings();
             runRender();   
             runQuiz();
         }        
-       ,_showError: function(error){
-            this.diag.set("ERROR", error);
+       ,_processError: function(error, message){
+            if(!error) error="";
+            if(!message) message="";
+            this.diag.set("title", "ERROR");
+            this.diag.set("content", error + " " + message);
             this.diag.show();
         }
-       ,_showAlert: function(error){
-            this.showError(error);
+       ,_processAlert: function(alert){
+            this.diag.set("title", "ALERTA");
+            this.diag.set("content", alert);
+            this.diag.show();
         }
-       ,_showInfo: function(info){
+       ,_processInfo: function(info){
            dom.byId(this.infoNodeId).innerHTML=info;
        }
-       ,_showTitle: function(title){
+       ,_processTitle: function(title){
            var nodeTitle = query("title")[0];
            nodeTitle.innerHTML=title;
        }
-       ,_processCommand:function(){
+       ,_processCommand:function(command){
             /*TO DO*/
-        }
-       ,processError: function(error){
-           this._showError(error);
+            if(command.type=="change_dom_style"){
+                this._processChangeStyleCommand(command)
+            }
+       }
+       ,_processChangeStyleCommand:function(command){
+            domStyle.set(command.id, command.propertyName, command.propertyValue);
+       }
+       ,_processWidgetCommand:function(command){
+            var widget = registry.byId(command.componentId);
+            if(lang.isArray(command.toExecute)){
+                 array.forEach(command.toExecute, function(responseItem){
+                    widget.processCommand(responseItem); 
+                 });             
+            }else{
+                widget._processResponse(command.toExecute);
+            }
         }
     });
     return ret;

@@ -9,11 +9,11 @@ define([
         "ioc/dokuwiki/listHeadings",
         "dijit/Dialog",
         "dijit/layout/ContentPane",
-        "dijit/_WidgetsInTemplateMixin",
-	"dojo/NodeList-dom" // NodeList.style
+        "dijit/_WidgetsInTemplateMixin"
+       ,"dojo/NodeList-dom" // NodeList.style
 ], function(declare, dom, on, att, event, request, runRender, listHeadings, 
                 Dialog, ContentPane, _WidgetsInTemplateMixin){
-    var ContentTabDokuwikiPage = declare("ioc.gui.ContentTabDokuwikiPage", 
+    var ContentTabDokuwiki= declare("ioc.gui.ContentTabDokuwiki", 
                                     [ContentPane, _WidgetsInTemplateMixin], {
 	// summary:
         //		Conveteix enllaços normals en crides AJAX).
@@ -22,7 +22,7 @@ define([
 //        containerNodeId:"bodyContent",
         
     });
-    return ContentTabDokuwikiPage;
+    return ContentTabDokuwiki;
 });
 
 
