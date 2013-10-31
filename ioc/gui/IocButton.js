@@ -1,23 +1,39 @@
+/* 
+ * Declara un Botó que realitza la funció indicada en un atribut
+ */
+define(["dojo/_base/declare"
+		,"dijit/form/Button"
+		,"ioc/wiki30/Request"
+        ,"dijit/_TemplatedMixin"
+		,"dojo/text!./templates/Button.html"
+		,"dojo/dom-style"
+        ,"dojo/NodeList-dom"
+],
+function(declare, button, Request, _TemplatedMixin, template, style) {
+    // module:
+    //		ioc/gui/IocButton
 
-define([
-	"dojo/_base/declare" // declare
-        ,"dijit/form/Button"
-        ,"ioc/wiki30/Request"
-	,"dojo/NodeList-dom" // NodeList.style
-], function(declare, Button, Request){
-var IocButton = declare("ioc.gui.IocButton", 
-                                [Button, Request], {
-	// summary:
-        //		Set of tabs with a menu to switch between tabs.
-        //              Tabs are resized according the TabController size.
-	//		Works only for horizontal tabs (either above or below 
-        //		the content, not to the left or right).
-       
-         command:""
-        ,onClick: function(){
-            this.sendRequest(this.command);
-        }
-});
-
-return IocButton;
+    var ret = declare("ioc.gui.IocButton", [button, Request, _TemplatedMixin],{
+    templateString: template,
+    query: ""
+    ,autoSize: false	// true: canvia el tamany del botó: width=inherited
+						// false: no canvia el tamany del botó
+    ,_onClick: function(){
+                this.inherited(arguments);
+                this.sendRequest(this.query);
+            }
+    ,startup: function(){
+		this.inherited(arguments);
+		if (this.autoSize) this.resize();
+	}
+	,resize: function(){
+            this.inherited(arguments);
+			var correccio_amplada = 15;
+            var node = this.buttonNode;
+			var nodePare = this.buttonTopNode.parentNode;
+			var amplePare = nodePare.clientWidth - correccio_amplada;
+			style.set(node, "width", amplePare+"px");
+			}
+    });
+    return ret;
 });
