@@ -1,5 +1,6 @@
 /* 
  * Declara un Botó que realitza la funció indicada en un atribut
+ * també canvia el tamany de fixe a variable segons el contenidor
  */
 define(["dojo/_base/declare"
 		,"dijit/form/Button"
