@@ -2,15 +2,19 @@ define([
 	"dojo/_base/declare" // declare
        ,"dojox/widget/Standby"
        ,"dojo/request"
-       ,"ioc/wiki30/Dispatcher"
-], function(declare, Standby, request){
+       ,"ioc/wiki30/dispatcherSingleton"
+], function(declare, Standby, request, dispatcherSingleton){
     var ret = declare("ioc.wiki30.Request", [], {
         standbyId: null
        ,urlBase: null
        ,method: "post"
-       ,dispatcher: null
+       ,dispatcher: dispatcherSingleton
        ,_standby:null
        ,sectokId: "sectok"
+//       ,constructor:function(args){
+//           lang.mixin(this, args);
+//           this
+//       }
        ,getSectok: function(){
             return this.dispatcher.getSectok();  
        }

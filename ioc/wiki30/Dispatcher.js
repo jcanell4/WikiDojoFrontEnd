@@ -13,7 +13,7 @@ define([
        ,"ioc/wiki30/SectokManager"
 ], function(declare, registry, runRender, listHeadings, runQuiz, dom, query
                              ,domStyle, Dialog, lang, array, SectokManager){
-    var ret = declare("ioc.wiki30.Dispatcher", [], {
+    var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState:null
        ,sectokManager:new SectokManager()
        ,containerNodeId: null
@@ -134,5 +134,5 @@ define([
             }
         }
     });
-    return ret;
+    return DispatcherClass;
 });
