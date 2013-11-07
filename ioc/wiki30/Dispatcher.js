@@ -117,8 +117,14 @@ define([
        ,_processCommand:function(command){
             /*TO DO*/
             if(command.type=="change_dom_style"){
-                this._processChangeStyleCommand(command)
+                this._processChangeStyleCommand(command);
+            }else if(command.type=="change_widget_property"){
+                this._processChangeWidgetPropertyCommand(command);
             }
+       }
+       ,_processChangeWidgetPropertyCommand:function(command){
+           var widget=registry.byId(command.id);
+           widget.set(command.propertyName, command.propertyValue);
        }
        ,_processChangeStyleCommand:function(command){
             domStyle.set(command.id, command.propertyName, command.propertyValue);
