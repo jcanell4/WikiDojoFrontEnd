@@ -15,19 +15,24 @@ function(declare, button, Request, _TemplatedMixin, template, style) {
     //		ioc/gui/IocButton
 
     var ret = declare("ioc.gui.IocButton", [button, Request, _TemplatedMixin],{
-    templateString: template,
-    query: ""
+	endStartup: false
+    ,templateString: template
+    ,query: ""
     ,autoSize: false	// true: canvia el tamany del botó: width=inherited
 						// false: no canvia el tamany del botó
+	,visible: true
     ,_onClick: function(){
                 this.inherited(arguments);
                 this.sendRequest(this.query);
             }
     ,startup: function(){
 		this.inherited(arguments);
-		if (this.autoSize) this.resize();
+		this.resize();
+		this.endStartup = true;
+		this.__setVisible();
 	}
 	,resize: function(){
+		if (this.autoSize) {
             this.inherited(arguments);
 			var correccio_amplada = 15;
             var node = this.buttonNode;
@@ -35,6 +40,28 @@ function(declare, button, Request, _TemplatedMixin, template, style) {
 			var amplePare = nodePare.clientWidth - correccio_amplada;
 			style.set(node, "width", amplePare+"px");
 			}
+		}
+	,set:function(propName, propValue){
+		this.inherited(arguments);
+		if (propName==="visible") {
+			this.__setVisible();
+		}
+	}
+	,setVisible: function(visible){
+			this.visible = visible;
+			this.__setVisible();
+		}
+	,__setVisible: function(){
+			if (this.endStartup) {
+	            var node = this.buttonNode;
+				if (this.visible) {
+					style.set(node, "display", "display");
+					this.resize();
+				}
+				else
+					style.set(node, "display", "none");
+			}
+		}
     });
     return ret;
 });
