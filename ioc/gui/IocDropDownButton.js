@@ -1,6 +1,5 @@
 /* 
- * Declara un Botó que realitza la funció indicada en un atribut
- * també canvia el tamany de fixe a variable segons el contenidor
+ * IocDropDownButton
  */
 define(["dojo/_base/declare"
 		,"dijit/form/DropDownButton"
@@ -11,31 +10,31 @@ define(["dojo/_base/declare"
         ,"dojo/NodeList-dom"
 ],
 function(declare, DropDownButton, Request, _TemplatedMixin, template, style) {
-    // module:
-    //		ioc/gui/IocDropDownButton
-
+    /* module:
+    *		ioc/gui/IocDropDownButton
+	* Afegeix un nou mètode al DropDownButton estàndar que redimensiona el botó
+	* per igualar-lo a la mida del seu contenidor pare.
+	* El mètode s'activa amb l'atribut autoSize.
+	*	- autoSize: true/false
+	*				true: executa el mètode resize -> canvia el tamany del botó
+	*				false: no executa el mètode resize -> no canvia el tamany del botó
+	*/
     var ret = declare("ioc.gui.IocDropDownButton", [DropDownButton, Request, _TemplatedMixin],{
-    templateString: template
-    ,query: ""
-    ,autoSize: true 	// true: canvia el tamany del botó: width=inherited
-						// false: no canvia el tamany del botó
-    ,_onClick: function(){
-                this.inherited(arguments);
-                this.sendRequest(this.query);
-            }
-    ,startup: function(){
-		this.inherited(arguments);
-		this.resize();
-	}
-	,resize: function(){
-		if (this.autoSize) {
-            this.inherited(arguments);
-			var correccio_amplada = 15;
-            var node = this._buttonNode;
-			var nodePare = this._buttonTopNode.parentNode;
-			var amplePare = nodePare.clientWidth - correccio_amplada;
-			style.set(node, "width", amplePare+"px");
+		templateString: template
+		,autoSize: true 	
+		,resize: function(){
+			if (this.autoSize) {
+				this.inherited(arguments);
+				var correccio_amplada = 15;
+	            var node = this._buttonNode;
+				var nodePare = this._buttonTopNode.parentNode;
+				var amplePare = nodePare.clientWidth - correccio_amplada;
+				style.set(node, "width", amplePare+"px");
 			}
+		}
+		,startup: function(){
+			this.inherited(arguments);
+			this.resize();
 		}
     });
     return ret;
