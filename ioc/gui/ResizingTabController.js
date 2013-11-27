@@ -1,16 +1,16 @@
 define([
 	"dojo/_base/declare", // declare
 	"dojo/_base/array", // array.forEach
-        "dojo/dom-class", // domClass
-        "dojo/dom-geometry",
+    "dojo/dom-class", // domClass
+    "dojo/dom-geometry",
 	"dojo/_base/lang", // lang.hitch
 	"dojo/on",
 	"dojo/query", // query
 	"dijit/registry",	// registry.byId()
 	"dojo/text!./templates/ResizingTabController.html",
 	"dojo/text!./templates/_ResizingTabControllerButton.html",
-        "dijit/layout/TabController",
-        "dijit/_WidgetsInTemplateMixin",
+    "dijit/layout/TabController",
+    "dijit/_WidgetsInTemplateMixin",
 	"dijit/form/Button",
 	"dijit/_HasDropDown",
 	"dijit/Menu",
@@ -19,13 +19,14 @@ define([
 ], function(declare, array, domClass, geometry, lang, on, query, registry, 
             tabControllerTemplate, buttonTemplate, TabController, 
             _WidgetsInTemplateMixin, Button, _HasDropDown, Menu, MenuItem){
+
 var ResizingTabController = declare("ioc.gui.ResizingTabController", 
                                 [TabController, _WidgetsInTemplateMixin], {
 	// summary:
-        //		Set of tabs with a menu to switch between tabs.
-        //              Tabs are resized according the TabController size.
+    //		Set of tabs with a menu to switch between tabs.
+    //              Tabs are resized according the TabController size.
 	//		Works only for horizontal tabs (either above or below 
-        //		the content, not to the left or right).
+    //		the content, not to the left or right).
  
  	templateString: tabControllerTemplate,
 
@@ -56,21 +57,19 @@ var ResizingTabController = declare("ioc.gui.ResizingTabController",
 		domClass.add(this.tablistWrapper, this.tabStripClass);
 	},
 
-        onStartup: function(){
+    onStartup: function(){
 		this.inherited(arguments);
 
 		// TabController is hidden until it finishes drawing, to give
 		// a less visually jumpy instantiation.   When it's finished, set visibility to ""
 		// to that the tabs are hidden/shown depending on the container's visibility setting.
-                this.domNode.style.visibility="";
+        this.domNode.style.visibility="";
 		this._postStartup = true;
-                this._calculateButtonSize();
+        this._calculateButtonSize();
 
 		// changes to the tab button label or iconClass will have changed the width of the
 		// buttons, so do a resize
-		this.own(on(this.containerNode, 
-                                "attrmodified-label, attrmodified-iconclass", 
-                                lang.hitch(this, function(evt){
+		this.own(on(this.containerNode, "attrmodified-label, attrmodified-iconclass", lang.hitch(this, function(evt){
 			if(this._dim){
 				this.resize(this._dim);
 			}
@@ -79,62 +78,60 @@ var ResizingTabController = declare("ioc.gui.ResizingTabController",
 //
 	onAddChild: function(page, insertIndex){
 		this.inherited(arguments);
-                this._calculateButtonSize();
+        this._calculateButtonSize();
 	},
 //
 	onRemoveChild: function(page, insertIndex){
 		this.inherited(arguments);
-                this._calculateButtonSize();                
+        this._calculateButtonSize();                
 	},
 //        
-        _calculateButtonSize: function(){
-            var posLabel;
-            var i;
-            var buttonWidth;
-            var maxTextWidth;
-            var tabButtonNode;
-            var tabButton;
-            var textNode;
-            var nChildren = this.getChildren().length-1;
-            var tabListWrapperWidth = this.domNode.offsetWidth;
-            if(this.useMenu && this._menuBtn){
+	_calculateButtonSize: function(){
+		var posLabel;
+        var i;
+        var buttonWidth;
+        var maxTextWidth;
+        var tabButtonNode;
+        var tabButton;
+        var textNode;
+        var nChildren = this.getChildren().length-1;
+        var tabListWrapperWidth = this.domNode.offsetWidth;
+        if(this.useMenu && this._menuBtn){
                 tabButtonNode = this._menuBtn.domNode;
                 tabListWrapperWidth-=geometry.getPadExtents(tabButtonNode).w;
                 tabListWrapperWidth-=geometry.getMarginSize(tabButtonNode).w;
-            }
-            buttonWidth = tabListWrapperWidth/nChildren;
-            for(i=0; i<nChildren; i++){
-                tabButton = this.getChildren()[i];
-                tabButtonNode = tabButton.domNode;
-                maxTextWidth = buttonWidth 
-                                - geometry.getPadBorderExtents(tabButtonNode).w
-                                - geometry.getMarginExtents(tabButtonNode).w;
-                tabButtonNode.style.width=""+(maxTextWidth)+"px";
-                textNode = query("> .tabLabel", tabButtonNode)[0];
-                textNode.innerHTML=tabButton.label;
-                posLabel=tabButton.label.length;
-                while(textNode.offsetWidth >= maxTextWidth+5){
-                    posLabel--;
-                    textNode.innerHTML=tabButton.label.substr(0, posLabel)+"...";
-                }
-            }
-            
-        },
+        }
+        buttonWidth = tabListWrapperWidth/nChildren;
+		for(i=0; i<nChildren; i++){
+			tabButton = this.getChildren()[i];
+            tabButtonNode = tabButton.domNode;
+            maxTextWidth = buttonWidth 
+					- geometry.getPadBorderExtents(tabButtonNode).w
+                    - geometry.getMarginExtents(tabButtonNode).w;
+			tabButtonNode.style.width=""+(maxTextWidth)+"px";
+            textNode = query("> .tabLabel", tabButtonNode)[0];
+            textNode.innerHTML=tabButton.label;
+            posLabel=tabButton.label.length;
+			while(textNode.offsetWidth >= maxTextWidth+5){
+				posLabel--;
+                textNode.innerHTML=tabButton.label.substr(0, posLabel)+"...";
+			}
+		}
+	},
 
 	_initMenuButton: function(){
 		// summary:
-		//		Creates the menu button used to view all tabs 
-                //		using a menu format.
-
+		//		Creates the menu button used to view all tabs using a menu format.
 		// Make the content labels of the buttons to display when the 
-                // tab labels become wider than the TabContainer.
+        // tab labels become wider than the TabContainer.
 		// Also set the width for each button.
-                var menuButton = this._menuBtn.domNode;
-                if(this.useMenu){
-                    menuButton.style.display="";
-                }else{
-                    menuButton.style.display="none";
-                }
+		
+			var menuButton = this._menuBtn.domNode;
+			if(this.useMenu){
+				menuButton.style.display="";
+			}else{
+				menuButton.style.display="none";
+			}
 	},
 
 	resize: function(dim){
@@ -146,23 +143,18 @@ var ResizingTabController = declare("ioc.gui.ResizingTabController",
 
 var ResizingTabControllerButtonMixin = declare("ioc.gui._ResizingTabControllerButtonMixin", null, {
 	baseClass: "dijitTab tabStripButton",
-
 	templateString: buttonTemplate,
-
-		// Override inherited tabIndex: 0 from dijit/form/Button, because user shouldn't be
-		// able to tab to the left/right/menu buttons
+	// Override inherited tabIndex: 0 from dijit/form/Button, because user shouldn't be
+	// able to tab to the left/right/menu buttons
 	tabIndex: "",
-
 	// Similarly, override FormWidget.isFocusable() because clicking a button shouldn't focus it
 	// either (this override avoids focus() call in FormWidget.js)
 	isFocusable: function(){ return false; }
 });
 
 // Class used in template
-declare(
-	"ioc.gui._ResizingTabControllerMenuButton",
-	[Button, _HasDropDown, ResizingTabControllerButtonMixin],
-{
+declare("ioc.gui._ResizingTabControllerMenuButton",
+			[Button, _HasDropDown, ResizingTabControllerButtonMixin], {
 	// id of the TabContainer itself
 	containerId: "",
 

@@ -13,8 +13,7 @@ define([
 ], function(declare, template, TooltipDialog, _WidgetsInTemplateMixin 
                    , Request, registry, domForm, on, event, style){
     var ret = declare("ioc.gui.ActionHiddenDialogDokuwiki", 
-                                    [TooltipDialog, _WidgetsInTemplateMixin 
-                                     ,Request], {
+                                    [TooltipDialog, _WidgetsInTemplateMixin, Request], {
         templateString: template
        ,widgetsInTemplate: true         
        ,startup:function(){

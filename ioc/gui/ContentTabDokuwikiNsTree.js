@@ -14,8 +14,7 @@ define([
 ], function(declare, query, template, Request, ContentPane, _LayoutWidget,
                 _TemplatedMixin, JsonRest, Tree, aspect, ObjectStoreModel){
     var ret = declare("ioc.gui.ContentTabDokuwikiNsTree", 
-                              [ContentPane, _TemplatedMixin, _LayoutWidget, 
-                                  Request], {
+                              [ContentPane, _TemplatedMixin, _LayoutWidget, Request], {
 	// summary:
         templateString: template
        ,treeDataSource: null
@@ -35,11 +34,10 @@ define([
                     store: new JsonRest({
                        target: tds                       
                        ,getChildren: function(object){
-                            return this.get(object.id).then(function(fullObject){
-                                    return fullObject.children;
-                            }, function(error){
-//                                    console.log(error);
-                            });
+                            return this.get(object.id).then(
+								function(fullObject){return fullObject.children;}
+								,function(error){/*console.log(error);*/}
+							);
                         }
                     })
                    ,getRoot: function(onItem){
@@ -69,9 +67,15 @@ define([
                parentNode.style.width = ""+node.offsetWidth+"px";
            },true);
        }
+	   
+	   ,updateRendering: function(){
+           this.inherited(arguments);
+		   this.tree._adjustWidths();
+	   }
+	   
        ,startup: function(){
             this.inherited(arguments);
-            this.tree.placeAt(this.id+"_tree")
+            this.tree.placeAt(this.id+"_tree");
             this.tree.startup();
        }
        ,setTreeDatasource: function(/*String*/ urlStr){
