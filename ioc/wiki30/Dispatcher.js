@@ -1,6 +1,7 @@
 define([
 	"dojo/_base/declare" // declare
        ,"dijit/registry" //search widgets by id
+	   ,"dijit/layout/ContentPane"	//per a la funció newTab
        ,"ioc/dokuwiki/runRender"
        ,"ioc/dokuwiki/listHeadings"
        ,"ioc/dokuwiki/runQuiz"
@@ -11,7 +12,7 @@ define([
        ,"dojo/_base/lang"
        ,"dojo/_base/array"
        ,"ioc/wiki30/SectokManager"
-], function(declare, registry, runRender, listHeadings, runQuiz, dom, query
+], function(declare, registry, ContentPane, runRender, listHeadings, runQuiz, dom, query
                              ,domStyle, Dialog, lang, array, SectokManager){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState:null
@@ -89,13 +90,25 @@ define([
             }
         }        
        ,_processContent:function(content){
-            dom.byId(this.containerNodeId).innerHTML=content;
-            /*TO CHANGE*/
+            //dom.byId(this.containerNodeId).innerHTML=content;
+            this.newTab(content);
             listHeadings();
             runRender();   
             runQuiz();
         }        
-       ,_processError: function(error, message){
+		,newTab: function(content){
+			/*Construeix una nova pestanya*/
+			var tc = registry.byId(this.containerNodeId);
+			var cp = new ContentPane({
+					id: content.id,
+					title: content.title,
+					content: content.content,
+					closable: true
+			});
+			tc.addChild(cp);
+			tc.selectChild(cp);
+		}
+	   ,_processError: function(error, message){
             if(!error) error="";
             if(!message) message="";
             this.diag.set("title", "ERROR");
