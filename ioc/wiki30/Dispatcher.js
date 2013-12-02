@@ -98,15 +98,17 @@ define([
         }        
 		,newTab: function(content){
 			/*Construeix una nova pestanya*/
-			var tc = registry.byId(this.containerNodeId);
-			var cp = new ContentPane({
-					id: content.id,
-					title: content.title,
-					content: content.content,
-					closable: true
-			});
-			tc.addChild(cp);
-			tc.selectChild(cp);
+			if (!registry.byId(content.id)) {
+				var tc = registry.byId(this.containerNodeId);
+				var cp = new ContentPane({
+						id: content.id,
+						title: content.title,
+						content: content.content,
+						closable: true
+				});
+				tc.addChild(cp);
+				tc.selectChild(cp);
+			}
 		}
 	   ,_processError: function(error, message){
             if(!error) error="";
