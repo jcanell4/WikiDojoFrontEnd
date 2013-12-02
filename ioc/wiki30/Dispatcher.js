@@ -45,10 +45,11 @@ define([
            
        }
        ,processLogin: function(result){
-           if(!result){
-            this.diag.set("ALERTA", "Usuari o contrasenya incorrecta");
-            this.diag.show();               
-           }
+			if (result.loginRequest && !result.loginResult){
+				this.diag.set("title", "ALERTA");
+				this.diag.set("content", "Usuari o contrasenya incorrecta");
+				this.diag.show();               
+			}
        }
        ,processSectok: function(result){
            this.putSectok(result);
