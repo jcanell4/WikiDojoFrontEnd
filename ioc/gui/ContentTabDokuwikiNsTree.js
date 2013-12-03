@@ -10,7 +10,7 @@ define([
         ,"dijit/Tree"
         ,"dojo/aspect"
         ,"dijit/tree/ObjectStoreModel"
-	,"dojo/NodeList-dom" // NodeList.style
+		,"dojo/NodeList-dom" // NodeList.style
 ], function(declare, query, template, Request, ContentPane, _LayoutWidget,
                 _TemplatedMixin, JsonRest, Tree, aspect, ObjectStoreModel){
     var ret = declare("ioc.gui.ContentTabDokuwikiNsTree", 
@@ -29,31 +29,31 @@ define([
            var root = this.rootValue;
            var nsTree = this;
            this.tree = new Tree({
-                /*id: vid+"_nTree"
-               ,*/model: new ObjectStoreModel({
-                    store: new JsonRest({
-                       target: tds                       
-                       ,getChildren: function(object){
-                            return this.get(object.id).then(
-								function(fullObject){return fullObject.children;}
-								,function(error){/*console.log(error);*/}
-							);
-                        }
-                    })
-                   ,getRoot: function(onItem){
-                            this.store.get(root).then(onItem);
-                    }
-                   ,mayHaveChildren: function(object){
-                            return object.type==="d";
-                    }
-                   ,getLabel: function(object){
-                       return object.name;
-                   }
-                })
-                ,persist: false
-                ,openOnClick: true
-                ,onClick: function(item){
-                    if(!this.model.mayHaveChildren(item)){
+                id: vid+"_nTree"
+			   ,model: new ObjectStoreModel({
+						store: new JsonRest({
+							   target: tds                       
+							   ,getChildren: function(object){
+									return this.get(object.id).then(
+										function(fullObject){return fullObject.children;}
+										,function(error){/*console.log(error);*/}
+									);
+								}
+						})
+					   ,getRoot: function(onItem){
+								this.store.get(root).then(onItem);
+						}
+					   ,mayHaveChildren: function(object){
+								return object.type==="d";
+						}
+					   ,getLabel: function(object){
+						   return object.name;
+					   }
+				})
+			   ,persist: false
+               ,openOnClick: true
+               ,onClick: function(item){
+					if(!this.model.mayHaveChildren(item)){
                         nsTree.sendRequest("id="+item.id);
                     }
                 }
@@ -88,6 +88,35 @@ define([
            }
            this.tree.model.store.target=this.treeDataSource+sectok+"/";
        }
+	   
+	   ,refresh: function(){
+			// Destruct the references to any selected nodes so that 
+			// the refreshed tree will not attempt to unselect destructed nodes
+			// when a new selection is made.
+			// These references are contained in Tree.selectedItem,
+			// Tree.selectedItems, Tree.selectedNode, and Tree.selectedNodes.
+			this.tree.dndController.selectNone();
+
+			this.tree.model.store.clearOnClose = true;
+//			this.tree.model.store.close(); produeix error
+
+			// Completely delete every node from the dijit.Tree     
+			this.tree._itemNodesMap = {};
+			this.tree.rootNode.state = "UNCHECKED";
+//			this.tree.model.root.children = null; produeix error
+
+			// Destroy the widget
+			this.tree.rootNode.destroyRecursive();
+
+			// Recreate the model, (with the model again)registry.byId
+//			this.tree.model.constructor(dijit.byId(this.tree.id).model);
+			//this.tree.model.constructor(registry.byId(this.tree.id).model);
+			this.tree.model.constructor(this.tree.model);
+
+			// Rebuild the tree
+			this.tree.postMixInProperties();
+			this.tree._load();
+		}
     });
     return ret;
 });
