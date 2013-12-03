@@ -98,12 +98,12 @@ define([
 			this.tree.dndController.selectNone();
 
 			this.tree.model.store.clearOnClose = true;
-			this.tree.model.store.close();
+//			this.tree.model.store.close(); produeix error
 
 			// Completely delete every node from the dijit.Tree     
 			this.tree._itemNodesMap = {};
 			this.tree.rootNode.state = "UNCHECKED";
-			this.tree.model.root.children = null;
+//			this.tree.model.root.children = null; produeix error
 
 			// Destroy the widget
 			this.tree.rootNode.destroyRecursive();

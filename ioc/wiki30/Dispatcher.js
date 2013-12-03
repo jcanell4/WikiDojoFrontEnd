@@ -136,11 +136,12 @@ define([
             }else if(command.type==="change_widget_property"){
                 this._processChangeWidgetPropertyCommand(command);
             }else if(command.type==="reaload_widget_content"){
-				var rbid = registry.byId(command.id);
-				if (rbid.refresh)
-					rbid.refresh();
-                else
-					this._processError("error", "Aquest element: "+command.id+" no te mètode refresh.");
+				var tabId = registry.byId(command.id);
+				if (tabId.refresh) {
+					tabId.refresh();
+				}else {
+					this._processError("error", "Aquest element: "+command.id+" no té mètode refresh.");
+				}
             }else if(command.type==="change_widget_property"){
                 this._processChangeWidgetPropertyCommand(command);
             }
