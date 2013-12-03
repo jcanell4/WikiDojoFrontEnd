@@ -15,25 +15,25 @@ define([
 ], function(declare, registry, ContentPane, runRender, listHeadings, runQuiz, dom, query
                              ,domStyle, Dialog, lang, array, SectokManager){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
-        globalState:null
-       ,sectokManager:new SectokManager()
+        globalState: null
+       ,sectokManager: new SectokManager()
        ,containerNodeId: null
-       ,infoNodeId:null
-       ,toUpdateSectok:new Array()
+       ,infoNodeId: null
+       ,toUpdateSectok: new Array()
        ,diag: new Dialog({
                         title: "ERROR",
                         style: "width: 300px"
                     })
-       ,constructor:function(/*Object*/ pAttributes){
+       ,constructor: function(/*Object*/ pAttributes){
            lang.mixin(this, pAttributes);
         }
        ,startup: function(){
            /*TO DO. Set the globalState to different components*/
         }
-       ,getSectok:function(strUrl){
+       ,getSectok: function(strUrl){
            return (this.sectokManager.getSectok(strUrl));
        }
-       ,putSectok:function(strUrl, sectok){
+       ,putSectok: function(strUrl, sectok){
            if(!sectok){
                sectok=strUrl;
                strUrl=undefined;
@@ -47,14 +47,13 @@ define([
        ,processLogin: function(result){
 			if (result.loginRequest && !result.loginResult){
 				this.diag.set("title", "ALERTA");
-				this.diag.set("content", "Usuari o contrasenya incorrecta");
+				this.diag.set("content", "Usuari o contrasenya incorrectes");
 				this.diag.show();               
 			}
        }
        ,processSectok: function(result){
            this.putSectok(result);
        }
-
        ,processError: function(error){
            this._processError(error.response.text);
         }
@@ -90,14 +89,14 @@ define([
                                  "Missatge incomprensible");
             }
         }        
-       ,_processContent:function(content){
+       ,_processContent: function(content){
             //dom.byId(this.containerNodeId).innerHTML=content;
             this.newTab(content);
             listHeadings();
             runRender();   
             runQuiz();
         }        
-		,newTab: function(content){
+	   ,newTab: function(content){
 			/*Construeix una nova pestanya*/
 			if (!registry.byId(content.id)) {
 				var tc = registry.byId(this.containerNodeId);
@@ -130,22 +129,30 @@ define([
            var nodeTitle = query("title")[0];
            nodeTitle.innerHTML=title;
        }
-       ,_processCommand:function(command){
+       ,_processCommand: function(command){
             /*TO DO*/
-            if(command.type=="change_dom_style"){
+            if(command.type==="change_dom_style"){
                 this._processChangeStyleCommand(command);
-            }else if(command.type=="change_widget_property"){
+            }else if(command.type==="change_widget_property"){
+                this._processChangeWidgetPropertyCommand(command);
+            }else if(command.type==="reaload_widget_content"){
+				var rbid = registry.byId(command.id);
+				if (rbid.refresh)
+					rbid.refresh();
+                else
+					this._processError("error", "Aquest element: "+command.id+" no te mètode refresh.");
+            }else if(command.type==="change_widget_property"){
                 this._processChangeWidgetPropertyCommand(command);
             }
        }
-       ,_processChangeWidgetPropertyCommand:function(command){
+       ,_processChangeWidgetPropertyCommand: function(command){
            var widget=registry.byId(command.id);
            widget.set(command.propertyName, command.propertyValue);
        }
-       ,_processChangeStyleCommand:function(command){
+       ,_processChangeStyleCommand: function(command){
             domStyle.set(command.id, command.propertyName, command.propertyValue);
        }
-       ,_processWidgetCommand:function(command){
+       ,_processWidgetCommand: function(command){
             var widget = registry.byId(command.componentId);
             if(lang.isArray(command.toExecute)){
                  array.forEach(command.toExecute, function(responseItem){
