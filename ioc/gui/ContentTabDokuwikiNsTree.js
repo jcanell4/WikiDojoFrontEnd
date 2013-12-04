@@ -97,7 +97,7 @@ define([
 			// Tree.selectedItems, Tree.selectedNode, and Tree.selectedNodes.
 			this.tree.dndController.selectNone();
 
-			this.tree.model.store.clearOnClose = true;
+//			this.tree.model.store.clearOnClose = true; //no és necessari
 //			this.tree.model.store.close(); produeix error
 
 			// Completely delete every node from the dijit.Tree     
