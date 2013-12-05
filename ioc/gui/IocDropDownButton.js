@@ -6,10 +6,9 @@ define(["dojo/_base/declare"
 		,"ioc/wiki30/Request"
         ,"dijit/_TemplatedMixin"
 		,"dojo/text!./templates/DropDownButton.html"
-		,"dojo/dom-style"
-        ,"dojo/NodeList-dom"
+		,"ioc/gui/IocComponent"
 ],
-function(declare, DropDownButton, Request, _TemplatedMixin, template, style) {
+function(declare, DropDownButton, Request, _TemplatedMixin, template, IocComponent) {
     /* module:
     *		ioc/gui/IocDropDownButton
 	* Afegeix un nou mètode al DropDownButton estàndar que redimensiona el botó
@@ -19,21 +18,13 @@ function(declare, DropDownButton, Request, _TemplatedMixin, template, style) {
 	*				true: executa el mètode resize -> canvia el tamany del botó
 	*				false: no executa el mètode resize -> no canvia el tamany del botó
 	*/
-    var ret = declare("ioc.gui.IocDropDownButton", [DropDownButton, Request, _TemplatedMixin],{
+    var ret = declare("ioc.gui.IocDropDownButton", [DropDownButton, Request, _TemplatedMixin, IocComponent],
+	{
 		templateString: template
-		,autoSize: true 	
-		,resize: function(){
-			if (this.autoSize) {
-				this.inherited(arguments);
-				var correccio_amplada = 15;
-	            var node = this._buttonNode;
-				var nodePare = this._buttonTopNode.parentNode;
-				var amplePare = nodePare.clientWidth - correccio_amplada;
-				style.set(node, "width", amplePare+"px");
-			}
-		}
 		,startup: function(){
 			this.inherited(arguments);
+			this.nodeToResize = this._buttonNode;
+			this.topNodeToResize = this._buttonTopNode;
 			this.resize();
 		}
     });

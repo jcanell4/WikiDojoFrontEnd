@@ -44,13 +44,6 @@ define([
            });             
            
        }
-       ,processLogin: function(result){
-			if (result.loginRequest && !result.loginResult){
-				this.diag.set("title", "ALERTA");
-				this.diag.set("content", "Usuari o contrasenya incorrectes");
-				this.diag.show();               
-			}
-       }
        ,processSectok: function(result){
            this.putSectok(result);
        }
@@ -68,35 +61,40 @@ define([
           }
         }
        ,_processResponse: function(response){
-            if(response.type==="data"){
-                this._processContent(response.value);
-            }else if(response.type==="title"){
-                this._processTitle(response.value);
+            if(response.type==="alert"){
+                this._processAlert(response.value);
             }else if(response.type==="command"){
                 this._processCommand(response.value);
+            }else if(response.type==="data"){
+                this._processContent(response.value);
             }else if(response.type==="error"){
                 this._processError(response.value);
             }else if(response.type==="info"){
                 this._processInfo(response.value);
-            }else if(response.type==="sectok"){
-                this.processSectok(response.value);
             }else if(response.type==="login"){
                 this.processLogin(response.value);
-            }else if(response.type==="alert"){
-                this._processAlert(response.value);
+            }else if(response.type==="sectok"){
+                this.processSectok(response.value);
+            }else if(response.type==="title"){
+                this._processTitle(response.value);
             }else{
                 this._processAlert(/*TO DO: internationalization*/
                                  "Missatge incomprensible");
             }
         }        
+       ,_processAlert: function(alert){
+            this.diag.set("title", "ALERTA");
+            this.diag.set("content", alert);
+            this.diag.show();
+        }
        ,_processContent: function(content){
             //dom.byId(this.containerNodeId).innerHTML=content;
-            this.newTab(content);
+            this.__newTab(content);
             listHeadings();
             runRender();   
             runQuiz();
         }        
-	   ,newTab: function(content){
+	   ,__newTab: function(content){
 			/*Construeix una nova pestanya*/
 			if (!registry.byId(content.id)) {
 				var tc = registry.byId(this.containerNodeId);
@@ -117,13 +115,20 @@ define([
             this.diag.set("content", error + " " + message);
             this.diag.show();
         }
-       ,_processAlert: function(alert){
-            this.diag.set("title", "ALERTA");
-            this.diag.set("content", alert);
-            this.diag.show();
-        }
        ,_processInfo: function(info){
            dom.byId(this.infoNodeId).innerHTML=info;
+       }
+       ,processLogin: function(result){
+			if (result.loginRequest && !result.loginResult){
+				this.diag.set("title", "ERROR");
+				this.diag.set("content", "Usuari o contrasenya incorrectes");
+				this.diag.show();               
+			}
+			else {
+			   var id = registry.byId("zonaMissatges");
+			   if (id) 
+				   id.setMessage("usuari: " . $_SESSION['user']);
+			}
        }
        ,_processTitle: function(title){
            var nodeTitle = query("title")[0];
@@ -136,16 +141,29 @@ define([
             }else if(command.type==="change_widget_property"){
                 this._processChangeWidgetPropertyCommand(command);
             }else if(command.type==="reaload_widget_content"){
-				var tabId = registry.byId(command.id);
-				if (tabId.refresh) {
-					tabId.refresh();
-				}else {
-					this._processError("error", "Aquest element: "+command.id+" no té mètode refresh.");
-				}
-            }else if(command.type==="change_widget_property"){
-                this._processChangeWidgetPropertyCommand(command);
+				this._processRefresh(command);
+            }else if(command.type==="remove_all_widget_children"){
+                this._processRemoveChildreWidgets(command);
             }
        }
+	   ,_processRefresh: function(command){
+			var tabId = registry.byId(command.id);
+			if (tabId.refresh) {
+				tabId.refresh();
+			}else {
+				this._processError("error", "Aquest element: "+command.id+" no té mètode refresh.");
+			}
+	   }
+	   ,_processRemoveChildreWidgets: function(command) {
+		   var child;
+		   var node=registry.byId(command.id);
+		   while (node.hasChildNodes()) {
+			    child = node.lastChild;
+				node.removeChild(child);
+			    child.destroyRecursive();
+			}
+
+	   }
        ,_processChangeWidgetPropertyCommand: function(command){
            var widget=registry.byId(command.id);
            widget.set(command.propertyName, command.propertyValue);
