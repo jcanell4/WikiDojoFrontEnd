@@ -1,5 +1,3 @@
-
-
 define(["dojo/_base/declare"
         ,"dijit/form/Form"
         ,"ioc/wiki30/Request"        
@@ -7,15 +5,15 @@ define(["dojo/_base/declare"
 ],
 function(declare, Form, Request) {
     // module:
-    //		ioc/gui/IocButton
+    //		ioc/gui/IocForm
 
-    var ret = declare("ioc.gui.IocButton", [Form, Request],{
-    ,query: ""
-    ,startup: function(){
+    var ret = declare("ioc.gui.IocForm", [Form, Request],{
+		,query: ""
+		,startup: function(){
 			this.inherited(arguments);
-                        if(this.action){
-                            this.query=this.action;
-                        }
+			if(this.action){
+				this.query=this.action;
+			}
 		}
 	});
 	return ret;

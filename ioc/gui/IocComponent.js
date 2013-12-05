@@ -5,7 +5,8 @@ define(["dojo/_base/declare"
 		,"dojo/dom-style"
 ],
 function(declare, style) {
-    /* module: ioc/gui/IocComponent
+	/* @author Rafael Claver <rclaver@xtec.cat>
+     * module: ioc/gui/IocComponent
 	 *  
 	 * Afegeix el mètode 'resize' que redimensiona l'objecte
 	 * per igualar-lo a la mida del seu contenidor pare.
