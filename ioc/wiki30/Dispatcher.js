@@ -157,11 +157,14 @@ define([
 	   ,_processRemoveChildreWidgets: function(command) {
 		   var child;
 		   var node=registry.byId(command.id);
-		   while (node.hasChildNodes()) {
-			    child = node.lastChild;
-				node.removeChild(child);
-			    child.destroyRecursive();
-			}
+                   if(node.hasChildren()){
+                       node.destroyDescendants(false);
+                   }
+//		   while (node.hasChildren()) {
+//			    child = node.lastChild;
+//				node.removeChild(child);
+//			    child.destroyRecursive();
+//			}
 
 	   }
        ,_processChangeWidgetPropertyCommand: function(command){

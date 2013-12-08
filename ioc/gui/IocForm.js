@@ -11,27 +11,39 @@ function(declare, Form, registry, domForm, Request) {
     // module:
     //		ioc/gui/IocForm
 
-    var ret = declare("ioc.gui.IocForm", [Form, registry, domForm, Request],{
-		,query: ""
-		,startup: function(){
-			var formDialog = registry.byId(this.id+"_form");
+    var ret = declare("ioc.gui.IocForm", [Form, Request],{
+//		query: ""
+		startup: function(){
+//			var formDialog = registry.byId(this.id+"_form");
 			var thisForm = this;
 			this.inherited(arguments);
-			formDialog.on('submit',function(){
-				if(formDialog.validate()){
-					//enviar                    
-					var query = domForm.toQuery(this.id);
+			this.on('submit',function(){
+				if(this.validate()){
+					//enviar  
+                                        var query;
+                                        var data;
+                                        var sep="";
+                                        if(this.action){
+                                            query=this.action;
+                                            sep="&";
+                                        }else{
+                                            query="";
+                                        }
+					data = domForm.toQuery(this.id);
+                                        if(data){
+                                            query=sep+data;
+                                        }
 					thisForm.sendRequest(query);
 				}else{
 					alert('Les dades no són correctes');
-					return false;
+//					return false;
 				}
 				return false;
-           });
+                        });
 
-			if(this.action){
-				this.query=this.action;
-			}
+//			if(this.action){
+//				this.query=this.action;
+//			}
 		}
 	});
 	return ret;
