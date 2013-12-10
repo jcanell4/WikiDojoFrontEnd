@@ -1,15 +1,16 @@
 define([
-	"dojo/_base/declare" // declare
-       ,"dojox/widget/Standby"
-       ,"dojo/request"
-       ,"ioc/wiki30/dispatcherSingleton"
-], function(declare, Standby, request, dispatcherSingleton){
+	"dojo/_base/declare" 
+	,"dojox/widget/Standby"
+	,"dojo/request"
+	,"ioc/wiki30/dispatcherSingleton"
+], 
+function(declare, Standby, request, dispatcherSingleton){
     var ret = declare("ioc.wiki30.Request", [], {
         standbyId: null
        ,urlBase: null
        ,method: "post"
        ,dispatcher: dispatcherSingleton
-       ,_standby:null
+       ,_standby: null
        ,sectokId: "sectok"
 //       ,constructor:function(args){
 //           lang.mixin(this, args);
@@ -43,42 +44,40 @@ define([
              */
             var standby = this._standby;
             
-            if(this.urlBase==null || this.dispatcher==null){
+            if(this.urlBase===null || this.dispatcher===null){
                 return;
             }
-            var linkChar = (this.urlBase.indexOf("?") !== -1)?"&":"?";
+            var linkChar = this.urlBase[this.urlBase.length-1]==="=" ? "" : (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
             var vUrl = this.urlBase;
-            if(query!=null){
+            if (query !== null){
                 vUrl += linkChar+query;
-                linkChar="&";
-                
+                linkChar = "&";
             }
-            if(this.getSectok()){
-                vUrl += linkChar+this.sectokId+"="+this.getSectok();
+            var gSect = this.getSectok();
+            if(gSect){
+                vUrl += linkChar + this.sectokId + "=" + gSect;
             }
-            var req = this;
-            if(standby){
+            if (standby){
                 standby.show();
             }
             
+            var req = this;
             if(this.method==="post"){
-                var resp =
-                request.post(vUrl, {handleAs: "json"}).then(
-                    function(data){
-                        return req.responseHandler(data);
-                    }, function(error){
-                        return req.errorHandler(error);
-                    }
-                );                
+                var resp = request.post(vUrl, {handleAs: "json"}).then(
+						function(data){
+							return req.responseHandler(data);
+						}, function(error){
+							return req.errorHandler(error);
+						}
+					);                
             }else{
-                var resp =
-                request.get(vUrl, {handleAs: "json"}).then(
-                    function(data){
-                        return req.responseHandler(data);
-                    }, function(error){
-                        return req.errorHandler(error);
-                    }
-                );     
+                var resp = request.get(vUrl, {handleAs: "json"}).then(
+						function(data){
+	                        return req.responseHandler(data);
+		                }, function(error){
+			                return req.errorHandler(error);
+				        }
+					);     
             }
         }
     });

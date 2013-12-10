@@ -40,7 +40,7 @@ define([
            }
            this.sectokManager.putSectok(strUrl, sectok);
            array.forEach(this.toUpdateSectok, function(responseItem){
-                    responseItem.updateSectok();
+				responseItem.updateSectok();
            });             
            
        }
@@ -120,19 +120,10 @@ define([
        }
        ,processLogin: function(result){
 			if (result.loginRequest && !result.loginResult){
-				this.diag.set("title", "ERROR");
-				this.diag.set("content", "Usuari o contrasenya incorrectes");
-				this.diag.show();               
+				this._processError("Usuari o contrasenya incorrectes");
+			}else {
+				dom.byId(this.infoNodeId).innerHTML="usuari connectat";
 			}
-			else {
-			   var id = registry.byId("zonaMissatges");
-			   if (id) 
-				   id.setMessage("usuari: " . $_SESSION['user']);
-			}
-       }
-       ,_processTitle: function(title){
-           var nodeTitle = query("title")[0];
-           nodeTitle.innerHTML=title;
        }
        ,_processCommand: function(command){
             /*TO DO*/
@@ -151,21 +142,14 @@ define([
 			if (tabId.refresh) {
 				tabId.refresh();
 			}else {
-				this._processError("error", "Aquest element: "+command.id+" no té mètode refresh.");
+				this._processError("Aquest element: "+command.id+" no té mètode refresh.");
 			}
 	   }
 	   ,_processRemoveChildreWidgets: function(command) {
-		   var child;
-		   var node=registry.byId(command.id);
-                   if(node.hasChildren()){
-                       node.destroyDescendants(false);
-                   }
-//		   while (node.hasChildren()) {
-//			    child = node.lastChild;
-//				node.removeChild(child);
-//			    child.destroyRecursive();
-//			}
-
+			var node=registry.byId(command.id);
+			if (node.hasChildren()){
+				node.destroyDescendants(false);
+			}
 	   }
        ,_processChangeWidgetPropertyCommand: function(command){
            var widget=registry.byId(command.id);
@@ -184,6 +168,10 @@ define([
                 widget._processResponse(command.toExecute);
             }
         }
+       ,_processTitle: function(title){
+           var nodeTitle = query("title")[0];
+           nodeTitle.innerHTML=title;
+       }
     });
     return DispatcherClass;
 });
