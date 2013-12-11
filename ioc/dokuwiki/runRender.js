@@ -1,5 +1,5 @@
 define([], function(){
-    var res = function(){
+    var res = function(idBodyContent){
         if (!JSINFO['plugin_iocexportl']['toccontents']){
                 $toc = jQuery('#toc__inside');
                 $toc.css('display', 'none');
@@ -11,7 +11,7 @@ define([], function(){
             return jQuery(a).parents(m[3]).length < 1;
         };
 
-        jQuery('#bodyContent').imagesLoaded(function(){
+        jQuery('#'+idBodyContent).imagesLoaded(function(){
                 jQuery('p > a > img').filter(':parents(.iocfigure)').filter(':parents(.ioccontent)').each(function(key, value){
                         var $img = jQuery(this);
                         var width = ($img.attr('width')?parseInt($img.attr('width')):$img.width());

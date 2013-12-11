@@ -88,11 +88,11 @@ define([
             this.diag.show();
         }
        ,_processContent: function(content){
-            //dom.byId(this.containerNodeId).innerHTML=content;
+            //dom.byId(this.containerNodeId).innerHTML=content.content;
             this.__newTab(content);
-            listHeadings();
-            runRender();   
-            runQuiz();
+            listHeadings(content.id);
+            runRender(content.id);   
+            runQuiz();		
         }        
 	   ,__newTab: function(content){
 			/*Construeix una nova pestanya*/
