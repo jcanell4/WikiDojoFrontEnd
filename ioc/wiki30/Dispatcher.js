@@ -121,6 +121,8 @@ define([
        ,processLogin: function(result){
 			if (result.loginRequest && !result.loginResult){
 				this._processError("Usuari o contrasenya incorrectes");
+			}else if (!result.loginRequest && !result.loginResult){
+				dom.byId(this.infoNodeId).innerHTML="usuari desconnectat";
 			}else {
 				dom.byId(this.infoNodeId).innerHTML="usuari connectat";
 			}
