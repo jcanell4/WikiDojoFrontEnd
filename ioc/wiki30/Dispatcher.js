@@ -12,8 +12,9 @@ define([
        ,"dojo/_base/lang"
        ,"dojo/_base/array"
        ,"ioc/wiki30/SectokManager"
+       ,"dojo/_base/kernel"
 ], function(declare, registry, ContentPane, runRender, listHeadings, runQuiz, dom, query
-                             ,domStyle, Dialog, lang, array, SectokManager){
+               ,domStyle, Dialog, lang, array, SectokManager, dojo){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState: null
        ,sectokManager: new SectokManager()
@@ -137,6 +138,8 @@ define([
 				this._processRefresh(command);
             }else if(command.type==="remove_all_widget_children"){
                 this._processRemoveChildreWidgets(command);
+            }else if(command.type==="process_dom_from_function"){
+//                this._processDomFromFuntcion(command);
             }
        }
 	   ,_processRefresh: function(command){
@@ -170,6 +173,15 @@ define([
                 widget._processResponse(command.toExecute);
             }
         }
+       ,_processDomFromFuntcion: function(command){
+           if(command.amd){
+               require(command.processName, function(process){
+                   process(command.id, command.params);
+               });
+           }else{               
+               dojo.eval(command.processName+"('"+command.id+"', '"+command.params+"')");
+           }
+       }
        ,_processTitle: function(title){
            var nodeTitle = query("title")[0];
            nodeTitle.innerHTML=title;
