@@ -49,17 +49,18 @@ define([
            this.putSectok(result);
        }
        ,processError: function(error){
-           this._processError(error.response.text);
+			this._processError(error.response.text);
         }
        ,processResponse: function(response){
-          var req = this;
-          if(lang.isArray(response)){
-             array.forEach(response, function(responseItem){
-                req._processResponse(responseItem); 
-             });             
-          }else{
-              req._processResponse(response);
-          }
+			var req = this;
+			if (lang.isArray(response)){
+				array.forEach(response, function(responseItem){
+					req._processResponse(responseItem); 
+				});             
+			}else{
+				req._processResponse(response);
+			}
+			return 0;
         }
        ,_processResponse: function(response){
             if(response.type==="alert"){
@@ -79,9 +80,9 @@ define([
             }else if(response.type==="title"){
                 this._processTitle(response.value);
             }else{
-                this._processAlert(/*TO DO: internationalization*/
-                                 "Missatge incomprensible");
+                this._processAlert(/*TO DO: internationalization*/"Missatge incomprensible");
             }
+			return 0;
         }        
        ,_processAlert: function(alert){
             this.diag.set("title", "ALERTA");
@@ -89,18 +90,22 @@ define([
             this.diag.show();
         }
        ,_processContent: function(content){
-			if (content.isTab===false)	//logout
+			if (content.isTab!==undefined && content.isTab===false)	//logout
 				dom.byId(this.containerNodeId).innerHTML=content.content;
-			else
+			else {
+				var cosa = dom.byId(this.containerNodeId);
 				this.__newTab(content);
-            listHeadings(content.id);
-            runRender(content.id);   
-            runQuiz();		
+				listHeadings(content.id);
+				runRender(content.id);   
+				runQuiz();
+			}
+			return 0;
         }        
 	   ,__newTab: function(content){
+		   var tc = registry.byId(this.containerNodeId);
+		   var node = registry.byId(content.id);
 			/*Construeix una nova pestanya*/
-			if (!registry.byId(content.id)) {
-				var tc = registry.byId(this.containerNodeId);
+			if (!node) {
 				var cp = new ContentPane({
 						id: content.id,
 						title: content.title,
@@ -109,7 +114,10 @@ define([
 				});
 				tc.addChild(cp);
 				tc.selectChild(cp);
+			}else {
+				tc.selectChild(node);
 			}
+			return 0;
 		}
 	   ,_processError: function(error, message){
             if(!error) error="";
@@ -156,7 +164,7 @@ define([
 	   }
 	   ,_processRemoveWidgetChild: function(command) {	//sólo necesario para destruir la pestaña logout
 			var widget = registry.byId(command.id);		//ahora esa pestaña ya no existe
-			if (widget) widget.destroy(true);
+			if (widget) widget.destroy(false);
 	   }
 	   ,_processRemoveAllChildrenWidgets: function(command) {
 			var node=registry.byId(command.id);
