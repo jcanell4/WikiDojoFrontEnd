@@ -89,8 +89,10 @@ define([
             this.diag.show();
         }
        ,_processContent: function(content){
-            //dom.byId(this.containerNodeId).innerHTML=content.content;
-            this.__newTab(content);
+			if (content.isTab===false)	//logout
+				dom.byId(this.containerNodeId).innerHTML=content.content;
+			else
+				this.__newTab(content);
             listHeadings(content.id);
             runRender(content.id);   
             runQuiz();		
@@ -136,8 +138,10 @@ define([
                 this._processChangeWidgetPropertyCommand(command);
             }else if(command.type==="reaload_widget_content"){
 				this._processRefresh(command);
+            }else if(command.type==="remove_widget_child"){
+                this._processRemoveWidgetChild(command);
             }else if(command.type==="remove_all_widget_children"){
-                this._processRemoveChildreWidgets(command);
+                this._processRemoveAllChildrenWidgets(command);
             }else if(command.type==="process_dom_from_function"){
 //                this._processDomFromFuntcion(command);
             }
@@ -150,7 +154,11 @@ define([
 				this._processError("Aquest element: "+command.id+" no té mètode refresh.");
 			}
 	   }
-	   ,_processRemoveChildreWidgets: function(command) {
+	   ,_processRemoveWidgetChild: function(command) {	//sólo necesario para destruir la pestaña logout
+			var widget = registry.byId(command.id);		//ahora esa pestaña ya no existe
+			if (widget) widget.destroy(true);
+	   }
+	   ,_processRemoveAllChildrenWidgets: function(command) {
 			var node=registry.byId(command.id);
 			if (node.hasChildren()){
 				node.destroyDescendants(false);
