@@ -1,10 +1,10 @@
 define([
 	"dojo/_base/declare" // declare
        ,"dijit/registry" //search widgets by id
-	   ,"dijit/layout/ContentPane"	//per a la funció newTab
-       ,"ioc/dokuwiki/runRender"
-       ,"ioc/dokuwiki/listHeadings"
-       ,"ioc/dokuwiki/runQuiz"
+       ,"dijit/layout/ContentPane"	//per a la funció newTab
+//       ,"ioc/dokuwiki/runRender"
+//       ,"ioc/dokuwiki/listHeadings"
+//       ,"ioc/dokuwiki/runQuiz"
        ,"dojo/dom"
        ,"dojo/query"
        ,"dojo/dom-style"
@@ -13,7 +13,7 @@ define([
        ,"dojo/_base/array"
        ,"ioc/wiki30/SectokManager"
        ,"dojo/_base/kernel"
-], function(declare, registry, ContentPane, runRender, listHeadings, runQuiz, dom, query
+], function(declare, registry, ContentPane/*, runRender, listHeadings, runQuiz*/, dom, query
                ,domStyle, Dialog, lang, array, SectokManager, dojo){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState: null
@@ -91,9 +91,9 @@ define([
        ,_processContent: function(content){
             //dom.byId(this.containerNodeId).innerHTML=content.content;
             this.__newTab(content);
-            listHeadings(content.id);
-            runRender(content.id);   
-            runQuiz();		
+//            listHeadings(content.id);
+//            runRender(content.id);   
+//            runQuiz();		
         }        
 	   ,__newTab: function(content){
 			/*Construeix una nova pestanya*/
@@ -139,7 +139,7 @@ define([
             }else if(command.type==="remove_all_widget_children"){
                 this._processRemoveChildreWidgets(command);
             }else if(command.type==="process_dom_from_function"){
-//                this._processDomFromFuntcion(command);
+                this._processDomFromFuntcion(command);
             }
        }
 	   ,_processRefresh: function(command){
@@ -175,7 +175,7 @@ define([
         }
        ,_processDomFromFuntcion: function(command){
            if(command.amd){
-               require(command.processName, function(process){
+               require(new Array(command.processName), function(process){
                    process(command.id, command.params);
                });
            }else{               

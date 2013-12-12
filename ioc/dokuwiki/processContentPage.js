@@ -3,7 +3,7 @@ define([
     ,"dojo/dom"
     ,"dojo/_base/event"
     ,"dojo/dom-form"
-    ,"ioc/dokuwiki/listHeading"
+    ,"ioc/dokuwiki/listHeadings"
     ,"ioc/dokuwiki/runRender"
     ,"ioc/dokuwiki/runQuiz" 
     ,"ioc/wiki30/Request"
@@ -26,10 +26,10 @@ define([
         on(domNode, "form.btn_secedit:submit", function(e){
             //enviar  
             var query = "";
-            var data;
-            data = domform.toQuery(this.id);
+            var data
+            data = domform.toQuery(this);
             if (data){
-                query += "&"+data;
+                query = data;
             }
             request.sendRequest(query);
             event.stop(e);
