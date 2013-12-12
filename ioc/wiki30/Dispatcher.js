@@ -49,17 +49,18 @@ define([
            this.putSectok(result);
        }
        ,processError: function(error){
-           this._processError(error.response.text);
+			this._processError(error.response.text);
         }
        ,processResponse: function(response){
-          var req = this;
-          if(lang.isArray(response)){
-             array.forEach(response, function(responseItem){
-                req._processResponse(responseItem); 
-             });             
-          }else{
-              req._processResponse(response);
-          }
+			var req = this;
+			if (lang.isArray(response)){
+				array.forEach(response, function(responseItem){
+					req._processResponse(responseItem); 
+				});             
+			}else{
+				req._processResponse(response);
+			}
+			return 0;
         }
        ,_processResponse: function(response){
             if(response.type==="alert"){
@@ -79,15 +80,29 @@ define([
             }else if(response.type==="title"){
                 this._processTitle(response.value);
             }else{
-                this._processAlert(/*TO DO: internationalization*/
-                                 "Missatge incomprensible");
+                this._processAlert(/*TO DO: internationalization*/"Missatge incomprensible");
             }
+			return 0;
         }        
        ,_processAlert: function(alert){
             this.diag.set("title", "ALERTA");
             this.diag.set("content", alert);
             this.diag.show();
         }
+            //Josep: QUÈ VOLS FER AQUÍ? En parelem?
+            //comento i torno a l'anterior        
+//       ,_processContent: function(content){
+//			if (content.isTab!==undefined && content.isTab===false)	//logout
+//				dom.byId(this.containerNodeId).innerHTML=content.content;
+//			else {
+//				var cosa = dom.byId(this.containerNodeId);
+//				this.__newTab(content);
+//				listHeadings(content.id);
+//				runRender(content.id);   
+//				runQuiz();
+//			}
+//			return 0;
+//        }            
        ,_processContent: function(content){
             //dom.byId(this.containerNodeId).innerHTML=content.content;
             this.__newTab(content);
@@ -96,9 +111,10 @@ define([
 //            runQuiz();		
         }        
 	   ,__newTab: function(content){
+		   var tc = registry.byId(this.containerNodeId);
+		   var node = registry.byId(content.id);
 			/*Construeix una nova pestanya*/
-			if (!registry.byId(content.id)) {
-				var tc = registry.byId(this.containerNodeId);
+			if (!node) {
 				var cp = new ContentPane({
 						id: content.id,
 						title: content.title,
@@ -107,7 +123,10 @@ define([
 				});
 				tc.addChild(cp);
 				tc.selectChild(cp);
+			}else {
+				tc.selectChild(node);
 			}
+			return 0;
 		}
 	   ,_processError: function(error, message){
             if(!error) error="";
@@ -136,8 +155,10 @@ define([
                 this._processChangeWidgetPropertyCommand(command);
             }else if(command.type==="reaload_widget_content"){
 				this._processRefresh(command);
+            }else if(command.type==="remove_widget_child"){
+                this._processRemoveWidgetChild(command);
             }else if(command.type==="remove_all_widget_children"){
-                this._processRemoveChildreWidgets(command);
+                this._processRemoveAllChildrenWidgets(command);
             }else if(command.type==="process_dom_from_function"){
                 this._processDomFromFuntcion(command);
             }
@@ -150,7 +171,11 @@ define([
 				this._processError("Aquest element: "+command.id+" no té mètode refresh.");
 			}
 	   }
-	   ,_processRemoveChildreWidgets: function(command) {
+	   ,_processRemoveWidgetChild: function(command) {	//sólo necesario para destruir la pestaña logout
+			var widget = registry.byId(command.id);		//ahora esa pestaña ya no existe
+			if (widget) widget.destroy(false);
+	   }
+	   ,_processRemoveAllChildrenWidgets: function(command) {
 			var node=registry.byId(command.id);
 			if (node.hasChildren()){
 				node.destroyDescendants(false);
