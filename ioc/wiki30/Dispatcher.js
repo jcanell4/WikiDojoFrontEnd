@@ -88,19 +88,11 @@ define([
             this.diag.set("content", alert);
             this.diag.show();
         }
-            //Josep: QUÈ VOLS FER AQUÍ? En parelem?
-            //comento i torno a l'anterior        
-//       ,_processContent: function(content){
-//			if (content.isTab!==undefined && content.isTab===false)	//logout
-//				dom.byId(this.containerNodeId).innerHTML=content.content;
-//			else {
-//				var cosa = dom.byId(this.containerNodeId);
-//				this.__newTab(content);
-//				listHeadings(content.id);
-//				runRender(content.id);   
-//				runQuiz();
-//			}
-//			return 0;
+//      ,_processContent: function(content){
+//			this.__newTab(content);
+//			listHeadings(content.id);
+//			runRender(content.id);   
+//			runQuiz();
 //        }            
        ,_processDataContent: function(content){
            var node = dom.byId(content.id);
@@ -111,9 +103,9 @@ define([
         }        
 	   ,__newTab: function(content){
 		   var tc = registry.byId(this.containerNodeId);
-		   var node = registry.byId(content.id);
+		   var widget = registry.byId(content.id);
 			/*Construeix una nova pestanya*/
-			if (!node) {
+			if (!widget) {
 				var cp = new ContentPane({
 						id: content.id,
 						title: content.title,
@@ -123,7 +115,9 @@ define([
 				tc.addChild(cp);
 				tc.selectChild(cp);
 			}else {
-				tc.selectChild(node);
+				tc.selectChild(widget);
+				var node = dom.byId(content.id);
+				node.innerHTML=content.content;
 			}
 			return 0;
 		}
