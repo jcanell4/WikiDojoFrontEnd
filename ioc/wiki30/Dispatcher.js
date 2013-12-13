@@ -2,9 +2,6 @@ define([
 	"dojo/_base/declare" // declare
        ,"dijit/registry" //search widgets by id
        ,"dijit/layout/ContentPane"	//per a la funció newTab
-//       ,"ioc/dokuwiki/runRender"
-//       ,"ioc/dokuwiki/listHeadings"
-//       ,"ioc/dokuwiki/runQuiz"
        ,"dojo/dom"
        ,"dojo/query"
        ,"dojo/dom-style"
@@ -13,7 +10,7 @@ define([
        ,"dojo/_base/array"
        ,"ioc/wiki30/SectokManager"
        ,"dojo/_base/kernel"
-], function(declare, registry, ContentPane/*, runRender, listHeadings, runQuiz*/, dom, query
+], function(declare, registry, ContentPane, dom, query
                ,domStyle, Dialog, lang, array, SectokManager, dojo){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState: null
@@ -67,8 +64,10 @@ define([
                 this._processAlert(response.value);
             }else if(response.type==="command"){
                 this._processCommand(response.value);
+            }else if(response.type==="html"){
+                this._processHtmlContent(response.value);
             }else if(response.type==="data"){
-                this._processContent(response.value);
+                this._processDataContent(response.value);
             }else if(response.type==="error"){
                 this._processError(response.value);
             }else if(response.type==="info"){
@@ -103,12 +102,12 @@ define([
 //			}
 //			return 0;
 //        }            
-       ,_processContent: function(content){
-            //dom.byId(this.containerNodeId).innerHTML=content.content;
+       ,_processDataContent: function(content){
+           var node = dom.byId(content.id);
+           node.innerHTML=content.content;
+       }
+       ,_processHtmlContent: function(content){
             this.__newTab(content);
-//            listHeadings(content.id);
-//            runRender(content.id);   
-//            runQuiz();		
         }        
 	   ,__newTab: function(content){
 		   var tc = registry.byId(this.containerNodeId);
