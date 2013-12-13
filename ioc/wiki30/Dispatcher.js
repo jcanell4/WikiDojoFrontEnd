@@ -170,9 +170,14 @@ define([
 				this._processError("Aquest element: "+command.id+" no té mètode refresh.");
 			}
 	   }
-	   ,_processRemoveWidgetChild: function(command) {	//sólo necesario para destruir la pestaña logout
-			var widget = registry.byId(command.id);		//ahora esa pestaña ya no existe
-			if (widget) widget.destroy(false);
+	   ,_processRemoveWidgetChild: function(command) {
+			var tc = registry.byId(this.containerNodeId);
+			var widget = registry.byId(command.id);
+			if (widget) {
+				tc.removeChild(widget);
+				widget.destroyRecursive(false);
+			}
+			return 0;
 	   }
 	   ,_processRemoveAllChildrenWidgets: function(command) {
 			var node=registry.byId(command.id);
