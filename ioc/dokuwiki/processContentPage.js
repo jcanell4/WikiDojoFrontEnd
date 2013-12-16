@@ -9,7 +9,8 @@ define([
     ,"ioc/wiki30/Request"
 ], function(on, dom, event, domform, listHeadings, runRender, runQuiz, 
                 Request){
-    var res = function(id, command){
+    var res = function(id, params){
+        //JSINFO.id=params.ns;
         listHeadings(id);
         runRender(id);   
         runQuiz();
@@ -21,7 +22,7 @@ define([
         }
         request.sectok = request.dispatcher.getSectok();
         request.dispatcher.toUpdateSectok.push(request);
-        request.urlBase=command;
+        request.urlBase=params.command;
         
         on(domNode, "form.btn_secedit:submit", function(e){
             //enviar  

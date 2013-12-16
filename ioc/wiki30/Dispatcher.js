@@ -154,6 +154,8 @@ define([
                 this._processRemoveAllChildrenWidgets(command);
             }else if(command.type==="process_dom_from_function"){
                 this._processDomFromFuntcion(command);
+            }else if(command.type==="jsinfo"){
+                this._processJsInfo(command);
             }
        }
 	   ,_processRefresh: function(command){
@@ -204,6 +206,9 @@ define([
            }else{               
                dojo.eval(command.processName+"('"+command.id+"', '"+command.params+"')");
            }
+       }
+       ,_processJsInfo: function(command){
+           lang.mixin(JSINFO, command.value);
        }
        ,_processTitle: function(title){
            var nodeTitle = query("title")[0];
