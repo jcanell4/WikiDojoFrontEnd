@@ -17,6 +17,7 @@ define([
        ,sectokManager: new SectokManager()
        ,containerNodeId: null
        ,infoNodeId: null
+       ,metaInfoNodeId: null
        ,toUpdateSectok: new Array()
        ,diag: new Dialog({
                         title: "ERROR",
@@ -78,11 +79,32 @@ define([
                 this.processSectok(response.value);
             }else if(response.type==="title"){
                 this._processTitle(response.value);
+            }else if(response.type==="metainfo"){
+                this._processMetaInfo(response.value);
             }else{
                 this._processAlert(/*TO DO: internationalization*/"Missatge incomprensible");
             }
 			return 0;
         }        
+	   ,_processMetaInfo: function(content){
+		   var tc = registry.byId(this.metaInfoNodeId);
+		   var widget = registry.byId(content.docId);
+			/*Construeix un nou contenidor de meta-info*/
+			if (!widget) {
+				var cp = new ContentPane({
+						id: content.id,
+						title: content.title,
+						content: content.content
+				});
+				tc.addChild(cp);
+				tc.selectChild(cp);
+			}else {
+				tc.selectChild(widget);
+				var node = dom.byId(content.id);
+				node.innerHTML=content.content;
+			}
+			return 0;
+		}
        ,_processAlert: function(alert){
             this.diag.set("title", "ALERTA");
             this.diag.set("content", alert);
