@@ -87,19 +87,26 @@ define([
 			return 0;
         }        
 	   ,_processMetaInfo: function(content){
-		   var tc = registry.byId(this.metaInfoNodeId);
+		   var ac = registry.byId(this.metaInfoNodeId);
+		   var nodo = dom.byId(this.metaInfoNodeId);
 		   var widget = registry.byId(content.docId);
 			/*Construeix un nou contenidor de meta-info*/
 			if (!widget) {
 				var cp = new ContentPane({
-						id: content.id,
-						title: content.title,
-						content: content.content
+						id: content.id
+						,title: content.title
+						,content: content.content
+						,closable: false
+						,extractContent: false
+						,preventCache: false
+						,preload: false
+						,refreshOnShow: false
+						,doLayout: false
 				});
-				tc.addChild(cp);
-				tc.selectChild(cp);
+				ac.addChild(cp);
+				ac.selectChild(cp);
 			}else {
-				tc.selectChild(widget);
+				ac.selectChild(widget);
 				var node = dom.byId(content.id);
 				node.innerHTML=content.content;
 			}
