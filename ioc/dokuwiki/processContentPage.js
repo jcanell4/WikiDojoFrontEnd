@@ -19,7 +19,7 @@ define([
         var request = new Request();
         request.updateSectok=function(sk){
             this.sectok=sk;
-        }
+        };
         request.sectok = request.dispatcher.getSectok();
         request.dispatcher.toUpdateSectok.push(request);
         request.urlBase=params.command;
@@ -27,7 +27,7 @@ define([
         on(domNode, "form.btn_secedit:submit", function(e){
             //enviar  
             var query = "";
-            var data
+            var data;
             data = domform.toQuery(this);
             if (data){
                 query = data;
@@ -35,7 +35,7 @@ define([
             request.sendRequest(query);
             event.stop(e);
         });
-    }
+    };
     return res;
 });
 

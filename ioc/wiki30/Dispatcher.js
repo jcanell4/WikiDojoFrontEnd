@@ -112,15 +112,8 @@ define([
             this.diag.set("content", alert);
             this.diag.show();
         }
-//      ,_processContent: function(content){
-//			this.__newTab(content);
-//			listHeadings(content.id);
-//			runRender(content.id);   
-//			runQuiz();
-//        }            
        ,_processDataContent: function(content){
-           var node = dom.byId(content.id);
-           node.innerHTML=content.content;
+           this.__newTab(content);
        }
        ,_processHtmlContent: function(content){
             this.__newTab(content);
