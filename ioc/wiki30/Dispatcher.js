@@ -16,6 +16,7 @@ define([
         globalState: null
        ,sectokManager: new SectokManager()
        ,containerNodeId: null
+       ,navegacioNodeId: null
        ,infoNodeId: null
        ,metaInfoNodeId: null
        ,toUpdateSectok: new Array()
