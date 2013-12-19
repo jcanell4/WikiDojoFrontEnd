@@ -88,7 +88,6 @@ define([
         }        
 	   ,_processMetaInfo: function(content){
 		   var ac = registry.byId(this.metaInfoNodeId);
-		   var nodo = dom.byId(this.metaInfoNodeId);
 		   var widget = registry.byId(content.docId);
 			/*Construeix un nou contenidor de meta-info*/
 			if (!widget) {
@@ -96,15 +95,10 @@ define([
 						id: content.id
 						,title: content.title
 						,content: content.content
-						,closable: false
-						,extractContent: false
-						,preventCache: false
-						,preload: false
-						,refreshOnShow: false
-						,doLayout: false
 				});
 				ac.addChild(cp);
 				ac.selectChild(cp);
+				ac.resize();
 			}else {
 				ac.selectChild(widget);
 				var node = dom.byId(content.id);
