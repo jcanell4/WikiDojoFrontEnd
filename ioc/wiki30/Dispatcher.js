@@ -10,8 +10,9 @@ define([
        ,"dojo/_base/array"
        ,"ioc/wiki30/SectokManager"
        ,"dojo/_base/kernel"
-], function(declare, registry, ContentPane, dom, query
-               ,domStyle, Dialog, lang, array, SectokManager, dojo){
+//	   ,"ioc/wiki30/DokuwikiContent"
+], function(declare, registry, ContentPane, dom, query, domStyle, Dialog,
+				lang, array, SectokManager, dojo){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState: null
        ,sectokManager: new SectokManager()
@@ -88,22 +89,28 @@ define([
 			return 0;
         }        
 	   ,_processMetaInfo: function(content){
-		   var ac = registry.byId(this.metaInfoNodeId);
-		   var widget = registry.byId(content.docId);
+			var ac = registry.byId(this.metaInfoNodeId);
+			var widget = registry.byId(content.docId);
+			var meta;
 			/*Construeix un nou contenidor de meta-info*/
 			if (!widget) {
-				var cp = new ContentPane({
-						id: content.id
-						,title: content.title
-						,content: content.content
-				});
-				ac.addChild(cp);
-				ac.selectChild(cp);
-				ac.resize();
+				for (meta in content.meta) {
+					var cp = new ContentPane({
+							id: meta.id
+							,title: meta.title
+							,content: meta.content
+					});
+					ac.addChild(cp);
+					if (content.defaultSelected == meta.id) 
+						ac.selectChild(cp);
+					ac.resize();
+				}
 			}else {
 				ac.selectChild(widget);
-				var node = dom.byId(content.id);
-				node.innerHTML=content.content;
+				for (meta in content.meta) {
+					var node = dom.byId(meta.id);
+					node.innerHTML=meta.content;
+				}
 			}
 			return 0;
 		}
@@ -113,14 +120,16 @@ define([
             this.diag.show();
         }
        ,_processDataContent: function(content){
-           this.__newTab(content);
+			this.__newTab(content);
+			//dokuwikiContent.putMetaData(content);
        }
        ,_processHtmlContent: function(content){
-            this.__newTab(content);
+			this.__newTab(content);
+			//dokuwikiContent.putMetaData(content);
         }        
 	   ,__newTab: function(content){
-		   var tc = registry.byId(this.containerNodeId);
-		   var widget = registry.byId(content.id);
+			var tc = registry.byId(this.containerNodeId);
+			var widget = registry.byId(content.id);
 			/*Construeix una nova pestanya*/
 			if (!widget) {
 				var cp = new ContentPane({
@@ -139,8 +148,8 @@ define([
 			return 0;
 		}
 	   ,_processError: function(error, message){
-            if(!error) error="";
-            if(!message) message="";
+            if (!error) error="";
+            if (!message) message="";
             this.diag.set("title", "ERROR");
             this.diag.set("content", error + " " + message);
             this.diag.show();
