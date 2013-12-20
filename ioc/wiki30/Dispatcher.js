@@ -89,8 +89,6 @@ define([
 			return 0;
         }        
 	   ,_processMetaInfo: function(content){
-//			var nodeCentral = registry.byId(this.containerNodeId);
-//			var widgetCentral = nodeCentral.selectedChildWidget;
 			var widgetCentral = registry.byId(this.containerNodeId).selectedChildWidget;
 			var nodeMetaInfo = registry.byId(this.metaInfoNodeId);
 			var m;
