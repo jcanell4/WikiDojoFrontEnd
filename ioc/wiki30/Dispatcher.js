@@ -89,27 +89,34 @@ define([
 			return 0;
         }        
 	   ,_processMetaInfo: function(content){
-			var ac = registry.byId(this.metaInfoNodeId);
-			var widget = registry.byId(content.docId);
-			var meta;
-			/*Construeix un nou contenidor de meta-info*/
-			if (!widget) {
-				for (meta in content.meta) {
-					var cp = new ContentPane({
-							id: meta.id
-							,title: meta.title
-							,content: meta.content
-					});
-					ac.addChild(cp);
-					if (content.defaultSelected == meta.id) 
-						ac.selectChild(cp);
-					ac.resize();
+//			var nodeCentral = registry.byId(this.containerNodeId);
+//			var widgetCentral = nodeCentral.selectedChildWidget;
+			var widgetCentral = registry.byId(this.containerNodeId).selectedChildWidget;
+			var nodeMetaInfo = registry.byId(this.metaInfoNodeId);
+			var m;
+			this._processRemoveAllChildrenWidgets(nodeMetaInfo);
+			for (m in content.meta) {
+				if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
+					var widgetMetaInfo = registry.byId(content.meta[m].id);
+					if (!widgetMetaInfo) {
+						/*Construeix un nou contenidor de meta-info*/
+						var cp = new ContentPane({
+										id: content.meta[m].id
+										,title: content.meta[m].title
+										,content: content.meta[m].content
+								});
+						nodeMetaInfo.addChild(cp);
+						if (content.defaultSelected === content.meta[m].id) 
+							nodeMetaInfo.selectChild(cp);
+						nodeMetaInfo.resize();
+					}else {
+						nodeMetaInfo.selectChild(widgetMetaInfo);
+						var node = dom.byId(content.meta[m].id);
+						node.innerHTML=content.meta[m].content;
+					}
 				}
-			}else {
-				ac.selectChild(widget);
-				for (meta in content.meta) {
-					var node = dom.byId(meta.id);
-					node.innerHTML=meta.content;
+				else{
+					//dokuwikiContent.putMetaData(content);
 				}
 			}
 			return 0;
