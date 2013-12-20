@@ -10,9 +10,9 @@ define([
        ,"dojo/_base/array"
        ,"ioc/wiki30/SectokManager"
        ,"dojo/_base/kernel"
-//           ,"ioc/wiki30/DokuwikiContent"
+//	   ,"ioc/wiki30/DokuwikiContent"
 ], function(declare, registry, ContentPane, dom, query, domStyle, Dialog,
-                                lang, array, SectokManager, dojo){
+				lang, array, SectokManager, dojo){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState: null
        ,sectokManager: new SectokManager()
@@ -88,71 +88,71 @@ define([
             }
                         return 0;
         }        
-           ,_processMetaInfo: function(content){
-                        var widgetCentral = registry.byId(this.containerNodeId).selectedChildWidget;
-                        var nodeMetaInfo = registry.byId(this.metaInfoNodeId);
-                        var m;
-                        this._processRemoveAllChildrenWidgets(nodeMetaInfo);
-                        for (m in content.meta) {
-                                if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
-                                        var widgetMetaInfo = registry.byId(content.meta[m].id);
-                                        if (!widgetMetaInfo) {
-                                                /*Construeix un nou contenidor de meta-info*/
-                                                var cp = new ContentPane({
-                                                                                id: content.meta[m].id
-                                                                                ,title: content.meta[m].title
-                                                                                ,content: content.meta[m].content
-                                                                });
-                                                nodeMetaInfo.addChild(cp);
-                                                if (content.defaultSelected === content.meta[m].id) 
-                                                        nodeMetaInfo.selectChild(cp);
-                                                nodeMetaInfo.resize();
-                                        }else {
-                                                nodeMetaInfo.selectChild(widgetMetaInfo);
-                                                var node = dom.byId(content.meta[m].id);
-                                                node.innerHTML=content.meta[m].content;
-                                        }
-                                }
-                                else{
-                                        //dokuwikiContent.putMetaData(content);
-                                }
-                        }
-                        return 0;
-                }
+	   ,_processMetaInfo: function(content){
+			var widgetCentral = registry.byId(this.containerNodeId).selectedChildWidget;
+			var nodeMetaInfo = registry.byId(this.metaInfoNodeId);
+			var m;
+			this._processRemoveAllChildrenWidgets(nodeMetaInfo);
+			for (m in content.meta) {
+				if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
+					var widgetMetaInfo = registry.byId(content.meta[m].id);
+					if (!widgetMetaInfo) {
+						/*Construeix un nou contenidor de meta-info*/
+						var cp = new ContentPane({
+										id: content.meta[m].id
+										,title: content.meta[m].title
+										,content: content.meta[m].content
+								});
+						nodeMetaInfo.addChild(cp);
+						if (content.defaultSelected === content.meta[m].id) 
+							nodeMetaInfo.selectChild(cp);
+						nodeMetaInfo.resize();
+					}else {
+						nodeMetaInfo.selectChild(widgetMetaInfo);
+						var node = dom.byId(content.meta[m].id);
+						node.innerHTML=content.meta[m].content;
+					}
+				}
+				else{
+					//dokuwikiContent.putMetaData(content);
+				}
+			}
+			return 0;
+		}
        ,_processAlert: function(alert){
             this.diag.set("title", "ALERTA");
             this.diag.set("content", alert);
             this.diag.show();
         }
        ,_processDataContent: function(content){
-                        this.__newTab(content);
-                        //dokuwikiContent.putMetaData(content);
+			this.__newTab(content);
+			//dokuwikiContent.putMetaData(content);
        }
        ,_processHtmlContent: function(content){
-                        this.__newTab(content);
-                        //dokuwikiContent.putMetaData(content);
+			this.__newTab(content);
+			//dokuwikiContent.putMetaData(content);
         }        
-           ,__newTab: function(content){
-                        var tc = registry.byId(this.containerNodeId);
-                        var widget = registry.byId(content.id);
-                        /*Construeix una nova pestanya*/
-                        if (!widget) {
-                                var cp = new ContentPane({
-                                                id: content.id,
-                                                title: content.title,
-                                                content: content.content,
-                                                closable: true
-                                });
-                                tc.addChild(cp);
-                                tc.selectChild(cp);
-                        }else {
-                                tc.selectChild(widget);
-                                var node = dom.byId(content.id);
-                                node.innerHTML=content.content;
-                        }
-                        return 0;
-                }
-           ,_processError: function(error, message){
+	   ,__newTab: function(content){
+			var tc = registry.byId(this.containerNodeId);
+			var widget = registry.byId(content.id);
+			/*Construeix una nova pestanya*/
+			if (!widget) {
+				var cp = new ContentPane({
+						id: content.id,
+						title: content.title,
+						content: content.content,
+						closable: true
+				});
+				tc.addChild(cp);
+				tc.selectChild(cp);
+			}else {
+				tc.selectChild(widget);
+				var node = dom.byId(content.id);
+				node.innerHTML=content.content;
+			}
+			return 0;
+		}
+	   ,_processError: function(error, message){
             if (!error) error="";
             if (!message) message="";
             this.diag.set("title", "ERROR");
