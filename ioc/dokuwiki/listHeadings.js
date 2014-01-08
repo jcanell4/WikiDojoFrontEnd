@@ -4,7 +4,7 @@ define([], function(){
 	
 	var addIndex = function(ini, idContent) {
 		// jQuery will give all the HNs in document order
-		jQuery('#'+idContent+' :header').each(function(i,e) {
+		jQuery('#'+idContent+' :header').not("div#dw__toc H3").each(function(i,e) {
 			var hIndex = parseInt(this.nodeName.substring(1)) - 1;
 
          	// just found a levelUp event

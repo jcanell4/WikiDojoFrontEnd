@@ -9,7 +9,7 @@ define([
     , 'ace/theme/textmate'
     , 'ace/undomanager'
     , 'ace/virtual_renderer'
-    , 'cs!mode'
+    , 'ace-mode'
     , 'require'], function() {
           var deps;
           deps = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
