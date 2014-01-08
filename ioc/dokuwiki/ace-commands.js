@@ -1,4 +1,4 @@
-define(['cs!context_table'], function(new_context_table) {
+define(['ace-context_table'], function(new_context_table) {
     return function(spec) {
         var add_menu_marker, callback, contexts, hide_menu, menu_marker, show_menu;
         contexts = [

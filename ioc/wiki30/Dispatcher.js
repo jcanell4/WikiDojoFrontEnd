@@ -185,6 +185,8 @@ define([
                 this._processRemoveAllChildrenWidgets(command);
             }else if(command.type==="process_dom_from_function"){
                 this._processDomFromFuntcion(command);
+            }else if(command.type==="process_function"){
+                this._processFuntcion(command);
             }else if(command.type==="jsinfo"){
                 this._processJsInfo(command);
             }
@@ -234,8 +236,37 @@ define([
                require(new Array(command.processName), function(process){
                    process(command.id, command.params);
                });
+           }else{  
+               var cmd = command.processName;
+               cmd += "('"+command.id+"'";
+               if(command.params){
+                  for(var par in command.params){
+                        cmd +=", '"+par+"'";
+                  }
+               }
+               cmd +=")";
+               dojo.eval(cmd);
+           }
+       }
+       ,_processFuntcion: function(command){
+           if(command.amd){
+               require(new Array(command.processName), function(process){
+                   process(command.params);
+               });
            }else{               
-               dojo.eval(command.processName+"('"+command.id+"', '"+command.params+"')");
+               var i;
+               var cmd = command.processName;
+               cmd += "(";
+               if(command.params){
+                 for(i=0; i<command.params.length; i++){
+                     if(i>0){
+                         cmd +=", ";
+                     }
+                     cmd +="'"+command.params+"'";
+                 }
+               }
+               cmd +=")";
+               dojo.eval(cmd);
            }
        }
        ,_processJsInfo: function(command){
