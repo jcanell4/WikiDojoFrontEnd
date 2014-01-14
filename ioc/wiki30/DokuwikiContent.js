@@ -13,14 +13,20 @@ function(declare){
 			this.id = id;
 			this.title = title;
 		}
+		,getId: function(){
+			return this.id;
+		}
 		,putMetaData: function(content) {
 		   this.metaData[content.id] = content;
 		}
-		,setDocumentHTML: function(content){
-		   this.documentHTML = content.content;
+		,getMetaData: function(id){
+			return this.metaData[id];
 		}
 		,removeAllMetaData: function(){
 			this.metaData = new Array();
+		}
+		,setDocumentHTML: function(content){
+		   this.documentHTML = content.content;
 		}
     });
     
