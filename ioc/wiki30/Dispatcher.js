@@ -8,13 +8,19 @@ define([
        ,"dijit/Dialog"
        ,"dojo/_base/lang"
        ,"dojo/_base/array"
+       ,"ioc/wiki30/GlobalState"
        ,"ioc/wiki30/SectokManager"
        ,"dojo/_base/kernel"
+       ,"ioc/wiki30/AlertProcessor"
+       ,"ioc/wiki30/HtmlContentProcessor"
 //	   ,"ioc/wiki30/DokuwikiContent"
-], function(declare, registry, ContentPane, dom, query, domStyle, Dialog,
-				lang, array, SectokManager, dojo){
+], function(declare, registry, ContentPane, dom, query, domStyle, Dialog
+		,lang, array, GlobalState, SectokManager, dojo, AlertProcessor
+                ,HtmlContentProcessor){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
-        globalState: null
+        globalState: new GlobalState()
+       ,contentCache:{}
+       ,processors:{}
        ,sectokManager: new SectokManager()
        ,containerNodeId: null
        ,navegacioNodeId: null
@@ -27,6 +33,9 @@ define([
                     })
        ,constructor: function(/*Object*/ pAttributes){
            lang.mixin(this, pAttributes);
+           this.processors["alert"]=new AlertProcessor();
+           this.processors["html"]=new HtmlContentProcessor();
+
         }
        ,startup: function(){
            /*TO DO. Set the globalState to different components*/
@@ -63,30 +72,32 @@ define([
                         return 0;
         }
        ,_processResponse: function(response){
-            if(response.type==="alert"){
-                this._processAlert(response.value);
-            }else if(response.type==="command"){
-                this._processCommand(response.value);
-            }else if(response.type==="html"){
-                this._processHtmlContent(response.value);
-            }else if(response.type==="data"){
-                this._processDataContent(response.value);
-            }else if(response.type==="error"){
-                this._processError(response.value);
-            }else if(response.type==="info"){
-                this._processInfo(response.value);
-            }else if(response.type==="login"){
-                this.processLogin(response.value);
-            }else if(response.type==="sectok"){
-                this.processSectok(response.value);
-            }else if(response.type==="title"){
-                this._processTitle(response.value);
-            }else if(response.type==="metainfo"){
-                this._processMetaInfo(response.value);
-            }else{
-                this._processAlert(/*TO DO: internationalization*/"Missatge incomprensible");
-            }
-                        return 0;
+           if(this.processors[response.type]){
+               this.processors[response.type].process(response, this);
+           }else{
+                if(response.type==="command"){
+                    this._processCommand(response.value);
+//                }else if(response.type==="html"){
+//                    this._processHtmlContent(response.value);
+                }else if(response.type==="data"){
+                    this._processDataContent(response.value);
+                }else if(response.type==="error"){
+                    this._processError(response.value);
+                }else if(response.type==="info"){
+                    this._processInfo(response.value);
+                }else if(response.type==="login"){
+                    this.processLogin(response.value);
+                }else if(response.type==="sectok"){
+                    this.processSectok(response.value);
+                }else if(response.type==="title"){
+                    this._processTitle(response.value);
+                }else if(response.type==="metainfo"){
+                    this._processMetaInfo(response.value);
+                }else{
+                    this._processAlert(/*TO DO: internationalization*/"Missatge incomprensible");
+                }
+           }
+           return 0;
         }        
 	   ,_processMetaInfo: function(content){
 			var widgetCentral = registry.byId(this.containerNodeId).selectedChildWidget;
@@ -119,19 +130,19 @@ define([
 			}
 			return 0;
 		}
-       ,_processAlert: function(alert){
-            this.diag.set("title", "ALERTA");
-            this.diag.set("content", alert);
-            this.diag.show();
-        }
+//       ,_processAlert: function(alert){
+//            this.diag.set("title", "ALERTA");
+//            this.diag.set("content", alert);
+//            this.diag.show();
+//        }
        ,_processDataContent: function(content){
 			this.__newTab(content);
 			//dokuwikiContent.putMetaData(content);
        }
-       ,_processHtmlContent: function(content){
-			this.__newTab(content);
-			//dokuwikiContent.putMetaData(content);
-        }        
+//       ,_processHtmlContent: function(content){
+//			this.__newTab(content);
+//			//dokuwikiContent.putMetaData(content);
+//        }        
 	   ,__newTab: function(content){
 			var tc = registry.byId(this.containerNodeId);
 			var widget = registry.byId(content.id);

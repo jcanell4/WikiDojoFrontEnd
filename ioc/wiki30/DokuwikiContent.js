@@ -2,17 +2,18 @@ define([
 	"dojo/_base/declare"
 ], 
 function(declare){
-	var DokuwikiContent = declare("ioc.gui.DokuwikiContent", {
+	var DokuwikiContent = declare("ioc.wiki30.DokuwikiContent", [],{
 		id: null
 		,title: null
 		,documentHTML: null
 		,documentWiki: null
 		,metaData: new Array()
 	   
-		,constructor: function(id, title) {
-			this.id = id;
-			this.title = title;
-		}
+//		,constructor: function(id, title) {
+//                     this.inherited(arguments);
+//			this.id = id;
+//			this.title = title;
+//		}
 		,getId: function(){
 			return this.id;
 		}

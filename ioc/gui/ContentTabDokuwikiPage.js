@@ -1,19 +1,14 @@
 define([
 	"dojo/_base/declare" // declare
-       /*,"dojo/dom"*/
        ,"dojo/on"
        ,"dojo/dom-attr"
        ,"dojo/_base/event"
        ,"dijit/layout/ContentPane"
-       /*,"dijit/_WidgetsInTemplateMixin"*/
        ,"ioc/wiki30/Request"
-       /*,"ioc/wiki30/ConfigurableByState"*/
        ,"dojo/NodeList-dom" // NodeList.style
-], function(declare, /*dom,*/ on, att, event, ContentPane/*, _WidgetsInTemplateMixin*/
-                , Request/*, ConfigurableByState*/){
+], function(declare, on, att, event, ContentPane, Request){
     var ret = declare("ioc.gui.ContentTabDokuwikiPage"
-                              ,[ContentPane/*, _WidgetsInTemplateMixin*/
-                                           ,Request/*, ConfigurableByState*/], {
+                              ,[ContentPane, Request], {
 	// summary:
         //Conveteix enllaços normals en crides AJAX).
  

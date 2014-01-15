@@ -1,6 +1,9 @@
-define(["ioc/wiki30/Dispatcher"],function(Dispatcher){
+define([
+    "ioc/wiki30/Dispatcher"
+],function(Dispatcher){
     var instance;
-    return (instance=(instance || new Dispatcher()));
+    instance=(instance || new Dispatcher());
+    return instance;
 });
 
 
