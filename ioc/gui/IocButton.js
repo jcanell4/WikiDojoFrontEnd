@@ -19,7 +19,7 @@ function(declare, button, Request, _TemplatedMixin, template, IocComponent) {
 		,query: ""
 		,_onClick: function(){
 			this.inherited(arguments);
-			this.sendRequest(this.query);
+			this.sendRequest(this.getQuery());
 		}
 		,startup: function(){
 			this.inherited(arguments);
@@ -28,6 +28,9 @@ function(declare, button, Request, _TemplatedMixin, template, IocComponent) {
 			this.resize();
 			this.__setVisible();
 		}
+                ,getQuery: function(){
+                    return this.query;
+                }
 	});
 	return ret;
 });

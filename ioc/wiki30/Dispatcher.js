@@ -13,7 +13,6 @@ define([
        ,"dojo/_base/kernel"
        ,"ioc/wiki30/AlertProcessor"
        ,"ioc/wiki30/HtmlContentProcessor"
-//	   ,"ioc/wiki30/DokuwikiContent"
 ], function(declare, registry, ContentPane, dom, query, domStyle, Dialog
 		,lang, array, GlobalState, SectokManager, dojo, AlertProcessor
                 ,HtmlContentProcessor){
