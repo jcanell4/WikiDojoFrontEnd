@@ -1,11 +1,11 @@
 define([
 	"dojo/_base/declare" // declare
-       ,"ioc/wiki30/AbstractResponseProcessor"
+       ,"ioc/wiki30/processor/AbstractResponseProcessor"
 ], function(declare, AbstractResponseProcessor){
-    var ret = declare("ioc.wiki30.AlertProcessor", [AbstractResponseProcessor], {
+    var ret = declare("ioc.wiki30.processor.AlertProcessor", [AbstractResponseProcessor], {
         type: "alert"
-       ,process:function(response, dispatcher){
-           this._processAlert(response.value, dispatcher);
+       ,process:function(value, dispatcher){
+           this._processAlert(value, dispatcher);
        }
        ,_processAlert: function(alert, dispatcher){
             dispatcher.diag.set("title", "ALERTA");

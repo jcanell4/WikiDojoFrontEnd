@@ -5,8 +5,8 @@ function(declare){
 	var DokuwikiContent = declare("ioc.wiki30.DokuwikiContent", [],{
 		id: null
 		,title: null
-		,documentHTML: null
-		,documentWiki: null
+//		,documentHTML: null
+//		,documentWiki: null
 		,metaData: new Array()
 	   
 //		,constructor: function(id, title) {
@@ -28,6 +28,9 @@ function(declare){
 		}
 		,setDocumentHTML: function(content){
 		   this.documentHTML = content.content;
+		}
+		,setDocumentWiki: function(content){
+		   this.documentWiki = content.content;
 		}
     });
     

@@ -2,10 +2,13 @@ define([
 	"dojo/_base/declare" // declare
 ], function(declare, lang){
     var ret = declare("ioc.wiki30.GlobalState", [], {
-        pages: {}
-       ,mode: "show"
+        pages: {} //{pageId, {ns, mode, action}}
+       ,defaultPage:{} //{ns, mode}
        ,login: false
-       ,info:""
+       ,info: ""
+       ,currentTabId: null
+       ,sectok: null
+       ,title: ""
     });
     return ret;
 });
