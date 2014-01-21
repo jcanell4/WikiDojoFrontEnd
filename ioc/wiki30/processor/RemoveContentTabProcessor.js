@@ -7,6 +7,7 @@ define([
        type: "remove"
        ,process:function(value, dispatcher){
            dispatcher.removeWidgetChild(dispatcher.containerNodeId, value);
+           this.inherited(arguments);
        } 
        ,updateState: function(dispatcher, value){
            delete dispatcher.contentCache[value]

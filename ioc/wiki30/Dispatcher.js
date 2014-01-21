@@ -23,6 +23,7 @@ define([
        ,"ioc/wiki30/processor/RemoveAllContentTabProcessor"
        ,"ioc/wiki30/processor/RemoveContentTabProcessor"
        ,"ioc/wiki30/processor/CommandProcessor"
+       ,"ioc/wiki30/UpdateViewHandler"       
 ], function(declare, registry, ContentPane, dom, query, domStyle, Dialog
 		,lang, array, GlobalState, SectokManager, dojo, AlertProcessor
                 ,HtmlContentProcessor, MetaInfoProcessor, DataContentProcessor
@@ -33,6 +34,7 @@ define([
         globalState: new GlobalState()
        ,contentCache:{}
        ,processors:{}
+       ,updateViewHandlers:[]
        ,sectokManager: new SectokManager()
        ,containerNodeId: null
        ,navegacioNodeId: null
@@ -58,11 +60,18 @@ define([
            this.processors["remove"]=new RemoveContentTabProcessor();
            this.processors["command"]=new CommandProcessor();
         }
+       ,addUpdateView: function(handler){
+           this.updateViewHandlers.push(handler);
+       }
        ,startup: function(){
            /*TO DO. Set the globalState to different components*/
         }
        ,updateFromState: function(){
-           
+               if(this.updateViewHandlers){
+                    array.forEach(this.updateViewHandlers, function(handler){
+                        handler.update();
+                    });
+               }
        }
        ,getSectok: function(strUrl){
            return (this.sectokManager.getSectok(strUrl));
