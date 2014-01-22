@@ -32,6 +32,7 @@ define([
                 ,RemoveContentTabProcessor, CommandProcessor){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState: new GlobalState()
+       ,unsavedChangesState: false
        ,contentCache:{}
        ,processors:{}
        ,updateViewHandlers:[]
@@ -119,7 +120,24 @@ define([
        ,changeWidgetProperty: function(id, propertyName, value){
            var widget=registry.byId(id);
            widget.set(propertyName, value);
-       }       
+       }  
+       ,getGlobalState: function(){
+           return this.globalState;
+       }
+       ,getCurrentPage: function(){
+           return this.globalState.pages[this.globalState.currentTabId];
+       }
+       ,getUnsavedChangesState: function(){
+           return this.unsavedChangesState;
+       }
+       ,setUnsavedChangesState: function(st){
+           this.unsavedChangesState = st;
+           if(st){
+               this.processors["info"].process("modificat", this);
+           }else{
+               this.processors["info"].process("", this);
+           }
+       }
 //       ,processSectok: function(result){
 //           this.putSectok(result);
 //       }
