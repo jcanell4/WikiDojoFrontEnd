@@ -33,7 +33,7 @@ define([
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState: new GlobalState()
        ,unsavedChangesState: false
-       ,contentCache:{}
+       ,contentCache:{}		//objecte {id_pestanya => metaInformacio[id => {id,title,content}]}
        ,processors:{}
        ,updateViewHandlers:[]
        ,sectokManager: new SectokManager()
@@ -87,7 +87,20 @@ define([
                                 responseItem.updateSectok();
            });             
            
-       }
+		}
+//		,addWidgetChild: function(content, i) {						???
+//			var nodeMetaInfo = registry.byId(this.metaInfoNodeId);	???
+//			var cp = new ContentPane({								???
+//						id: content.meta[i].id						???
+//						,title: content.meta[i].title				???
+//						,content: content.meta[i].content			???
+//					});
+//			nodeMetaInfo.addChild(cp);
+//			if (content.defaultSelected === content.meta[i].id) 	???
+//				nodeMetaInfo.selectChild(cp);						???
+//			if (nodeMetaInfo.resize)
+//				nodeMetaInfo.resize();
+//		}
        ,removeWidgetChild: function(parentId, childId) {
             var parent;
             var child;
@@ -102,20 +115,20 @@ define([
                 child = childId;
             }
             if (child) {
-                    parent.removeChild(child);
-                    child.destroyRecursive(false);
+				parent.removeChild(child);
+				child.destroyRecursive(false);
             }
        }
        ,removeAllChildrenWidgets: function(pwidget) {
-           var widget;
-           if(lang.isString(pwidget)){
-               widget = registry.byId(pwidget);
-           }else{
-               widget = pwidget;
-           }
-           if (widget.hasChildren()){
-                    widget.destroyDescendants(false);
-           }
+			var widget;
+			if(lang.isString(pwidget)){
+				widget = registry.byId(pwidget);
+			}else{
+				widget = pwidget;
+			}
+			if (widget.hasChildren()){
+				widget.destroyDescendants(false);
+			}
        }
        ,changeWidgetProperty: function(id, propertyName, value){
            var widget=registry.byId(id);
@@ -123,6 +136,9 @@ define([
        }  
        ,getGlobalState: function(){
            return this.globalState;
+       }
+       ,getContentCache: function(id){
+           return this.contentCache[id];
        }
        ,getCurrentPage: function(){
            return this.globalState.pages[this.globalState.currentTabId];
@@ -138,9 +154,6 @@ define([
                this.processors["info"].process("", this);
            }
        }
-//       ,processSectok: function(result){
-//           this.putSectok(result);
-//       }
        ,processError: function(error){
             this._processError(error.response.text);
        }
@@ -183,7 +196,15 @@ define([
 //                }
            }
            return 0;
-        }        
+        }
+		,_processError: function(error, message){
+            if (!error) error="";
+            if (!message) message="";
+            this.processors["error"].process(error + " " + message, this);
+        }
+//       ,processSectok: function(result){
+//           this.putSectok(result);
+//       }
 //	   ,_processMetaInfo: function(content){
 //			var widgetCentral = registry.byId(this.containerNodeId).selectedChildWidget;
 //			var nodeMetaInfo = registry.byId(this.metaInfoNodeId);
@@ -248,11 +269,6 @@ define([
 //			}
 //			return 0;
 //		}
-	,_processError: function(error, message){
-            if (!error) error="";
-            if (!message) message="";
-            this.processors["error"].process(error + " " + message, this);
-        }
 //       ,_processInfo: function(info){
 //           dom.byId(this.infoNodeId).innerHTML=info;
 //       }
