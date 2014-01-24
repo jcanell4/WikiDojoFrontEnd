@@ -42,7 +42,7 @@ define([
                                             //actualitzar contentCache
                                             delete dispatcher.contentCache[content.id];
                                             //elimina els widgets corresponents a les metaInfo de la pestanya
-                                            alert('currentTabId='+currentTabId + '\n\ncontent.id='+content.id);
+//                                            alert('currentTabId='+currentTabId + '\n\ncontent.id='+content.id);
                                             if (currentTabId == content.id) {
                                                 var nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId);
                                                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
