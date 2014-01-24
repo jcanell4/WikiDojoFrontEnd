@@ -2,7 +2,7 @@ define([
 	"dojo/_base/declare" // declare
 ], function(declare, lang){
     var ret = declare("ioc.wiki30.GlobalState", [], {
-        pages: {} //{pageId, {ns, mode, action}}
+        pages: {} //[{pageId: {ns, mode, action}}]
        ,defaultPage:{} //{ns, mode}
        ,login: false
        ,info: ""
