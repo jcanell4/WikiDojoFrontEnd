@@ -7,13 +7,14 @@ function(declare){
 		,title: null
 //		,documentHTML: null
 //		,documentWiki: null
-		,metaData: new Array()
+		,metaData: null
 	   
-//		,constructor: function(id, title) {
-//                     this.inherited(arguments);
-//			this.id = id;
-//			this.title = title;
-//		}
+		,constructor: function(id, title) {
+                     this.inherited(arguments);
+			this.id = id;
+			this.title = title;
+                        this.metaData = new Array();
+		}
 		,getId: function(){
 			return this.id;
 		}
@@ -21,7 +22,11 @@ function(declare){
 		   this.metaData[content.id] = content;
 		}
 		,getMetaData: function(id){
+                    if(id){
 			return this.metaData[id];
+                    }else{
+                        return this.metaData;
+                    }
 		}
 		,removeAllMetaData: function(){
 			this.metaData = new Array();

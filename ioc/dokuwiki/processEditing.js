@@ -2,22 +2,25 @@ define([
     "ioc/wiki30/dispatcherSingleton"
     ,"dojo/dom"
     ,"dojo/on"
+    ,"dojo/query"
     ,"dijit/focus"
     ,"dojo/ready"
-], function(dispatcher, dom, on, focus, ready){
+    ,"dojo/dom-geometry"
+    ,"dojo/dom-style"
+], function(dispatcher, dom, on, query, focus, ready, geometry, style){
     /**
     * Activate "not saved" dialog, add draft deletion to page unload,
     * add handlers to monitor changes
     *
     * Sets focus to the editbox as well
     */
-   function setChangesControl(){
-        var editform = dom.byId('dw__editform');
+   function setChangesControl(editFormId, wikiTextId, summaryId){
+        var editform = dom.byId(editFormId);
         if (!editform) {
             return;
         }
 
-        var edit_text = dom.byId('wiki__text');
+        var edit_text = dom.byId(wikiTextId);
         if (edit_text) {
             if(edit_text.readOnly) {
                 return;
@@ -33,8 +36,8 @@ define([
         }
 
         var checkfunc = function() {
-            window.textChanged = true; //global var
-            dispatcher.setUnsavedChangesState(window.textChanged );
+            window.textChanged=true;
+            dispatcher.setUnsavedChangesState(true);
             summaryCheck();
         };
 
@@ -49,7 +52,7 @@ define([
         };
         window.onunload = deleteDraft;
 
-        var summary = dom.byId('edit__summary');
+        var summary = dom.byId(summaryId);
         on(summary, "change", summaryCheck);
         on(summary, "keyup", summaryCheck);
 
@@ -71,7 +74,48 @@ define([
 //            }
 //        );
 
-        dw_editor.init();
+        dw_editor.init();        
+    }
+    
+    function cleanHtmlEdition(id, wikiTextId, editBarId, licenseClass){
+        var aText = new Array();
+        var node = dom.byId(id);
+        var child = node.firstChild;
+        while(child!=null){
+            if(child.nodeType == Node.ELEMENT_NODE){
+                var tag = child.tagName.toLowerCase();
+                if(tag!=="div" && tag!=="script"){
+                    var toDelete = child;
+                    child = child.nextSibling;
+                    node.removeChild(toDelete);
+                    aText.push(toDelete);
+                }else{
+                    child = child.nextSibling;
+                }
+            }else{
+                child = child.nextSibling;
+            }
+        }
+        child = dom.byId(editBarId);
+        style.set(child, "visibility", "hidden");
+//        child.style.visibility = "hidden";
+        
+        query("."+licenseClass, node).forEach(function(child){
+            aText.push(child);
+            node = child.parentNode;
+            node.removeChild(child);
+        });
+        
+        node  = dom.byId(dispatcher.infoNodeId);
+        node.innerHTML="";
+        for(var i in aText){
+            node.appendChild(aText[i]);
+        }
+        
+        var contentNode = dom.byId(id);
+        var h = geometry.getContentBox(contentNode).h;
+        style.set(wikiTextId, "height", ""+h-20+"px" );
+        style.set(wikiTextId, "resize", "vertical" );
     }
     
     var res = function(params){
@@ -83,7 +127,10 @@ define([
                 jQuery('#'+params.toolbarId).attr('role', 'toolbar');
             }
 
-            setChangesControl();
+            setChangesControl(params.editFormId, params.wikiTextId, 
+                                params.summaryId);
+            cleanHtmlEdition(params.id, params.wikiTextId, params.editBarId, 
+                                params.licenseClass);
         });
     };
     return res;

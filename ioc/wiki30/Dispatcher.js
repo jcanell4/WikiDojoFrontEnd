@@ -32,7 +32,7 @@ define([
                 ,RemoveContentTabProcessor, CommandProcessor){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState: new GlobalState()
-       ,unsavedChangesState: false
+       ,unsavedChangesState: 0
        ,contentCache:{}		//objecte {id_pestanya => metaInformacio[id => {id,title,content}]}
        ,processors:{}
        ,updateViewHandlers:[]
@@ -147,12 +147,7 @@ define([
            return this.unsavedChangesState;
        }
        ,setUnsavedChangesState: function(st){
-           this.unsavedChangesState = st;
-           if(st){
-               this.processors["info"].process("modificat", this);
-           }else{
-               this.processors["info"].process("", this);
-           }
+           this.unsavedChangesState=st;          
        }
        ,processError: function(error){
             this._processError(error.response.text);

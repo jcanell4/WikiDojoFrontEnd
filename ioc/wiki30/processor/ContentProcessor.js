@@ -9,8 +9,8 @@ define([
             DokuwikiContent){
     var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor], {
        process:function(value, dispatcher){
-           this.inherited(arguments);
            this.__newTab(value, dispatcher);   
+           this.inherited(arguments);
        } 
        ,updateState: function(dispatcher, value){
            if(!dispatcher.contentCache[value.id]){
