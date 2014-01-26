@@ -8,8 +8,9 @@ define([
     ,"dojo/dom-geometry"
     ,"dojo/dom-style"
 ], function(dispatcher, dom, on, query, focus, ready, geometry, style){
-    var res = function(params){
-        window.
+    var res = function(){
+        window.textChanged=false;
+        dispatcher.setUnsavedChangesState(false);
     };
     return res;
 });

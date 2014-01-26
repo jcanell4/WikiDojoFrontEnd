@@ -32,7 +32,7 @@ define([
                 ,RemoveContentTabProcessor, CommandProcessor){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
         globalState: new GlobalState()
-       ,unsavedChangesState: 0
+       ,unsavedChangesState: false
        ,contentCache:{}		//objecte {id_pestanya => metaInformacio[id => {id,title,content}]}
        ,processors:{}
        ,updateViewHandlers:[]
