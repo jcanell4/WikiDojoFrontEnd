@@ -16,6 +16,12 @@ function(declare, Standby, request, dispatcherSingleton){
 //           lang.mixin(this, args);
 //           this
 //       }
+       ,hasPostData: function(){
+           return  this.getPostData()!=null;
+       }
+       ,getPostData: function(){
+           return null;
+       }
        ,getSectok: function(){
             return this.dispatcher.getSectok();  
        }
@@ -62,8 +68,12 @@ function(declare, Standby, request, dispatcherSingleton){
             }
             
             var req = this;
+            var configPost = {handleAs: "json"};
             if(this.method==="post"){
-                var resp = request.post(vUrl, {handleAs: "json"}).then(
+                if(this.hasPostData()){
+                    configPost.data = this.getPostData();
+                }
+                var resp = request.post(vUrl, configPost).then(
 						function(data){
 							return req.responseHandler(data);
 						}, function(error){
@@ -71,13 +81,13 @@ function(declare, Standby, request, dispatcherSingleton){
 						}
 					);                
             }else{
-                var resp = request.get(vUrl, {handleAs: "json"}).then(
-						function(data){
-	                        return req.responseHandler(data);
+                var resp = request.get(vUrl, configPost).then(
+				function(data){
+                                    return req.responseHandler(data);
 		                }, function(error){
-			                return req.errorHandler(error);
-				        }
-					);     
+                                    return req.errorHandler(error);
+				}
+                            );     
             }
         }
     });
