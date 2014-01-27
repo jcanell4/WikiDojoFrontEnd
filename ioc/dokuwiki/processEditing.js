@@ -131,6 +131,7 @@ define([
                                 params.summaryId);
             cleanHtmlEdition(params.id, params.wikiTextId, params.editBarId, 
                                 params.licenseClass);
+            dw_locktimer.init(params.timeout, params.draft);
         });
     };
     return res;
