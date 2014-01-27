@@ -1,6 +1,8 @@
 define([
 	"dojo/_base/declare"
-], function(declare, lang){
+    ,"dojo/dom-class"
+    ,"dojo/_base/lang"
+], function(declare, classe, lang){
     var ret = declare("ioc.wiki30.GlobalState", [], {
         pages: {}        //[{pageId: {ns, mode, action}}]
         ,defaultPage:{}  //{ns, mode}
@@ -10,24 +12,54 @@ define([
         ,currentSectionId: null
         ,sectok: null
         ,title: ""
-        ,currentSection: function(node) {
-            if (typeof(node) == "String") {  //recibido directamente el id
+        ,setCurrentSectionId: function(node) {
+            
+//            this.__ImprimirObjeto(node, "node.className : "+node.className + " -- node.tagName : "+node.tagName);
+            
+            if (lang.isString(node)) {  //recibe directamente el id
                 this.currentSectionId = node;
             }
             else {
-                var tagName = node.nodeName.charAt(0).toUpperCase();
-                switch(tagName) {
-                    case 'H': 
-//                      var tag = document.getElementsByTagName(node.nodeName)[0];
-//                      this.currentSectionId = tag.getAttribute("id");
-                        this.currentSectionId = node.id;
+//              if (node.hasChildNodes()) {
+//                  var childNodes = node.children;
+//                  this.__ImprimirObjeto(childNodes, "childNodes_node_children");
+//              }
+                    
+                var ltagName = node.tagName.charAt(0).toUpperCase();
+                var lclassName = node.className;
+                
+                switch(ltagName) {
+                    case 'H': //H1, H2
+                        alert("node.id : "+node.id + "\n\nnode.tagName : "+node.tagName + "\n\nnode.className : "+node.className);
+                        if (lclassName.indexOf("sectionedit") >= 0)
+                            this.currentSectionId = node.id;
                         break;
-                    case 'D':
-                        var tag = document.getElementsByTagName(node.nodeName)[0];
-                        var ps = node.previousSibling;
+                    case 'D': //DIV
+                        alert("node.id : "+node.id + "\n\nnode.tagName : "+node.tagName + "\n\nnode.className : "+node.className);
+                        var ps = null;
+                        if (lclassName.indexOf("level") >= 0) { //DIV 1
+                            ps = node.previousSibling;
+                            ps = ps.previousSibling;
+                        }
+                        if (classe.contains(node,"secedit editbutton_section")){ //DIV 2
+                            ps = node.previousSibling;
+                            ps = ps.previousSibling;
+                            ps = ps.previousSibling;
+                            ps = ps.previousSibling;
+                        }
+                        alert("ps.id : "+ps.id);
+//                        this.__ImprimirObjeto(ps, "ps:node.previousSibling");
+                        this.currentSectionId = ps.id;
                         break;
                 }
             }
+        }
+       ,__ImprimirObjeto: function (o, nom) {
+            var salida = nom + '\n\n';
+            for (var p in o) {
+                salida += '• ' + p + ': ' + o[p] + '\n\n';
+            }
+            alert(salida);
         }
     });
     return ret;
