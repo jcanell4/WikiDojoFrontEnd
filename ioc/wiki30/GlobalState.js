@@ -19,7 +19,6 @@ define([
                 this.currentSectionId = dwPageUi.getIdSectionNode(node);
         }
 
-
        ,__ImprimirObjeto: function (o, nom) {
             var salida = nom + '\n\n';
             for (var p in o) {
@@ -27,6 +26,9 @@ define([
             }
             alert(salida);
         }
+//        ,require(["dojo/dom-form"], function(domForm){
+//          var formId = "myId";
+//          var formQuery = domForm.toQuery(formId);
     });
     return ret;
 });
