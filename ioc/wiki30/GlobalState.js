@@ -48,8 +48,8 @@ define([
                             ps = ps.previousSibling;
                         }
                         alert("ps.id : "+ps.id);
-//                        this.__ImprimirObjeto(ps, "ps:node.previousSibling");
                         this.currentSectionId = ps.id;
+                        this.__ImprimirObjeto(this, "globalState");
                         break;
                 }
             }
