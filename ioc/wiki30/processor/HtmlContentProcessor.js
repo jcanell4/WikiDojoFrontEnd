@@ -10,13 +10,13 @@ define([
            this.inherited(arguments);
            
            /* Provisional */
-           var node = registry.byId(value.id);
-           var childNodeH1 = node.domNode.children[0]; //domNode de H1
-           var childNodeDIV1 = node.domNode.children[1]; //domNode de DIV1
-           var childNodeDIV2 = node.domNode.children[2]; //domNode de DIV2
-           dispatcher.globalState.__ImprimirObjeto(node.domNode.children, "node.domNode.children");
-           dispatcher.globalState.__ImprimirObjeto(childNodeDIV2, "node.domNode.children[2]");
-           dispatcher.globalState.setCurrentSectionId(childNodeDIV2);
+//           var node = registry.byId(value.id);
+//           var childNodeH1 = node.domNode.children[0]; //domNode de H1
+//           var childNodeDIV1 = node.domNode.children[1]; //domNode de DIV1
+//           var childNodeDIV2 = node.domNode.children[2]; //domNode de DIV2
+//           dispatcher.globalState.__ImprimirObjeto(node.domNode.children, "node.domNode.children");
+//           dispatcher.globalState.__ImprimirObjeto(childNodeDIV2, "node.domNode.children[2]");
+//           dispatcher.globalState.setCurrentSectionId(childNodeDIV2);
            /* Provisional */
        }
        ,updateState: function(dispatcher, value){

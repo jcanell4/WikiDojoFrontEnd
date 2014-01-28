@@ -35,6 +35,8 @@ define([
             request.sendRequest(query);
             event.stop(e);
         });
+        
+        dw_page.sectionHighlight();
     };
     return res;
 });
