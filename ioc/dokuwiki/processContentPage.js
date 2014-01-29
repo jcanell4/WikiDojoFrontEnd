@@ -92,7 +92,7 @@ define([
         });
         
         if(dispatcher.globalState.getCurrentSectionId()){
-            var node = dom.byId(dispatcher.globalState.getCurrentSectionId())
+            var node = dom.byId(dispatcher.globalState.getCurrentSectionId());
             toggleClass(dwPageUi.getAllSectionNodes(node), "section_selected", true);
         }
         

@@ -8,7 +8,48 @@ define([
 ], function(declare, StateUpdaterProcessor, registry, dom, ContentPane, DokuwikiContent){
     var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor], {
        process:function(value, dispatcher){
-           this.__newTab(value, dispatcher);   
+           var oPage = dispatcher.globalState.pages;
+
+           //<- chivato 
+           if (!oPage[value.id]) 
+               alert("MODULO:ContentProcessor:process\n\nvalue.id : "+value.id);
+           else
+               //dispatcher.globalState.__ImprimirObjeto(oPage[value.id], "MODULO:ContentProcessor:process\n\nObject:oPage[value.id]:");
+               alert("MODULO:ContentProcessor:process\n\nObject:oPage["+value.id+"].ns : "+oPage[value.id].ns +
+                        "\n\nObject:oPage["+value.id+"].action : "+oPage[value.id].action +
+                        "\n\ndispatcher.unsavedChangesState : "+dispatcher.unsavedChangesState);
+           //chivato ->
+           
+           //no entrar si hay cambios sin guardar
+           if (dispatcher.unsavedChangesState) {
+               var pestanya = "activa:"+dispatcher.globalState.currentTabId;
+               if (oPage[value.id])
+                    pestanya = (oPage[value.id]["action"] === "edit") ? "seleccionada:"+value.id : pestanya;
+                alert("La pestanya "+pestanya+" està en edició.");
+           }
+           //Antes de la creación de la pestaña, el objeto "globalState.pages" está vacío, naturalmente
+           else if (!oPage[value.id]) {
+               this.__newTab(value, dispatcher);
+           }  
+           //no entrar si la pestaña clicada (en el árbol) y la pestaña activa son la misma y está en edición y con cambios sin guardar
+           else if (value.id === dispatcher.globalState.currentTabId &&
+                    !dispatcher.unsavedChangesState) {
+               this.__newTab(value, dispatcher);
+           }
+           //no entrar si la pestaña clicada (en el árbol) o la pestaña activa están en edición
+           else if (oPage[value.id]["action"] !== "edit" &&
+                    oPage[dispatcher.globalState.currentTabId]["action"] !== "edit" &&
+                    value.id !== dispatcher.globalState.currentTabId) {
+               this.__newTab(value, dispatcher);
+           }
+           else if (oPage[value.id]["action"] === "edit" ||
+                    oPage[dispatcher.globalState.currentTabId]["action"] === "edit") {
+                var pestanya = (oPage[value.id]["action"] === "edit") ? "seleccionada:"+value.id : "activa:"+dispatcher.globalState.currentTabId;
+                alert("La pestanya "+pestanya+" està en edició.");
+           }
+           else {
+               this.__newTab(value, dispatcher);
+           }
            this.inherited(arguments);
        } 
        ,updateState: function(dispatcher, value){
@@ -42,8 +83,7 @@ define([
                                             //actualitzar contentCache
                                             delete dispatcher.contentCache[content.id];
                                             //elimina els widgets corresponents a les metaInfo de la pestanya
-//                                            alert('currentTabId='+currentTabId + '\n\ncontent.id='+content.id);
-                                            if (currentTabId == content.id) {
+                                            if (currentTabId === content.id) {
                                                 var nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId);
                                                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
                                                 dispatcher.globalState.currentTabId = null;

@@ -7,32 +7,20 @@ define([
     var ret = {
         getAllSectionNodes: function(node){
             /*
-             * Retorna un array de nodes, des del node "pare" H1 fins al node que inicia el procés
+             * Retorna un array dels nodes de la secció, des del node "pare" H1 fins al darrer node
              */
-            var ps = node;
             var arrNodes = new Array();
             var tagName = "DIV";
             var className = "secedit";
 
-            ps=this.getFirstSectionNode(node);
-//            while (ps) {
-//                if (ps.nodeType === ps.ELEMENT_NODE) {
-//                    if (ps.tagName.toUpperCase().charAt(0) === "H" 
-//                            && ps.className.indexOf("sectionedit") >= 0) {
-//                        break;  //Hem arribat al node Head
-//                    }
-//                }
-//                ps = ps.previousSibling;
-//            }
-
+            var ps = this.getFirstSectionNode(node);
             var i = 0;
             while (ps){
                 if (ps.nodeType === ps.ELEMENT_NODE) {
                     arrNodes[i++]=ps;
                 }
-                if (ps.tagName && ps.tagName.toUpperCase() === tagName 
-                        && domClass.contains(ps, className)) {
-                    break;  //Hem arribat al node inicial
+                if (ps.tagName && ps.tagName.toUpperCase() === tagName && domClass.contains(ps, className)) {
+                    break;  //Hem arribat al node inicial de la secció
                 }
                 ps = ps.nextSibling;
             }
@@ -41,13 +29,13 @@ define([
 
         ,getFirstSectionNode: function(node){
             /*
-             * Retorna el node "pare" H1 del node que inicia el procés
+             * Retorna el node "pare" H1 de la secció del node que inicia el procés
              */
             var ps = node;
             while (ps) {
                 if (ps.nodeType === ps.ELEMENT_NODE) {
                     if (ps.tagName.charAt(0) === "H" && ps.className.indexOf("sectionedit") >= 0) {
-                        break;
+                        break;  //hem arribat al node Head
                     }
                 }
                 ps = ps.previousSibling;
@@ -67,16 +55,15 @@ define([
        }
        ,getLastSectionNode: function(node){
             /*
-             * Retorna el node "pare" H1 del node que inicia el procés
+             * Retorna el darrer node de la secció del node que inicia el procés
              */
             var tagName = "DIV";
             var className = "secedit";
             
             var ps = node;
             while (ps){
-                if (ps.tagName && ps.tagName.toUpperCase() === tagName 
-                        && domClass.contains(ps, className)) {
-                    break;  //Hem arribat al node inicial
+                if (ps.tagName && ps.tagName.toUpperCase() === tagName && domClass.contains(ps, className)) {
+                    break;  //Hem arribat al darrer node de la secció
                 }
                 ps = ps.nextSibling;
             }
