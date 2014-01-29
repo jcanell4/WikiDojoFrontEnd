@@ -7,8 +7,40 @@ define([
     ,"ioc/dokuwiki/runRender"
     ,"ioc/dokuwiki/runQuiz" 
     ,"ioc/wiki30/Request"
+    ,"ioc/dokuwiki/dwPageUi"
+    ,"dojo/dom-class"
+    ,"ioc/wiki30/dispatcherSingleton"
+
 ], function(on, dom, event, domform, listHeadings, runRender, runQuiz, 
-                Request){
+                Request, dwPageUi, domClass, dispatcher){
+    
+    function setCurrentSection(node){
+        var oldId = dispatcher.globalState.getCurrentSectionId();
+        dispatcher.globalState.setCurrentSectionId(node);    
+        setSelectedSection(node, true);
+        if(oldId!==dispatcher.globalState.getCurrentSectionId()){
+            setSelectedSection(dom.byId(oldId), false);
+        }
+    }
+    
+    function toggleClass(aNodes, className, toggle){
+        for(var i=0; i+1<aNodes.length; i++){
+            if(toggle){
+                domClass.add(aNodes[i], className);
+            }else{
+                domClass.remove(aNodes[i], className);
+            }
+        }                        
+    }
+
+    function setSelectedSection(node, selected){
+        toggleClass(dwPageUi.getAllSectionNodes(node), "section_selected", selected);
+    }
+    
+    function setHighlightSection(node, highlight){
+        toggleClass(dwPageUi.getAllSectionNodes(node), "section_highlight", highlight);
+    }
+    
     var res = function(id, params){
         //JSINFO.id=params.ns;
         listHeadings(id);
@@ -36,7 +68,34 @@ define([
             event.stop(e);
         });
         
-        dw_page.sectionHighlight();
+        on(domNode, 'div.secedit:click, div[class*=\"level\"]:click', function(e){
+            setCurrentSection(this);
+        });
+
+        on(domNode, '*[class*=\"sectionedit\"]:click', function(e){
+            setCurrentSection(this);
+        });
+        on(domNode, 'div.secedit:mouseover, div[class*=\"level\"]:mouseover', 
+                                                                    function(e){
+            setHighlightSection(this, true);
+        });
+        on(domNode, 'div.secedit:mouseout, div[class*=\"level\"]:mouseout', 
+                                                                    function(e){
+            setHighlightSection(this, false);
+        });
+        on(domNode, '*[class*=\"sectionedit\"]:mouseover', function(e){
+            setHighlightSection(this, true);
+        });
+        
+        on(domNode, '*[class*=\"sectionedit\"]:mouseout', function(e){
+            setHighlightSection(this, false);
+        });
+        
+        if(dispatcher.globalState.getCurrentSectionId()){
+            var node = dom.byId(dispatcher.globalState.getCurrentSectionId())
+            toggleClass(dwPageUi.getAllSectionNodes(node), "section_selected", true);
+        }
+        
     };
     return res;
 });

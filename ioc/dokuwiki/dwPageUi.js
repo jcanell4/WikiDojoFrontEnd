@@ -1,32 +1,37 @@
 define([
-     "dojo/_base/declare"
-    ,"ioc/wiki30/dispatcherSingleton"
-], function(declare, dispatcher){
-    var ret = declare("ioc.dokuwiki.dwPageUi", [], {
+     "dojo/dom-class"
+    ,"dojo/dom-form"
+    ,"dojo/dom"
+    ,"dojo/query"
+], function(domClass, domForm, dom, query){
+    var ret = {
         getAllSectionNodes: function(node){
             /*
              * Retorna un array de nodes, des del node "pare" H1 fins al node que inicia el procés
              */
             var ps = node;
             var arrNodes = new Array();
-            var tagName = node.tagName;
-            var className = node.className;
+            var tagName = "DIV";
+            var className = "secedit";
 
-            while (ps) {
-                if (ps.nodeType === ps.ELEMENT_NODE) {
-                    if (ps.tagName.charAt(0) === "H" && ps.className.indexOf("sectionedit") >= 0) {
-                        break;  //Hem arribat al node Head
-                    }
-                }
-                ps = ps.previousSibling;
-            }
+            ps=this.getFirstSectionNode(node);
+//            while (ps) {
+//                if (ps.nodeType === ps.ELEMENT_NODE) {
+//                    if (ps.tagName.toUpperCase().charAt(0) === "H" 
+//                            && ps.className.indexOf("sectionedit") >= 0) {
+//                        break;  //Hem arribat al node Head
+//                    }
+//                }
+//                ps = ps.previousSibling;
+//            }
 
             var i = 0;
             while (ps){
                 if (ps.nodeType === ps.ELEMENT_NODE) {
                     arrNodes[i++]=ps;
                 }
-                if (ps.tagName === tagName && ps.className == className) {
+                if (ps.tagName && ps.tagName.toUpperCase() === tagName 
+                        && domClass.contains(ps, className)) {
                     break;  //Hem arribat al node inicial
                 }
                 ps = ps.nextSibling;
@@ -47,12 +52,36 @@ define([
                 }
                 ps = ps.previousSibling;
             }
-            this.__ImprimirObjeto(ps,"ps");
             return ps;
         }
        ,getIdSectionNode: function(node){
             return this.getFirstSectionNode(node).id;
        }
+       ,getFormQueryToEditSection: function(/*String*/ id ){
+           var ret="";
+           var lastNode = this.getLastSectionNode(dom.byId(id));
+           if(lastNode){
+               ret = domForm.toQuery(query("form", lastNode)[0]);
+           }
+           return ret;
+       }
+       ,getLastSectionNode: function(node){
+            /*
+             * Retorna el node "pare" H1 del node que inicia el procés
+             */
+            var tagName = "DIV";
+            var className = "secedit";
+            
+            var ps = node;
+            while (ps){
+                if (ps.tagName && ps.tagName.toUpperCase() === tagName 
+                        && domClass.contains(ps, className)) {
+                    break;  //Hem arribat al node inicial
+                }
+                ps = ps.nextSibling;
+            }
+            return ps;
+        }
 
 //      ,sectionHighlight: function() {
 //        
@@ -85,7 +114,7 @@ define([
 //       ,highlight: function(){
 //           
 //       }
-    });
+    };
     return ret;
 });
 

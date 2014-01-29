@@ -18,6 +18,9 @@ define([
             else 
                 this.currentSectionId = dwPageUi.getIdSectionNode(node);
         }
+        ,getCurrentSectionId: function() {
+            return this.currentSectionId;
+        }
 
        ,__ImprimirObjeto: function (o, nom) {
             var salida = nom + '\n\n';
