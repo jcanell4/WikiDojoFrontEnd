@@ -10,7 +10,7 @@ define([
            this.inherited(arguments);
        } 
        ,updateState: function(dispatcher, value){
-           dispatcher.globalState.title=value;
+           dispatcher.getGlobalState().title=value;
        }
        ,_processTitle: function(title){
            var nodeTitle = query("title")[0];

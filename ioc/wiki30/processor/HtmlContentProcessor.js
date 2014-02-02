@@ -13,14 +13,14 @@ define([
 //           var childNodeH1 = node.domNode.children[0]; //domNode de H1
 //           var childNodeDIV1 = node.domNode.children[1]; //domNode de DIV1
 //           var childNodeDIV2 = node.domNode.children[2]; //domNode de DIV2
-////           dispatcher.globalState.__ImprimirObjeto(node.domNode.children, "node.domNode.children");
-////           dispatcher.globalState.__ImprimirObjeto(childNodeDIV2, "node.domNode.children[2]");
-//           dispatcher.globalState.getIdSectionNode(childNodeDIV1);
+////           dispatcher.getGlobalState().__ImprimirObjeto(node.domNode.children, "node.domNode.children");
+////           dispatcher.getGlobalState().__ImprimirObjeto(childNodeDIV2, "node.domNode.children[2]");
+//           dispatcher.getGlobalState().getIdSectionNode(childNodeDIV1);
            /* Provisional */
        }
        ,updateState: function(dispatcher, value){
            this.inherited(arguments);
-           dispatcher.globalState.pages[value.id]["action"]="view";
+           dispatcher.getGlobalState().pages[value.id]["action"]="view";
        }
     });
     return ret;

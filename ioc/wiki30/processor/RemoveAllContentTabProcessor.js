@@ -11,8 +11,8 @@ define([
        } 
        ,updateState: function(dispatcher, value){
            dispatcher.contentCache={}
-           dispatcher.globalState.pages={};
-           dispatcher.globalState.currentTabId=null;
+           dispatcher.getGlobalState().pages={};
+           dispatcher.getGlobalState().currentTabId=null;
        }
     });
     return ret;

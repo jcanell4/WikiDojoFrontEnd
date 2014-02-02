@@ -7,7 +7,8 @@ define([
     ,"dojo/ready"
     ,"dojo/dom-geometry"
     ,"dojo/dom-style"
-], function(dispatcher, dom, on, query, focus, ready, geometry, style){
+    ,'dojo/_base/unload'
+], function(dispatcher, dom, on, query, focus, ready, geometry, style, unload){
     /**
     * Activate "not saved" dialog, add draft deletion to page unload,
     * add handlers to monitor changes
@@ -45,12 +46,23 @@ define([
         on(editform, 'change', checkfunc);
 //        focus.watch(editform, checkfunc);
 
-        window.onbeforeunload = function(){
-            if(dispatcher.getUnsavedChangesState()) {
-                return LANG.notsavedyet;
-            }
-        };
-        window.onunload = deleteDraft;
+        if(!unload.isEditUnloadAdded){
+            unload.addOnUnload(function(){
+                if(wikiIocDispatcher.getUnsavedChangesState()) {
+                    return LANG.notsavedyet;
+                }
+            });
+
+            unload.addOnWindowUnload(deleteDraft);
+            unload.isEditUnloadAdded=true;
+        }
+
+//        window.onbeforeunload = function(){
+//            if(dispatcher.getUnsavedChangesState()) {
+//                return LANG.notsavedyet;
+//            }
+//        };
+//        window.onunload = deleteDraft;
 
         var summary = dom.byId(summaryId);
         on(summary, "change", summaryCheck);

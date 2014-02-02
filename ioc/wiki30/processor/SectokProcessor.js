@@ -9,7 +9,7 @@ define([
            this.inherited(arguments);
        } 
        ,updateState: function(dispatcher, value){
-           dispatcher.globalState.sectok=value;
+           dispatcher.getGlobalState().sectok=value;
        }
        ,_processSectok: function(result, dispatcher){
            dispatcher.putSectok(result);

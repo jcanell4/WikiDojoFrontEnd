@@ -11,9 +11,9 @@ define([
        } 
        ,updateState: function(dispatcher, value){
            delete dispatcher.contentCache[value]
-           delete dispatcher.globalState.pages[value];
+           delete dispatcher.getGlobalState().pages[value];
            var container = registry.byId(dispatcher.containerNodeId);
-           dispatcher.globalState.currentTabId=container.selectedChildWidget.id;
+           dispatcher.getGlobalState().currentTabId=container.selectedChildWidget.id;
        }
     });
     return ret;

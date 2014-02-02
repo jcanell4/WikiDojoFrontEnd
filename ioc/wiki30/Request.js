@@ -12,10 +12,6 @@ function(declare, Standby, request, dispatcherSingleton){
        ,dispatcher: dispatcherSingleton
        ,_standby: null
        ,sectokId: "sectok"
-//       ,constructor:function(args){
-//           lang.mixin(this, args);
-//           this
-//       }
        ,hasPostData: function(){
            return  this.getPostData()!=null;
        }

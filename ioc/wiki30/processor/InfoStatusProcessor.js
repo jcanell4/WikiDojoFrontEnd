@@ -10,7 +10,7 @@ define([
            this.inherited(arguments);
        } 
        ,updateState: function(dispatcher, value){
-           dispatcher.globalState.info=value;
+           dispatcher.getGlobalState().info=value;
        }
        ,_processInfo: function(info, dispatcher){
            dom.byId(dispatcher.infoNodeId).innerHTML=info;

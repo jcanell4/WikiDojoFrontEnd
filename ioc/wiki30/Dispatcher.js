@@ -31,17 +31,17 @@ define([
                 ,SectokProcessor, TitleProcessor, RemoveAllContentTabProcessor
                 ,RemoveContentTabProcessor, CommandProcessor){
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
-        globalState: new GlobalState()
+        globalState: null
        ,unsavedChangesState: false
        ,contentCache:{}		//objecte {id_pestanya => metaInformacio[id => {id,title,content}]}
        ,processors:{}
        ,updateViewHandlers:[]
-       ,sectokManager: new SectokManager()
+       ,sectokManager: null
        ,containerNodeId: null
        ,navegacioNodeId: null
        ,infoNodeId: null
        ,metaInfoNodeId: null
-       ,toUpdateSectok: new Array()
+       ,toUpdateSectok: null
        ,diag: new Dialog({
                         title: "ERROR",
                         style: "width: 300px"
@@ -59,8 +59,19 @@ define([
            this.processors["title"]=new TitleProcessor();
            this.processors["removeall"]=new RemoveAllContentTabProcessor();
            this.processors["remove"]=new RemoveContentTabProcessor();
-           this.processors["command"]=new CommandProcessor();
-        }
+           this.processors["command"]=new CommandProcessor();           
+           this.toUpdateSectok = new Array();
+           this.sectokManager = new SectokManager();
+           this.globalState = GlobalState;
+       }
+//       ,initGlobalState: function(){
+//           if(typeof(Storage)!=="undefined"
+//                    && sessionStorage.globalState){
+//               this.globalState = JSON.parse(sessionStorage.globalState);
+//           }else{
+//               this.globalState = GlobalState;
+//           }           
+//       }
        ,addUpdateView: function(handler){
            this.updateViewHandlers.push(handler);
        }
@@ -141,13 +152,15 @@ define([
            return this.contentCache[id];
        }
        ,getCurrentPage: function(){
-           return this.globalState.pages[this.globalState.currentTabId];
+           return this.getGlobalState().pages[this.getGlobalState().currentTabId];
        }
        ,getUnsavedChangesState: function(){
            return this.unsavedChangesState;
        }
        ,setUnsavedChangesState: function(st){
            this.unsavedChangesState=st;          
+       }
+       ,loadDataFromGlobalState: function(){           
        }
        ,processError: function(error){
             this._processError(error.response.text);
@@ -168,27 +181,7 @@ define([
            if(this.processors[response.type]){
                this.processors[response.type].process(response.value, this);
            }else{
-//                if(response.type==="command"){
-//                    this._processCommand(response.value);
-//                }else if(response.type==="html"){
-//                    this._processHtmlContent(response.value);
-//                }else if(response.type==="data"){
-//                    this._processDataContent(response.value);
-//                }else if(response.type==="error"){
-//                    this._processError(response.value);
-//                }else if(response.type==="info"){
-//                    this._processInfo(response.value);
-//                }else if(response.type==="login"){
-//                    this.processLogin(response.value);
-//                }else if(response.type==="sectok"){
-//                    this.processSectok(response.value);
-//                }else if(response.type==="title"){
-//                    this._processTitle(response.value);
-//                }else if(response.type==="metainfo"){
-//                    this._processMetaInfo(response.value);
-//                }else{
-                    this.processors["alert"].process("Missatge incomprensible", this); /*TO DO: internationalization*/
-//                }
+                this.processors["alert"].process("Missatge incomprensible", this); /*TO DO: internationalization*/
            }
            return 0;
         }
@@ -197,190 +190,6 @@ define([
             if (!message) message="";
             this.processors["error"].process(error + " " + message, this);
         }
-//       ,processSectok: function(result){
-//           this.putSectok(result);
-//       }
-//	   ,_processMetaInfo: function(content){
-//			var widgetCentral = registry.byId(this.containerNodeId).selectedChildWidget;
-//			var nodeMetaInfo = registry.byId(this.metaInfoNodeId);
-//			var m;
-//			this._processRemoveAllChildrenWidgets(nodeMetaInfo);
-//			for (m in content.meta) {
-//				if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
-//					var widgetMetaInfo = registry.byId(content.meta[m].id);
-//					if (!widgetMetaInfo) {
-//						/*Construeix un nou contenidor de meta-info*/
-//						var cp = new ContentPane({
-//										id: content.meta[m].id
-//										,title: content.meta[m].title
-//										,content: content.meta[m].content
-//								});
-//						nodeMetaInfo.addChild(cp);
-//						if (content.defaultSelected === content.meta[m].id) 
-//							nodeMetaInfo.selectChild(cp);
-//						nodeMetaInfo.resize();
-//					}else {
-//						nodeMetaInfo.selectChild(widgetMetaInfo);
-//						var node = dom.byId(content.meta[m].id);
-//						node.innerHTML=content.meta[m].content;
-//					}
-//				}
-//				else{
-//					//dokuwikiContent.putMetaData(content);
-//				}
-//			}
-//			return 0;
-//		}
-//       ,_processAlert: function(alert){
-//            this.diag.set("title", "ALERTA");
-//            this.diag.set("content", alert);
-//            this.diag.show();
-//        }
-//       ,_processDataContent: function(content){
-//			this.__newTab(content);
-//			//dokuwikiContent.putMetaData(content);
-//       }
-//       ,_processHtmlContent: function(content){
-//			this.__newTab(content);
-//			//dokuwikiContent.putMetaData(content);
-//        }        
-//	   ,__newTab: function(content){
-//			var tc = registry.byId(this.containerNodeId);
-//			var widget = registry.byId(content.id);
-//			/*Construeix una nova pestanya*/
-//			if (!widget) {
-//				var cp = new ContentPane({
-//						id: content.id,
-//						title: content.title,
-//						content: content.content,
-//						closable: true
-//				});
-//				tc.addChild(cp);
-//				tc.selectChild(cp);
-//			}else {
-//				tc.selectChild(widget);
-//				var node = dom.byId(content.id);
-//				node.innerHTML=content.content;
-//			}
-//			return 0;
-//		}
-//       ,_processInfo: function(info){
-//           dom.byId(this.infoNodeId).innerHTML=info;
-//       }
-//       ,processLogin: function(result){
-//                        if (result.loginRequest && !result.loginResult){
-//                                this._processError("Usuari o contrasenya incorrectes");
-//                        }else if (!result.loginRequest && !result.loginResult){
-//                                dom.byId(this.infoNodeId).innerHTML="usuari desconnectat";
-//                        }else {
-//                                dom.byId(this.infoNodeId).innerHTML="usuari connectat";
-//                        }
-//       }
-//       ,_processCommand: function(command){
-//            /*TO DO*/
-//            if(command.type==="change_dom_style"){
-//                this._processChangeStyleCommand(command);
-//            }else if(command.type==="change_widget_property"){
-//                this._processChangeWidgetPropertyCommand(command);
-//            }else if(command.type==="reaload_widget_content"){
-//                                this._processRefresh(command);
-//            }else if(command.type==="remove_widget_child"){
-//                this._processRemoveWidgetChild(command);
-//            }else if(command.type==="remove_all_widget_children"){
-//                this._processRemoveAllChildrenWidgets(command);
-//            }else if(command.type==="process_dom_from_function"){
-//                this._processDomFromFuntcion(command);
-//            }else if(command.type==="process_function"){
-//                this._processFuntcion(command);
-//            }else if(command.type==="jsinfo"){
-//                this._processJsInfo(command);
-//            }
-//       }
-//           ,_processRefresh: function(command){
-//                        var tabId = registry.byId(command.id);
-//                        if (tabId.refresh) {
-//                                tabId.refresh();
-//                        }else {
-//                                this._processError("Aquest element: "+command.id+" no té mètode refresh.");
-//                        }
-//           }
-//           ,_processRemoveWidgetChild: function(command) {
-//                        var tc = registry.byId(this.containerNodeId);
-//                        var widget = registry.byId(command.id);
-//                        if (widget) {
-//                                tc.removeChild(widget);
-//                                widget.destroyRecursive(false);
-//                        }
-//                        return 0;
-//           }
-//           ,_processRemoveAllChildrenWidgets: function(command) {
-//                        var node=registry.byId(command.id);
-//                        if (node.hasChildren()){
-//                                node.destroyDescendants(false);
-//                        }
-//           }
-//       ,_processChangeWidgetPropertyCommand: function(command){
-//           var widget=registry.byId(command.id);
-//           widget.set(command.propertyName, command.propertyValue);
-//       }
-//       ,_processChangeStyleCommand: function(command){
-//            domStyle.set(command.id, command.propertyName, command.propertyValue);
-//       }
-//       ,_processWidgetCommand: function(command){
-//            var widget = registry.byId(command.componentId);
-//            if(lang.isArray(command.toExecute)){
-//                 array.forEach(command.toExecute, function(responseItem){
-//                    widget.processCommand(responseItem); 
-//                 });             
-//            }else{
-//                widget._processResponse(command.toExecute);
-//            }
-//        }
-//       ,_processDomFromFuntcion: function(command){
-//           if(command.amd){
-//               require(new Array(command.processName), function(process){
-//                   process(command.id, command.params);
-//               });
-//           }else{  
-//               var cmd = command.processName;
-//               cmd += "('"+command.id+"'";
-//               if(command.params){
-//                  for(var par in command.params){
-//                        cmd +=", '"+par+"'";
-//                  }
-//               }
-//               cmd +=")";
-//               dojo.eval(cmd);
-//           }
-//       }
-//       ,_processFuntcion: function(command){
-//           if(command.amd){
-//               require(new Array(command.processName), function(process){
-//                   process(command.params);
-//               });
-//           }else{               
-//               var i;
-//               var cmd = command.processName;
-//               cmd += "(";
-//               if(command.params){
-//                 for(i=0; i<command.params.length; i++){
-//                     if(i>0){
-//                         cmd +=", ";
-//                     }
-//                     cmd +="'"+command.params+"'";
-//                 }
-//               }
-//               cmd +=")";
-//               dojo.eval(cmd);
-//           }
-//       }
-//       ,_processJsInfo: function(command){
-//           lang.mixin(JSINFO, command.value);
-//       }
-//       ,_processTitle: function(title){
-//           var nodeTitle = query("title")[0];
-//           nodeTitle.innerHTML=title;
-//       }
     });
     return DispatcherClass;
 });

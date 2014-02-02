@@ -15,10 +15,10 @@ define([
                 Request, dwPageUi, domClass, dispatcher){
     
     function setCurrentSection(node){
-        var oldId = dispatcher.globalState.getCurrentSectionId();
-        dispatcher.globalState.setCurrentSectionId(node);    
+        var oldId = dispatcher.getGlobalState().getCurrentSectionId();
+        dispatcher.getGlobalState().setCurrentSectionId(node);    
         setSelectedSection(node, true);
-        if(oldId!==dispatcher.globalState.getCurrentSectionId()){
+        if(oldId!==dispatcher.getGlobalState().getCurrentSectionId()){
             setSelectedSection(dom.byId(oldId), false);
         }
     }
@@ -91,8 +91,8 @@ define([
             setHighlightSection(this, false);
         });
         
-        if(dispatcher.globalState.getCurrentSectionId()){
-            var node = dom.byId(dispatcher.globalState.getCurrentSectionId());
+        if(dispatcher.getGlobalState().getCurrentSectionId()){
+            var node = dom.byId(dispatcher.getGlobalState().getCurrentSectionId());
             toggleClass(dwPageUi.getAllSectionNodes(node), "section_selected", true);
         }
         

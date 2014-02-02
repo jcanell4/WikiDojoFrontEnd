@@ -10,7 +10,7 @@ define([
            this.inherited(arguments);
        } 
        ,updateState: function(dispatcher, value){
-           dispatcher.globalState.login=value.loginResult;           
+           dispatcher.getGlobalState().login=value.loginResult;           
        }
        ,_processLogin: function(result, dispatcher){
             if (result.loginRequest && !result.loginResult){

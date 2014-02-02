@@ -3,8 +3,9 @@ define([
     ,"dojo/_base/lang"
     ,"ioc/dokuwiki/dwPageUi"
 ], function(declare, lang, dwPageUi){
-    var ret = declare("ioc.wiki30.GlobalState", [], {
-        pages: {}        //[{pageId: {ns, mode, action}}]
+//    var ret = declare("ioc.wiki30.GlobalState", [], {
+    var ret = {
+        pages: {}        //{[pageId]: {ns, mode, action}}
         ,defaultPage:{}  //{ns, mode}
         ,login: false
         ,info: ""
@@ -29,9 +30,7 @@ define([
             }
             alert(salida);
         }
-//        ,require(["dojo/dom-form"], function(domForm){
-//          var formId = "myId";
-//          var formQuery = domForm.toQuery(formId);
-    });
+    };
+//    });
     return ret;
 });

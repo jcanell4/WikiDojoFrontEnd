@@ -9,7 +9,7 @@ define([
        }
        ,updateState: function(dispatcher, value){
            this.inherited(arguments);
-           dispatcher.globalState.pages[value.id]["action"]="edit";
+           dispatcher.getGlobalState().pages[value.id]["action"]="edit";
        }
     });
     return ret;
