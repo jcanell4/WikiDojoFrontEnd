@@ -1,16 +1,11 @@
 define([
 	"dojo/_base/declare" // declare
-], function(declare, lang){
+], function(declare){
     var ret = declare("ioc.wiki30.UpdateViewHandler", [], {
-        _dispatcher: null
-        ,constructor: function(/*Dispatcher*/ dispatcher, /*function*/ updateFunction){
-            this._dispatcher = dispatcher;
+        constructor: function(/*function*/ updateFunction){
             if(updateFunction){
                 this.update = updateFunction;
             }
-        }
-        ,getDispatcher: function(){
-            return this._dispatcher;
         }
         ,update: function(){}
     });

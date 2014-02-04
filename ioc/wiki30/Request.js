@@ -62,14 +62,14 @@ function(declare, Standby, request, dispatcherSingleton){
             if (standby){
                 standby.show();
             }
-            
+            var resp;
             var req = this;
             var configPost = {handleAs: "json"};
             if(this.method==="post"){
                 if(this.hasPostData()){
                     configPost.data = this.getPostData();
                 }
-                var resp = request.post(vUrl, configPost).then(
+                resp = request.post(vUrl, configPost).then(
 						function(data){
 							return req.responseHandler(data);
 						}, function(error){
@@ -77,7 +77,7 @@ function(declare, Standby, request, dispatcherSingleton){
 						}
 					);                
             }else{
-                var resp = request.get(vUrl, configPost).then(
+                resp = request.get(vUrl, configPost).then(
 				function(data){
                                     return req.responseHandler(data);
 		                }, function(error){
@@ -85,6 +85,7 @@ function(declare, Standby, request, dispatcherSingleton){
 				}
                             );     
             }
+            return resp
         }
     });
     return ret;

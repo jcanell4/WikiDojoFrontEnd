@@ -35,7 +35,8 @@ define([
        ,unsavedChangesState: false
        ,contentCache:{}		//objecte {id_pestanya => metaInformacio[id => {id,title,content}]}
        ,processors:{}
-       ,updateViewHandlers:[]
+       ,updateViewHandlers:null
+       ,reloadStateHandlers:null
        ,sectokManager: null
        ,containerNodeId: null
        ,navegacioNodeId: null
@@ -63,6 +64,9 @@ define([
            this.toUpdateSectok = new Array();
            this.sectokManager = new SectokManager();
            this.globalState = GlobalState;
+           this.updateViewHandlers = new Array();
+           this.reloadStateHandlers = new Array();
+           
        }
 //       ,initGlobalState: function(){
 //           if(typeof(Storage)!=="undefined"
@@ -75,6 +79,9 @@ define([
        ,addUpdateView: function(handler){
            this.updateViewHandlers.push(handler);
        }
+       ,addReloadState: function(handler){
+           this.reloadStateHandlers.push(handler);
+       }
        ,startup: function(){
            /*TO DO. Set the globalState to different components*/
         }
@@ -85,6 +92,13 @@ define([
                     });
                }
        }
+       ,reloadFromState: function(stateToLoad){
+               if(this.reloadStateHandlers){
+                    array.forEach(this.reloadStateHandlers, function(handler){
+                        handler.reload(stateToLoad);
+                    });
+               }
+       }       
        ,getSectok: function(strUrl){
            return (this.sectokManager.getSectok(strUrl));
        }
