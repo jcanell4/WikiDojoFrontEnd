@@ -1,108 +1,17 @@
 var __slice = [].slice;
-
-define(function() {
-  return function(spec) {
-    var doku_get_selection, doku_selection_class, doku_set_selection, doku_submit_handler, patch, patching, textarea;
-    patching = false;
-    textarea = document.getElementById('wiki__text');
-    patch = function(name, func) {
-      var obj, orig_func;
-      obj = (typeof dw_editor !== "undefined" && dw_editor !== null ? dw_editor[name] : void 0) != null ? dw_editor : window;
-      orig_func = obj[name];
-      obj[name] = function() {
-        var args;
-        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-        return func.call.apply(func, [this, orig_func].concat(__slice.call(args)));
-      };
-      return orig_func;
-    };
-    patch('currentHeadlineLevel', function(func, id) {
-      if (id === textarea.id) {
-        jQuery(textarea).val(spec.get_value());
-      }
-      return func(id);
-    });
-    doku_get_selection = patch('getSelection', function(func, obj) {
-      var result, selection;
-      if (patching && obj === textarea) {
-        jQuery(textarea).val(spec.get_value());
-        result = spec.get_selection();
-        selection = new selection_class();
-        selection.obj = textarea;
-        selection.start = result.start;
-        selection.end = result.end;
-        return selection;
-      } else {
-        return func(obj);
-      }
-    });
-    patch('pasteText', function(func, selection, text, opts) {
-      if (opts == null) {
-        opts = {};
-      }
-      if (patching && selection.obj === textarea) {
-        spec.paste_text(selection.start, selection.end, text);
-        selection.end = selection.start + text.length - (opts.endofs || 0);
-        selection.start += opts.startofs || 0;
-        if (opts.nosel) {
-          selection.start = selection.end;
-        }
-        return spec.set_selection(selection.start, selection.end);
-      } else {
-        return func(selection, text, opts);
-      }
-    });
-    doku_selection_class = patch('selection_class', function(func) {
-      func.apply(this);
-      this.doku_get_text = this.getText;
-      this.getText = function() {
-        if (patching && this.obj === textarea) {
-          return spec.get_text(this.start, this.end);
-        } else {
-          return this.doku_get_text();
-        }
-      };
-      return null;
-    });
-    doku_set_selection = patch('setSelection', function(func, selection) {
-      if (patching && selection.obj === textarea) {
-        return spec.set_selection(selection.start, selection.end);
-      } else {
-        return func(selection);
-      }
-    });
-    patch('setWrap', function(func, obj, value) {
-      func(obj, value);
-      if (obj === textarea) {
-        return spec.set_wrap(value !== 'off');
-      }
-    });
-    patch('sizeCtl', function(func, obj, value) {
-      var id;
-      func(obj, value);
-      id = (typeof obj.attr === "function" ? obj.attr('id') : void 0) || obj;
-      if (patching && id === textarea.id) {
-        return spec.size_ctl(value);
-      }
-    });
-    doku_submit_handler = textarea.form.onsubmit;
-    jQuery(textarea.form).submit(function(event) {
-      if (patching) {
-        return jQuery(textarea).val(spec.get_value());
-      }
-    });
-    return jQuery(window).resize(function(event) {
-      if (patching) {
-        return spec.on_resize();
-      }
-    });
-  };
-});
-
-define(['ace-wrapper', 'ace-commands', 'ace-container', 'ace-doku_wrapper', 'ace-preview', 'ace-toggle', 'underscore'], function() {
+define([
+     'ioc/dokuwiki/ace-loader'
+    ,'ioc/dokuwiki/ace-wrapper'
+    ,'ioc/dokuwiki/ace-commands'
+    ,'ioc/dokuwiki/ace-container'
+    ,'ioc/dokuwiki/ace-doku_wrapper'
+    ,'ioc/dokuwiki/ace-preview'
+    ,'ioc/dokuwiki/ace-toggle'
+    ,'ioc/dokuwiki/underscore'
+], function() {
   var ace, container, deps, disable, doku, enable, init, new_ace, new_commands, new_container, new_doku, new_preview, new_toggle, toggle, user_editing;
   deps = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-  new_ace = deps[0], new_commands = deps[1], new_container = deps[2], new_doku = deps[3], new_preview = deps[4], new_toggle = deps[5];
+  new_ace = deps[1], new_commands = deps[2], new_container = deps[3], new_doku = deps[4], new_preview = deps[5], new_toggle = deps[6];
   ace = container = doku = toggle = null;
   user_editing = false;
   disable = function() {
@@ -215,8 +124,9 @@ define(['ace-wrapper', 'ace-commands', 'ace-container', 'ace-doku_wrapper', 'ace
       }
     }
   };
-  return typeof jQuery === "function" ? jQuery(document).ready(function() {
-    return _.defer(init);
-  }) : void 0;
+//  return typeof jQuery === "function" ? jQuery(document).ready(function() {
+//    return _.defer(init);
+//  }) : void 0;
+  return init;
 });
 

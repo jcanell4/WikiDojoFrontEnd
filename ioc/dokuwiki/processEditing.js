@@ -8,7 +8,8 @@ define([
     ,"dojo/dom-geometry"
     ,"dojo/dom-style"
     ,'dojo/_base/unload'
-], function(dispatcher, dom, on, query, focus, ready, geometry, style, unload){
+    /*,"ioc/dokuwiki/ace-main"*/
+], function(dispatcher, dom, on, query, focus, ready, geometry, style, unload/*, ace*/){
     /**
     * Activate "not saved" dialog, add draft deletion to page unload,
     * add handlers to monitor changes
@@ -144,6 +145,7 @@ define([
             cleanHtmlEdition(params.id, params.wikiTextId, params.editBarId, 
                                 params.licenseClass);
             dw_locktimer.init(params.timeout, params.draft);
+//            ace();
         });
     };
     return res;

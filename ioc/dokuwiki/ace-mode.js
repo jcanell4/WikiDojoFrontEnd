@@ -1,6 +1,47 @@
 var __slice = [].slice;
 
-define(['ace/mode/text', 'ace/tokenizer', 'ace/mode/c_cpp_highlight_rules', 'ace/mode/clojure_highlight_rules', 'ace/mode/coffee_highlight_rules', 'ace/mode/coldfusion_highlight_rules', 'ace/mode/csharp_highlight_rules', 'ace/mode/css_highlight_rules', 'ace/mode/diff_highlight_rules', 'ace/mode/golang_highlight_rules', 'ace/mode/groovy_highlight_rules', 'ace/mode/haxe_highlight_rules', 'ace/mode/html_highlight_rules', 'ace/mode/java_highlight_rules', 'ace/mode/javascript_highlight_rules', 'ace/mode/json_highlight_rules', 'ace/mode/jsx_highlight_rules', 'ace/mode/latex_highlight_rules', 'ace/mode/less_highlight_rules', 'ace/mode/liquid_highlight_rules', 'ace/mode/lua_highlight_rules', 'ace/mode/luapage_highlight_rules', 'ace/mode/markdown_highlight_rules', 'ace/mode/ocaml_highlight_rules', 'ace/mode/perl_highlight_rules', 'ace/mode/pgsql_highlight_rules', 'ace/mode/php_highlight_rules', 'ace/mode/powershell_highlight_rules', 'ace/mode/python_highlight_rules', 'ace/mode/ruby_highlight_rules', 'ace/mode/scad_highlight_rules', 'ace/mode/scala_highlight_rules', 'ace/mode/scss_highlight_rules', 'ace/mode/sh_highlight_rules', 'ace/mode/sql_highlight_rules', 'ace/mode/svg_highlight_rules', 'ace/mode/tcl_highlight_rules', 'ace/mode/textile_highlight_rules', 'ace/mode/xml_highlight_rules', 'ace/mode/xquery_highlight_rules', 'ace/mode/yaml_highlight_rules'], function() {
+define([
+      'ace/mode/text'
+    , 'ace/tokenizer'
+    , 'ace/mode/c_cpp_highlight_rules'
+    , 'ace/mode/clojure_highlight_rules'
+    , 'ace/mode/coffee_highlight_rules'
+    , 'ace/mode/coldfusion_highlight_rules'
+    , 'ace/mode/csharp_highlight_rules'
+    , 'ace/mode/css_highlight_rules'
+    , 'ace/mode/diff_highlight_rules'
+    , 'ace/mode/golang_highlight_rules'
+    , 'ace/mode/groovy_highlight_rules'
+    , 'ace/mode/haxe_highlight_rules'
+    , 'ace/mode/html_highlight_rules'
+    , 'ace/mode/java_highlight_rules'
+    , 'ace/mode/javascript_highlight_rules'
+    , 'ace/mode/json_highlight_rules'
+    , 'ace/mode/jsx_highlight_rules'
+    , 'ace/mode/latex_highlight_rules'
+    , 'ace/mode/less_highlight_rules'
+    , 'ace/mode/liquid_highlight_rules'
+    , 'ace/mode/lua_highlight_rules'
+    , 'ace/mode/luapage_highlight_rules'
+    , 'ace/mode/markdown_highlight_rules'
+    , 'ace/mode/ocaml_highlight_rules'
+    , 'ace/mode/perl_highlight_rules'
+    , 'ace/mode/pgsql_highlight_rules'
+    , 'ace/mode/php_highlight_rules'
+    , 'ace/mode/powershell_highlight_rules'
+    , 'ace/mode/python_highlight_rules'
+    , 'ace/mode/ruby_highlight_rules'
+    , 'ace/mode/scad_highlight_rules'
+    , 'ace/mode/scala_highlight_rules'
+    , 'ace/mode/scss_highlight_rules'
+    , 'ace/mode/sh_highlight_rules'
+    , 'ace/mode/sql_highlight_rules'
+    , 'ace/mode/svg_highlight_rules'
+    , 'ace/mode/tcl_highlight_rules'
+    , 'ace/mode/textile_highlight_rules'
+    , 'ace/mode/xml_highlight_rules'
+    , 'ace/mode/xquery_highlight_rules'
+    , 'ace/mode/yaml_highlight_rules'], function() {
   var deps;
   deps = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
   return function(spec) {

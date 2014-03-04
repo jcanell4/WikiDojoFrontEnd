@@ -50,7 +50,7 @@ define([
 //           else {
 //               this.__newTab(value, dispatcher);
 //           }
-           this.__newTab(value, dispatcher); 
+               this.__newTab(value, dispatcher);
            this.inherited(arguments);
        } 
        ,updateState: function(dispatcher, value){

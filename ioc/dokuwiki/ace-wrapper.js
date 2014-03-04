@@ -1,21 +1,22 @@
 var __slice = [].slice;
 
 define([
-      'ace/editor'
-    , 'ace/keyboard/state_handler'
-    , 'ace/lib/fixoldbrowsers'
-    , 'ace/mode/markdown'
-    , 'ace/range'
-    , 'ace/theme/textmate'
-    , 'ace/undomanager'
-    , 'ace/virtual_renderer'
-    , 'ace-mode'
-    , 'require'], function() {
+     'ace/editor'
+    ,'ace/keyboard/state_handler'
+    ,'ace/lib/fixoldbrowsers'
+    ,'ace/mode/markdown'
+    ,'ace/range'
+    ,'ace/theme/textmate'
+    ,'ace/undomanager'
+    ,'ace/virtual_renderer'
+    ,'ioc/dokuwiki/ace-mode'/*
+    ,'require'*/], function() {
           var deps;
           deps = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
           return function(spec) {
+            /*var require*/
             var Editor, Range, StateHandler, UndoManager, VirtualRenderer, editor, fixoldbrowsers, getLineStates, markdown
-            , new_mode, offset_to_pos, pos_to_offset, require, session, theme, _ref, _ref1, _ref2, _ref3, _ref4;
+            , new_mode, offset_to_pos, pos_to_offset, session, theme, _ref, _ref1, _ref2, _ref3, _ref4;
             (_ref = deps[0], Editor = _ref.Editor), 
             (_ref1 = deps[1], StateHandler = _ref1.StateHandler), 
             fixoldbrowsers = deps[2], markdown = deps[3], 
@@ -26,7 +27,7 @@ define([
             (_ref4 = deps[7], 
             VirtualRenderer = _ref4.VirtualRenderer), 
             new_mode = deps[8], 
-            require = deps[9];
+//            require = deps[9];
 
             editor = null;
             session = null;
