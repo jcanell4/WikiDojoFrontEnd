@@ -9,9 +9,11 @@ define([
     ,'ioc/dokuwiki/ace-toggle'
     ,'ioc/dokuwiki/underscore'
 ], function() {
-  var ace, container, deps, disable, doku, enable, init, new_ace, new_commands, new_container, new_doku, new_preview, new_toggle, toggle, user_editing;
+  var ace, container, deps, disable, doku, enable, init, new_ace, new_commands,
+        new_container, new_doku, new_preview, new_toggle, toggle, user_editing;
   deps = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-  new_ace = deps[1], new_commands = deps[2], new_container = deps[3], new_doku = deps[4], new_preview = deps[5], new_toggle = deps[6];
+  new_ace = deps[1], new_commands = deps[2], new_container = deps[3], 
+  new_doku = deps[4], new_preview = deps[5], new_toggle = deps[6];
   ace = container = doku = toggle = null;
   user_editing = false;
   disable = function() {
@@ -116,13 +118,21 @@ define([
     });
     if (doku.get_cookie('aceeditor') != null) {
       if (doku.get_cookie('aceeditor') !== 'off') {
-        return enable();
+        enable();
       }
     } else {
       if (JSINFO.plugin_aceeditor["default"]) {
-        return enable();
+        enable();
       }
     }
+    var ret = {"dokuWrapper":doku
+              ,"container":container
+              ,"toggle":toggle
+              ,"ace":ace
+              ,"preview":preview
+              ,"commands":commands
+    };
+    return ret;
   };
 //  return typeof jQuery === "function" ? jQuery(document).ready(function() {
 //    return _.defer(init);
