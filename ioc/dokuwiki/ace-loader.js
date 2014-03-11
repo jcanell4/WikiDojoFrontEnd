@@ -57,6 +57,7 @@ define([
     ,"ace/renderloop"
     //2
     ,'ace/requirejs/text!ace/theme/textmate.css'
+    ,'ace/requirejs/text!ace/css/editor.css'
     ,"ace/mouse/mouse_handler"
     ,"ace/document"
     ,"ace/mode/text"
@@ -70,7 +71,6 @@ define([
     ,"ace/mode/folding/markdown"
     ,"ace/edit_session/folding"  
     ,"ace/commands/command_manager"
-    ,'ace/requirejs/text!ace/css/editor.css'
     ,'ace/mode/clojure_highlight_rules'
     ,"ace/mode/folding/coffee"
     ,'ace/mode/coffee_highlight_rules'
