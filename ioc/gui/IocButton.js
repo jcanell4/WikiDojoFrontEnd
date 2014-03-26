@@ -4,17 +4,16 @@
  */
 define(["dojo/_base/declare"
         ,"dijit/form/Button"
-        ,"ioc/wiki30/Request"
         ,"dijit/_TemplatedMixin"
         ,"dojo/text!./templates/Button.html"
-        ,"ioc/gui/IocComponent"
+        ,"ioc/gui/IocResizableComponent"
         ,"dojo/_base/lang"
 ],
-function(declare, button, Request, _TemplatedMixin, template, IocComponent, dojoBase) {
+function(declare, button, _TemplatedMixin, template, IocComponent, dojoBase) {
     // module:
     //		ioc/gui/IocButton
 
-    var ret = declare("ioc.gui.IocButton", [button, Request, _TemplatedMixin, IocComponent], 
+    var ret = declare("ioc.gui.IocButton", [button, _TemplatedMixin, IocComponent], 
 	{
 	    templateString: template
             ,query: ""

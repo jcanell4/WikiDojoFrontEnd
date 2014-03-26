@@ -2,11 +2,13 @@
  * Funcions comunes als botons
 */
 define(["dojo/_base/declare"
-		,"dojo/dom-style"
+	,"dojo/dom-style"
+        ,"ioc/wiki30/Request"
+
 ],
-function(declare, style) {
+function(declare, style, Request) {
 	/* @author Rafael Claver <rclaver@xtec.cat>
-     * module: ioc/gui/IocComponent
+     * module: ioc/gui/IocResizableComponent
 	 *  
 	 * Afegeix el mètode 'resize' que redimensiona l'objecte
 	 * per igualar-lo a la mida del seu contenidor pare.
@@ -16,7 +18,7 @@ function(declare, style) {
 	 *				false: no executa el mètode resize -> no canvia el tamany del botó
 	 * Afegeix el mètode '__setVisible' que mostra/amaga l'objecte
 	*/
-    var ret = declare("ioc.gui.IocComponent", [], {
+    var ret = declare("ioc.gui.IocResizableComponent", [Request], {
 		 nodeToResize: null
 		,topNodeToResize:null
 		,visible: true

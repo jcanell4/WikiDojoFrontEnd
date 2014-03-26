@@ -47,18 +47,18 @@ define([], function(){
                                 }
                                 jQuery(this).attr('width', widthaux);
                         }
-                        var url = $img.attr('src');
-                        var patt = new RegExp("w=\\d+", 'g');
-                        var patt2 = new RegExp("h=\\d+", 'g');
-                        if (patt.test(url)){
-                                url=url.replace(patt, "w="+widthaux);
-                                jQuery(this).attr('src', url);
-                        }
+//                        var url = $img.attr('src');
+//                        var patt = new RegExp("w=\\d+", 'g');
+//                        var patt2 = new RegExp("h=\\d+", 'g');
+//                        if (patt.test(url)){
+//                                url=url.replace(patt, "w="+widthaux);
+//                                jQuery(this).attr('src', url);
+//                        }
                         if (height){
                                 var ratio = parseFloat(width/height);
                                 height = parseInt(widthaux/ratio);
-                                url=url.replace(patt2, "h="+height);
-                                jQuery(this).attr('src', url);	
+//                                url=url.replace(patt2, "h="+height);
+//                                jQuery(this).attr('src', url);	
                                 jQuery(this).attr('height', height);
                         }
                 });

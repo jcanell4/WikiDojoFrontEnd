@@ -6,7 +6,7 @@ define(["dojo/_base/declare"
 		,"ioc/wiki30/Request"
         ,"dijit/_TemplatedMixin"
 		,"dojo/text!./templates/DropDownButton.html"
-		,"ioc/gui/IocComponent"
+		,"ioc/gui/IocResizableComponent"
 ],
 function(declare, DropDownButton, Request, _TemplatedMixin, template, IocComponent) {
     /* module:
