@@ -7,18 +7,18 @@ define([
 	"dojo/on",
 	"dojo/query", // query
 	"dijit/registry",	// registry.byId()
+    "dijit/_WidgetsInTemplateMixin",
+    "dijit/layout/TabController",
 	"dojo/text!./templates/ResizingTabController.html",
 	"dojo/text!./templates/_ResizingTabControllerButton.html",
-    "dijit/layout/TabController",
-    "dijit/_WidgetsInTemplateMixin",
 	"dijit/form/Button",
 	"dijit/_HasDropDown",
 	"dijit/Menu",
 	"dijit/MenuItem",
 	"dojo/NodeList-dom" // NodeList.style
 ], function(declare, array, domClass, geometry, lang, on, query, registry, 
-            tabControllerTemplate, buttonTemplate, TabController, 
-            _WidgetsInTemplateMixin, Button, _HasDropDown, Menu, MenuItem){
+            _WidgetsInTemplateMixin, TabController, tabControllerTemplate, 
+            buttonTemplate, Button, _HasDropDown, Menu, MenuItem){
 
 var ResizingTabController = declare("ioc.gui.ResizingTabController", 
                                 [TabController, _WidgetsInTemplateMixin], {
@@ -41,6 +41,7 @@ var ResizingTabController = declare("ioc.gui.ResizingTabController",
 	widgetsInTemplate: true,
 
 	buildRendering: function(){
+//	postCreate: function(){
 		this.inherited(arguments);
 		var n = this.domNode;
 
@@ -85,6 +86,8 @@ var ResizingTabController = declare("ioc.gui.ResizingTabController",
 		this.inherited(arguments);
         this._calculateButtonSize();                
 	},
+        onkeypress: function(evt){    
+        },
 //        
 	_calculateButtonSize: function(){
 		var posLabel;
@@ -94,12 +97,13 @@ var ResizingTabController = declare("ioc.gui.ResizingTabController",
         var tabButtonNode;
         var tabButton;
         var textNode;
-        var nChildren = this.getChildren().length-1;
+        var nChildren = this.getChildren().length;
         var tabListWrapperWidth = this.domNode.offsetWidth;
         if(this.useMenu && this._menuBtn){
                 tabButtonNode = this._menuBtn.domNode;
-                tabListWrapperWidth-=geometry.getPadExtents(tabButtonNode).w;
-                tabListWrapperWidth-=geometry.getMarginSize(tabButtonNode).w;
+                var w = geometry.getMarginSize(tabButtonNode).w-1;
+                tabListWrapperWidth-=w;
+                tabButtonNode.style.left= ""+(tabListWrapperWidth)+"px";
         }
         buttonWidth = tabListWrapperWidth/nChildren;
 		for(i=0; i<nChildren; i++){
@@ -127,6 +131,8 @@ var ResizingTabController = declare("ioc.gui.ResizingTabController",
 		// Also set the width for each button.
 		
 			var menuButton = this._menuBtn.domNode;
+                        menuButton.style.position="absolute";
+                        menuButton.style.top="0px";
 			if(this.useMenu){
 				menuButton.style.display="";
 			}else{
