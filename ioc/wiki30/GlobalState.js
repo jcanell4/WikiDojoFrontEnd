@@ -1,7 +1,8 @@
 define([
     /*"dojo/_base/declare"
-     ,*/"dojo/_base/lang"
-    , "ioc/dokuwiki/dwPageUi"
+     ,*/
+    "dojo/_base/lang",
+    "ioc/dokuwiki/dwPageUi"
 ], function (/*declare,*/ lang, dwPageUi) {
     //    var ret = declare("ioc.wiki30.GlobalState", [], {
     var ret = {
@@ -9,14 +10,14 @@ define([
          * El index del hash es el mateix que el ns, que es el mateix que es mostra a la pestanya
          * @type {Object.<{ns:??, node:??, action:??}>}
          */
-        pages:               {},        //{[pageId]: {ns, mode, action}}
-        login:               false,
-        info:                "",
-        currentTabId:        null,
+        pages:            {},        //{[pageId]: {ns, mode, action}}
+        login:            false,
+        info:             "",
+        currentTabId:     null,
         /** @type {string} id de la secció seleccionada */
-        currentSectionId:    null,
-        sectok:              null,
-        title:               "",
+        currentSectionId: null,
+        sectok:           null,
+        title:            "",
 
         /**
          * Node es un node del DOM o una cadena amb el nom de la secció.
@@ -28,7 +29,6 @@ define([
          * @param {string|*} node on es troba la nova selecció, o nom de la secció
          */
         setCurrentSectionId: function (node) {
-            console.log(node);
             if (lang.isString(node)) {//recibe directamente el id
                 alert("setCurrentSection");
                 this.currentSectionId = node;
@@ -52,6 +52,7 @@ define([
         /**
          * Retorna el nombre de pàgines emmagazemades a la propietat pages, que es correspon amb el nombre de pestanyes
          * obertes.
+         *
          * @returns {Number} nombre de pàgines
          */
         pagesLength: function () {
@@ -72,6 +73,7 @@ define([
 
         /**
          * TODO[Xavi] No trobo que això sigui cridat ni instanciat en lloc.
+         *
          * @param o
          * @param nom
          * @constructor
