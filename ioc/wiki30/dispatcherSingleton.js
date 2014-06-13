@@ -1,8 +1,8 @@
 define([
     "ioc/wiki30/Dispatcher"
-],function(Dispatcher){
+], function (Dispatcher) {
     var instance;
-    instance=(instance || new Dispatcher());
+    instance = (instance || new Dispatcher());
     return instance;
 });
 
