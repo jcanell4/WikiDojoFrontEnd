@@ -8,7 +8,7 @@ define([
     var ret = {
         /**
          * El index del hash es el mateix que el ns, que es el mateix que es mostra a la pestanya
-         * @type {Object.<{ns:??, node:??, action:??}>}
+         * @type {Object.<{ns: string, node: string, action: string}>}
          */
         pages:            {},        //{[pageId]: {ns, mode, action}}
         login:            false,
@@ -50,7 +50,7 @@ define([
         },
 
         /**
-         * Retorna el nombre de pàgines emmagazemades a la propietat pages, que es correspon amb el nombre de pestanyes
+         * Retorna el nombre de pàgines emmagatzemades a la propietat pages, que es correspon amb el nombre de pestanyes
          * obertes.
          *
          * @returns {Number} nombre de pàgines
@@ -60,7 +60,7 @@ define([
         },
 
         /**
-         * Es cridtat desde scriptsRef.tpl i retorna una instancia d'aquest objecte afegint les dades del objete passat
+         * Es cridat desde scriptsRef.tpl i retorna una instancia d'aquest objecte afegint les dades del objete passat
          * com argument. Les dades son obtingudes del sessionStorage si existeix.
          *
          * @param {Object.<*>} p dades a afegir a aquesta instancia.

@@ -8,6 +8,7 @@ define([
          * cridat per ell.
          *
          * @param {function(GlobalState)} realodFunction funció que serà cridada quan ??
+         * @constructor
          */
         constructor: function (realodFunction) {
             // TODO[Xavi] S'ha de poder instanciar sense l'argument?

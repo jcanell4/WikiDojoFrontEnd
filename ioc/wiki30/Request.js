@@ -80,7 +80,6 @@ define([
          * no hauria de retornar res.
          */
         sendRequest: function (query) {
-            console.log(query);
             //run standby resource while ajax response doesn't arribe
             if (this.standbyId !== null && !this._standby) {
                 this._standby = new Standby({target: this.standbyId});

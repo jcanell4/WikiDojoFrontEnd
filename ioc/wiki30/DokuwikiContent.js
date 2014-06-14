@@ -26,6 +26,7 @@ define([
          * assignant l'objecte en lloc del string que porta com id.
          *
          * @param {{id: string}} id objecte anonim amb una cadena
+         * @constructor
          */
         constructor: function (id) {
             this.inherited(arguments); // TODO[Xavi] te cap efecte? el constructor de la superclasse es crida automàticament

@@ -1,209 +1,382 @@
 define([
-        "dojo/_base/declare" // declare
-       ,"dijit/registry" //search widgets by id
-       ,"dijit/layout/ContentPane"        //per a la funció newTab
-       ,"dojo/dom"
-       ,"dojo/query"
-       ,"dojo/dom-style"
-       ,"dijit/Dialog"
-       ,"dojo/_base/lang"
-       ,"dojo/_base/array"
-       ,"ioc/wiki30/GlobalState"
-       ,"ioc/wiki30/SectokManager"
-       ,"dojo/_base/kernel"
-       ,"ioc/wiki30/processor/AlertProcessor"
-       ,"ioc/wiki30/processor/HtmlContentProcessor"
-       ,"ioc/wiki30/processor/MetaInfoProcessor"
-       ,"ioc/wiki30/processor/DataContentProcessor"
-       ,"ioc/wiki30/processor/ErrorProcessor"
-       ,"ioc/wiki30/processor/InfoStatusProcessor"
-       ,"ioc/wiki30/processor/LoginProcessor"
-       ,"ioc/wiki30/processor/SectokProcessor"
-       ,"ioc/wiki30/processor/TitleProcessor"
-       ,"ioc/wiki30/processor/RemoveAllContentTabProcessor"
-       ,"ioc/wiki30/processor/RemoveContentTabProcessor"
-       ,"ioc/wiki30/processor/CommandProcessor"
-       ,"ioc/wiki30/UpdateViewHandler"       
-], function(declare, registry, ContentPane, dom, query, domStyle, Dialog
-		,lang, array, GlobalState, SectokManager, dojo, AlertProcessor
-                ,HtmlContentProcessor, MetaInfoProcessor, DataContentProcessor
-                ,ErrorProcessor, InfoStatusProcessor, LoginProcessor
-                ,SectokProcessor, TitleProcessor, RemoveAllContentTabProcessor
-                ,RemoveContentTabProcessor, CommandProcessor){
+    "dojo/_base/declare", // declare
+    "dijit/registry", //search widgets by id
+    "dijit/layout/ContentPane",        //per a la funció newTab
+    "dojo/dom",
+    "dojo/query",
+    "dojo/dom-style",
+    "dijit/Dialog",
+    "dojo/_base/lang",
+    "dojo/_base/array",
+    "ioc/wiki30/GlobalState",
+    "ioc/wiki30/SectokManager",
+    "dojo/_base/kernel",
+    "ioc/wiki30/processor/AlertProcessor",
+    "ioc/wiki30/processor/HtmlContentProcessor",
+    "ioc/wiki30/processor/MetaInfoProcessor",
+    "ioc/wiki30/processor/DataContentProcessor",
+    "ioc/wiki30/processor/ErrorProcessor",
+    "ioc/wiki30/processor/InfoStatusProcessor",
+    "ioc/wiki30/processor/LoginProcessor",
+    "ioc/wiki30/processor/SectokProcessor",
+    "ioc/wiki30/processor/TitleProcessor",
+    "ioc/wiki30/processor/RemoveAllContentTabProcessor",
+    "ioc/wiki30/processor/RemoveContentTabProcessor",
+    "ioc/wiki30/processor/CommandProcessor",
+    "ioc/wiki30/UpdateViewHandler"
+], function (declare, registry, ContentPane, dom, query, domStyle, Dialog, lang, array, GlobalState, SectokManager, dojo, AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, DataContentProcessor, ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor, RemoveAllContentTabProcessor, RemoveContentTabProcessor, CommandProcessor) {
+    /**
+     * @typedef {Object} Node nodel del dom
+     * @typedef {Object} DijitContainer widget contenidor
+     */
+
     var DispatcherClass = declare("ioc.wiki30.Dispatcher", [], {
-        globalState: null
-       ,unsavedChangesState: false
-       ,contentCache:{}		//objecte {id_pestanya => metaInformacio[id => {id,title,content}]}
-       ,processors:{}
-       ,updateViewHandlers:null
-       ,reloadStateHandlers:null
-       ,sectokManager: null
-       ,containerNodeId: null
-       ,navegacioNodeId: null
-       ,infoNodeId: null
-       ,metaInfoNodeId: null
-       ,toUpdateSectok: null
-       ,diag: new Dialog({
-                        title: "ERROR",
-                        style: "width: 300px"
-                    })
-       ,constructor: function(/*Object*/ pAttributes){
-           lang.mixin(this, pAttributes);
-           this.processors["alert"]=new AlertProcessor();
-           this.processors["html"]=new HtmlContentProcessor();
-           this.processors["metainfo"]=new MetaInfoProcessor();
-           this.processors["data"]=new DataContentProcessor();
-           this.processors["error"]=new ErrorProcessor();
-           this.processors["info"]=new InfoStatusProcessor();
-           this.processors["login"]=new LoginProcessor();
-           this.processors["sectok"]=new SectokProcessor();
-           this.processors["title"]=new TitleProcessor();
-           this.processors["removeall"]=new RemoveAllContentTabProcessor();
-           this.processors["remove"]=new RemoveContentTabProcessor();
-           this.processors["command"]=new CommandProcessor();           
-           this.toUpdateSectok = new Array();
-           this.sectokManager = new SectokManager();
-           this.globalState = GlobalState;
-           this.updateViewHandlers = new Array();
-           this.reloadStateHandlers = new Array();
-           
-       }
-//       ,initGlobalState: function(){
-//           if(typeof(Storage)!=="undefined"
-//                    && sessionStorage.globalState){
-//               this.globalState = JSON.parse(sessionStorage.globalState);
-//           }else{
-//               this.globalState = GlobalState;
-//           }           
-//       }
-       ,addUpdateView: function(handler){
-           this.updateViewHandlers.push(handler);
-       }
-       ,addReloadState: function(handler){
-           this.reloadStateHandlers.push(handler);
-       }
-       ,startup: function(){
-           /*TO DO. Set the globalState to different components*/
-        }
-       ,updateFromState: function(){
-               if(this.updateViewHandlers){
-                    array.forEach(this.updateViewHandlers, function(handler){
-                        handler.update();
-                    });
-               }
-       }
-       ,reloadFromState: function(stateToLoad){
-               if(this.reloadStateHandlers){
-                    array.forEach(this.reloadStateHandlers, function(handler){
-                        handler.reload(stateToLoad);
-                    });
-               }
-       }       
-       ,getSectok: function(strUrl){
-           return (this.sectokManager.getSectok(strUrl));
-       }
-       ,putSectok: function(strUrl, sectok){
-           if(!sectok){
-               sectok=strUrl;
-               strUrl=undefined;
-           }
-           this.sectokManager.putSectok(strUrl, sectok);
-           array.forEach(this.toUpdateSectok, function(responseItem){
-                                responseItem.updateSectok();
-           });             
-           
-		}
-//		,addWidgetChild: function(content, i) {						???
-//			var nodeMetaInfo = registry.byId(this.metaInfoNodeId);	???
-//			var cp = new ContentPane({								???
-//						id: content.meta[i].id						???
-//						,title: content.meta[i].title				???
-//						,content: content.meta[i].content			???
-//					});
-//			nodeMetaInfo.addChild(cp);
-//			if (content.defaultSelected === content.meta[i].id) 	???
-//				nodeMetaInfo.selectChild(cp);						???
-//			if (nodeMetaInfo.resize)
-//				nodeMetaInfo.resize();
-//		}
-       ,removeWidgetChild: function(parentId, childId) {
+        /** @type {ioc.wiki30.GlobalState} */
+        globalState:         null,
+        /** @type {boolean} */
+        unsavedChangesState: false,
+
+        contentCache:        {},		//objecte {id_pestanya => metaInformacio[id => {id,title,content}]}
+        /** @type {Object.<*>} //TODO[Xavi] mirar com canviar per interface processor */
+        processors:          {},
+        /** @type {Array.<{ioc.wiki30.UpdateViewHandler}>} */
+        updateViewHandlers:  null,
+        /** @type {Array.<{ioc.wiki30.ReloadStateHandler}>} */
+        reloadStateHandlers: null,
+        /** @type {ioc.wiki30.SectokManager} */
+        sectokManager:       null,
+        /** @type {string} S'estableix al scriptsRef pel valor substituit al template */
+        containerNodeId:     null,
+        /** @type {string} S'estableix al scriptsRef pel valor substituit al template */
+        navegacioNodeId:     null,
+        /** @type {string} S'estableix al scriptsRef pel valor substituit al template */
+        infoNodeId:          null,
+        /** @type {string} S'estableix al scriptsRef pel valor substituit al template */
+        metaInfoNodeId:      null,
+        /**
+         * TODO[Xavi] Compte, s'afegeix només un element i es fa desde scriptsRef.tpl amb .push();
+         * @type {Array.<*>} actualment només s'afegeix 1 element i es tracta d'el corresponent a TAB_INDEX
+         */
+        toUpdateSectok:      null,
+        diag:                new Dialog({
+            title: "ERROR",
+            style: "width: 300px"
+        }),
+
+        /**
+         * Afegeix al hash de processadors els processadors, les característiques del objecte passat com argument i
+         * inicialitza els arrays per emmagatzemar els handlers.
+         *
+         * @param pAttributes TODO[Xavi] l'argument es sempre undefined, només es crida desde dispatcherSingleton.js
+         * @constructor
+         */
+        constructor: function (/*Object*/ pAttributes) {
+            lang.mixin(this, pAttributes);
+            this.processors["alert"] = new AlertProcessor();
+            this.processors["html"] = new HtmlContentProcessor();
+            this.processors["metainfo"] = new MetaInfoProcessor();
+            this.processors["data"] = new DataContentProcessor();
+            this.processors["error"] = new ErrorProcessor();
+            this.processors["info"] = new InfoStatusProcessor();
+            this.processors["login"] = new LoginProcessor();
+            this.processors["sectok"] = new SectokProcessor();
+            this.processors["title"] = new TitleProcessor();
+            this.processors["removeall"] = new RemoveAllContentTabProcessor();
+            this.processors["remove"] = new RemoveContentTabProcessor();
+            this.processors["command"] = new CommandProcessor();
+            this.toUpdateSectok = new Array();
+            this.sectokManager = new SectokManager();
+            this.globalState = GlobalState;
+            this.updateViewHandlers = new Array();
+            this.reloadStateHandlers = new Array();
+        },
+
+        //       ,initGlobalState: function(){
+        //           if(typeof(Storage)!=="undefined"
+        //                    && sessionStorage.globalState){
+        //               this.globalState = JSON.parse(sessionStorage.globalState);
+        //           }else{
+        //               this.globalState = GlobalState;
+        //           }
+        //       }
+
+        /**
+         * Afegeix el UpdateViewHandler al array que es crida quan s'ha d'actualitzar la vista.
+         *
+         * @param {ioc.wiki30.UpdateViewHandler} handler handler per afegir
+         */
+        addUpdateView: function (handler) {
+            this.updateViewHandlers.push(handler);
+        },
+
+        /**
+         * Afegeix el ReloadStatgeHandler al array que es cridar al recarregar.
+         *
+         * @param {ioc.wiki30.ReloadStateHandler} handler handler per afegir
+         */
+        addReloadState: function (handler) {
+            this.reloadStateHandlers.push(handler);
+        },
+
+        /**
+         * TODO[Xavi] Buida, no fa res. Es crida enlloc?
+         */
+        startup: function () {
+            /*TO DO. Set the globalState to different components*/
+        },
+
+        /**
+         * Recorre el array de UpdateViewHandlers i crida al métode update() de cadascun.
+         */
+        updateFromState: function () {
+            if (this.updateViewHandlers) {
+                array.forEach(this.updateViewHandlers, function (handler) {
+                    handler.update();
+                });
+            }
+        },
+
+        /**
+         * Recorre el array de ReloadStateHandlers i recarrega el estat passat com argument.
+         *
+         * Només es crida una vegada al carregar la página.
+         *
+         * TODO[Xavi] Com que es passa el GlobalState, es necessari que es pasi com argument?
+         *
+         * @param {ioc.wiki30.GlobalState} stateToLoad
+         */
+        reloadFromState: function (stateToLoad) {
+            if (this.reloadStateHandlers) {
+                array.forEach(this.reloadStateHandlers, function (handler) {
+                    handler.reload(stateToLoad);
+                });
+            }
+        },
+
+        /**
+         * TODO[Xavi] mai es passa cap argument, sempre es undefined.
+         *
+         * @param {string} strUrl ??
+         *
+         * @returns {string} el security token
+         */
+        getSectok: function (strUrl) {
+            return (this.sectokManager.getSectok(strUrl));
+        },
+
+        /**
+         * Afegeix el security token al array de security tokens, i l'actualitza a tots els elements al array
+         * toUpdateSectok.
+         *
+         * @param {string|undefined} strUrl TODO[Xavi] el valor es fa servir com a token.
+         * @param {?string} sectok TODO[Xavi] sempre es undefined, així que no es fa servir per a res
+         */
+        putSectok: function (strUrl, sectok) {
+            if (!sectok) {
+                sectok = strUrl;
+                strUrl = undefined;
+            }
+            this.sectokManager.putSectok(strUrl, sectok);
+            array.forEach(this.toUpdateSectok, function (responseItem) {
+                responseItem.updateSectok();
+            });
+
+        },
+        //		,addWidgetChild: function(content, i) {						???
+        //			var nodeMetaInfo = registry.byId(this.metaInfoNodeId);	???
+        //			var cp = new ContentPane({								???
+        //						id: content.meta[i].id						???
+        //						,title: content.meta[i].title				???
+        //						,content: content.meta[i].content			???
+        //					});
+        //			nodeMetaInfo.addChild(cp);
+        //			if (content.defaultSelected === content.meta[i].id) 	???
+        //				nodeMetaInfo.selectChild(cp);						???
+        //			if (nodeMetaInfo.resize)
+        //				nodeMetaInfo.resize();
+        //		}
+
+        /**
+         * TODO[Xavi] Es crida enlloc? Apareix a CommandProcessor.js, però no sembla que es cridi durant la execució
+         *
+         * @param {string|Node} parentId
+         * @param {string|Node} childId
+         */
+        removeWidgetChild: function (parentId, childId) {
             var parent;
             var child;
-            if(lang.isString(parentId)){
+            if (lang.isString(parentId)) {
                 parent = registry.byId(parentId);
-            }else{
+            } else {
                 parent = parentId;
             }
-            if(lang.isString(childId)){
+            if (lang.isString(childId)) {
                 child = registry.byId(childId);
-            }else{
+            } else {
                 child = childId;
             }
             if (child) {
-				parent.removeChild(child);
-				child.destroyRecursive(false);
+                parent.removeChild(child);
+                child.destroyRecursive(false);
             }
-       }
-       ,removeAllChildrenWidgets: function(pwidget) {
-			var widget;
-			if(lang.isString(pwidget)){
-				widget = registry.byId(pwidget);
-			}else{
-				widget = pwidget;
-			}
-			if (widget.hasChildren()){
-				widget.destroyDescendants(false);
-			}
-       }
-       ,changeWidgetProperty: function(id, propertyName, value){
-           var widget=registry.byId(id);
-           widget.set(propertyName, value);
-       }  
-       ,getGlobalState: function(){
-           return this.globalState;
-       }
-       ,getContentCache: function(id){
-           return this.contentCache[id];
-       }
-       ,getCurrentPage: function(){
-           return this.getGlobalState().pages[this.getGlobalState().currentTabId];
-       }
-       ,getUnsavedChangesState: function(){
-           return this.unsavedChangesState;
-       }
-       ,setUnsavedChangesState: function(st){
-           this.unsavedChangesState=st;          
-       }
-       ,loadDataFromGlobalState: function(){           
-       }
-       ,processError: function(error){
+        },
+
+
+        /**
+         * TODO[Xavi] Sempre es crida amb el dijit i mai com a string?
+         * Només es crida desde el contenidor central a scriptsRef.tpl.
+         *
+         * @param {DijitContainer|string} pwidget
+         */
+        removeAllChildrenWidgets: function (pwidget) {
+            var widget;
+            if (lang.isString(pwidget)) {
+                widget = registry.byId(pwidget);
+            } else {
+                widget = pwidget;
+            }
+            if (widget.hasChildren()) {
+                widget.destroyDescendants(false);
+            }
+        },
+
+        /**
+         * Canvia la propietat del widget amb el id passat com argument, pel valor passat.
+         *
+         * @param {string} id
+         * @param {string} propertyName
+         * @param {string} value
+         */
+        changeWidgetProperty: function (id, propertyName, value) {
+            var widget = registry.byId(id);
+            widget.set(propertyName, value);
+        },
+
+        /**
+         * Retorna el GlobalState emmagatzemat al dispatcher.
+         *
+         * @returns {?ioc.wiki30.GlobalState} el GlobalState emmagatzemat al dispatcher.
+         */
+        getGlobalState: function () {
+            return this.globalState;
+        },
+
+
+        /**
+         * Retorna l'objecte amb el contingut corresponent a la id passat com argument.
+         *
+         * @param {string} id del contingut.
+         * @returns {ioc.wiki30.DokuwikiContent} el contingut corresponent
+         */
+        getContentCache: function (id) {
+            return this.contentCache[id];
+        },
+
+
+        /**
+         * Retorna la informació de la pàgina mostrada a la pestanya actual.
+         *
+         * TODO[Xavi] No es crida enlloc?
+         *
+         * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
+         */
+        getCurrentPage: function () {
+            return this.getGlobalState().pages[this.getGlobalState().currentTabId];
+        },
+
+        /**
+         * Retorna el valor de UnsavedChangeState.
+         *
+         * @returns {boolean} unsavedChangeState
+         */
+        getUnsavedChangesState: function () {
+            return this.unsavedChangesState;
+        },
+
+        /**
+         * Estableix el valor de UnsavedChangeState.
+         *
+         * @param {boolean} st
+         */
+        setUnsavedChangesState:  function (st) {
+            this.unsavedChangesState = st;
+        },
+
+        // TODO[Xavi] no es crida enlloc i no fa res, es per esborrar?
+        loadDataFromGlobalState: function () {
+        },
+
+        /**
+         * Processa un error.
+         *
+         * @param {SyntaxError} error error per processar
+         */
+        processError: function (error) {
+            alert("Error");
+            console.log(error);
             this._processError(error.response.text);
-       }
-       ,processResponse: function(response){
+        },
+
+        /**
+         * Processa la resposta passada com argument.
+         *
+         * TODO[Xavi] no es fa servir la resposta en lloc.
+         *
+         * @param {Array.<{type: string, value: *}>|{type: string, value: *}} response resposta per processar.
+         *
+         * @returns {number} sempre es 0
+         */
+        processResponse: function (response) {
+            // TODO[Xavi] canviar req per that per fer més clara la intenció
             var req = this;
-            if (lang.isArray(response)){
-                    array.forEach(response, function(responseItem){
-                            req._processResponse(responseItem); 
-                    });             
-            }else{
-                    req._processResponse(response);
+
+            // TODO[Xavi] lang.isArray() està deprecated.
+            if (lang.isArray(response)) {
+                array.forEach(response, function (responseItem) {
+                    req._processResponse(responseItem);
+                });
+            } else {
+                req._processResponse(response);
             }
-            this.updateFromState();            
+            this.updateFromState();
             return 0;
-        }
-       ,_processResponse: function(response){
-           if(this.processors[response.type]){
-               this.processors[response.type].process(response.value, this);
-           }else{
-                this.processors["alert"].process("Missatge incomprensible", this); /*TO DO: internationalization*/
-           }
-           return 0;
-        }
-		,_processError: function(error, message){
-            if (!error) error="";
-            if (!message) message="";
+        },
+
+        /**
+         * Comprova si hi ha definit una resposta d'aquest tipus, i si es així la processa passant-li el valor i aquest
+         * dispatcher com arguments. En cas contrari mostra una alerta avissant.
+         *
+         * @param {{type: string, value: *}} response resposta per processar
+         *
+         * @returns {number} sempre es 0
+         * @private
+         */
+        _processResponse: function (response) {
+            if (this.processors[response.type]) {
+                this.processors[response.type].process(response.value, this);
+            } else {
+                this.processors["alert"].process("Missatge incomprensible", this);
+                /*TO DO: internationalization*/
+            }
+            return 0;
+        },
+
+        /**
+         * Crida al processor error passant-li el missatge d'error per mostrar.
+         *
+         * TODO[Xavi] Sempre es cridat només amb un argument, s'hauria de eliminar i fer servir només processError?
+         *
+         * @param error
+         * @param message
+         * @private
+         */
+        _processError: function (error, message) {
+            if (!error) error = "";
+            if (!message) message = "";
             this.processors["error"].process(error + " " + message, this);
         }
+
     });
+
     return DispatcherClass;
 });

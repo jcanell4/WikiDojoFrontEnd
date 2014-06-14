@@ -8,6 +8,7 @@ define([
          * i la acció a realitzar a la pàgina sel·leccionada.
          *
          * @param {?function()} updateFunction funció per substituir a update
+         * @constructor
          */
         constructor: function (updateFunction) {
             if (updateFunction) {
