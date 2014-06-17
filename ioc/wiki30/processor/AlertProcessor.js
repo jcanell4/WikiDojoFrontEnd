@@ -1,18 +1,35 @@
 define([
-	"dojo/_base/declare" // declare
-       ,"ioc/wiki30/processor/AbstractResponseProcessor"
-], function(declare, AbstractResponseProcessor){
-    var ret = declare("ioc.wiki30.processor.AlertProcessor", [AbstractResponseProcessor], {
-        type: "alert"
-       ,process:function(value, dispatcher){
-           this._processAlert(value, dispatcher);
-       }
-       ,_processAlert: function(alert, dispatcher){
-            dispatcher.diag.set("title", "ALERTA");
-            dispatcher.diag.set("content", alert);
-            dispatcher.diag.show();
-        }
-    });
+    "dojo/_base/declare", // declare
+    "ioc/wiki30/processor/AbstractResponseProcessor"
+], function (declare, AbstractResponseProcessor) {
+    var ret = declare("ioc.wiki30.processor.AlertProcessor", [AbstractResponseProcessor],
+        /**
+         * @class ioc.wiki30.processor.AlertProcessor
+         * @extends {ioc.wiki30.processor.AbstractResponseProcessor}
+         */
+        {
+            type: "alert", // TODO[Xavi] moure la declaració al constructor?
+
+            /**
+             * @param {*} value
+             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @override
+             */
+            process: function (value, dispatcher) {
+                this._processAlert(value, dispatcher);
+            },
+
+            /**
+             * @param {string} alert
+             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @private
+             */
+            _processAlert: function (alert, dispatcher) {
+                dispatcher.diag.set("title", "ALERTA");
+                dispatcher.diag.set("content", alert);
+                dispatcher.diag.show();
+            }
+        });
     return ret;
 });
 

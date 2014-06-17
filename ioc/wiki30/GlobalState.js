@@ -11,12 +11,18 @@ define([
          * @type {Object.<{ns: string, node: string, action: string}>}
          */
         pages:            {},        //{[pageId]: {ns, mode, action}}
+
         login:            false,
+
         info:             "",
+
         currentTabId:     null,
+
         /** @type {string} id de la secció seleccionada */
         currentSectionId: null,
+
         sectok:           null,
+
         title:            "",
 
         /**

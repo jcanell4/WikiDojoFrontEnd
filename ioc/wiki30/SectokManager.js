@@ -2,7 +2,11 @@ define([
     "dojo/_base/declare", // declare
     "require" // TODO[Xavi] No es fa servir
 ], function (declare, require) {
-    var ret = declare("ioc.wiki30.SectokManager", [], {
+    var ret = declare("ioc.wiki30.SectokManager", [],
+        /**
+         * @class ioc.wiki30.SectokManager
+         */
+        {
 
         // TODO[Xavi] Això ha de ser un hash, no un array
         _hashSectok: new Array(),

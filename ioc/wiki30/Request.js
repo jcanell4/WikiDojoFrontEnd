@@ -4,7 +4,11 @@ define([
     "dojo/request",
     "ioc/wiki30/dispatcherSingleton"
 ], function (declare, Standby, request, dispatcherSingleton) {
-    var ret = declare("ioc.wiki30.Request", [], {
+    var ret = declare("ioc.wiki30.Request", [],
+        /**
+         * @class ioc.wiki30.Request
+         */
+        {
         standbyId:  null,
         urlBase:    null,
         method:     "post",
