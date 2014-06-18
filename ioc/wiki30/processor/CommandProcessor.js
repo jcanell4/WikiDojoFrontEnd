@@ -51,16 +51,30 @@ define([
                         }
            }
            ,_processRemoveWidgetChild: function(command, dispatcher) {
-                dispatcher.removeWidgetChild(command.id, command.childId)
-                return 0;
+                var parent;
+                var child;
+                var parentId = command.id;
+                var childId = command.childId;
+                parent = registry.byId(parentId);
+                child = registry.byId(childId);
+                if (parent && child) {
+                    parent.removeChild(child);
+                    child.destroyRecursive(false);
+                }
            }
            ,_processRemoveAllChildrenWidgets: function(command, dispatcher) {
-                        var node=registry.byId(command.id);
-                        dispatcher.removeAllChildrenWidgets(node);
+//                    var widget=registry.byId(command.id);
+//                    if (widget.hasChildren()) {
+//                        widget.destroyDescendants(false);
+//                    }
+                dispatcher.removeAllChildrenWidgets(command.id);
            }
-       ,_processChangeWidgetPropertyCommand: function(command){
-           var widget=registry.byId(command.id);
-           widget.set(command.propertyName, command.propertyValue);
+       ,_processChangeWidgetPropertyCommand: function(command, dispatcher){
+//           var widget=registry.byId(command.id);
+//           widget.set(command.propertyName, command.propertyValue);
+                dispatcher.changeWidgetProperty(command.id, 
+                                                  command.propertyName,
+                                                  command.propertyValue);
        }
        ,_processChangeStyleCommand: function(command){
             domStyle.set(command.id, command.propertyName, command.propertyValue);

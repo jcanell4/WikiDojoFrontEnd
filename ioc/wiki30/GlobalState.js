@@ -69,21 +69,6 @@ define([
             var instance = Object.create(this);
             lang.mixin(instance, p);
             return instance;
-        },
-
-        /**
-         * TODO[Xavi] No trobo que això sigui cridat ni instanciat en lloc.
-         *
-         * @param o
-         * @param nom
-         * @constructor
-         */
-        ImprimirObjeto: function (o, nom) {
-            var salida = nom + '\n\n';
-            for (var p in o) {
-                salida += '• ' + p + ': ' + o[p] + '\n\n';
-            }
-            alert(salida);
         }
     };
     //    });

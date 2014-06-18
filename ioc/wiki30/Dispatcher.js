@@ -196,30 +196,30 @@ define([
         //				nodeMetaInfo.resize();
         //		}
 
-        /**
-         * TODO[Xavi] Es crida enlloc? Apareix a CommandProcessor.js, però no sembla que es cridi durant la execució
-         *
-         * @param {string|Node} parentId
-         * @param {string|Node} childId
-         */
-        removeWidgetChild: function (parentId, childId) {
-            var parent;
-            var child;
-            if (lang.isString(parentId)) {
-                parent = registry.byId(parentId);
-            } else {
-                parent = parentId;
-            }
-            if (lang.isString(childId)) {
-                child = registry.byId(childId);
-            } else {
-                child = childId;
-            }
-            if (child) {
-                parent.removeChild(child);
-                child.destroyRecursive(false);
-            }
-        },
+//        /**
+//         * TODO[Xavi] Es crida enlloc? Apareix a CommandProcessor.js, però no sembla que es cridi durant la execució
+//         *
+//         * @param {string|Node} parentId
+//         * @param {string|Node} childId
+//         */
+//        removeWidgetChild: function (parentId, childId) {
+//            var parent;
+//            var child;
+//            if (lang.isString(parentId)) {
+//                parent = registry.byId(parentId);
+//            } else {
+//                parent = parentId;
+//            }
+//            if (lang.isString(childId)) {
+//                child = registry.byId(childId);
+//            } else {
+//                child = childId;
+//            }
+//            if (child) {
+//                parent.removeChild(child);
+//                child.destroyRecursive(false);
+//            }
+//        },
 
 
         /**
@@ -249,7 +249,7 @@ define([
          */
         changeWidgetProperty: function (id, propertyName, value) {
             var widget = registry.byId(id);
-            widget.set(propertyName, value);
+            widget.set(propertyName, value);            
         },
 
         /**
@@ -312,8 +312,8 @@ define([
          * @param {SyntaxError} error error per processar
          */
         processError: function (error) {
-            alert("Error");
-            console.log(error);
+//            alert("Error");
+            console.log(error.response.text);
             this._processError(error.response.text);
         },
 
@@ -370,10 +370,9 @@ define([
          * @param message
          * @private
          */
-        _processError: function (error, message) {
-            if (!error) error = "";
-            if (!message) message = "";
-            this.processors["error"].process(error + " " + message, this);
+        _processError: function (errorMessage) {
+            if (!errorMessage) errorMessage = "";
+            this.processors["error"].process(errorMessage, this);
         }
 
     });

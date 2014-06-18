@@ -10,7 +10,8 @@ define([
         method:     "post",
         dispatcher: dispatcherSingleton,
         _standby:   null,
-        sectokId:   "sectok",
+        sectokId:   null,
+        sectokParam: "sectok",
 
         /**
          * Retorna true si hi ha PostData o false en cas contrari.
@@ -32,7 +33,7 @@ define([
          * @returns {string} token de seguretat
          */
         getSectok: function () {
-            return this.dispatcher.getSectok();
+            return this.dispatcher.getSectok(this.sectokId);
         },
 
         /**
@@ -94,7 +95,8 @@ define([
             if (this.urlBase === null || this.dispatcher === null) {
                 return;
             }
-            var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" : (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
+            var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" : 
+                                        (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
             var vUrl = this.urlBase;
             if (query !== null) {
                 vUrl += linkChar + query;
@@ -102,7 +104,7 @@ define([
             }
             var gSect = this.getSectok();
             if (gSect) {
-                vUrl += linkChar + this.sectokId + "=" + gSect;
+                vUrl += linkChar + this.sectokParam + "=" + gSect;
             }
             if (standby) {
                 standby.show();
