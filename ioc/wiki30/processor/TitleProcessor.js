@@ -30,7 +30,6 @@ define([
              * @param {string} value
              */
             updateState: function (dispatcher, value) {
-                alert(value);
                 dispatcher.getGlobalState().title = value;
             },
 
