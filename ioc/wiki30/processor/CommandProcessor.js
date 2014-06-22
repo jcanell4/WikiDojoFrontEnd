@@ -18,7 +18,6 @@ define([
         {
             type: "command", // TODO[Xavi] Moure la declaració al constructor?
 
-
             processors: {}, // TODO[Xavi] S'afegeixen enlloc?
 
             constructor: function () {
@@ -27,7 +26,7 @@ define([
             },
 
             /**
-             * @param {object} value
+             * @param {*} value
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @override
              */

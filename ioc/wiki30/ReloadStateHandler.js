@@ -26,7 +26,7 @@ define([
             /**
              * TODO[Xavi] Comprovar si això es crida enlloc. En qualsevol cas no te cap efecte perque el métode es buit.
              *
-             * @param {GlobalState} stateToReload
+             * @param {ioc.wiki30.GlobalState} stateToReload
              */
             reload: function (stateToReload) {
             }

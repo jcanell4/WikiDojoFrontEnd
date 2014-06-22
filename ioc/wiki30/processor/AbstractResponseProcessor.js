@@ -14,7 +14,7 @@ define([
             /**
              * Processa aquest command.
              *
-             * @param {object} value
+             * @param {*} value
              * @param {ioc.wiki30.Dispatcher} dispatcher
              */
             process: function (value, dispatcher) {
@@ -22,5 +22,3 @@ define([
         });
     return ret;
 });
-
-

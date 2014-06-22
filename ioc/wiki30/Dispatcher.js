@@ -192,7 +192,7 @@ define([
                 });
 
             },
-            
+
             /**
              * TODO[Xavi] Sempre es crida amb el dijit i mai com a string?
              * Només es crida desde el contenidor central a scriptsRef.tpl.
@@ -330,20 +330,16 @@ define([
                 return 0;
             },
 
-        /**
-         * Crida al processor error passant-li el missatge d'error per mostrar.
-         *
-         * TODO[Xavi] Sempre es cridat només amb un argument, s'hauria de eliminar i fer servir només processError?
-         *
-         * @param error
-         * @param message
-         * @private
-         */
-        _processError: function (errorMessage) {
-            if (!errorMessage) errorMessage = "";
-            this.processors["error"].process(errorMessage, this);
-        }
-
+            /**
+             * Crida al processor error passant-li el missatge d'error per mostrar.
+             *
+             * @param {string } errorMessage missatge d'error
+             * @private
+             */
+            _processError: function (errorMessage) {
+                if (!errorMessage) errorMessage = "";
+                this.processors["error"].process(errorMessage, this);
+            }
         });
 
     return DispatcherClass;

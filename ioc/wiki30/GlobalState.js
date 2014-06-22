@@ -5,6 +5,9 @@ define([
     "ioc/dokuwiki/dwPageUi"
 ], function (/*declare,*/ lang, dwPageUi) {
     //    var ret = declare("ioc.wiki30.GlobalState", [], {
+    /**
+     * @class ioc.wiki30.GlobalState
+     */
     var ret = {
         /**
          * El index del hash es el mateix que el ns, que es el mateix que es mostra a la pestanya
@@ -36,7 +39,6 @@ define([
          */
         setCurrentSectionId: function (node) {
             if (lang.isString(node)) {//recibe directamente el id
-                alert("setCurrentSection");
                 this.currentSectionId = node;
             } else {
                 this.currentSectionId = dwPageUi.getIdSectionNode(node);
