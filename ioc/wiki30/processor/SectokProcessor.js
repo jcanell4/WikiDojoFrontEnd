@@ -6,7 +6,7 @@ define([
 
         /**
          * @class ioc.wiki30.processor.SectokProcessor
-         * @extends {ioc.wiki30.processor.StateUpdaterProcessor}
+         * @extends ioc.wiki30.processor.StateUpdaterProcessor
          */
         {
 

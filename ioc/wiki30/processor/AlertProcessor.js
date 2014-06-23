@@ -5,7 +5,7 @@ define([
     var ret = declare("ioc.wiki30.processor.AlertProcessor", [AbstractResponseProcessor],
         /**
          * @class ioc.wiki30.processor.AlertProcessor
-         * @extends {ioc.wiki30.processor.AbstractResponseProcessor}
+         * @extends ioc.wiki30.processor.AbstractResponseProcessor
          */
         {
             type: "alert", // TODO[Xavi] moure la declaració al constructor?

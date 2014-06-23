@@ -10,7 +10,7 @@ define([
     var ret = declare("ioc.wiki30.processor.CommandProcessor", [AbstractResponseProcessor],
         /**
          * @class ioc.wiki30.processor.CommandProcessor
-         * @extends {ioc.wiki30.processor.AbstractResponseProcessor}
+         * @extends ioc.wiki30.processor.AbstractResponseProcessor
          *
          * @typedef {object} DijitWidget widget
          * @typedef {object} DijitContainer contenidor
@@ -72,26 +72,27 @@ define([
 
                     }
                 }
-           }
-           /**
+            },
+
+            /**
              * @param {object} command
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @private
-             */
-           ,_processRefresh: function(command, dispatcher){
-                        var tabId = registry.byId(command.id);
-                        if (tabId.refresh) {
-                                tabId.refresh();
-                        }else {
-                                dispatcher._processError("Aquest element: "+command.id+" no té mètode refresh.");
-                        }
-           }
-           /**
+             */ _processRefresh: function (command, dispatcher) {
+                var tabId = registry.byId(command.id);
+                if (tabId.refresh) {
+                    tabId.refresh();
+                } else {
+                    dispatcher._processError("Aquest element: " + command.id + " no té mètode refresh.");
+                }
+            },
+
+            /**
              * @param {*} command
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @private
              */
-           ,_processRemoveWidgetChild: function(command, dispatcher) {
+            _processRemoveWidgetChild: function (command, dispatcher) {
                 var parent;
                 var child;
                 var parentId = command.id;
@@ -102,45 +103,50 @@ define([
                     parent.removeChild(child);
                     child.destroyRecursive(false);
                 }
-           }
+            },
+
             /**
              * @param {object} command
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @private
              */
-           ,_processRemoveAllChildrenWidgets: function(command, dispatcher) {
+            _processRemoveAllChildrenWidgets: function (command, dispatcher) {
                 dispatcher.removeAllChildrenWidgets(command.id);
-           }
+            },
+
             /**
              * @param {object} command
              * @private
-             */           
-       ,_processChangeWidgetPropertyCommand: function(command, dispatcher){
-//           var widget=registry.byId(command.id);
-//           widget.set(command.propertyName, command.propertyValue);
-                dispatcher.changeWidgetProperty(command.id, 
-                                                  command.propertyName,
-                                                  command.propertyValue);
-       }
-       /**
+             */
+            _processChangeWidgetPropertyCommand: function (command, dispatcher) {
+                //           var widget=registry.byId(command.id);
+                //           widget.set(command.propertyName, command.propertyValue);
+                dispatcher.changeWidgetProperty(command.id,
+                    command.propertyName,
+                    command.propertyValue);
+            },
+
+            /**
              *
              * @param {object} command
              * @private
              */
-       ,_processChangeStyleCommand: function(command){
-            domStyle.set(command.id, command.propertyName, command.propertyValue);
-       }
-       // TODO[Xavi] Es fa servir enlloc?
-       ,_processWidgetCommand: function(command){
-            var widget = registry.byId(command.componentId);
-            if(lang.isArray(command.toExecute)){
-                 array.forEach(command.toExecute, function(responseItem){
-                    widget.processCommand(responseItem); 
-                 });             
-            }else{
-                widget._processResponse(command.toExecute);
-            }
-       },
+            _processChangeStyleCommand: function (command) {
+                domStyle.set(command.id, command.propertyName, command.propertyValue);
+            },
+
+            // TODO[Xavi] Es fa servir enlloc?
+            _processWidgetCommand: function (command) {
+                var widget = registry.byId(command.componentId);
+                if (lang.isArray(command.toExecute)) {
+                    array.forEach(command.toExecute, function (responseItem) {
+                        widget.processCommand(responseItem);
+                    });
+                } else {
+                    widget._processResponse(command.toExecute);
+                }
+            },
+
             /**
              * TODO[Xavi] Typo en el nom
              * @param {object} command
@@ -202,5 +208,6 @@ define([
             }
         });
     return ret;
-});
+})
+;
 

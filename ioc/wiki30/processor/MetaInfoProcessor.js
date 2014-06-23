@@ -7,7 +7,10 @@ define([
     "ioc/wiki30/DokuwikiContent"
 ], function (declare, registry, dom, ContentPane, AbstractResponseProcessor) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
-
+        /**
+         * @class ioc.wiki30.processor.MetaInfoProcessor
+         * @extends ioc.wiki30.processor.AbstractResponseProcessor
+         */
         {
 
             type: "meta",
@@ -31,7 +34,7 @@ define([
                 var nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId);
                 var m;
                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
-                                for (m in content.meta) {
+                for (m in content.meta) {
                     if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
                         var widgetMetaInfo = registry.byId(content.meta[m].id);
                         if (!widgetMetaInfo) {

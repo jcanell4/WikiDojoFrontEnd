@@ -10,7 +10,7 @@ define([
     var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor],
         /**
          * @class ioc.wiki30.processor.ContentProcessor
-         * @extends {ioc.wiki30.processor.StateUpdaterProcessor}
+         * @extends ioc.wiki30.processor.StateUpdaterProcessor
          */
         {
             /**

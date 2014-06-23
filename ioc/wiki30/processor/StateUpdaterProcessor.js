@@ -5,7 +5,7 @@ define([
 
     /**
      * @class ioc.wiki30.processor.StateUpdaterProcessor
-     * @extends {ioc.wiki30.processor.AbstractResponseProcessor}
+     * @extends ioc.wiki30.processor.AbstractResponseProcessor
      */
     var ret = declare("ioc.wiki30.processor.StateUpdaterProcessor", [AbstractResponseProcessor], {
 

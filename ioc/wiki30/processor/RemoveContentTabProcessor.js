@@ -7,7 +7,7 @@ define([
 
         /**
          * @class ioc.wiki30.processor.RemoveContentTabProcessor
-         * @extends {ioc.wiki30.processor.StateUpdaterProcessor}
+         * @extends ioc.wiki30.processor.StateUpdaterProcessor
          */
         {
 

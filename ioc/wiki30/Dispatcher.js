@@ -216,7 +216,7 @@ define([
              *
              * @param {string} id
              * @param {string} propertyName
-             * @param {string} value
+             * @param {string|boolean} value
              */
             changeWidgetProperty: function (id, propertyName, value) {
                 var widget = registry.byId(id);

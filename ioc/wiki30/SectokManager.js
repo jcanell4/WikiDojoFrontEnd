@@ -32,7 +32,7 @@ define([
          * @param {string} id
          */
         removeSectok: function (id) {
-            id = this._getId(id); // TODO[Xavi] this.this es correcte?
+            id = this._getId(id);
             if (id in this._hashSectok) {
                 delete this._hashSectok[id];
             }

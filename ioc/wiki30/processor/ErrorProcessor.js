@@ -8,7 +8,7 @@ define([
 
         /**
          * @class ioc.wiki30.processor.ErrorProcessor
-         * @extends {ioc.wiki30.processor.AbstractResponseProcessor}
+         * @extends ioc.wiki30.processor.AbstractResponseProcessor
          */
         {
 

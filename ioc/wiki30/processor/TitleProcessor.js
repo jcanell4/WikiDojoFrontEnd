@@ -6,7 +6,7 @@ define([
     var ret = declare("ioc.wiki30.processor.TitleProcessor", [StateUpdaterProcessor],
         /**
          * @class ioc.wiki30.processor.TitleProcessor
-         * @extends {ioc.wiki30.processor.StateUpdaterProcessor}
+         * @extends ioc.wiki30.processor.StateUpdaterProcessor
          */
         {
             type: "title",
@@ -24,7 +24,7 @@ define([
 
 
             /**
-             * Actualitza el valor del títol de la finestra.
+             * Actualitza el valor del títol de la finestra del explorador.
              *
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @param {string} value
