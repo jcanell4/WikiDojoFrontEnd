@@ -26,7 +26,6 @@ define([
                 return  this.getPostData() != null;
             },
 
-            // TODO[Xavi] Perquè es crida aquesta funció? Sempre retorna null i no hi ha cap PostData emmagatzemada
             /**
              * TODO[Xavi] es sobrescrit a scriptsRef.tpl
              * @returns {null}

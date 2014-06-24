@@ -7,7 +7,7 @@ define([
     "dojo/_base/array",
     "dojo/_base/kernel"
 ], function (declare, AbstractResponseProcessor, registry, domStyle, lang, array, dojo) {
-    var ret = declare("ioc.wiki30.processor.CommandProcessor", [AbstractResponseProcessor],
+    return declare("ioc.wiki30.processor.CommandProcessor", [AbstractResponseProcessor],
         /**
          * @class ioc.wiki30.processor.CommandProcessor
          * @extends ioc.wiki30.processor.AbstractResponseProcessor
@@ -26,7 +26,7 @@ define([
             },
 
             /**
-             * @param {*} value
+             * @param {object} value
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @override
              */
@@ -69,7 +69,6 @@ define([
 
                     } else if (command.type === "jsinfo") {
                         this._processJsInfo(command, dispatcher);
-
                     }
                 }
             },
@@ -78,7 +77,8 @@ define([
              * @param {object} command
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @private
-             */ _processRefresh: function (command, dispatcher) {
+             */
+            _processRefresh: function (command, dispatcher) {
                 var tabId = registry.byId(command.id);
                 if (tabId.refresh) {
                     tabId.refresh();
@@ -88,7 +88,7 @@ define([
             },
 
             /**
-             * @param {*} command
+             * @param {object} command
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @private
              */
@@ -116,14 +116,13 @@ define([
 
             /**
              * @param {object} command
+             * @param {ioc.wiki30.Dispatcher} dispatcher
              * @private
              */
             _processChangeWidgetPropertyCommand: function (command, dispatcher) {
                 //           var widget=registry.byId(command.id);
                 //           widget.set(command.propertyName, command.propertyValue);
-                dispatcher.changeWidgetProperty(command.id,
-                    command.propertyName,
-                    command.propertyValue);
+                dispatcher.changeWidgetProperty(command.id, command.propertyName, command.propertyValue);
             },
 
             /**
@@ -136,7 +135,7 @@ define([
             },
 
             // TODO[Xavi] Es fa servir enlloc?
-            _processWidgetCommand: function (command) {
+            _processWidgetCommand:      function (command) {
                 var widget = registry.byId(command.componentId);
                 if (lang.isArray(command.toExecute)) {
                     array.forEach(command.toExecute, function (responseItem) {
@@ -153,7 +152,6 @@ define([
              * @private
              */
             _processDomFromFuntcion: function (command) {
-
                 if (command.amd) {
                     require(new Array(command.processName), function (process) {
                         process(command.id, command.params);
@@ -199,7 +197,6 @@ define([
             },
 
             /**
-             *
              * @param {object} command
              * @private
              */
@@ -207,7 +204,6 @@ define([
                 lang.mixin(window.JSINFO, command.value);
             }
         });
-    return ret;
 })
 ;
 

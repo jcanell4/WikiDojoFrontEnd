@@ -29,7 +29,9 @@ define([
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
-    var DispatcherClass = declare("ioc.wiki30.Dispatcher", [],
+    //var DispatcherClass =
+
+       return declare("ioc.wiki30.Dispatcher", [],
         /**
          * @class ioc.wiki30.Dispatcher
          */

@@ -47,7 +47,7 @@ define([
                         if (dojoBase.isFunction(this.clickListener[i])) {
                             this.clickListener[i](evt);
                         } else if (dojoBase.isObject(this.clickListener[i])) {
-                            this.clickListener[i].process(evt); // TODO[Xavi] Error, s'ha de passar també el Dispatcher
+                            this.clickListener[i].process(evt); // TODO[Xavi] Error, s'hauria de passar també el Dispatcher
                         }
                     }
                 }
@@ -65,12 +65,11 @@ define([
 
 
             /**
-             * Retorna la query emmagatzemada.
+             * Retorna la query emmagatzemada. Aquest métode es sobrescrit a scriptesRef.tpl.
              *
              * @returns {string}
              */
             getQuery: function () {
-                alert(this.query);
                 return this.query;
             },
 
