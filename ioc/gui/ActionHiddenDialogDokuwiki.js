@@ -25,7 +25,7 @@ define([
         {
             templateString: template,
 
-            widgetsInTemplate: true,
+            widgetsInTemplate: true, // TODO[Xavi] No es necessari en la versió que fem servir de Dojo
 
             /** @override */
             startup: function () {

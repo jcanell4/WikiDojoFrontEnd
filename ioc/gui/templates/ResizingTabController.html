@@ -1,13 +1,13 @@
 <div class="dijitTabListContainer-${tabPosition}" style="visibility:hidden">
-	<div class='dijitTabListWrapper' data-dojo-attach-point='tablistWrapper'>
-               	<div data-dojo-type="ioc.gui._ResizingTabControllerMenuButton"
-					class="tabStripButton-${tabPosition}"
-                    id="${id}_menuBtn"
-                    data-dojo-props="containerId: '${containerId}', iconClass: 'dijitTabStripMenuIcon', dropDownPosition: ['below-alt', 'above-alt']"
-                    data-dojo-attach-point="_menuBtn" showLabel="false" title="">&#9660;
-		</div>
-		<div role='tablist' data-dojo-attach-event='onkeypress:onkeypress'
-			data-dojo-attach-point='containerNode'>	
-                </div>
-	</div>
+    <div class='dijitTabListWrapper' data-dojo-attach-point='tablistWrapper'>
+        <div data-dojo-type="ioc.gui._ResizingTabControllerMenuButton"
+             class="tabStripButton-${tabPosition}"
+             id="${id}_menuBtn"
+             data-dojo-props="containerId: '${containerId}', iconClass: 'dijitTabStripMenuIcon', dropDownPosition: ['below-alt', 'above-alt']"
+             data-dojo-attach-point="_menuBtn" showLabel="false" title="">&#9660;
+        </div>
+        <div role='tablist' data-dojo-attach-event='onkeypress:onkeypress'
+             data-dojo-attach-point='containerNode'>
+        </div>
+    </div>
 </div>

@@ -19,25 +19,35 @@ define([
 ], function (declare, array, domClass, geometry, lang, on, query, registry, _WidgetsInTemplateMixin, TabController, tabControllerTemplate, buttonTemplate, Button, _HasDropDown, Menu, MenuItem) {
 
     var ResizingTabController = declare("ioc.gui.ResizingTabController", [TabController, _WidgetsInTemplateMixin],
+        /**
+         * Set of tabs with a menu to switch between tabs. Tabs are resized according to the TabController size.
+         * Works only for horizontal tabs (either above or below the content, not the left or right).
+         *
+         * @class ioc.gui.ResizingTabController
+         * @extends dijit._WidgetsInTemplateMixin
+         * @extends dijit.layout.TabController
+         */
         {
-            // summary:
-            //		Set of tabs with a menu to switch between tabs.
-            //              Tabs are resized according the TabController size.
-            //		Works only for horizontal tabs (either above or below
-            //		the content, not to the left or right).
+            // Attachpoints
+            tablistWrapper: null,
 
+            _menuBtn: null,
+
+            /** @override */
             templateString: tabControllerTemplate,
 
-            // useMenu: [const] Boolean
-            //		True if a menu should be used to select tabs, false otherwise.
-            useMenu:        false,
+            /** @const {boolean}  True if a menu should be used to select tabs, false otherwise. */
+            useMenu:       false, // TODO[Xavi] no es constant, segurament @final seria més apropiat però no es aplicable a propietats
 
             // tabStripClass: [const] String
             //		The css class to apply to the tab strip, if it is visible.
-            tabStripClass:  "",
+            /** @const {string} The css class to apply to the tab strip, if it is visible. */ // TODO[Xavi] no es constant, segurament @final seria més apropiat però no es aplicable a propietats
+            tabStripClass: "", // TODO[Xavi] no es constant, segurament @final seria més apropiat però no es aplicable a propietats
 
-            widgetsInTemplate: true,
+            /** @override */
+            widgetsInTemplate: true, // TODO[Xavi] No es necessari en aquesta versió de Dojo
 
+            /** @override */
             buildRendering: function () {
                 //	postCreate: function(){
                 this.inherited(arguments);
@@ -56,7 +66,8 @@ define([
                 domClass.add(this.tablistWrapper, this.tabStripClass);
             },
 
-            onStartup:            function () {
+            /** @override */
+            onStartup: function () {
                 this.inherited(arguments);
 
                 // TabController is hidden until it finishes drawing, to give
@@ -68,29 +79,35 @@ define([
 
                 // changes to the tab button label or iconClass will have changed the width of the
                 // buttons, so do a resize
-                this.own(on(this.containerNode, "attrmodified-label, attrmodified-iconclass", lang.hitch(this, function (evt) {
-                    if (this._dim) {
-                        this.resize(this._dim);
-                    }
-                })));
+                this.own(
+                    on(this.containerNode, "attrmodified-label, attrmodified-iconclass", lang.hitch(this, function (evt) {
+                        if (this._dim) {
+                            this.resize(this._dim);
+                        }
+                    })));
             },
 
-            //
-            onAddChild:           function (page, insertIndex) {
+            /** @override */
+            onAddChild: function (page, insertIndex) {
                 this.inherited(arguments);
                 this._calculateButtonSize();
             },
 
-            //
-            onRemoveChild:        function (page, insertIndex) {
+            /** @override */
+            onRemoveChild: function (page, insertIndex) {
                 this.inherited(arguments);
                 this._calculateButtonSize();
             },
 
-            onkeypress:           function (evt) {
+            /** @override */
+            onkeypress: function (evt) {
             },
 
-            //
+            /**
+             * Calcula i canvia la mida del botó de la pestanya.
+             *
+             * @private
+             */
             _calculateButtonSize: function () {
                 var posLabel;
                 var i;
@@ -125,13 +142,13 @@ define([
                 }
             },
 
+            /**
+             * Creates the menu button used to view all tabs using a menu format. Make the content labels of the buttons
+             * to display when the tab labels become wider than the TabContainer. Also set the widt for each button.
+             *
+             * @private
+             */
             _initMenuButton: function () {
-                // summary:
-                //		Creates the menu button used to view all tabs using a menu format.
-                // Make the content labels of the buttons to display when the
-                // tab labels become wider than the TabContainer.
-                // Also set the width for each button.
-
                 var menuButton = this._menuBtn.domNode;
                 menuButton.style.position = "absolute";
                 menuButton.style.top = "0px";
@@ -142,6 +159,10 @@ define([
                 }
             },
 
+            /**
+             * @param {{w: int}} dim
+             * @override
+             */
             resize: function (dim) {
                 this.inherited(arguments);
                 this.domNode.style.width = "" + dim.w + "px";
@@ -149,34 +170,72 @@ define([
             }/*,*/
         });
 
-    var ResizingTabControllerButtonMixin = declare("ioc.gui._ResizingTabControllerButtonMixin", null, {
-        baseClass:      "dijitTab tabStripButton",
-        templateString: buttonTemplate,
-        // Override inherited tabIndex: 0 from dijit/form/Button, because user shouldn't be
-        // able to tab to the left/right/menu buttons
-        tabIndex:       "",
-        // Similarly, override FormWidget.isFocusable() because clicking a button shouldn't focus it
-        // either (this override avoids focus() call in FormWidget.js)
-        isFocusable:    function () {
-            return false;
-        }
-    });
+    var ResizingTabControllerButtonMixin = declare("ioc.gui._ResizingTabControllerButtonMixin", null,
+        /**
+         * Set of tabs with a menu to switch between tabs. Tabs are resized according to the TabController size.
+         * Works only for horizontal tabs (either above or below the content, not the left or right).
+         *
+         * @class ioc.gui._ResizingTabControllerButtonMixin
+         */
+        {
+            /** @override */
+            baseClass: "dijitTab tabStripButton",
+
+            /** @override */
+            templateString: buttonTemplate,
+
+            /**
+             * Override inherited tabIndex: 0 from dijit/form/Button, because user shouldn't be able to tab to the
+             * left/right/menu buttons
+             * @type {string}
+             * @override
+             */
+            tabIndex: "",
+
+
+            /**
+             * Similarly, override FormWidget.isFocusable() because clicking a button shouldn't focus it either
+             * (this override avoids focus() call in FormWidget.js)
+             *
+             * @override
+             */
+            isFocusable: function () {
+                return false;
+            }
+        });
 
     // Class used in template
-    declare("ioc.gui._ResizingTabControllerMenuButton",
-        [Button, _HasDropDown, ResizingTabControllerButtonMixin], {
-            // id of the TabContainer itself
+    declare("ioc.gui._ResizingTabControllerMenuButton", [Button, _HasDropDown, ResizingTabControllerButtonMixin],
+        /**
+         * @class ioc.gui._ResizingTabControllerMenuButton
+         * @extends dijit.form.Button
+         * @extends dijit._HastDropDown
+         * @extends ioc.gui._ResizingTabControllerButtonMixin
+         */
+        {
+            /** @type {string} id of the TabContainer itself */
             containerId: "",
 
-            // -1 so user can't tab into the button, but so that button can still be focused programatically.
-            // Because need to move focus to the button (or somewhere) before the menu is hidden or IE6 will crash.
-            tabIndex:    "-1",
+            /**
+             * -1 so user can't tab into the button, but so that button can still be focused programatically. Because need to move focus to the button (or somewhere) before the menu is hidden or IE6 will crash.
+             * @type {string}
+             * @override
+             */
+            tabIndex: "-1",
 
+            /**
+             * @returns {boolean} Sempre retorna false
+             * @override
+             */
             isLoaded: function () {
                 // recreate menu every time, in case the TabContainer's list of children (or their icons/labels) have changed
                 return false;
             },
 
+            /**
+             * @param callback
+             * @override
+             */
             loadDropDown: function (callback) {
                 this.dropDown = new Menu({
                     id:            this.containerId + "_menu",
@@ -205,7 +264,11 @@ define([
                 callback();
             },
 
-            closeDropDown: function (/*Boolean*/ focus) {
+            /**
+             * @param {boolean} focus
+             * @override
+             */
+            closeDropDown: function (focus) {
                 this.inherited(arguments);
                 if (this.dropDown) {
                     this.dropDown.destroyRecursive();

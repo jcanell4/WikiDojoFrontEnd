@@ -1,6 +1,3 @@
-/* 
- * IocDropDownButton
- */
 define([
     "dojo/_base/declare",
     "dijit/form/DropDownButton",
@@ -11,6 +8,7 @@ define([
 ], function (declare, DropDownButton, Request, _TemplatedMixin, template, IocComponent) {
 
     var ret = declare("ioc.gui.IocDropDownButton", [DropDownButton, Request, _TemplatedMixin, IocComponent],
+
         /**
          * Afegeix un nou mètode al DropDownButton estàndar que redimensiona el botó
          * per igualar-lo a la mida del seu contenidor pare.
@@ -20,7 +18,6 @@ define([
          * @extends dijit._TemplatedMixin
          * @extends ioc.gui.IocResizableComponent
          * @extends ioc.wiki30.Request
-         * @extends ioc.gui.IocResizableComponent
          */
         {
             templateString: template,

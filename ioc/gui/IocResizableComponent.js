@@ -7,24 +7,30 @@ define([
     "ioc/wiki30/Request",
 
 ], function (declare, style, Request) {
-    /* @author Rafael Claver <rclaver@xtec.cat>
-     * module: ioc/gui/IocResizableComponent
-     *
-     * Afegeix el mètode 'resize' que redimensiona l'objecte
-     * per igualar-lo a la mida del seu contenidor pare.
-     * El mètode s'activa amb l'atribut autoSize.
-     *	- autoSize: true/false
-     *				true: executa el mètode resize -> iguala el tamany del botó al del contenidor pare
-     *				false: no executa el mètode resize -> no canvia el tamany del botó
-     * Afegeix el mètode '__setVisible' que mostra/amaga l'objecte
-     */
     var ret = declare("ioc.gui.IocResizableComponent", [Request],
-        {
-            nodeToResize:    null,
-            topNodeToResize: null,
-            visible:         true,
-            autoSize:        false,
 
+        /**
+         * Afegeix el mètode 'resize' que redimensiona l'objecte per igualar-lo a la mida del seu contenidor pare.
+         * El mètode s'activa amb l'atribut autoSize.
+         *
+         * @class ioc.gui.IocResizableComponent
+         * @extends ioc.wiki30.Request
+         * @author Rafael Claver <rclaver@xtec.cat>
+         */
+        {
+            /** @type {HTMLElement} */
+            nodeToResize:    null,
+
+            /** @type {HTMLElement} */
+            topNodeToResize: null,
+
+            /** @type {boolean} */
+            visible: true,
+
+            /** @type {boolean} */
+            autoSize: false,
+
+            /** @override */
             set: function (propName) {
                 this.inherited(arguments);
                 if (propName === "visible") {
@@ -32,6 +38,11 @@ define([
                 }
             },
 
+            /**
+             * Mostra o amaga el widget.
+             *
+             * @private
+             */
             __setVisible: function () {
                 if (this._started) {
                     var node = this.nodeToResize;
@@ -44,6 +55,12 @@ define([
                 }
             },
 
+            /**
+             * Canvia la mida del botó segons l'estat de la propietat autoSize. Si aquesta es true es canvia la mida per
+             * ajustarla a la mida del contenidor pare, i si es false es deixa com està.
+             *
+             * @override
+             */
             resize: function () {
                 if (this.autoSize) {
                     this.inherited(arguments);

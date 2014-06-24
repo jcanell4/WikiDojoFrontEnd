@@ -7,11 +7,15 @@ define([
     "dojo/_base/event",
     "dojo/NodeList-dom"
 ], function (declare, Form, domForm, Request) {
-    // module:
-    //		ioc/gui/IocForm
-
     var ret = declare("ioc.gui.IocForm", [Form, Request],
 
+        /**
+         * Aquest widget modifica el formulari de dojo per enviar les dades via Ajax al fer submit.
+         *
+         * @class ioc.gui.IocForm
+         * @extends dijit.form.Form
+         * @extends ioc.wiki30.Request
+         */
         {
             /** @override */
             startup: function () {

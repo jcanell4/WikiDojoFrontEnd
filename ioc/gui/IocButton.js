@@ -1,7 +1,3 @@
-/* 
- * Declara un Botó que realitza la funció indicada en un atribut
- * també canvia el tamany de fixe a variable segons el contenidor
- */
 define([
     "dojo/_base/declare",
     "dijit/form/Button",
@@ -13,7 +9,10 @@ define([
     var ret = declare("ioc.gui.IocButton", [button, _TemplatedMixin, IocComponent],
 
         /**
-         * Aquest widget es un boto que al clicarlo recorre tots els listeners associats i els processa si son objectes
+         * Declara un Botó que realitza la funció indicada en un atribut
+         * també canvia el tamany de fixe a variable segons el contenidor
+         *
+         * Aquest widget es un boto que Al clicarlo recorre tots els listeners associats i els processa si son objectes
          * o els executa si son funcions.
          *
          * @class ioc.gui.IocButton
@@ -48,7 +47,7 @@ define([
                         if (dojoBase.isFunction(this.clickListener[i])) {
                             this.clickListener[i](evt);
                         } else if (dojoBase.isObject(this.clickListener[i])) {
-                            this.clickListener[i].process(evt);
+                            this.clickListener[i].process(evt); // TODO[Xavi] Error, s'ha de passar també el Dispatcher
                         }
                     }
                 }
@@ -78,7 +77,7 @@ define([
             /**
              * TODO[Xavi] No es crida enlloc?
              *
-             * @param {function|object} listener
+             * @param {function|ioc.wiki30.processor.AbstractResponseProcessor} listener
              * @returns {*}
              */
             addClickListener: function (listener) {
