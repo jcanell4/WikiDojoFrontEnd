@@ -6,8 +6,8 @@ define([
 
     var ret = declare("ioc.wiki30.processor.DataContentProcessor", [ContentProcessor],
         /**
-         * @class ioc.wiki30.processor.DataContentProcessor
-         * @extends ioc.wiki30.processor.ContentProcessor
+         * @class DataContentProcessor
+         * @extends ContentProcessor
          */
         {
 

@@ -5,13 +5,11 @@ define([
 ], function (declare, AbstractResponseProcessor) {
 
     var ret = declare("ioc.wiki30.processor.ErrorProcessor", [AbstractResponseProcessor],
-
         /**
-         * @class ioc.wiki30.processor.ErrorProcessor
-         * @extends ioc.wiki30.processor.AbstractResponseProcessor
+         * @class ErrorProcessor
+         * @extends AbstractResponseProcessor
          */
         {
-
             type: "error",
 
             /**

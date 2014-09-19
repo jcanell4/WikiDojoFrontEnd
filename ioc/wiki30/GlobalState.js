@@ -6,7 +6,7 @@ define([
 ], function (/*declare,*/ lang, dwPageUi) {
     //    var ret = declare("ioc.wiki30.GlobalState", [], {
     /**
-     * @class ioc.wiki30.GlobalState
+     * @class GlobalState
      */
     var ret = {
         /**

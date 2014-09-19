@@ -6,8 +6,8 @@ define([
     var ret = declare("ioc.wiki30.processor.LoginProcessor", [StateUpdaterProcessor],
 
         /**
-         * @class ioc.wiki30.processor.LoginProcessor
-         * @extends ioc.wiki30.processor.StateUpdaterProcessor
+         * @class LoginProcessor
+         * @extends StateUpdaterProcessor
          */
         {
             type: "login",

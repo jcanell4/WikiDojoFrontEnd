@@ -3,7 +3,7 @@ define([
 ], function (declare) {
     var ret = declare("ioc.wiki30.UpdateViewHandler", [],
         /**
-         * @class ioc.wiki30.UpdateViewHandler
+         * @class UpdateViewHandler
          */
         {
             /**

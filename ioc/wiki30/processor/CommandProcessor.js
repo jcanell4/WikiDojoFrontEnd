@@ -9,8 +9,8 @@ define([
 ], function (declare, AbstractResponseProcessor, registry, domStyle, lang, array, dojo) {
     return declare("ioc.wiki30.processor.CommandProcessor", [AbstractResponseProcessor],
         /**
-         * @class ioc.wiki30.processor.CommandProcessor
-         * @extends ioc.wiki30.processor.AbstractResponseProcessor
+         * @class CommandProcessor
+         * @extends AbstractResponseProcessor
          *
          * @typedef {object} DijitWidget widget
          * @typedef {object} DijitContainer contenidor

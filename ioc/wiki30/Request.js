@@ -6,7 +6,7 @@ define([
 ], function (declare, Standby, request, dispatcherSingleton) {
     var ret = declare("ioc.wiki30.Request", [],
         /**
-         * @class ioc.wiki30.Request
+         * @class Request
          */
         {
             standbyId: null,

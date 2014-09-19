@@ -5,8 +5,8 @@ define([
     var ret = declare("ioc.wiki30.processor.SectokProcessor", [StateUpdaterProcessor],
 
         /**
-         * @class ioc.wiki30.processor.SectokProcessor
-         * @extends ioc.wiki30.processor.StateUpdaterProcessor
+         * @class SectokProcessor
+         * @extends StateUpdaterProcessor
          */
         {
 

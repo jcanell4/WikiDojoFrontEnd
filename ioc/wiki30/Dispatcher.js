@@ -33,31 +33,31 @@ define([
 
        return declare("ioc.wiki30.Dispatcher", [],
         /**
-         * @class ioc.wiki30.Dispatcher
+         * @class Dispatcher
          */
         {
-            /** @type {ioc.wiki30.GlobalState} */
+            /** @type {GlobalState} */
             globalState: null,
 
             /** @type {boolean} */
             unsavedChangesState: false,
 
-            /** @type {Object.<ioc.wiki30.DokuwikiContent>} la  id del hash correspon al id del DokuwikiContent */
+            /** @type {Object.<DokuwikiContent>} la  id del hash correspon al id del DokuwikiContent */
             contentCache: {},		//objecte {id_pestanya => metaInformacio[id => {id,title,content}]}
 
             /**
              * @dict
-             * @type {Object.<ioc.wiki30.processor.AbstractResponseProcessor>}
+             * @type {Object.<AbstractResponseProcessor>}
              */
             processors: {},
 
-            /** @type {Array.<ioc.wiki30.UpdateViewHandler>} */
+            /** @type {Array.<UpdateViewHandler>} */
             updateViewHandlers: null,
 
-            /** @type {Array.<ioc.wiki30.ReloadStateHandler>} */
+            /** @type {Array.<ReloadStateHandler>} */
             reloadStateHandlers: null,
 
-            /** @type ioc.wiki30.SectokManager */
+            /** @type SectokManager */
             sectokManager: null,
 
             /** @type {string} S'estableix al scriptsRef pel valor substituit al template */
@@ -115,7 +115,7 @@ define([
             /**
              * Afegeix el UpdateViewHandler al array que es crida quan s'ha d'actualitzar la vista.
              *
-             * @param {ioc.wiki30.UpdateViewHandler} handler handler per afegir
+             * @param {UpdateViewHandler} handler handler per afegir
              */
             addUpdateView: function (handler) {
                 this.updateViewHandlers.push(handler);
@@ -124,7 +124,7 @@ define([
             /**
              * Afegeix el ReloadStatgeHandler al array que es cridar al recarregar.
              *
-             * @param {ioc.wiki30.ReloadStateHandler} handler handler per afegir
+             * @param {ReloadStateHandler} handler handler per afegir
              */
             addReloadState: function (handler) {
                 this.reloadStateHandlers.push(handler);
@@ -155,7 +155,7 @@ define([
              *
              * TODO[Xavi] Com que es passa el GlobalState, es necessari que es pasi com argument?
              *
-             * @param {ioc.wiki30.GlobalState} stateToLoad
+             * @param {GlobalState} stateToLoad
              */
             reloadFromState: function (stateToLoad) {
                 if (this.reloadStateHandlers) {
@@ -228,7 +228,7 @@ define([
             /**
              * Retorna el GlobalState emmagatzemat al dispatcher.
              *
-             * @returns {?ioc.wiki30.GlobalState} el GlobalState emmagatzemat al dispatcher.
+             * @returns {?GlobalState} el GlobalState emmagatzemat al dispatcher.
              */
             getGlobalState: function () {
                 return this.globalState;
@@ -239,7 +239,7 @@ define([
              * Retorna l'objecte amb el contingut corresponent a la id passat com argument.
              *
              * @param {string} id del contingut.
-             * @returns {ioc.wiki30.DokuwikiContent} el contingut corresponent
+             * @returns {DokuwikiContent} el contingut corresponent
              */
             getContentCache: function (id) {
                 return this.contentCache[id];
