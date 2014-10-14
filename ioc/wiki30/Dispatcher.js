@@ -343,6 +343,4 @@ define([
                 this.processors["error"].process(errorMessage, this);
             }
         });
-
-    return DispatcherClass;
 });
