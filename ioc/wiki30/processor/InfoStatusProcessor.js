@@ -6,8 +6,8 @@ define([
 ], function (declare, StateUpdaterProcessor, dom) {
     var ret = declare("ioc.wiki30.processor.InfoStatusProcessor", [StateUpdaterProcessor],
         /**
-         * @class ioc.wiki30.processor.InfoStatusProcessor
-         * @extends ioc.wiki30.processor.StateUpdaterProcessor
+         * @class InfoStatusProcessor
+         * @extends StateUpdaterProcessor
          */
         {
             type: "info",

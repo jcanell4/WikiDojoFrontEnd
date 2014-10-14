@@ -4,7 +4,7 @@ define([
 ], function (declare, require) {
     var ret = declare("ioc.wiki30.SectokManager", [],
         /**
-         * @class ioc.wiki30.SectokManager
+         * @class SectokManager
          */
         {
 

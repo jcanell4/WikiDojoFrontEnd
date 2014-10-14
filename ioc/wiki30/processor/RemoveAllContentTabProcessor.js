@@ -6,8 +6,8 @@ define([
     var ret = declare("ioc.wiki30.processor.RemoveAllContentTabProcessor", [StateUpdaterProcessor],
 
         /**
-         * @class ioc.wiki30.processor.RemoveAllContentTabProcessor
-         * @extends ioc.wiki30.processor.StateUpdaterProcessor
+         * @class RemoveAllContentTabProcessor
+         * @extends StateUpdaterProcessor
          */
         {
             type: "removeall",

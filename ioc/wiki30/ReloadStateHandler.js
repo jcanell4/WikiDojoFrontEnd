@@ -4,7 +4,7 @@ define([
 
     var ret = declare("ioc.wiki30.ReloadStateHandler", [],
         /**
-         * @class ioc.wiki30.ReloadStateHandler
+         * @class ReloadStateHandler
          */
         {
             /**
@@ -26,7 +26,7 @@ define([
             /**
              * TODO[Xavi] Comprovar si això es crida enlloc. En qualsevol cas no te cap efecte perque el métode es buit.
              *
-             * @param {ioc.wiki30.GlobalState} stateToReload
+             * @param {GlobalState} stateToReload
              */
             reload: function (stateToReload) {
             }

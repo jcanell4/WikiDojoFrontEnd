@@ -5,7 +5,7 @@ define([
     // l'objecte com a prop?
     var DokuwikiContent = declare("ioc.wiki30.DokuwikiContent", [],
         /**
-         * @class ioc.wiki30.DokuwikiContent
+         * @class DokuwikiContent
          */
         {
             id: null,

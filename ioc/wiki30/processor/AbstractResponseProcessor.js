@@ -5,7 +5,7 @@ define([
         /**
          * Superclasse de tots els processors.
          *
-         * @class ioc.wiki30.processor.AbstractResponseProcessor
+         * @class AbstractResponseProcessor
          */
         {
             /** @type string */

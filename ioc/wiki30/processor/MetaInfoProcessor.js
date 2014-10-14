@@ -8,8 +8,8 @@ define([
 ], function (declare, registry, dom, ContentPane, AbstractResponseProcessor) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
-         * @class ioc.wiki30.processor.MetaInfoProcessor
-         * @extends ioc.wiki30.processor.AbstractResponseProcessor
+         * @class MetaInfoProcessor
+         * @extends AbstractResponseProcessor
          */
         {
 
