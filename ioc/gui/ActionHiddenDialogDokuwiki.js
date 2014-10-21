@@ -3,6 +3,7 @@ define([
     "dojo/text!./templates/ActionHiddenDialogDokuwiki.html",
     "dijit/TooltipDialog",
     "dijit/_WidgetsInTemplateMixin",
+    "dijit/popup",
     "ioc/wiki30/Request",
     "dijit/registry",
     "dojo/dom-form",
@@ -10,7 +11,8 @@ define([
     "dojo/_base/event",
     "dojo/dom-style",
     "dojo/NodeList-dom" // NodeList.style
-], function (declare, template, TooltipDialog, _WidgetsInTemplateMixin, Request, registry, domForm, on, event, style) {
+], function (declare, template, TooltipDialog, _WidgetsInTemplateMixin, popup, 
+                                Request, registry, domForm, on, event, style) {
     var ret = declare("ioc.gui.ActionHiddenDialogDokuwiki", [TooltipDialog, _WidgetsInTemplateMixin, Request],
 
         /**
@@ -65,8 +67,7 @@ define([
                     this._standby.hide();
                 }
 
-                var node = this.domNode;
-                style.set(node, "display", "none");
+                popup.close(this);
             }
         });
     return ret;
