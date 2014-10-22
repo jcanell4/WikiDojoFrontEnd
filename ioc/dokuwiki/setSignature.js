@@ -1,6 +1,6 @@
 define(["dojo/_base/lang"], function(lang){
     var res = function(params){
-        var value;
+        var value='';
         if(params){
             if(lang.isString(params)){
                 value = params;
@@ -8,11 +8,9 @@ define(["dojo/_base/lang"], function(lang){
                 value = params.value;
             }else if(lang.isArray(params)){
                 value = params[0];
-            }else{
-                value = '';
             }
-            window.SIG = value;
         }
+        window.SIG = value;
     };
     return res;
 });
