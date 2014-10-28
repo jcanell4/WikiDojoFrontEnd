@@ -16,6 +16,17 @@ define([
             _standby: null,
             sectokId: null,
             sectokParam: "sectok",
+            /** @type {string} */
+            query: "",
+
+            /**
+             * Retorna la query emmagatzemada. Aquest métode es sobrescrit a scriptesRef.tpl.
+             *
+             * @returns {string}
+             */
+            getQuery: function () {
+                return this.query;
+            },
 
             /**
              * Retorna true si hi ha PostData o false en cas contrari.
@@ -23,7 +34,7 @@ define([
              * @returns {boolean}
              */
             hasPostData: function () {
-                return  this.getPostData() != null;
+                return  this.getPostData() !== null;
             },
 
             /**
@@ -106,7 +117,10 @@ define([
                 var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
                     (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
                 var vUrl = this.urlBase;
-                if (query !== null) {
+                if(!query && this.getQuery() && this.getQuery().length>0){
+                     query=this.getQuery();
+                }
+                if (query) {
                     vUrl += linkChar + query;
                     linkChar = "&";
                 }

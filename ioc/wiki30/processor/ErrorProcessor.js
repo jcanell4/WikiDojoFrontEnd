@@ -19,7 +19,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                this._processError(value, dispatcher);
+                this._processError(value.message, dispatcher);
             },
 
             /**

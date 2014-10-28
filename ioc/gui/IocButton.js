@@ -24,9 +24,6 @@ define([
         {
             templateString: template,
 
-            /** @type {string} */
-            query: "",
-
             /** @type {Object.<function|ioc.wiki30.processor.AbstractResponseProcessor>} */
             clickListener: null,
 
@@ -63,15 +60,6 @@ define([
                 this.__setVisible();
             },
 
-
-            /**
-             * Retorna la query emmagatzemada. Aquest métode es sobrescrit a scriptesRef.tpl.
-             *
-             * @returns {string}
-             */
-            getQuery: function () {
-                return this.query;
-            },
 
             /**
              * TODO[Xavi] No es crida enlloc?
