@@ -339,8 +339,8 @@ define([
              * @private
              */
             _processError: function (errorMessage) {
-                if (!errorMessage) errorMessage = "";
-                this.processors["error"].process(errorMessage, this);
+                if (!errorMessage) errorMessage = "Unknown error";
+                this.processors["error"].process({message:errorMessage}, this);
             }
         });
 });
