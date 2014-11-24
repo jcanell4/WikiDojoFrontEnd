@@ -10,9 +10,9 @@ define([
     ,"ioc/dokuwiki/dwPageUi"
     ,"dojo/dom-class"
     ,"ioc/wiki30/dispatcherSingleton"
-
+    ,"dojo/dom-attr"
 ], function(on, dom, event, domform, listHeadings, runRender, runQuiz, 
-                Request, dwPageUi, domClass, dispatcher){
+                Request, dwPageUi, domClass, dispatcher, att){
     
     function setCurrentSection(node){
         var oldId = dispatcher.getGlobalState().getCurrentSectionId();
@@ -48,13 +48,13 @@ define([
         runQuiz();
         
         var domNode = dom.byId(id);
-        var request = new Request();
-        request.updateSectok=function(sk){
+        var requestEdita = new Request();
+        requestEdita.updateSectok=function(sk){
             this.sectok=sk;
         };
-        request.sectok = request.dispatcher.getSectok();
-        request.dispatcher.toUpdateSectok.push(request);
-        request.urlBase=params.command;
+        requestEdita.sectok = requestEdita.dispatcher.getSectok();
+        requestEdita.dispatcher.toUpdateSectok.push(requestEdita);
+        requestEdita.urlBase=params.editCommand;
         
         on(domNode, "form.btn_secedit:submit", function(e){
             //enviar  
@@ -64,7 +64,7 @@ define([
             if (data){
                 query = data;
             }
-            request.sendRequest(query);
+            requestEdita.sendRequest(query);
             event.stop(e);
         });
         
@@ -89,6 +89,24 @@ define([
         
         on(domNode, '*[class*=\"sectionedit\"]:mouseout', function(e){
             setHighlightSection(this, false);
+        });
+        
+        var requestImgDetail = new Request();
+        requestImgDetail.updateSectok=function(sk){
+            this.sectok=sk;
+        };
+        requestImgDetail.sectok = requestImgDetail.dispatcher.getSectok();
+        requestImgDetail.dispatcher.toUpdateSectok.push(requestImgDetail);
+        requestImgDetail.urlBase=params.detailCommand;
+
+        on(domNode, 'div.imgb a.media:click, div.iocfigure a.media:click', function(e){
+            var query = "";
+            var arr = att.get(this, "href").split("?");
+            if (arr.length > 1) {
+                query = arr[1];
+            }
+            requestImgDetail.sendRequest(query);
+            event.stop(e);            
         });
         
         if(dispatcher.getGlobalState().getCurrentSectionId()){
