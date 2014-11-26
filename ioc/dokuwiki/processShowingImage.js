@@ -1,55 +1,77 @@
 define([
-     "dojo/dom-construct" //Cal importar el constructir del DOM
-    ,"ioc/gui/IocButton"
-    , "dijit/Dialog"
-    , "dijit/form/Button"
-    , "dojo/on"
-    , "dojo/_base/event"
-], function(domConstruct, iocButton, Dialog, Button, on, event) { 
-    var res = function(params) { 
-        var imageDialog = new Dialog({
-             title: params.imageTitle
-             ,onClose: function(e){event.stop(e);fOnClose();} //NO FUNCIONA, e.preventDefault() tampoc em funciona
-            ,id: "imageDialog" + "_" + params.imageId
-            //,style: "width: 500px"
-        });
+    "dojo/dom-construct" //Cal importar el constructir del DOM
+            , "ioc/gui/IocButton"
+            , "dijit/Dialog"
+            , "dijit/form/Button"
+            , "dojo/dom"
+            , "dojo/_base/xhr"
+            , "dojo/query"
+            , "dojo/domReady!"
+], function(domConstruct, iocButton, Dialog, Button, dom, xhr, query) {
+    var res = function(params) {
+        var maxWidth = 800;
+        var maxHeight = 600;
 
-//        var actionBar = dojo.create("div", {   //No facis servir variables globals com dijit o dojo. Importa la funcionalitat equivalent!
+        var imageDialog = new Dialog({
+            title: params.imageTitle
+            , onHide: function(e) { //Voliem detectar el event onClose i hem hagut de utilitzar onHide
+                fOnClose();
+            }
+            , id: "imageDialog" + "_" + params.imageId
+        });
+        
+        /*CAPTURAR EL offsetWidth del titol*/
+        var titleId = imageDialog.get("id") + "_title";
+        console.log(titleId);
+        console.log(query("#"+titleId).offsetWidth);//undefined
+        console.log(dom.byId(titleId).innerHTML.offsetWidth);//undefined
+        console.log(dom.byId(titleId).offsetWidth);//0
+
         var dialogContainer = domConstruct.create("div", {
-           id:"dialogContainer" + "_" + params.imageId
+            id: "dialogContainer" + "_" + params.imageId
         });
         var contentContainer = domConstruct.create("div", {
-           class:"dijitDialogPaneContentArea"            
-        }).innerHTML=params.content;
+            "class": "dijitDialogPaneContentArea"
+            , "style": "maxWidth:" + maxWidth + "px; maxHeight:" + maxHeight + "px; overflow:auto;"
+            , "innerHTML": params.content
+        });
         var actionBar = domConstruct.create("div", {
             "class": "dijitDialogPaneActionBar"
         });
-        
-        var fOnClose = function(){
-            console.log("DESTROY");
-            //imageDialog.destroyRecursive();
+
+        var fOnClose = function() {
+            imageDialog.destroyRecursive();
         };
-        
-        on(imageDialog, "close", function(e){fOnClose();});
-        
+
         new iocButton({
             "label": params.modifyImageLabel
-            ,"onClick": function(e){
-                //TODO call ajaxcommand?
+            , "onClick": function(e) {
+                var commandParams = new Array();
+                commandParams["imageId"] = params.imageId;
+                xhr.get({
+                    url: "/dokuwiki_30/lib/plugins/ajaxcommand/ajax.php?call=commandreport",
+                    content: commandParams,
+                    handleAs: "json",
+                    load: function(data) {
+                        console.log(data);
+                    }
+                });
                 fOnClose();
             }
         }).placeAt(actionBar);
-        
+
         new Button({
             "label": params.closeDialogLabel
-            ,"onClick": function(e){fOnClose();}
+            , "onClick": function(e) {
+                fOnClose();
+            }
         }).placeAt(actionBar);
-        
-        
+
+
         //col·locar en el lloc adequat
         domConstruct.place(contentContainer, dialogContainer, "last");
         domConstruct.place(actionBar, dialogContainer, "last");
-        
+
         //assignar i mostrar
         imageDialog.set("content", dialogContainer);
         imageDialog.show();
