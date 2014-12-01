@@ -297,17 +297,17 @@ define([
              *
              * @returns {number} sempre es 0
              */
-            processResponse: function (response) {
+            processResponse: function (response, processors) {
                 // TODO[Xavi] canviar req per that per fer més clara la intenció
                 var req = this;
 
                 // TODO[Xavi] lang.isArray() està deprecated.
                 if (lang.isArray(response)) {
                     array.forEach(response, function (responseItem) {
-                        req._processResponse(responseItem);
+                        req._processResponse(responseItem, processors);
                     });
                 } else {
-                    req._processResponse(response);
+                    req._processResponse(response, processors);
                 }
                 this.updateFromState();
                 return 0;
@@ -322,8 +322,10 @@ define([
              * @returns {number} sempre es 0
              * @private
              */
-            _processResponse: function (response) {
-                if (this.processors[response.type]) {
+            _processResponse: function (response, processors) {
+                if(processors && processors[response.type]){
+                    processors[response.type].process(response.value, this);
+                }else if (this.processors[response.type]) {
                     this.processors[response.type].process(response.value, this);
                 } else {
                     this.processors["alert"].process("Missatge incomprensible", this);

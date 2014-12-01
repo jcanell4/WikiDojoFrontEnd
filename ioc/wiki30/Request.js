@@ -18,6 +18,18 @@ define([
             sectokParam: "sectok",
             /** @type {string} */
             query: "",
+            processors: null,
+            
+            addProcessor: function(type, processor){
+                if(this.processors===null){
+                    this.processors=new Array();
+                }
+                this.processors[type]=processor;
+            },
+            
+            getProcessor: function(type){
+                return this.processor[type];
+            },
 
             /**
              * Retorna la query emmagatzemada. Aquest métode es sobrescrit a scriptesRef.tpl.
@@ -65,7 +77,7 @@ define([
              * @param {Array.<{type: string, value}>} data dades per processar.
              */
             responseHandler: function (data) {
-                this.dispatcher.processResponse(data);
+                this.dispatcher.processResponse(data, this.processors);
                 if (this._standby) {
                     this._standby.hide();
                 }

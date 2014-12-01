@@ -18,17 +18,10 @@ define([
             [MenuItem, Request, _TemplatedMixin, IocComponent],
             {
                 templateString: template,
-                query: "",
                 _onClick: function(evt) {
                     this.inherited(arguments);
                     this.sendRequest(this.getQuery());
                 },
-                //això és temporal per tal de que funcioni
-                //però s'ha de treure perquè Request ja la tindrà
-                getQuery: function() {
-                    return this.query;
-                }
-
             });
 
 });
