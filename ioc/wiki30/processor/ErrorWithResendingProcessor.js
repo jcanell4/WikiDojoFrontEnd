@@ -28,7 +28,7 @@ define([
             process: function (value, dispatcher) {
                 if(this.errorAction[value.code]){
                     var action = this.errorAction[value.code];
-                    action();
+                    action(dispatcher);
                 }else{
                     this._processError(value.message, dispatcher);
                 }

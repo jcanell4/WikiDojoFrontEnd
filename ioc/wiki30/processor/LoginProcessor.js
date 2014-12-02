@@ -56,6 +56,7 @@ define([
              */
             updateState: function (dispatcher, value) {
                 dispatcher.getGlobalState().login = value.loginResult;
+                dispatcher.getGlobalState().userId = value.userId;
             }
 
         });
