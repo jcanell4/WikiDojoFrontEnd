@@ -3,7 +3,7 @@ define([
     "ioc/wiki30/processor/ErrorProcessor"
 ], function (declare, ErrorProcessor) {
 
-    var ret = declare("ioc.wiki30.processor.ErrorMultiFunctionProcessor", 
+    var ret = declare("ioc.wiki30.processor.ErrorWithResendingProcessor", 
         [ErrorProcessor],
         /**
          * @class ErrorProcessor
