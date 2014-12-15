@@ -22,6 +22,8 @@ define([
              * @type {Object.<{content: string, id: string, tittle: string}>}
              */
             metaData: null,
+            
+            editor: null,
 
             /**
              * Es construeix un objecte d'aquest tipus per cada pestanya que es carrega.
@@ -76,13 +78,21 @@ define([
                     return this.metaData;
                 }
             },
+            
+            setEditor: function(editor){
+              this.editor  = editor;
+            },
+
+            getEditor: function(){
+              return this.editor;
+            },
 
             // TODO[Xavi] No es crida enlloc?
             removeAllMetaData: function () {
                 alert("removeAllMetaData");
                 this.metaData = new Array();
             },
-
+            
             // TODO[Xavi] No es crida enlloc?
             setDocumentHTML:   function (content) {
                 alert("setDocumentHTML");
