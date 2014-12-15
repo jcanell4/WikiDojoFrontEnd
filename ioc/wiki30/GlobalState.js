@@ -107,7 +107,11 @@ define([
         },
         
         getCurrentContent: function(){
-            return this.pages[currentTabId];
+            return this.pages[this.currentTabId];
+        },
+        
+        getCurrentId: function(){
+            return this.currentTabId
         }
         
     };
