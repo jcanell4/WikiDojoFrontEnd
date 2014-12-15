@@ -10,10 +10,11 @@ define([
      */
     var ret = {
         /**
-         * El index del hash es el mateix que el ns, que es el mateix que es mostra a la pestanya
-         * @type {Object.<{ns: string, node: string, action: string}>}
+         * El index del hash es el mateix que el ns, que es el mateix que es 
+         * mostra a la pestanya
+         * @type {Object.<{ns: string, mode: string, action: string}>}
          */
-        pages:            {},        //{[pageId]: {ns, mode, action}}
+        pages:            {},        //{[pageId]: {ns, mode, action}}  
 
         login:            false,
 
@@ -64,7 +65,7 @@ define([
          * @returns {Number} nombre de pàgines
          */
         pagesLength: function () {
-            return Object.keys(this.pages).length
+            return this.contentLength();
         },
 
         /**
@@ -77,7 +78,38 @@ define([
             var instance = Object.create(this);
             lang.mixin(instance, p);
             return instance;
+        },
+        
+        contentLength: function(){
+            return Object.keys(this.pages).length;
+        },
+        
+        getContentMode: function(id){
+            return this.getContent(id)["mode"];
+        },
+        
+        getContentNs: function(id){
+            return this.getContent(id)["ns"];
+        },
+        
+        getContentAction: function(id){
+            return this.getContent(id)["action"];
+        },
+        
+        getContent: function(id){
+            var ret=undefined;
+            if(this.pages[id]){
+                ret = this.pages[id];
+            }else{
+                ret = {};
+            }
+            return ret;
+        },
+        
+        getCurrentContent: function(){
+            return this.pages[currentTabId];
         }
+        
     };
     //    });
     return ret;

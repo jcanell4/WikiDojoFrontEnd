@@ -246,6 +246,17 @@ define([
             },
 
 
+//            /**
+//             * Retorna la informació de la pàgina mostrada a la pestanya actual.
+//             *
+//             * TODO[Xavi] No es crida enlloc?
+//             *
+//             * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
+//             */
+//            getCurrentPage: function () {
+//                return this.getGlobalState().pages[this.getGlobalState().currentTabId];
+//            },
+
             /**
              * Retorna la informació de la pàgina mostrada a la pestanya actual.
              *
@@ -253,8 +264,8 @@ define([
              *
              * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
              */
-            getCurrentPage: function () {
-                return this.getGlobalState().pages[this.getGlobalState().currentTabId];
+            getCurrentContent: function () {
+                return this.getGlobalState().getCurrentContent();
             },
 
             /**

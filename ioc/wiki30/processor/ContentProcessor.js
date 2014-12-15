@@ -3,9 +3,11 @@ define([
     "ioc/wiki30/processor/StateUpdaterProcessor",
     "dijit/registry",            //search widgets by id
     "dojo/dom",
+    "dojo/dom-construct",
     "dijit/layout/ContentPane",  //per a la funció newTab
     "ioc/wiki30/DokuwikiContent"
-], function (declare, StateUpdaterProcessor, registry, dom, ContentPane, DokuwikiContent) {
+], function (declare, StateUpdaterProcessor, registry, dom, domConstruct, 
+                    ContentPane, DokuwikiContent) {
 
     var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor],
         /**
@@ -20,48 +22,6 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //           var oPage = dispatcher.getGlobalState().pages;
-                //
-                //           //<- chivato
-                //           if (!oPage[value.id])
-                //               alert("MODULO:ContentProcessor:process\n\nvalue.id : "+value.id);
-                //           else
-                //               //dispatcher.getGlobalState().__ImprimirObjeto(oPage[value.id], "MODULO:ContentProcessor:process\n\nObject:oPage[value.id]:");
-                //               alert("MODULO:ContentProcessor:process\n\nObject:oPage["+value.id+"].ns : "+oPage[value.id].ns +
-                //                        "\n\nObject:oPage["+value.id+"].action : "+oPage[value.id].action +
-                //                        "\n\ndispatcher.unsavedChangesState : "+dispatcher.unsavedChangesState);
-                //           //chivato ->
-                //
-                //           //no entrar si hay cambios sin guardar
-                //           if (dispatcher.unsavedChangesState) {
-                //               var pestanya = "activa:"+dispatcher.getGlobalState().currentTabId;
-                //               if (oPage[value.id])
-                //                    pestanya = (oPage[value.id]["action"] === "edit") ? "seleccionada:"+value.id : pestanya;
-                //                alert("La pestanya "+pestanya+" està en edició.");
-                //           }
-                //           //Antes de la creación de la pestaña, el objeto "globalState.pages" está vacío, naturalmente
-                //           else if (!oPage[value.id]) {
-                //               this.__newTab(value, dispatcher);
-                //           }
-                //           //no entrar si la pestaña clicada (en el árbol) y la pestaña activa son la misma y está en edición y con cambios sin guardar
-                //           else if (value.id === dispatcher.getGlobalState().currentTabId &&
-                //                    !dispatcher.unsavedChangesState) {
-                //               this.__newTab(value, dispatcher);
-                //           }
-                //           //no entrar si la pestaña clicada (en el árbol) o la pestaña activa están en edición
-                //           else if (oPage[value.id]["action"] !== "edit" &&
-                //                    oPage[dispatcher.getGlobalState().currentTabId]["action"] !== "edit" &&
-                //                    value.id !== dispatcher.getGlobalState().currentTabId) {
-                //               this.__newTab(value, dispatcher);
-                //           }
-                //           else if (oPage[value.id]["action"] === "edit" ||
-                //                    oPage[dispatcher.getGlobalState().currentTabId]["action"] === "edit") {
-                //                var pestanya = (oPage[value.id]["action"] === "edit") ? "seleccionada:"+value.id : "activa:"+dispatcher.getGlobalState().currentTabId;
-                //                alert("La pestanya "+pestanya+" està en edició.");
-                //           }
-                //           else {
-                //               this.__newTab(value, dispatcher);
-                //           }
                 this.__newTab(value, dispatcher);
                 this.inherited(arguments);
             },
@@ -130,7 +90,10 @@ define([
                 } else {
                     tc.selectChild(widget);
                     var node = dom.byId(content.id);
-                    node.innerHTML = content.content;
+                    while (node.firstChild) {
+                       node.removeChild(node.firstChild);
+                    }
+                    domConstruct.place(content.content, node);
                 }
                 return 0;
             }

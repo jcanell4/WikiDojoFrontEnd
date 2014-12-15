@@ -1,7 +1,9 @@
 define([
+    "dojo/dom",
+    "dojo/dom-prop",
     "dojo/_base/declare", // declare
     "ioc/wiki30/processor/ContentProcessor"
-], function (declare, ContentProcessor) {
+], function (dom, domProp, declare, ContentProcessor) {
 
 
     var ret = declare("ioc.wiki30.processor.DataContentProcessor", [ContentProcessor],
