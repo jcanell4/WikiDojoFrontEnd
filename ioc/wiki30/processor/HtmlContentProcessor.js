@@ -1,8 +1,7 @@
 define([
     "dojo/_base/declare",
-    "dijit/registry",    //search widgets by id
     "ioc/wiki30/processor/ContentProcessor"
-], function (declare, registry, ContentProcessor) {
+], function (declare, ContentProcessor) {
 
     var ret = declare("ioc.wiki30.processor.HtmlContentProcessor", [ContentProcessor],
         /**
