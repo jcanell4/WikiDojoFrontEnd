@@ -696,6 +696,7 @@ define([
                 }
             },
 
+            // TODO renombrar tot per fer-ho més entenedor
             defBox: function (e, n) { // TODO: canviar el nom per un de més apropiat
                 var r, i, s, o, u, a, f, l, c;
 
@@ -715,7 +716,6 @@ define([
 
                 // TODO[Xavi] No trobo la declaració de la funció t, suposo que el que fa es buscar a n la coincidencia
                 // "id" i "offset" en cada cas.
-                console.log(n);
                 var t = function(llista, paraula) {
                     for (var i=0, len = llista.length; i<len; i++) {
                         if (llista[i]==paraula) {
@@ -734,13 +734,6 @@ define([
                     this.defRule(s, "\\s*-?\\d+\\s*$", "constant.numeric", o);
                     this.defRule(s, ".+$", "keyword.invalid", o);
                 }
-                /*
-                t.call(n, "id") < 0 && ct(i, ".+", "keyword.invalid");
-                t.call(n, "offset") >= 0 && (
-                    this.defRule(o, "^(  :)(offset)(:)", a, s),
-                        this.defRule(s, "\\s*-?\\d+\\s*$", "constant.numeric", o),
-                        this.defRule(s, ".+$", "keyword.invalid", o));
-                        */
                 c = _(n).without("id", "offset");
 
                 for (f = 0, l = c.length; f < l; f++) {
