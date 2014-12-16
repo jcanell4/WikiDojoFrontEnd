@@ -64,7 +64,7 @@ define([
             /**
              * TODO[Xavi] No es crida enlloc?
              *
-             * @param {function|ioc.wiki30.processor.AbstractResponseProcessor} listener
+             * @param {function|AbstractResponseProcessor} listener
              * @returns {*}
              */
             addClickListener: function (listener) {
@@ -76,7 +76,7 @@ define([
             /**
              * TODO[Xavi] Fer servir un diccionari?
              * @param {string} key
-             * @param {function|ioc.wiki30.processor.AbstractResponseProcessor} listener
+             * @param {function|AbstractResponseProcessor} listener
              */
             putClickListener: function (key, listener) {
                 if (!this.clickListener) {

@@ -110,7 +110,9 @@ define([
             }
         }
         child = dom.byId(editBarId);
-        style.set(child, "visibility", "hidden");
+
+        // TODO[Xavi] Comentant per comprovar la correcta funcionalitat del intercanvi entre el ace i el textarea
+        //style.set(child, "visibility", "hidden");
 //        child.style.visibility = "hidden";
         
         query("."+licenseClass, node).forEach(function(child){
