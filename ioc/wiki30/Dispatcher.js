@@ -245,7 +245,6 @@ define([
                 return this.contentCache[id];
             },
 
-
 //            /**
 //             * Retorna la informació de la pàgina mostrada a la pestanya actual.
 //             *
@@ -284,6 +283,7 @@ define([
              */
             setUnsavedChangesState:  function (st) {
                 this.unsavedChangesState = st;
+                window.textChanged = st;
             },
 
             // TODO[Xavi] no es crida enlloc i no fa res, es per esborrar?

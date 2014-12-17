@@ -8,8 +8,8 @@ define([
     ,"dojo/dom-geometry"
     ,"dojo/dom-style"
     ,'dojo/_base/unload'
-    /*,"ioc/dokuwiki/ace-main"*/
-], function(dispatcher, dom, on, query, focus, ready, geometry, style, unload/*, ace*/){
+], function(dispatcher, dom, on, query, focus, ready, geometry, style, 
+            unload){
     /**
     * Activate "not saved" dialog, add draft deletion to page unload,
     * add handlers to monitor changes
@@ -38,7 +38,6 @@ define([
         }
 
         var checkfunc = function() {
-            window.textChanged=true;
             dispatcher.setUnsavedChangesState(true);
             summaryCheck();
         };
@@ -49,7 +48,7 @@ define([
 
         if(!unload.isEditUnloadAdded){
             unload.addOnUnload(function(){
-                if(wikiIocDispatcher.getUnsavedChangesState()) {
+                if(dispatcher.getUnsavedChangesState()) {
                     return LANG.notsavedyet;
                 }
             });
@@ -92,16 +91,18 @@ define([
     
     function cleanHtmlEdition(id, wikiTextId, editBarId, licenseClass){
         var aText = new Array();
-        var node = dom.byId(id);
+        var node = dispatcher.getContentCache(id).getEditor().getEditorNode();
         var child = node.firstChild;
         while(child!=null){
             if(child.nodeType == Node.ELEMENT_NODE){
                 var tag = child.tagName.toLowerCase();
-                if(tag!=="div" && tag!=="script"){
+                if(tag!=="div" /*&& tag!=="script"*/){
                     var toDelete = child;
                     child = child.nextSibling;
                     node.removeChild(toDelete);
-                    aText.push(toDelete);
+                    if(tag!=="script"){
+                        aText.push(toDelete);
+                    }
                 }else{
                     child = child.nextSibling;
                 }
@@ -121,11 +122,11 @@ define([
             node.removeChild(child);
         });
         
-        node  = dom.byId(dispatcher.infoNodeId);
-        node.innerHTML="";
-        for(var i in aText){
-            node.appendChild(aText[i]);
-        }
+//        node  = dom.byId(dispatcher.infoNodeId);
+//        node.innerHTML="";
+//        for(var i in aText){
+//            node.appendChild(aText[i]);
+//        }
         
         var contentNode = dom.byId(id);
         var h = geometry.getContentBox(contentNode).h;
@@ -146,8 +147,7 @@ define([
                                 params.summaryId);
             cleanHtmlEdition(params.id, params.wikiTextId, params.editBarId, 
                                 params.licenseClass);
-            dw_locktimer.init(params.timeout, params.draft);
-//            ace();
+            dw_locktimer.init(params.timeout, params.draft);                      
         });
     };
     return res;

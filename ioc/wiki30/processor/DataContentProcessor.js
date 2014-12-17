@@ -1,9 +1,9 @@
 define([
     "dojo/dom",
-    "dojo/dom-prop",
+    "ioc/dokuwiki/editorManager/Editor",
     "dojo/_base/declare", // declare
     "ioc/wiki30/processor/ContentProcessor"
-], function (dom, domProp, declare, ContentProcessor) {
+], function (dom, Editor, declare, ContentProcessor) {
 
 
     var ret = declare("ioc.wiki30.processor.DataContentProcessor", [ContentProcessor],
@@ -21,7 +21,10 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                value.editor = new Editor(value.id, value.content);
+                value.content = "<p></p>";
                 this.inherited(arguments);
+                value.editor.select();
             },
 
 
@@ -36,6 +39,7 @@ define([
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
                 dispatcher.getGlobalState().pages[value.id]["action"] = "edit";
+                dispatcher.getContentCache(value.id).setEditor(value.editor);
             }
         });
 

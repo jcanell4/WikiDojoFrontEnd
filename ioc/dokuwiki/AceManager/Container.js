@@ -25,14 +25,19 @@ define([
 
             /** @type {object} @private*/
             textarea: null,
+                    
+            /** @type {object} @private*/
+            dokuEditor: null,
+                    
 
             /**
              *
              * @param {AceWrapper} aceWrapper
              * @param {DokuWrapper} dokuWrapper
              */
-            constructor: function (aceWrapper, dokuWrapper) {
+            constructor: function (aceWrapper, dokuWrapper, dokuEditor) {
                 this.aceWrapper = aceWrapper;
+                this.dokuEditor = dokuEditor;
                 this.dokuWrapper = dokuWrapper;
                 dokuWrapper.setContainer(this);
                 this._init();
@@ -100,7 +105,49 @@ define([
                 wrapper.show();
                 element.css('width', wrapper.width() + 'px');
                 return element.css('height', wrapper.height() + 'px');
+            },
+            
+            getTextAreaValue: function(){
+                return this.dokuWrapper.get_value();
+            },
+            
+            getAceValue: function(){
+                return this.aceWrapper.get_value();
+            },
+            
+            setTextAreaValue: function(v){
+                return this.dokuWrapper.set_value(v);
+            },
+            
+            setAceValue: function(v){
+                return this.aceWrapper.set_value(v);
+            },
+
+            /** @param {ElementCollection | Element | id} editorNode*/
+            setEditorNode: function(editorNode){
+                if(this.dokuEditor){
+                    this.dokuEditor.setEditorNode(editorNode);
+                }
+            },
+            
+            select: function(){
+                if(this.dokuEditor){
+                    this.dokuEditor.select();
+                }
+            },
+
+    
+            unselect: function(){
+                if(this.dokuEditor){
+                    this.dokuEditor.unselect();
+                }
+            },
+            
+            getEditorNode: function(){
+                return this.dokuEditor.getEditorNode();
             }
+            
+
 
         });
 });

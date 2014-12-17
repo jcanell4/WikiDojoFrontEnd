@@ -25,7 +25,7 @@ define([
 ], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, Toggle, IocCommands, GlobalState, Dispatcher) {
     var editorsCarregats = {};
 
-    return function (params) {
+    return function (params) { 
         //console.log(params);
 
 
@@ -35,6 +35,8 @@ define([
         if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById('wiki__text'))) {
             return;
         }
+        
+        var currentEditor = Dispatcher.getContentCache(params.id).getEditor();
 
         var lang_rules = {
                 // TODO Eliminar aquests llenguatges, es només una demostració
@@ -67,7 +69,7 @@ define([
 
             dokuWrapper = new DokuWrapper(aceWrapper),
 
-            container = new Container(aceWrapper, dokuWrapper),
+            container = new Container(aceWrapper, dokuWrapper, currentEditor),
 
             toggle = new Toggle(container),
 
@@ -130,8 +132,7 @@ define([
 
 
         var wg = registry.byId(params.buttonId)
-
-
+        
         wg.putClickListener(params.key, function () {
 
             if (dokuWrapper.get_cookie('aceeditor')
@@ -139,25 +140,25 @@ define([
                 var textArea = dom.byId(params.textAreaId),
                     id = GlobalState.getCurrentId(),
                     editor = Dispatcher.getContentCache(id).getEditor();
-                textArea.value = editor.ace.get_value();
+                textArea.value = editor.getAceValue();
             }
         });
 
         console.log("Carregat en " + (new Date().getTime() - inici));
 
-        editor = {
-            dokuWrapper: dokuWrapper,
-            containerId: container,
-            toggle:      toggle,
-            ace:         aceWrapper,
-            preview:     preview,
-            commands:    commands
-        };
-
-        Dispatcher.getContentCache(params.id).setEditor(editor);
+//        editor = {
+//            dokuWrapper: dokuWrapper,
+//            containerId: container,
+//            toggle:      toggle,
+//            ace:         aceWrapper,
+//            preview:     preview,
+//            commands:    commands
+//        };
+        
+        Dispatcher.getContentCache(params.id).setEditor(container);
 
         // TODO es fa servir aquest objecte en algun moment o no cal retornar-lo?
-        return editor;
+//        return editor;
     };
 });
 
