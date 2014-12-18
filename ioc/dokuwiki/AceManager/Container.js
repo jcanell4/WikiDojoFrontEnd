@@ -28,18 +28,19 @@ define([
                     
             /** @type {object} @private*/
             dokuEditor: null,
-                    
 
             /**
              *
              * @param {AceWrapper} aceWrapper
              * @param {DokuWrapper} dokuWrapper
+             * @param {Editor} dokuEditor
              */
             constructor: function (aceWrapper, dokuWrapper, dokuEditor) {
                 this.aceWrapper = aceWrapper;
                 this.dokuEditor = dokuEditor;
                 this.dokuWrapper = dokuWrapper;
                 dokuWrapper.setContainer(this);
+                console.log(dokuEditor);
                 this._init();
             },
 

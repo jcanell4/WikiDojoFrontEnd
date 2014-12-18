@@ -26,12 +26,16 @@ define([
             
             /**
              *
-             * @param {AceWrapper} aceWrapper
-             * @param {DokuWrapper} dokuWrapper
+             * @param {string} id - Identificador de la pestanya a la que es troba el document
+             * @param {Element} editorNode - Contingut HTML que embolica al editor
              */
             constructor: function (id, editorNode) {
                 this.containerId = id;
                 this.setEditorNode(editorNode);
+                console.log("id: ");
+                console.log(id);
+                console.log("editorNode:");
+                console.log(editorNode);
             },
             
              /** @param {ElementCollection | Element | id} editorNode*/
@@ -93,7 +97,7 @@ define([
                 if(!this.hasPrefix){
                     return;
                 }
-                var queue = new Array()
+                var queue = new Array();
                 queue.push(this.editorNode);
                 while(queue.length>0){
                     var elem = queue.shift();

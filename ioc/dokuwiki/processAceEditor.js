@@ -123,12 +123,7 @@ define([
             commands.hide_menu();
         });
 
-        if (JSINFO.plugin_aceeditor["default"] ||
-            (dokuWrapper.get_cookie('aceeditor') != null && dokuWrapper.get_cookie('aceeditor') !== 'off')) {
-            toggle.enable();
-        }
 
-        toggle.enable();
 
 
         var wg = registry.byId(params.buttonId)
@@ -146,19 +141,77 @@ define([
 
         console.log("Carregat en " + (new Date().getTime() - inici));
 
-//        editor = {
-//            dokuWrapper: dokuWrapper,
-//            containerId: container,
-//            toggle:      toggle,
-//            ace:         aceWrapper,
-//            preview:     preview,
-//            commands:    commands
-//        };
-        
         Dispatcher.getContentCache(params.id).setEditor(container);
 
-        // TODO es fa servir aquest objecte en algun moment o no cal retornar-lo?
-//        return editor;
+
+
+        var enable= function () {
+            var selection,
+                ace = aceWrapper,
+                doku = dokuWrapper;
+                //alert("enabling");
+            selection = doku.get_selection();
+            doku.disable();
+            container.set_height(doku.inner_height());
+            container.show();
+            //this.on();
+            ace.set_value(doku.get_value());
+            ace.resize();
+            ace.focus();
+            ace.set_selection(selection.start, selection.end);
+            //user_editing = true; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
+            doku.set_cookie('aceeditor', 'on');
+        },
+
+        disable =  function () {
+            var selection,
+                ace = aceWrapper,
+                doku = dokuWrapper;
+
+            //alert("disabling");
+            selection = ace.get_selection();
+            //user_editing = false; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
+            doku.set_cookie('aceeditor', 'off');
+            container.hide();
+            //this.off();
+            doku.enable();
+            doku.set_value(ace.get_value());
+            doku.set_selection(selection.start, selection.end);
+            doku.focus();
+        };
+
+        // Afegim els botons a la barra
+        if (JSINFO.plugin_aceeditor["default"] ||
+            (dokuWrapper.get_cookie('aceeditor') != null && dokuWrapper.get_cookie('aceeditor') !== 'off')) {
+            enable();
+        }
+
+        // TODO[Xavi] Les funcions cridades per la toolbar son globals, altre opció es modificar el fitxer lib/plugins/scripts/toolbar.js
+        window.addBtnActionClick = function ($btn, props, edid) {
+            $btn.click(function() {
+
+                // Hem de comprovar l'editor actual
+
+                console.log(DokuCookie.getValue('aceeditor'));
+                if (DokuCookie.getValue('aceeditor') != null && DokuCookie.getValue('aceeditor') !== 'on') {
+                    enable();
+                } else {
+                    disable();
+                }
+                return false;
+            })
+        };
+
+        if (typeof window.toolbar !== 'undefined') {
+            alert("Existeix una toolbar");
+            window.toolbar[window.toolbar.length] = {
+                type: "Click", // we havea new type that links to the function
+                title: "Hey Click me!",
+                icon: "../../plugins/aceeditor/images/toggle_on.png"
+            }
+        }
+
+
     };
 });
 

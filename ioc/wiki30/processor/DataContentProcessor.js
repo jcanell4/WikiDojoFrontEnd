@@ -17,7 +17,7 @@ define([
 
             /**
              * @param {*} value
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              * @override
              */
             process: function (value, dispatcher) {
@@ -32,7 +32,7 @@ define([
              * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument, i afegeix
              * el valor de la acció a "edit".
              *
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              * @param {Object.<{id: string, ns: string}>} value
              * @override
              */
