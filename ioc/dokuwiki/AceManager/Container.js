@@ -18,28 +18,29 @@ define([
             dokuWrapper: null,
 
             /** @type {object} @private*/
-            elementContainer: null,
+            $elementContainer: null,
 
             /** @type {object} @private*/
-            wrapper: null,
+            $wrapper: null,
 
             /** @type {object} @private*/
-            textarea: null,
+            $textarea: null,
                     
             /** @type {object} @private*/
             dokuEditor: null,
-                    
 
             /**
              *
              * @param {AceWrapper} aceWrapper
              * @param {DokuWrapper} dokuWrapper
+             * @param {Editor} dokuEditor
              */
             constructor: function (aceWrapper, dokuWrapper, dokuEditor) {
                 this.aceWrapper = aceWrapper;
                 this.dokuEditor = dokuEditor;
                 this.dokuWrapper = dokuWrapper;
                 dokuWrapper.setContainer(this);
+                console.log(dokuEditor);
                 this._init();
             },
 
@@ -69,39 +70,39 @@ define([
 
                 wrapper.append(element).insertAfter(textarea).hide();
 
-                this.elementContainer = element;
-                this.wrapper = wrapper;
-                this.textarea = textarea;
+                this.$elementContainer = element;
+                this.$wrapper = wrapper;
+                this.$textarea = textarea;
             },
 
             element: function () {
-                return this.elementContainer.get(0);
+                return this.$elementContainer.get(0);
             },
 
             hide: function () {
-                return this.wrapper.hide();
+                return this.$wrapper.hide();
             },
 
             incr_height: function (value) {
-                var wrapper = this.wrapper,
-                    element = this.elementContainer;
+                var wrapper = this.$wrapper,
+                    element = this.$elementContainer;
 
                 wrapper.css('height', (wrapper.height() + value) + 'px');
                 return element.css('height', wrapper.height() + 'px');
             },
 
             on_resize:  function () {
-                return this.elementContainer.css('width', this.wrapper.width() + 'px');
+                return this.$elementContainer.css('width', this.$wrapper.width() + 'px');
             },
 
             set_height: function (value) {
-                this.wrapper.css('height', value + 'px');
-                return this.elementContainer.css('height', this.wrapper.height() + 'px');
+                this.$wrapper.css('height', value + 'px');
+                return this.$elementContainer.css('height', this.$wrapper.height() + 'px');
             },
 
             show: function () {
-                var wrapper = this.wrapper,
-                    element = this.elementContainer;
+                var wrapper = this.$wrapper,
+                    element = this.$elementContainer;
                 wrapper.show();
                 element.css('width', wrapper.width() + 'px');
                 return element.css('height', wrapper.height() + 'px');

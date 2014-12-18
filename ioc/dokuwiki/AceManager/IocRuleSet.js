@@ -2,7 +2,9 @@ define([
     'dojo/_base/declare',
     'ioc/dokuwiki/AceManager/AbstractRuleSet',
     'ace-builds/mode-php',
-    'ace-builds/mode-html'
+    'ace-builds/mode-html',
+    'ace-builds/mode-markdown',
+    'ace-builds/mode-latex',
 
 ], function (declare, AbstractRuleSet) {
     return declare(AbstractRuleSet,
