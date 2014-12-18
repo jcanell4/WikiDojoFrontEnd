@@ -57,13 +57,6 @@ define([
             unload.isEditUnloadAdded=true;
         }
 
-//        window.onbeforeunload = function(){
-//            if(dispatcher.getUnsavedChangesState()) {
-//                return LANG.notsavedyet;
-//            }
-//        };
-//        window.onunload = deleteDraft;
-
         var summary = dom.byId(summaryId);
         on(summary, "change", summaryCheck);
         on(summary, "keyup", summaryCheck);

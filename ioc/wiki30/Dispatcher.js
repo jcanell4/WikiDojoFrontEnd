@@ -273,7 +273,8 @@ define([
              * @returns {boolean} unsavedChangeState
              */
             getUnsavedChangesState: function () {
-                return this.unsavedChangesState;
+                return this.unsavedChangesState
+                        || window.textChanged;
             },
 
             /**

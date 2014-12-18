@@ -1,7 +1,8 @@
 define([
     "dojo/Stateful",
     "dojo/_base/declare",
-], function (Stateful, declare) {
+    "ioc/wiki30/dispatcherSingleton"
+], function (Stateful, declare, dispatcher) {
     return declare([Stateful],
         /**
          * Embolcall per manipular un textarea.
@@ -240,7 +241,7 @@ define([
 
                         this.doku_get_text = this.getText;
                         this.getText = function () {
-                            if (self.patching && this.obj === self.textarea) {
+                            if (self.patching && this.obj === self.textArea) {
                                 return self.aceGetText(this.start, this.end);
                             } else {
                                 return this.doku_get_text();
@@ -383,8 +384,8 @@ define([
 
             // TODO d'on surt el summaryCheck()? de js.php? --> Surt de /lib/scripts/edit.js#summaryCheck()
             text_changed:    function () {
-                window.textChanged = true;
-                //return summaryCheck(); // TODO: Pendent d'activar quan integrem la dokuwiki
+                dispatcher.setUnsavedChangesState(true);
+                return summaryCheck(); // TODO: Pendent d'activar quan integrem la dokuwiki
             },
 
             /**
