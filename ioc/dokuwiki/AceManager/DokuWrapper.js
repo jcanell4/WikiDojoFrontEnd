@@ -240,7 +240,7 @@ define([
 
                         this.doku_get_text = this.getText;
                         this.getText = function () {
-                            if (self.patching && this.obj === self.textarea) {
+                            if (self.patching && this.obj === self.$textarea) {
                                 return self.aceGetText(this.start, this.end);
                             } else {
                                 return this.doku_get_text();
