@@ -26,16 +26,12 @@ define([
     var editorsCarregats = {};
 
     return function (params) { 
-        //console.log(params);
-
-
-        // TODO: substituir totes les referencies a wiki__text per params.textAreaId
 
         // Comprovem la versió del explorador i que existeix l'entorn de la dokuwiki abans de fer res
-        if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById('wiki__text'))) {
+        if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById(params.textAreaId))) {
             return;
         }
-        
+
         var currentEditor = Dispatcher.getContentCache(params.id).getEditor();
 
         var lang_rules = {
@@ -59,15 +55,15 @@ define([
 
                 // TODO Reactivar al integrar
                 theme:       JSINFO.plugin_aceeditor.colortheme,
-                readOnly:    jQuery(document.getElementById('wiki__text')).attr('readonly'),
+                readOnly:    jQuery(document.getElementById(params.textAreaId)).attr('readonly'),
                 wraplimit:   JSINFO.plugin_aceeditor.wraplimit,
-                wrapMode:    jQuery(document.getElementById('wiki__text')).attr('wrap') !== 'off',
+                wrapMode:    jQuery(document.getElementById(params.textAreaId)).attr('wrap') !== 'off',
                 mdpage:      JSINFO.plugin_aceeditor.mdpage // TODO no he trobat on es fa servir aquesta propietat
             }),
 
             aceWrapper = new AceWrapper(iocAceEditor),
 
-            dokuWrapper = new DokuWrapper(aceWrapper),
+            dokuWrapper = new DokuWrapper(aceWrapper, '', params.id),
 
             container = new Container(aceWrapper, dokuWrapper, currentEditor),
 
@@ -139,79 +135,100 @@ define([
             }
         });
 
-        console.log("Carregat en " + (new Date().getTime() - inici));
+
+
+
 
         Dispatcher.getContentCache(params.id).setEditor(container);
 
 
+        var enable = function () {
+                var id = GlobalState.getCurrentId(),
+                    selection,
+                    container = Dispatcher.getContentCache(id).getEditor(),
+                    ace = container.aceWrapper,
+                    doku = container.dokuWrapper;
 
-        var enable= function () {
-            var selection,
-                ace = aceWrapper,
-                doku = dokuWrapper;
-                //alert("enabling");
-            selection = doku.get_selection();
-            doku.disable();
-            container.set_height(doku.inner_height());
-            container.show();
-            //this.on();
-            ace.set_value(doku.get_value());
-            ace.resize();
-            ace.focus();
-            ace.set_selection(selection.start, selection.end);
-            //user_editing = true; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
-            doku.set_cookie('aceeditor', 'on');
-        },
+                selection = doku.get_selection();
+                doku.disable();
+                container.set_height(doku.inner_height());
+                container.show();
+                //this.on();
+                ace.set_value(doku.get_value());
+                ace.resize();
+                ace.focus();
+                ace.set_selection(selection.start, selection.end);
+                //user_editing = true; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
+                //doku.set_cookie('aceeditor-' + id, 'on');
+                doku.set_cookie('aceeditor', 'on');
+                Dispatcher.getContentCache(id).setAceEditorOn(true);
 
-        disable =  function () {
-            var selection,
-                ace = aceWrapper,
-                doku = dokuWrapper;
+                //console.log('aceeditor-'+id);
+                //console.log(doku.get_cookie('aceeditor-'+id));
 
-            //alert("disabling");
-            selection = ace.get_selection();
-            //user_editing = false; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
-            doku.set_cookie('aceeditor', 'off');
-            container.hide();
-            //this.off();
-            doku.enable();
-            doku.set_value(ace.get_value());
-            doku.set_selection(selection.start, selection.end);
-            doku.focus();
-        };
+            },
+
+            disable = function () {
+                var id = GlobalState.getCurrentId(),
+                    selection,
+                    container = Dispatcher.getContentCache(id).getEditor(),
+                    ace = container.aceWrapper,
+                    doku = container.dokuWrapper;
+
+                selection = ace.get_selection();
+                //user_editing = false; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
+
+                Dispatcher.getContentCache(id).setAceEditorOn(false);
+                //doku.set_cookie('aceeditor-' + id, 'off');
+                doku.set_cookie('aceeditor', 'off');
+
+                //console.log('aceeditor-'+id);
+                //console.log(doku.get_cookie('aceeditor-'+id));
+
+                container.hide();
+                //this.off();
+                doku.enable();
+                doku.set_value(ace.get_value());
+                doku.set_selection(selection.start, selection.end);
+                doku.focus();
+            };
 
         // Afegim els botons a la barra
-        if (JSINFO.plugin_aceeditor["default"] ||
-            (dokuWrapper.get_cookie('aceeditor') != null && dokuWrapper.get_cookie('aceeditor') !== 'off')) {
+        if (JSINFO.plugin_aceeditor["default"] || Dispatcher.getContentCache(id).isAceEditorOn()) {
             enable();
         }
 
         // TODO[Xavi] Les funcions cridades per la toolbar son globals, altre opció es modificar el fitxer lib/plugins/scripts/toolbar.js
-        window.addBtnActionClick = function ($btn, props, edid) {
-            $btn.click(function() {
 
-                // Hem de comprovar l'editor actual
+        // Només afegim el botó si no existeix
 
-                console.log(DokuCookie.getValue('aceeditor'));
-                if (DokuCookie.getValue('aceeditor') != null && DokuCookie.getValue('aceeditor') !== 'on') {
-                    enable();
-                } else {
-                    disable();
+        if (typeof window.toolbar !== 'undefined' && !window.addBtnActionClick) {
+            window.addBtnActionClick = function ($btn, props, edid) {
+                var id = GlobalState.getCurrentId();
+
+                $btn.click(function () {
+                    // Hem de comprovar l'editor actual
+                    if (Dispatcher.getContentCache(id).isAceEditorOn()) {
+                        disable();
+                    } else {
+                        enable();
+                    }
+                    return false;
+                })
+            };
+
+            if (typeof window.toolbar !== 'undefined') {
+                window.toolbar[window.toolbar.length] = {
+                    type:  "Click", // we havea new type that links to the function
+                    title: "Activar/Desactivar ACE!",
+                    icon:  "../../plugins/aceeditor/images/toggle_on.png"
                 }
-                return false;
-            })
-        };
-
-        if (typeof window.toolbar !== 'undefined') {
-            alert("Existeix una toolbar");
-            window.toolbar[window.toolbar.length] = {
-                type: "Click", // we havea new type that links to the function
-                title: "Hey Click me!",
-                icon: "../../plugins/aceeditor/images/toggle_on.png"
             }
+
         }
 
 
+        console.log("Carregat en " + (new Date().getTime() - inici));
     };
 });
 

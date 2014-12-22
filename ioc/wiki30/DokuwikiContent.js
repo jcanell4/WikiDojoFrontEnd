@@ -22,7 +22,7 @@ define([
              * @type {Object.<{content: string, id: string, tittle: string}>}
              */
             metaData: null,
-            
+
             editor: null,
 
             /**
@@ -78,7 +78,7 @@ define([
                     return this.metaData;
                 }
             },
-            
+
             setEditor: function(editor){
               this.editor  = editor;
             },
@@ -92,7 +92,7 @@ define([
                 alert("removeAllMetaData");
                 this.metaData = new Array();
             },
-            
+
             // TODO[Xavi] No es crida enlloc?
             setDocumentHTML:   function (content) {
                 alert("setDocumentHTML");
@@ -103,6 +103,23 @@ define([
             setDocumentWiki:   function (content) {
                 alert("setDocumentWiki");
                 this.documentWiki = content.content;
+            },
+
+            /**
+             *
+             * @returns {boolean}
+             */
+            isAceEditorOn: function () {
+                return this.aceEditorOn;
+            },
+
+
+            /**
+             *
+             * @param {boolean} on
+             */
+            setAceEditorOn: function (on) {
+                this.aceEditorOn = on;
             }
         });
 

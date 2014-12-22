@@ -1,8 +1,9 @@
 define([
     "dojo/Stateful",
     "dojo/_base/declare",
-    "ioc/wiki30/dispatcherSingleton"
-], function (Stateful, declare, dispatcher) {
+    "ioc/wiki30/dispatcherSingleton",
+    "ioc/dokuwiki/AceManager/patcher",
+], function (Stateful, declare, dispatcher, patcher) {
     return declare([Stateful],
         /**
          * Embolcall per manipular un textarea.
@@ -83,36 +84,6 @@ define([
                 this.set('aceWrapper', aceWrapper)
             },
 
-            /**
-             * Afegeix una funció al objecte dw_editor si existeix alguna amb aquest nom o al objecte window si no s'ha
-             * trobat cap coincidencia amb el nom.
-             *
-             * Aquesta funció no reemplaça l'anterior, si no que s'afegeix a la original de manera que es criden totes.
-             *
-             * @param {string} name - nom de la funció
-             * @param {function} func - funció per afegir
-             * @returns {function|null} - La referéncia a la funció parxejada
-             */
-            patch: function (name, func) {
-                var obj = (dw_editor && dw_editor[name]) ? dw_editor : window,
-                    orig_func = obj[name];
-
-                obj[name] = function () {
-                    var args, aux;
-
-                    if (arguments.length > 0) {
-                        args = [].slice.call(arguments, 0);
-                    } else {
-                        args = []
-                    }
-
-                    aux = [this, orig_func].concat([].slice.call(args));
-
-                    return func.call.apply(func, aux);
-                };
-
-                return obj[name];
-            },
 
             /**
              * Inicialitza l'embolcall aplicant els parxes necessaris per afegir les noves funcions al editor a sobre
@@ -153,7 +124,7 @@ define([
                         if (!opts) {
                             opts = {};
                         }
-                        if (self.patching && selection.obj === self.textArea) {
+                        if (self.patching && selection.obj.id === self.textArea.id) {
                             self.acePasteText(selection.start, selection.end, text);
                             selection.end = selection.start + text.length - (opts.endofs || 0);
                             selection.start += opts.startofs || 0;
@@ -257,7 +228,7 @@ define([
                      * @private
                      */
                     _patchSetSelection = function (func, selection) {
-                        if (self.patching && selection.obj === self.textArea) {
+                        if (self.patching && selection.obj.id === self.textArea.id) {
                             self.aceSetSelection(selection.start, selection.end);
                         } else {
                             if (func) {
@@ -266,14 +237,24 @@ define([
                         }
                     };
 
-                this.patch('currentHeadlineLevel', _patchCurrentHeadlineLevel);
-                this.patch('pasteText', _patchPasteText);
-                this.patch('setWrap', _patchSetWrap);
-                this.patch('sizeCtl', _patchSizeCtl);
+                patcher('currentHeadlineLevel', _patchCurrentHeadlineLevel);
+                patcher('pasteText', _patchPasteText);
+                patcher('setWrap', _patchSetWrap);
+                patcher('sizeCtl', _patchSizeCtl);
 
-                this.doku_get_selection = this.patch('getSelection', _patchGetSelection);
-                this.doku_selection_class = this.patch('selection_class', _patchSelectionClass);
-                this.doku_set_selection = this.patch('setSelection', _patchSetSelection);
+                this.doku_get_selection = patcher('getSelection', _patchGetSelection);
+                this.doku_selection_class = patcher('selection_class', _patchSelectionClass);
+                this.doku_set_selection = patcher('setSelection', _patchSetSelection);
+
+
+                //this.patch('currentHeadlineLevel', _patchCurrentHeadlineLevel);
+                //this.patch('pasteText', _patchPasteText);
+                //this.patch('setWrap', _patchSetWrap);
+                //this.patch('sizeCtl', _patchSizeCtl);
+                //
+                //this.doku_get_selection = this.patch('getSelection', _patchGetSelection);
+                //this.doku_selection_class = this.patch('selection_class', _patchSelectionClass);
+                //this.doku_set_selection = this.patch('setSelection', _patchSetSelection);
 
                 jQuery(this.textArea.form).submit(function (event) {
                     if (this.patching) {
