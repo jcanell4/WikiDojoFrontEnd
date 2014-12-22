@@ -23,7 +23,6 @@ define([
 
 
 ], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, Toggle, IocCommands, GlobalState, Dispatcher) {
-    var editorsCarregats = {};
 
     return function (params) {
 
@@ -247,4 +246,3 @@ define([
         console.log("Carregat en " + (new Date().getTime() - inici));
     };
 });
-
