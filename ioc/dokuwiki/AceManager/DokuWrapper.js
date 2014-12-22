@@ -105,10 +105,10 @@ define([
                      */
                     _patchCurrentHeadlineLevel = function (func, id) {
                         if (id === self.textArea.id) {
-                            jQuery(self.textArea).val(this.aceGetValue());
+                            jQuery(self.textArea).val(self.aceGetValue());
                         }
 
-                        func(id);
+                        return func(id);
                     },
 
                     /**
@@ -245,16 +245,6 @@ define([
                 this.doku_get_selection = patcher('getSelection', _patchGetSelection);
                 this.doku_selection_class = patcher('selection_class', _patchSelectionClass);
                 this.doku_set_selection = patcher('setSelection', _patchSetSelection);
-
-
-                //this.patch('currentHeadlineLevel', _patchCurrentHeadlineLevel);
-                //this.patch('pasteText', _patchPasteText);
-                //this.patch('setWrap', _patchSetWrap);
-                //this.patch('sizeCtl', _patchSizeCtl);
-                //
-                //this.doku_get_selection = this.patch('getSelection', _patchGetSelection);
-                //this.doku_selection_class = this.patch('selection_class', _patchSelectionClass);
-                //this.doku_set_selection = this.patch('setSelection', _patchSetSelection);
 
                 jQuery(this.textArea.form).submit(function (event) {
                     if (this.patching) {
