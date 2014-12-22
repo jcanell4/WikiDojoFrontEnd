@@ -32,10 +32,6 @@ define([
             constructor: function (id, editorNode) {
                 this.containerId = id;
                 this.setEditorNode(editorNode);
-                console.log("id: ");
-                console.log(id);
-                console.log("editorNode:");
-                console.log(editorNode);
             },
             
              /** @param {ElementCollection | Element | id} editorNode*/
