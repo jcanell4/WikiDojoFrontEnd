@@ -4,7 +4,8 @@ define([
     "dojo/dom-construct",
     "dojo/dom",
     "dojo/dom-prop",
-], function (Stateful, declare, domConstuct, dom, domProp) {
+    "ioc/dokuwiki/AceManager/patcher",
+], function (Stateful, declare, domConstuct, dom, domProp, patcher) {
     return declare([Stateful],
         /**
          * Embolcall per manipular un editor ace.
@@ -51,6 +52,10 @@ define([
             select: function(){
                 domConstuct.place(this.editorNode, this.containerId);
                 this._removePrefixId();
+
+                // Comprovem si tenim les funcions d'aquest guardades
+                patcher.restoreCachedFunctions(this.containerId);
+
             },
 
     
@@ -95,6 +100,7 @@ define([
                 }
                 var queue = new Array();
                 queue.push(this.editorNode);
+
                 while(queue.length>0){
                     var elem = queue.shift();
                     var children = elem.children;
@@ -104,7 +110,9 @@ define([
                     if(elem.id){
                         if(typeof elem.id === "string"){
                             var newId = elem.id.substr(this.containerId.length+1);
+                            //console.log(elem);
                             domProp.set(elem, "id", newId)
+
                         }else if(elem.tagName=="FORM"){
                             domProp.set(elem, "id", "dw__editform")
                         }

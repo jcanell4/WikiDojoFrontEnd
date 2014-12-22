@@ -25,6 +25,11 @@ define([
 
             editor: null,
 
+            // TODO[Xavi] Necessaris per controlar l'estat dels botons
+            aceEditorOn: false,
+            wrapperOn: true,
+
+
             /**
              * Es construeix un objecte d'aquest tipus per cada pestanya que es carrega.
              *
@@ -113,13 +118,28 @@ define([
                 return this.aceEditorOn;
             },
 
-
             /**
              *
              * @param {boolean} on
              */
             setAceEditorOn: function (on) {
                 this.aceEditorOn = on;
+            },
+
+            /**
+             *
+             * @returns {boolean}
+             */
+            isWrapperOn: function () {
+                return this.wrapperOn;
+            },
+
+            /**
+             *
+             * @param {boolean} on
+             */
+            setWrapperOn: function (on) {
+                this.wrapperOn = on;
             }
         });
 

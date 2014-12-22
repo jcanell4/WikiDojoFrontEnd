@@ -3,7 +3,8 @@ define([
     "dojo/_base/declare",
     "ioc/wiki30/dispatcherSingleton",
     "ioc/dokuwiki/AceManager/patcher",
-], function (Stateful, declare, dispatcher, patcher) {
+    'ioc/wiki30/GlobalState',
+], function (Stateful, declare, dispatcher, patcher, GlobalState) {
     return declare([Stateful],
         /**
          * Embolcall per manipular un textarea.
@@ -98,6 +99,8 @@ define([
             _init: function () {
                 var self = this,
 
+                    id = GlobalState.getCurrentId(),
+
                     /**
                      * @param {function} func - Funcio a cridar a continuació
                      * @param {string} id - Id del text area
@@ -147,7 +150,7 @@ define([
                      */
                     _patchSetWrap = function (func, obj, value) {
                         func(obj, value);
-                        if (obj === self.textArea) {
+                        if (obj.id === self.textArea.id) {
                             self.aceSetWrap(value !== 'off');
                         }
                     },
@@ -237,14 +240,25 @@ define([
                         }
                     };
 
-                patcher('currentHeadlineLevel', _patchCurrentHeadlineLevel);
-                patcher('pasteText', _patchPasteText);
-                patcher('setWrap', _patchSetWrap);
-                patcher('sizeCtl', _patchSizeCtl);
+                patcher.patch('currentHeadlineLevel', _patchCurrentHeadlineLevel, id);
+                patcher.patch('pasteText', _patchPasteText, id);
+                patcher.patch('setWrap', _patchSetWrap, id);
+                patcher.patch('sizeCtl', _patchSizeCtl, id);
 
-                this.doku_get_selection = patcher('getSelection', _patchGetSelection);
-                this.doku_selection_class = patcher('selection_class', _patchSelectionClass);
-                this.doku_set_selection = patcher('setSelection', _patchSetSelection);
+                this.doku_get_selection = patcher.patch('getSelection', _patchGetSelection, id);
+                this.doku_selection_class = patcher.patch('selection_class', _patchSelectionClass, id);
+                this.doku_set_selection = patcher.patch('setSelection', _patchSetSelection, id);
+
+
+                //patcher.cacheFunction(id, 'currentHeadlineLevel');
+                //patcher.cacheFunction(id, 'pasteText');
+                //patcher.cacheFunction(id, 'setWrap');
+                //patcher.cacheFunction(id, 'sizeCtl');
+                //patcher.cacheFunction(id, 'getSelection');
+                //patcher.cacheFunction(id, 'selection_class');
+                //patcher.cacheFunction(id, 'setSelection');
+                //
+
 
                 jQuery(this.textArea.form).submit(function (event) {
                     if (this.patching) {
@@ -271,7 +285,7 @@ define([
                 jQuery(this.textArea).show();
             },
 
-            focus:      function () {
+            focus: function () {
                 jQuery(this.textArea).focus();
             },
 
@@ -279,7 +293,7 @@ define([
                 return DokuCookie.getValue(name);
             },
 
-            get_readonly:  function () {
+            get_readonly: function () {
                 return jQuery(this.textArea).attr('readonly');
             },
 
@@ -325,7 +339,7 @@ define([
                 return jQuery(this.textArea).innerHeight();
             },
 
-            set_cookie:   function (name, value) {
+            set_cookie: function (name, value) {
                 DokuCookie.setValue(name, value);
             },
 
@@ -349,12 +363,12 @@ define([
              *
              * @param {string} value
              */
-            set_value:       function (value) {
+            set_value:    function (value) {
                 jQuery(this.textArea).val(value);
             },
 
             // TODO d'on surt el summaryCheck()? de js.php? --> Surt de /lib/scripts/edit.js#summaryCheck()
-            text_changed:    function () {
+            text_changed: function () {
                 dispatcher.setUnsavedChangesState(true);
                 return summaryCheck(); // TODO: Pendent d'activar quan integrem la dokuwiki
             },
@@ -375,7 +389,7 @@ define([
              * @param {int} end - Punt final
              * @returns {string}
              */
-            aceGetText:      function (start, end) {
+            aceGetText: function (start, end) {
                 return this.aceWrapper.get_value().substring(start, end);
             },
 
@@ -384,7 +398,7 @@ define([
              *
              * @returns {string}
              */
-            aceGetValue:     function () {
+            aceGetValue: function () {
                 return this.aceWrapper.get_value();
             },
 
@@ -395,7 +409,7 @@ define([
              * @param {int} end - Punt final
              * @param {string} text - Text a enganxar
              */
-            acePasteText:    function (start, end, text) {
+            acePasteText: function (start, end, text) {
                 this.aceWrapper.replace(start, end, text);
                 this.aceWrapper.set_selection(start, end);
                 this.aceWrapper.focus();
@@ -404,7 +418,7 @@ define([
             /**
              * Comunica la realització dels canvis al contenidor i el embolcall del ace.
              */
-            aceOnResize:     function () {
+            aceOnResize: function () {
                 this.container.on_resize();
                 this.aceWrapper.resize();
             },
@@ -425,7 +439,7 @@ define([
              *
              * @param {string} value -  Els valos vàlids son 'on' i 'off'
              */
-            aceSetWrap:      function (value) {
+            aceSetWrap: function (value) {
                 this.aceWrapper.set_wrap_mode(value);
                 this.aceWrapper.focus();
             },
@@ -435,7 +449,7 @@ define([
              *
              * @param {int} value - Nova alçada
              */
-            aceSizeCtl:      function (value) {
+            aceSizeCtl: function (value) {
                 this.container.incr_height(value);
                 this.aceWrapper.resize();
                 this.aceWrapper.focus();

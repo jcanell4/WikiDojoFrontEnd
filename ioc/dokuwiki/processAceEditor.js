@@ -25,7 +25,7 @@ define([
 ], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, Toggle, IocCommands, GlobalState, Dispatcher) {
     var editorsCarregats = {};
 
-    return function (params) { 
+    return function (params) {
 
         // Comprovem la versió del explorador i que existeix l'entorn de la dokuwiki abans de fer res
         if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById(params.textAreaId))) {
@@ -97,12 +97,12 @@ define([
 
         // TODO: Eliminar, aquest codi fa que es mostri el state de la línia actual
         /*
-        iocAceEditor.setChangeCursorCallback(
-            function () {
-                var currline = iocAceEditor.editor.getSelectionRange().start.row;
-                console.log(iocAceEditor.session.getState(currline));
-            }
-        );*/
+         iocAceEditor.setChangeCursorCallback(
+         function () {
+         var currline = iocAceEditor.editor.getSelectionRange().start.row;
+         console.log(iocAceEditor.session.getState(currline));
+         }
+         );*/
 
         // TODO en una propera tasca
         iocAceEditor.setDocumentChangeCallback(function () {
@@ -120,10 +120,8 @@ define([
         });
 
 
-
-
         var wg = registry.byId(params.buttonId)
-        
+
         wg.putClickListener(params.key, function () {
 
             if (dokuWrapper.get_cookie('aceeditor')
@@ -134,9 +132,6 @@ define([
                 textArea.value = editor.getAceValue();
             }
         });
-
-
-
 
 
         Dispatcher.getContentCache(params.id).setEditor(container);
@@ -159,12 +154,9 @@ define([
                 ace.focus();
                 ace.set_selection(selection.start, selection.end);
                 //user_editing = true; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
-                //doku.set_cookie('aceeditor-' + id, 'on');
                 doku.set_cookie('aceeditor', 'on');
                 Dispatcher.getContentCache(id).setAceEditorOn(true);
 
-                //console.log('aceeditor-'+id);
-                //console.log(doku.get_cookie('aceeditor-'+id));
 
             },
 
@@ -179,11 +171,7 @@ define([
                 //user_editing = false; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
 
                 Dispatcher.getContentCache(id).setAceEditorOn(false);
-                //doku.set_cookie('aceeditor-' + id, 'off');
                 doku.set_cookie('aceeditor', 'off');
-
-                //console.log('aceeditor-'+id);
-                //console.log(doku.get_cookie('aceeditor-'+id));
 
                 container.hide();
                 //this.off();
@@ -201,12 +189,11 @@ define([
         // TODO[Xavi] Les funcions cridades per la toolbar son globals, altre opció es modificar el fitxer lib/plugins/scripts/toolbar.js
 
         // Només afegim el botó si no existeix
-
         if (typeof window.toolbar !== 'undefined' && !window.addBtnActionClick) {
-            window.addBtnActionClick = function ($btn, props, edid) {
-                var id = GlobalState.getCurrentId();
+            window.addBtnActionEnableAce = function ($btn, props, edid) {
 
                 $btn.click(function () {
+                    var id = GlobalState.getCurrentId();
                     // Hem de comprovar l'editor actual
                     if (Dispatcher.getContentCache(id).isAceEditorOn()) {
                         disable();
@@ -217,11 +204,40 @@ define([
                 })
             };
 
+            window.addBtnActionEnableWrapper = function ($btn, props, edid) {
+
+                $btn.click(function () {
+                    var id = GlobalState.getCurrentId(),
+                        content = Dispatcher.getContentCache(id),
+                        textArea = content.getEditor().$textArea.context;
+
+                    if (content.isWrapperOn()) {
+                        dw_editor.setWrap(textArea, 'off');
+                        content.setWrapperOn(false);
+
+                    } else {
+                        dw_editor.setWrap(textArea, 'on');
+                        content.setWrapperOn(true);
+                    }
+
+
+                    return false;
+                })
+            };
+
             if (typeof window.toolbar !== 'undefined') {
                 window.toolbar[window.toolbar.length] = {
-                    type:  "Click", // we havea new type that links to the function
+                    type:  "EnableAce", // we havea new type that links to the function
                     title: "Activar/Desactivar ACE!",
                     icon:  "../../plugins/aceeditor/images/toggle_on.png"
+                }
+            }
+
+            if (typeof window.toolbar !== 'undefined') {
+                window.toolbar[window.toolbar.length] = {
+                    type:  "EnableWrapper", // we havea new type that links to the function
+                    title: "Activar/Desactivar embolcall!",
+                    icon:  "../../../../proves_ace/images/wrap.png"
                 }
             }
 

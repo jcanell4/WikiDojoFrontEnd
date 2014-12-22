@@ -24,7 +24,7 @@ define([
             $wrapper: null,
 
             /** @type {object} @private*/
-            $textarea: null,
+            $textArea: null,
                     
             /** @type {object} @private*/
             dokuEditor: null,
@@ -40,7 +40,6 @@ define([
                 this.dokuEditor = dokuEditor;
                 this.dokuWrapper = dokuWrapper;
                 dokuWrapper.setContainer(this);
-                console.log(dokuEditor);
                 this._init();
             },
 
@@ -72,7 +71,7 @@ define([
 
                 this.$elementContainer = element;
                 this.$wrapper = wrapper;
-                this.$textarea = textarea;
+                this.$textArea = textarea;
             },
 
             element: function () {
