@@ -19,6 +19,7 @@ define([
             /** @type {string} */
             query: "",
             processors: null,
+            content: null,
             
             addProcessor: function(type, processor){
                 if(this.processors===null){
@@ -129,8 +130,13 @@ define([
                 var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
                     (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
                 var vUrl = this.urlBase;
-                if(!query && this.getQuery() && this.getQuery().length>0){
-                     query=this.getQuery();
+                if(!query){
+                    var q = this.getQuery();
+                    if(q && typeof q === "string" && q.length>0){
+                        query=q;
+                    }else{
+                        this.content = q;
+                    }
                 }
                 if (query) {
                     vUrl += linkChar + query;
@@ -146,6 +152,9 @@ define([
                 var resp;
                 var req = this;
                 var configPost = {handleAs: "json"};
+                if(this.content){
+                    configPost.content = this.content;
+                }
                 if (this.method === "post") {
 
                     if (this.hasPostData()) {
