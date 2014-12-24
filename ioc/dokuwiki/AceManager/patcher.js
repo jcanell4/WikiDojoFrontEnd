@@ -13,6 +13,7 @@ define([], function () {
          *
          * @param {string} name - nom de la funció
          * @param {function} func - funció per afegir
+         * @param {string} id - id corresponent a la pestanya que s'està editant
          * @returns {function|null} - La referéncia a la funció parxejada
          */
         patch = function (name, func, id) {

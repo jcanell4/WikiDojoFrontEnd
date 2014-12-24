@@ -249,17 +249,6 @@ define([
                 this.doku_selection_class = patcher.patch('selection_class', _patchSelectionClass, id);
                 this.doku_set_selection = patcher.patch('setSelection', _patchSetSelection, id);
 
-
-                //patcher.cacheFunction(id, 'currentHeadlineLevel');
-                //patcher.cacheFunction(id, 'pasteText');
-                //patcher.cacheFunction(id, 'setWrap');
-                //patcher.cacheFunction(id, 'sizeCtl');
-                //patcher.cacheFunction(id, 'getSelection');
-                //patcher.cacheFunction(id, 'selection_class');
-                //patcher.cacheFunction(id, 'setSelection');
-                //
-
-
                 jQuery(this.textArea.form).submit(function (event) {
                     if (this.patching) {
                         return jQuery(self.textArea).val(self.aceGetValue());
