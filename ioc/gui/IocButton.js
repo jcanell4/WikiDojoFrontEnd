@@ -48,7 +48,7 @@ define([
                         }
                     }
                 }
-                this.sendRequest(this.getQuery());
+                this.sendRequest();
             },
 
             /** @override */
