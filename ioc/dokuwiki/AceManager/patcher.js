@@ -1,3 +1,9 @@
+/**
+ * Mòdul per aplicar els patch necesaris a les funcions globals del plugin aceeditor i la dokuwiki, conservant un cache
+ * de les funcions originals i les nove per facilitar l'administració de múltiples pestanyes.
+ *
+ * @author Xavier García<xaviergaro.dev@gmail.com>
+ */
 define([], function () {
     // Métodes i propietats privades del patcher
 
@@ -18,7 +24,7 @@ define([], function () {
          */
         patch = function (name, func, id) {
             if (!id) {
-                throw new Error ("No s'ha especificat la id per afegir al cache");
+                throw new Error("No s'ha especificat la id per afegir al cache");
             }
 
             var obj = (dw_editor && dw_editor[name]) ? dw_editor : window,
@@ -50,7 +56,7 @@ define([], function () {
 
             // Afegim la nova funció al cache
             if (id) {
-              cacheFunction(id, name);
+                cacheFunction(id, name);
             }
 
             return obj[name];

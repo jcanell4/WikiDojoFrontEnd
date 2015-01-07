@@ -8,10 +8,10 @@ define([
     'ioc/dokuwiki/AceManager/AceWrapper',
     'ioc/dokuwiki/AceManager/DokuWrapper',
     'ioc/dokuwiki/AceManager/Container',
-    'ioc/dokuwiki/AceManager/Toggle',
     'ioc/dokuwiki/AceManager/IocCommands',
     'ioc/wiki30/GlobalState',
     'ioc/wiki30/dispatcherSingleton',
+    'ioc/dokuwiki/AceManager/toolbarManager',
 
     // Només cal carregar els modes que s'han d'incloure
     "ace-builds/mode-markdown",
@@ -22,12 +22,18 @@ define([
     "ioc/dokuwiki/underscore",
 
 
-], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, Toggle, IocCommands, GlobalState, Dispatcher) {
+], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, GlobalState, dispatcher, toolbarManager) {
 
-    var enable = function () {
-            var id = GlobalState.getCurrentId(),
+    var
+        /**
+         * Activa l'editor ACE a la pestanya actual o la pestanya pasada com argument per evitar problemas al recarregar.
+         *
+         * @param {string?} id - identificador de la pestanya corresponent al editor a activar.
+         */
+        enable = function (id) {
+            var currentId = id || GlobalState.getCurrentId(),
                 selection,
-                container = Dispatcher.getContentCache(id).getEditor(),
+                container = dispatcher.getContentCache(currentId).getEditor(),
                 ace = container.aceWrapper,
                 doku = container.dokuWrapper;
 
@@ -35,97 +41,90 @@ define([
             doku.disable();
             container.set_height(doku.inner_height());
             container.show();
-            //this.on();
             ace.set_value(doku.get_value());
             ace.resize();
             ace.focus();
             ace.set_selection(selection.start, selection.end);
             //user_editing = true; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
             doku.set_cookie('aceeditor', 'on');
-            Dispatcher.getContentCache(id).setAceEditorOn(true);
-
-
+            dispatcher.getContentCache(currentId).setAceEditorOn(true);
         },
 
+        /**
+         * Desactiva l'editor ACE a la pestanya actual
+         */
         disable = function () {
             var id = GlobalState.getCurrentId(),
                 selection,
-                container = Dispatcher.getContentCache(id).getEditor(),
+                container = dispatcher.getContentCache(id).getEditor(),
                 ace = container.aceWrapper,
                 doku = container.dokuWrapper;
 
             selection = ace.get_selection();
             //user_editing = false; // TODO comprovar on s'ha d'actualitzar aquest valor i per a que es fa servir --> Es fa servir a la funció callback que es passa al AceEditor
 
-            Dispatcher.getContentCache(id).setAceEditorOn(false);
+            dispatcher.getContentCache(id).setAceEditorOn(false);
             doku.set_cookie('aceeditor', 'off');
 
             container.hide();
-            //this.off();
             doku.enable();
             doku.set_value(ace.get_value());
             doku.set_selection(selection.start, selection.end);
             doku.focus();
-        };
+        },
 
+        confEnableAce = {
+            type:  "EnableAce",
+            title: "Activar/Desactivar ACE",
+            icon:  "../../plugins/aceeditor/images/toggle_on.png" // TODO: Canviar la ruta on es troben les imatges
+        },
 
-    // TODO[Xavi] Les funcions cridades per la toolbar son globals, altre opció es modificar el fitxer lib/plugins/scripts/toolbar.js
+        /**
+         * Activa o desactiva l'editor ACE segons l'estat actual
+         *
+         * @returns {boolean} - Sempre retorna fals.
+         */
+        funcEnableAce = function () {
+            var id = GlobalState.getCurrentId();
 
-    // Només afegim el botó si no existeix
-    // if (typeof window.toolbar !== 'undefined' && !window.addBtnActionClick) {
-        window.addBtnActionEnableAce = function ($btn, props, edid) {
-
-            $btn.click(function () {
-                var id = GlobalState.getCurrentId();
-                // Hem de comprovar l'editor actual
-                if (Dispatcher.getContentCache(id).isAceEditorOn()) {
-                    disable();
-                } else {
-                    enable();
-                }
-                return false;
-            })
-        };
-
-        window.addBtnActionEnableWrapper = function ($btn, props, edid) {
-
-            $btn.click(function () {
-                var id = GlobalState.getCurrentId(),
-                    content = Dispatcher.getContentCache(id),
-                    textArea = content.getEditor().$textArea.context;
-
-                if (content.isWrapperOn()) {
-                    dw_editor.setWrap(textArea, 'off');
-                    content.setWrapperOn(false);
-
-                } else {
-                    dw_editor.setWrap(textArea, 'on');
-                    content.setWrapperOn(true);
-                }
-
-
-                return false;
-            })
-        };
-
-        if (typeof window.toolbar !== 'undefined') {
-            window.toolbar[window.toolbar.length] = {
-                type:  "EnableAce",
-                title: "Activar/Desactivar ACE",
-                icon:  "../../plugins/aceeditor/images/toggle_on.png" // TODO: Canviar la ruta on es troben les imatges
+            if (dispatcher.getContentCache(id).isAceEditorOn()) {
+                disable();
+            } else {
+                enable();
             }
-        }
+            return false;
+        },
 
-        if (typeof window.toolbar !== 'undefined') {
-            window.toolbar[window.toolbar.length] = {
-                type:  "EnableWrapper", // we havea new type that links to the function
-                title: "Activar/Desactivar embolcall",
-                icon:  "../../../../proves_ace/images/wrap.png" // TODO: Canviar la ruta on es troben les imatges
+        confEnableWrapper = {
+            type:  "EnableWrapper", // we havea new type that links to the function
+            title: "Activar/Desactivar embolcall",
+            icon:  "../../../../proves_ace/images/wrap.png" // TODO: Canviar la ruta on es troben les imatges
+        },
+
+        /**
+         * Activa o desactiva l'embolcall del text.
+         * @returns {boolean} - Sempre retorna fals
+         */
+        funcEnableWrapper = function () {
+            var id = GlobalState.getCurrentId(),
+                content = dispatcher.getContentCache(id),
+                textArea = content.getEditor().$textArea.context;
+
+            if (content.isWrapperOn()) {
+                dw_editor.setWrap(textArea, 'off');
+                content.setWrapperOn(false);
+
+            } else {
+                dw_editor.setWrap(textArea, 'on');
+                content.setWrapperOn(true);
             }
-        }
 
-    //}
+            return false;
+        };
 
+    toolbarManager.addButton(confEnableAce, funcEnableAce);
+    toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
+    toolbarManager.removeButton(1);
 
     return function (params) {
 
@@ -134,9 +133,10 @@ define([
             return;
         }
 
-        var currentEditor = Dispatcher.getContentCache(params.id).getEditor();
 
-        var lang_rules = {
+        var currentEditor = dispatcher.getContentCache(params.id).getEditor(),
+
+            lang_rules = {
                 // TODO Eliminar aquests llenguatges, es només una demostració
                 //java:       ace.require("ace/mode/java_highlight_rules").JavaHighlightRules,
                 javascript: ace.require("ace/mode/javascript_highlight_rules").JavaScriptHighlightRules
@@ -168,8 +168,6 @@ define([
             dokuWrapper = new DokuWrapper(aceWrapper, '', params.id),
 
             container = new Container(aceWrapper, dokuWrapper, currentEditor),
-
-            toggle = new Toggle(container),
 
             user_editing = false,
 
@@ -231,19 +229,18 @@ define([
                 && dokuWrapper.get_cookie('aceeditor') !== 'off') {
                 var textArea = dom.byId(params.textAreaId),
                     id = GlobalState.getCurrentId(),
-                    editor = Dispatcher.getContentCache(id).getEditor();
+                    editor = dispatcher.getContentCache(id).getEditor();
                 textArea.value = editor.getAceValue();
             }
         });
 
 
-        Dispatcher.getContentCache(params.id).setEditor(container);
+        dispatcher.getContentCache(params.id).setEditor(container);
 
         // Si s'ha d'activar l'editor l'activem
-        if (JSINFO.plugin_aceeditor["default"] || Dispatcher.getContentCache(id).isAceEditorOn()) {
-            enable();
+        if (JSINFO.plugin_aceeditor["default"] || dispatcher.getContentCache(id).isAceEditorOn()) {
+            enable(params.id);
         }
-
 
 
         console.log("Carregat en " + (new Date().getTime() - inici));
