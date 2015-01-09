@@ -25,7 +25,12 @@ define([
                     }
                 }
             },
-            
+             
+            /**
+             * Associa una funció a un mode determinat
+             *
+             * @type {function()}
+             */
             addUpdateFunction: function(mode, updateFunction){
                 this.functions[mode]= updateFunction;
             },
@@ -40,7 +45,9 @@ define([
                 var currentId = dispatcher.getGlobalState().getCurrentId();
                 var f = this.functions[dispatcher.getGlobalState()
                                                 .getContentMode(currentId)];
-                f();
+                if(f){
+                    f();
+                }
             }
         });
     return ret;
