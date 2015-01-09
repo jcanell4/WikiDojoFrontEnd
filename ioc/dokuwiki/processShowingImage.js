@@ -15,17 +15,17 @@ define([
         var imageDialog = new Dialog({
             title: params.imageTitle
             , onHide: function(e) { //Voliem detectar el event onClose i hem hagut de utilitzar onHide
-                fOnClose();
+                this.destroyRecursive();
             }
             , id: "imageDialog" + "_" + params.imageId
         });
         
         /*CAPTURAR EL offsetWidth del titol*/
         var titleId = imageDialog.get("id") + "_title";
-        console.log(titleId);
-        console.log(query("#"+titleId).offsetWidth);//undefined
-        console.log(dom.byId(titleId).innerHTML.offsetWidth);//undefined
-        console.log(dom.byId(titleId).offsetWidth);//0
+//        console.log(titleId);
+//        console.log(query("#"+titleId).offsetWidth);//undefined
+//        console.log(dom.byId(titleId).innerHTML.offsetWidth);//undefined
+//        console.log(dom.byId(titleId).offsetWidth);//0
 
         var dialogContainer = domConstruct.create("div", {
             id: "dialogContainer" + "_" + params.imageId
@@ -42,7 +42,21 @@ define([
         var fOnClose = function() {
             imageDialog.destroyRecursive();
         };
+        
+        /**/
+        var mediaButton = new iocButton({
+            "label": params.modifyImageLabel
+            , "urlBase": "/dokuwiki_30/lib/plugins/ajaxcommand/ajax.php?call=media"
+            , "query": 'imageId=' + params.imageId                    
+        });
 
+        mediaButton.addClickListener(function() {
+            imageDialog.destroyRecursive();
+        });
+
+        mediaButton.placeAt(actionBar);
+
+        /*
         new iocButton({
             "label": params.modifyImageLabel
             , "onClick": function(e) {
@@ -59,11 +73,12 @@ define([
                 fOnClose();
             }
         }).placeAt(actionBar);
+        /**/
 
         new Button({
             "label": params.closeDialogLabel
             , "onClick": function(e) {
-                fOnClose();
+                imageDialog.destroyRecursive();
             }
         }).placeAt(actionBar);
 

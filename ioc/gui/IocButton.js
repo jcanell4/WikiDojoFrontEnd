@@ -69,6 +69,9 @@ define([
              */
             addClickListener: function (listener) {
                 var key = 'autoKey';
+                if(!this.clickListener){
+                    this.clickListener={};
+                }
                 key = key + Object.keys(this.clickListener).length;
                 return this.putClickListener(key, listener);
             },
