@@ -12,6 +12,8 @@ define([
     'ioc/wiki30/GlobalState',
     'ioc/wiki30/dispatcherSingleton',
     'ioc/dokuwiki/AceManager/toolbarManager',
+    "dojo/dom-geometry",
+    "dojo/dom-style",
 
     // Només cal carregar els modes que s'han d'incloure
     "ace-builds/mode-markdown",
@@ -19,10 +21,10 @@ define([
     "ace-builds/mode-java",
     "ace-builds/mode-javascript",
     //"ace-builds/mode-php",
-    "ioc/dokuwiki/underscore",
+    "ioc/dokuwiki/underscore"
 
 
-], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, GlobalState, dispatcher, toolbarManager) {
+], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style) {
 
     var
         /**
@@ -133,6 +135,10 @@ define([
             return;
         }
 
+        var contentNode = dom.byId(params.id);
+        var h = geometry.getContentBox(contentNode).h;
+        style.set(params.textAreaId, "height", "" + h - 20 + "px");
+        style.set(params.textAreaId, "resize", "vertical");
 
         var currentEditor = dispatcher.getContentCache(params.id).getEditor(),
 
@@ -244,5 +250,6 @@ define([
 
 
         console.log("Carregat en " + (new Date().getTime() - inici));
+
     };
 });

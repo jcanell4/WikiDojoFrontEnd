@@ -81,64 +81,19 @@ define([
 
         dw_editor.init();        
     }
-    
-    function cleanHtmlEdition(id, wikiTextId, editBarId, licenseClass){
-        var aText = new Array();
-        var node = dispatcher.getContentCache(id).getEditor().getEditorNode();
-        var child = node.firstChild;
-        while(child!=null){
-            if(child.nodeType == Node.ELEMENT_NODE){
-                var tag = child.tagName.toLowerCase();
-                if(tag!=="div" /*&& tag!=="script"*/){
-                    var toDelete = child;
-                    child = child.nextSibling;
-                    node.removeChild(toDelete);
-                    if(tag!=="script"){
-                        aText.push(toDelete);
-                    }
-                }else{
-                    child = child.nextSibling;
-                }
-            }else{
-                child = child.nextSibling;
-            }
-        }
-        child = dom.byId(editBarId);
 
-        style.set(child, "visibility", "hidden");
-//        child.style.visibility = "hidden";
-        
-        query("."+licenseClass, node).forEach(function(child){
-            aText.push(child);
-            node = child.parentNode;
-            node.removeChild(child);
-        });
-        
-//        node  = dom.byId(dispatcher.infoNodeId);
-//        node.innerHTML="";
-//        for(var i in aText){
-//            node.appendChild(aText[i]);
-//        }
-        
-        var contentNode = dom.byId(id);
-        var h = geometry.getContentBox(contentNode).h;
-        style.set(wikiTextId, "height", ""+h-20+"px" );
-        style.set(wikiTextId, "resize", "vertical" );
-    }
     
     var res = function(params){
         ready(function(){
             var toolbar = window[params.varName];
             if(toolbar && params.toolbarId && params.wikiTextId){
-                //initToolbar('tool__bar','wiki__text', toolbar);
                 initToolbar(params.toolbarId,params.wikiTextId, toolbar);
                 jQuery('#'+params.toolbarId).attr('role', 'toolbar');
             }
 
             setChangesControl(params.editFormId, params.wikiTextId, 
                                 params.summaryId);
-            cleanHtmlEdition(params.id, params.wikiTextId, params.editBarId, 
-                                params.licenseClass);
+
             dw_locktimer.init(params.timeout, params.draft);                      
         });
     };
