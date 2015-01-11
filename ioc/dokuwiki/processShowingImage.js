@@ -38,11 +38,7 @@ define([
         var actionBar = domConstruct.create("div", {
             "class": "dijitDialogPaneActionBar"
         });
-
-        var fOnClose = function() {
-            imageDialog.destroyRecursive();
-        };
-        
+       
         /**/
         var mediaButton = new iocButton({
             "label": params.modifyImageLabel
