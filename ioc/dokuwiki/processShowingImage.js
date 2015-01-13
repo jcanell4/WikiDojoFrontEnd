@@ -40,10 +40,11 @@ define([
         });
        
         /**/
+
         var mediaButton = new iocButton({
             "label": params.modifyImageLabel
             , "urlBase": "/dokuwiki_30/lib/plugins/ajaxcommand/ajax.php?call=media"
-            , "query": 'imageId=' + params.imageId                    
+            , "query": 'id='+params.fromId +'&image=' + params.imageId+'&img='+params.imageId                   
         });
 
         mediaButton.addClickListener(function() {
