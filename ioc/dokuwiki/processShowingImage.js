@@ -44,7 +44,7 @@ define([
         var mediaButton = new iocButton({
             "label": params.modifyImageLabel
             , "urlBase": "/dokuwiki_30/lib/plugins/ajaxcommand/ajax.php?call=media"
-            , "query": 'id='+params.fromId +'&image=' + params.imageId+'&img='+params.imageId                   
+            , "query": 'id='+params.fromId +'&image=' + params.imageId+'&img='+params.imageId+'&do=media'                   
         });
 
         mediaButton.addClickListener(function() {
