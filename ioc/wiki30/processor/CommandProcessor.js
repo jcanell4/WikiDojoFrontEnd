@@ -52,7 +52,7 @@ define([
                     } else if (command.type === "change_widget_property") {
                         this._processChangeWidgetPropertyCommand(command, dispatcher);
 
-                    } else if (command.type === "reaload_widget_content") {
+                    } else if (command.type === "reload_widget_content") {
                         this._processRefresh(command, dispatcher);
 
                     } else if (command.type === "remove_widget_child") {

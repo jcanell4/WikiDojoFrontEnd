@@ -6,6 +6,7 @@ define([
     var DokuwikiContent = declare("ioc.wiki30.DokuwikiContent", [],
         /**
          * @class DokuwikiContent
+         * @author Josep Cañellas <jcanell4@ioc.cat>
          */
         {
             id: null,
@@ -23,12 +24,14 @@ define([
              */
             metaData: null,
 
-            editor: null,
+            editor:      null,
 
             // TODO[Xavi] Necessaris per controlar l'estat dels botons
             aceEditorOn: false,
-            wrapperOn: true,
+            wrapperOn:   true,
 
+            // TODO[Xavi] Temporal per comprovar emmagatezmar el valor del panell del acordió actual
+            currentAccordionPaneId: null,
 
             /**
              * Es construeix un objecte d'aquest tipus per cada pestanya que es carrega.
@@ -70,32 +73,45 @@ define([
              * contrari es retorna tot el hash de metaData.
              * TODO[Xavi] Es crida alguna vegada amb argument?
              *
-             * @param {string} id corresponent a la metadata
+             * @param {string?} id corresponent a la metadata
              *
              * @returns {Object.<{content: string, id: string, tittle: string}>|{content: string, id: string, tittle: string}}
              * la metadada corresponent al id o el hash complet de metadades
              */
-            getMetaData:       function (id) {
-                // TODO[Xavi] es pot canviar per operació ternaria
-                if (id) {
-                    return this.metaData[id];
-                } else {
-                    return this.metaData;
-                }
+            getMetaData: function (id) {
+                return id ? this.metaData[id] : this.metaData;
             },
 
-            setEditor: function(editor){
-              this.editor  = editor;
+            /**
+             * Elimina la metadata corresponent al id passat com argument. Aquesta id generalment estarà composada per
+             * la mateixa id del document afegint un postfix amb una barra _, per exemple "dokuwiki_toc".
+             *
+             * Si no es passa cap argument s'eliminen totes les metadates.
+             *
+             * @param {string?} id - id de la metadata a eliminar
+             */
+            //removeMetaData: function (id) {
+            //    if (id) {
+            //        delete this.metaData[id];
+            //    } else {
+            //        this.metaData = {}
+            //    }
+            //},
+
+
+            setEditor: function (editor) {
+                this.editor = editor;
             },
 
-            getEditor: function(){
-              return this.editor;
+            getEditor:         function () {
+                return this.editor;
             },
 
-            // TODO[Xavi] No es crida enlloc?
+            /**
+             * Elimina totes les metadadtes del objecte actual.
+             */
             removeAllMetaData: function () {
-                alert("removeAllMetaData");
-                this.metaData = new Array();
+                this.metaData = {};
             },
 
             // TODO[Xavi] No es crida enlloc?
@@ -140,6 +156,17 @@ define([
              */
             setWrapperOn: function (on) {
                 this.wrapperOn = on;
+            },
+
+
+            /**
+             * Reemplaça el contingut de la metadata amb el id i els  continguts passats com argument.
+             *
+             * @param {string} id - id de la metadada a reemplaçar
+             * @param {string} content - contingut amb el que es reemplaçarà la metadata actual
+             */
+            replaceMetaDataContent: function (id, content) {
+                this.metaData[id]["content"] = content;
             }
         });
 
