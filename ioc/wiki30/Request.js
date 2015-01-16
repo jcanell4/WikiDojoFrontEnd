@@ -2,9 +2,10 @@ define([
     "dojo/_base/declare",
     "dojox/widget/Standby",
     "dojo/request",
-    "ioc/wiki30/dispatcherSingleton"
-], function (declare, Standby, request, dispatcherSingleton) {
-    var ret = declare("ioc.wiki30.Request", [],
+    "ioc/wiki30/dispatcherSingleton",
+    "dojo/Stateful",
+], function (declare, Standby, request, dispatcherSingleton, Stateful) {
+    var ret = declare("ioc.wiki30.Request", [Stateful],
         /**
          * @class Request
          */
