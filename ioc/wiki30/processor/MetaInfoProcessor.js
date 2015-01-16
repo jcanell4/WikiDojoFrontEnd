@@ -7,7 +7,8 @@ define([
     "dojo/query",
     "dojo/on",
     "ioc/wiki30/GlobalState",
-], function (declare, registry, dom, ContentPane, AbstractResponseProcessor, dojoQuery, on, globalState) {
+    "ioc/dokuwiki/guiSharedFunctions"
+], function (declare, registry, dom, ContentPane, AbstractResponseProcessor, dojoQuery, on, globalState, guiSharedFunctions) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -42,7 +43,6 @@ define([
                     defaultSelected,
                     selectedPane;
 
-                dispatcher.getContentCache(content.docId).removeAllMetaData();
                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
                 for (m in content.meta) {
                     if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
@@ -56,36 +56,34 @@ define([
                             });
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
-                            this._addWatchToPane(cp, content.docId, cp.id, dispatcher);
-                            this._addChangeListenersToPane(cp.domNode.id, dispatcher)
-                        } else {
-                            nodeMetaInfo.selectChild(widgetMetaInfo);
-                            var node = dom.byId(content.meta[m].id);
-                            node.innerHTML = content.meta[m].content;
+
+                            guiSharedFunctions.addWatchToMetadataPane(cp, content.docId, cp.id, dispatcher);
+                            guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
+
                         }
                     }
                 }
 
 
-                currentPaneId = dispatcher.getContentCache(content.docId).currentAccordionPaneId;
+                currentPaneId = dispatcher.getContentCache(content.docId).getCurrentId("metadataPane");
                 defaultSelected = content.defaultSelected;
 
                 if (!currentPaneId && defaultSelected) {
-                    dispatcher.getContentCache(content.docId).currentAccordionPaneId = defaultSelected
+                    dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", defaultSelected)
                 }
 
                 selectedPane = this._setSelectedPane(content.meta, [currentPaneId, defaultSelected]);
 
                 if (selectedPane) {
                     nodeMetaInfo.selectChild(selectedPane);
-                    dispatcher.getContentCache(content.docId).currentAccordionPaneId = selectedPane;
+                    dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", selectedPane);
                 }
 
                 return 0;
             },
 
             /**
-             * TODO[Xavi] Els paràmetres estan al contrari que a la resta de mètdoes, canviar per consistencia?
+             * TODO[Xavi] Els paràmetres estan al contrari que a la resta de mètodes, canviar per consistencia?
              *
              * Afegeix les metadades al contentCache.
              *
@@ -94,32 +92,16 @@ define([
              * @private
              */
             _processContentCache: function (dispatcher, value) {
+                dispatcher.getContentCache(value.docId).removeAllMetaData();
+                dispatcher.getContentCache(value.docId).removeAllInfo();
+
                 if (dispatcher.contentCache[value.docId]) {
                     var meta = value.meta;
+
                     for (var i = 0; i < meta.length; i++) {
                         dispatcher.contentCache[value.docId].putMetaData(meta[i]);
                     }
                 }
-            },
-
-            /**
-             * Afegeix un watch al panell per controlar quan s'ha clicat i fa persistent el canvi al ContentCache.
-             *
-             * @param {Object} node - Dijit al que s'aplica el watch
-             * @param {string} documentId - id del document al que està enllaçat aquest panell
-             * @param {string} paneId - id del panell seleccionat
-             * @param {Dispatcher} dispatcher
-             * @private
-             */
-            _addWatchToPane: function (node, documentId, paneId, dispatcher) {
-
-                node.watch("selected", function (name, oldValue, newValue) {
-                    if (newValue) {
-                        dispatcher.getContentCache(documentId).currentAccordionPaneId = paneId;
-
-                        //alert("Set Current Pane for: " + documentId + " to: " + paneId)
-                    }
-                })
             },
 
             /**
@@ -132,39 +114,13 @@ define([
              * @private
              */
             _setSelectedPane: function (metadata, ids) {
-                for (var i = 0; i < ids.length; i++) {
-                    if (metadata[ids[i]]) {
-                        return ids[i]
+                for (var i = 0, len = metadata.length; i < len; i++) {
+                    for (var j = 0; j < ids.length; j++) {
+                        if (metadata[i]['id'] == ids[j]) {
+                            return ids[j]
+                        }
                     }
                 }
-            },
-
-            /**
-             * Afegeix un listener a tots els elements de tipus input del panell que actualitzará les metadades
-             * relacionadas al ContentCache amb els canvis fets.
-             *
-             * Actualitza els valors checked i value, si el tipus del element no es basa en aquests valors (per exemple
-             * radio buttons) no tindrá l'efecte esperat.
-             *
-             * @param {string} paneId - id del panell de metadades
-             * @param {Dispatcher} dispatcher
-             * @private
-             */
-            _addChangeListenersToPane: function (paneId, dispatcher) {
-                var nodeList = dojoQuery("#" + paneId + " input");
-
-                nodeList.forEach(function (node) {
-                    on(node, 'change', function (evt) {
-                        var currentTab = globalState.getCurrentId(),
-                            changedNode;
-
-                        node.setAttribute("value", evt.target.value);
-                        node.setAttribute("checked", evt.target.checked);
-                        changedNode = dom.byId(paneId).innerHTML;
-
-                        dispatcher.getContentCache(currentTab).replaceMetaDataContent(paneId, changedNode)
-                    })
-                });
             }
 
         });

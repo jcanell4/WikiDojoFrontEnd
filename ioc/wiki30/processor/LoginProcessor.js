@@ -14,7 +14,7 @@ define([
 
             /**
              * @param {*} value
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              *
              * @override
              */
@@ -27,29 +27,40 @@ define([
              * Processar la connexió i desconnexió dels usuaris, mostrant un error si el nom d'usuari o contrasenya son
              * incorrectes.
              *
-             * TODO[Xavi] el missatge d'error es mostra cridant a un mètode privat.
-             *
              * @param {{loginRequest: string, loginResult: string}} result
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              *
              * @private
              */
             _processLogin: function (result, dispatcher) {
                 if (result.loginRequest && !result.loginResult) {
+                    // TODO[Xavi] el missatge d'error es mostra cridant a un mètode privat.
                     dispatcher._processError("Usuari o contrasenya incorrectes");
 
                 } else if (!result.loginRequest && !result.loginResult) {
-                    dom.byId(dispatcher.infoNodeId).innerHTML = "usuari desconnectat";
+		    //TODO[Josep] Cal que la informació parteixisempre del servidor
+                    //S'ha de passar aquesta informació al servidor
+                    dispatcher.processResponse({
+                        type: "info",
+                        value: {
+                            info: ["usuari desconnectat"]
+                        }
+                    });
 
                 } else {
-                    dom.byId(dispatcher.infoNodeId).innerHTML = "usuari connectat";
+                    dispatcher.processResponse({
+                        type: "info",
+                        value: {
+                            info:["usuari connectat"]
+                        }
+                    });
                 }
             },
 
             /**
              * Actualitza els valors de login del GlobalState.
              *
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              * @param {{loginResult: string}} value
              *
              * @override

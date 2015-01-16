@@ -1,15 +1,15 @@
 define([
     "dojo/_base/declare"
 ], function (declare) {
-    // TODO[Xavi] perqué fem servir com a classe base un array buit en lloc de la classe definida aquí i pasem
-    // l'objecte com a prop?
     var DokuwikiContent = declare("ioc.wiki30.DokuwikiContent", [],
         /**
          * @class DokuwikiContent
          * @author Josep Cañellas <jcanell4@ioc.cat>
          */
         {
+            /** @type {string} */
             id: null,
+
             //		,title: null
             //		,documentHTML: null
             //		,documentWiki: null
@@ -18,7 +18,7 @@ define([
              * Emmagatzema un hash amb les metadates de la pàgina seleccionada.
              * El content es una cadena amb el codi html per mostrar.
              * El id es una cadena amb la id que es fa servir com a index del hash.
-             * TODO[Xavi] El title es el títol que es mostra com a capçalera del widget que mostra les metadates?
+             * El title es el títol que es mostra com a capçalera del widget que mostra les metadates
              *
              * @type {Object.<{content: string, id: string, tittle: string}>}
              */
@@ -26,32 +26,42 @@ define([
 
             editor:      null,
 
-            // TODO[Xavi] Necessaris per controlar l'estat dels botons
             aceEditorOn: false,
             wrapperOn:   true,
 
-            // TODO[Xavi] Temporal per comprovar emmagatezmar el valor del panell del acordió actual
-            currentAccordionPaneId: null,
+            /** @type  {Object.<string, string>} Hash de ids organitzadas per {tipus : valor} */
+            currentIds: {},
+
+            info: [],
 
             /**
              * Es construeix un objecte d'aquest tipus per cada pestanya que es carrega.
              *
              * TODO[Xavi] Sembla que hi ha un error, o s'està passant un objecte i hauria de ser un string, o s'està
-             * assignant l'objecte en lloc del string que porta com id.
+             * assignant l'objecte en lloc del string que porta com id. DE VEGADES ARRIBA D
              *
-             * @param {{id: string}} id objecte anonim amb una cadena
+             * @param {{id: string}|string} id - objecte anonim amb una cadena
              * @constructor
              */
             constructor: function (id) {
                 this.inherited(arguments); // TODO[Xavi] te cap efecte? el constructor de la superclasse es crida automàticament
-                this.id = id; // TODO[Xavi] Hauria de pasarse el id.id?
-                this.metaData = new Array(); //TODO[Xavi] es un hash no un array
+
+                if (typeof id === "string") {
+                    this.id = id
+                } else if (typeof id.id === "string") {
+                    this.id = id.id
+                } else {
+                    throw new Error("no es reconeix el tipus de id");
+                }
+
+                this.metaData = {};
+                this.currentIds = {};
+                this.info = [];
             },
 
             /**
-             * TODO[Xavi] es fa servir enlloc?
              *
-             * @returns {null}
+             * @returns {string}
              */
             getId: function () {
                 return this.id;
@@ -71,7 +81,6 @@ define([
             /**
              * Es crida al canviar de pestanya. Si es pasa la id retorna només l'element corresponent a la id, en cas
              * contrari es retorna tot el hash de metaData.
-             * TODO[Xavi] Es crida alguna vegada amb argument?
              *
              * @param {string?} id corresponent a la metadata
              *
@@ -82,21 +91,6 @@ define([
                 return id ? this.metaData[id] : this.metaData;
             },
 
-            /**
-             * Elimina la metadata corresponent al id passat com argument. Aquesta id generalment estarà composada per
-             * la mateixa id del document afegint un postfix amb una barra _, per exemple "dokuwiki_toc".
-             *
-             * Si no es passa cap argument s'eliminen totes les metadates.
-             *
-             * @param {string?} id - id de la metadata a eliminar
-             */
-            //removeMetaData: function (id) {
-            //    if (id) {
-            //        delete this.metaData[id];
-            //    } else {
-            //        this.metaData = {}
-            //    }
-            //},
 
 
             setEditor: function (editor) {
@@ -167,6 +161,44 @@ define([
              */
             replaceMetaDataContent: function (id, content) {
                 this.metaData[id]["content"] = content;
+            },
+
+            /**
+             * Guarda la id del panell del tipus passat com argumetn com l'actual per aquest tipus.
+             *
+             * @param {string} type - tipus del panell que volem guardar com actual
+             * @param {string} value - id del panell que volem guardar com actual
+             */
+            setCurrentId: function (type, value) {
+                this.currentIds[type] = value;
+            },
+
+            /**
+             * Retorna la id del panell actual corresponent al tipus passat per argument.
+             *
+             * @param {string} type - tipus de pannel del que volem recuperar la id
+             * @returns {string} - id del panell actual
+             */
+            getCurrentId: function (type) {
+                return this.currentIds[type]
+            },
+
+            putInfo: function (info) {
+                this.info=[];
+                if (Array.isArray(info)) {
+                    this.info = this.info.concat(info);
+
+                } else {
+                    this.info.push(info);
+                }
+            },
+
+            getInfo: function () {
+                return this.info;
+            },
+
+            removeAllInfo: function () {
+                this.info = [];
             }
         });
 
