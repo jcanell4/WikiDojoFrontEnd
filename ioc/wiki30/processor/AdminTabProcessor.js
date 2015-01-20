@@ -1,9 +1,8 @@
 define([
     "dojo/_base/declare", 
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "dijit/registry",
-    "dijit/layout/ContentPane"
-], function (declare, AbstractResponseProcessor,registry, ContentPane) {
+    "dijit/registry"
+], function (declare, AbstractResponseProcessor,registry) {
     var ret = declare("ioc.wiki30.processor.AdminTabProcessor", [AbstractResponseProcessor],
     /**
     * @class AdminTabProcessor
@@ -31,27 +30,31 @@ define([
         * @private
         */
         _processAdminTab: function (result, dispatcher) {
-            var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
-            if (admin_tab !== undefined) {  
-                //  Si existeix la pestanya només caldrà substituir el contingut actual pel nou
-                registry.byId(result.tabId).innerHTML = result.content;  
-                } else {
-                    // Crear una pestanya nova a la zona de navegació si no existeix 
-                    // fill d'un objecte de tipus ContentTabDokuwikiPage 
-                    //al qual se li passi la urlBase que hagi arribat amb la resposta 
-                    //i el contingut html amb la llista de tasques.
-                    //var cp1 = new ContentTabDokuwikiPage();
-                    var cp1 = new ContentPane(
-                    {
-                        id: result.containerId + "_tablist_" + result.tabId,
-                        title: result.title,
-                        content: result.content,
-                        urlBase: result.urlBase
-                    });
-                    var tc = registry.byId(result.containerId);
-                    tc.addChild(cp1);
-                }
-            }
-        });
+            require([
+                //"dijit/layout/ContentPane"
+                "ioc/gui/ContentTabDokuwikiPage"], function(ContentPane){
+                    var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
+                    if (admin_tab !== undefined) {  
+                        //  Si existeix la pestanya només caldrà substituir el contingut actual pel nou
+                        registry.byId(result.tabId).innerHTML = result.content;  
+                        } else {
+                            // Crear una pestanya nova a la zona de navegació si no existeix 
+                            // fill d'un objecte de tipus ContentTabDokuwikiPage 
+                            //al qual se li passi la urlBase que hagi arribat amb la resposta 
+                            //i el contingut html amb la llista de tasques.
+                            //var cp1 = new ContentTabDokuwikiPage();
+                            var cp1 = new ContentPane(
+                            {
+                                id: result.tabId,
+                                title: result.title,
+                                content: result.content,
+                                urlBase: result.urlBase
+                            });
+                            var tc = registry.byId(result.containerId);
+                            tc.addChild(cp1);
+                        }
+            });
+        }
+    });
     return ret;
 });

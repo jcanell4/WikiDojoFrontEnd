@@ -1,16 +1,11 @@
 define([
     "dojo/_base/declare", // declare
     "dijit/registry", //search widgets by id
-    "dijit/layout/ContentPane",        //per a la funció newTab
-    "dojo/dom",
-    "dojo/query",
-    "dojo/dom-style",
     "dijit/Dialog",
     "dojo/_base/lang",
     "dojo/_base/array",
     "ioc/wiki30/GlobalState",
     "ioc/wiki30/SectokManager",
-    "dojo/_base/kernel",
     "ioc/wiki30/processor/AlertProcessor",
     "ioc/wiki30/processor/HtmlContentProcessor",
     "ioc/wiki30/processor/MetaInfoProcessor",
@@ -25,14 +20,17 @@ define([
     "ioc/wiki30/processor/CommandProcessor",
     "ioc/wiki30/processor/AdminTabProcessor",
     "ioc/wiki30/UpdateViewHandler"
-], function (declare, registry, ContentPane, dom, query, domStyle, Dialog, lang, array, GlobalState, SectokManager, dojo, AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, DataContentProcessor, ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor, RemoveAllContentTabProcessor, RemoveContentTabProcessor, CommandProcessor,AdminTabProcessor) {
+], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager, 
+                AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, 
+                DataContentProcessor, ErrorProcessor, InfoStatusProcessor, 
+                LoginProcessor, SectokProcessor, TitleProcessor, 
+                RemoveAllContentTabProcessor, RemoveContentTabProcessor, 
+                CommandProcessor, AdminTabProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
-    //var DispatcherClass =
-
-       return declare("ioc.wiki30.Dispatcher", [],
+       var ret= declare("ioc.wiki30.Dispatcher", [],
         /**
          * @class Dispatcher
          */
@@ -357,6 +355,7 @@ define([
             _processError: function (errorMessage) {
                 if (!errorMessage) errorMessage = "Unknown error";
                 this.processors["error"].process({message:errorMessage}, this);
-            }
+                }
         });
+        return ret;
 });
