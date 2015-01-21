@@ -37,8 +37,9 @@ define([
                     // TODO[Xavi] el missatge d'error es mostra cridant a un mètode privat.
                     dispatcher._processError("Usuari o contrasenya incorrectes");
 
-                } else if (!result.loginRequest && !result.loginResult) {
+                } /*else if (!result.loginRequest && !result.loginResult) {
 		    //TODO[Josep] Cal que la informació parteixisempre del servidor
+
                     //S'ha de passar aquesta informació al servidor
                     dispatcher.processResponse({
                         type: "info",
@@ -54,7 +55,7 @@ define([
                             info:["usuari connectat"]
                         }
                     });
-                }
+                } */
             },
 
             /**

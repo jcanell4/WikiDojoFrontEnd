@@ -93,7 +93,6 @@ define([
              */
             _processContentCache: function (dispatcher, value) {
                 dispatcher.getContentCache(value.docId).removeAllMetaData();
-                dispatcher.getContentCache(value.docId).removeAllInfo();
 
                 if (dispatcher.contentCache[value.docId]) {
                     var meta = value.meta;

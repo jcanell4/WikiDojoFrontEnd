@@ -1,3 +1,6 @@
+/**
+ * @author Josep Cañellas <jcanell4@ioc.cat>
+ */
 define([
     "dojo/_base/declare", // declare
     "dijit/registry", //search widgets by id
@@ -23,15 +26,21 @@ define([
     "ioc/wiki30/processor/RemoveAllContentTabProcessor",
     "ioc/wiki30/processor/RemoveContentTabProcessor",
     "ioc/wiki30/processor/CommandProcessor",
-    "ioc/wiki30/UpdateViewHandler"
-], function (declare, registry, ContentPane, dom, query, domStyle, Dialog, lang, array, GlobalState, SectokManager, dojo, AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, DataContentProcessor, ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor, RemoveAllContentTabProcessor, RemoveContentTabProcessor, CommandProcessor) {
+    "ioc/wiki30/manager/InfoManager",
+    "ioc/wiki30/UpdateViewHandler",
+
+
+], function (declare, registry, ContentPane, dom, query, domStyle, Dialog, lang, array, GlobalState, SectokManager,
+             dojo, AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, DataContentProcessor, ErrorProcessor,
+             InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor, RemoveAllContentTabProcessor,
+             RemoveContentTabProcessor, CommandProcessor, InfoManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
     //var DispatcherClass =
 
-       return declare("ioc.wiki30.Dispatcher", [],
+    return declare("ioc.wiki30.Dispatcher", [],
         /**
          * @class Dispatcher
          */
@@ -84,6 +93,9 @@ define([
                 style: "width: 300px"
             }),
 
+            /** @type {InfoManager} Instancia del gestor de infos associat amb aquest dispatcher */
+            infoManager: null,
+
             /**
              * Afegeix al hash de processadors els processadors, les característiques del objecte passat com argument i
              * inicialitza els arrays per emmagatzemar els handlers.
@@ -110,6 +122,8 @@ define([
                 this.globalState = GlobalState;
                 this.updateViewHandlers = new Array();
                 this.reloadStateHandlers = new Array();
+
+                this.infoManager = new InfoManager(this);
             },
 
             /**
@@ -245,16 +259,16 @@ define([
                 return this.contentCache[id];
             },
 
-//            /**
-//             * Retorna la informació de la pàgina mostrada a la pestanya actual.
-//             *
-//             * TODO[Xavi] No es crida enlloc?
-//             *
-//             * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
-//             */
-//            getCurrentPage: function () {
-//                return this.getGlobalState().pages[this.getGlobalState().currentTabId];
-//            },
+            //            /**
+            //             * Retorna la informació de la pàgina mostrada a la pestanya actual.
+            //             *
+            //             * TODO[Xavi] No es crida enlloc?
+            //             *
+            //             * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
+            //             */
+            //            getCurrentPage: function () {
+            //                return this.getGlobalState().pages[this.getGlobalState().currentTabId];
+            //            },
 
             /**
              * Retorna la informació de la pàgina mostrada a la pestanya actual.
@@ -274,7 +288,7 @@ define([
              */
             getUnsavedChangesState: function () {
                 return this.unsavedChangesState
-                        || window.textChanged;
+                    || window.textChanged;
             },
 
             /**
@@ -335,9 +349,9 @@ define([
              * @private
              */
             _processResponse: function (response, processors) {
-                if(processors && processors[response.type]){
+                if (processors && processors[response.type]) {
                     processors[response.type].process(response.value, this);
-                }else if (this.processors[response.type]) {
+                } else if (this.processors[response.type]) {
                     this.processors[response.type].process(response.value, this);
                 } else {
                     this.processors["alert"].process("Missatge incomprensible", this);
@@ -354,7 +368,11 @@ define([
              */
             _processError: function (errorMessage) {
                 if (!errorMessage) errorMessage = "Unknown error";
-                this.processors["error"].process({message:errorMessage}, this);
+                this.processors["error"].process({message: errorMessage}, this);
+            },
+
+            getInfoManager: function () {
+                return this.infoManager;
             }
         });
 });
