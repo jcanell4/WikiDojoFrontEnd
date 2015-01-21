@@ -3,7 +3,7 @@ define([
     "dojox/widget/Standby",
     "dojo/request",
     "ioc/wiki30/dispatcherSingleton",
-    "dojo/Stateful",
+    "dojo/Stateful"
 ], function (declare, Standby, request, dispatcherSingleton, Stateful) {
     var ret = declare("ioc.wiki30.Request", [Stateful],
         /**

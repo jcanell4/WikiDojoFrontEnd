@@ -4,8 +4,7 @@ define([
     "dojo/dom-attr",
     "dojo/_base/event",
     "dijit/layout/ContentPane",
-    "ioc/wiki30/Request",
-    "dojo/NodeList-dom", // NodeList.style
+    "ioc/wiki30/Request"
 ], function (declare, on, att, event, ContentPane, Request) {
     var ret = declare("ioc.gui.ContentTabDokuwikiPage", [ContentPane, Request],
 

@@ -4,16 +4,11 @@
 define([
     "dojo/_base/declare", // declare
     "dijit/registry", //search widgets by id
-    "dijit/layout/ContentPane",        //per a la funció newTab
-    "dojo/dom",
-    "dojo/query",
-    "dojo/dom-style",
     "dijit/Dialog",
     "dojo/_base/lang",
     "dojo/_base/array",
     "ioc/wiki30/GlobalState",
     "ioc/wiki30/SectokManager",
-    "dojo/_base/kernel",
     "ioc/wiki30/processor/AlertProcessor",
     "ioc/wiki30/processor/HtmlContentProcessor",
     "ioc/wiki30/processor/MetaInfoProcessor",
@@ -38,9 +33,7 @@ define([
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
-    //var DispatcherClass =
-
-    return declare("ioc.wiki30.Dispatcher", [],
+       var ret= declare("ioc.wiki30.Dispatcher", [],
         /**
          * @class Dispatcher
          */
@@ -349,9 +342,9 @@ define([
              * @private
              */
             _processResponse: function (response, processors) {
-                if (processors && processors[response.type]) {
+                if(processors && processors[response.type]){
                     processors[response.type].process(response.value, this);
-                } else if (this.processors[response.type]) {
+                }else if (this.processors[response.type]) {
                     this.processors[response.type].process(response.value, this);
                 } else {
                     this.processors["alert"].process("Missatge incomprensible", this);
@@ -375,4 +368,5 @@ define([
                 return this.infoManager;
             }
         });
+        return ret;
 });
