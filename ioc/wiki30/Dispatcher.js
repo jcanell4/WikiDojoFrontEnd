@@ -25,9 +25,11 @@ define([
     "ioc/wiki30/UpdateViewHandler",
 
 
-], function (declare, registry, ContentPane, dom, query, domStyle, Dialog, lang, array, GlobalState, SectokManager,
-             dojo, AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, DataContentProcessor, ErrorProcessor,
-             InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor, RemoveAllContentTabProcessor,
+], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
+             AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, 
+             DataContentProcessor, ErrorProcessor,
+             InfoStatusProcessor, LoginProcessor, SectokProcessor, 
+             TitleProcessor, RemoveAllContentTabProcessor,
              RemoveContentTabProcessor, CommandProcessor, InfoManager) {
     /**
      * @typedef {object} DijitWidget widget
