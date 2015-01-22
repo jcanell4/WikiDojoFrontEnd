@@ -1,5 +1,5 @@
 define([
-    "dojo/_base/declare", 
+    "dojo/_base/declare",
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "dijit/registry"
 ], function (declare, AbstractResponseProcessor,registry) {
@@ -9,7 +9,7 @@ define([
     * @extends AbstractResponseProcessor
     */
     {
-        type: "admintab", 
+        type: "admintab",
 
         /**
         * @param {*} value
@@ -21,7 +21,7 @@ define([
         },
 
         /**
-        * @param {{containerId: string 
+        * @param {{containerId: string
                     ,tabId: string
                     ,title: string
                     ,content: string
@@ -33,16 +33,15 @@ define([
             require([
                 "ioc/gui/ContentTabDokuwikiPage"], function(ContentTabDokuwikiPage){
                     var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
-                    if (admin_tab !== undefined) {  
+                    if (admin_tab !== undefined) {
                         //  Si existeix la pestanya només caldrà substituir el contingut actual pel nou
-                        registry.byId(result.tabId).innerHTML = result.content;  
+                        registry.byId(result.tabId).innerHTML = result.content;
                         } else {
-                            // Crear una pestanya nova a la zona de navegació si no existeix 
-                            // fill d'un objecte de tipus ContentTabDokuwikiPage 
-                            //al qual se li passi la urlBase que hagi arribat amb la resposta 
+                            // Crear una pestanya nova a la zona de navegació si no existeix
+                            // fill d'un objecte de tipus ContentTabDokuwikiPage
+                            //al qual se li passi la urlBase que hagi arribat amb la resposta
                             //i el contingut html amb la llista de tasques.
-                            //var cp1 = new ContentTabDokuwikiPage();
-                            var cp1 = new ContentPane(
+                            var cp1 = new ContentTabDokuwikiPage(
                             {
                                 id: result.tabId,
                                 title: result.title,
