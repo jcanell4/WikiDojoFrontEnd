@@ -31,8 +31,7 @@ define([
         */
         _processAdminTab: function (result, dispatcher) {
             require([
-                //"dijit/layout/ContentPane"
-                "ioc/gui/ContentTabDokuwikiPage"], function(ContentPane){
+                "ioc/gui/ContentTabDokuwikiPage"], function(ContentTabDokuwikiPage){
                     var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
                     if (admin_tab !== undefined) {  
                         //  Si existeix la pestanya només caldrà substituir el contingut actual pel nou

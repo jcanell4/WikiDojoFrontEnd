@@ -1,3 +1,6 @@
+/**
+ * @author Josep Cañellas <jcanell4@ioc.cat>
+ */
 define([
     "dojo/_base/declare", // declare
     "dijit/registry", //search widgets by id
@@ -19,13 +22,14 @@ define([
     "ioc/wiki30/processor/RemoveContentTabProcessor",
     "ioc/wiki30/processor/CommandProcessor",
     "ioc/wiki30/processor/AdminTabProcessor",
+    "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager, 
                 AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, 
                 DataContentProcessor, ErrorProcessor, InfoStatusProcessor, 
                 LoginProcessor, SectokProcessor, TitleProcessor, 
                 RemoveAllContentTabProcessor, RemoveContentTabProcessor, 
-                CommandProcessor, AdminTabProcessor) {
+                CommandProcessor, AdminTabProcessor, InfoManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -83,6 +87,9 @@ define([
                 style: "width: 300px"
             }),
 
+            /** @type {InfoManager} Instancia del gestor de infos associat amb aquest dispatcher */
+            infoManager: null,
+
             /**
              * Afegeix al hash de processadors els processadors, les característiques del objecte passat com argument i
              * inicialitza els arrays per emmagatzemar els handlers.
@@ -110,6 +117,8 @@ define([
                 this.globalState = GlobalState;
                 this.updateViewHandlers = new Array();
                 this.reloadStateHandlers = new Array();
+
+                this.infoManager = new InfoManager(this);
             },
 
             /**
@@ -245,16 +254,16 @@ define([
                 return this.contentCache[id];
             },
 
-//            /**
-//             * Retorna la informació de la pàgina mostrada a la pestanya actual.
-//             *
-//             * TODO[Xavi] No es crida enlloc?
-//             *
-//             * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
-//             */
-//            getCurrentPage: function () {
-//                return this.getGlobalState().pages[this.getGlobalState().currentTabId];
-//            },
+            //            /**
+            //             * Retorna la informació de la pàgina mostrada a la pestanya actual.
+            //             *
+            //             * TODO[Xavi] No es crida enlloc?
+            //             *
+            //             * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
+            //             */
+            //            getCurrentPage: function () {
+            //                return this.getGlobalState().pages[this.getGlobalState().currentTabId];
+            //            },
 
             /**
              * Retorna la informació de la pàgina mostrada a la pestanya actual.
@@ -274,7 +283,7 @@ define([
              */
             getUnsavedChangesState: function () {
                 return this.unsavedChangesState
-                        || window.textChanged;
+                    || window.textChanged;
             },
 
             /**
@@ -354,8 +363,12 @@ define([
              */
             _processError: function (errorMessage) {
                 if (!errorMessage) errorMessage = "Unknown error";
-                this.processors["error"].process({message:errorMessage}, this);
-                }
+                this.processors["error"].process({message: errorMessage}, this);
+            },
+
+            getInfoManager: function () {
+                return this.infoManager;
+            }
         });
         return ret;
 });

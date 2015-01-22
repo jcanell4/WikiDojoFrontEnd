@@ -27,6 +27,7 @@ define([
             editor:      null,
 
             aceEditorOn: false,
+
             wrapperOn:   true,
 
             /** @type  {Object.<string, string>} Hash de ids organitzadas per {tipus : valor} */
@@ -90,8 +91,6 @@ define([
             getMetaData: function (id) {
                 return id ? this.metaData[id] : this.metaData;
             },
-
-
 
             setEditor: function (editor) {
                 this.editor = editor;
@@ -181,24 +180,6 @@ define([
              */
             getCurrentId: function (type) {
                 return this.currentIds[type]
-            },
-
-            putInfo: function (info) {
-                this.info=[];
-                if (Array.isArray(info)) {
-                    this.info = this.info.concat(info);
-
-                } else {
-                    this.info.push(info);
-                }
-            },
-
-            getInfo: function () {
-                return this.info;
-            },
-
-            removeAllInfo: function () {
-                this.info = [];
             }
         });
 
