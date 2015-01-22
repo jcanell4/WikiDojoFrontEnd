@@ -2,44 +2,58 @@ define([
     /*"dojo/_base/declare"
      ,*/
     "dojo/_base/lang",
-    "ioc/dokuwiki/dwPageUi"
-], function (/*declare,*/ lang, dwPageUi) {
+    "ioc/dokuwiki/dwPageUi",
+    "ioc/dokuwiki/guiSharedFunctions",
+    "dojo/dom"
+], function (/*declare,*/ lang, dwPageUi, guiSharedFunctions, dom) {
     //    var ret = declare("ioc.wiki30.GlobalState", [], {
     /**
      * @class GlobalState
      */
     var ret = {
         /**
-         * El index del hash es el mateix que el ns, que es el mateix que es 
+         * El index del hash es el mateix que el ns, que es el mateix que es
          * mostra a la pestanya
          * @type {Object.<{ns: string, mode: string, action: string}>}
          */
-        pages:            {},        //{[pageId]: {ns, mode, action}}  
+        pages: {},        //{[pageId]: {ns, mode, action}}
 
-        login:            false,
+        login: false,
 
-        info:             "",
+        info: "",
 
-        currentTabId:     null,
+        currentTabId: null,
 
         /** @type {string} id de la secció seleccionada */
         currentSectionId: null,
 
-        sectok:           null,
+        sectok: null,
 
-        title:            "",
+        title: "",
+
+        /** @type {InfoStorage} */
+        infoStorage: {
+            timer:       {
+                global:   null,
+                document: {}
+            },
+            currentInfo: {
+                global:   null,
+                document: {}
+            },
+            storedInfo:  {
+                global:   null,
+                document: {}
+            }
+        },
 
         /**
          * Node es un node del DOM o una cadena amb el nom de la secció.
-         * TODO[Xavi] lang.isxxx seran @deprecated a la 2.0 substituir per typeof node == "string"
-         * http://dojotoolkit.org/reference-guide/1.9/releasenotes/migration-2.0.html#releasenotes-migration-2-0-testing-object-types
-         *
-         * TODO[Xavi] Sembla que mai es cridat com a string, en tots els casos que he vist es passa un node
          *
          * @param {string|*} node on es troba la nova selecció, o nom de la secció
          */
         setCurrentSectionId: function (node) {
-            if (lang.isString(node)) {//recibe directamente el id
+            if (typeof node === "string") {//recibe directamente el id
                 this.currentSectionId = node;
             } else {
                 this.currentSectionId = dwPageUi.getIdSectionNode(node);
@@ -79,42 +93,63 @@ define([
             lang.mixin(instance, p);
             return instance;
         },
-        
-        contentLength: function(){
+
+        contentLength: function () {
             return Object.keys(this.pages).length;
         },
-        
-        getContentMode: function(id){
+
+        getContentMode: function (id) {
             return this.getContent(id)["mode"];
         },
-        
-        getContentNs: function(id){
+
+        getContentNs: function (id) {
             return this.getContent(id)["ns"];
         },
-        
-        getContentAction: function(id){
+
+        getContentAction: function (id) {
             return this.getContent(id)["action"];
         },
-        
-        getContent: function(id){
-            var ret=undefined;
-            if(this.pages[id]){
+
+        getContent: function (id) {
+            var ret = undefined;
+            if (this.pages[id]) {
                 ret = this.pages[id];
-            }else{
+            } else {
                 ret = {};
             }
             return ret;
         },
-        
-        getCurrentContent: function(){
+
+        getCurrentContent: function () {
             return this.pages[this.currentTabId];
         },
-        
-        getCurrentId: function(){
+
+        getCurrentId: function () {
             return this.currentTabId
+        },
+
+
+        /**
+         * Retorna el magatzem de informació.
+         *
+         * @returns {InfoStorage}
+         */
+        getInfoStorage: function() {
+            return this.infoStorage;
+        },
+
+        /**
+         * Estableix el magatzem de informació passat com argument com l'actual.
+         *
+         * @param {InfoStorage} infoStorage
+         */
+        setInfoStorage: function(infoStorage) {
+            this.infoStorage = infoStorage;
         }
-        
+
     };
-    //    });
+
+
     return ret;
 });
+

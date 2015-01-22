@@ -11,23 +11,6 @@ define([
 
     var
         /**
-         * Crea una cadena HTML concatenant tots els elements del array passat com argument, en ordre invers de manera
-         * que el últim es mostrará primer, i incloent-los dins de contenidors <div> individuals
-         * @param {string[]} infoArray
-         * @private
-         */
-        _formatInfoToHTML = function (infoArray) {
-            var html = "";
-
-            for (var i = infoArray.length - 1; i >= 0; i--) {
-                //console.log("Formatting: " + infoArray[i]);
-                html += "<div>" + infoArray[i] + "</div>";
-            }
-
-            return html;
-        },
-
-        /**
          * Afegeix un watch al panell per controlar quan s'ha clicat i fa persistent el canvi al ContentCache.
          *
          * @param {Object} node - Dijit al que s'aplica el watch
@@ -96,8 +79,6 @@ define([
 
 
     return {
-
-        formatInfoToHTML: _formatInfoToHTML,
 
         addWatchToMetadataPane: _addWatchToMetadataPane,
 

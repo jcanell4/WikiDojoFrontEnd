@@ -11,15 +11,16 @@ define([
              * S'sestableix la funció de recarrega. Creat a scriptsRef.tpl. Aquest objecte s'afegeix al Dispatcher i es
              * cridat per ell.
              *
-             * @param {function(GlobalState)} realodFunction funció que serà cridada quan ??
+             * @param {function(GlobalState)} reloadHandler funció que serà cridada al recarregar la pàgina.
              * @constructor
              */
-            constructor: function (realodFunction) {
-                // TODO[Xavi] S'ha de poder instanciar sense l'argument?
-                if (realodFunction) {
-                    this.reload = realodFunction;
+            constructor: function (reloadHandler) {
+
+
+                if (reloadHandler) {
+                    this.reload = reloadHandler;
                 } else {
-                    alert("S'ha intentant establir una funció de reload nla");
+                    alert("S'ha intentant establir una funció de reload sense passar la funció");
                 }
             },
 
