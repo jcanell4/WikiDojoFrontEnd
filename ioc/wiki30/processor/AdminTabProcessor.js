@@ -36,7 +36,7 @@ define([
                     if (admin_tab !== undefined) {
                         //  Si existeix la pestanya només caldrà substituir el contingut actual pel nou
                         registry.byId(result.tabId).innerHTML = result.content;
-                        } else {
+                    } else {
                             // Crear una pestanya nova a la zona de navegació si no existeix
                             // fill d'un objecte de tipus ContentTabDokuwikiPage
                             //al qual se li passi la urlBase que hagi arribat amb la resposta
@@ -50,7 +50,7 @@ define([
                             });
                             var tc = registry.byId(result.containerId);
                             tc.addChild(cp1);
-                        }
+                    }
             });
         }
     });
