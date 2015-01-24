@@ -27,9 +27,7 @@ define([
 
             checkfunc = function () {
                 var currentId = dispatcher.getGlobalState().getCurrentId();
-                changesManager.updateDocument(currentId);
-
-                //alert("Canvis detectats");
+                changesManager.updateDocumentChangeState(currentId);
                 summaryCheck();
             };
 
@@ -40,9 +38,6 @@ define([
         changesManager.setDocument(edit_text.value);
 
         window.addEventListener("beforeunload", function (event) {
-            //changesManager.checkDocument();
-            //console.log(changesManager.documentsChanged);
-
             if (changesManager.thereAreChangedDocuments()) {
                 event.returnValue = LANG.notsavedyet;
             }
@@ -61,7 +56,11 @@ define([
         }
 
         on(editform, 'keyup', checkfunc);
+        on(editform, 'paste', checkfunc);
+        on(editform, 'cut', checkfunc);
         on(editform, 'focusout', checkfunc);
+
+
         on(summary, "change", summaryCheck);
         on(summary, "keyup", summaryCheck);
 

@@ -81,7 +81,8 @@ define([
                                 dispatcher.getGlobalState().currentTabId = null;
                             }
 
-                            dispatcher.getChangesManager().resetDocument(content.id);
+                            dispatcher.getChangesManager().resetDocumentChangeState(content.id);
+
 
                             // TODO[Xavi] S'hauria de restaurar la visibilitat dels botons i els panells d'informació
 

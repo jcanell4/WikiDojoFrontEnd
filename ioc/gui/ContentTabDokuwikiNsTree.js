@@ -126,7 +126,7 @@ define([
 
                     loadItem: function (item) {
                         var id = item.id.replace(':', '_');
-                        dispatcher.getChangesManager().resetDocument(id);
+                        dispatcher.getChangesManager().resetDocumentChangeState(id);
 
                         if (!this.model.mayHaveChildren(item)) {
                             nsTree.sendRequest("id=" + item.id);
