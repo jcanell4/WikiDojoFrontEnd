@@ -53,7 +53,7 @@ define([
              * Si existeix una pestanya amb aquesta id carrega el contingut a aquesta pestanya, si no construeix una de nova.
              *
              * @param {{id: string, ns: string, title: string, content: string}} content
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              * @returns {number} TODO[Xavi] Sempre retorna 0, es fa servir per alguna cosa?
              * @private
              */
@@ -80,6 +80,11 @@ define([
                                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
                                 dispatcher.getGlobalState().currentTabId = null;
                             }
+
+                            dispatcher.getChangesManager().resetDocument(content.id);
+
+                            // TODO[Xavi] S'hauria de restaurar la visibilitat dels botons i els panells d'informació
+
                             return true;
                         }
                     });

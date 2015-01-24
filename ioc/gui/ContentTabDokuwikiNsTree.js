@@ -10,8 +10,13 @@ define([
     "dijit/Tree",
     "dojo/aspect",
     "dijit/tree/ObjectStoreModel",
+    "ioc/wiki30/dispatcherSingleton",
+    "dijit/Dialog",
+    "dijit/form/Button",
     "dojo/NodeList-dom" // NodeList.style
-], function (declare, query, template, Request, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Tree, aspect, ObjectStoreModel) {
+
+], function (declare, query, template, Request, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Tree, aspect,
+             ObjectStoreModel, dispatcher, Dialog, Button) {
     var ret = declare("ioc.gui.ContentTabDokuwikiNsTree", [ContentPane, _TemplatedMixin, _LayoutWidget, Request],
 
         /**
@@ -75,9 +80,60 @@ define([
                     openOnClick: true,
 
                     onClick: function (item) {
+
+                        var changesManager = dispatcher.getChangesManager(),
+                            confirmation = false,
+                            id = item.id.replace(':', '_');
+
+                        if (changesManager.isChanged(id)) {
+
+                            //alert("Hi han canvis no guardats al document: " + item.id)
+
+                            // TODO[Xavi] Afegir la localització
+                            // TODO[Xavi] Reemplaçar amb ConfigDialog quan actualitzem a dojo 1.10
+                            var myDialog = new Dialog({
+                                title:   "No s'han desat els canvis",
+                                content: "No s'han desat els canvis al document actual, vols continuar i descartar els canvis?<br>",
+                                style:   "width: 300px"
+                            });
+
+
+                            var self = this;
+                            var okButton = new Button({label: "Continuar"});
+                            var cancelButton = new Button({label: "Cancel·lar"});
+
+                            okButton.on('click', function (e) {
+                                self.loadItem(item);
+                                myDialog.destroy();
+                            });
+
+                            cancelButton.on('click', function (e) {
+                                myDialog.destroy();
+                            });
+
+                            myDialog.addChild(okButton);
+                            myDialog.addChild(cancelButton);
+                            myDialog.show();
+
+                        } else {
+                            confirmation = true;
+                        }
+
+                        if (confirmation) {
+                            this.loadItem(item);
+                        }
+                    },
+
+                    loadItem: function (item) {
+                        var id = item.id.replace(':', '_');
+                        dispatcher.getChangesManager().resetDocument(id);
+
                         if (!this.model.mayHaveChildren(item)) {
                             nsTree.sendRequest("id=" + item.id);
                         }
+
+                        // TODO[Xavi] En qualsevol cas hem de posar la pestanya com activada
+
                     }
                 });
                 var tree = this.tree;
@@ -158,7 +214,8 @@ define([
                 // Rebuild the tree
                 this.tree.postMixInProperties();
                 this.tree._load();
-            }
+            },
+
         });
     return ret;
 });

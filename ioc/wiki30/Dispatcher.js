@@ -22,6 +22,7 @@ define([
     "ioc/wiki30/processor/RemoveContentTabProcessor",
     "ioc/wiki30/processor/CommandProcessor",
     "ioc/wiki30/manager/InfoManager",
+    "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/UpdateViewHandler",
 
 
@@ -30,7 +31,7 @@ define([
              DataContentProcessor, ErrorProcessor,
              InfoStatusProcessor, LoginProcessor, SectokProcessor, 
              TitleProcessor, RemoveAllContentTabProcessor,
-             RemoveContentTabProcessor, CommandProcessor, InfoManager) {
+             RemoveContentTabProcessor, CommandProcessor, InfoManager, ChangesManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -119,6 +120,8 @@ define([
                 this.reloadStateHandlers = new Array();
 
                 this.infoManager = new InfoManager(this);
+                this.changesManager = new ChangesManager(this);
+
             },
 
             /**
@@ -282,6 +285,7 @@ define([
              * @returns {boolean} unsavedChangeState
              */
             getUnsavedChangesState: function () {
+                alert("getUnsavedChangesState");
                 return this.unsavedChangesState
                     || window.textChanged;
             },
@@ -292,8 +296,10 @@ define([
              * @param {boolean} st
              */
             setUnsavedChangesState:  function (st) {
+                alert("SetUnsavedChangesState");
                 this.unsavedChangesState = st;
                 window.textChanged = st;
+
             },
 
             // TODO[Xavi] no es crida enlloc i no fa res, es per esborrar?
@@ -366,9 +372,20 @@ define([
                 this.processors["error"].process({message: errorMessage}, this);
             },
 
+            /**
+             * Retorna el gestor d'informacions
+             *
+             * @returns {InfoManager} Gestor d'informació
+             */
             getInfoManager: function () {
                 return this.infoManager;
-            }
+            },
+
+           getChangesManager: function() {
+               return this.changesManager;
+           }
+
+
         });
         return ret;
 });

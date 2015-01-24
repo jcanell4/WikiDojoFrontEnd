@@ -196,6 +196,10 @@ define([
                 this.editor.getSelection().on('changeCursor', function () {
                     return callback();
                 });
+            },
+
+            getText: function () {
+                return this.get('session').getValue();
             }
         });
 });
