@@ -1,9 +1,7 @@
 define([
         'dojo/_base/declare',
-        'dojo/_base/lang',
         'dijit/registry',
-        'dojo/on'
-    ], function (declare, lang, registry, on) {
+    ], function (declare, registry) {
         return declare(null,
             /**
              * Gestiona el control de canvis als documents des de la última vegada que es van desar.
@@ -17,6 +15,8 @@ define([
                 documentsOriginal: {},
 
                 dispatcher: null,
+
+                lastChecked: null,
 
                 constructor: function (dispatcher) {
                     this.documentsChanged = {};
@@ -44,7 +44,17 @@ define([
 
                     id = id || this._getCurrentId();
 
-                    result = !(this.documentsOriginal[id] == content);
+                    if (content == this.lastChecked) {
+                        return this.isChanged(id);
+                    } else {
+                        result = !(this.documentsOriginal[id] == content);
+                        this.lastChecked = content;
+                    }
+
+                    if (result) {
+                        this.dispatcher.dispatchEvent("document_changed", {id: id});
+                    }
+
                     return result;
                 },
 
@@ -107,7 +117,8 @@ define([
                         this.resetDocumentChangeState(id); // Si no els hi ha fa un reset del document
                     }
 
-                    this.updateTabFormat(id, result);
+
+
 
                     return result;
                 },
@@ -141,22 +152,10 @@ define([
                         delete this.documentsChanged[id];
                     }
 
-                    this.updateTabFormat(id, false)
+                    this.dispatcher.dispatchEvent("document_changes_reset", {id: id});
+
                 },
 
-
-                // TODO[Xavi] el ChangesManager ha d'ignorar els components de la pàgina
-                updateTabFormat: function (id, changed) {
-                    var tabNode = registry.byId("bodyContent_tablist_" + id);
-
-                    if (tabNode) {
-                        if (changed) {
-                            tabNode.domNode.style.color = 'red';
-                        } else {
-                            tabNode.domNode.style.color = 'black';
-                        }
-                    }
-                },
 
                 /**
                  * Retorna si el document amb la id especificada ha canviat, si no s'especifica es comprova el document
