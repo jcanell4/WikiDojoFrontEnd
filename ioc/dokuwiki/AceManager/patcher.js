@@ -69,12 +69,12 @@ define([], function () {
                 cachedFunctions[id] = [];
             }
             cachedFunctions[id].push({name: name, func: func});
-            console.log("Guardada funció: " + name + " per id: " + id);
+            //console.log("Guardada funció: " + name + " per id: " + id);
         },
 
         restoreCachedFunctions = function (id) {
             if (!cachedFunctions[id]) {
-                console.log("No hi ha funcions en caché");
+                //console.log("No hi ha funcions en caché");
                 return;
             }
 
@@ -85,7 +85,7 @@ define([], function () {
                 name = functions[i]['name'];
                 func = functions[i]['func'];
 
-                console.log("Restaurant funció: " + name + " per id: " + id);
+                //console.log("Restaurant funció: " + name + " per id: " + id);
 
                 if (dw_editor && dw_editor[name]) {
                     dw_editor[name] = func

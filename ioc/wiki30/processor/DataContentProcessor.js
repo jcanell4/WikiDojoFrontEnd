@@ -21,10 +21,14 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                var ret;
+
                 value.editor = new Editor(value.id, value.content);
                 value.content = "<p></p>";
-                this.inherited(arguments);
+                ret = this.inherited(arguments);
                 value.editor.select();
+
+                return ret;
             },
 
 

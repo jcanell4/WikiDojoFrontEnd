@@ -210,7 +210,7 @@ define([
          }
          );*/
 
-        // TODO en una propera tasca
+        // TODO: en una propera tasca, user_editing sempre es false
         iocAceEditor.setDocumentChangeCallback(function () {
             if (user_editing) {
                 dokuWrapper.text_changed();
@@ -247,7 +247,6 @@ define([
         if (JSINFO.plugin_aceeditor["default"] || dispatcher.getContentCache(id).isAceEditorOn()) {
             enable(params.id);
         }
-
 
         console.log("Carregat en " + (new Date().getTime() - inici));
 
