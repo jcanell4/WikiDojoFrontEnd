@@ -164,7 +164,7 @@ define([
                 // Rebuild the tree
                 this.tree.postMixInProperties();
                 this.tree._load();
-            },
+            }
 
         });
     return ret;
