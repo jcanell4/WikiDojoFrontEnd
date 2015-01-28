@@ -110,8 +110,7 @@ define([
              *
              * @param {string} query petició que fem a la dokuwiki
              *
-             * @returns {?dojo.promise.Promise} TODO[Xavi] aquest valor no sembla correcte, i no es fa servir en lloc,
-             * no hauria de retornar res.
+             * @returns {?dojo.promise.Promise}
              */
             sendRequest: function (query) {
                 //run standby resource while ajax response doesn't arribe

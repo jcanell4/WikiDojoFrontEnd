@@ -19,7 +19,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                this.inherited(arguments);
+                return this.inherited(arguments);
 
                 /* Provisional */
                 //           var node = registry.byId(value.id);
@@ -36,7 +36,7 @@ define([
              * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument, i afegeix
              * el valor de la acció a "view".
              *
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              * @param {{id: string, ns: string, title: string, content: string}} value
              *
              * @override

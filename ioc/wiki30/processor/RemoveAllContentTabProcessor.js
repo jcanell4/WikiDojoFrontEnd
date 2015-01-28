@@ -14,7 +14,7 @@ define([
 
             /**
              * @param {*} value
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              *
              * @override
              */
@@ -25,11 +25,11 @@ define([
 
             /**
              * Elimina tots els continguts carregats a la aplicació
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              * @param {*} value
              */
             updateState: function (dispatcher, value) {
-                dispatcher.contentCache = {}
+                dispatcher.contentCache = {};
                 dispatcher.getGlobalState().pages = {};
                 dispatcher.getGlobalState().currentTabId = null;
             }

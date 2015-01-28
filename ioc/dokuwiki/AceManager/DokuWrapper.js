@@ -357,9 +357,10 @@ define([
             },
 
             // TODO d'on surt el summaryCheck()? de js.php? --> Surt de /lib/scripts/edit.js#summaryCheck()
-            text_changed: function () {
-                dispatcher.setUnsavedChangesState(true);
-                return summaryCheck(); // TODO: Pendent d'activar quan integrem la dokuwiki
+            text_changed: function () { // TODO[Xavi] No es crida?
+                dispatcher.getChangesManager().addDocumentChanged();
+                //dispatcher.setUnsavedChangesState(true);
+                return summaryCheck();
             },
 
             /**
