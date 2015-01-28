@@ -1,6 +1,6 @@
 define([
-    "dojo/_base/declare" // declare
-], function (declare, lang) {
+    "dojo/_base/declare"
+], function (declare) {
     var ret = declare("ioc.wiki30.processor.AbstractResponseProcessor", [],
         /**
          * Superclasse de tots els processors.
@@ -12,10 +12,10 @@ define([
             type: "undefined",
 
             /**
-             * Processa aquest command.
+             * Processa aquest command. Si no es sobreescriu a la subclasse no realitza cap acció.
              *
-             * @param {*} value
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {*} value - Contingut a processar
+             * @param {Dispatcher} dispatcher
              */
             process: function (value, dispatcher) {
             }

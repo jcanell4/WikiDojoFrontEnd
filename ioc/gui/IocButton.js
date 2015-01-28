@@ -15,11 +15,11 @@ define([
          * Aquest widget es un boto que Al clicarlo recorre tots els listeners associats i els processa si son objectes
          * o els executa si son funcions.
          *
-         * @class ioc.gui.IocButton
+         * @class IocButton
          * @extends dijit.form.Button
          * @extends dijit._TemplatedMixin
-         * @extends ioc.gui.IocResizableComponent
-         * @extends ioc.wiki30.Request
+         * @extends IocResizableComponent
+         * @extends Request
          */
         {
             templateString: template,

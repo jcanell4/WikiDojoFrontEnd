@@ -1,5 +1,5 @@
 define([
-    "dojo/_base/declare", // declare
+    "dojo/_base/declare",
     "ioc/wiki30/processor/AbstractResponseProcessor"
 ], function (declare, AbstractResponseProcessor) {
     var ret = declare("ioc.wiki30.processor.AlertProcessor", [AbstractResponseProcessor],
@@ -8,11 +8,13 @@ define([
          * @extends AbstractResponseProcessor
          */
         {
-            type: "alert", // TODO[Xavi] moure la declaració al constructor?
+            type: "alert",
 
             /**
-             * @param {*} value
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * Processa un missatge de tipus alert el que fa que es configuri un dialeg i es mostri.
+             *
+             * @param {string} value - Missatge que es mostrarà
+             * @param {Dispatcher} dispatcher
              * @override
              */
             process: function (value, dispatcher) {
@@ -20,8 +22,10 @@ define([
             },
 
             /**
-             * @param {string} alert
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * Configura el dialge amb el text passat com argument i el mostra.
+             *
+             * @param {string} alert - Missatge que es mostrarà
+             * @param {Dispatcher} dispatcher
              * @private
              */
             _processAlert: function (alert, dispatcher) {

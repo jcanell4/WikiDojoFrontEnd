@@ -23,7 +23,7 @@ define([
          * Set of tabs with a menu to switch between tabs. Tabs are resized according to the TabController size.
          * Works only for horizontal tabs (either above or below the content, not the left or right).
          *
-         * @class ioc.gui.ResizingTabController
+         * @class ResizingTabController
          * @extends dijit._WidgetsInTemplateMixin
          * @extends dijit.layout.TabController
          */
