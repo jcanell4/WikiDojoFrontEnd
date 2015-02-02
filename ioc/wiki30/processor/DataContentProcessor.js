@@ -16,7 +16,7 @@ define([
             type: "data",
 
             /**
-             * @param {*} value
+             * @param {Content} value
              * @param {Dispatcher} dispatcher
              * @override
              */
@@ -37,7 +37,7 @@ define([
              * el valor de la acció a "edit".
              *
              * @param {Dispatcher} dispatcher
-             * @param {Object.<{id: string, ns: string}>} value
+             * @param {Content} value
              * @override
              */
             updateState: function (dispatcher, value) {

@@ -22,11 +22,11 @@ define([
         /**
          * Aquest widget afegeix un panell amb un arbre.
          *
-         * @class ioc.gui.ContentTabDokuwikiNsTree
-         * @extends {dijit.layout.ContentPane}
-         * @extends {dijit._LayoutWidget}
-         * @extends {dijit._TemplatedMixin}
-         * @extends {ioc.wiki30.Request}
+         * @class ContentTabDokuwikiNsTree
+         * @extends dijit.layout.ContentPane
+         * @extends dijit._LayoutWidget
+         * @extends dijit._TemplatedMixin
+         * @extends Request
          */
         {
             // summary:

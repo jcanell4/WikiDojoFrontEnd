@@ -1,22 +1,19 @@
 define([
-    /*"dojo/_base/declare"
-     ,*/
     "dojo/_base/lang",
-    "ioc/dokuwiki/dwPageUi",
-    "ioc/dokuwiki/guiSharedFunctions",
-    "dojo/dom"
-], function (/*declare,*/ lang, dwPageUi, guiSharedFunctions, dom) {
-    //    var ret = declare("ioc.wiki30.GlobalState", [], {
+    "ioc/dokuwiki/dwPageUi"
+], function (lang, dwPageUi) {
     /**
      * @class GlobalState
      */
+
+    /** @typedef {{ns:string, mode:string, action:string}} Page */
+
     var ret = {
         /**
-         * El index del hash es el mateix que el ns, que es el mateix que es
-         * mostra a la pestanya
-         * @type {Object.<{ns: string, mode: string, action: string}>}
+         * El index del hash es el mateix que el ns, que es el mateix que es mostra a la pestanya
+         * @type {{string:Page?}}
          */
-        pages: {},        //{[pageId]: {ns, mode, action}}
+        pages: {},
 
         login: false,
 
@@ -112,6 +109,8 @@ define([
 
         getContent: function (id) {
             var ret = undefined;
+
+
             if (this.pages[id]) {
                 ret = this.pages[id];
             } else {
@@ -134,7 +133,7 @@ define([
          *
          * @returns {InfoStorage}
          */
-        getInfoStorage: function() {
+        getInfoStorage: function () {
             return this.infoStorage;
         },
 
@@ -143,7 +142,7 @@ define([
          *
          * @param {InfoStorage} infoStorage
          */
-        setInfoStorage: function(infoStorage) {
+        setInfoStorage: function (infoStorage) {
             this.infoStorage = infoStorage;
         }
 

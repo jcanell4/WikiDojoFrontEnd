@@ -12,13 +12,16 @@ define([
          * @class CommandProcessor
          * @extends AbstractResponseProcessor
          *
+         *
          * @typedef {object} DijitWidget widget
          * @typedef {object} DijitContainer contenidor
          */
-        {
-            type: "command", // TODO[Xavi] Moure la declaració al constructor?
 
-            processors: {}, // TODO[Xavi] S'afegeixen enlloc?
+        /** @typedef {{type:string, id:string?, amd:bool?, propertyName:string?, propertyValue: string?, value:{object}?, params:{object}?, processName:string?}} Command - Ordre per processar */
+        {
+            type: "command",
+
+            processors: {},
 
             constructor: function () {
                 this.inherited(arguments); // TODO[Xavi] Això te cap efecte?
@@ -26,22 +29,22 @@ define([
             },
 
             /**
-             * @param {object} value
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Command} value
+             * @param {Dispatcher} dispatcher
              * @override
              */
             process: function (value, dispatcher) {
                 this._processCommand(value, dispatcher);
             },
 
+
             /**
-             * @param {object} command
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Command} command
+             * @param {Dispatcher} dispatcher
              * @private
              */
             _processCommand: function (command, dispatcher) {
 
-                // TODO[Xavi] No hi ha processors, això es necessari?
                 if (this.processors[command.type]) {
                     this.processors[command.type].process(command, dispatcher);
 
@@ -74,8 +77,8 @@ define([
             },
 
             /**
-             * @param {object} command
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Command} command
+             * @param {Dispatcher} dispatcher
              * @private
              */
             _processRefresh: function (command, dispatcher) {
@@ -88,8 +91,8 @@ define([
             },
 
             /**
-             * @param {object} command
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Command} command
+             * @param {Dispatcher} dispatcher
              * @private
              */
             _processRemoveWidgetChild: function (command, dispatcher) {
@@ -106,8 +109,8 @@ define([
             },
 
             /**
-             * @param {object} command
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Command} command
+             * @param {Dispatcher} dispatcher
              * @private
              */
             _processRemoveAllChildrenWidgets: function (command, dispatcher) {
@@ -115,8 +118,8 @@ define([
             },
 
             /**
-             * @param {object} command
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Command} command
+             * @param {Dispatcher} dispatcher
              * @private
              */
             _processChangeWidgetPropertyCommand: function (command, dispatcher) {
@@ -127,7 +130,7 @@ define([
 
             /**
              *
-             * @param {object} command
+             * @param {Command} command
              * @private
              */
             _processChangeStyleCommand: function (command) {
@@ -148,7 +151,7 @@ define([
 
             /**
              * TODO[Xavi] Typo en el nom
-             * @param {object} command
+             * @param {Command} command
              * @private
              */
             _processDomFromFuntcion: function (command) {
@@ -171,7 +174,7 @@ define([
 
             /**
              * TODO[Xavi] typo en el nom
-             * @param {object} command
+             * @param {Command} command
              * @private
              */
             _processFuntcion: function (command) {
@@ -197,13 +200,11 @@ define([
             },
 
             /**
-             * @param {object} command
+             * @param {Command} command
              * @private
              */
             _processJsInfo: function (command) {
                 lang.mixin(window.JSINFO, command.value);
             }
         });
-})
-;
-
+});

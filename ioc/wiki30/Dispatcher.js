@@ -11,6 +11,7 @@ define([
     "ioc/wiki30/SectokManager",
     "ioc/wiki30/processor/AlertProcessor",
     "ioc/wiki30/processor/HtmlContentProcessor",
+    "ioc/wiki30/processor/MediaProcessor",    
     "ioc/wiki30/processor/MetaInfoProcessor",
     "ioc/wiki30/processor/DataContentProcessor",
     "ioc/wiki30/processor/ErrorProcessor",
@@ -27,7 +28,7 @@ define([
 
 
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-             AlertProcessor, HtmlContentProcessor, MetaInfoProcessor,
+             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
              DataContentProcessor, ErrorProcessor,
              InfoStatusProcessor, LoginProcessor, SectokProcessor,
              TitleProcessor, RemoveAllContentTabProcessor,
@@ -36,6 +37,8 @@ define([
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
+
+     /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
     var ret = declare("ioc.wiki30.Dispatcher", [],
         /**
          * @class Dispatcher
@@ -103,6 +106,7 @@ define([
                 lang.mixin(this, pAttributes); // TODO[Xavi] comprovar si es més apropiat declare.safeMixin()
                 this.processors["alert"] = new AlertProcessor();
                 this.processors["html"] = new HtmlContentProcessor();
+                this.processors["media"] = new MediaProcessor();                
                 this.processors["metainfo"] = new MetaInfoProcessor();
                 this.processors["data"] = new DataContentProcessor();
                 this.processors["error"] = new ErrorProcessor();

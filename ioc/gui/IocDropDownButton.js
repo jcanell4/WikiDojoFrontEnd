@@ -13,11 +13,11 @@ define([
          * Afegeix un nou mètode al DropDownButton estàndar que redimensiona el botó
          * per igualar-lo a la mida del seu contenidor pare.
          *
-         * @class ioc.gui.IocDropDownButton
+         * @class IocDropDownButton
          * @extends dijit.form.DropDownButton
          * @extends dijit._TemplatedMixin
-         * @extends ioc.gui.IocResizableComponent
-         * @extends ioc.wiki30.Request
+         * @extends IocResizableComponent
+         * @extends Request
          */
         {
             templateString: template,
