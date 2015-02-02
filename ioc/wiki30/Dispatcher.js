@@ -37,6 +37,8 @@ define([
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
+
+     /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
     var ret = declare("ioc.wiki30.Dispatcher", [],
         /**
          * @class Dispatcher

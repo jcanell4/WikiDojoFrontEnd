@@ -32,40 +32,7 @@ define([
 
 
                 if (changesManager.isChanged(id)) {
-
-                    //// TODO[Xavi] Afegir la localització
-                    //// TODO[Xavi] Reemplaçar amb ConfigDialog quan actualitzem a dojo 1.10
-                    //var myDialog = new Dialog({
-                    //    title:   "No s'han desat els canvis",
-                    //    content: "No s'han desat els canvis al document actual, vols continuar i descartar els canvis?<br>",
-                    //    style:   "width: 300px"
-                    //});
-
                     confirmation = this._discardChanges();
-
-                    /*
-
-                     var self = this;
-                     var okButton = new Button({label: "Continuar"});
-                     var cancelButton = new Button({label: "Cancel·lar"});
-
-                     var args = arguments;
-
-                     okButton.on('click', function (e) {
-                     confirmation = true;
-                     self._loadTab(value, dispatcher, args);
-                     myDialog.destroy();
-                     });
-
-                     cancelButton.on('click', function (e) {
-                     confirmation = false;
-                     myDialog.destroy();
-                     });
-
-                     myDialog.addChild(okButton);
-                     myDialog.addChild(cancelButton);
-                     myDialog.show();
-                     */
 
                 } else {
                     confirmation = true;
@@ -93,7 +60,7 @@ define([
              * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument.
              *
              * @param {Dispatcher} dispatcher
-             * @param {{id: string, ns: string, title: string, content: string}} value
+             * @param {Content} value
              *
              * @override
              */
@@ -115,7 +82,7 @@ define([
             /**
              * Si existeix una pestanya amb aquesta id carrega el contingut a aquesta pestanya, si no construeix una de nova.
              *
-             * @param {{id: string, ns: string, title: string, content: string}} content
+             * @param {Content} content
              * @param {Dispatcher} dispatcher
              * @returns {number}
              * @private

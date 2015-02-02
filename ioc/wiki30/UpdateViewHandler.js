@@ -11,7 +11,7 @@ define([
              * El métode update permet mostrar o ocultar els botons de la part dreta de la pantalla, segons el GlobalState
              * i la acció a realitzar a la pàgina sel·leccionada.
              *
-             * @param {function()} updateFunction funció per substituir a update
+             * @param {function} updateFunction - Funció per substituir a update
              * @constructor
              */
             constructor: function (updateFunction) {
@@ -23,8 +23,6 @@ define([
             /**
              * TODO[Xavi] Té cap efecte? es sobrescrit al scriptsRef.
              * Posa tots els botons ocults, i segons el GlobalState i la acció mostra unos botons o altres.
-             *
-             * @type {function()}
              */
             update: function () {
             }

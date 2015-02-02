@@ -13,8 +13,8 @@ define([
          * Afegeix el mètode 'resize' que redimensiona l'objecte per igualar-lo a la mida del seu contenidor pare.
          * El mètode s'activa amb l'atribut autoSize.
          *
-         * @class ioc.gui.IocResizableComponent
-         * @extends ioc.wiki30.Request
+         * @class IocResizableComponent
+         * @extends Request
          * @author Rafael Claver <rclaver@xtec.cat>
          */
         {
