@@ -12,7 +12,7 @@ define([
         /**
          *
          * @param {*} value
-         * @param {ioc.wiki30.Dispatcher} dispatcher
+         * @param {Dispatcher} dispatcher
          */
         process: function (value, dispatcher) {
             this.updateState(dispatcher, value);
@@ -21,7 +21,7 @@ define([
         /**
          * TODO[Xavi] Es pasan els arguments al contrari que al process, s'hauria de canviar per fer-ho mes consistent.
          *
-         * @param {ioc.wiki30.Dispatcher} dispatcher
+         * @param {Dispatcher} dispatcher
          * @param {*} value
          */
         updateState: null /*function(dispatcher, value){}*/

@@ -11,9 +11,9 @@ define([
         /**
          * Converteix enllaços normals en crides AJAX.
          *
-         * @class ioc.gui.ContentTabDokuwikiPage
-         * @extends {dijit.layout.ContentPane}
-         * @extends {ioc.wiki30.Request}
+         * @class ContentTabDokuwikiPage
+         * @extends dijit.layout.ContentPane
+         * @extends Request
          */
         {
 

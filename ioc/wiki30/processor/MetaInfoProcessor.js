@@ -1,14 +1,10 @@
 define([
     "dojo/_base/declare",
-    "dijit/registry", //search widgets by id
-    "dojo/dom",
+    "dijit/registry",
     "dijit/layout/ContentPane",
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "dojo/query",
-    "dojo/on",
-    "ioc/wiki30/GlobalState",
     "ioc/dokuwiki/guiSharedFunctions"
-], function (declare, registry, dom, ContentPane, AbstractResponseProcessor, dojoQuery, on, globalState, guiSharedFunctions) {
+], function (declare, registry, ContentPane, AbstractResponseProcessor, guiSharedFunctions) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -16,7 +12,6 @@ define([
          * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-
             type: "meta",
 
             process: function (value, dispatcher) {
@@ -28,7 +23,7 @@ define([
              * Elimina tots els widgets del contenidor de metadades i crea un de nou amb la informació del contingut
              * passat com argument.
              *
-             * @param {{docId: string, meta:[{content: string, id: string, title: string}]}} content
+             * @param {{docId: string, meta:Content[]}} content
              * @param {Dispatcher} dispatcher
              * @returns {number} sempre es 0
              * @private
@@ -88,7 +83,7 @@ define([
              * Afegeix les metadades al contentCache.
              *
              * @param {Dispatcher} dispatcher
-             * @param {{docId: string, meta:[{content: string, id: string, title: string}]}} value
+             * @param {{docId: string, meta:Content[]}} value
              * @private
              */
             _processContentCache: function (dispatcher, value) {

@@ -14,7 +14,7 @@ define([
 
             /**
              * @param {*} value
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              *
              * @override
              */
@@ -26,7 +26,7 @@ define([
              * Processa un missatge d'error.
              *
              * @param {string} message
-             * @param dispatcher
+             * @param {Dispatcher} dispatcher
              * @private
              */
             _processError: function (message, dispatcher) {

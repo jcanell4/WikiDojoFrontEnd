@@ -12,9 +12,9 @@ define([
         /**
          * Aquest widget modifica el formulari de dojo per enviar les dades via Ajax al fer submit.
          *
-         * @class ioc.gui.IocForm
+         * @class IocForm
          * @extends dijit.form.Form
-         * @extends ioc.wiki30.Request
+         * @extends Request
          */
         {
             /** @override */

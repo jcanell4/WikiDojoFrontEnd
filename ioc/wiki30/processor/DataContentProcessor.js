@@ -16,15 +16,19 @@ define([
             type: "data",
 
             /**
-             * @param {*} value
+             * @param {Content} value
              * @param {Dispatcher} dispatcher
              * @override
              */
             process: function (value, dispatcher) {
+                var ret;
+
                 value.editor = new Editor(value.id, value.content);
                 value.content = "<p></p>";
-                this.inherited(arguments);
+                ret = this.inherited(arguments);
                 value.editor.select();
+
+                return ret;
             },
 
 
@@ -33,7 +37,7 @@ define([
              * el valor de la acció a "edit".
              *
              * @param {Dispatcher} dispatcher
-             * @param {Object.<{id: string, ns: string}>} value
+             * @param {Content} value
              * @override
              */
             updateState: function (dispatcher, value) {

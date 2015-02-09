@@ -24,7 +24,8 @@ define([
     "ioc/dokuwiki/underscore"
 
 
-], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style) {
+], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container,
+             IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style) {
 
     var
         /**
@@ -78,7 +79,7 @@ define([
         confEnableAce = {
             type:  "EnableAce",
             title: "Activar/Desactivar ACE",
-            icon:  "../../plugins/aceeditor/images/toggle_on.png" // TODO: Canviar la ruta on es troben les imatges
+            icon: "/iocjslib/ioc/gui/img/toggle_on.png"
         },
 
         /**
@@ -100,7 +101,7 @@ define([
         confEnableWrapper = {
             type:  "EnableWrapper", // we havea new type that links to the function
             title: "Activar/Desactivar embolcall",
-            icon:  "../../../../proves_ace/images/wrap.png" // TODO: Canviar la ruta on es troben les imatges
+            icon: "/iocjslib/ioc/gui/img/wrap.png"
         },
 
         /**
@@ -210,7 +211,7 @@ define([
          }
          );*/
 
-        // TODO en una propera tasca
+        // TODO: en una propera tasca, user_editing sempre es false
         iocAceEditor.setDocumentChangeCallback(function () {
             if (user_editing) {
                 dokuWrapper.text_changed();
@@ -247,7 +248,6 @@ define([
         if (JSINFO.plugin_aceeditor["default"] || dispatcher.getContentCache(id).isAceEditorOn()) {
             enable(params.id);
         }
-
 
         console.log("Carregat en " + (new Date().getTime() - inici));
 
