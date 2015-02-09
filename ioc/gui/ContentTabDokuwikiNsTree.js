@@ -10,18 +10,23 @@ define([
     "dijit/Tree",
     "dojo/aspect",
     "dijit/tree/ObjectStoreModel",
+    "ioc/wiki30/dispatcherSingleton",
+    "dijit/Dialog",
+    "dijit/form/Button",
     "dojo/NodeList-dom" // NodeList.style
-], function (declare, query, template, Request, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Tree, aspect, ObjectStoreModel) {
+
+], function (declare, query, template, Request, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Tree, aspect,
+             ObjectStoreModel, dispatcher, Dialog, Button) {
     var ret = declare("ioc.gui.ContentTabDokuwikiNsTree", [ContentPane, _TemplatedMixin, _LayoutWidget, Request],
 
         /**
          * Aquest widget afegeix un panell amb un arbre.
          *
-         * @class ioc.gui.ContentTabDokuwikiNsTree
-         * @extends {dijit.layout.ContentPane}
-         * @extends {dijit._LayoutWidget}
-         * @extends {dijit._TemplatedMixin}
-         * @extends {ioc.wiki30.Request}
+         * @class ContentTabDokuwikiNsTree
+         * @extends dijit.layout.ContentPane
+         * @extends dijit._LayoutWidget
+         * @extends dijit._TemplatedMixin
+         * @extends Request
          */
         {
             // summary:
@@ -79,6 +84,7 @@ define([
                             nsTree.sendRequest("id=" + item.id);
                         }
                     }
+
                 });
                 var tree = this.tree;
                 //           this.tree.model.store.query(this.getSectok());
@@ -159,6 +165,7 @@ define([
                 this.tree.postMixInProperties();
                 this.tree._load();
             }
+
         });
     return ret;
 });

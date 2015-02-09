@@ -21,7 +21,7 @@ define([
             
             /**
              * @param {*} value
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {Dispatcher} dispatcher
              *
              * @override
              */

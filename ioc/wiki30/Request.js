@@ -10,27 +10,45 @@ define([
          * @class Request
          */
         {
-            standbyId: null,
-            urlBase: null,
-            method: "post",
-            dispatcher: dispatcherSingleton,
-            _standby: null,
-            sectokId: null,
+            standbyId:   null,
+
+            urlBase:     null,
+
+            method:      "post",
+
+            dispatcher:  dispatcherSingleton,
+
+            _standby:    null,
+
+            sectokId:    null,
+
             sectokParam: "sectok",
-            /** @type {string} */
-            query: "",
-            processors: null,
-            content: null,
-            
-            addProcessor: function(type, processor){
-                if(this.processors===null){
-                    this.processors=new Array();
+
+            query:       "",
+
+            processors:  [],
+
+            content:     null,
+
+            /**
+             *
+             * @param {string} type
+             * @param {function} processor
+             */
+            addProcessor: function (type, processor) {
+                if (this.processors === null) {
+                    this.processors = [];
                 }
-                this.processors[type]=processor;
+                this.processors[type] = processor;
             },
-            
-            getProcessor: function(type){
-                return this.processor[type];
+
+            /**
+             *
+             * @param {string} type
+             * @returns {function}
+             */
+            getProcessor: function (type) {
+                return this.processors[type];
             },
 
             /**
@@ -48,7 +66,7 @@ define([
              * @returns {boolean}
              */
             hasPostData: function () {
-                return  this.getPostData() !== null;
+                return this.getPostData() !== null;
             },
 
             /**
@@ -76,7 +94,7 @@ define([
              *
              * Si s'està mostrant el standby l'amaguem.
              *
-             * @param {Array.<{type: string, value}>} data dades per processar.
+             * @param {Command|Command[]} data dades per processar.
              */
             responseHandler: function (data) {
                 this.dispatcher.processResponse(data, this.processors);
@@ -91,7 +109,7 @@ define([
              *
              * Si s'està mostrant el standby l'amaguem.
              *
-             * @param {SyntaxError} error
+             * @param {Error} error
              */
             errorHandler: function (error) {
                 console.log(error);
@@ -106,12 +124,11 @@ define([
              *      'id=start'
              *      'do=edit&id=start'
              *
-             * TODO[Xavi] Aquest métode es molt confus, no fa servir un únic var i te diversos punts de retorn.
+             * TODO[Xavi] Aquest métode es confus, no fa servir un únic var i te diversos punts de retorn.
              *
              * @param {string} query petició que fem a la dokuwiki
              *
-             * @returns {?dojo.promise.Promise} TODO[Xavi] aquest valor no sembla correcte, i no es fa servir en lloc,
-             * no hauria de retornar res.
+             * @returns {?dojo.promise.Promise}
              */
             sendRequest: function (query) {
                 //run standby resource while ajax response doesn't arribe
@@ -131,11 +148,11 @@ define([
                 var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
                     (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
                 var vUrl = this.urlBase;
-                if(!query){
+                if (!query) {
                     var q = this.getQuery();
-                    if(q && typeof q === "string" && q.length>0){
-                        query=q;
-                    }else{
+                    if (q && typeof q === "string" && q.length > 0) {
+                        query = q;
+                    } else {
                         this.content = q;
                     }
                 }
@@ -153,7 +170,7 @@ define([
                 var resp;
                 var req = this;
                 var configPost = {handleAs: "json"};
-                if(this.content){
+                if (this.content) {
                     configPost.content = this.content;
                 }
                 if (this.method === "post") {

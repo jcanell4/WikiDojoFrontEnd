@@ -11,6 +11,7 @@ define([
     "ioc/wiki30/SectokManager",
     "ioc/wiki30/processor/AlertProcessor",
     "ioc/wiki30/processor/HtmlContentProcessor",
+    "ioc/wiki30/processor/MediaProcessor",    
     "ioc/wiki30/processor/MetaInfoProcessor",
     "ioc/wiki30/processor/DataContentProcessor",
     "ioc/wiki30/processor/ErrorProcessor",
@@ -23,18 +24,21 @@ define([
     "ioc/wiki30/processor/CommandProcessor",
     "ioc/wiki30/processor/AdminTabProcessor",
     "ioc/wiki30/manager/InfoManager",
+    "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager, 
                 AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, 
                 DataContentProcessor, ErrorProcessor, InfoStatusProcessor, 
                 LoginProcessor, SectokProcessor, TitleProcessor, 
                 RemoveAllContentTabProcessor, RemoveContentTabProcessor, 
-                CommandProcessor, AdminTabProcessor, InfoManager) {
+                CommandProcessor, AdminTabProcessor, InfoManager,ChangesManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
-       var ret= declare("ioc.wiki30.Dispatcher", [],
+
+     /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
+    var ret = declare("ioc.wiki30.Dispatcher", [],
         /**
          * @class Dispatcher
          */
@@ -101,6 +105,7 @@ define([
                 lang.mixin(this, pAttributes); // TODO[Xavi] comprovar si es més apropiat declare.safeMixin()
                 this.processors["alert"] = new AlertProcessor();
                 this.processors["html"] = new HtmlContentProcessor();
+                this.processors["media"] = new MediaProcessor();                
                 this.processors["metainfo"] = new MetaInfoProcessor();
                 this.processors["data"] = new DataContentProcessor();
                 this.processors["error"] = new ErrorProcessor();
@@ -119,6 +124,8 @@ define([
                 this.reloadStateHandlers = new Array();
 
                 this.infoManager = new InfoManager(this);
+                this.changesManager = new ChangesManager(this);
+
             },
 
             /**
@@ -282,6 +289,7 @@ define([
              * @returns {boolean} unsavedChangeState
              */
             getUnsavedChangesState: function () {
+                alert("getUnsavedChangesState");
                 return this.unsavedChangesState
                     || window.textChanged;
             },
@@ -292,8 +300,10 @@ define([
              * @param {boolean} st
              */
             setUnsavedChangesState:  function (st) {
+                alert("SetUnsavedChangesState");
                 this.unsavedChangesState = st;
                 window.textChanged = st;
+
             },
 
             // TODO[Xavi] no es crida enlloc i no fa res, es per esborrar?
@@ -322,16 +332,32 @@ define([
                 // TODO[Xavi] canviar req per that per fer més clara la intenció
                 var req = this;
 
-                // TODO[Xavi] lang.isArray() està deprecated.
-                if (lang.isArray(response)) {
-                    array.forEach(response, function (responseItem) {
-                        req._processResponse(responseItem, processors);
+
+                if (Array.isArray(response)) {
+
+                    array.some(response, function (responseItem) {
+                        var result = req._processResponse(responseItem, processors);
+                        return result != 0; // Surt del bucle quan es true
                     });
+
                 } else {
                     req._processResponse(response, processors);
                 }
+
                 this.updateFromState();
                 return 0;
+                /*
+                 // TODO[Xavi] lang.isArray() està deprecated.
+                 if (lang.isArray(response)) {
+                 array.forEach(response, function (responseItem) {
+                 req._processResponse(responseItem, processors);
+                 });
+                 } else {
+                 req._processResponse(response, processors);
+                 }
+                 this.updateFromState();
+                 return 0;
+                 */
             },
 
             /**
@@ -344,15 +370,18 @@ define([
              * @private
              */
             _processResponse: function (response, processors) {
-                if(processors && processors[response.type]){
-                    processors[response.type].process(response.value, this);
-                }else if (this.processors[response.type]) {
-                    this.processors[response.type].process(response.value, this);
+                var result;
+
+                if (processors && processors[response.type]) {
+                    result = processors[response.type].process(response.value, this);
+                } else if (this.processors[response.type]) {
+                    result = this.processors[response.type].process(response.value, this);
                 } else {
-                    this.processors["alert"].process("Missatge incomprensible", this);
+                    result = this.processors["alert"].process("Missatge incomprensible", this);
                     /*TO DO: internationalization*/
                 }
-                return 0;
+
+                return result || 0;
             },
 
             /**
@@ -366,9 +395,69 @@ define([
                 this.processors["error"].process({message: errorMessage}, this);
             },
 
+            /**
+             * Retorna el gestor d'informacions
+             *
+             * @returns {InfoManager} Gestor d'informació
+             */
             getInfoManager: function () {
                 return this.infoManager;
+            },
+
+            getChangesManager: function () {
+                return this.changesManager;
+            },
+
+
+            events: {}, // string: function[];
+
+            observers: [],
+
+            registerToEvent: function (event, callback) {
+                var index,
+                    observer;
+
+                if (!Array.isArray(this.events[event])) {
+                    this.events[event] = [];
+                }
+
+                index = this.events[event].push(callback) -1;
+                observer = {event: event, index: index};
+
+                return this.observers.push(observer) - 1;
+            },
+
+            /**
+             * Despatcha l'esdeveniment amb les dades passades com argument a tots els observadors.
+             *
+             * @param {string} event - Nom del esdeveniment
+             * @param {object} data - Dades que es passaran als observadors
+             */
+            dispatchEvent: function (event, data) {
+                var observers = this.events[event];
+                if (observers) {
+                    array.forEach(observers, function (callback) {
+                        if (callback) {
+                            callback(data);
+                        }
+                    });
+                }
+            },
+
+            /**
+             * Alliberem els objectes però no els esborrem per no alterar la correspondencia dels index de al resta dels
+             * subscriptors
+             *
+             * @param {int} observerId - Identificador del event observat
+             */
+            removeObserver: function (observerId) {
+                var subscriber = this.observers[observerId];
+
+                this.events[subscriber.event][subscriber.index] = null;
+                this.observers[observerId] = null;
             }
+
+
         });
-        return ret;
+    return ret;
 });

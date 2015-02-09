@@ -19,10 +19,10 @@ define([
          * Aquest widget afegeix un dialog ocult que inclou la validacio de les dades abans d'enviar-les, i l'enviament
          * via ajax al servidor. En cas de que la resposta sigui correcte amaga aquest dialog.
          *
-         * @class ioc.gui.ActionHiddenDialogDokuwiki
-         * @extends {dijit.TooltipDialog}
-         * @extends {dijit._WidgetsInTemplateMixin}
-         * @extends {ioc.wiki30.Request}
+         * @class ActionHiddenDialogDokuwiki
+         * @extends dijit.TooltipDialog
+         * @extends dijit._WidgetsInTemplateMixin
+         * @extends Request
          */
         {
             templateString: template,

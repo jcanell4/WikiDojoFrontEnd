@@ -37,32 +37,14 @@ define([
                     // TODO[Xavi] el missatge d'error es mostra cridant a un mètode privat.
                     dispatcher._processError("Usuari o contrasenya incorrectes");
 
-                } /*else if (!result.loginRequest && !result.loginResult) {
-		    //TODO[Josep] Cal que la informació parteixisempre del servidor
-
-                    //S'ha de passar aquesta informació al servidor
-                    dispatcher.processResponse({
-                        type: "info",
-                        value: {
-                            info: ["usuari desconnectat"]
-                        }
-                    });
-
-                } else {
-                    dispatcher.processResponse({
-                        type: "info",
-                        value: {
-                            info:["usuari connectat"]
-                        }
-                    });
-                } */
+                }
             },
 
             /**
              * Actualitza els valors de login del GlobalState.
              *
              * @param {Dispatcher} dispatcher
-             * @param {{loginResult: string}} value
+             * @param {{loginResult: string, userId: string}} value
              *
              * @override
              */

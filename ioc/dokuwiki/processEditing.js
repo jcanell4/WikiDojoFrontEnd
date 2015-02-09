@@ -1,100 +1,92 @@
-define([           
-    "ioc/wiki30/dispatcherSingleton"
-    ,"dojo/dom"
-    ,"dojo/on"
-    ,"dojo/query"
-    ,"dijit/focus"
-    ,"dojo/ready"
-    ,"dojo/dom-geometry"
-    ,"dojo/dom-style"
-    ,'dojo/_base/unload'
-], function(dispatcher, dom, on, query, focus, ready, geometry, style, 
-            unload){
+/**
+ * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
+ */
+define([
+    "ioc/wiki30/dispatcherSingleton",
+    "dojo/dom",
+    "dojo/on",
+    "dijit/focus",
+    "dojo/ready"
+
+], function (dispatcher, dom, on, focus, ready) {
     /**
-    * Activate "not saved" dialog, add draft deletion to page unload,
-    * add handlers to monitor changes
-    *
-    * Sets focus to the editbox as well
-    */
-   function setChangesControl(editFormId, wikiTextId, summaryId){
-        var editform = dom.byId(editFormId);
-        if (!editform) {
+     * Activate "not saved" dialog, add draft deletion to page unload,
+     * add handlers to monitor changes
+     *
+     * Sets focus to the editbox as well
+     */
+    function setChangesControl(editFormId, wikiTextId, summaryId) {
+        var editform = dom.byId(editFormId),
+
+            edit_text = dom.byId(wikiTextId),
+
+            summary = dom.byId(summaryId),
+
+            changesManager = dispatcher.getChangesManager(),
+
+
+            checkfunc = function () {
+                var currentId = dispatcher.getGlobalState().getCurrentId();
+                changesManager.updateDocumentChangeState(currentId);
+                summaryCheck();
+            };
+
+        if (!editform || (edit_text && edit_text.readOnly)) {
             return;
         }
 
-        var edit_text = dom.byId(wikiTextId);
-        if (edit_text) {
-            if(edit_text.readOnly) {
-                return;
+        changesManager.setDocument(edit_text.value);
+
+        window.addEventListener("beforeunload", function (event) {
+            if (changesManager.thereAreChangedDocuments()) {
+                event.returnValue = LANG.notsavedyet;
             }
 
+            deleteDraft();
+        });
+
+        if (edit_text) {
             // set focus and place cursor at the start
             var sel = getSelection(edit_text);
             sel.start = 0;
-            sel.end   = 0;
+            sel.end = 0;
             setSelection(sel);
             focus.focus(edit_text);
-//            edit_text.focus();
+            //            edit_text.focus();
         }
 
-        var checkfunc = function() {
-            dispatcher.setUnsavedChangesState(true);
-            summaryCheck();
-        };
+        on(editform, 'keyup', checkfunc);
+        on(editform, 'paste', checkfunc);
+        on(editform, 'cut', checkfunc);
+        on(editform, 'focusout', checkfunc);
 
-        on(editform, 'keydown', checkfunc);
-        on(editform, 'change', checkfunc);
-//        focus.watch(editform, checkfunc);
 
-        if(!unload.isEditUnloadAdded){
-            unload.addOnUnload(function(){
-                if(dispatcher.getUnsavedChangesState()) {
-                    return LANG.notsavedyet;
-                }
-            });
-
-            unload.addOnWindowUnload(deleteDraft);
-            unload.isEditUnloadAdded=true;
-        }
-
-        var summary = dom.byId(summaryId);
         on(summary, "change", summaryCheck);
         on(summary, "keyup", summaryCheck);
 
+        if (changesManager.thereAreChangedDocuments()) {
+            summaryCheck();
+        }
 
-        if (dispatcher.getUnsavedChangesState()) summaryCheck();
-                
-//        // reset change memory var on submit
-//        jQuery('#edbtn__save').click(
-//            function() {
-//                window.onbeforeunload = '';
-//                textChanged = false;
-//            }
-//        );
-//        jQuery('#edbtn__preview').click(
-//            function() {
-//                window.onbeforeunload = '';
-//                textChanged = false;
-//                window.keepDraft = true; // needed to keep draft on page unload
-//            }
-//        );
-
-        dw_editor.init();        
+        dw_editor.init();
     }
 
-    
-    var res = function(params){
-        ready(function(){
+    /**
+     * @param {{toolbarId:string, editFormId:string, wikiTextId:string, summaryId:string}} params
+     */
+    var res = function (params) {
+        ready(function () {
             var toolbar = window[params.varName];
-            if(toolbar && params.toolbarId && params.wikiTextId){
-                initToolbar(params.toolbarId,params.wikiTextId, toolbar);
-                jQuery('#'+params.toolbarId).attr('role', 'toolbar');
+
+            if (toolbar && params.toolbarId && params.wikiTextId) {
+                initToolbar(params.toolbarId, params.wikiTextId, toolbar);
+                jQuery('#' + params.toolbarId).attr('role', 'toolbar');
             }
 
-            setChangesControl(params.editFormId, params.wikiTextId, 
-                                params.summaryId);
+            setChangesControl(params.editFormId, params.wikiTextId,
+                params.summaryId);
 
-            dw_locktimer.init(params.timeout, params.draft);                      
+            dw_locktimer.init(params.timeout, params.draft);
         });
     };
     return res;
