@@ -27,7 +27,7 @@ define([
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-                AlertProcessor, HtmlContentProcessor, MetaInfoProcessor,
+                AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
                 DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
                 LoginProcessor, SectokProcessor, TitleProcessor,
                 RemoveAllContentTabProcessor, RemoveContentTabProcessor,
