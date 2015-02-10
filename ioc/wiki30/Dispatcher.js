@@ -11,7 +11,7 @@ define([
     "ioc/wiki30/SectokManager",
     "ioc/wiki30/processor/AlertProcessor",
     "ioc/wiki30/processor/HtmlContentProcessor",
-    "ioc/wiki30/processor/MediaProcessor",    
+    "ioc/wiki30/processor/MediaProcessor",
     "ioc/wiki30/processor/MetaInfoProcessor",
     "ioc/wiki30/processor/DataContentProcessor",
     "ioc/wiki30/processor/ErrorProcessor",
@@ -22,16 +22,16 @@ define([
     "ioc/wiki30/processor/RemoveAllContentTabProcessor",
     "ioc/wiki30/processor/RemoveContentTabProcessor",
     "ioc/wiki30/processor/CommandProcessor",
-    "ioc/wiki30/processor/AdminTabProcessor",
+    "ioc/wiki30/processor/AdminTaskProcessor",
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/UpdateViewHandler"
-], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager, 
-                AlertProcessor, HtmlContentProcessor, MetaInfoProcessor, 
-                DataContentProcessor, ErrorProcessor, InfoStatusProcessor, 
-                LoginProcessor, SectokProcessor, TitleProcessor, 
-                RemoveAllContentTabProcessor, RemoveContentTabProcessor, 
-                CommandProcessor, AdminTabProcessor, InfoManager,ChangesManager) {
+], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
+                AlertProcessor, HtmlContentProcessor, MetaInfoProcessor,
+                DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
+                LoginProcessor, SectokProcessor, TitleProcessor,
+                RemoveAllContentTabProcessor, RemoveContentTabProcessor,
+                CommandProcessor, AdminTaskProcessor, InfoManager,ChangesManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -105,7 +105,7 @@ define([
                 lang.mixin(this, pAttributes); // TODO[Xavi] comprovar si es més apropiat declare.safeMixin()
                 this.processors["alert"] = new AlertProcessor();
                 this.processors["html"] = new HtmlContentProcessor();
-                this.processors["media"] = new MediaProcessor();                
+                this.processors["media"] = new MediaProcessor();
                 this.processors["metainfo"] = new MetaInfoProcessor();
                 this.processors["data"] = new DataContentProcessor();
                 this.processors["error"] = new ErrorProcessor();
@@ -116,7 +116,7 @@ define([
                 this.processors["removeall"] = new RemoveAllContentTabProcessor();
                 this.processors["remove"] = new RemoveContentTabProcessor();
                 this.processors["command"] = new CommandProcessor();
-                this.processors["admin_tab"] = new AdminTabProcessor();
+                this.processors["admin_task"] = new AdminTaskProcessor();
                 this.toUpdateSectok = new Array();
                 this.sectokManager = new SectokManager();
                 this.globalState = GlobalState;
