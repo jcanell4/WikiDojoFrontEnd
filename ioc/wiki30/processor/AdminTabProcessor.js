@@ -3,13 +3,13 @@ define([
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "dijit/registry"
 ], function (declare, AbstractResponseProcessor,registry) {
-    var ret = declare("ioc.wiki30.processor.AdminTaskProcessor", [AbstractResponseProcessor],
+    var ret = declare("ioc.wiki30.processor.AdminTabProcessor", [AbstractResponseProcessor],
     /**
-    * @class AdminTaskProcessor
+    * @class AdminTabProcessor
     * @extends AbstractResponseProcessor
     */
     {
-        type: "admintask",
+        type: "admintab",
 
         /**
         * @param {*} value
@@ -17,7 +17,7 @@ define([
         * @override
         */
         process: function (value, dispatcher) {
-            this._processAdminTask(value, dispatcher);
+            this._processAdminTab(value, dispatcher);
         },
 
         /**
@@ -29,7 +29,7 @@ define([
         * @param {ioc.wiki30.Dispatcher} dispatcher
         * @private
         */
-        _processAdminTask: function (result, dispatcher) {
+        _processAdminTab: function (result, dispatcher) {
             require([
                 "ioc/gui/ContentTabDokuwikiPage"], function(ContentTabDokuwikiPage){
                     var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
