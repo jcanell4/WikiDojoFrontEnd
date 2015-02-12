@@ -23,6 +23,7 @@ define([
     "ioc/wiki30/processor/RemoveContentTabProcessor",
     "ioc/wiki30/processor/CommandProcessor",
     "ioc/wiki30/processor/AdminTabProcessor",
+    "ioc/wiki30/processor/AdminTaskProcessor",
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/UpdateViewHandler"
@@ -31,7 +32,7 @@ define([
                 DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
                 LoginProcessor, SectokProcessor, TitleProcessor,
                 RemoveAllContentTabProcessor, RemoveContentTabProcessor,
-                CommandProcessor, AdminTabProcessor, InfoManager,ChangesManager) {
+                CommandProcessor, AdminTabProcessor, AdminTaskProcessor, InfoManager,ChangesManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -117,6 +118,7 @@ define([
                 this.processors["remove"] = new RemoveContentTabProcessor();
                 this.processors["command"] = new CommandProcessor();
                 this.processors["admin_tab"] = new AdminTabProcessor();
+                this.processors["admin_task"] = new AdminTaskProcessor();
                 this.toUpdateSectok = new Array();
                 this.sectokManager = new SectokManager();
                 this.globalState = GlobalState;
