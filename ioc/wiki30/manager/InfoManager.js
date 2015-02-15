@@ -283,6 +283,8 @@ define([
                  * es tract d'un missatge global o correspongui amb el document actualment actiu. En cas contrari la
                  * acció es ignorada.
                  *
+                 * TODO[Xavi] Es podria actualitzar per fer servir l'observador del dispatcher i no fer el refresc manualment
+                 *
                  * @param {string?} id - Id del document del que volem mostrar la info, o null per mostrar el global.
                  */
                 refreshInfo: function (id) {
