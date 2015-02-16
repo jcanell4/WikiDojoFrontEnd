@@ -251,14 +251,6 @@ define([
                     exec:    this.callback('tab', this.aceWrapper.indent)
                 });
 
-                // TODO: Esborrar, només per fer proves
-                this.aceWrapper.add_command({
-                    name: 'doku-test',
-                    exec: this.callback('test', function () {
-                        alert("test working")
-                    })
-                });
-
                 this.aceWrapper.set_keyboard_states({
                     'start': [
                         {
@@ -296,11 +288,6 @@ define([
                         {
                             key:  't',
                             exec: 'doku-menu-t',
-                            then: 'start'
-                        },
-                        { // TODO: Esborrar, només per fer proves
-                            key:  'ñ',
-                            exec: 'doku-test',
                             then: 'start'
                         },
                         {

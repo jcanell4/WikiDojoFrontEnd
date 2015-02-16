@@ -5,11 +5,8 @@
  * @author Xavier García<xaviergaro.dev@gmail.com>
  */
 define([], function () {
-    // Métodes i propietats privades del patcher
-
     var originalFunctions = {},
         cachedFunctions = {},
-
 
         /**
          * Afegeix una funció al objecte dw_editor si existeix alguna amb aquest nom o al objecte window si no s'ha
@@ -29,13 +26,10 @@ define([], function () {
 
             var obj = (dw_editor && dw_editor[name]) ? dw_editor : window,
                 orig_func;
-            //orig_func = obj[name];
 
             if (originalFunctions[name]) {
                 orig_func = originalFunctions[name];
-                //alert("ja existeix "+name);
             } else {
-                //alert("guardem original "+name);
                 orig_func = obj[name];
                 originalFunctions[name] = orig_func;
             }
@@ -69,12 +63,10 @@ define([], function () {
                 cachedFunctions[id] = [];
             }
             cachedFunctions[id].push({name: name, func: func});
-            //console.log("Guardada funció: " + name + " per id: " + id);
         },
 
         restoreCachedFunctions = function (id) {
             if (!cachedFunctions[id]) {
-                //console.log("No hi ha funcions en caché");
                 return;
             }
 
@@ -84,8 +76,6 @@ define([], function () {
             for (var i = 0, len = functions.length; i < len; i++) {
                 name = functions[i]['name'];
                 func = functions[i]['func'];
-
-                //console.log("Restaurant funció: " + name + " per id: " + id);
 
                 if (dw_editor && dw_editor[name]) {
                     dw_editor[name] = func
@@ -98,8 +88,6 @@ define([], function () {
 
     return {
         patch: patch,
-
-        //cacheFunction: cacheFunction,
 
         restoreCachedFunctions: restoreCachedFunctions
     }
