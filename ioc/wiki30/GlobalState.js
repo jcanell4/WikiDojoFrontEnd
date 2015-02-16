@@ -24,6 +24,9 @@ define([
         /** @type {string} id de la secció seleccionada */
         currentSectionId: null,
 
+        /** @type {string} id de la pestanya del panell de navegacio seleccionat */
+        currentNavigationId: null,
+
         sectok: null,
 
         title: "",
@@ -144,8 +147,24 @@ define([
          */
         setInfoStorage: function (infoStorage) {
             this.infoStorage = infoStorage;
-        }
+        },
 
+
+        /**
+         * Retorna la id de la pestanya del panell de navegació actual
+         * @returns {string}
+         */
+        getCurrentNavigationId: function () {
+            return this.currentNavigationId;
+        },
+
+        /**
+         * Estableix el id de la pestanya del panell de navegació activa
+         * @param {string} navigationId
+         */
+        setCurrentNavigationId: function(navigationId) {
+            this.currentNavigationId = navigationId;
+        }
     };
 
 
