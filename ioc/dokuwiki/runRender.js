@@ -41,7 +41,7 @@ define([], function(){
                         var height = ($img.attr('height')?parseInt($img.attr('height')):$img.height());
                         var widthaux = 0;
                         if (width){
-                                widthaux = width * 1.5;
+                                widthaux = width * 1;
                                 if (widthaux > 800){
                                         widthaux = 800;
                                 }
