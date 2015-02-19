@@ -7,7 +7,6 @@ define([
          * @class IocContextTable
          */
         {
-
             aceWrapper: null,
 
             constructor: function (aceWrapper) {

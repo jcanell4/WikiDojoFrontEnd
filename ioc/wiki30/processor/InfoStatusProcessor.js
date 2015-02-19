@@ -39,7 +39,7 @@ define([
                 infoManager.setInfo(value);
 
                 if (!value.message) {
-                    console.error("Error detectact, la info que ha arribat no es vàlida", info)
+                    console.error("Error detectact, la info que ha arribat no es vàlida", value)
                 }
             }
 
