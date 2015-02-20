@@ -11,11 +11,13 @@ define([
     'ioc/wiki30/GlobalState',
     'ioc/wiki30/dispatcherSingleton',
     'ioc/dokuwiki/AceManager/toolbarManager',
-    "dojo/dom-geometry",
-    "dojo/dom-style",
-    "ioc/dokuwiki/underscore"
+    'dojo/dom-geometry',
+    'dojo/dom-style',
+    'dojo/on',
+
+    'ioc/dokuwiki/underscore'
 ], function (registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container,
-             IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style) {
+             IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style, on) {
 
     var
         /**
@@ -128,7 +130,17 @@ define([
             h = geometry.getContentBox(contentNode).h;
 
         style.set(params.textAreaId, "height", "" + h - 20 + "px");
-        style.set(params.textAreaId, "resize", "vertical");
+
+        on(window, 'resize', function () {
+
+            var editor = dispatcher.getContentCache(params.id).getEditor(),
+                h = geometry.getContentBox(contentNode).h;
+
+            style.set(editor.containerId, "height", "" + h - 20 + "px");
+            style.set(params.textAreaId, "height", "" + h - 20 + "px");
+
+        });
+
 
         var currentEditor = dispatcher.getContentCache(params.id).getEditor(),
 
