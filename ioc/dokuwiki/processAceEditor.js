@@ -1,5 +1,4 @@
 define([
-    'dojo/ready',
     "dijit/registry",
     'dojo/dom',
     'ioc/dokuwiki/AceManager/IocAceEditor',
@@ -12,20 +11,13 @@ define([
     'ioc/wiki30/GlobalState',
     'ioc/wiki30/dispatcherSingleton',
     'ioc/dokuwiki/AceManager/toolbarManager',
-    "dojo/dom-geometry",
-    "dojo/dom-style",
+    'dojo/dom-geometry',
+    'dojo/dom-style',
+    'dojo/on',
 
-    // Només cal carregar els modes que s'han d'incloure
-    "ace-builds/mode-markdown",
-    "ace-builds/mode-latex",
-    "ace-builds/mode-java",
-    "ace-builds/mode-javascript",
-    //"ace-builds/mode-php",
-    "ioc/dokuwiki/underscore"
-
-
-], function (ready, registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container,
-             IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style) {
+    'ioc/dokuwiki/underscore'
+], function (registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container,
+             IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style, on) {
 
     var
         /**
@@ -79,7 +71,7 @@ define([
         confEnableAce = {
             type:  "EnableAce",
             title: "Activar/Desactivar ACE",
-            icon: "/iocjslib/ioc/gui/img/toggle_on.png"
+            icon:  "/iocjslib/ioc/gui/img/toggle_on.png"
         },
 
         /**
@@ -101,7 +93,7 @@ define([
         confEnableWrapper = {
             type:  "EnableWrapper", // we havea new type that links to the function
             title: "Activar/Desactivar embolcall",
-            icon: "/iocjslib/ioc/gui/img/wrap.png"
+            icon:  "/iocjslib/ioc/gui/img/wrap.png"
         },
 
         /**
@@ -127,30 +119,34 @@ define([
 
     toolbarManager.addButton(confEnableAce, funcEnableAce);
     toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
-    toolbarManager.removeButton(1);
 
     return function (params) {
-
         // Comprovem la versió del explorador i que existeix l'entorn de la dokuwiki abans de fer res
         if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById(params.textAreaId))) {
             return;
         }
 
-        var contentNode = dom.byId(params.id);
-        var h = geometry.getContentBox(contentNode).h;
+        var contentNode = dom.byId(params.id),
+            h = geometry.getContentBox(contentNode).h;
+
         style.set(params.textAreaId, "height", "" + h - 20 + "px");
-        style.set(params.textAreaId, "resize", "vertical");
+
+        on(window, 'resize', function () {
+
+            var editor = dispatcher.getContentCache(params.id).getEditor(),
+                h = geometry.getContentBox(contentNode).h;
+
+            style.set(editor.containerId, "height", "" + h - 20 + "px");
+            style.set(params.textAreaId, "height", "" + h - 20 + "px");
+
+        });
+
 
         var currentEditor = dispatcher.getContentCache(params.id).getEditor(),
 
-            lang_rules = {
-                // TODO Eliminar aquests llenguatges, es només una demostració
-                //java:       ace.require("ace/mode/java_highlight_rules").JavaHighlightRules,
-                javascript: ace.require("ace/mode/javascript_highlight_rules").JavaScriptHighlightRules
-            },
+            lang_rules = {},
 
             iocAceMode = new IocAceMode({
-                //xmlTags:          ['alumne', 'professor'], // TODO Eliminar, només per fer proves
                 baseHighlighters: lang_rules,
                 ruleSets:         [new IocRuleSet()],
                 xmlTags:          JSINFO.plugin_aceeditor.xmltags
@@ -161,26 +157,22 @@ define([
             iocAceEditor = new IocAceEditor({
                 mode:        mode,
                 containerId: "editor" + params.id,
-
-                // TODO Reactivar al integrar
                 theme:       JSINFO.plugin_aceeditor.colortheme,
                 readOnly:    jQuery(document.getElementById(params.textAreaId)).attr('readonly'),
                 wraplimit:   JSINFO.plugin_aceeditor.wraplimit,
                 wrapMode:    jQuery(document.getElementById(params.textAreaId)).attr('wrap') !== 'off',
-                mdpage:      JSINFO.plugin_aceeditor.mdpage // TODO no he trobat on es fa servir aquesta propietat
+                mdpage:      JSINFO.plugin_aceeditor.mdpage
             }),
 
             aceWrapper = new AceWrapper(iocAceEditor),
 
-            dokuWrapper = new DokuWrapper(aceWrapper, '', params.id),
+            dokuWrapper = new DokuWrapper(aceWrapper, params.textAreaId),
 
             container = new Container(aceWrapper, dokuWrapper, currentEditor),
 
             user_editing = false,
 
             commands,
-
-            preview, // TODO en una propera tasca
 
             editor;
 
@@ -190,26 +182,6 @@ define([
 
         // No es poden afegir els comandaments fins que no s'a inicialitzat l'editor
         commands = new IocCommands(aceWrapper);
-
-        // TODO: Eliminar aquesta etiqueta de prova externa
-        mode = iocAceMode.getMode(); // S'ha de tornar a generar el mode
-
-
-        // COMPTA: Fins que no s'ha inicialitzat l'editor no es possible afegir noves regles
-        iocAceEditor.setMode(mode);
-
-        // TODO: Eliminar, només es fan servir per les proves
-        iocAceEditor.setDocumentChangeCallback(function () {
-        });
-
-        // TODO: Eliminar, aquest codi fa que es mostri el state de la línia actual
-        /*
-         iocAceEditor.setChangeCursorCallback(
-         function () {
-         var currline = iocAceEditor.editor.getSelectionRange().start.row;
-         console.log(iocAceEditor.session.getState(currline));
-         }
-         );*/
 
         // TODO: en una propera tasca, user_editing sempre es false
         iocAceEditor.setDocumentChangeCallback(function () {
@@ -250,6 +222,5 @@ define([
         }
 
         console.log("Carregat en " + (new Date().getTime() - inici));
-
     };
 });
