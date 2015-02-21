@@ -46,19 +46,10 @@ define([
         };
         requestEdita.sectok = requestEdita.dispatcher.getSectok();
         requestEdita.dispatcher.toUpdateSectok.push(requestEdita);
-        requestEdita.urlBase=params.editCommand;
 
 
-        on(domNode, "#acl__detail input[type=submit]:click", function(e){
-          alert("hola");
-        });
-
-        //on(domNode, "#acl_manager input[name='cmd[update]']:click", function(e){
-        //  alert("hola2");
-        //});
-
-
-        on(domNode, "#acl__detail form:click", function(e){
+        on(domNode, "#acl__detail form:submit", function(e){
+            requestEdita.urlBase=params.urlBaseDesa;
             //enviar
             var query = "";
             var data;
@@ -71,7 +62,8 @@ define([
         });
 
         // capturar el clic sobre el botó Actualitzar
-        on(domNode, "#acl__user input[type=submit]:click", function(e){
+        on(domNode, "#acl_manager .level2 form:submit", function(e){
+            requestEdita.urlBase=params.urlBaseActualiza;
             //enviar
             var query = "";
             var data;
