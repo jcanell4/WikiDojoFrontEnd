@@ -32,12 +32,12 @@ define([
         requestUpdateAcl.urlBase=params.urlBase;
 
         // capturar el clic sobre el botó Desa/Actualitza/Suprimeix
-        form = query(params.saveSelector);
+        var form = query(params.saveSelector);
         var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
             var queryString = "";
             var data = domform.toQuery(this.form);
-            data += "&cmd="+this.name.substring(4,this.name.length-1);
+            data += "&" + this.name + "="+ domform.fieldToObject(this);
             if (data){
               queryString = data;
             }
@@ -47,12 +47,12 @@ define([
         });
 
         // capturar el clic sobre el botó Actualitzar a la graella
-        form = query(params.updateSelector);
+        var form = query(params.updateSelector);
         var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
             var queryString = "";
             var data = domform.toQuery(this.form);
-            data += "&cmd="+this.name.substring(4,this.name.length-1);
+            data += "&" + this.name + "="+ domform.fieldToObject(this);
             if (data){
               queryString = data;
             }
