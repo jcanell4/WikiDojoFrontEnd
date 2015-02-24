@@ -16,21 +16,21 @@ define([
     ,"dojo/dom-form"
     ,"ioc/wiki30/Request"
 ], function(on, dom, query,event, domform, Request){
-
+    var requestUpdateAcl = new Request();
+    requestUpdateAcl.updateSectok=function(sk){
+            this.sectok=sk;
+    };
+    requestUpdateAcl.sectok = requestUpdateAcl.dispatcher.getSectok();
+    requestUpdateAcl.dispatcher.toUpdateSectok.push(requestUpdateAcl);
+    
 
     var res = function(id, params){
-      // captura la manipulació de l'arbre
-      dw_acl.init();
+        // captura la manipulació de l'arbre
+        dw_acl.init();
 
-      var domNode = dom.byId(id);
-        var requestUpdateAcl = new Request();
-        requestUpdateAcl.updateSectok=function(sk){
-            this.sectok=sk;
-        };
-        requestUpdateAcl.sectok = requestUpdateAcl.dispatcher.getSectok();
-        requestUpdateAcl.dispatcher.toUpdateSectok.push(requestUpdateAcl);
+        var domNode = dom.byId(id);
         requestUpdateAcl.urlBase=params.urlBase;
-
+  
         // capturar el clic sobre el botó Desa/Actualitza/Suprimeix
         var form = query(params.saveSelector);
         var handle = on(form, "input[type=submit]:click", function(e){
