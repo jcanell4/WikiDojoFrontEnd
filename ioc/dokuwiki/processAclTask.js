@@ -37,6 +37,7 @@ define([
             var query = "";
             var data;
             data = domform.toQuery(this);
+            data += "&"+e.explicitOriginalTarget.name+"="+domform.fieldToObject(e.explicitOriginalTarget);
             if (data){
                 query = data;
             }
@@ -51,6 +52,7 @@ define([
             var query = "";
             var data;
             data = domform.toQuery(this);
+            data += "&"+e.explicitOriginalTarget.name+"="+domform.fieldToObject(e.explicitOriginalTarget);
             if (data){
                 query = data;
             }
