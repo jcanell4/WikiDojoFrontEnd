@@ -4,17 +4,18 @@
 *    executar mètode init() de l'objecte dw_acl.
 *  - capturar el clics dels botons als forms.
 *    els selectors css estan definits a la funció getAclSelectors
-*    del DokuModelAdapter 
+*    del DokuModelAdapter
 *
 * @author Eduard Latorre
 */
 define([
      "dojo/on"
     ,"dojo/dom"
+    ,"dojo/query"
     ,"dojo/_base/event"
     ,"dojo/dom-form"
     ,"ioc/wiki30/Request"
-], function(on, dom, event, domform, Request){
+], function(on, dom, query,event, domform, Request){
 
 
     var res = function(id, params){
@@ -28,36 +29,36 @@ define([
         };
         requestUpdateAcl.sectok = requestUpdateAcl.dispatcher.getSectok();
         requestUpdateAcl.dispatcher.toUpdateSectok.push(requestUpdateAcl);
+        requestUpdateAcl.urlBase=params.urlBase;
 
-
-        // capturar el clic sobre el botó Desa
-        on(domNode, params.saveSelector, function(e){
-            requestUpdateAcl.urlBase=params.urlBaseDesa;
+        // capturar el clic sobre el botó Desa/Actualitza/Suprimeix
+        form = query(params.saveSelector);
+        var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
-            var query = "";
-            var data;
-            data = domform.toQuery(this);
-            data += "&"+e.explicitOriginalTarget.name+"="+domform.fieldToObject(e.explicitOriginalTarget);
+            var queryString = "";
+            var data = domform.toQuery(this.form);
+            data += "&cmd="+this.name.substring(4,this.name.length-1);
             if (data){
-                query = data;
+              queryString = data;
             }
-            requestUpdateAcl.sendRequest(query);
+            requestUpdateAcl.sendRequest(queryString);
             event.stop(e);
+            handle.remove();
         });
 
-        // capturar el clic sobre el botó Actualitzar
-        on(domNode, params.updateSelector, function(e){
-            requestUpdateAcl.urlBase=params.urlBaseActualiza;
+        // capturar el clic sobre el botó Actualitzar a la graella
+        form = query(params.updateSelector);
+        var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
-            var query = "";
-            var data;
-            data = domform.toQuery(this);
-            data += "&"+e.explicitOriginalTarget.name+"="+domform.fieldToObject(e.explicitOriginalTarget);
+            var queryString = "";
+            var data = domform.toQuery(this.form);
+            data += "&cmd="+this.name.substring(4,this.name.length-1);
             if (data){
-                query = data;
+              queryString = data;
             }
-            requestUpdateAcl.sendRequest(query);
+            requestUpdateAcl.sendRequest(queryString);
             event.stop(e);
+            handle.remove();
         });
 
 
