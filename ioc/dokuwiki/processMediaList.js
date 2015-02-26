@@ -23,6 +23,7 @@ define([
                 setSelectedElement(dwPageUi.getElementParentNodeId(oldId,"LI"), false);
             }
         }
+        dispatcher.updateFromState();
 
     }
     
@@ -41,9 +42,7 @@ define([
     
     var res = function(id, params){
         //JSINFO.id=params.ns;
-        listHeadings(id);
-        runRender(id);   
-        runQuiz();
+
         
         var domNode = dom.byId(id);        
         
