@@ -110,6 +110,9 @@ define([
              * TODO Si no el troba, no para
              */
             var ps = null;
+            if (typeof nodeId !== "string"){
+                nodeId = nodeId.id;
+            }
             if(dom.byId(nodeId)){
                 ps = dom.byId(nodeId);
                 if ((ps.nodeType === ps.ELEMENT_NODE) && (ps.tagName && ps.tagName.toUpperCase() === typeId)) {                    
