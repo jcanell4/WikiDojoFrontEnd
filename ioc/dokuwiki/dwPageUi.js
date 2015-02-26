@@ -69,6 +69,66 @@ define([
             }
             return ps;
         }
+       ,getElementWhithNodeId: function(node,typeId){
+            /*
+             * Donat un node, retorna el node (tipus element) que coincideix amb typeId
+             */
+            /*
+             * TODO Si no el troba, no para
+             */
+
+            var ps = node.firstChild;
+            while (ps){
+                if(ps.hasChildNodes()){
+                    ps = ps.firstChild;
+                }else{
+                    var pt = ps.nextSibling;
+                    if(pt){
+                        ps = pt;
+                    }else{
+                        ps = ps.parentNode;
+                        ps = ps.nextSibling;
+                    }
+                }
+                if(ps){
+                    if (ps.nodeType === ps.ELEMENT_NODE) {
+                        if (ps.tagName && ps.tagName.toUpperCase() === typeId){
+                            break;
+                        } 
+                        
+                    }
+                    
+                }
+            }
+            return ps;
+        }
+       ,getElementParentNodeId: function(nodeId, typeId){
+            /*
+             * Donat un Id d'element, retorna l'element pare que coincideix amb typeId
+             */
+            /*
+             * TODO Si no el troba, no para
+             */
+            var ps = null;
+            if(dom.byId(nodeId)){
+                ps = dom.byId(nodeId);
+                if ((ps.nodeType === ps.ELEMENT_NODE) && (ps.tagName && ps.tagName.toUpperCase() === typeId)) {                    
+                                             
+                }else{
+                    while (ps){
+                        ps = ps.parentElement;
+                        if(ps){
+                            if (ps.nodeType === ps.ELEMENT_NODE) {
+                                if (ps.tagName && ps.tagName.toUpperCase() === typeId){
+                                    break;
+                                }                         
+                            }                    
+                        }
+                    }                    
+                }                    
+            }
+            return ps;
+        }
 
 //      ,sectionHighlight: function() {
 //        
