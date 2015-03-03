@@ -13,6 +13,7 @@ define([
     "ioc/wiki30/processor/HtmlContentProcessor",
     "ioc/wiki30/processor/MediaProcessor",    
     "ioc/wiki30/processor/MetaInfoProcessor",
+    "ioc/wiki30/processor/MetaMediaInfoProcessor",
     "ioc/wiki30/processor/DataContentProcessor",
     "ioc/wiki30/processor/ErrorProcessor",
     "ioc/wiki30/processor/InfoStatusProcessor",
@@ -28,7 +29,7 @@ define([
 
 
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
+             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,MetaMediaInfoProcessor,
              DataContentProcessor, ErrorProcessor,
              InfoStatusProcessor, LoginProcessor, SectokProcessor,
              TitleProcessor, RemoveAllContentTabProcessor,
@@ -108,6 +109,7 @@ define([
                 this.processors["html"] = new HtmlContentProcessor();
                 this.processors["media"] = new MediaProcessor();                
                 this.processors["metainfo"] = new MetaInfoProcessor();
+                this.processors["metaMedia"] = new MetaMediaInfoProcessor();
                 this.processors["data"] = new DataContentProcessor();
                 this.processors["error"] = new ErrorProcessor();
                 this.processors["info"] = new InfoStatusProcessor();
