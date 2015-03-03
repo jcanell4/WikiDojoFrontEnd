@@ -22,7 +22,6 @@ define([
     };
     requestUpdateAcl.sectok = requestUpdateAcl.dispatcher.getSectok();
     requestUpdateAcl.dispatcher.toUpdateSectok.push(requestUpdateAcl);
-    
 
     var res = function(id, params){
         // captura la manipulació de l'arbre
@@ -30,7 +29,7 @@ define([
 
         var domNode = dom.byId(id);
         requestUpdateAcl.urlBase=params.urlBase;
-  
+
         // capturar el clic sobre el botó Desa/Actualitza/Suprimeix
         var form = query(params.saveSelector);
         var handle = on(form, "input[type=submit]:click", function(e){
