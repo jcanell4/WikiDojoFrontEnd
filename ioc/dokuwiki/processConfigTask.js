@@ -32,16 +32,19 @@ define([
         var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
             var queryString = "";
-            var data = domform.toQuery(this.form);
-            data += "&" + this.name + "="+ domform.fieldToObject(this);
+            var data = this.name + "="+ domform.fieldToObject(this);
             if (data){
               queryString = data;
             }
+
+            var data = domform.toObject(this.form);
+            requestUpdate.getPostData = function () {
+                return data;
+            };
             requestUpdate.sendRequest(queryString);
             event.stop(e);
             handle.remove();
         });
-
     };
     return res;
 });
