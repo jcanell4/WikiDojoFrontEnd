@@ -2,9 +2,8 @@ define([
     "dojo/_base/declare",
     "dojox/widget/Standby",
     "dojo/request",
-    "ioc/wiki30/dispatcherSingleton",
     "dojo/Stateful"
-], function (declare, Standby, request, dispatcherSingleton, Stateful) {
+], function (declare, Standby, request, Stateful) {
     var ret = declare("ioc.wiki30.Request", [Stateful],
         /**
          * @class Request
@@ -16,7 +15,8 @@ define([
 
             method:      "post",
 
-            dispatcher:  dispatcherSingleton,
+            /** @type: dispatcherSingleton */
+            dispatcher:  null,
 
             _standby:    null,
 
@@ -124,8 +124,6 @@ define([
              *      'id=start'
              *      'do=edit&id=start'
              *
-             * TODO[Xavi] Aquest métode es confus, no fa servir un únic var i te diversos punts de retorn.
-             *
              * @param {string} query petició que fem a la dokuwiki
              *
              * @returns {?dojo.promise.Promise}
@@ -144,6 +142,7 @@ define([
                 var standby = this._standby;
 
                 if (this.urlBase === null || this.dispatcher === null) {
+                    console.log("no hi ha url base");
                     return;
                 }
                 var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
@@ -197,6 +196,8 @@ define([
                         }
                     );
                 }
+
+                console.log("fi de send request");
                 return resp;
             }
         });

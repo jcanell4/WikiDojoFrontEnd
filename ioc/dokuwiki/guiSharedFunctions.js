@@ -75,6 +75,10 @@ define([
                 title:   "prova_title2",
                 content: "<input type=\"text\"/> Text Test"
             })
+        },
+
+        _generateRevisionsHtml = function (revisions) {
+            return 'Generacio de les revisions';
         };
 
 
@@ -84,7 +88,9 @@ define([
 
         addChangeListenersToMetadataPane: _addChangeListenersToMetadataPane,
 
-        pushTestMetadataToArray: _pushTestMetadataToArray
+        pushTestMetadataToArray: _pushTestMetadataToArray,
+
+        generateRevisionsHtml: _generateRevisionsHtml
 
     }
 });

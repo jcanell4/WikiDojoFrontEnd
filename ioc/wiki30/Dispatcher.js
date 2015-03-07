@@ -24,6 +24,7 @@ define([
     "ioc/wiki30/processor/CommandProcessor",
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
+    "ioc/wiki30/processor/RevisionsProcessor",
     "ioc/wiki30/UpdateViewHandler",
 
 
@@ -32,7 +33,7 @@ define([
              DataContentProcessor, ErrorProcessor,
              InfoStatusProcessor, LoginProcessor, SectokProcessor,
              TitleProcessor, RemoveAllContentTabProcessor,
-             RemoveContentTabProcessor, CommandProcessor, InfoManager, ChangesManager) {
+             RemoveContentTabProcessor, CommandProcessor, InfoManager, ChangesManager, RevisionsProcessor   ) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -106,7 +107,7 @@ define([
                 lang.mixin(this, pAttributes); // TODO[Xavi] comprovar si es més apropiat declare.safeMixin()
                 this.processors["alert"] = new AlertProcessor();
                 this.processors["html"] = new HtmlContentProcessor();
-                this.processors["media"] = new MediaProcessor();                
+                this.processors["media"] = new MediaProcessor();
                 this.processors["metainfo"] = new MetaInfoProcessor();
                 this.processors["data"] = new DataContentProcessor();
                 this.processors["error"] = new ErrorProcessor();
@@ -125,6 +126,8 @@ define([
 
                 this.infoManager = new InfoManager(this);
                 this.changesManager = new ChangesManager(this);
+
+                this.processors["revisions"] = new RevisionsProcessor();
 
             },
 

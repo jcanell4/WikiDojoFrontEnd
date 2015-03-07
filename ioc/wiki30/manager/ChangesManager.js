@@ -1,7 +1,6 @@
 define([
-        'dojo/_base/declare',
-        'dijit/registry',
-    ], function (declare, registry) {
+        'dojo/_base/declare'
+    ], function (declare) {
         return declare(null,
             /**
              * Gestiona el control de canvis als documents des de la última vegada que es van desar.
@@ -118,8 +117,6 @@ define([
                     }
 
 
-
-
                     return result;
                 },
 
@@ -145,7 +142,7 @@ define([
                  *
                  * @param {string?} id - Id del document a reiniciatlizar
                  */
-                resetDocumentChangeState:   function (id) {
+                resetDocumentChangeState: function (id) {
                     id = id || this._getCurrentId();
 
                     if (this.documentsChanged[id]) {

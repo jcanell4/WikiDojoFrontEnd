@@ -33,7 +33,9 @@ define([
             /** @type  {Object.<string, string>} Hash de ids organitzadas per {tipus : valor} */
             currentIds: {},
 
-            info: [],
+            revisions: null,
+
+            //info: [],
 
             /**
              * Es construeix un objecte d'aquest tipus per cada pestanya que es carrega.
@@ -57,7 +59,8 @@ define([
 
                 this.metaData = {};
                 this.currentIds = {};
-                this.info = [];
+                //this.info = [];
+                this.revisions = {};
             },
 
             /**
