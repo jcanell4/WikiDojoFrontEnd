@@ -16,8 +16,12 @@ define([
         * @param {ioc.wiki30.Dispatcher} dispatcher
         * @override
         */
-        process: function (value, dispatcher) {
-            this._processAdminTab(value, dispatcher);
+        process: function (result, dispatcher) {
+           if (result.type === "add_admin_tab") {
+              this._processAddAdminTab(result, dispatcher);
+           } else if (result.type === "remove_admin_tab") {
+              this._processRemoveAdminTab(result, dispatcher);
+           }
         },
 
         /**
@@ -29,7 +33,7 @@ define([
         * @param {ioc.wiki30.Dispatcher} dispatcher
         * @private
         */
-        _processAdminTab: function (result, dispatcher) {
+        _processAddAdminTab: function (result, dispatcher) {
             require([
                 "ioc/gui/ContentTabDokuwikiPage"], function(ContentTabDokuwikiPage){
                     var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
@@ -52,7 +56,26 @@ define([
                             tc.addChild(cp1);
                     }
             });
+        },
+
+        /**
+        * @param {{containerId: string
+                    ,tabId: string
+                    ,urlBase: string}} result
+        * @param {ioc.wiki30.Dispatcher} dispatcher
+        * @private
+        */
+        _processRemoveAdminTab: function (result, dispatcher) {
+            var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
+            if (admin_tab !== undefined) {
+                //  Si existeix la pestanya la eliminem
+                var tc = registry.byId(result.containerId);
+                var tab = registry.byId(result.tabId);
+                tc.removeChild(tab);
+                tab.destroy();
+            }
         }
+
     });
     return ret;
 });
