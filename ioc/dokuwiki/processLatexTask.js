@@ -1,5 +1,5 @@
 /**
-* Funció pel pluguin CONFIG que executa captures d'esdeveniments:
+* Funció pel pluguin LATEX que executa captures d'esdeveniments:
 *  - capturar el clics dels botons als forms.
 *    els selectors css estan definits a la funció getConfigSelectors
 *    del DokuModelAdapter

@@ -1,5 +1,5 @@
 /**
-* Funció pel pluguin CONFIG que executa captures d'esdeveniments:
+* Funció pel pluguin REVERT que executa captures d'esdeveniments:
 *  - capturar el clics dels botons als forms.
 *    els selectors css estan definits a la funció getConfigSelectors
 *    del DokuModelAdapter
@@ -28,7 +28,7 @@ define([
         requestUpdate.urlBase=params.urlBase;
 
         // capturar el clic sobre el botó Desa
-        var form = query(params.configSelector);
+        var form = query(params.revertSelector);
         var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
             var queryString = "";
