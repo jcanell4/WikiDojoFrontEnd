@@ -96,16 +96,7 @@ define([
              * @private
              */
             _processRemoveWidgetChild: function (command, dispatcher) {
-                var parent;
-                var child;
-                var parentId = command.id;
-                var childId = command.childId;
-                parent = registry.byId(parentId);
-                child = registry.byId(childId);
-                if (parent && child) {
-                    parent.removeChild(child);
-                    child.destroyRecursive(false);
-                }
+                dispatcher.removeWidgetChild(command, dispatcher);
             },
 
             /**
