@@ -4,7 +4,7 @@
 *    els selectors css estan definits a la funció getConfigSelectors
 *    del DokuModelAdapter
 *
-* @author Eduard Latorre
+* @author Eduardo Latorre Jarque <eduardo.latorre@gmail.com>
 */
 define([
      "dojo/on"
@@ -13,7 +13,7 @@ define([
     ,"dojo/_base/event"
     ,"dojo/dom-form"
     ,"ioc/wiki30/Request"
-], function(on, dom, query,event, domform, Request){
+], function(on, dom, query, event, domform, Request){
     var requestUpdate = new Request();
     requestUpdate.updateSectok=function(sk){
             this.sectok=sk;
