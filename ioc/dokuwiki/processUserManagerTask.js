@@ -32,19 +32,22 @@ define([
         for (var i = 0; i < forms.length; i++) {
             var handle = on(forms[i], "input[type=submit]:click", function(e){
                 //enviar
-                var queryString = "";
-                var data = this.name + "="+ domform.fieldToObject(this);
-                if (data){
-                  queryString = data;
-                }
+                // el botó ExportCSV no passa per Ajax
+                if (this.name !== params.exportCsvName) {
+                    var queryString = "";
+                    var data = this.name + "="+ domform.fieldToObject(this);
+                    if (data){
+                      queryString = data;
+                    }
 
-                var data = domform.toObject(this.form);
-                requestUpdate.getPostData = function () {
-                    return data;
-                };
-                requestUpdate.sendRequest(queryString);
-                event.stop(e);
-                handle.remove();
+                    var data = domform.toObject(this.form);
+                    requestUpdate.getPostData = function () {
+                        return data;
+                    };
+                    requestUpdate.sendRequest(queryString);
+                    event.stop(e);
+                    handle.remove();
+                }   
             });
         };
 
