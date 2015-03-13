@@ -420,6 +420,8 @@ define([
                 var index,
                     observer;
 
+                console.log('registrat', event);
+
                 if (!Array.isArray(this.events[event])) {
                     this.events[event] = [];
                 }
@@ -445,6 +447,8 @@ define([
                         }
                     });
                 }
+
+                console.log('disparat', event);
             },
 
             /**
@@ -458,8 +462,9 @@ define([
 
                 this.events[subscriber.event][subscriber.index] = null;
                 this.observers[observerId] = null;
-            }
 
+                console.log('eliminat', event);
+            }
 
         });
     return ret;

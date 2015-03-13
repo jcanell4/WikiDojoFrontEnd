@@ -25,6 +25,7 @@ define([
              */
             process: function (value, dispatcher) {
 
+                alert("Carregant");
 
                 var changesManager = dispatcher.getChangesManager(),
                     confirmation = false,

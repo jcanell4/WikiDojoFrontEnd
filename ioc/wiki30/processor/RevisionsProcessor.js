@@ -99,6 +99,12 @@ define([
                         dispatcher.toUpdateSectok.push(cp);
                         //cp.updateSectok(); // TODO[Xavi] Comprovar que això funcioni al doc page no es fa?
 
+                        var contentCache = dispatcher.getContentCache(content.id);
+
+                        contentCache.cp = cp ;
+
+                        console.log("Content Cache: ", contentCache.cp);
+
                         guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
                         guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
                     }
