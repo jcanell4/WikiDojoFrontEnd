@@ -34,17 +34,10 @@ define([
                 //enviar
                 // el botó ExportCSV no passa per Ajax
                 if (this.name !== params.exportCsvName) {
-                    var queryString = "";
-                    var data = this.name + "="+ domform.fieldToObject(this);
-                    if (data){
-                      queryString = data;
-                    }
-
-                    var data = domform.toObject(this.form);
-                    requestUpdate.getPostData = function () {
-                        return data;
-                    };
-                    requestUpdate.sendRequest(queryString);
+                    requestUpdate.sendForm(
+                            this.form,
+                            this.name + "="+ domform.fieldToObject(this)
+                    );
                     event.stop(e);
                     handle.remove();
                 }   
