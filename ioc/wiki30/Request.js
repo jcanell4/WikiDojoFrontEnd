@@ -2,9 +2,10 @@ define([
     "dojo/_base/declare",
     "dojox/widget/Standby",
     "dojo/request",
+    "dojo/request/iframe",
     "ioc/wiki30/dispatcherSingleton",
     "dojo/Stateful"
-], function (declare, Standby, request, dispatcherSingleton, Stateful) {
+], function (declare, Standby, request, iframe, dispatcherSingleton, Stateful) {
     var ret = declare("ioc.wiki30.Request", [Stateful],
         /**
          * @class Request
@@ -119,6 +120,52 @@ define([
                 }
             },
 
+            sendForm: function (formObject, buttonQuery) {
+                //run standby resource while ajax response doesn't arribe
+                if (this.standbyId !== null && !this._standby) {
+                    this._standby = new Standby({target: this.standbyId});
+                    document.body.appendChild(this._standby.domNode);
+                    this._standby.startup();
+                }
+                /*It sets the Standby object in a variable to be accessible from any site.
+                 *The private attibute is used to control the construction of the object
+                 */
+                var standby = this._standby;
+
+                if (this.urlBase === null || this.dispatcher === null) {
+                    return;
+                }
+                var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
+                    (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
+                var vUrl = this.urlBase;               
+                if(buttonQuery){
+                    vUrl += linkChar + buttonQuery;
+                    linkChar = "&";
+                }
+                var gSect = this.getSectok();
+                if (gSect) {
+                    vUrl += linkChar + this.sectokParam + "=" + gSect;
+                }
+                if (standby) {
+                    standby.show();
+                }
+                var resp;
+                var req = this;
+                var configPost = {handleAs: "json"};
+                if (this.content) {
+                    configPost.content = this.content;
+                }
+                configPost.form = formObject;
+                
+                resp = iframe.post(vUrl, configPost).then(
+                    function (data) {
+                        return req.responseHandler(data);
+                    }, function (error) {
+                        return req.errorHandler(error);
+                    }
+                );
+                return resp;                
+            },
             /**
              * Realitzar una petició ajax, pot ser només una ordre o més d'una per exemple:
              *      'id=start'
