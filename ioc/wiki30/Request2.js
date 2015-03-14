@@ -30,6 +30,11 @@ define([
 
             content:     null,
 
+            constructor: function(args) {
+                this.dispatcher = args.dispatcher;
+                this.urlBase = args.urlBase || "lib/plugins/ajaxcommand/ajax.php?";
+            },
+
             /**
              *
              * @param {string} type

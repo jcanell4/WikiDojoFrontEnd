@@ -17,9 +17,12 @@ define([
 
                 lastChecked: null,
 
+                eventManager: null,
+
                 constructor: function (dispatcher) {
                     this.documentsChanged = {};
                     this.dispatcher = dispatcher;
+                    this.eventManager = dispatcher.getEventManager();
                 },
 
                 /**
@@ -51,7 +54,8 @@ define([
                     }
 
                     if (result) {
-                        this.dispatcher.dispatchEvent("document_changed", {id: id});
+                        this.eventManager.dispatchEvent("document_changed", {id: id});
+                        //this.dispatcher.dispatchEvent("document_changed", {id: id});
                     }
 
                     return result;
@@ -148,8 +152,11 @@ define([
                     if (this.documentsChanged[id]) {
                         delete this.documentsChanged[id];
                     }
+                    console.log(this.eventManager);
 
-                    this.dispatcher.dispatchEvent("document_changes_reset", {id: id});
+
+                    this.eventManager.dispatchEvent("document_changes_reset", {id: id});
+                    //this.dispatcher.dispatchEvent("document_changes_reset", {id: id});
 
                 },
 

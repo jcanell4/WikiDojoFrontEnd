@@ -11,7 +11,7 @@ define([
     "ioc/wiki30/SectokManager",
     "ioc/wiki30/processor/AlertProcessor",
     "ioc/wiki30/processor/HtmlContentProcessor",
-    "ioc/wiki30/processor/MediaProcessor",    
+    "ioc/wiki30/processor/MediaProcessor",
     "ioc/wiki30/processor/MetaInfoProcessor",
     "ioc/wiki30/processor/DataContentProcessor",
     "ioc/wiki30/processor/ErrorProcessor",
@@ -25,21 +25,21 @@ define([
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/processor/RevisionsProcessor",
-    "ioc/wiki30/UpdateViewHandler",
+    "ioc/wiki30/manager/EventManager",
+    "ioc/wiki30/UpdateViewHandler"
 
 
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
-             DataContentProcessor, ErrorProcessor,
-             InfoStatusProcessor, LoginProcessor, SectokProcessor,
-             TitleProcessor, RemoveAllContentTabProcessor,
-             RemoveContentTabProcessor, CommandProcessor, InfoManager, ChangesManager, RevisionsProcessor   ) {
+             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor, DataContentProcessor,
+             ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor,
+             RemoveAllContentTabProcessor, RemoveContentTabProcessor, CommandProcessor, InfoManager, ChangesManager,
+             RevisionsProcessor, EventManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
 
-     /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
+    /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
     var ret = declare("ioc.wiki30.Dispatcher", [],
         /**
          * @class Dispatcher
@@ -96,6 +96,9 @@ define([
             /** @type {InfoManager} Instancia del gestor de infos associat amb aquest dispatcher */
             infoManager: null,
 
+            /** @type {EventManager} Instancia del gestor d'eseveniments */
+            eventManager: null,
+
             /**
              * Afegeix al hash de processadors els processadors, les característiques del objecte passat com argument i
              * inicialitza els arrays per emmagatzemar els handlers.
@@ -103,7 +106,7 @@ define([
              * @param pAttributes TODO[Xavi] l'argument es sempre undefined, només es crida desde dispatcherSingleton.js
              * @constructor
              */
-            constructor: function (/*Object*/ pAttributes) {
+            constructor:   function (/*Object*/ pAttributes) {
                 lang.mixin(this, pAttributes); // TODO[Xavi] comprovar si es més apropiat declare.safeMixin()
                 this.processors["alert"] = new AlertProcessor();
                 this.processors["html"] = new HtmlContentProcessor();
@@ -124,13 +127,16 @@ define([
                 this.updateViewHandlers = new Array();
                 this.reloadStateHandlers = new Array();
 
+                this.eventManager = new EventManager(this);
+
                 this.infoManager = new InfoManager(this);
                 this.changesManager = new ChangesManager(this);
 
                 this.processors["revisions"] = new RevisionsProcessor();
 
-            },
 
+
+            },
             /**
              * Afegeix el UpdateViewHandler al array que es crida quan s'ha d'actualitzar la vista.
              *
@@ -221,6 +227,25 @@ define([
              * @param {DijitContainer|string} pwidget
              */
             removeAllChildrenWidgets: function (pwidget) {
+                var children;
+                var widget;
+                if (lang.isString(pwidget)) {
+                    widget = registry.byId(pwidget);
+                } else {
+                    widget = pwidget;
+                }
+                if (widget.hasChildren()) {
+                    children = widget.getChildren();
+                    for (var i = 0; i < children.length; i++) {
+                        if (children[i].unregisterFromEvents) {
+                            children[i].unregisterFromEvents();
+                        }
+                    }
+                    widget.destroyDescendants(false);
+                }
+            },
+
+            hideAllChildrenWidgets: function (pwidget) {
                 var widget;
                 if (lang.isString(pwidget)) {
                     widget = registry.byId(pwidget);
@@ -229,6 +254,22 @@ define([
                 }
                 if (widget.hasChildren()) {
                     widget.destroyDescendants(false);
+                }
+            },
+
+            removeWidgetChild: function (command, dispatcher) {
+                var parent;
+                var child;
+                var parentId = command.id;
+                var childId = command.childId;
+                parent = registry.byId(parentId);
+                child = registry.byId(childId);
+                if (parent && child) {
+                    if (child.unregisterFromEvents) {
+                        child.unregisterFromEvents();
+                    }
+                    parent.removeChild(child);
+                    child.destroyRecursive(false);
                 }
             },
 
@@ -412,59 +453,11 @@ define([
             },
 
 
-            events: {}, // string: function[];
-
-            observers: [],
-
-            registerToEvent: function (event, callback) {
-                var index,
-                    observer;
-
-                console.log('registrat', event);
-
-                if (!Array.isArray(this.events[event])) {
-                    this.events[event] = [];
-                }
-
-                index = this.events[event].push(callback) -1;
-                observer = {event: event, index: index};
-
-                return this.observers.push(observer) - 1;
-            },
-
-            /**
-             * Despatcha l'esdeveniment amb les dades passades com argument a tots els observadors.
-             *
-             * @param {string} event - Nom del esdeveniment
-             * @param {object} data - Dades que es passaran als observadors
-             */
-            dispatchEvent: function (event, data) {
-                var observers = this.events[event];
-                if (observers) {
-                    array.forEach(observers, function (callback) {
-                        if (callback) {
-                            callback(data);
-                        }
-                    });
-                }
-
-                console.log('disparat', event);
-            },
-
-            /**
-             * Alliberem els objectes però no els esborrem per no alterar la correspondencia dels index de al resta dels
-             * subscriptors
-             *
-             * @param {int} observerId - Identificador del event observat
-             */
-            removeObserver: function (observerId) {
-                var subscriber = this.observers[observerId];
-
-                this.events[subscriber.event][subscriber.index] = null;
-                this.observers[observerId] = null;
-
-                console.log('eliminat', event);
+            getEventManager: function() {
+                return this.eventManager;
             }
+
+
 
         });
     return ret;

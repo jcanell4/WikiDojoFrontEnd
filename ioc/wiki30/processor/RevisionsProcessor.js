@@ -1,13 +1,12 @@
 define([
     "dojo/_base/declare",
     "dijit/registry",
-    "ioc/gui/IocContentPane",
+    "ioc/gui/RequestRenderContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/dokuwiki/guiSharedFunctions",
     "ioc/gui/renderEngineFactory",
 
-
-], function (declare, registry, ContentPane, AbstractResponseProcessor, guiSharedFunctions, renderEngineFactory, Request, dom, on) {
+], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor, guiSharedFunctions, renderEngineFactory) {
 
     // Definim el render engine que emprearem per formatar les revisions
     renderEngineFactory.addRenderEngine('revisions',
@@ -34,11 +33,11 @@ define([
             return html;
         });
 
-    var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
+    var ret = declare("ioc.wiki30.processor.RevisionsProcessor", [AbstractResponseProcessor],
         /**
          * @class RevisionsProcessor
          * @extends AbstractResponseProcessor
-         * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
+         * @author Xavier García <xaviergaro.dev@gmail.com>
          */
         {
 
@@ -82,9 +81,8 @@ define([
                     if (!widgetMetaInfo) {
                         /*Construeix un nou contenidor de meta-info*/
 
-                        console.log("update toc");
 
-                        cp = new ContentPane({
+                        cp = new RequestRenderContentTool({
                             id:         paneId,
                             title:      'Revisions (' + count + ')',
                             data:       content.revisions,
@@ -135,6 +133,9 @@ define([
                     dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
                 }
 
+                console.log(cp);
+
+
                 return 0;
             },
 
@@ -178,7 +179,7 @@ define([
                         }
                     }
                 }
-            },
+            }
 
 
         });

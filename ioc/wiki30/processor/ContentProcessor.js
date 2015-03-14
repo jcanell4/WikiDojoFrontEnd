@@ -4,12 +4,13 @@ define([
     "dijit/registry",            //search widgets by id
     "dojo/dom",
     "dojo/dom-construct",
-    "dijit/layout/ContentPane",  //per a la funció newTab
+    //"dijit/layout/ContentPane",  //per a la funció newTab
+    "ioc/gui/ContentTool",
     "ioc/wiki30/DokuwikiContent",
     "dijit/Dialog",
     "dijit/form/Button",
 ], function (declare, StateUpdaterProcessor, registry, dom, domConstruct,
-             ContentPane, DokuwikiContent, Dialog, Button) {
+             ContentTool, DokuwikiContent, Dialog, Button) {
 
     var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor],
         /**
@@ -25,11 +26,11 @@ define([
              */
             process: function (value, dispatcher) {
 
-                alert("Carregant");
 
                 var changesManager = dispatcher.getChangesManager(),
                     confirmation = false,
                     id = value.id;
+
 
 
                 if (changesManager.isChanged(id)) {
@@ -39,10 +40,12 @@ define([
                     confirmation = true;
                 }
 
+
                 if (confirmation) {
                     changesManager.resetDocumentChangeState(id);
                     this._loadTab(value, dispatcher, arguments);
                 }
+
 
                 return confirmation ? 0 : 100;
 
@@ -94,13 +97,15 @@ define([
                     self = this,
                     cp;
 
+
                 /*Construeix una nova pestanya*/
                 if (!widget) {
-                    cp = new ContentPane({
+                    cp = new ContentTool({
                         id:       content.id,
                         title:    content.title,
                         content:  content.content,
                         closable: true,
+                        dispatcher: dispatcher,
 
                         onClose: function () {
 
@@ -131,33 +136,35 @@ define([
 
                             }
 
+
+
                             return confirmation;
-                        },
-
-                        /** @type {int[]} indentificador propi dels events als que està subscrit */
-                        registeredToEvents: [],
-
-                        /**
-                         * Es registra al esdeveniment i respón amb la funció passada com argument quan es escoltat.
-                         *
-                         * Es guarda la referencia obtinguda al registrar-lo per poder desenregistrar-se quan sigui
-                         * necessari.
-                         *
-                         * @param {string} event - nom del esdeveniment
-                         * @param {function} callback - funció a executar
-                         */
-                        registerToEvent: function (event, callback) {
-                            this.registeredToEvents.push(dispatcher.registerToEvent(event, callback));
-                        },
-
-                        /**
-                         * Recorre la lista de esdeveniments al que està subscrit i es desenregistra de tots.
-                         */
-                        unregisterFromEvents: function () {
-                            for (var i = 0, len = this.registeredToEvents.length; i < len; i++) {
-                                dispatcher.removeObserver(this.registeredToEvents[i]);
-                            }
                         }
+                        //
+                        ///** @type {int[]} indentificador propi dels events als que està subscrit */
+                        //registeredToEvents: [],
+                        //
+                        ///**
+                        // * Es registra al esdeveniment i respón amb la funció passada com argument quan es escoltat.
+                        // *
+                        // * Es guarda la referencia obtinguda al registrar-lo per poder desenregistrar-se quan sigui
+                        // * necessari.
+                        // *
+                        // * @param {string} event - nom del esdeveniment
+                        // * @param {function} callback - funció a executar
+                        // */
+                        //registerToEvent: function (event, callback) {
+                        //    this.registeredToEvents.push(dispatcher.registerToEvent(event, callback));
+                        //},
+                        //
+                        ///**
+                        // * Recorre la lista de esdeveniments al que està subscrit i es desenregistra de tots.
+                        // */
+                        //unregisterFromEvents: function () {
+                        //    for (var i = 0, len = this.registeredToEvents.length; i < len; i++) {
+                        //        dispatcher.removeObserver(this.registeredToEvents[i]);
+                        //    }
+                        //}
                     });
 
                     // Ens registrem als esdeveniments als que ens interessa observar
