@@ -27,10 +27,10 @@ define([
         var domNode = dom.byId(id);
         requestUpdate.urlBase=params.urlBase;
 
-        // capturar el clic sobre el botó Llista d'usuaris
+        // capturar el clic sobre el botons
         var forms = query(params.formsSelector);
         for (var i = 0; i < forms.length; i++) {
-            var handle = on(forms[i], "input[type=submit]:click", function(e){
+            var handle = on(forms[i], "input[name*=fn]:click", function(e){
                 //enviar
                 // el botó ExportCSV no passa per Ajax
                 if (this.name !== params.exportCsvName) {

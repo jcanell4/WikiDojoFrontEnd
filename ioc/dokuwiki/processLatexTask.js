@@ -28,19 +28,19 @@ define([
         requestUpdate.urlBase=params.urlBase;
 
         // capturar el clic sobre el botó Desa
-        var form = query(params.configSelector);
-        var handle = on(form, "input[type=submit]:click", function(e){
+        var form = query(params.latexSelector);
+        var selector = "input[name=" + params.latexpurge + "][type=submit]:click";
+        selector += ",input[name=" + params.dotest + "][type=submit]:click";
+        var handle = on(form,selector,function(e){
             //enviar
-            var queryString = "";
-            var data = this.name + "="+ domform.fieldToObject(this);
-            if (data){
-              queryString = data;
-            }
-
+            var queryString = "do=admin&page=latex";
+            // post data
             var data = domform.toObject(this.form);
+            data[this.name]= domform.fieldToObject(this);
             requestUpdate.getPostData = function () {
                 return data;
             };
+            
             requestUpdate.sendRequest(queryString);
             event.stop(e);
             handle.remove();

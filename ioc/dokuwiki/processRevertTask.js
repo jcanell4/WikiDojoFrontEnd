@@ -27,16 +27,12 @@ define([
         var domNode = dom.byId(id);
         requestUpdate.urlBase=params.urlBase;
 
-        // capturar el clic sobre el botó Desa
+        // capturar el clic sobre el botó Cerca
         var form = query(params.revertSelector);
         var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
-            var queryString = "";
-            var data = this.name + "="+ domform.fieldToObject(this);
-            if (data){
-              queryString = data;
-            }
-
+            var queryString = "call=admin_task&do=admin&page=revert"; 
+            
             var data = domform.toObject(this.form);
             requestUpdate.getPostData = function () {
                 return data;
@@ -45,6 +41,19 @@ define([
             event.stop(e);
             handle.remove();
         });
+
+        // capturar el clic sobre els enllaços <a>
+        var handle = on(form, "a:click", function(e){
+            //enviar
+            var uri = this.href;
+            var queryString = uri.substring(uri.indexOf("?") + 1, uri.length);
+            queryString = "call=page&" + queryString + "&sectok=" + requestUpdate.sectok;
+            
+            requestUpdate.sendRequest(queryString);
+            event.stop(e);
+        });
+
+
     };
     return res;
 });
