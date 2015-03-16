@@ -7,17 +7,13 @@ define([
     "ioc/wiki30/Request",
     "dijit/registry",
     "dojo/dom-form",
-    "dojo/on",
-    "dojo/_base/event",
-    "dojo/dom-style",
-    "dojo/NodeList-dom" // NodeList.style
-], function (declare, template, TooltipDialog, _WidgetsInTemplateMixin, popup, 
-                                Request, registry, domForm, on, event, style) {
+    "dijit/form/Form" //cridat per ActionHiddenDialogDokuwiki.html
+], function (declare, template, TooltipDialog, _WidgetsInTemplateMixin,
+                                 popup, Request, registry, domForm) { 
     var ret = declare("ioc.gui.ActionHiddenDialogDokuwiki", [TooltipDialog, _WidgetsInTemplateMixin, Request],
-
         /**
-         * Aquest widget afegeix un dialog ocult que inclou la validacio de les dades abans d'enviar-les, i l'enviament
-         * via ajax al servidor. En cas de que la resposta sigui correcte amaga aquest dialog.
+         * Aquest widget afegeix un dialog ocult que inclou la validacio de les dades abans d'enviar-les,
+         * i l'enviament via ajax al servidor. En cas de que la resposta sigui correcte amaga aquest dialog.
          *
          * @class ActionHiddenDialogDokuwiki
          * @extends dijit.TooltipDialog
@@ -26,7 +22,6 @@ define([
          */
         {
             templateString: template,
-
             widgetsInTemplate: true, // TODO[Xavi] No es necessari en la versió que fem servir de Dojo
 
             /** @override */
