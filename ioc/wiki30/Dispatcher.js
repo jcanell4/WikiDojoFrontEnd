@@ -218,6 +218,25 @@ define([
              * @param {DijitContainer|string} pwidget
              */
             removeAllChildrenWidgets: function (pwidget) {
+                var children;
+                var widget;
+                if (lang.isString(pwidget)) {
+                    widget = registry.byId(pwidget);
+                } else {
+                    widget = pwidget;
+                }
+                if (widget.hasChildren()) {
+                    children = widget.getChildren();
+                    for(var i=0; i<children.length; i++){
+                        if(children[i].unregisterFromEvents){
+                            children[i].unregisterFromEvents();
+                        }
+                    }
+                    widget.destroyDescendants(false);
+                }
+            },
+            
+            hideAllChildrenWidgets: function (pwidget) {
                 var widget;
                 if (lang.isString(pwidget)) {
                     widget = registry.byId(pwidget);
@@ -226,6 +245,22 @@ define([
                 }
                 if (widget.hasChildren()) {
                     widget.destroyDescendants(false);
+                }
+            },
+            
+            removeWidgetChild: function (command, dispatcher) {
+                var parent;
+                var child;
+                var parentId = command.id;
+                var childId = command.childId;
+                parent = registry.byId(parentId);
+                child = registry.byId(childId);
+                if (parent && child) {
+                    if(child.unregisterFromEvents){
+                        child.unregisterFromEvents();
+                    }                    
+                    parent.removeChild(child);
+                    child.destroyRecursive(false);
                 }
             },
 
