@@ -1,5 +1,5 @@
 define([
-    "dojo/_base/declare", // declare
+    "dojo/_base/declare",
     "dojo/text!./templates/ActionHiddenDialogDokuwiki.html",
     "dijit/TooltipDialog",
     "dijit/_WidgetsInTemplateMixin",
@@ -8,8 +8,8 @@ define([
     "dijit/registry",
     "dojo/dom-form",
     "dijit/form/Form" //cridat per ActionHiddenDialogDokuwiki.html
-], function (declare, template, TooltipDialog, _WidgetsInTemplateMixin,
-                                 popup, Request, registry, domForm) { 
+], function (declare, template, TooltipDialog, _WidgetsInTemplateMixin, popup, Request, registry, domForm) { 
+
     var ret = declare("ioc.gui.ActionHiddenDialogDokuwiki", [TooltipDialog, _WidgetsInTemplateMixin, Request],
         /**
          * Aquest widget afegeix un dialog ocult que inclou la validacio de les dades abans d'enviar-les,
@@ -36,8 +36,8 @@ define([
                         //enviar
                         var query = domForm.toQuery(this.id);
                         hiddenDialog.sendRequest(query);
-                        //                    var node = hiddenDialog.domNode;
-                        //                    style.set(node, "display", "none");
+                        // var node = hiddenDialog.domNode;
+                        // style.set(node, "display", "none");
                     } else {
                         alert('Les dades no són correctes');
                         return false;
@@ -61,7 +61,6 @@ define([
                 if (this._standby) {
                     this._standby.hide();
                 }
-
                 popup.close(this);
             }
         });
