@@ -54,7 +54,10 @@ define([
         
         if(dispatcher.getGlobalState().getCurrentElementId()){
             var node = dwPageUi.getElementParentNodeId(dispatcher.getGlobalState().getCurrentElementId(),"LI")
-            toggleClass(node, "section_selected", true);
+            if(node){                
+                toggleClass(node, "section_selected", true);
+            }
+
         }
         
     };

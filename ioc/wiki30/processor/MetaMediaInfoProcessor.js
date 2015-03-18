@@ -5,6 +5,7 @@ define([
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/dokuwiki/guiSharedFunctions"
 ], function (declare, registry, ContentPane, AbstractResponseProcessor, guiSharedFunctions) {
+    
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -15,7 +16,7 @@ define([
             type: "metaMedia",
 
             process: function (value, dispatcher) {
-                this._processMetaInfo(value, dispatcher);
+                this._processMetaMediaInfo(value, dispatcher);
                 this._processContentCache(dispatcher, value);
             },
 
@@ -28,7 +29,7 @@ define([
              * @returns {number} sempre es 0
              * @private
              */
-            _processMetaInfo: function (content, dispatcher) {
+            _processMetaMediaInfo: function (content, dispatcher) {
                 var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
                     nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
                     widgetMetaInfo,
