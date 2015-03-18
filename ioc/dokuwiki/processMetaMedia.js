@@ -23,9 +23,9 @@ define([
 
         var domNode = dom.byId(id);
         //Es desconnecten els esdeveniments que havia connectats en aquest domNode.id
-        dojo.forEach(connects[domNode.id], function (handle) {
+        /*dojo.forEach(connects[domNode.id], function (handle) {
             dojo.disconnect(handle);
-        });
+        });*/
         var requestMedia = new Request();
         requestMedia.urlBase = "/dokuwiki_30/lib/plugins/ajaxcommand/ajax.php?call=media";
         requestMedia.updateSectok = function (sk) {
