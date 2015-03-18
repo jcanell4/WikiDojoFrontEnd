@@ -156,6 +156,7 @@ define([
                     configPost.content = this.content;
                 }
                 configPost.form = formObject;
+                configPost.data = {iframe: 1};
                 
                 resp = iframe.post(vUrl, configPost).then(
                     function (data) {
