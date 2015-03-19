@@ -33,7 +33,7 @@ define([
              DataContentProcessor, ErrorProcessor,
              InfoStatusProcessor, LoginProcessor, SectokProcessor,
              TitleProcessor, RemoveAllContentTabProcessor,
-             RemoveContentTabProcessor, CommandProcessor, InfoManager, ChangesManager) {
+             RemoveContentTabProcessor, CommandProcessor, AdminTabProcessor,AdminTaskProcessor,InfoManager, ChangesManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
