@@ -1,6 +1,6 @@
 define([
     "dojo/_base/declare",
-    "dojo/_base/array",
+    "dojo/_base/array"
 
 ], function (declare, array) {
     return declare(null,
@@ -33,7 +33,6 @@ define([
                 observer = {event: event, index: index};
 
 
-                console.log ('Enregistrament detectat per: ' + event);
                 return this.observers.push(observer) - 1;
             },
 
@@ -58,7 +57,6 @@ define([
                     });
                 }
 
-                console.log ('Esdeveniment disparat: ' + event);
             },
 
             /**
@@ -68,13 +66,10 @@ define([
              * @param {int} observerId - Identificador del event observat
              */
             removeObserver: function (observerId) {
-                console.log ('es vol elminar Observador eleminat amb id: '+ observerId);
                 var subscriber = this.observers[observerId];
 
                 this.events[subscriber.event][subscriber.index] = null;
                 this.observers[observerId] = null;
-                console.log ('Observador eleminat amb id: '+ observerId);
-                console.log(this.observers);
             }
 
         });

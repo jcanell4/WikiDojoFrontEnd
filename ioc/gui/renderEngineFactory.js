@@ -10,7 +10,6 @@ define([
 
     var renderEngines = {
             default: function (data) {
-                console.log("Default cridat amb valor: " + data);
 
 
                 var i = typeof data === 'string' ? data : 'Tipus de dada no reconegut.';
@@ -27,7 +26,6 @@ define([
             //      Si existeix el retornem
             //      Si no existeix retornem el generador per defecte, que retorna el contingut tal com s'ha passat
 
-            console.log("getRenderEngine cridat per: "+type);
             return renderEngines[type] ? renderEngines[type] : renderEngines['default'];
 
         },
@@ -36,7 +34,6 @@ define([
             // Afegeix el motor de render a la llista de render engines
             // TODO[Xavi] Que fem si ja existeix?  ACTUALMENT: reemplaça
             renderEngines[type] = renderEngine;
-            console.log("RenderEngine per " + type + " afegit");
         };
 
 

@@ -45,6 +45,8 @@ define([
                 dispatcher.getGlobalState().pages[value.id]["action"] = "edit";
                 dispatcher.getContentCache(value.id).setEditor(value.editor);
             }
+
+
         });
 
 

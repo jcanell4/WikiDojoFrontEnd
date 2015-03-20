@@ -5,7 +5,13 @@ define([
 
 ], function (declare, ContentPane, EventObserver) {
 
-    return declare([ContentPane, EventObserver], {
+    return declare([ContentPane, EventObserver],
+        /**
+         * @class ContentTool
+         * @extends ContentPane, EventObserver
+         * @author Xavier García <xaviergaro.dev@gmail.com>
+         */
+        {
 
         ///** @type {int[]} indentificador propi dels events als que està subscrit */
         //registeredToEvents: [],
@@ -47,12 +53,12 @@ define([
             this.inherited(arguments);
 
             this.watch('data', function (name, oldValue, value) {
-                console.log('data changed');
                 this.set('content', value);
             });
 
             if (this.data) {
-                this.set('content', value);
+                this.set('content', this.data);
+
             }
 
         },

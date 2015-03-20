@@ -20,15 +20,15 @@ define([
              * El id es una cadena amb la id que es fa servir com a index del hash.
              * El title es el títol que es mostra com a capçalera del widget que mostra les metadates
              *
-             * @type {Object.<{content: string, id: string, tittle: string}>}
+             * @type {ContentTool}
              */
             metaData: null,
 
-            editor:      null,
+            editor: null,
 
             aceEditorOn: false,
 
-            wrapperOn:   true,
+            wrapperOn: true,
 
             /** @type  {Object.<string, string>} Hash de ids organitzadas per {tipus : valor} */
             currentIds: {},
@@ -76,10 +76,15 @@ define([
              * Es cridat cada vegada que es carrega una pestanya, per exemple al carregar la pàgina o al obrir una nova
              * pàgina.
              *
-             * @param {{content: string, id: string, tittle: string}} content objecte amb les metadades a afegir.
+             * @param {ContentTool} content objecte amb les metadades a afegir.
              */
             putMetaData: function (content) {
-                this.metaData[content.id] = content;
+                if (content.getParent()) {
+                    console.log("Error, s'ha de guardar la metadata abans d'afegir-la el ContentTool al contenidor");
+                    throw new Error("Error, s'ha de guardar la metadata abans d'afegir-la el ContentTool al contenidor");
+                }
+
+                this.metaData[content.id] = jQuery.extend(true, {}, content);
             },
 
             /**
@@ -92,14 +97,33 @@ define([
              * la metadada corresponent al id o el hash complet de metadades
              */
             getMetaData: function (id) {
-                return id ? this.metaData[id] : this.metaData;
+                //return lang.clone(id ? this.metaData[id] : this.metaData);
+
+                return jQuery.extend(true, {}, id ? this.metaData[id] : this.metaData);
+
+                //return id ? jQuery.extend(true, {}, this.metaData[id]) : this._getAllMetaData();
+            },
+
+            /**
+             * Retornem les metadates però clonant cadascuna
+             *
+             * @private
+             */
+            _getAllMetaData: function () {
+                var allMeta = {};
+
+                for (var m in this.metaData) {
+                    allMeta[m] = jQuery.extend(true, {}, this.metaData[m]);
+                }
+
+                return allMeta;
             },
 
             setEditor: function (editor) {
                 this.editor = editor;
             },
 
-            getEditor:         function () {
+            getEditor: function () {
                 return this.editor;
             },
 
@@ -173,6 +197,7 @@ define([
              */
             setCurrentId: function (type, value) {
                 this.currentIds[type] = value;
+
             },
 
             /**

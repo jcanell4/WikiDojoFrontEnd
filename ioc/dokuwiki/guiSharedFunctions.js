@@ -22,7 +22,9 @@ define([
         _addWatchToMetadataPane = function (node, documentId, paneId, dispatcher) {
 
             node.watch("selected", function (name, oldValue, newValue) {
+
                 if (newValue) {
+                    console.log("selected:", paneId);
                     dispatcher.getContentCache(documentId).setCurrentId("metadataPane", paneId)
                 }
             })

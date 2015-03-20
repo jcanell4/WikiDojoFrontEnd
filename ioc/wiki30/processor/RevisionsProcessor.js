@@ -46,9 +46,7 @@ define([
 
             process: function (value, dispatcher) {
                 this._processMetaInfo(value, dispatcher);
-                alert("fin de processmetainfo");
                 this._processContentCache(dispatcher, value);
-                alert("fin de processcontentcache");
             },
 
             /**
@@ -68,40 +66,47 @@ define([
                     m,
                     currentPaneId,
                     defaultSelected,
-                    selectedPane;
-
+                    selectedPane,
+                    meta;
 
                 if (widgetCentral && widgetCentral.id === content.id) { //esta metainfo pertenece a la pestaña activa
 
-                    var paneId = content.id + '_revisions'; // per diferenciar del panell de metainfo afegim el _revisions
-                    widgetMetaInfo = registry.byId(paneId);
-                    var count = Object.keys(content.revisions).length;
+                    meta = this._convertMetaData(content);
 
+                    //console.log(content);
+                    //alert("lee el log");
+                    widgetMetaInfo = registry.byId(meta.id);
 
                     if (!widgetMetaInfo) {
                         /*Construeix un nou contenidor de meta-info*/
 
-
-                        cp = new RequestRenderContentTool({
-                            id:         paneId,
-                            title:      'Revisions (' + count + ')',
-                            data:       content.revisions,
-                            type:       'revisions',
-                            dispatcher: dispatcher
-                            //content: guiSharedFunctions.generateRevisionsHtml(content.revisions)
-                        });
+                        //cp = new RequestRenderContentTool({
+                        //    id:         meta.id,
+                        //    title:      meta.title,
+                        //    data:       meta.data,
+                        //    type:       meta.type,
+                        //    dispatcher: dispatcher
+                        //    //content: guiSharedFunctions.generateRevisionsHtml(content.revisions)
+                        //});
+                        ////
+                        ////console.log("Revisions, abans de afegir", cp);
+                        ////
+                        //dispatcher.contentCache[content.id].putMetaData(cp);
+                        ////
+                        //alert("afegit revisions);" +
+                        //"")
+                        cp = this.createContentTool(content, dispatcher);
                         nodeMetaInfo.addChild(cp);
                         nodeMetaInfo.resize();
-
-
+                        //
+                        //
                         dispatcher.toUpdateSectok.push(cp);
-                        //cp.updateSectok(); // TODO[Xavi] Comprovar que això funcioni al doc page no es fa?
+                        ////cp.updateSectok(); // TODO[Xavi] Comprovar que això funcioni al doc page no es fa?
+
 
                         var contentCache = dispatcher.getContentCache(content.id);
 
-                        contentCache.cp = cp ;
-
-                        console.log("Content Cache: ", contentCache.cp);
+                        contentCache.cp = cp;
 
                         guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
                         guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
@@ -133,8 +138,6 @@ define([
                     dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
                 }
 
-                console.log(cp);
-
 
                 return 0;
             },
@@ -159,7 +162,14 @@ define([
                  dispatcher.contentCache[value.id].putMetaData(meta[i]);
                  }
                  }*/
-                dispatcher.contentCache[value.id].putMetaData(guiSharedFunctions.generateRevisionsHtml(content.revisions));
+
+                //var meta = this.convertMetadata(value);
+
+
+                //dispatcher.contentCache[value.id].putMetaData(meta);
+
+
+                //dispatcher.contentCache[value.id].putMetaData(guiSharedFunctions.generateRevisionsHtml(content.revisions));
             },
 
             /**
@@ -179,6 +189,51 @@ define([
                         }
                     }
                 }
+            },
+
+            /**
+             * Formata la informació per inicialitzar el ContentTool apropiat
+             *
+             * @param value
+             * @returns {{id: string, data: {object}, title: string, type: string}}
+             * @private
+             */
+            _convertMetaData: function (value) {
+                var count = Object.keys(value.revisions).length;
+
+                return {
+                    id:    value.id + '_revisions',
+                    data:  value.revisions,
+                    title: 'Revisions (' + count + ')',
+                    type:  'revisions'
+                };
+            },
+
+
+            /**
+             * Crea un ContentTool apropiat i el retorna.
+             *
+             * @param content
+             * @param dispatcher
+             * @returns {ContentTool}
+             * @private
+             */
+            createContentTool: function (content, dispatcher) {
+                var meta = this._convertMetaData(content);
+
+
+                var contentTool = new RequestRenderContentTool({
+                    id:         meta.id,
+                    title:      meta.title,
+                    data:       meta.data,
+                    type:       meta.type,
+                    dispatcher: dispatcher
+                });
+
+
+                dispatcher.contentCache[content.id].putMetaData(contentTool);
+
+                return contentTool;
             }
 
 

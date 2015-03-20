@@ -1,10 +1,11 @@
 define([
     "dojo/_base/declare",
     "dijit/registry",
-    "dijit/layout/ContentPane",
+    //"dijit/layout/ContentPane",
+    "ioc/gui/ContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/dokuwiki/guiSharedFunctions"
-], function (declare, registry, ContentPane, AbstractResponseProcessor, guiSharedFunctions) {
+], function (declare, registry, ContentTool, AbstractResponseProcessor, guiSharedFunctions) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -16,6 +17,8 @@ define([
 
             process: function (value, dispatcher) {
                 this._processMetaInfo(value, dispatcher);
+
+
                 this._processContentCache(dispatcher, value);
             },
 
@@ -23,7 +26,7 @@ define([
              * Elimina tots els widgets del contenidor de metadades i crea un de nou amb la informació del contingut
              * passat com argument.
              *
-             * @param {{docId: string, meta:Content[]}} content
+             * @param {{id: string, meta:Content[]}} content
              * @param {Dispatcher} dispatcher
              * @returns {number} sempre es 0
              * @private
@@ -36,23 +39,53 @@ define([
                     m,
                     currentPaneId,
                     defaultSelected,
-                    selectedPane;
+                    selectedPane,
+                    meta;
+
 
                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
                 for (m in content.meta) {
-                    if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
-                        widgetMetaInfo = registry.byId(content.meta[m].id);
+
+
+
+
+                    if (widgetCentral && widgetCentral.id === content.id) { //esta metainfo pertenece a la pestaña activa
+
+
+
+                        meta = this._convertMetaData(content.meta[m]);
+
+
+
+                        //widgetMetaInfo = registry.byId(content.meta[m].id);
+
+                        widgetMetaInfo = registry.byId(meta.id);
+
+
+
+
                         if (!widgetMetaInfo) {
                             /*Construeix un nou contenidor de meta-info*/
-                            cp = new ContentPane({
-                                id:      content.meta[m].id,
-                                title:   content.meta[m].title,
-                                content: content.meta[m].content
+                            cp = new ContentTool({
+                                //id:      content.meta[m].id,
+                                //title:   content.meta[m].title,
+                                //content: content.meta[m].content,
+                                id:    meta.id,
+                                title: meta.title,
+                                //content: meta.content,
+                                data:  meta.data,
+                                dispatcher: dispatcher
+
                             });
+
+                            dispatcher.contentCache[content.id].putMetaData(cp);
+
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
 
-                            guiSharedFunctions.addWatchToMetadataPane(cp, content.docId, cp.id, dispatcher);
+
+
+                            guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
                             guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
 
                         }
@@ -60,19 +93,26 @@ define([
                 }
 
 
-                currentPaneId = dispatcher.getContentCache(content.docId).getCurrentId("metadataPane");
+
+                currentPaneId = dispatcher.getContentCache(content.id).getCurrentId("metadataPane");
+
+
                 defaultSelected = content.defaultSelected;
 
+
+
+
                 if (!currentPaneId && defaultSelected) {
-                    dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", defaultSelected)
+                    dispatcher.getContentCache(content.id).setCurrentId("metadataPane", defaultSelected)
                 }
 
                 selectedPane = this._setSelectedPane(content.meta, [currentPaneId, defaultSelected]);
 
                 if (selectedPane) {
                     nodeMetaInfo.selectChild(selectedPane);
-                    dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", selectedPane);
+                    dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
                 }
+
 
                 return 0;
             },
@@ -83,19 +123,23 @@ define([
              * Afegeix les metadades al contentCache.
              *
              * @param {Dispatcher} dispatcher
-             * @param {{docId: string, meta:Content[]}} value
+             * @param {{id: string, meta:Content[]}} value
              * @private
              */
             _processContentCache: function (dispatcher, value) {
-                dispatcher.getContentCache(value.docId).removeAllMetaData();
 
-                if (dispatcher.contentCache[value.docId]) {
-                    var meta = value.meta;
+                //dispatcher.getContentCache(value.id).removeAllMetaData(); // TODO[Xavi] comprovar si això es necessari o fem servir el hide
 
-                    for (var i = 0; i < meta.length; i++) {
-                        dispatcher.contentCache[value.docId].putMetaData(meta[i]);
-                    }
-                }
+
+                //
+                //if (dispatcher.contentCache[value.id]) {
+                //    var meta = value.meta;
+                //
+                //    for (var i = 0; i < meta.length; i++) {
+                //        console.log("Put metadata: ", meta[i]);
+                //        dispatcher.contentCache[value.id].putMetaData(meta[i]);
+                //    }
+                //}
             },
 
             /**
@@ -115,6 +159,15 @@ define([
                         }
                     }
                 }
+            },
+
+            _convertMetaData: function (value) {
+
+                return {
+                    id:    value.id, // El id corresponent a la metadata s'estableix al DokuModelAdapter
+                    data:  value.content,
+                    title: value.title
+                };
             }
 
         });

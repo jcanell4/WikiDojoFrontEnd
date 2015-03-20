@@ -152,7 +152,6 @@ define([
                     if (this.documentsChanged[id]) {
                         delete this.documentsChanged[id];
                     }
-                    console.log(this.eventManager);
 
 
                     this.eventManager.dispatchEvent("document_changes_reset", {id: id});
