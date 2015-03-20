@@ -46,7 +46,6 @@ define([
 
             nodeList.forEach(function (node) {
                 on(node, 'change', function (evt) {
-                    alert("ha saltat");
                     var currentTab = dispatcher.getGlobalState().getCurrentId(),
                         changedNode;
 
@@ -57,43 +56,13 @@ define([
                     dispatcher.getContentCache(currentTab).replaceMetaDataContent(paneId, changedNode)
                 })
             });
-        },
-
-
-        /**
-         * Afegeix al array passat com argument els objectes amb metadata de prova
-         *
-         * @param {{id: string, title: string, content: string}[]} meta - Array al que s'afegeixen les dades
-         * @private
-         */
-        _pushTestMetadataToArray = function (meta) {
-            meta.push({
-                id:      "prova",
-                title:   "prova_title",
-                content: "<input type=\"checkbox\"/> Checkbox Test"
-            });
-
-            meta.push({
-                id:      "prova2",
-                title:   "prova_title2",
-                content: "<input type=\"text\"/> Text Test"
-            })
-        },
-
-        _generateRevisionsHtml = function (revisions) {
-            return 'Generacio de les revisions';
         };
-
 
     return {
 
         addWatchToMetadataPane: _addWatchToMetadataPane,
 
         addChangeListenersToMetadataPane: _addChangeListenersToMetadataPane,
-
-        pushTestMetadataToArray: _pushTestMetadataToArray,
-
-        generateRevisionsHtml: _generateRevisionsHtml
 
     }
 });

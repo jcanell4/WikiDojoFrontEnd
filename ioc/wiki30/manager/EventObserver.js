@@ -46,6 +46,10 @@ define([
 
         triggerEvent: function (event, data) {
             this.eventManager.dispatchEvent(event, data);
+        },
+
+        onUnload: function () {
+            this.inherited(arguments);
         }
     })
 

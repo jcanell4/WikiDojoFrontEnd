@@ -17,8 +17,6 @@ define([
 
             process: function (value, dispatcher) {
                 this._processMetaInfo(value, dispatcher);
-
-
                 this._processContentCache(dispatcher, value);
             },
 
@@ -40,51 +38,22 @@ define([
                     currentPaneId,
                     defaultSelected,
                     selectedPane,
-                    meta;
+                    currentMetaContent;
 
 
                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
                 for (m in content.meta) {
 
+                    if (widgetCentral && widgetCentral.id === content.id) { // aquesta metainfo pertany a la pestanya activa
+                        currentMetaContent = content.meta[m];
 
+                        if (!registry.byId(currentMetaContent.id)) {
 
+                            cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
 
-                    if (widgetCentral && widgetCentral.id === content.id) { //esta metainfo pertenece a la pestaña activa
-
-
-
-                        meta = this._convertMetaData(content.meta[m]);
-
-
-
-                        //widgetMetaInfo = registry.byId(content.meta[m].id);
-
-                        widgetMetaInfo = registry.byId(meta.id);
-
-
-
-
-                        if (!widgetMetaInfo) {
-                            /*Construeix un nou contenidor de meta-info*/
-                            cp = new ContentTool({
-                                //id:      content.meta[m].id,
-                                //title:   content.meta[m].title,
-                                //content: content.meta[m].content,
-                                id:    meta.id,
-                                title: meta.title,
-                                //content: meta.content,
-                                data:  meta.data,
-                                dispatcher: dispatcher
-
-                            });
-
-                            dispatcher.contentCache[content.id].putMetaData(cp);
-
+                            // TODO[Xavi] extreure a un mètode la adició al contenidor
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
-
-
-
                             guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
                             guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
 
@@ -92,15 +61,8 @@ define([
                     }
                 }
 
-
-
                 currentPaneId = dispatcher.getContentCache(content.id).getCurrentId("metadataPane");
-
-
                 defaultSelected = content.defaultSelected;
-
-
-
 
                 if (!currentPaneId && defaultSelected) {
                     dispatcher.getContentCache(content.id).setCurrentId("metadataPane", defaultSelected)
@@ -112,7 +74,6 @@ define([
                     nodeMetaInfo.selectChild(selectedPane);
                     dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
                 }
-
 
                 return 0;
             },
@@ -127,19 +88,8 @@ define([
              * @private
              */
             _processContentCache: function (dispatcher, value) {
+                // TODO[Xavi] Actulament no es fa servir per a res
 
-                //dispatcher.getContentCache(value.id).removeAllMetaData(); // TODO[Xavi] comprovar si això es necessari o fem servir el hide
-
-
-                //
-                //if (dispatcher.contentCache[value.id]) {
-                //    var meta = value.meta;
-                //
-                //    for (var i = 0; i < meta.length; i++) {
-                //        console.log("Put metadata: ", meta[i]);
-                //        dispatcher.contentCache[value.id].putMetaData(meta[i]);
-                //    }
-                //}
             },
 
             /**
@@ -161,13 +111,47 @@ define([
                 }
             },
 
-            _convertMetaData: function (value) {
-
+            _convertMetaData: function (content) {
                 return {
-                    id:    value.id, // El id corresponent a la metadata s'estableix al DokuModelAdapter
-                    data:  value.content,
-                    title: value.title
+                    id:    this._buildContentId(content), // El id corresponent a la metadata s'estableix al DokuModelAdapter
+                    data:  content.content || ' ',
+                    title: content.title
                 };
+            },
+
+            /**
+             * Crea un ContentTool apropiat i el retorna.
+             *
+             * @param {object} content
+             * @param {Dispatcher} dispatcher
+             * @returns {ContentTool}
+             * @param {string} parentId
+             * @private
+             */
+            _createContentTool: function (content, dispatcher, parentId) {
+                var meta = this._convertMetaData(content),
+                    contentTool = new ContentTool({
+                        id:         meta.id,
+                        title:      meta.title,
+                        data:       meta.data,
+                        dispatcher: dispatcher
+                    });
+
+                dispatcher.contentCache[parentId].putMetaData(contentTool);
+
+                return contentTool;
+            },
+
+            /**
+             * Contrueix la id a partir del content passat com argument. Ens assegurem que només hi ha un punt on ho hem
+             * de canviar si volem una estructura diferent.
+             *
+             * @param content
+             * @returns {string}
+             * @private
+             */
+            _buildContentId: function (content) {
+                return content.id;
             }
 
         });

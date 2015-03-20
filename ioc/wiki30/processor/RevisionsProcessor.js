@@ -8,7 +8,7 @@ define([
 
 ], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor, guiSharedFunctions, renderEngineFactory) {
 
-    // Definim el render engine que emprearem per formatar les revisions
+    // Definim el render engine que emprearem per formatar les revisions TODO[Xavi] això està aqui a mode de demostració, tots els renders habiutals els posarem al RenderEngineFactory.
     renderEngineFactory.addRenderEngine('revisions',
         function (data) {
             var html = '',
@@ -63,71 +63,31 @@ define([
                     nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
                     widgetMetaInfo,
                     cp,
-                    m,
                     currentPaneId,
                     defaultSelected,
-                    selectedPane,
-                    meta;
+                    selectedPane;
 
                 if (widgetCentral && widgetCentral.id === content.id) { //esta metainfo pertenece a la pestaña activa
 
-                    meta = this._convertMetaData(content);
-
-                    //console.log(content);
-                    //alert("lee el log");
-                    widgetMetaInfo = registry.byId(meta.id);
+                    widgetMetaInfo = registry.byId(this._buildContentId(content));
 
                     if (!widgetMetaInfo) {
-                        /*Construeix un nou contenidor de meta-info*/
+                        cp = this._createContentTool(content, dispatcher, content.id);
 
-                        //cp = new RequestRenderContentTool({
-                        //    id:         meta.id,
-                        //    title:      meta.title,
-                        //    data:       meta.data,
-                        //    type:       meta.type,
-                        //    dispatcher: dispatcher
-                        //    //content: guiSharedFunctions.generateRevisionsHtml(content.revisions)
-                        //});
-                        ////
-                        ////console.log("Revisions, abans de afegir", cp);
-                        ////
-                        //dispatcher.contentCache[content.id].putMetaData(cp);
-                        ////
-                        //alert("afegit revisions);" +
-                        //"")
-                        cp = this.createContentTool(content, dispatcher);
+                        // TODO[Xavi] extreure a un mètode la adició al contenidor <-- COMPTE, aquest bloc està completament duplicat a MetaInfoProcessor
                         nodeMetaInfo.addChild(cp);
                         nodeMetaInfo.resize();
-                        //
-                        //
-                        dispatcher.toUpdateSectok.push(cp);
-                        ////cp.updateSectok(); // TODO[Xavi] Comprovar que això funcioni al doc page no es fa?
-
-
-                        var contentCache = dispatcher.getContentCache(content.id);
-
-                        contentCache.cp = cp;
-
                         guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
                         guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
                     }
                 }
-                //}
 
                 currentPaneId = dispatcher.getContentCache(content.id).getCurrentId("metadataPane");
                 defaultSelected = content.defaultSelected;
 
-                //alert("ok 1");
                 if (!currentPaneId && defaultSelected) {
                     dispatcher.getContentCache(content.id).setCurrentId("metadataPane", defaultSelected)
                 }
-
-
-                // Això no cal en aquest cas?
-                /*
-                 console.log("mira aquí que está el error:")
-                 selectedPane = this._setSelectedPane(content.revisions, [currentPaneId, defaultSelected]);
-                 */
 
                 if (defaultSelected) {
                     selectedPane = paneId;
@@ -137,7 +97,6 @@ define([
                     nodeMetaInfo.selectChild(selectedPane);
                     dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
                 }
-
 
                 return 0;
             },
@@ -152,58 +111,23 @@ define([
              * @private
              */
             _processContentCache: function (dispatcher, value) {
-                /*
-                 dispatcher.getContentCache(value.id).removeAllMetaData();
 
-                 if (dispatcher.contentCache[value.id]) {
-                 var meta = value.revisions;
-
-                 for (var i = 0; i < meta.length; i++) {
-                 dispatcher.contentCache[value.id].putMetaData(meta[i]);
-                 }
-                 }*/
-
-                //var meta = this.convertMetadata(value);
-
-
-                //dispatcher.contentCache[value.id].putMetaData(meta);
-
-
-                //dispatcher.contentCache[value.id].putMetaData(guiSharedFunctions.generateRevisionsHtml(content.revisions));
-            },
-
-            /**
-             * Comprova si existeix algun dels ids passats com arguments a les metadata i retorna la primera
-             * coincidencia. L'ordre en que es passen els ids es el mateix en el que es comprovaran, així que s'han de
-             * passar en l'ordre d'importancia.
-             *
-             * @param {Object[]} metadata - Hash amb totes les metadades passades
-             * @param {string[]} ids - array amb les ids a comprovar per ordre
-             * @private
-             */
-            _setSelectedPane: function (metadata, ids) {
-                for (var i = 0, len = metadata.length; i < len; i++) {
-                    for (var j = 0; j < ids.length; j++) {
-                        if (metadata[i]['id'] == ids[j]) {
-                            return ids[j]
-                        }
-                    }
-                }
+                // TODO[Xavi] Actualment no es fa servir per a res
             },
 
             /**
              * Formata la informació per inicialitzar el ContentTool apropiat
              *
-             * @param value
+             * @param content
              * @returns {{id: string, data: {object}, title: string, type: string}}
              * @private
              */
-            _convertMetaData: function (value) {
-                var count = Object.keys(value.revisions).length;
+            _convertMetaData: function (content) {
+                var count = Object.keys(content.revisions).length;
 
                 return {
-                    id:    value.id + '_revisions',
-                    data:  value.revisions,
+                    id:    this._buildContentId(content),
+                    data:  content.revisions,
                     title: 'Revisions (' + count + ')',
                     type:  'revisions'
                 };
@@ -211,29 +135,39 @@ define([
 
 
             /**
-             * Crea un ContentTool apropiat i el retorna.
+             * Crea un ContentTool apropiat, l'afegeix al contentCahcie, i el retorna.
              *
-             * @param content
-             * @param dispatcher
+             * @param {object} content
+             * @param {Dispatcher} dispatcher
              * @returns {ContentTool}
+             * @param {string} parentId
              * @private
              */
-            createContentTool: function (content, dispatcher) {
-                var meta = this._convertMetaData(content);
+            _createContentTool: function (content, dispatcher, parentId) {
+                var meta = this._convertMetaData(content),
+                    contentTool = new RequestRenderContentTool({
+                        id:         meta.id,
+                        title:      meta.title,
+                        data:       meta.data,
+                        type:       meta.type,
+                        dispatcher: dispatcher
+                    });
 
-
-                var contentTool = new RequestRenderContentTool({
-                    id:         meta.id,
-                    title:      meta.title,
-                    data:       meta.data,
-                    type:       meta.type,
-                    dispatcher: dispatcher
-                });
-
-
-                dispatcher.contentCache[content.id].putMetaData(contentTool);
+                dispatcher.contentCache[parentId].putMetaData(contentTool);
 
                 return contentTool;
+            },
+
+            /**
+             * Contrueix la id a partir del content passat com argument. Ens assegurem que només hi ha un punt on ho hem
+             * de canviar si volem una estructura diferent.
+             *
+             * @param {object} content
+             * @returns {string}
+             * @private
+             */
+            _buildContentId: function (content) {
+                return content.id + '_revisions';
             }
 
 
