@@ -186,7 +186,7 @@ define([
              * @param {string} content - contingut amb el que es reemplaçarà la metadata actual
              */
             replaceMetaDataContent: function (id, content) {
-                this.metaData[id]["content"] = content;
+                this.metaData[id].set('data', content);
             },
 
             /**

@@ -46,6 +46,7 @@ define([
 
             nodeList.forEach(function (node) {
                 on(node, 'change', function (evt) {
+                    alert("ha saltat");
                     var currentTab = dispatcher.getGlobalState().getCurrentId(),
                         changedNode;
 
