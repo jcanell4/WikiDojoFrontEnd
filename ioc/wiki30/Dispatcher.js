@@ -32,8 +32,8 @@ define([
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor, DataContentProcessor,
              ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor,
-             RemoveAllContentTabProcessor, RemoveContentTabProcessor, CommandProcessor, 
-             AdminTabProcessor, AdminTaskProcessor, InfoManager,ChangesManager, RevisionsProcessor, EventManager) {
+             RemoveAllContentTabProcessor, RemoveContentTabProcessor, CommandProcessor,
+             AdminTabProcessor, AdminTaskProcessor, InfoManager, ChangesManager, RevisionsProcessor, EventManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -136,7 +136,7 @@ define([
 
                 this.processors["revisions"] = new RevisionsProcessor();
             },
-            
+
             /**
              * Afegeix el UpdateViewHandler al array que es crida quan s'ha d'actualitzar la vista.
              *
@@ -227,6 +227,12 @@ define([
              * @param {DijitContainer|string} pwidget
              */
             removeAllChildrenWidgets: function (pwidget) {
+                return this.hideAllChildrenWidgets(pwidget);
+
+
+
+
+                /*
                 var children;
                 var widget;
                 if (lang.isString(pwidget)) {
@@ -236,27 +242,43 @@ define([
                 }
                 if (widget.hasChildren()) {
                     children = widget.getChildren();
-                    for(var i=0; i<children.length; i++){
-                        if(children[i].unregisterFromEvents){
+                    for (var i = 0; i < children.length; i++) {
+                        if (children[i].unregisterFromEvents) {
                             children[i].unregisterFromEvents();
                         }
                     }
                     widget.destroyDescendants(false);
                 }
+                */
+
             },
-            
+
+
             hideAllChildrenWidgets: function (pwidget) {
+
                 var widget;
                 if (lang.isString(pwidget)) {
                     widget = registry.byId(pwidget);
                 } else {
                     widget = pwidget;
                 }
+
+                var children = widget.getChildren();
+
+                for (var child in children) {
+                    console.log(child);
+                    children[child].hideContent();
+
+                }
+/*
+
                 if (widget.hasChildren()) {
                     widget.destroyDescendants(false);
                 }
+*/
+
             },
-            
+
             removeWidgetChild: function (command, dispatcher) {
                 var parent;
                 var child;
@@ -265,9 +287,9 @@ define([
                 parent = registry.byId(parentId);
                 child = registry.byId(childId);
                 if (parent && child) {
-                    if(child.unregisterFromEvents){
+                    if (child.unregisterFromEvents) {
                         child.unregisterFromEvents();
-                    }                    
+                    }
                     parent.removeChild(child);
                     child.destroyRecursive(false);
                 }
@@ -305,16 +327,6 @@ define([
                 return this.contentCache[id];
             },
 
-            //            /**
-            //             * Retorna la informació de la pàgina mostrada a la pestanya actual.
-            //             *
-            //             * TODO[Xavi] No es crida enlloc?
-            //             *
-            //             * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
-            //             */
-            //            getCurrentPage: function () {
-            //                return this.getGlobalState().pages[this.getGlobalState().currentTabId];
-            //            },
 
             /**
              * Retorna la informació de la pàgina mostrada a la pestanya actual.
@@ -390,18 +402,7 @@ define([
 
                 this.updateFromState();
                 return 0;
-                /*
-                 // TODO[Xavi] lang.isArray() està deprecated.
-                 if (lang.isArray(response)) {
-                 array.forEach(response, function (responseItem) {
-                 req._processResponse(responseItem, processors);
-                 });
-                 } else {
-                 req._processResponse(response, processors);
-                 }
-                 this.updateFromState();
-                 return 0;
-                 */
+
             },
 
             /**
@@ -453,9 +454,14 @@ define([
             },
 
 
-            getEventManager: function() {
+            getEventManager: function () {
                 return this.eventManager;
-            }
+            },
+
+            discardChanges: function () {
+                return confirm("No s'han desat els canvis al document actual, vols descartar els canvis");
+            },
+
 
         });
     return ret;

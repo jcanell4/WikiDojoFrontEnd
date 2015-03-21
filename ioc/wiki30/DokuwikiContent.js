@@ -79,12 +79,16 @@ define([
              * @param {ContentTool} content objecte amb les metadades a afegir.
              */
             putMetaData: function (content) {
+                /*
                 if (content.getParent()) {
                     console.log("Error, s'ha de guardar la metadata abans d'afegir-la el ContentTool al contenidor");
                     throw new Error("Error, s'ha de guardar la metadata abans d'afegir-la el ContentTool al contenidor");
                 }
 
                 this.metaData[content.id] = jQuery.extend(true, {}, content);
+                */
+                console.log("puttin", content.id);
+                this.metaData[content.id] = content;
             },
 
             /**
@@ -99,9 +103,11 @@ define([
             getMetaData: function (id) {
                 //return lang.clone(id ? this.metaData[id] : this.metaData);
 
-                return jQuery.extend(true, {}, id ? this.metaData[id] : this.metaData);
+                //return jQuery.extend(true, {}, id ? this.metaData[id] : this.metaData);
 
                 //return id ? jQuery.extend(true, {}, this.metaData[id]) : this._getAllMetaData();
+                console.log("getting", this.metaData);
+                return id ? this.metaData[id] : this.metaData;
             },
 
             /**

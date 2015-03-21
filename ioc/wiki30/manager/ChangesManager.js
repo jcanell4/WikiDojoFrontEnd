@@ -156,7 +156,6 @@ define([
 
                     this.eventManager.dispatchEvent("document_changes_reset", {id: id});
                     //this.dispatcher.dispatchEvent("document_changes_reset", {id: id});
-
                 },
 
 

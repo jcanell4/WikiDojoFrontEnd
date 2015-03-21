@@ -1,18 +1,14 @@
 define([
     "dojo/_base/declare",
-    "ioc/gui/RequestContentTool",
+    "ioc/wiki30/Request2",
     "ioc/gui/RenderContentTool",
     "dojo/_base/event",
     "dojo/dom-attr",
     'dojo/dom',
     'dojo/on'
-], function (declare, RequestContentTool, RenderContentTool, event, att, dom, on) {
+], function (declare, Request, RenderContentTool, event, att, dom, on) {
 
-    return declare([RenderContentTool, RequestContentTool], {
-
-        constructor: function (args) {
-            declare.safeMixin(this, args);
-        },
+    return declare([RenderContentTool, Request], {
 
         /**
          *

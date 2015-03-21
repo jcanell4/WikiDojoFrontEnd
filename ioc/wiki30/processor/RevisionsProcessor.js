@@ -4,7 +4,7 @@ define([
     "ioc/gui/RequestRenderContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/dokuwiki/guiSharedFunctions",
-    "ioc/gui/renderEngineFactory",
+    "ioc/gui/renderEngineFactory"
 
 ], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor, guiSharedFunctions, renderEngineFactory) {
 
@@ -77,6 +77,7 @@ define([
                         // TODO[Xavi] extreure a un mètode la adició al contenidor <-- COMPTE, aquest bloc està completament duplicat a MetaInfoProcessor
                         nodeMetaInfo.addChild(cp);
                         nodeMetaInfo.resize();
+
                         guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
                         guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
                     }

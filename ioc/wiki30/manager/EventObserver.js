@@ -3,6 +3,10 @@ define([
 ], function (declare) {
     return declare(null, {
 
+        "-chains-": {
+            onUnload: "before"
+        },
+
         /** @type {int[]} indentificador propi dels events als que està subscrit */
         registeredToEvents: [],
 
@@ -46,11 +50,9 @@ define([
 
         triggerEvent: function (event, data) {
             this.eventManager.dispatchEvent(event, data);
-        },
-
-        onUnload: function () {
-            this.inherited(arguments);
         }
+
+
     })
 
 });

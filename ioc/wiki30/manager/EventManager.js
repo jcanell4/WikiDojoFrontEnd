@@ -43,9 +43,9 @@ define([
              * @param {object} data - Dades que es passaran als observadors
              */
             dispatchEvent: function (event, data) {
-
                 var observers = this.events[event];
 
+                console.log("llençant esdeveniment:", event, data);
 
                 if (observers) {
 
@@ -68,8 +68,11 @@ define([
             removeObserver: function (observerId) {
                 var subscriber = this.observers[observerId];
 
+
                 this.events[subscriber.event][subscriber.index] = null;
                 this.observers[observerId] = null;
+
+                console.log("Eliminat observador: ", observerId);
             }
 
         });

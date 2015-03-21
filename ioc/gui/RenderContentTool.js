@@ -6,18 +6,12 @@ define([
         //return declare([ContentPane, Request], {
 
         return declare([ContentTool], {
-            /** @type mixin - les dades poden estar en qualsevol format */
-            data: null,
 
             /** @type string */
             type: null,
 
             /** @type function */
             renderEngine: null,
-
-            constructor: function (args) {
-
-            },
 
             /**
              *
@@ -26,6 +20,7 @@ define([
             render: function () {
                 this.set('content', this.renderEngine(this.data));
             },
+
 
             startup: function () {
 
@@ -38,7 +33,14 @@ define([
                 if (this.data) {
                     this.render();
                 }
+            },
 
+            onLoad: function() {
+                //console.log("load RenderContentTool");
+            },
+
+            postLoad: function() {
+                //console.log("només ha de sortir aquest postload pel rendercontenttool");
             }
         });
     }

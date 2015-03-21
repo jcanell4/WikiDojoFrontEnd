@@ -4,8 +4,9 @@ define([
     //"dijit/layout/ContentPane",
     "ioc/gui/ContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "ioc/dokuwiki/guiSharedFunctions"
-], function (declare, registry, ContentTool, AbstractResponseProcessor, guiSharedFunctions) {
+    "ioc/dokuwiki/guiSharedFunctions",
+    "dojo/dom-style",
+], function (declare, registry, ContentTool, AbstractResponseProcessor, guiSharedFunctions, domStyle) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -32,7 +33,6 @@ define([
             _processMetaInfo: function (content, dispatcher) {
                 var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
                     nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
-                    widgetMetaInfo,
                     cp,
                     m,
                     currentPaneId,
@@ -54,6 +54,12 @@ define([
                             // TODO[Xavi] extreure a un mètode la adició al contenidor
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
+                           //domStyle.set(cp.domNode.id + "_wrapper", {display: "none"});
+                            //domStyle.set(cp.domNode.id + "_wrapper", {display: "none"});
+                            //domStyle.set(cp.domNode.id , "display" , "hidden");
+
+
+
                             guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
                             guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
 
@@ -134,7 +140,18 @@ define([
                         id:         meta.id,
                         title:      meta.title,
                         data:       meta.data,
-                        dispatcher: dispatcher
+                        dispatcher: dispatcher,
+
+                        postLoad: function() {
+                            self = this;
+
+                            this.registerToEvent("document_closed", function(data) {
+                                alert("borrar!");
+                            });
+
+                        }
+
+
                     });
 
                 dispatcher.contentCache[parentId].putMetaData(contentTool);
@@ -153,6 +170,10 @@ define([
             _buildContentId: function (content) {
                 return content.id;
             }
+
+
+
+
 
         });
     return ret;
