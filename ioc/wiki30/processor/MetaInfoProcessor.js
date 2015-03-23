@@ -38,11 +38,11 @@ define([
                     nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
                     cp,
                     m,
-                    currentPaneId,
                     defaultSelected,
                     selectedPane,
+                    firstPane,
                     currentMetaContent,
-                    first;
+                    contentCache;
 
 
                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
@@ -53,7 +53,7 @@ define([
                     if (widgetCentral && widgetCentral.id === content.id) { // aquesta metainfo pertany a la pestanya activa
                         currentMetaContent = content.meta[m];
 
-                        if (!registry.byId(currentMetaContent.id)) {
+                        if (!registry.byId(currentMetaContent.id)) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
 
                             cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
 
@@ -61,35 +61,64 @@ define([
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
 
-                            if (!first) {
-                                first = cp.id;
+                            if (!firstPane) {
+                                firstPane = cp.id;
                             }
 
+                            if (content.defaultSelected) {
+                                defaultSelected = cp.id;
+                            }
 
                             //guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
                             guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
 
+                        } else {
+                            console.log("ja existeix");
+                            alert("JA EXISTEIX!");
                         }
                     }
                 }
 
-                currentPaneId = dispatcher.getContentCache(content.id).getCurrentId("metadataPane");
-                defaultSelected = content.defaultSelected;
 
-                if (!currentPaneId && defaultSelected) {
-                    dispatcher.getContentCache(content.id).setCurrentId("metadataPane", defaultSelected)
-                }
-
-                selectedPane = this._setSelectedPane(content.meta, [currentPaneId, defaultSelected]);
+                contentCache = dispatcher.getContentCache(content.id);
+                selectedPane = contentCache.getCurrentId("metadataPane");
 
                 if (selectedPane) {
-                    nodeMetaInfo.selectChild(selectedPane);
-                    dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
+                    // Es el panell que hem seleccionat abans
+
+                } else if (defaultSelected) {
+                    // està marcat per defecte
+                    selectedPane = defaultSelected;
                 } else {
-                    nodeMetaInfo.selectChild(first);
-                    dispatcher.getContentCache(content.id).setCurrentId("metadataPane", first);
+                    // No hi ha cap marcat, establim el primer com a marcat
+                    selectedPane = firstPane;
+
                 }
 
+                nodeMetaInfo.selectChild(selectedPane);
+
+                /*
+
+
+
+                 currentPaneId = dispatcher.getContentCache(content.id).getCurrentId("metadataPane");
+                 defaultSelected = content.defaultSelected;
+
+                 if (!currentPaneId && defaultSelected) {
+                 dispatcher.getContentCache(content.id).setCurrentId("metadataPane", defaultSelected)
+                 }
+
+                 selectedPane = this._setSelectedPane(content.meta, [currentPaneId, defaultSelected]);
+
+                 if (selectedPane) {
+                 nodeMetaInfo.selectChild(selectedPane);
+                 dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
+                 } else {
+                 nodeMetaInfo.selectChild(firstPane);
+                 dispatcher.getContentCache(content.id).setCurrentId("metadataPane", firstPane);
+                 }
+
+                 */
 
                 return 0;
             },
@@ -117,15 +146,15 @@ define([
              * @param {string[]} ids - array amb les ids a comprovar per ordre
              * @private
              */
-            _setSelectedPane: function (metadata, ids) {
-                for (var i = 0, len = metadata.length; i < len; i++) {
-                    for (var j = 0; j < ids.length; j++) {
-                        if (metadata[i]['id'] == ids[j]) {
-                            return ids[j]
-                        }
-                    }
-                }
-            },
+            //_setSelectedPane: function (metadata, ids) {
+            //    for (var i = 0, len = metadata.length; i < len; i++) {
+            //        for (var j = 0; j < ids.length; j++) {
+            //            if (metadata[i]['id'] == ids[j]) {
+            //                return ids[j]
+            //            }
+            //        }
+            //    }
+            //},
 
             _convertMetaData: function (content) {
                 return {
@@ -152,28 +181,45 @@ define([
                         title:      meta.title,
                         data:       meta.data,
                         dispatcher: dispatcher,
-                        docId: docId,
+                        docId:      docId,
 
-                        postLoad: function() {
+                        postLoad: function () {
                             var self = this;
-                            this.registerToEvent("document_closed", function(data) {
-                                if (data.id == self.docId) {
 
-                                    var parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
+                            this.registerToEvent("document_closed", function (data) {
+                                var parent;
+
+                                if (data.id == self.docId) {
+                                    parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
                                     parent.removeChild(self);
                                     self.destroyRecursive();
-
-                                    console.log("esborrat per:", data.id)
-                                } else {
-                                    console.log("el nostre doc es", self.docId, " i no ens afecta: ", data.id);
                                 }
                             });
 
 
-                            this.registerToEvent("document_selected", function(data) {
-                                if (self.id.lastIndexOf(data.id, 0) === 0 && this.domNode) {
+                            this.registerToEvent("document_selected", function (data) {
+                                var selectedPane,
+                                    parent;
+
+                                if (data.id == self.docId && self.domNode) {
                                     self.showContent();
-                                    console.log("mostrant: ", this.id);
+                                    selectedPane = self.dispatcher.getContentCache(self.docId).getCurrentId('metadataPane');
+
+                                    console.log("selectedPane:", selectedPane, "id:",self.id);
+                                    if (selectedPane == self.id) {
+                                        parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
+                                        parent.selectChild(self);
+                                        console.log("child selected");
+                                    }
+
+
+                                }
+                            });
+
+
+                            this.registerToEvent("document_unselected", function (data) {
+                                if (data.id == self.docId && self.domNode) {
+                                    self.hideContent();
                                 }
                             });
 
@@ -212,9 +258,6 @@ define([
             _buildContentId: function (content) {
                 return content.id;
             }
-
-
-
 
 
         });

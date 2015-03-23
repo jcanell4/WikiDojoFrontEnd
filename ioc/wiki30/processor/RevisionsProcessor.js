@@ -158,23 +158,39 @@ define([
                         postLoad: function() {
                             var self = this;
                             this.registerToEvent("document_closed", function(data) {
+                                var parent;
+
                                 if (data.id == self.docId) {
 
-                                    var parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
+                                    parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
                                     parent.removeChild(self);
                                     self.destroyRecursive();
 
-                                    console.log("esborrat per:", data.id)
-                                } else {
-                                    console.log("el nostre doc es", self.docId, " i no ens afecta: ", data.id);
                                 }
                             });
 
 
-                            this.registerToEvent("document_selected", function(data) {
-                                if (self.id.lastIndexOf(data.id, 0) === 0 && this.domNode) {
+                            this.registerToEvent("document_selected", function (data) {
+                                var selectedPane,
+                                    parent;
+
+                                if (data.id == self.docId && self.domNode) {
                                     self.showContent();
-                                    console.log("mostrant: ", this.id);
+                                    selectedPane = self.dispatcher.getContentCache(self.docId).getCurrentId('metadataPane');
+
+                                    if (selectedPane == self.id) {
+                                        parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
+                                        parent.selectChild(self);
+                                    }
+
+
+                                }
+                            });
+
+
+                            this.registerToEvent("document_unselected", function(data) {
+                                if (data.id == self.docId && self.domNode) {
+                                    self.hideContent();
                                 }
                             });
 

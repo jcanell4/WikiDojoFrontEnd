@@ -520,7 +520,8 @@ define([
 
             setCurrentDocument: function(id) {
                 this.getGlobalState().currentTabId = id;
-                this.eventManager.dispatchEvent("document_selected (from dispatcher)", {id: id});
+                //this.eventManager.dispatchEvent("document_selected (from dispatcher)", {id: id});
+                this.eventManager.dispatchEvent("document_selected", {id: id});
             }
 
 

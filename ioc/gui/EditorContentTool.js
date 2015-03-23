@@ -90,6 +90,14 @@ define([
         onUnload: function () {
             this.unregisterFromEvents();
             console.log("onUnload del EditorContentTool");
+        },
+
+        onSelect: function () { // onShow()
+            this.triggerEvent("document_selected", {id: this.id, extra: "EditorContentTool"});
+        },
+
+        onUnselect: function () { // onHide()
+            this.triggerEvent("document_unselected", {id: this.id, extra: "EditorContentTool"});
         }
 
 

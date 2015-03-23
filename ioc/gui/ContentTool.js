@@ -55,11 +55,11 @@ define([
 
 
             onSelect: function () { // onShow()
-                this.triggerEvent("document_selected (from ContentTool)", {id: this.id});
+                this.triggerEvent("content_selected", {id: this.id});
             },
 
             onUnselect: function () { // onHide()
-                this.triggerEvent("document_Unselected (from ContentTool)", {id: this.id});
+                this.triggerEvent("content_unselected", {id: this.id});
             },
 
             onResize: function () {
@@ -109,7 +109,7 @@ define([
             postLoad: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
                 //
-                alert("postload de ContentTool");
+                alert("postload de addRequestTo");
                 console.log("postLoad ContentTool");
             },
 
