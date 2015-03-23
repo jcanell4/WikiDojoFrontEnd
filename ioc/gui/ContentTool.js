@@ -39,12 +39,27 @@ define([
                 declare.safeMixin(this, args);
             },
 
-            onSelect: function () { // onShow()
+            /**
+             * @private
+             */
+            onShow:function () {
+                this.onSelect();
+            },
 
+            /**
+             * @private
+             */
+            onHide:function () {
+                this.onUnselect();
+            },
+
+
+            onSelect: function () { // onShow()
+                this.triggerEvent("document_selected (from ContentTool)", {id: this.id});
             },
 
             onUnselect: function () { // onHide()
-
+                this.triggerEvent("document_Unselected (from ContentTool)", {id: this.id});
             },
 
             onResize: function () {
@@ -52,7 +67,7 @@ define([
             },
 
             getId: function () { // get('id')
-
+                return this.get('id');
             },
 
             /** @override */
@@ -86,22 +101,34 @@ define([
                 this.postLoad();
             },
 
+            /**
+             * Dins d'aquest mètode s'ha d'afegir tot el codi que volguem assegurar-nos que s'executa quan el
+             * ContentTool ha estat afegit efectivament a la pàgina. Es el lloc indicat per afegir els watchers,
+             * listeners i enregistrament a esdeveniments.
+             */
             postLoad: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
                 //
+                alert("postload de ContentTool");
                 console.log("postLoad ContentTool");
             },
 
 
             hideContent: function() {
+                console.log("hide this: ", this.id);
                 domStyle.set(this.domNode.id + "_wrapper", {display: "none"});
 
             },
 
             showContent: function() {
-
+                console.log("show this: ", this.id);
                 domStyle.set(this.domNode.id + "_wrapper", {display: ""});
+                console.log("mostrat");
+            },
 
+            onUnload: function () {
+                this.unregisterFromEvents();
+                console.log("onUnload del ContentTool");
             }
 
         });

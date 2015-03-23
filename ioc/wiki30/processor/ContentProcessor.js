@@ -8,11 +8,10 @@ define([
     //"ioc/gui/ContentTool",
     "ioc/gui/EditorContentTool",
     "ioc/wiki30/DokuwikiContent",
-    "dijit/Dialog",
-    "dijit/form/Button",
+
 ], function (declare, StateUpdaterProcessor, registry, dom, domConstruct,
              //ContentTool,
-             EditorContentTool, DokuwikiContent, Dialog, Button) {
+             EditorContentTool, DokuwikiContent) {
 
     var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor],
         /**
@@ -27,6 +26,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+
 
                 var changesManager = dispatcher.getChangesManager(),
                     confirmation = false,
@@ -47,12 +47,14 @@ define([
 
                 console.log("retornant codi ");
 
+
                 return confirmation ? 0 : 100;
 
             },
 
             _loadTab: function (value, dispatcher, args) {
                 this.__newTab(value, dispatcher);
+
                 this.inherited("process", args);
             },
 
@@ -66,11 +68,20 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
+
+                dispatcher.addDocument(value);
+
+                /*
+
                 if (!dispatcher.contentCache[value.id]) {
+                    //alert("nou content cache");
                     dispatcher.contentCache[value.id] = new DokuwikiContent({
-                        "id": value.id /*
-                         ,"title": value.title */
+                        "id": value.id
                     });
+                } else {
+                    //alert ("compte, ja existeix el content cache");
+
+
                 }
                 //         dispatcher.contentCache[value.id].setDocumentHTML(value);
                 if (!dispatcher.getGlobalState().pages[value.id]) {
@@ -78,6 +89,7 @@ define([
                 }
                 dispatcher.getGlobalState().pages[value.id]["ns"] = value.ns;
                 dispatcher.getGlobalState().currentTabId = value.id;
+                */
             },
 
             /**
@@ -93,6 +105,7 @@ define([
                     widget = registry.byId(content.id),
                     cp;
 
+
                 if (!widget) {
                     cp = this._createContentTool(content, dispatcher);
 
@@ -100,6 +113,8 @@ define([
                     tc.selectChild(cp);
 
                 } else {
+
+
                     tc.selectChild(widget);
                     var node = dom.byId(content.id);
                     while (node.firstChild) {

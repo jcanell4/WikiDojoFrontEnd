@@ -78,8 +78,9 @@ define([
                         nodeMetaInfo.addChild(cp);
                         nodeMetaInfo.resize();
 
-                        guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
-                        guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
+                        //guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
+
+                        //guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
                     }
                 }
 
@@ -141,20 +142,61 @@ define([
              * @param {object} content
              * @param {Dispatcher} dispatcher
              * @returns {ContentTool}
-             * @param {string} parentId
+             * @param {string} docId
              * @private
              */
-            _createContentTool: function (content, dispatcher, parentId) {
+            _createContentTool: function (content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
                     contentTool = new RequestRenderContentTool({
                         id:         meta.id,
                         title:      meta.title,
                         data:       meta.data,
                         type:       meta.type,
-                        dispatcher: dispatcher
+                        dispatcher: dispatcher,
+                        docId: docId,
+
+                        postLoad: function() {
+                            var self = this;
+                            this.registerToEvent("document_closed", function(data) {
+                                if (data.id == self.docId) {
+
+                                    var parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
+                                    parent.removeChild(self);
+                                    self.destroyRecursive();
+
+                                    console.log("esborrat per:", data.id)
+                                } else {
+                                    console.log("el nostre doc es", self.docId, " i no ens afecta: ", data.id);
+                                }
+                            });
+
+
+                            this.registerToEvent("document_selected", function(data) {
+                                if (self.id.lastIndexOf(data.id, 0) === 0 && this.domNode) {
+                                    self.showContent();
+                                    console.log("mostrant: ", this.id);
+                                }
+                            });
+
+                            this.watch("selected", function (name, oldValue, newValue) {
+                                var contentCache = this.dispatcher.getContentCache(this.docId);
+
+                                if (newValue) {
+                                    console.log("selected POSTLOAD:", this.id);
+
+                                    if (contentCache) {
+                                        contentCache.setCurrentId("metadataPane", this.id)
+                                    }
+
+                                }
+                            })
+
+
+                        }
+
                     });
 
-                dispatcher.contentCache[parentId].putMetaData(contentTool);
+                dispatcher.contentCache[docId].putMetaData(contentTool);
 
                 return contentTool;
             },

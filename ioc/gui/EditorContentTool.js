@@ -12,7 +12,7 @@ define([
             this.registerToEvent("document_changed", lang.hitch(this, this._onDocumentChanged));
             this.registerToEvent("document_changes_reset", lang.hitch(this, this._onDocumentChangesReset));
             this.registerToEvent("test", function () {
-                return null
+                alert("triggered test");
             });
         },
 
@@ -35,6 +35,7 @@ define([
         },
 
         onClose: function () {
+            // TODO[Xavi] tota la lógica del changes manager s'ha modificar i afegir-la a aquesta classe
             var changesManager = this.dispatcher.getChangesManager(),
                 confirmation = true;
 
@@ -44,26 +45,42 @@ define([
 
             if (confirmation) {
                 var currentTabId = this.dispatcher.getGlobalState().currentTabId;
-                //actualitzar globalState
-                delete this.dispatcher.getGlobalState().pages[this.id];
-                //actualitzar contentCache
-                delete this.dispatcher.contentCache[this.id];
+
+                // TODO[Xavi] fer que els widgets s'eliminin a si mateixos al detectar el document_closed!!
+
+
+
+
+
                 //elimina els widgets corresponents a les metaInfo de la pestanya
                 if (currentTabId === this.id) {
                     var nodeMetaInfo = registry.byId(this.dispatcher.metaInfoNodeId);
-                    this.dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
                     this.dispatcher.getGlobalState().currentTabId = null;
+
+                    //nodeMetaInfo.removeAllWidgets(this.id);
+
                 }
 
                 this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
 
+
                 //this.unregisterFromEvents();
-                // TODO[Xavi] S'hauria de restaurar la visibilitat dels botons i els panells d'informació
+
+                // TODO[Xavi] S'hauria de restaurar la visibilitat dels botons i els panells d'informació <-- Enregistrat als events?
+
+
+
+                ////actualitzar globalState
+                //delete this.dispatcher.getGlobalState().pages[this.id];
+                ////actualitzar contentCache
+                //delete this.dispatcher.contentCache[this.id];
+
+                this.dispatcher.removeDocument(this.id);
 
                 this.triggerEvent('document_closed', {id: this.id});
             }
 
-                        console.log("onClose finalitzat");
+            console.log("onClose finalitzat");
             return confirmation;
 
         }
@@ -72,8 +89,7 @@ define([
 
         onUnload: function () {
             this.unregisterFromEvents();
-            console.log("onUnoad del EditorContentTool");
-
+            console.log("onUnload del EditorContentTool");
         }
 
 

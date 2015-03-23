@@ -6,7 +6,10 @@ define([
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/dokuwiki/guiSharedFunctions",
     "dojo/dom-style",
-], function (declare, registry, ContentTool, AbstractResponseProcessor, guiSharedFunctions, domStyle) {
+    'dojo/query',
+    'dojo/on',
+    'dojo/dom'
+], function (declare, registry, ContentTool, AbstractResponseProcessor, guiSharedFunctions, domStyle, dojoQuery, on, dom) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -38,10 +41,13 @@ define([
                     currentPaneId,
                     defaultSelected,
                     selectedPane,
-                    currentMetaContent;
+                    currentMetaContent,
+                    first;
 
 
                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
+
+
                 for (m in content.meta) {
 
                     if (widgetCentral && widgetCentral.id === content.id) { // aquesta metainfo pertany a la pestanya activa
@@ -54,13 +60,13 @@ define([
                             // TODO[Xavi] extreure a un mètode la adició al contenidor
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
-                           //domStyle.set(cp.domNode.id + "_wrapper", {display: "none"});
-                            //domStyle.set(cp.domNode.id + "_wrapper", {display: "none"});
-                            //domStyle.set(cp.domNode.id , "display" , "hidden");
+
+                            if (!first) {
+                                first = cp.id;
+                            }
 
 
-
-                            guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
+                            //guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
                             guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
 
                         }
@@ -79,7 +85,11 @@ define([
                 if (selectedPane) {
                     nodeMetaInfo.selectChild(selectedPane);
                     dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
+                } else {
+                    nodeMetaInfo.selectChild(first);
+                    dispatcher.getContentCache(content.id).setCurrentId("metadataPane", first);
                 }
+
 
                 return 0;
             },
@@ -131,30 +141,62 @@ define([
              * @param {object} content
              * @param {Dispatcher} dispatcher
              * @returns {ContentTool}
-             * @param {string} parentId
+             * @param {string} docId
              * @private
              */
-            _createContentTool: function (content, dispatcher, parentId) {
+            _createContentTool: function (content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
+
                     contentTool = new ContentTool({
                         id:         meta.id,
                         title:      meta.title,
                         data:       meta.data,
                         dispatcher: dispatcher,
+                        docId: docId,
 
                         postLoad: function() {
-                            self = this;
-
+                            var self = this;
                             this.registerToEvent("document_closed", function(data) {
-                                alert("borrar!");
+                                if (data.id == self.docId) {
+
+                                    var parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
+                                    parent.removeChild(self);
+                                    self.destroyRecursive();
+
+                                    console.log("esborrat per:", data.id)
+                                } else {
+                                    console.log("el nostre doc es", self.docId, " i no ens afecta: ", data.id);
+                                }
                             });
+
+
+                            this.registerToEvent("document_selected", function(data) {
+                                if (self.id.lastIndexOf(data.id, 0) === 0 && this.domNode) {
+                                    self.showContent();
+                                    console.log("mostrant: ", this.id);
+                                }
+                            });
+
+                            this.watch("selected", function (name, oldValue, newValue) {
+                                var contentCache = this.dispatcher.getContentCache(this.docId);
+
+                                if (newValue) {
+                                    console.log("selected POSTLOAD:", this.id);
+
+                                    if (contentCache) {
+                                        contentCache.setCurrentId("metadataPane", this.id)
+                                    }
+
+                                }
+                            })
+
 
                         }
 
 
                     });
 
-                dispatcher.contentCache[parentId].putMetaData(contentTool);
+                dispatcher.contentCache[docId].putMetaData(contentTool);
 
                 return contentTool;
             },

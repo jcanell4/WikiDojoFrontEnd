@@ -87,7 +87,7 @@ define([
 
                 this.metaData[content.id] = jQuery.extend(true, {}, content);
                 */
-                console.log("puttin", content.id);
+                console.log("putting", content.id, " for document: ", this.id);
                 this.metaData[content.id] = content;
             },
 
@@ -106,7 +106,7 @@ define([
                 //return jQuery.extend(true, {}, id ? this.metaData[id] : this.metaData);
 
                 //return id ? jQuery.extend(true, {}, this.metaData[id]) : this._getAllMetaData();
-                console.log("getting", this.metaData);
+                console.log("getting", this.metaData, " for document: ", this.id);
                 return id ? this.metaData[id] : this.metaData;
             },
 

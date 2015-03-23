@@ -28,12 +28,15 @@ define([
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/processor/RevisionsProcessor",
     "ioc/wiki30/manager/EventManager",
+    "ioc/wiki30/DokuwikiContent",
+    "ioc/wiki30/manager/EventObserver",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor, DataContentProcessor,
              ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor,
              RemoveAllContentTabProcessor, RemoveContentTabProcessor, CommandProcessor,
-             AdminTabProcessor, AdminTaskProcessor, InfoManager, ChangesManager, RevisionsProcessor, EventManager) {
+             AdminTabProcessor, AdminTaskProcessor, InfoManager, ChangesManager, RevisionsProcessor, EventManager,
+             DokuwikiContent, EventObserver) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -265,8 +268,8 @@ define([
 
                 var children = widget.getChildren();
 
+                console.log(children);
                 for (var child in children) {
-                    console.log(child);
                     children[child].hideContent();
 
                 }
@@ -449,18 +452,77 @@ define([
                 return this.infoManager;
             },
 
+            /** @deprecated */
             getChangesManager: function () {
                 return this.changesManager;
             },
 
 
+            /**
+             * Retorna el EventManager que gestiona els esdeveniments d'aquest dispatcher.
+             * @returns {EventManager}
+             */
             getEventManager: function () {
                 return this.eventManager;
             },
 
+            /**
+             * Mostra un quadre de dialeg demanant confirmació i retorna true o false segons si s'ha de continuar o no.
+             * Aquest missatge només es mostrarà en alguns navegadors (això depen dels navegadors i no de nosaltres).
+             *
+             * @returns {bool}
+             */
             discardChanges: function () {
-                return confirm("No s'han desat els canvis al document actual, vols descartar els canvis");
+                return confirm("No s'han desat els canvis al document actual, vols descartar els canvis?");
             },
+
+
+            /**
+             * Afegeix un document.
+             *
+             * @param content
+             */
+            addDocument: function(content) {
+                if (!this.contentCache[content.id]) {
+                    console.log("creant nou ContentCache per " + content.id);
+
+                    this.contentCache[content.id] = new DokuwikiContent({
+                        "id": content.id
+                    })
+                } else {
+                    console.log("ja existeix el ContentCache per " + content.id);
+                }
+
+                if (!this.getGlobalState().pages[content.id]) {
+                    this.getGlobalState().pages[content.id] = {};
+                }
+
+                this.getGlobalState().pages[content.id]["ns"] = content.ns;
+                this.getGlobalState().currentTabId = content.id;
+
+                this.setCurrentDocument(content.id);
+            },
+
+            /**
+             * Elimina el document amb la id passada com argument.
+             *
+             * @param {string} id
+             */
+            removeDocument: function(id) {
+                if (this.getGlobalState().pages[id]) {
+                    delete this.getGlobalState().pages[id];
+                }
+
+                if (this.contentCache[id]) {
+                    delete this.contentCache[id];
+                }
+            },
+
+            setCurrentDocument: function(id) {
+                this.getGlobalState().currentTabId = id;
+                this.eventManager.dispatchEvent("document_selected (from dispatcher)", {id: id});
+            }
+
 
 
         });

@@ -18,6 +18,7 @@ define([
          * @param {string} paneId - id del panell seleccionat
          * @param {Dispatcher} dispatcher
          * @private
+         * @deprecated
          */
         _addWatchToMetadataPane = function (node, documentId, paneId, dispatcher) {
 
@@ -60,7 +61,7 @@ define([
 
     return {
 
-        addWatchToMetadataPane: _addWatchToMetadataPane,
+        //addWatchToMetadataPane: _addWatchToMetadataPane,
 
         addChangeListenersToMetadataPane: _addChangeListenersToMetadataPane,
 
