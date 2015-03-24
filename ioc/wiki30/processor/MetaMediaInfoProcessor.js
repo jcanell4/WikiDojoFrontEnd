@@ -40,6 +40,7 @@ define([
                     selectedPane;
 
                 dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
+                
                 for (m in content.meta) {
                     if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
                         widgetMetaInfo = registry.byId(content.meta[m].id);

@@ -15,7 +15,7 @@ define([
 ], function (on, dom, event, domform, registry, listHeadings, runRender, runQuiz,
         Request, dwPageUi, domClass, dispatcher, att) {
 
-
+    var eventHandlers = new Array();
 
     var res = function (id, params) {
         //JSINFO.id=params.ns;
@@ -24,15 +24,19 @@ define([
         var domNode = dom.byId(id);
         //Es desconnecten els esdeveniments que havia connectats en aquest domNode.id
         /*dojo.forEach(connects[domNode.id], function (handle) {
-            dojo.disconnect(handle);
-        });*/
+         dojo.disconnect(handle);
+         });*/
         var requestMedia = new Request();
         requestMedia.urlBase = "/dokuwiki_30/lib/plugins/ajaxcommand/ajax.php?call=media";
         requestMedia.updateSectok = function (sk) {
             this.sectok = sk;
         };
 
-        on(domNode, 'li:click', function (e) {
+        eventHandlers.push(on(domNode, 'li:click', function (e) {
+            var unHandler;
+            while (unHandler = eventHandlers.pop()) {
+                unHandler.remove();
+            }
             //setCurrentElement(this);
             var nodea = dwPageUi.getElementWhithNodeId(this, "A");
             var elid = "";
@@ -48,9 +52,10 @@ define([
             query = 'id=' + elid + '&ns=' + elid + '&do=media';
             requestMedia.sendRequest(query);
             event.stop(e);
-        });
+        })
+                );
 
-        on(domNode, '[name="fileoptions"]:change', function (checked) {
+        eventHandlers.push(on(domNode, '[name="fileoptions"]:change', function (checked) {
             if (checked) {
                 if (this.id === "thumbs") {
                     dojo.query(".rows").addClass("thumbs");
@@ -61,9 +66,14 @@ define([
                     dojo.query(".thumbs").removeClass("thumbs");
                 }
             }
-        });
+        })
+        );
 
-        on(domNode, '[name="filesort"]:change', function (checked) {
+        eventHandlers.push(on(domNode, '[name="filesort"]:change', function (checked) {
+            var unHandler;
+            while (unHandler = eventHandlers.pop()) {
+                unHandler.remove();
+            }
             if (checked) {
                 var elid = dispatcher.getGlobalState().pages["media"]["ns"];
                 var elsort = "";
@@ -77,10 +87,16 @@ define([
                 query = 'id=' + elid + '&ns=' + elid + '&do=media' + '&sort=' + elsort;
                 requestMedia.sendRequest(query);
             }
-        });
+        })
+                );
 
         //File upload del Media Manager
-        on(domNode, '#dw__upload:submit', function (e) {
+        eventHandlers.push(on(domNode, '#dw__upload:submit', function (e) {
+            var unHandler;
+            while (unHandler = eventHandlers.pop()) {
+                unHandler.remove();
+            }
+            event.stop(e);
             var elid = dispatcher.getGlobalState().pages["media"]["ns"];
             var x = document.getElementById("upload__file");
             var file = x.files[0];
@@ -99,32 +115,14 @@ define([
                 query = 'id=' + elid + '&ns=' + elid + '&do=media' +
                         '&qqfile=' + file.name + '&tab_details=view' + '&tab_files=files' + '&isupload=upload'
                         + ow + mediaid;
-                alert("hola");
-
-                requestMedia.getPostData = function () {
-                    var x = document.getElementById("upload__file");
-                    var data = new FormData();
-                    var file = x.files[0];
-                    //var fileName  = x.files[0].name;
-                    //var fileSize  = x.files[0].size;
-                    //var fileType  = x.files[0].type;
-                    data.append("upload", file);
-                    //data.append("fileName", fileName);
-                    //data.append("fileSize", fileSize);
-                    //data.append("fileType", fileType);
-                    return data;
-                }
-                /*requestMedia.getPostData = function () {
-                 var x = document.getElementById("dw__upload");
-                 return formData = new FormData(x);
-                 }*/
-                requestMedia.sendRequest(query);
+                requestMedia.sendForm("dw__upload", query);
             } else {
                 alert("S'ha de seleccionar un fitxer");
             }
 
-            event.stop(e);
-        });
+
+        })
+                );
 
 
 
