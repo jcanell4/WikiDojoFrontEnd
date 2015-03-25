@@ -5,11 +5,12 @@ define([
     "ioc/gui/ContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/dokuwiki/guiSharedFunctions",
+    "ioc/gui/metaContentToolFactory",
     "dojo/dom-style",
     'dojo/query',
     'dojo/on',
     'dojo/dom'
-], function (declare, registry, ContentTool, AbstractResponseProcessor, guiSharedFunctions, domStyle, dojoQuery, on, dom) {
+], function (declare, registry, ContentTool, AbstractResponseProcessor, guiSharedFunctions, metaContentToolFactory, domStyle, dojoQuery, on, dom) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -45,7 +46,7 @@ define([
                     contentCache;
 
 
-                dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
+                //dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
 
 
                 for (m in content.meta) {
@@ -74,7 +75,8 @@ define([
 
                         } else {
                             console.log("ja existeix");
-                            alert("JA EXISTEIX!");
+                            //alert("JA EXISTEIX!");
+
                         }
                     }
                 }
@@ -96,29 +98,6 @@ define([
                 }
 
                 nodeMetaInfo.selectChild(selectedPane);
-
-                /*
-
-
-
-                 currentPaneId = dispatcher.getContentCache(content.id).getCurrentId("metadataPane");
-                 defaultSelected = content.defaultSelected;
-
-                 if (!currentPaneId && defaultSelected) {
-                 dispatcher.getContentCache(content.id).setCurrentId("metadataPane", defaultSelected)
-                 }
-
-                 selectedPane = this._setSelectedPane(content.meta, [currentPaneId, defaultSelected]);
-
-                 if (selectedPane) {
-                 nodeMetaInfo.selectChild(selectedPane);
-                 dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
-                 } else {
-                 nodeMetaInfo.selectChild(firstPane);
-                 dispatcher.getContentCache(content.id).setCurrentId("metadataPane", firstPane);
-                 }
-
-                 */
 
                 return 0;
             },
@@ -164,6 +143,24 @@ define([
                 };
             },
 
+
+            _newCreateContentTool: function (content, dispatcher, docId) {
+                var meta = this._convertMetaData(content),
+                    c = new ContentTool({
+                        id:         meta.id,
+                        title:      meta.title,
+                        data:       meta.data,
+                        dispatcher: dispatcher,
+                        docId:      docId,
+                        action:     'view'
+                    });
+
+                return new metaContentToolFactory.buildMetaContentTool(c);
+
+                //return declare.safeMixin(c, new MetaContentTool());
+
+            },
+
             /**
              * Crea un ContentTool apropiat i el retorna.
              *
@@ -174,6 +171,9 @@ define([
              * @private
              */
             _createContentTool: function (content, dispatcher, docId) {
+                return this._newCreateContentTool(content, dispatcher, docId) ;
+                /*
+
                 var meta = this._convertMetaData(content),
 
                     contentTool = new ContentTool({
@@ -182,6 +182,8 @@ define([
                         data:       meta.data,
                         dispatcher: dispatcher,
                         docId:      docId,
+                        action:     'view',
+
 
                         postLoad: function () {
                             var self = this;
@@ -190,7 +192,7 @@ define([
                                 var parent;
 
                                 if (data.id == self.docId) {
-                                    parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
+                                    parent = self._getContainer(); // Sí, s'ha de posar dues vegades
                                     parent.removeChild(self);
                                     self.destroyRecursive();
                                 }
@@ -201,18 +203,16 @@ define([
                                 var selectedPane,
                                     parent;
 
-                                if (data.id == self.docId && self.domNode) {
+                                if (data.id == self.docId && self.domNode && self.action == data.action) {
                                     self.showContent();
                                     selectedPane = self.dispatcher.getContentCache(self.docId).getCurrentId('metadataPane');
 
                                     console.log("selectedPane:", selectedPane, "id:",self.id);
                                     if (selectedPane == self.id) {
-                                        parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
+                                        parent = self._getContainer(); // Sí, s'ha de posar dues vegades
                                         parent.selectChild(self);
                                         console.log("child selected");
                                     }
-
-
                                 }
                             });
 
@@ -237,7 +237,12 @@ define([
                             })
 
 
+                        },
+
+                        _getContainer: function() {
+                            return this.getParent().getParent();
                         }
+
 
 
                     });
@@ -245,6 +250,7 @@ define([
                 dispatcher.contentCache[docId].putMetaData(contentTool);
 
                 return contentTool;
+                */
             },
 
             /**
@@ -258,6 +264,7 @@ define([
             _buildContentId: function (content) {
                 return content.id;
             }
+
 
 
         });

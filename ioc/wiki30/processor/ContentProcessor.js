@@ -52,6 +52,7 @@ define([
 
             },
 
+            /** @private */
             _loadTab: function (value, dispatcher, args) {
                 this.__newTab(value, dispatcher);
 
@@ -68,28 +69,7 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
-
                 dispatcher.addDocument(value);
-
-                /*
-
-                if (!dispatcher.contentCache[value.id]) {
-                    //alert("nou content cache");
-                    dispatcher.contentCache[value.id] = new DokuwikiContent({
-                        "id": value.id
-                    });
-                } else {
-                    //alert ("compte, ja existeix el content cache");
-
-
-                }
-                //         dispatcher.contentCache[value.id].setDocumentHTML(value);
-                if (!dispatcher.getGlobalState().pages[value.id]) {
-                    dispatcher.getGlobalState().pages[value.id] = {};
-                }
-                dispatcher.getGlobalState().pages[value.id]["ns"] = value.ns;
-                dispatcher.getGlobalState().currentTabId = value.id;
-                */
             },
 
             /**
@@ -125,6 +105,7 @@ define([
                 return 0;
             },
 
+            /** @private */
             _createContentTool: function (content, dispatcher) {
                 return new EditorContentTool({
                     id:         content.id,

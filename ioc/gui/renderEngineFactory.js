@@ -4,20 +4,14 @@
  *
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
-define([
-
-], function () {
+define([], function () {
 
     var renderEngines = {
+
             default: function (data) {
-
-
                 var i = typeof data === 'string' ? data : 'Tipus de dada no reconegut.';
-
                 console.log(i);
-
                 return i;
-
             }
         },
 

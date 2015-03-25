@@ -3,7 +3,6 @@ define([
         "ioc/gui/ContentTool",
         "ioc/gui/renderEngineFactory",
     ], function (declare, ContentTool, renderEngineFactory) {
-        //return declare([ContentPane, Request], {
 
         return declare([ContentTool], {
 
@@ -33,14 +32,6 @@ define([
                 if (this.data) {
                     this.render();
                 }
-            },
-
-            onLoad: function() {
-                //console.log("load RenderContentTool");
-            },
-
-            postLoad: function() {
-                //console.log("només ha de sortir aquest postload pel rendercontenttool");
             }
         });
     }

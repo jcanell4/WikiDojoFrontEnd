@@ -18,7 +18,8 @@ define([
             },
 
             dispatcher: null,
-            data:       null,
+
+            data: null,
 
 
             /**
@@ -42,14 +43,14 @@ define([
             /**
              * @private
              */
-            onShow:function () {
+            onShow: function () {
                 this.onSelect();
             },
 
             /**
              * @private
              */
-            onHide:function () {
+            onHide: function () {
                 this.onUnselect();
             },
 
@@ -96,8 +97,7 @@ define([
              * Chained after
              */
             onLoad: function () {
-                //TODO[Xavi] aquì s'han d'afegir els watchers i listeners comuns
-                console.log("Load ContentTool");
+                // aquì s'han d'afegir els watchers i listeners comuns
                 this.postLoad();
             },
 
@@ -108,27 +108,29 @@ define([
              */
             postLoad: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
-                //
-                alert("postload de addRequestTo");
-                console.log("postLoad ContentTool");
+                this.inherited(arguments);
             },
 
 
-            hideContent: function() {
+            hideContent: function () {
                 console.log("hide this: ", this.id);
                 domStyle.set(this.domNode.id + "_wrapper", {display: "none"});
-
+                this._getContainer().resize();
             },
 
-            showContent: function() {
+            showContent: function () {
                 console.log("show this: ", this.id);
                 domStyle.set(this.domNode.id + "_wrapper", {display: ""});
                 console.log("mostrat");
+                this._getContainer().resize();
             },
 
             onUnload: function () {
                 this.unregisterFromEvents();
-                console.log("onUnload del ContentTool");
+            },
+
+            _getContainer: function () {
+                return this.getParent().getParent();
             }
 
         });

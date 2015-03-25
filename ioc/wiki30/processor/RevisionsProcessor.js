@@ -4,9 +4,11 @@ define([
     "ioc/gui/RequestRenderContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/dokuwiki/guiSharedFunctions",
-    "ioc/gui/renderEngineFactory"
+    "ioc/gui/renderEngineFactory",
+    "ioc/gui/metaContentToolFactory",
 
-], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor, guiSharedFunctions, renderEngineFactory) {
+], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor, guiSharedFunctions,
+             renderEngineFactory, metaContentToolFactory) {
 
     // Definim el render engine que emprearem per formatar les revisions TODO[Xavi] això està aqui a mode de demostració, tots els renders habiutals els posarem al RenderEngineFactory.
     renderEngineFactory.addRenderEngine('revisions',
@@ -136,86 +138,31 @@ define([
             },
 
 
+
             /**
-             * Crea un ContentTool apropiat, l'afegeix al contentCahcie, i el retorna.
+             * Crea un MetaContentTool apropiat, l'afegeix al contentCahcie, i el retorna.
              *
              * @param {object} content
              * @param {Dispatcher} dispatcher
-             * @returns {ContentTool}
+             * @returns {MetaContentTool}
              * @param {string} docId
              * @private
              */
-            _createContentTool: function (content, dispatcher, docId) {
+            _createContentTool: function(content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
-                    contentTool = new RequestRenderContentTool({
+                    c = new RequestRenderContentTool({
                         id:         meta.id,
                         title:      meta.title,
                         data:       meta.data,
                         type:       meta.type,
                         dispatcher: dispatcher,
                         docId: docId,
-
-                        postLoad: function() {
-                            var self = this;
-                            this.registerToEvent("document_closed", function(data) {
-                                var parent;
-
-                                if (data.id == self.docId) {
-
-                                    parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
-                                    parent.removeChild(self);
-                                    self.destroyRecursive();
-
-                                }
-                            });
+                        action: 'view'});
 
 
-                            this.registerToEvent("document_selected", function (data) {
-                                var selectedPane,
-                                    parent;
-
-                                if (data.id == self.docId && self.domNode) {
-                                    self.showContent();
-                                    selectedPane = self.dispatcher.getContentCache(self.docId).getCurrentId('metadataPane');
-
-                                    if (selectedPane == self.id) {
-                                        parent = self.getParent().getParent(); // Sí, s'ha de posar dues vegades
-                                        parent.selectChild(self);
-                                    }
-
-
-                                }
-                            });
-
-
-                            this.registerToEvent("document_unselected", function(data) {
-                                if (data.id == self.docId && self.domNode) {
-                                    self.hideContent();
-                                }
-                            });
-
-                            this.watch("selected", function (name, oldValue, newValue) {
-                                var contentCache = this.dispatcher.getContentCache(this.docId);
-
-                                if (newValue) {
-                                    console.log("selected POSTLOAD:", this.id);
-
-                                    if (contentCache) {
-                                        contentCache.setCurrentId("metadataPane", this.id)
-                                    }
-
-                                }
-                            })
-
-
-                        }
-
-                    });
-
-                dispatcher.contentCache[docId].putMetaData(contentTool);
-
-                return contentTool;
+                return metaContentToolFactory.buildMetaContentTool(c);
             },
+
 
             /**
              * Contrueix la id a partir del content passat com argument. Ens assegurem que només hi ha un punt on ho hem

@@ -48,10 +48,6 @@ define([
 
                 // TODO[Xavi] fer que els widgets s'eliminin a si mateixos al detectar el document_closed!!
 
-
-
-
-
                 //elimina els widgets corresponents a les metaInfo de la pestanya
                 if (currentTabId === this.id) {
                     var nodeMetaInfo = registry.byId(this.dispatcher.metaInfoNodeId);
@@ -64,16 +60,7 @@ define([
                 this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
 
 
-                //this.unregisterFromEvents();
-
                 // TODO[Xavi] S'hauria de restaurar la visibilitat dels botons i els panells d'informació <-- Enregistrat als events?
-
-
-
-                ////actualitzar globalState
-                //delete this.dispatcher.getGlobalState().pages[this.id];
-                ////actualitzar contentCache
-                //delete this.dispatcher.contentCache[this.id];
 
                 this.dispatcher.removeDocument(this.id);
 
