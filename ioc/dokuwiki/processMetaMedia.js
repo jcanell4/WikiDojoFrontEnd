@@ -61,7 +61,9 @@ define([
                         elid = igualSplit[1];
                     }
                 }
-                query = 'id=' + elid + '&ns=' + elid + '&do=media';
+                var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
+                var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+                query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
                 requestMedia.sendRequest(query);
             }
 
@@ -88,7 +90,9 @@ define([
                     elid = igualSplit[1];
                 }
             }
-            query = 'id=' + elid + '&ns=' + elid + '&do=media';
+            var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
+            var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+            query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
             requestMedia.sendRequest(query);
 
         })
@@ -115,15 +119,9 @@ define([
             }
             if (checked) {
                 var elid = dispatcher.getGlobalState().pages["media"]["ns"];
-                var elsort = "";
-                if (this.id === "nom") {
-                    elsort = "name";
-
-                }
-                if (this.id === "data") {
-                    elsort = "date";
-                }
-                query = 'id=' + elid + '&ns=' + elid + '&do=media' + '&sort=' + elsort;
+                var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
+                var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+                query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
                 requestMedia.sendRequest(query);
             }
         })
@@ -151,7 +149,9 @@ define([
                         mediaid = "&mediaid=" + mediaid;
                     }
                 }
-                query = 'id=' + elid + '&ns=' + elid + '&do=media' +
+                var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
+                var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+                query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort+
                         '&qqfile=' + file.name + '&tab_details=view' + '&tab_files=files' + '&isupload=upload'
                         + ow + mediaid;
                 requestMedia.sendForm("dw__upload", query);
