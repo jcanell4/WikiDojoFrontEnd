@@ -11,9 +11,6 @@ define([
         postLoad: function () {
             this.registerToEvent("document_changed", lang.hitch(this, this._onDocumentChanged));
             this.registerToEvent("document_changes_reset", lang.hitch(this, this._onDocumentChangesReset));
-            this.registerToEvent("test", function () {
-                alert("triggered test");
-            });
         },
 
         /**
@@ -28,6 +25,11 @@ define([
             }
         },
 
+        /**
+         *
+         * @param {object} data - dades amb informació sobre l'esdeveniment
+         * @private
+         */
         _onDocumentChangesReset: function (data) {
             if (data.id == this.id) {
                 this.controlButton.containerNode.style.color = 'black';
@@ -46,45 +48,31 @@ define([
             if (confirmation) {
                 var currentTabId = this.dispatcher.getGlobalState().currentTabId;
 
-                // TODO[Xavi] fer que els widgets s'eliminin a si mateixos al detectar el document_closed!!
-
-                //elimina els widgets corresponents a les metaInfo de la pestanya
                 if (currentTabId === this.id) {
-                    var nodeMetaInfo = registry.byId(this.dispatcher.metaInfoNodeId);
                     this.dispatcher.getGlobalState().currentTabId = null;
-
-                    //nodeMetaInfo.removeAllWidgets(this.id);
-
                 }
 
                 this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
 
-
                 // TODO[Xavi] S'hauria de restaurar la visibilitat dels botons i els panells d'informació <-- Enregistrat als events?
 
                 this.dispatcher.removeDocument(this.id);
-
                 this.triggerEvent('document_closed', {id: this.id});
             }
 
-            console.log("onClose finalitzat");
             return confirmation;
-
-        }
-
-        ,
+        },
 
         onUnload: function () {
             this.unregisterFromEvents();
-            console.log("onUnload del EditorContentTool");
         },
 
         onSelect: function () { // onShow()
-            this.triggerEvent("document_selected", {id: this.id, extra: "EditorContentTool"});
+            this.triggerEvent("document_selected", {id: this.id});
         },
 
         onUnselect: function () { // onHide()
-            this.triggerEvent("document_unselected", {id: this.id, extra: "EditorContentTool"});
+            this.triggerEvent("document_unselected", {id: this.id});
         }
 
 

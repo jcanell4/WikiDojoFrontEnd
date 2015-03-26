@@ -1,7 +1,6 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-
 ], function (declare, lang) {
 
     /**
@@ -11,6 +10,7 @@ define([
      */
     var MetaContentTool = declare(null, {
 
+
         /** @override */
         postLoad: function () {
 
@@ -18,34 +18,18 @@ define([
             this.registerToEvent("document_selected", lang.hitch(this, this._onDocumentSelected));
             this.registerToEvent("document_unselected", lang.hitch(this, this._onDocumentUnselected));
 
-
             this.watch("selected", function (name, oldValue, newValue) {
                 var contentCache = this.dispatcher.getContentCache(this.docId);
-
-                if (newValue) {
-                    console.log("selected POSTLOAD:", this.id);
-
-                    if (contentCache) {
-                        contentCache.setCurrentId("metadataPane", this.id)
-                    }
-
+                if (contentCache) {
+                    contentCache.setCurrentId("metadataPane", this.id)
                 }
             })
-
-
         },
 
         /** @private */
         _onDocumentClosed: function (data) {
-            var parent;
-
             if (data.id == this.docId) {
-
-                parent = this._getContainer();
-                parent.removeChild(this);
-                this.destroyRecursive();
-                console.log(this);
-
+                this.removeContentTool();
             }
         },
 
@@ -57,21 +41,14 @@ define([
 
             if (data.id == this.docId && this.domNode) {
 
-                if (this.action == data.action) {
-                    this.showContent();
-                    selectedPane = this.dispatcher.getContentCache(this.docId).getCurrentId('metadataPane');
-
-                    if (selectedPane == this.id) {
-                        parent = this._getContainer();
-                        parent.selectChild(this);
-                        console.log("Selected child: ", parent.get('selectedChildWidget'));
-                    }
+                this.showContent();
+                selectedPane = this.dispatcher.getContentCache(this.docId).getCurrentId('metadataPane');
 
 
-                } else {
-                    //this.hideContent(); // TODO[Xavi] Per determinar exactament com cal mostrar-los
+                if (selectedPane == this.id) {
+                    parent = this.getContainer();
+                    parent.selectChild(this);
                 }
-
             }
         },
 
@@ -81,10 +58,7 @@ define([
                 this.hideContent();
             }
         }
-
-
     });
-
 
     return {
         buildMetaContentTool: function (contentTool) {

@@ -3,11 +3,10 @@ define([
     "dijit/registry",
     "ioc/gui/RequestRenderContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "ioc/dokuwiki/guiSharedFunctions",
     "ioc/gui/renderEngineFactory",
     "ioc/gui/metaContentToolFactory",
 
-], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor, guiSharedFunctions,
+], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor,
              renderEngineFactory, metaContentToolFactory) {
 
     // Definim el render engine que emprearem per formatar les revisions TODO[Xavi] això està aqui a mode de demostració, tots els renders habiutals els posarem al RenderEngineFactory.
@@ -35,7 +34,7 @@ define([
             return html;
         });
 
-    var ret = declare("ioc.wiki30.processor.RevisionsProcessor", [AbstractResponseProcessor],
+    return declare("ioc.wiki30.processor.RevisionsProcessor", [AbstractResponseProcessor],
         /**
          * @class RevisionsProcessor
          * @extends AbstractResponseProcessor
@@ -65,42 +64,27 @@ define([
                     nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
                     widgetMetaInfo,
                     cp,
-                    currentPaneId,
-                    defaultSelected,
-                    selectedPane;
+                    selectedPane,
+                    contentCache = dispatcher.getContentCache(content.id);
 
-                if (widgetCentral && widgetCentral.id === content.id) { //esta metainfo pertenece a la pestaña activa
+                if (widgetCentral && widgetCentral.id === content.id) { //esta metainfo pertenece a la pestaña activa // TODO[Xavi] comprovar si fa falta aquesta comprovació, la adició del element s'ha de fer sempre, el que s'ha de controlar es si es mostra o no (aixó ha de ser igual al MetaInforProcessor, i ho podem controlar al addChild() del ContentToolContainer
 
                     widgetMetaInfo = registry.byId(this._buildContentId(content));
 
                     if (!widgetMetaInfo) {
                         cp = this._createContentTool(content, dispatcher, content.id);
-
-                        // TODO[Xavi] extreure a un mètode la adició al contenidor <-- COMPTE, aquest bloc està completament duplicat a MetaInfoProcessor
-                        nodeMetaInfo.addChild(cp);
-                        nodeMetaInfo.resize();
-
-                        //guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
-
-                        //guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
+                        this.addContentToolToContainer(cp, nodeMetaInfo);
                     }
                 }
 
-                currentPaneId = dispatcher.getContentCache(content.id).getCurrentId("metadataPane");
-                defaultSelected = content.defaultSelected;
+                selectedPane = contentCache.getCurrentId("metadataPane");
 
-                if (!currentPaneId && defaultSelected) {
-                    dispatcher.getContentCache(content.id).setCurrentId("metadataPane", defaultSelected)
+                if (!selectedPane) {
+                    selectedPane = cp.id;
                 }
 
-                if (defaultSelected) {
-                    selectedPane = paneId;
-                }
-
-                if (selectedPane) {
-                    nodeMetaInfo.selectChild(selectedPane);
-                    dispatcher.getContentCache(content.id).setCurrentId("metadataPane", selectedPane);
-                }
+                nodeMetaInfo.selectChild(selectedPane);
+                contentCache.setCurrentId("metadataPane", selectedPane);
 
                 return 0;
             },
@@ -138,7 +122,6 @@ define([
             },
 
 
-
             /**
              * Crea un MetaContentTool apropiat, l'afegeix al contentCahcie, i el retorna.
              *
@@ -148,7 +131,7 @@ define([
              * @param {string} docId
              * @private
              */
-            _createContentTool: function(content, dispatcher, docId) {
+            _createContentTool: function (content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
                     c = new RequestRenderContentTool({
                         id:         meta.id,
@@ -156,13 +139,13 @@ define([
                         data:       meta.data,
                         type:       meta.type,
                         dispatcher: dispatcher,
-                        docId: docId,
-                        action: 'view'});
+                        docId:      docId,
+                        action:     'view'
+                    });
 
 
                 return metaContentToolFactory.buildMetaContentTool(c);
             },
-
 
             /**
              * Contrueix la id a partir del content passat com argument. Ens assegurem que només hi ha un punt on ho hem
@@ -172,12 +155,17 @@ define([
              * @returns {string}
              * @private
              */
-            _buildContentId: function (content) {
+            _buildContentId:           function (content) {
                 return content.id + '_revisions';
+            },
+
+            // TODO[Xavi] Això haurà de anar al ContainerContentTool <-- dubplicat a MetaInfoProcessor
+            addContentToolToContainer: function (contentTool, container) {
+                container.addChild(contentTool);
+                container.resize();
             }
 
 
         });
-    return ret;
 });
 

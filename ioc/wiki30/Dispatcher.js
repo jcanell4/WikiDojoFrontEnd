@@ -233,30 +233,36 @@ define([
                 return this.hideAllChildrenWidgets(pwidget);
 
 
-
-
                 /*
-                var children;
-                var widget;
-                if (lang.isString(pwidget)) {
-                    widget = registry.byId(pwidget);
-                } else {
-                    widget = pwidget;
-                }
-                if (widget.hasChildren()) {
-                    children = widget.getChildren();
-                    for (var i = 0; i < children.length; i++) {
-                        if (children[i].unregisterFromEvents) {
-                            children[i].unregisterFromEvents();
-                        }
-                    }
-                    widget.destroyDescendants(false);
-                }
-                */
+                 var children;
+                 var widget;
+                 if (lang.isString(pwidget)) {
+                 widget = registry.byId(pwidget);
+                 } else {
+                 widget = pwidget;
+                 }
+                 if (widget.hasChildren()) {
+                 children = widget.getChildren();
+                 for (var i = 0; i < children.length; i++) {
+                 if (children[i].unregisterFromEvents) {
+                 children[i].unregisterFromEvents();
+                 }
+                 }
+                 widget.destroyDescendants(false);
+                 }
+                 */
 
             },
 
 
+            /**
+             * TODO[Xavi] Amb els canvis que he fet hem sembla que això ja no cal, en tot cas s'hauria de moure al
+             * contenidor
+             *
+             * @param command
+             * @param dispatcher
+             * @deprecated
+             */
             hideAllChildrenWidgets: function (pwidget) {
 
                 var widget;
@@ -268,20 +274,27 @@ define([
 
                 var children = widget.getChildren();
 
-                console.log(children);
                 for (var child in children) {
                     children[child].hideContent();
 
                 }
-/*
+
 
                 if (widget.hasChildren()) {
                     widget.destroyDescendants(false);
                 }
-*/
+
 
             },
 
+            /**
+             * TODO[Xavi] Amb els canvis que he fet hem sembla que això ja no cal, en tot cas s'hauria de moure al
+             * contenidor
+             *
+             * @param command
+             * @param dispatcher
+             * @deprecated
+             */
             removeWidgetChild: function (command, dispatcher) {
                 var parent;
                 var child;
@@ -482,15 +495,12 @@ define([
              *
              * @param content
              */
-            addDocument: function(content) {
+            addDocument: function (content) {
                 if (!this.contentCache[content.id]) {
-                    console.log("creant nou ContentCache per " + content.id);
 
                     this.contentCache[content.id] = new DokuwikiContent({
                         "id": content.id
                     })
-                } else {
-                    console.log("ja existeix el ContentCache per " + content.id);
                 }
 
                 if (!this.getGlobalState().pages[content.id]) {
@@ -508,7 +518,7 @@ define([
              *
              * @param {string} id
              */
-            removeDocument: function(id) {
+            removeDocument: function (id) {
                 if (this.getGlobalState().pages[id]) {
                     delete this.getGlobalState().pages[id];
                 }
@@ -518,16 +528,10 @@ define([
                 }
             },
 
-            setCurrentDocument: function(id) {
-                var action = this.getGlobalState().getContentAction(id);
+            setCurrentDocument: function (id) {
                 this.getGlobalState().currentTabId = id;
-
-                console.log("action rebuda al dispatcher: ", action);
-
-                this.eventManager.dispatchEvent("document_selected", {id: id, action: action});
+                this.eventManager.dispatchEvent("document_selected", {id: id});
             }
-
-
 
         });
     return ret;

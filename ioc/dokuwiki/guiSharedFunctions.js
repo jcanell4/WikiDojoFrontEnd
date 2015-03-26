@@ -63,7 +63,7 @@ define([
 
         //addWatchToMetadataPane: _addWatchToMetadataPane,
 
-        addChangeListenersToMetadataPane: _addChangeListenersToMetadataPane,
+        //addChangeListenersToMetadataPane: _addChangeListenersToMetadataPane,
 
     }
 });

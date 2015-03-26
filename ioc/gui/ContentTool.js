@@ -113,24 +113,28 @@ define([
 
 
             hideContent: function () {
-                console.log("hide this: ", this.id);
                 domStyle.set(this.domNode.id + "_wrapper", {display: "none"});
-                this._getContainer().resize();
+                this.getContainer().resize();
             },
 
             showContent: function () {
-                console.log("show this: ", this.id);
                 domStyle.set(this.domNode.id + "_wrapper", {display: ""});
-                console.log("mostrat");
-                this._getContainer().resize();
+                this.getContainer().resize();
             },
 
             onUnload: function () {
                 this.unregisterFromEvents();
             },
 
-            _getContainer: function () {
+
+            getContainer: function () {
                 return this.getParent().getParent();
+            },
+
+            removeContentTool: function () {
+                var parent = this.getContainer();
+                parent.removeChild(this);
+                this.destroyRecursive();
             }
 
         });

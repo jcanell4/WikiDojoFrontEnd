@@ -45,9 +45,6 @@ define([
                     this._loadTab(value, dispatcher, arguments);
                 }
 
-                console.log("retornant codi ");
-
-
                 return confirmation ? 0 : 100;
 
             },
@@ -90,11 +87,10 @@ define([
                     cp = this._createContentTool(content, dispatcher);
 
                     tc.addChild(cp);
+
                     tc.selectChild(cp);
 
                 } else {
-
-
                     tc.selectChild(widget);
                     var node = dom.byId(content.id);
                     while (node.firstChild) {

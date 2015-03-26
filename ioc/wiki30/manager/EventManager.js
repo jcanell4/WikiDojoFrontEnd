@@ -1,7 +1,6 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/array"
-
 ], function (declare, array) {
     return declare(null,
         /**
@@ -11,7 +10,7 @@ define([
          * @author Xavier Garcia <xaviergaro.dev@gmail.com>
          */
         {
-            events: {}, // string: function[];
+            events: {}, // {string: function[]};
 
             observers: [],
 
@@ -45,18 +44,15 @@ define([
             dispatchEvent: function (event, data) {
                 var observers = this.events[event];
 
-                console.log("llençant esdeveniment:", event, data);
+                //console.log("llençant esdeveniment:", event, data);
 
                 if (observers) {
-
                     array.forEach(observers, function (callback) {
-
                         if (callback) {
                             callback(data);
                         }
                     });
                 }
-
             },
 
             /**
@@ -68,11 +64,10 @@ define([
             removeObserver: function (observerId) {
                 var subscriber = this.observers[observerId];
 
-
                 this.events[subscriber.event][subscriber.index] = null;
                 this.observers[observerId] = null;
 
-                console.log("Eliminat observador: ", observerId);
+                //console.log("Eliminat observador: ", observerId);
             }
 
         });

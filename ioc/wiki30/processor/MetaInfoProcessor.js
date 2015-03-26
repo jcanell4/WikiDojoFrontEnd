@@ -1,16 +1,10 @@
 define([
     "dojo/_base/declare",
     "dijit/registry",
-    //"dijit/layout/ContentPane",
     "ioc/gui/ContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "ioc/dokuwiki/guiSharedFunctions",
-    "ioc/gui/metaContentToolFactory",
-    "dojo/dom-style",
-    'dojo/query',
-    'dojo/on',
-    'dojo/dom'
-], function (declare, registry, ContentTool, AbstractResponseProcessor, guiSharedFunctions, metaContentToolFactory, domStyle, dojoQuery, on, dom) {
+    "ioc/gui/metaContentToolFactory"
+], function (declare, registry, ContentTool, AbstractResponseProcessor, metaContentToolFactory) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -43,10 +37,10 @@ define([
                     selectedPane,
                     firstPane,
                     currentMetaContent,
-                    contentCache;
+                    contentCache = dispatcher.getContentCache(content.id);
 
-
-                //dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
+                this.clearContainer(nodeMetaInfo, content.id); // TODO[Xavi] Això haurà de anar al ContainerContentTool
+                contentCache.setCurrentId("metadataPane", null);
 
 
                 for (m in content.meta) {
@@ -57,10 +51,7 @@ define([
                         if (!registry.byId(currentMetaContent.id)) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
 
                             cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
-
-                            // TODO[Xavi] extreure a un mètode la adició al contenidor
-                            nodeMetaInfo.addChild(cp);
-                            nodeMetaInfo.resize();
+                            this.addContentToolToContainer(cp, nodeMetaInfo);
 
                             if (!firstPane) {
                                 firstPane = cp.id;
@@ -70,34 +61,26 @@ define([
                                 defaultSelected = cp.id;
                             }
 
-                            //guiSharedFunctions.addWatchToMetadataPane(cp, content.id, cp.id, dispatcher);
-                            guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
-
                         } else {
                             console.log("ja existeix");
-                            //alert("JA EXISTEIX!");
-
+                            alert("JA EXISTEIX -> comprovar quin es aquest cas i perquè"); // TODO[Xavi] Si no es produeix mai -> esborrar: moure la
                         }
                     }
                 }
 
 
-                contentCache = dispatcher.getContentCache(content.id);
                 selectedPane = contentCache.getCurrentId("metadataPane");
 
-                if (selectedPane) {
-                    // Es el panell que hem seleccionat abans
-
-                } else if (defaultSelected) {
-                    // està marcat per defecte
+                if (!selectedPane && defaultSelected) {
                     selectedPane = defaultSelected;
-                } else {
-                    // No hi ha cap marcat, establim el primer com a marcat
+                } else if (!selectedPane) {
                     selectedPane = firstPane;
 
                 }
 
                 nodeMetaInfo.selectChild(selectedPane);
+                contentCache.setCurrentId("metadataPane", selectedPane);
+
 
                 return 0;
             },
@@ -116,35 +99,26 @@ define([
 
             },
 
-            /**
-             * Comprova si existeix algun dels ids passats com arguments a les metadata i retorna la primera
-             * coincidencia. L'ordre en que es passen els ids es el mateix en el que es comprovaran, així que s'han de
-             * passar en l'ordre d'importancia.
-             *
-             * @param {Object[]} metadata - Hash amb totes les metadades passades
-             * @param {string[]} ids - array amb les ids a comprovar per ordre
-             * @private
-             */
-            //_setSelectedPane: function (metadata, ids) {
-            //    for (var i = 0, len = metadata.length; i < len; i++) {
-            //        for (var j = 0; j < ids.length; j++) {
-            //            if (metadata[i]['id'] == ids[j]) {
-            //                return ids[j]
-            //            }
-            //        }
-            //    }
-            //},
-
             _convertMetaData: function (content) {
                 return {
-                    id:    this._buildContentId(content), // El id corresponent a la metadata s'estableix al DokuModelAdapter
-                    data:  content.content || ' ',
-                    title: content.title
+                    id:     this._buildContentId(content), // El id corresponent a la metadata s'estableix al DokuModelAdapter
+                    data:   content.content || ' ',
+                    title:  content.title,
+                    action: content.action
                 };
             },
 
 
-            _newCreateContentTool: function (content, dispatcher, docId) {
+            /**
+             * Crea un ContentTool apropiat i el retorna.
+             *
+             * @param {object} content
+             * @param {Dispatcher} dispatcher
+             * @returns {MetaContentTool}
+             * @param {string} docId
+             * @private
+             */
+            _createContentTool: function (content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
                     c = new ContentTool({
                         id:         meta.id,
@@ -152,105 +126,11 @@ define([
                         data:       meta.data,
                         dispatcher: dispatcher,
                         docId:      docId,
-                        action:     'view'
+                        action:     meta.action
                     });
 
-                return new metaContentToolFactory.buildMetaContentTool(c);
+                return metaContentToolFactory.buildMetaContentTool(c);
 
-                //return declare.safeMixin(c, new MetaContentTool());
-
-            },
-
-            /**
-             * Crea un ContentTool apropiat i el retorna.
-             *
-             * @param {object} content
-             * @param {Dispatcher} dispatcher
-             * @returns {ContentTool}
-             * @param {string} docId
-             * @private
-             */
-            _createContentTool: function (content, dispatcher, docId) {
-                return this._newCreateContentTool(content, dispatcher, docId) ;
-                /*
-
-                var meta = this._convertMetaData(content),
-
-                    contentTool = new ContentTool({
-                        id:         meta.id,
-                        title:      meta.title,
-                        data:       meta.data,
-                        dispatcher: dispatcher,
-                        docId:      docId,
-                        action:     'view',
-
-
-                        postLoad: function () {
-                            var self = this;
-
-                            this.registerToEvent("document_closed", function (data) {
-                                var parent;
-
-                                if (data.id == self.docId) {
-                                    parent = self._getContainer(); // Sí, s'ha de posar dues vegades
-                                    parent.removeChild(self);
-                                    self.destroyRecursive();
-                                }
-                            });
-
-
-                            this.registerToEvent("document_selected", function (data) {
-                                var selectedPane,
-                                    parent;
-
-                                if (data.id == self.docId && self.domNode && self.action == data.action) {
-                                    self.showContent();
-                                    selectedPane = self.dispatcher.getContentCache(self.docId).getCurrentId('metadataPane');
-
-                                    console.log("selectedPane:", selectedPane, "id:",self.id);
-                                    if (selectedPane == self.id) {
-                                        parent = self._getContainer(); // Sí, s'ha de posar dues vegades
-                                        parent.selectChild(self);
-                                        console.log("child selected");
-                                    }
-                                }
-                            });
-
-
-                            this.registerToEvent("document_unselected", function (data) {
-                                if (data.id == self.docId && self.domNode) {
-                                    self.hideContent();
-                                }
-                            });
-
-                            this.watch("selected", function (name, oldValue, newValue) {
-                                var contentCache = this.dispatcher.getContentCache(this.docId);
-
-                                if (newValue) {
-                                    console.log("selected POSTLOAD:", this.id);
-
-                                    if (contentCache) {
-                                        contentCache.setCurrentId("metadataPane", this.id)
-                                    }
-
-                                }
-                            })
-
-
-                        },
-
-                        _getContainer: function() {
-                            return this.getParent().getParent();
-                        }
-
-
-
-                    });
-
-                dispatcher.contentCache[docId].putMetaData(contentTool);
-
-                return contentTool;
-                */
             },
 
             /**
@@ -261,10 +141,28 @@ define([
              * @returns {string}
              * @private
              */
-            _buildContentId: function (content) {
+            _buildContentId:           function (content) {
                 return content.id;
-            }
+            },
 
+            // TODO[Xavi] Això haurà de anar al ContainerContentTool
+            clearContainer:            function (container, docId) {
+                var children = container.getChildren();
+
+                container.selectedChildWidget = null;
+
+                for (var child in children) {
+                    if (children[child].docId == docId) {
+                        children[child].removeContentTool();
+                    }
+                }
+            },
+
+            // TODO[Xavi] Això haurà de anar al ContainerContentTool
+            addContentToolToContainer: function (contentTool, container) {
+                container.addChild(contentTool);
+                container.resize();
+            }
 
 
         });
