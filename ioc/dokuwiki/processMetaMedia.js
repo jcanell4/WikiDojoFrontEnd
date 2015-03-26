@@ -163,7 +163,25 @@ define([
         })
                 );
 
+        //Search del Media Manager
+        eventHandlers.push(on(domNode, '#dw__mediasearch:submit', function (e) {
+            var unHandler;
+            while (unHandler = eventHandlers.pop()) {
+                unHandler.remove();
+            }
+            event.stop(e);
+            var elid = dispatcher.getGlobalState().pages["media"]["ns"];
+            var q = document.getElementById("mediaSearchq").getAttribute("value");
+            var elid = dispatcher.getGlobalState().pages["media"]["ns"];
+            var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
+            var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+            query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
+            query = query + '&tab_files=search&mediado=searchlist&q='+q;
+            requestMedia.sendRequest(query);
 
+
+        })
+                );
 
 
     };
