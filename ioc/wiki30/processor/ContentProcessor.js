@@ -4,14 +4,9 @@ define([
     "dijit/registry",            //search widgets by id
     "dojo/dom",
     "dojo/dom-construct",
-    //"dijit/layout/ContentPane",  //per a la funció newTab
-    //"ioc/gui/ContentTool",
     "ioc/gui/EditorContentTool",
-    "ioc/wiki30/DokuwikiContent",
 
-], function (declare, StateUpdaterProcessor, registry, dom, domConstruct,
-             //ContentTool,
-             EditorContentTool, DokuwikiContent) {
+], function (declare, StateUpdaterProcessor, registry, dom, domConstruct, EditorContentTool) {
 
     var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor],
         /**

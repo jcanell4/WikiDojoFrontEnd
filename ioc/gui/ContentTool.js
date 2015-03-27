@@ -14,7 +14,8 @@ define([
          */
         {
             "-chains-": {
-                onLoad: "before"
+                onLoad:   "before",
+                onUnload: "before"
             },
 
             dispatcher: null,
@@ -94,7 +95,7 @@ define([
             },
 
             /**
-             * Chained after
+             * Chained before
              */
             onLoad: function () {
                 // aquì s'han d'afegir els watchers i listeners comuns
@@ -105,6 +106,8 @@ define([
              * Dins d'aquest mètode s'ha d'afegir tot el codi que volguem assegurar-nos que s'executa quan el
              * ContentTool ha estat afegit efectivament a la pàgina. Es el lloc indicat per afegir els watchers,
              * listeners i enregistrament a esdeveniments.
+             *
+             * @protected
              */
             postLoad: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
@@ -122,6 +125,9 @@ define([
                 this.getContainer().resize();
             },
 
+            /**
+             * Chained before
+             */
             onUnload: function () {
                 this.unregisterFromEvents();
             },
@@ -133,6 +139,11 @@ define([
 
             removeContentTool: function () {
                 var parent = this.getContainer();
+
+                if (parent.selectedChildWidget && parent.selectedChildWidget.id == this.id) {
+                    parent.selectedChildWidget = null;
+                }
+
                 parent.removeChild(this);
                 this.destroyRecursive();
             }

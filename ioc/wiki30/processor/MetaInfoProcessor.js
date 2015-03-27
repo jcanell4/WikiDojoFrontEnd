@@ -3,8 +3,8 @@ define([
     "dijit/registry",
     "ioc/gui/ContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "ioc/gui/metaContentToolFactory"
-], function (declare, registry, ContentTool, AbstractResponseProcessor, metaContentToolFactory) {
+    "ioc/gui/metaContentToolDecorator"
+], function (declare, registry, ContentTool, AbstractResponseProcessor, metaContentToolDecorator) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -26,7 +26,7 @@ define([
              * @param {{id: string, meta:Content[]}} content
              * @param {Dispatcher} dispatcher
              * @returns {number} sempre es 0
-             * @private
+             * @protected
              */
             _processMetaInfo: function (content, dispatcher) {
                 var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
@@ -92,13 +92,14 @@ define([
              *
              * @param {Dispatcher} dispatcher
              * @param {{id: string, meta:Content[]}} value
-             * @private
+             * @protected
              */
             _processContentCache: function (dispatcher, value) {
                 // TODO[Xavi] Actulament no es fa servir per a res
 
             },
 
+            /** @private */
             _convertMetaData: function (content) {
                 return {
                     id:     this._buildContentId(content), // El id corresponent a la metadata s'estableix al DokuModelAdapter
@@ -116,7 +117,7 @@ define([
              * @param {Dispatcher} dispatcher
              * @returns {MetaContentTool}
              * @param {string} docId
-             * @private
+             * @protected
              */
             _createContentTool: function (content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
@@ -129,7 +130,7 @@ define([
                         action:     meta.action
                     });
 
-                return metaContentToolFactory.buildMetaContentTool(c);
+                return metaContentToolDecorator.decorate(c);
 
             },
 
@@ -139,7 +140,7 @@ define([
              *
              * @param content
              * @returns {string}
-             * @private
+             * @protected
              */
             _buildContentId:           function (content) {
                 return content.id;
@@ -149,7 +150,6 @@ define([
             clearContainer:            function (container, docId) {
                 var children = container.getChildren();
 
-                container.selectedChildWidget = null;
 
                 for (var child in children) {
                     if (children[child].docId == docId) {

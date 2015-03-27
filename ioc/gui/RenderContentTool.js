@@ -14,7 +14,7 @@ define([
 
             /**
              *
-             * @private
+             * @protected
              */
             render: function () {
                 this.set('content', this.renderEngine(this.data));

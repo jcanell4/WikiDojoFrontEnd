@@ -4,10 +4,10 @@ define([
     "ioc/gui/RequestRenderContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/gui/renderEngineFactory",
-    "ioc/gui/metaContentToolFactory",
+    "ioc/gui/metaContentToolDecorator",
 
 ], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor,
-             renderEngineFactory, metaContentToolFactory) {
+             renderEngineFactory, metaContentToolDecorator) {
 
     // Definim el render engine que emprearem per formatar les revisions TODO[Xavi] això està aqui a mode de demostració, tots els renders habiutals els posarem al RenderEngineFactory.
     renderEngineFactory.addRenderEngine('revisions',
@@ -57,7 +57,7 @@ define([
              * @param {{docId: string, meta:Content[]}} content
              * @param {Dispatcher} dispatcher
              * @returns {number} sempre es 0
-             * @private
+             * @protected
              */
             _processMetaInfo: function (content, dispatcher) {
                 var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
@@ -96,7 +96,7 @@ define([
              *
              * @param {Dispatcher} dispatcher
              * @param {{docId: string, meta:Content[]}} value
-             * @private
+             * @protected
              */
             _processContentCache: function (dispatcher, value) {
 
@@ -108,7 +108,7 @@ define([
              *
              * @param content
              * @returns {{id: string, data: {object}, title: string, type: string}}
-             * @private
+             * @protected
              */
             _convertMetaData: function (content) {
                 var count = Object.keys(content.revisions).length;
@@ -129,7 +129,7 @@ define([
              * @param {Dispatcher} dispatcher
              * @returns {MetaContentTool}
              * @param {string} docId
-             * @private
+             * @protected
              */
             _createContentTool: function (content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
@@ -144,7 +144,7 @@ define([
                     });
 
 
-                return metaContentToolFactory.buildMetaContentTool(c);
+                return metaContentToolDecorator.decorate(c);
             },
 
             /**
@@ -153,7 +153,7 @@ define([
              *
              * @param {object} content
              * @returns {string}
-             * @private
+             * @protected
              */
             _buildContentId:           function (content) {
                 return content.id + '_revisions';

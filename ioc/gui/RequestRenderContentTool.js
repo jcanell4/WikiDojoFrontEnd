@@ -12,13 +12,14 @@ define([
 
         /**
          *
-         * @private
+         * @protected
          */
         render: function () {
             this.set('content', this.renderEngine(this.data))
             this.replaceLinksWithRequest();
         },
 
+        /** @private */
         replaceLinksWithRequest: function () {
             var q = null;
             var tab = this;

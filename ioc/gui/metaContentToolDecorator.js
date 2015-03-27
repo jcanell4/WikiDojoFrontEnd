@@ -11,7 +11,10 @@ define([
     var MetaContentTool = declare(null, {
 
 
-        /** @override */
+        /**
+         * @override
+         * @protected
+         */
         postLoad: function () {
 
             this.registerToEvent("document_closed", lang.hitch(this, this._onDocumentClosed));
@@ -61,7 +64,7 @@ define([
     });
 
     return {
-        buildMetaContentTool: function (contentTool) {
+        decorate: function (contentTool) {
             return declare.safeMixin(contentTool, new MetaContentTool);
         }
     }

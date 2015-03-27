@@ -61,13 +61,13 @@ define([
              *
              * @param {int} observerId - Identificador del event observat
              */
-            removeObserver: function (observerId) {
+            unregister: function (observerId) {
                 var subscriber = this.observers[observerId];
 
                 this.events[subscriber.event][subscriber.index] = null;
                 this.observers[observerId] = null;
 
-                //console.log("Eliminat observador: ", observerId);
+                console.log("Eliminat observador: ", observerId);
             }
 
         });

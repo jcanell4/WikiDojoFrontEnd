@@ -42,7 +42,7 @@ define([
          */
         unregisterFromEvents: function () {
             for (var i = 0, len = this.registeredToEvents.length; i < len; i++) {
-                this.eventManager.removeObserver(this.registeredToEvents[i]);
+                this.eventManager.unregister(this.registeredToEvents[i]);
             }
 
             this.registeredToEvents = [];

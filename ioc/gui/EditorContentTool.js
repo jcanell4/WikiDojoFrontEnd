@@ -63,10 +63,6 @@ define([
             return confirmation;
         },
 
-        onUnload: function () {
-            this.unregisterFromEvents();
-        },
-
         onSelect: function () { // onShow()
             this.triggerEvent("document_selected", {id: this.id});
         },
