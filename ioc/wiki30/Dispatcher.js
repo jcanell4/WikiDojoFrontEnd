@@ -39,7 +39,7 @@ define([
      */
 
      /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
-    var ret = declare("ioc.wiki30.Dispatcher", [],
+    var ret = declare(null,
         /**
          * @class Dispatcher
          */
