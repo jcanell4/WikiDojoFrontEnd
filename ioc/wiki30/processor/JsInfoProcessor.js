@@ -18,9 +18,22 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //NO FUNCIONA -> this.inherited(arguments);
                 this._processJsInfo(value, dispatcher);
-                
+                this.inherited(arguments);
+            },
+
+            /**
+             * Estableix el token de seguretat al GlobalState
+             *
+             * @param {ioc.wiki30.Dispatcher} dispatcher
+             * @param {string} value
+             */
+            updateState: function (dispatcher, value) {
+                var permission = dispatcher.getGlobalState().permissions;
+                if (Object.keys(value).length>0) {
+                   permission.isadmin = value['isadmin'];
+                   permission.ismanager = value['ismanager'];
+                }
             },
 
             /**
@@ -31,8 +44,10 @@ define([
              */
             _processJsInfo: function (result, dispatcher) {
                 var permission = dispatcher.getGlobalState().permissions;
-                permission.isadmin = result.value.permission['isadmin'];
-                permission.ismanager = result.value.permission['ismanager'];
+                if (Object.keys(result).length>0) {
+                   permission.isadmin = result['isadmin'];
+                   permission.ismanager = result['ismanager'];
+                }
              }
         });
     return ret;
