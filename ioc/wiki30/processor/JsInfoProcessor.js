@@ -43,11 +43,12 @@ define([
              * @private
              */
             _processJsInfo: function (result, dispatcher) {
-                var permission = dispatcher.getGlobalState().permissions;
-                if (Object.keys(result).length>0) {
-                   permission.isadmin = result['isadmin'];
-                   permission.ismanager = result['ismanager'];
-                }
+                window.JSINFO = result;
+//                var permission = dispatcher.getGlobalState().permissions;
+//                if (Object.keys(result).length>0) {
+//                   permission.isadmin = result['isadmin'];
+//                   permission.ismanager = result['ismanager'];
+//                }
              }
         });
     return ret;
