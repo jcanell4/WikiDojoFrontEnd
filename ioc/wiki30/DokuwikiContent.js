@@ -66,19 +66,19 @@ define([
                 this.editor = editor;
             },
 
-            getEditor: function () {
+            getEditor:       function () {
                 return this.editor;
             },
 
 
             // TODO[Xavi] No es crida enlloc?
-            setDocumentHTML:   function (content) {
+            setDocumentHTML: function (content) {
                 alert("setDocumentHTML");
                 this.documentHTML = content.content;
             },
 
             // TODO[Xavi] No es crida enlloc?
-            setDocumentWiki:   function (content) {
+            setDocumentWiki: function (content) {
                 alert("setDocumentWiki");
                 this.documentWiki = content.content;
             },
@@ -147,6 +147,18 @@ define([
             getCurrentId: function (type) {
                 //alert("getted: " + this.currentIds[type]);
                 return this.currentIds[type]
+            },
+
+
+            /** @type EventObserver */
+            mainContentTool : null,
+
+            setMainContentTool:  function (observer) {
+                this.mainContentTool = observer;
+            },
+
+            getMainContentTool: function () {
+                return this.mainContentTool;
             }
         });
 

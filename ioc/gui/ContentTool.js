@@ -39,6 +39,9 @@ define([
                 this.data = args.data ? args.data : args.content;
 
                 declare.safeMixin(this, args);
+
+                console.log("EXISTEIX? ", this.registerObserverToEvent);
+
             },
 
             /**

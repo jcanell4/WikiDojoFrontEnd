@@ -7,6 +7,7 @@ define([
      * Aquesta classe requereix que es faci un mixin amb un ContentTool per poder funcionar.
      *
      * @class MetaContentTool
+     * @extends EventObserver
      */
     var MetaContentTool = declare(null, {
 
@@ -16,10 +17,16 @@ define([
          * @protected
          */
         postLoad: function () {
+            console.log("Postload");
+            var observed = this.dispatcher.getContentCache(this.docId).getMainContentTool();
+            console.log("docid: ", this.docId);
+            console.log("observer: ", observed);
 
-            this.registerToEvent("document_closed", lang.hitch(this, this._onDocumentClosed));
-            this.registerToEvent("document_selected", lang.hitch(this, this._onDocumentSelected));
-            this.registerToEvent("document_unselected", lang.hitch(this, this._onDocumentUnselected));
+
+            this.registerToEvent(observed, "document_closed", lang.hitch(this, this._onDocumentClosed));
+            this.registerToEvent(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
+            this.registerToEvent(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
+            console.log("observer despres de registrar: ", observed);
 
             this.watch("selected", function (name, oldValue, newValue) {
                 var contentCache = this.dispatcher.getContentCache(this.docId);
@@ -57,6 +64,7 @@ define([
 
         /** @private */
         _onDocumentUnselected: function (data) {
+            console.log("Rebut unselected");
             if (data.id == this.docId && this.domNode) {
                 this.hideContent();
             }

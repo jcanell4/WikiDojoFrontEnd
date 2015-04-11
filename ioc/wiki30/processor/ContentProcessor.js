@@ -22,7 +22,6 @@ define([
              */
             process: function (value, dispatcher) {
 
-
                 var changesManager = dispatcher.getChangesManager(),
                     confirmation = false,
                     id = value.id;
@@ -35,8 +34,10 @@ define([
                     confirmation = true;
                 }
 
+
                 if (confirmation) {
                     changesManager.resetDocumentChangeState(id);
+
                     this._loadTab(value, dispatcher, arguments);
                 }
 
@@ -46,6 +47,7 @@ define([
 
             /** @private */
             _loadTab: function (value, dispatcher, args) {
+
                 this.__newTab(value, dispatcher);
 
                 this.inherited("process", args);
@@ -61,7 +63,8 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
-                dispatcher.addDocument(value);
+                //dispatcher.addDocument(value);
+
             },
 
             /**
@@ -73,6 +76,7 @@ define([
              * @private
              */
             __newTab: function (content, dispatcher) {
+
                 var tc = registry.byId(dispatcher.containerNodeId),
                     widget = registry.byId(content.id),
                     cp;
@@ -81,9 +85,12 @@ define([
                 if (!widget) {
                     cp = this._createContentTool(content, dispatcher);
 
+
                     tc.addChild(cp);
 
                     tc.selectChild(cp);
+
+
 
                 } else {
                     tc.selectChild(widget);
@@ -93,6 +100,17 @@ define([
                     }
                     domConstruct.place(content.content, node);
                 }
+
+                //console.log("disp", dispatcher);
+                //console.log("func", dispatcher.addDocument);
+                //console.log("value:", value);
+                //alert("stop");
+                dispatcher.addDocument(content);
+                //alert("aqui?");
+                console.log("docuemnt afegit");
+                cp.setCurrentDocument(content.id);
+                console.log("establert com actual");
+
                 return 0;
             },
 

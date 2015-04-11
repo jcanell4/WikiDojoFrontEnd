@@ -6,7 +6,7 @@ define([
     "ioc/wiki30/dispatcherSingleton",
     "dojo/Stateful"
 ], function (declare, Standby, request, iframe, dispatcherSingleton, Stateful) {
-    var ret = declare("ioc.wiki30.Request", [Stateful],
+    var ret = declare([Stateful],
         /**
          * @class Request
          */

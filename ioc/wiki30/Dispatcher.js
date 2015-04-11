@@ -496,6 +496,7 @@ define([
              * @param content
              */
             addDocument: function (content) {
+                console.log('addDocument', content);
                 if (!this.contentCache[content.id]) {
 
                     this.contentCache[content.id] = new DokuwikiContent({
@@ -510,7 +511,7 @@ define([
                 this.getGlobalState().pages[content.id]["ns"] = content.ns;
                 this.getGlobalState().currentTabId = content.id;
 
-                this.setCurrentDocument(content.id);
+                console.log('surt de addDocument', content);
             },
 
             /**
@@ -528,10 +529,7 @@ define([
                 }
             },
 
-            setCurrentDocument: function (id) {
-                this.getGlobalState().currentTabId = id;
-                this.eventManager.dispatchEvent("document_selected", {id: id});
-            }
+
 
         });
     return ret;

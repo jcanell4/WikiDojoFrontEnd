@@ -54,8 +54,8 @@ define([
                     }
 
                     if (result) {
+                        // TODO[Xavi] l'avís s'ha de passar al content tool
                         this.eventManager.dispatchEvent("document_changed", {id: id});
-                        //this.dispatcher.dispatchEvent("document_changed", {id: id});
                     }
 
                     return result;
@@ -89,7 +89,6 @@ define([
                         return null;
                         //console.log("Error detectat: ", error);
                     }
-
                 },
 
                 /**
@@ -154,8 +153,11 @@ define([
                     }
 
 
+                    console.log(this.eventManager);
+
                     this.eventManager.dispatchEvent("document_changes_reset", {id: id});
-                    //this.dispatcher.dispatchEvent("document_changes_reset", {id: id});
+
+
                 },
 
 

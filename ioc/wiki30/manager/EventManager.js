@@ -18,9 +18,11 @@ define([
 
             constructor: function (dispatcher) {
                 this.dispatcher = dispatcher;
+                //alert("Constructor EVENT MANAGER");
             },
 
             registerToEvent: function (event, callback) {
+                alert("RegisterToEvent EVENT MANAGER");
                 var index,
                     observer;
 
@@ -42,6 +44,7 @@ define([
              * @param {object} data - Dades que es passaran als observadors
              */
             dispatchEvent: function (event, data) {
+                alert("DispatchEvent EVENT MANAGER");
                 var observers = this.events[event];
 
                 //console.log("llençant esdeveniment:", event, data);
@@ -62,6 +65,7 @@ define([
              * @param {int} observerId - Identificador del event observat
              */
             unregister: function (observerId) {
+                alert("Unregister EVENT MAANGER");
                 var subscriber = this.observers[observerId];
 
                 this.events[subscriber.event][subscriber.index] = null;
