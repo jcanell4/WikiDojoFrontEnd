@@ -49,6 +49,9 @@ define([
                     }
                 }
                 var isOk = this.onClick(evt);
+                if(typeof isOk === "undefined"){
+                    isOk=true;
+                }
                 if(isOk){
                     this.sendRequest();
                 }
