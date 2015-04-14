@@ -35,13 +35,15 @@ define([
                 },
 
                 /**
-                 * Retorna si el document passat com argument o el document actual han sigut canviat.s
+                 * Retorna si el document passat com argument o el document actual han sigut canviat.
                  *
                  * @param {string?} id - id del document a comprovar
                  * @returns {boolean} - Cert si hi han hagut canvis o Fals en cas contrari
                  */
                 isDocumentChanged: function (id) {
                     var content = this._getCurrentContent(),
+                        contentCache,
+                        observer,
                         result;
 
                     id = id || this._getCurrentId();
@@ -55,7 +57,15 @@ define([
 
                     if (result) {
                         // TODO[Xavi] l'avís s'ha de passar al content tool
-                        this.eventManager.dispatchEvent("document_changed", {id: id});
+                        contentCache = this.dispatcher.getContentCache(id);
+
+                        if (contentCache) {
+                            observer = contentCache.getMainContentTool();
+                            observer.dispatchEvent("document_changed", {id: id});
+                        }
+
+
+                        //this.eventManager.dispatchEvent("document_changed", {id: id});
                     }
 
                     return result;
@@ -146,6 +156,8 @@ define([
                  * @param {string?} id - Id del document a reiniciatlizar
                  */
                 resetDocumentChangeState: function (id) {
+                    var contentCache, observer;
+
                     id = id || this._getCurrentId();
 
                     if (this.documentsChanged[id]) {
@@ -155,7 +167,15 @@ define([
 
                     console.log(this.eventManager);
 
-                    this.eventManager.dispatchEvent("document_changes_reset", {id: id});
+                    // Recuperem el mainContentTool
+                    contentCache = this.dispatcher.getContentCache(id);
+
+                    if (contentCache) {
+                        observer = contentCache.getMainContentTool();
+                        observer.dispatchEvent("document_changes_reset", {id: id});
+                    }
+
+                    //this.eventManager.dispatchEvent("document_changes_reset", {id: id});
 
 
                 },

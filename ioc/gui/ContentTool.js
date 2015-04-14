@@ -1,10 +1,11 @@
 define([
-    'dojo/_base/declare',
-    'dijit/layout/ContentPane',
-    'ioc/wiki30/manager/EventObserver',
+    "dojo/_base/declare",
+    "dijit/layout/ContentPane",
+    "ioc/wiki30/manager/EventObserver",
     "dojo/dom-style",
+    "ioc/gui/contentToolDecorator"
 
-], function (declare, ContentPane, EventObserver, domStyle) {
+], function (declare, ContentPane, EventObserver, domStyle, contentToolDecorator) {
 
     return declare([ContentPane, EventObserver],
         /**
@@ -40,7 +41,7 @@ define([
 
                 declare.safeMixin(this, args);
 
-                console.log("EXISTEIX? ", this.registerObserverToEvent);
+                //console.log("EXISTEIX? ", this.registerObserverToEvent);
 
             },
 
@@ -149,6 +150,11 @@ define([
 
                 parent.removeChild(this);
                 this.destroyRecursive();
+            },
+
+
+            decorate: function(type) {
+                return contentToolDecorator.decorate(type, this);
             }
 
         });

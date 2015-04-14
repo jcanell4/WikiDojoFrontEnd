@@ -5,9 +5,10 @@ define([
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/gui/renderEngineFactory",
     "ioc/gui/metaContentToolDecorator",
+    "ioc/gui/ContentTool",
 
 ], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor,
-             renderEngineFactory, metaContentToolDecorator) {
+             renderEngineFactory, metaContentToolDecorator, ContentTool) {
 
     // Definim el render engine que emprearem per formatar les revisions TODO[Xavi] això està aqui a mode de demostració, tots els renders habiutals els posarem al RenderEngineFactory.
     renderEngineFactory.addRenderEngine('revisions',
@@ -123,7 +124,7 @@ define([
 
 
             /**
-             * Crea un MetaContentTool apropiat, l'afegeix al contentCahcie, i el retorna.
+             * Crea un MetaContentTool apropiat, l'afegeix al contentCache, i el retorna.
              *
              * @param {object} content
              * @param {Dispatcher} dispatcher
@@ -132,8 +133,20 @@ define([
              * @protected
              */
             _createContentTool: function (content, dispatcher, docId) {
+                //var meta = this._convertMetaData(content),
+                //    c = new RequestRenderContentTool({
+                //        id:         meta.id,
+                //        title:      meta.title,
+                //        data:       meta.data,
+                //        type:       meta.type,
+                //        dispatcher: dispatcher,
+                //        docId:      docId,
+                //        action:     'view'
+                //    });
+
+
                 var meta = this._convertMetaData(content),
-                    c = new RequestRenderContentTool({
+                    c = new ContentTool({
                         id:         meta.id,
                         title:      meta.title,
                         data:       meta.data,
@@ -144,7 +157,8 @@ define([
                     });
 
 
-                return metaContentToolDecorator.decorate(c);
+                return c.decorate('request').decorate('meta');
+                //return metaContentToolDecorator.decorate(c);
             },
 
             /**

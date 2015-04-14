@@ -16,6 +16,8 @@ define([
             // TODO[Xavi] Reactivar quan es mogui el ChangesManager
             //this.registerToEvent("document_changed", lang.hitch(this, this._onDocumentChanged));
             //this.registerToEvent("document_changes_reset", lang.hitch(this, this._onDocumentChangesReset));
+            this.registerToEvent(this, "document_changed", lang.hitch(this, this._onDocumentChanged));
+            this.registerToEvent(this, "document_changes_reset", lang.hitch(this, this._onDocumentChangesReset));
         },
 
         /**
@@ -80,11 +82,11 @@ define([
         setCurrentDocument: function (id) {
             this.dispatcher.getGlobalState().currentTabId = id;
             //this.eventManager.dispatchEvent("document_selected", {id: id});
-            console.log("abans de set", this.dispatcher.getContentCache(id), id);
-            console.log(this.dispatcher.contentCache);
+            //console.log("abans de set", this.dispatcher.getContentCache(id), id);
+            //console.log(this.dispatcher.contentCache);
 
             this.dispatcher.getContentCache(id).setMainContentTool(this);
-            console.log("despres de set");
+            //console.log("despres de set");
             this.dispatchEvent("document_selected", {id: id});
         }
 

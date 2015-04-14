@@ -99,17 +99,19 @@ define([
                         node.removeChild(node.firstChild);
                     }
                     domConstruct.place(content.content, node);
+                    cp = dispatcher.getContentCache(content.id).getMainContentTool();
                 }
 
                 //console.log("disp", dispatcher);
                 //console.log("func", dispatcher.addDocument);
                 //console.log("value:", value);
                 //alert("stop");
+
                 dispatcher.addDocument(content);
                 //alert("aqui?");
-                console.log("docuemnt afegit");
+                //console.log("docuemnt afegit");
                 cp.setCurrentDocument(content.id);
-                console.log("establert com actual");
+                //console.log("establert com actual");
 
                 return 0;
             },

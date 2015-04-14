@@ -15,6 +15,7 @@ define([
             type: "meta",
 
             process: function (value, dispatcher) {
+
                 this._processMetaInfo(value, dispatcher);
                 this._processContentCache(dispatcher, value);
             },
@@ -130,7 +131,8 @@ define([
                         action:     meta.action
                     });
 
-                return metaContentToolDecorator.decorate(c);
+                return c.decorate('meta');
+                //return metaContentToolDecorator.decorate(c);
 
             },
 

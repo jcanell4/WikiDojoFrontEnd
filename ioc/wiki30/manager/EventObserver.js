@@ -47,8 +47,8 @@ define([
              */
 
             registerToEvent: function (observer, event, callback) {
-                console.log("Observed: ", observer);
-                console.log("MEtode: ", observer.registerObserverToEvent);
+                //console.log("Observed: ", observer);
+                //console.log("Metode: ", observer.registerObserverToEvent);
                 //alert("dins de register");
 
 
@@ -57,7 +57,7 @@ define([
                     "id":       observer.registerObserverToEvent(event, callback)
                 };
 
-                console.log("Vull enregistrarme!");
+                //console.log("Vull enregistrarme!");
                 this.registeredToEvents.push(reference);
             },
 
@@ -73,7 +73,7 @@ define([
                     observed.unregister(id);
                 }
 
-                console.log("Desenregistrat observadors");
+                //console.log("Desenregistrat observadors");
                 this.registeredToEvents = [];
             },
 
@@ -90,14 +90,14 @@ define([
             dispatchEvent: function (event, data) {
                 var observers = this.events[event];
 
-                console.log("llençant esdeveniment:", event, data);
-
-                console.log("Interessats:", observers);
-                console.log("Totals:",this.events);
+                //console.log("llençant esdeveniment:", event, data);
+                //
+                //console.log("Interessats:", observers);
+                //console.log("Totals:",this.events);
 
                 if (observers) {
                     dojoArray.forEach(observers, function (callback) {
-                        console.log("Cridat");
+                        //console.log("Cridat");
                         if (callback) {
                             callback(data);
                         }
@@ -126,9 +126,24 @@ define([
                 observer = {event: event, index: index};
 
 
-                console.log("Enregistrat observador al esdeveniment:"+event);
+                //console.log("Enregistrat observador al esdeveniment:"+event);
 
                 return this.observers.push(observer) - 1;
+            },
+
+            /**
+             * Alliberem els objectes però no els esborrem per no alterar la correspondencia dels index de al resta dels
+             * subscriptors
+             *
+             * @param {int} observerId - Identificador del event observat
+             */
+            unregister: function (observerId) {
+                var subscriber = this.observers[observerId];
+
+                this.events[subscriber.event][subscriber.index] = null;
+                this.observers[observerId] = null;
+
+                //console.log("Eliminat observador: ", observerId);
             }
 
         })
