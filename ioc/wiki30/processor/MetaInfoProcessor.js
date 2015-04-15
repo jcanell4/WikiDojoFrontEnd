@@ -121,17 +121,18 @@ define([
              * @protected
              */
             _createContentTool: function (content, dispatcher, docId) {
-                var meta = this._convertMetaData(content),
-                    c = new ContentTool({
+                var meta = this._convertMetaData(content);
+
+                return new ContentTool({
                         id:         meta.id,
                         title:      meta.title,
                         data:       meta.data,
                         dispatcher: dispatcher,
                         docId:      docId,
                         action:     meta.action
-                    });
+                    }).decorate('meta');
 
-                return c.decorate('meta');
+                //return c.decorate('meta');
                 //return metaContentToolDecorator.decorate(c);
 
             },

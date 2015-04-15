@@ -143,8 +143,8 @@ define([
                 //    });
 
 
-                var meta = this._convertMetaData(content),
-                    c = new ContentTool({
+                 var meta = this._convertMetaData(content);
+                    return  new ContentTool({
                         id:         meta.id,
                         title:      meta.title,
                         data:       meta.data,
@@ -152,10 +152,8 @@ define([
                         dispatcher: dispatcher,
                         docId:      docId,
                         action:     'view'
-                    });
+                    }).decorate('request').decorate('meta');
 
-
-                return c.decorate('request').decorate('meta');
                 //return metaContentToolDecorator.decorate(c);
             },
 
