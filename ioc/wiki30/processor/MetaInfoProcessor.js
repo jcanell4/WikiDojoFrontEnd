@@ -3,8 +3,8 @@ define([
     "dijit/registry",
     "ioc/gui/ContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "ioc/gui/metaContentToolDecorator"
-], function (declare, registry, ContentTool, AbstractResponseProcessor, metaContentToolDecorator) {
+
+], function (declare, registry, ContentTool, AbstractResponseProcessor) {
     var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor

@@ -1,14 +1,12 @@
 define([
     "dojo/_base/declare",
     "dijit/registry",
-    "ioc/gui/RequestRenderContentTool",
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/gui/renderEngineFactory",
-    "ioc/gui/metaContentToolDecorator",
     "ioc/gui/ContentTool",
 
-], function (declare, registry, RequestRenderContentTool, AbstractResponseProcessor,
-             renderEngineFactory, metaContentToolDecorator, ContentTool) {
+], function (declare, registry, AbstractResponseProcessor,
+             renderEngineFactory, ContentTool) {
 
     // Definim el render engine que emprearem per formatar les revisions TODO[Xavi] això està aqui a mode de demostració, tots els renders habiutals els posarem al RenderEngineFactory.
     renderEngineFactory.addRenderEngine('revisions',

@@ -17,12 +17,12 @@ define([
 
                 lastChecked: null,
 
-                eventManager: null,
+
 
                 constructor: function (dispatcher) {
                     this.documentsChanged = {};
                     this.dispatcher = dispatcher;
-                    this.eventManager = dispatcher.getEventManager();
+
                 },
 
                 /**
@@ -165,7 +165,7 @@ define([
                     }
 
 
-                    console.log(this.eventManager);
+                    //console.log(this.eventManager);
 
                     // Recuperem el mainContentTool
                     contentCache = this.dispatcher.getContentCache(id);

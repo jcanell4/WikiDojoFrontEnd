@@ -27,16 +27,14 @@ define([
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/processor/RevisionsProcessor",
-    "ioc/wiki30/manager/EventManager",
     "ioc/wiki30/DokuwikiContent",
-    "ioc/wiki30/manager/EventObserver",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor, DataContentProcessor,
              ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor,
              RemoveAllContentTabProcessor, RemoveContentTabProcessor, CommandProcessor,
-             AdminTabProcessor, AdminTaskProcessor, InfoManager, ChangesManager, RevisionsProcessor, EventManager,
-             DokuwikiContent, EventObserver) {
+             AdminTabProcessor, AdminTaskProcessor, InfoManager, ChangesManager, RevisionsProcessor,
+             DokuwikiContent) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -99,9 +97,6 @@ define([
             /** @type {InfoManager} Instancia del gestor de infos associat amb aquest dispatcher */
             infoManager: null,
 
-            /** @type {EventManager} Instancia del gestor d'eseveniments */
-            eventManager: null,
-
             /**
              * Afegeix al hash de processadors els processadors, les característiques del objecte passat com argument i
              * inicialitza els arrays per emmagatzemar els handlers.
@@ -132,7 +127,6 @@ define([
                 this.updateViewHandlers = new Array();
                 this.reloadStateHandlers = new Array();
 
-                this.eventManager = new EventManager(this);
 
                 this.infoManager = new InfoManager(this);
                 this.changesManager = new ChangesManager(this);
@@ -471,13 +465,6 @@ define([
             },
 
 
-            /**
-             * Retorna el EventManager que gestiona els esdeveniments d'aquest dispatcher.
-             * @returns {EventManager}
-             */
-            getEventManager: function () {
-                return this.eventManager;
-            },
 
             /**
              * Mostra un quadre de dialeg demanant confirmació i retorna true o false segons si s'ha de continuar o no.

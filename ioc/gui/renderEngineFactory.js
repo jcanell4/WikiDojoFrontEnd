@@ -20,14 +20,14 @@ define([], function () {
             //      Si existeix el retornem
             //      Si no existeix retornem el generador per defecte, que retorna el contingut tal com s'ha passat
 
-            console.warn("Retornant engine: " + type);
+
 
             return renderEngines[type] ? renderEngines[type] : renderEngines['default'];
 
         },
 
         _addRenderEngine = function (type, renderEngine) {
-            console.warn("Afegint engine " + type);
+
 
             renderEngines[type] = renderEngine;
         };

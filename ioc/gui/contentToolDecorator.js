@@ -6,9 +6,8 @@ define([
     "dojo/dom-attr",
     'dojo/dom',
     'dojo/on',
-    'dojo/ready'
 
-], function (declare, lang, renderEngineFactory, event, att, dom, on, ready) {
+], function (declare, lang, renderEngineFactory, event, att, dom, on) {
 
     /**
      * Aquesta classe requereix que es faci un mixin amb un ContentTool per poder funcionar.
@@ -124,12 +123,9 @@ define([
             requester: null,
 
             constructor: function () {
-                console.log("constructor");
 
                 require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
-                    ready(lang.hitch(this, function () {
-                        this.requester = new Request();
-                    }));
+                    this.requester = new Request();
                 }));
             },
 
@@ -185,18 +181,16 @@ define([
         decorate: function (type, contentTool) {
             var decoration;
 
-            console.log(contentTool.type);
-
 
             switch (type) {
                 case this.types.META:
                     decoration = new MetaContentTool();
-                    console.log("nou metacontenttool");
+                    //console.log("nou metacontenttool");
                     break;
 
                 case this.types.RENDER:
                     decoration = new RenderContentTool();
-                    console.log("nou rendercontenttool");
+                    //console.log("nou rendercontenttool");
 
                     break;
 
@@ -205,15 +199,15 @@ define([
 
 
                     if (!contentTool.render) {
-                        console.log("no hi ha render");
+                        //console.log("no hi ha render");
                         contentTool.decorate('render');
 
                     } else {
-                        console.log("hi ha render");
+                        //console.log("hi ha render");
                     }
 
                     decoration = new RequestContentTool();
-                    console.log("nou requestrcontenttool");
+                    //console.log("nou requestrcontenttool");
                     break;
 
 
@@ -229,7 +223,7 @@ define([
 
             }
 
-            console.log(contentTool);
+            //console.log(contentTool);
 
 
             if (decoration) {
