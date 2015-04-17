@@ -2,9 +2,10 @@ define([
     "dojo/_base/declare",
     "dijit/layout/ContentPane",
     "ioc/wiki30/manager/EventObserver",
-    "dojo/dom-style"
+    "dojo/dom-style",
+    "dojo/dom"
 
-], function (declare, ContentPane, EventObserver, domStyle) {
+], function (declare, ContentPane, EventObserver, domStyle, dom) {
 
     return declare([ContentPane, EventObserver],
         /**
@@ -125,13 +126,18 @@ define([
 
 
             hideContent: function () {
-                domStyle.set(this.domNode.id + "_wrapper", {display: "none"});
-                this.getContainer().resize();
+                if (dom.byId(this.domNode.id)) {
+                    domStyle.set(this.domNode.id + "_wrapper", {display: "none"});
+                    this.getContainer().resize();
+                }
             },
 
             showContent: function () {
-                domStyle.set(this.domNode.id + "_wrapper", {display: ""});
-                this.getContainer().resize();
+                if (dom.byId(this.domNode.id)) {
+                    domStyle.set(this.domNode.id + "_wrapper", {display: ""});
+                    this.getContainer().resize();
+
+                }
             },
 
             /**

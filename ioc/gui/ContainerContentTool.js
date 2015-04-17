@@ -38,7 +38,18 @@ define([
 
             addChild: function (contentTool) {
                 // TODO[Xavi] Controlar si la pestanya afegida a de ser visible o no
-                //console.log("S'ha afegit " + contentTool.title);
+                console.log("S'ha afegit " + contentTool.title);
+
+                // Comprovem si ha de ser visible
+
+                if (contentTool.docId) {
+                    if (this.dispatcher.getGlobalState().getCurrentId() === contentTool.docId) {
+                        contentTool.showContent();
+                    } else {
+                        contentTool.hideContent();
+                    }
+                }
+
 
                 this.inherited(arguments);
                 this.resize();
@@ -55,7 +66,6 @@ define([
                 }
 
             }
-
 
 
         });
