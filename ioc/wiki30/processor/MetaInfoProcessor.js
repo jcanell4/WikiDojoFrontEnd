@@ -20,35 +20,6 @@ define([
             type: "meta",
 
             process: function (value, dispatcher) {
-
-                console.log("Creant tabcontainer");
-                var tc = new TabContainer();
-
-
-                var args = {dispatcher: dispatcher};
-                var cont = new ContainerContentTool(args);
-
-                console.log("Creat el conatinercontentTool");
-
-
-                declare.safeMixin(tc, cont);
-
-                console.log("mixed");
-
-
-                for (var i = 0; i < 10; i++) {
-                    console.log("efegint contenttool " + i);
-                    var cp = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
-                    console.log("Fet");
-                    cp.title = "ct: " + i;
-                    tc.addChild(cp);
-                }
-                console.log("sortint de tabcontainer");
-
-
-                console.log("Llista de childrens:", tc.getChildren());
-
-
                 this._processMetaInfo(value, dispatcher);
                 this._processContentCache(dispatcher, value);
             },
@@ -73,7 +44,9 @@ define([
                     currentMetaContent,
                     contentCache = dispatcher.getContentCache(content.id);
 
-                this.clearContainer(nodeMetaInfo, content.id); // TODO[Xavi] Això haurà de anar al ContainerContentTool
+                //this.clearContainer(nodeMetaInfo, content.id); // TODO[Xavi] Això haurà de anar al ContainerContentTool
+                nodeMetaInfo.clearContainer(content.id);
+
                 contentCache.setCurrentId("metadataPane", null);
 
 
@@ -85,7 +58,8 @@ define([
                         if (!registry.byId(currentMetaContent.id)) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
 
                             cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
-                            this.addContentToolToContainer(cp, nodeMetaInfo);
+                            nodeMetaInfo.addChild(cp);
+                            //this.addContentToolToContainer(cp, nodeMetaInfo);
 
                             if (!firstPane) {
                                 firstPane = cp.id;
@@ -178,26 +152,6 @@ define([
              */
             _buildContentId:           function (content) {
                 return content.id;
-            },
-
-            // TODO[Xavi] Això haurà de anar al ContainerContentTool
-            /** @deprecated */
-            clearContainer:            function (container, docId) {
-                var children = container.getChildren();
-
-
-                for (var child in children) {
-                    if (children[child].docId == docId) {
-                        children[child].removeContentTool();
-                    }
-                }
-            },
-
-            // TODO[Xavi] Això haurà de anar al ContainerContentTool
-            /** @deprecated */
-            addContentToolToContainer: function (contentTool, container) {
-                container.addChild(contentTool);
-                container.resize();
             }
 
 

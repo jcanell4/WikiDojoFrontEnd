@@ -72,7 +72,8 @@ define([
 
                     if (!widgetMetaInfo) {
                         cp = this._createContentTool(content, dispatcher, content.id);
-                        this.addContentToolToContainer(cp, nodeMetaInfo);
+                        nodeMetaInfo.addChild(cp);
+                        //this.addContentToolToContainer(cp, nodeMetaInfo);
                     }
                 }
 
@@ -163,13 +164,13 @@ define([
             _buildContentId:           function (content) {
                 return content.id + '_revisions';
             },
-
-            // TODO[Xavi] Això haurà de anar al ContainerContentTool <-- dubplicat a MetaInfoProcessor
-            /** @deprecated */
-            addContentToolToContainer: function (contentTool, container) {
-                container.addChild(contentTool);
-                container.resize();
-            }
+            //
+            //// TODO[Xavi] Això haurà de anar al ContainerContentTool <-- dubplicat a MetaInfoProcessor
+            ///** @deprecated */
+            //addContentToolToContainer: function (contentTool, container) {
+            //    container.addChild(contentTool);
+            //    container.resize();
+            //}
 
 
         });

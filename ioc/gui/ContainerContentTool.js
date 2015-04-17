@@ -5,10 +5,21 @@ define([
 ], function (declare, EventObserver) {
 
     return declare([EventObserver],
+
+        /**
+         * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del containerContentToolFactory.
+         *
+         * @class ContainerContentTool
+         * @extends EventObserver
+         * @author Xavier García <xaviergaro.dev@gmail.com>
+         * @protected
+         * @see containerContentToolFactory
+         */
         {
 
             dispatcher: null,
 
+            decorator: null,
 
             /**
              * Al constructor s'ha de passar com argument un contenidor d'accordio o de pestanyes
@@ -16,36 +27,35 @@ define([
              */
             constructor: function (args) {
                 this.dispatcher = null;
+                this.decorator = null;
                 declare.safeMixin(this, args);
-
-                console.log("mesclat amb args");
-
             },
 
 
             decorate: function (type) {
-                // TODO[Xavi] Codi que crida al containerContentToolDecorator, decora amb el type i el retorna
+                return this.decorator.decorate(type, this);
             },
 
             addChild: function (contentTool) {
-
                 // TODO[Xavi] Controlar si la pestanya afegida a de ser visible o no
-                console.log("S'ha afegit " + contentTool.title);
+                //console.log("S'ha afegit " + contentTool.title);
 
                 this.inherited(arguments);
-
                 this.resize();
-            },
-
-
-            /** @deprecated això es fa directament al addChild, només feia un this.resize()*/
-            addContentToolToContainer: function (contentTool) {
-                // TODO[Xavi] Actualment al MetaInfoProcessor i RevisionsProcessor
             },
 
             clearContainer: function (docId) {
                 // TODO[Xavi] Elimina tots els ContentTools referents associats al docId
+                var children = this.getChildren();
+
+                for (var child in children) {
+                    if (children[child].docId == docId) {
+                        children[child].removeContentTool();
+                    }
+                }
+
             }
+
 
 
         });

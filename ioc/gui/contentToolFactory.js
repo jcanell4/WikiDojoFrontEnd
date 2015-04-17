@@ -186,18 +186,18 @@ define([
         },
 
 
-        decorate: function (type, contentTool) {
+        decorate: function (type, contentTool, args) {
             var decoration;
 
 
             switch (type) {
                 case this.decoration.META:
-                    decoration = new MetaContentTool();
+                    decoration = new MetaContentTool(args);
                     //console.log("nou metacontenttool");
                     break;
 
                 case this.decoration.RENDER:
-                    decoration = new RenderContentTool();
+                    decoration = new RenderContentTool(args);
                     //console.log("nou rendercontenttool");
 
                     break;
@@ -208,7 +208,7 @@ define([
 
                     if (!contentTool.render) {
                         //console.log("no hi ha render");
-                        contentTool.decorate(this.decoration.RENDER);
+                        contentTool.decorate(this.decoration.RENDER, args);
 
                     } else {
                         //console.log("hi ha render");
@@ -248,26 +248,16 @@ define([
 
             switch (type) {
 
-
                 case this.generation.BASE:
-                    console.log("Creant base", args);
-                    console.log("existeix?", ContentTool);
-
-                    var c = new ContentTool(args);
-                    console.log("creat: ", c);
-                    return c;
+                    return new ContentTool(args);
 
                 case this.generation.EDITOR:
-                    console.log("Creant editor");
-                    var e = EditorContentTool(args);
-                    console.log(e);
-                    return e;
+                    return new EditorContentTool(args);
 
                 default:
                     console.error('No existeix el tipus de ContentTool ' + type);
             }
 
-            // TODO: Retorna un ContentTool base del tipus especificat (per ara ContentTool o EditorContentTool)
         }
 
     }

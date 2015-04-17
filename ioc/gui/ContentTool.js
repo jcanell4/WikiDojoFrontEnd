@@ -39,9 +39,10 @@ define([
              * @param args
              */
             constructor: function (args) {
-                console.log("Constructor amb args: ", args);
                 this.data = null;
                 this.dispatcher = null;
+                this.decorator = null;
+
 
                 this.data = args.data ? args.data : args.content;
 
@@ -157,10 +158,10 @@ define([
             },
 
 
-            decorate: function (type) {
+            decorate: function (type, args) {
 
                 if (this.decorator) {
-                    return this.decorator.decorate(type, this);
+                    return this.decorator.decorate(type, this, args);
                 } else {
                     console.error("Decorador no incorporat");
                 }
