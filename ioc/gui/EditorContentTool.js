@@ -1,14 +1,18 @@
 define([
     "dojo/_base/declare",
-    "dijit/registry",
     "ioc/gui/ContentTool",
     "dojo/_base/lang",
 
-], function (declare, registry, ContentTool, lang) {
-
+], function (declare, ContentTool, lang) {
 
     /**
-     *@extends EventObserver
+     * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
+     *
+     * @class EditorContentTool
+     * @extends ContentTool, EventObserver
+     * @author Xavier García <xaviergaro.dev@gmail.com>
+     * @protected
+     * @see contentToolFactory
      */
     return declare([ContentTool], {
 

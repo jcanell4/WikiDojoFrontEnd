@@ -4,10 +4,12 @@ define([
     "ioc/gui/renderEngineFactory",
     "dojo/_base/event",
     "dojo/dom-attr",
-    'dojo/dom',
-    'dojo/on',
+    "dojo/dom",
+    "dojo/on",
+    "ioc/gui/ContentTool",
+    "ioc/gui/EditorContentTool",
 
-], function (declare, lang, renderEngineFactory, event, att, dom, on) {
+], function (declare, lang, renderEngineFactory, event, att, dom, on, ContentTool, EditorContentTool) {
 
     /**
      * Aquesta classe requereix que es faci un mixin amb un ContentTool per poder funcionar.
@@ -16,8 +18,6 @@ define([
      * @extends EventObserver
      */
     var MetaContentTool = declare(null, {
-
-
             /**
              * @override
              * @protected
@@ -124,6 +124,7 @@ define([
 
             constructor: function () {
 
+
                 require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
                     this.requester = new Request();
                 }));
@@ -134,7 +135,7 @@ define([
              * @protected
              */
             render: function () {
-                this.set('content', this.renderEngine(this.data))
+                this.set('content', this.renderEngine(this.data));
                 this.replaceLinksWithRequest();
             },
 
@@ -171,36 +172,43 @@ define([
 
 
         /** @enum */
-        types: {
+        decoration: {
             META:    'meta',
             RENDER:  'render',
             REQUEST: 'request',
             EDITOR:  'editor'
         },
 
+        /** @enum */
+        generation: {
+            EDITOR: 'editor',
+            BASE:   'base'
+        },
+
+
         decorate: function (type, contentTool) {
             var decoration;
 
 
             switch (type) {
-                case this.types.META:
+                case this.decoration.META:
                     decoration = new MetaContentTool();
                     //console.log("nou metacontenttool");
                     break;
 
-                case this.types.RENDER:
+                case this.decoration.RENDER:
                     decoration = new RenderContentTool();
                     //console.log("nou rendercontenttool");
 
                     break;
 
-                case this.types.REQUEST:
+                case this.decoration.REQUEST:
                     // TODO comprovar si contentTool es instance of RenderContentTool i si no ho es fer primer el mixin amb el RenderContentTool
 
 
                     if (!contentTool.render) {
                         //console.log("no hi ha render");
-                        contentTool.decorate('render');
+                        contentTool.decorate(this.decoration.RENDER);
 
                     } else {
                         //console.log("hi ha render");
@@ -219,7 +227,7 @@ define([
 
 
                 default:
-                    console.error('No existeix el tipus de ContentTool ' + type);
+                    console.error('No existeix el tipus de decoració ' + type);
 
             }
 
@@ -232,7 +240,36 @@ define([
                 return contentTool;
             }
 
+        },
+
+        generate: function (type, args) {
+
+            args.decorator = this;
+
+            switch (type) {
+
+
+                case this.generation.BASE:
+                    console.log("Creant base", args);
+                    console.log("existeix?", ContentTool);
+
+                    var c = new ContentTool(args);
+                    console.log("creat: ", c);
+                    return c;
+
+                case this.generation.EDITOR:
+                    console.log("Creant editor");
+                    var e = EditorContentTool(args);
+                    console.log(e);
+                    return e;
+
+                default:
+                    console.error('No existeix el tipus de ContentTool ' + type);
+            }
+
+            // TODO: Retorna un ContentTool base del tipus especificat (per ara ContentTool o EditorContentTool)
         }
+
     }
 
 

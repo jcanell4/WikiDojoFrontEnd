@@ -2,16 +2,19 @@ define([
     "dojo/_base/declare",
     "dijit/layout/ContentPane",
     "ioc/wiki30/manager/EventObserver",
-    "dojo/dom-style",
-    "ioc/gui/contentToolDecorator"
+    "dojo/dom-style"
 
-], function (declare, ContentPane, EventObserver, domStyle, contentToolDecorator) {
+], function (declare, ContentPane, EventObserver, domStyle) {
 
     return declare([ContentPane, EventObserver],
         /**
+         * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
+         *
          * @class ContentTool
          * @extends ContentPane, EventObserver
          * @author Xavier García <xaviergaro.dev@gmail.com>
+         * @protected
+         * @see contentToolFactory
          */
         {
             "-chains-": {
@@ -22,6 +25,8 @@ define([
             dispatcher: null,
 
             data: null,
+
+            decorator: null,
 
 
             /**
@@ -34,14 +39,13 @@ define([
              * @param args
              */
             constructor: function (args) {
+                console.log("Constructor amb args: ", args);
                 this.data = null;
                 this.dispatcher = null;
 
                 this.data = args.data ? args.data : args.content;
 
                 declare.safeMixin(this, args);
-
-                //console.log("EXISTEIX? ", this.registerObserverToEvent);
 
             },
 
@@ -153,8 +157,14 @@ define([
             },
 
 
-            decorate: function(type) {
-                return contentToolDecorator.decorate(type, this);
+            decorate: function (type) {
+
+                if (this.decorator) {
+                    return this.decorator.decorate(type, this);
+                } else {
+                    console.error("Decorador no incorporat");
+                }
+
             }
 
         });

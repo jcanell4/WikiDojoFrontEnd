@@ -3,10 +3,10 @@ define([
     "dijit/registry",
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/gui/renderEngineFactory",
-    "ioc/gui/ContentTool",
+    "ioc/gui/contentToolFactory",
 
 ], function (declare, registry, AbstractResponseProcessor,
-             renderEngineFactory, ContentTool) {
+             renderEngineFactory, contentToolFactory) {
 
     // Definim el render engine que emprearem per formatar les revisions TODO[Xavi] això està aqui a mode de demostració, tots els renders habiutals els posarem al RenderEngineFactory.
     renderEngineFactory.addRenderEngine('revisions',
@@ -131,20 +131,9 @@ define([
              * @protected
              */
             _createContentTool: function (content, dispatcher, docId) {
-                //var meta = this._convertMetaData(content),
-                //    c = new RequestRenderContentTool({
-                //        id:         meta.id,
-                //        title:      meta.title,
-                //        data:       meta.data,
-                //        type:       meta.type,
-                //        dispatcher: dispatcher,
-                //        docId:      docId,
-                //        action:     'view'
-                //    });
-
-
-                 var meta = this._convertMetaData(content);
-                    return  new ContentTool({
+                var meta = this._convertMetaData(content),
+                    args =
+                    {
                         id:         meta.id,
                         title:      meta.title,
                         data:       meta.data,
@@ -152,7 +141,13 @@ define([
                         dispatcher: dispatcher,
                         docId:      docId,
                         action:     'view'
-                    }).decorate('request').decorate('meta');
+                    };
+
+
+                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
+                    .decorate(contentToolFactory.decoration.REQUEST)
+                    .decorate(contentToolFactory.decoration.META);
+
 
                 //return metaContentToolDecorator.decorate(c);
             },
@@ -170,6 +165,7 @@ define([
             },
 
             // TODO[Xavi] Això haurà de anar al ContainerContentTool <-- dubplicat a MetaInfoProcessor
+            /** @deprecated */
             addContentToolToContainer: function (contentTool, container) {
                 container.addChild(contentTool);
                 container.resize();

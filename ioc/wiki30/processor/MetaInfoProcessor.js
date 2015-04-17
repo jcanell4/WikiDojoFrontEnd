@@ -1,11 +1,16 @@
 define([
     "dojo/_base/declare",
     "dijit/registry",
-    "ioc/gui/ContentTool",
+    "ioc/gui/contentToolFactory",
     "ioc/wiki30/processor/AbstractResponseProcessor",
 
-], function (declare, registry, ContentTool, AbstractResponseProcessor) {
-    var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
+    // TODO[Xavi] Tests, esborrar
+    "dijit/layout/TabContainer",
+    "ioc/gui/ContainerContentTool"
+
+
+], function (declare, registry, contentToolFactory, AbstractResponseProcessor, TabContainer, ContainerContentTool) {
+    var ret = declare([AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
          * @extends AbstractResponseProcessor
@@ -15,6 +20,34 @@ define([
             type: "meta",
 
             process: function (value, dispatcher) {
+
+                console.log("Creant tabcontainer");
+                var tc = new TabContainer();
+
+
+                var args = {dispatcher: dispatcher};
+                var cont = new ContainerContentTool(args);
+
+                console.log("Creat el conatinercontentTool");
+
+
+                declare.safeMixin(tc, cont);
+
+                console.log("mixed");
+
+
+                for (var i = 0; i < 10; i++) {
+                    console.log("efegint contenttool " + i);
+                    var cp = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
+                    console.log("Fet");
+                    cp.title = "ct: " + i;
+                    tc.addChild(cp);
+                }
+                console.log("sortint de tabcontainer");
+
+
+                console.log("Llista de childrens:", tc.getChildren());
+
 
                 this._processMetaInfo(value, dispatcher);
                 this._processContentCache(dispatcher, value);
@@ -121,20 +154,18 @@ define([
              * @protected
              */
             _createContentTool: function (content, dispatcher, docId) {
-                var meta = this._convertMetaData(content);
-
-                return new ContentTool({
+                var meta = this._convertMetaData(content),
+                    args = {
                         id:         meta.id,
                         title:      meta.title,
                         data:       meta.data,
                         dispatcher: dispatcher,
                         docId:      docId,
                         action:     meta.action
-                    }).decorate('meta');
+                    };
 
-                //return c.decorate('meta');
-                //return metaContentToolDecorator.decorate(c);
-
+                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
+                    .decorate(contentToolFactory.decoration.META);
             },
 
             /**
@@ -150,6 +181,7 @@ define([
             },
 
             // TODO[Xavi] Això haurà de anar al ContainerContentTool
+            /** @deprecated */
             clearContainer:            function (container, docId) {
                 var children = container.getChildren();
 
@@ -162,6 +194,7 @@ define([
             },
 
             // TODO[Xavi] Això haurà de anar al ContainerContentTool
+            /** @deprecated */
             addContentToolToContainer: function (contentTool, container) {
                 container.addChild(contentTool);
                 container.resize();
