@@ -4,7 +4,7 @@ define([
 ], function (declare, ContentProcessor) {
     var ret = declare("ioc.wiki30.processor.AdminTaskProcessor", [ContentProcessor],
     /**
-    * @class AdminTabProcessor
+    * @class AdminTaskProcessor
     * @extends AbstractResponseProcessor
     */
     {

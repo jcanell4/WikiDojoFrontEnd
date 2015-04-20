@@ -24,24 +24,28 @@ define([
     "ioc/wiki30/processor/CommandProcessor",
     "ioc/wiki30/processor/AdminTabProcessor",
     "ioc/wiki30/processor/AdminTaskProcessor",
+    "ioc/wiki30/processor/JsInfoProcessor",
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/processor/RevisionsProcessor",
     "ioc/wiki30/DokuwikiContent",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor, DataContentProcessor,
-             ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor, TitleProcessor,
-             RemoveAllContentTabProcessor, RemoveContentTabProcessor, CommandProcessor,
-             AdminTabProcessor, AdminTaskProcessor, InfoManager, ChangesManager, RevisionsProcessor,
-             DokuwikiContent) {
+                AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
+                DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
+                LoginProcessor, SectokProcessor, TitleProcessor,
+                RemoveAllContentTabProcessor, RemoveContentTabProcessor,
+                CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
+                InfoManager, ChangesManager, RevisionsProcessor,
+                DokuwikiContent, UpdateViewHandler) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
 
-    /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
-    var ret = declare("ioc.wiki30.Dispatcher", [],
+    
+     /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
+    var ret = declare(null,
         /**
          * @class Dispatcher
          */
@@ -121,6 +125,7 @@ define([
                 this.processors["command"] = new CommandProcessor();
                 this.processors["admin_tab"] = new AdminTabProcessor();
                 this.processors["admin_task"] = new AdminTaskProcessor();
+                this.processors["jsinfo"] = new JsInfoProcessor();
                 this.toUpdateSectok = new Array();
                 this.sectokManager = new SectokManager();
                 this.globalState = GlobalState;
@@ -280,15 +285,7 @@ define([
 
 
             },
-
-            /**
-             * TODO[Xavi] Amb els canvis que he fet hem sembla que això ja no cal, en tot cas s'hauria de moure al
-             * contenidor
-             *
-             * @param command
-             * @param dispatcher
-             * @deprecated
-             */
+            
             removeWidgetChild: function (command, dispatcher) {
                 var parent;
                 var child;
@@ -459,7 +456,7 @@ define([
                 return this.infoManager;
             },
 
-            /** @deprecated */
+            
             getChangesManager: function () {
                 return this.changesManager;
             },
@@ -514,7 +511,7 @@ define([
                 if (this.contentCache[id]) {
                     delete this.contentCache[id];
                 }
-            },
+            }
 
 
 
