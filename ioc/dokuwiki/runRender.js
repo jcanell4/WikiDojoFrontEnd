@@ -1,6 +1,6 @@
 define([], function(){
     var res = function(idBodyContent){
-        if (!JSINFO['plugin_iocexportl']['toccontents']){
+        if (!JSINFO['plugin_iocexportl'] || !JSINFO['plugin_iocexportl']['toccontents']){
                 $toc = jQuery('#toc__inside');
                 $toc.css('display', 'none');
                 $tocul = $toc.children('ul.toc');

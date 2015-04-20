@@ -29,11 +29,6 @@ define([
                     summaryCheck();
                 };
 
-            console.log("editform", editform);
-            console.log("edit_text", edit_text);
-            console.log("summary", summary);
-            console.log("summaryId", summaryId);
-
 
             if (!editform || (edit_text && edit_text.readOnly)) {
                 return;
@@ -79,7 +74,6 @@ define([
         },
 
         editing = function (params, dispatcher) {
-            console.log("Dins del processEditing");
             var toolbar = window[params.varName];
 
             if (toolbar && params.toolbarId && params.wikiTextId) {
@@ -93,7 +87,6 @@ define([
 
 
             dw_locktimer.init(params.timeout, params.draft);
-            console.log("fi editing");
 
             //});
         };
@@ -129,12 +122,10 @@ define([
                 value.editor.select();
 
                 ready(function() {
-                    console.log("Ready");
                     editing(value.editing, dispatcher);
                 });
 
 
-                console.log("ret: ", ret);
                 return ret;
                 //return this.inherited(arguments);
             },

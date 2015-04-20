@@ -38,7 +38,7 @@ define([
 
             addChild: function (contentTool) {
                 // TODO[Xavi] Controlar si la pestanya afegida a de ser visible o no
-                console.log("S'ha afegit " + contentTool.title);
+                //console.log("S'ha afegit " + contentTool.title);
 
                 // Comprovem si ha de ser visible
 
