@@ -25,22 +25,24 @@ define([
     "ioc/wiki30/processor/CommandProcessor",
     "ioc/wiki30/processor/AdminTabProcessor",
     "ioc/wiki30/processor/AdminTaskProcessor",
+    "ioc/wiki30/processor/JsInfoProcessor",
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,MetaMediaInfoProcessor,
-             DataContentProcessor, ErrorProcessor,
-             InfoStatusProcessor, LoginProcessor, SectokProcessor,
-             TitleProcessor, RemoveAllContentTabProcessor,
-             RemoveContentTabProcessor, CommandProcessor, AdminTabProcessor,AdminTaskProcessor,InfoManager, ChangesManager) {
+                AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
+                DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
+                LoginProcessor, SectokProcessor, TitleProcessor,
+                RemoveAllContentTabProcessor, RemoveContentTabProcessor,
+                CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
+                InfoManager, ChangesManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
 
      /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
-    var ret = declare("ioc.wiki30.Dispatcher", [],
+    var ret = declare(null,
         /**
          * @class Dispatcher
          */
@@ -121,6 +123,7 @@ define([
                 this.processors["command"] = new CommandProcessor();
                 this.processors["admin_tab"] = new AdminTabProcessor();
                 this.processors["admin_task"] = new AdminTaskProcessor();
+                this.processors["jsinfo"] = new JsInfoProcessor();
                 this.toUpdateSectok = new Array();
                 this.sectokManager = new SectokManager();
                 this.globalState = GlobalState;
@@ -239,7 +242,7 @@ define([
                     widget.destroyDescendants(false);
                 }
             },
-            
+
             hideAllChildrenWidgets: function (pwidget) {
                 var widget;
                 if (lang.isString(pwidget)) {
@@ -251,7 +254,7 @@ define([
                     widget.destroyDescendants(false);
                 }
             },
-            
+
             removeWidgetChild: function (command, dispatcher) {
                 var parent;
                 var child;
@@ -262,7 +265,7 @@ define([
                 if (parent && child) {
                     if(child.unregisterFromEvents){
                         child.unregisterFromEvents();
-                    }                    
+                    }
                     parent.removeChild(child);
                     child.destroyRecursive(false);
                 }

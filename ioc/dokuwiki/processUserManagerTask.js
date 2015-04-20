@@ -42,6 +42,18 @@ define([
                     handle.remove();
                 }   
             });
+
+            // capturar el clic sobre els enllaços dels usuaris <a>
+            var handle = on(forms[i], "tr.user_info a:click", function(e){
+            //enviar
+            var uri = this.href;
+            var queryString = uri.substring(uri.indexOf("?") + 1, uri.length);
+            queryString = "call=admin_task&" + queryString + "&sectok=" + requestUpdate.sectok;
+            
+            requestUpdate.sendRequest(queryString);
+            event.stop(e);
+        });
+            
         };
 
     };

@@ -15,6 +15,8 @@ define([
          */
         pages: {},
 
+        permissions: {},
+
         login: false,
 
         info: "",
@@ -191,6 +193,7 @@ define([
             this.currentNavigationId = navigationId;
         }
     };
+
 
 
     return ret;
