@@ -6,7 +6,7 @@ define([
     "ioc/dokuwiki/guiSharedFunctions"
 ], function (declare, registry, ContentPane, AbstractResponseProcessor, guiSharedFunctions) {
     
-    var ret = declare("ioc.wiki30.processor.MetaInfoProcessor", [AbstractResponseProcessor],
+    var ret = declare("ioc.wiki30.processor.MetaMediaInfoProcessor", [AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
          * @extends AbstractResponseProcessor
