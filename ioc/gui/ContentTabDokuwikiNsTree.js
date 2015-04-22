@@ -16,7 +16,7 @@ define([
             /** @override */
             buildRendering: function () {
                 this.inherited(arguments);
-                nsTree = this;
+                var nsTree = this;
                 this.tree.onClick = function(item){
                     if(!this.model.mayHaveChildren(item)){
                         nsTree.sendRequest("id="+item.id);

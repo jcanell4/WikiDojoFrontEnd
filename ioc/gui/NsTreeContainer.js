@@ -62,7 +62,6 @@ define([
                 var vid = this.id;
                 var tds = this.treeDataSource;
                 var root = this.rootValue;
-                var nsTree = this;
                 this.tree = new Tree({
                     id: vid + "_nTree",
 
