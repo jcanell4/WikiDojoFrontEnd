@@ -31,20 +31,20 @@ define([
     "ioc/wiki30/DokuwikiContent",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-                AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
-                DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
-                LoginProcessor, SectokProcessor, TitleProcessor,
-                RemoveAllContentTabProcessor, RemoveContentTabProcessor,
-                CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
-                InfoManager, ChangesManager, RevisionsProcessor,
-                DokuwikiContent, UpdateViewHandler) {
+             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
+             DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
+             LoginProcessor, SectokProcessor, TitleProcessor,
+             RemoveAllContentTabProcessor, RemoveContentTabProcessor,
+             CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
+             InfoManager, ChangesManager, RevisionsProcessor,
+             DokuwikiContent, UpdateViewHandler) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
 
-    
-     /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
+
+    /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
     var ret = declare(null,
         /**
          * @class Dispatcher
@@ -226,66 +226,24 @@ define([
              * TODO[Xavi] Sempre es crida amb el dijit i mai com a string?
              * Només es crida desde el contenidor central a scriptsRef.tpl.
              *
-             * @param {DijitContainer|string} pwidget
+             * @param {ContainerContentTool|string} pwidget
              */
             removeAllChildrenWidgets: function (pwidget) {
-                return this.hideAllChildrenWidgets(pwidget);
+                var container;
 
-
-                /*
-                 var children;
-                 var widget;
-                 if (lang.isString(pwidget)) {
-                 widget = registry.byId(pwidget);
-                 } else {
-                 widget = pwidget;
-                 }
-                 if (widget.hasChildren()) {
-                 children = widget.getChildren();
-                 for (var i = 0; i < children.length; i++) {
-                 if (children[i].unregisterFromEvents) {
-                 children[i].unregisterFromEvents();
-                 }
-                 }
-                 widget.destroyDescendants(false);
-                 }
-                 */
-
-            },
-
-
-            /**
-             * TODO[Xavi] Amb els canvis que he fet hem sembla que això ja no cal, en tot cas s'hauria de moure al
-             * contenidor
-             *
-             * @param command
-             * @param dispatcher
-             * @deprecated
-             */
-            hideAllChildrenWidgets: function (pwidget) {
-
-                var widget;
-                if (lang.isString(pwidget)) {
-                    widget = registry.byId(pwidget);
+                if (typeof pwidget === "string") {
+                    container = registry.byId(pwidget);
                 } else {
-                    widget = pwidget;
+                    container = pwidget;
                 }
 
-                var children = widget.getChildren();
-
-                for (var child in children) {
-                    children[child].hideContent();
-
+                if (container.clearContainer) {
+                    container.clearContainer();
+                } else {
+                    container.destroyDescendants(false);
                 }
-
-
-                if (widget.hasChildren()) {
-                    widget.destroyDescendants(false);
-                }
-
-
             },
-            
+
             removeWidgetChild: function (command, dispatcher) {
                 var parent;
                 var child;
@@ -395,7 +353,6 @@ define([
                 // TODO[Xavi] canviar req per that per fer més clara la intenció
                 var req = this;
 
-
                 if (Array.isArray(response)) {
 
                     array.some(response, function (responseItem) {
@@ -456,11 +413,10 @@ define([
                 return this.infoManager;
             },
 
-            
+
             getChangesManager: function () {
                 return this.changesManager;
             },
-
 
 
             /**
@@ -512,7 +468,6 @@ define([
                     delete this.contentCache[id];
                 }
             }
-
 
 
         });

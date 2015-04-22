@@ -46,7 +46,6 @@ define([
         },
 
         onClose: function () {
-            // TODO[Xavi] tota la lógica del changes manager s'ha modificar i afegir-la a aquesta classe
             var changesManager = this.dispatcher.getChangesManager(),
                 confirmation = true;
 
@@ -64,13 +63,21 @@ define([
                 this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
 
                 // TODO[Xavi] S'hauria de restaurar la visibilitat dels botons i els panells d'informació <-- Enregistrat als events?
-
-                this.dispatcher.removeDocument(this.id);
-                this.triggerEvent('document_closed', {id: this.id});
-            }
+                this.closeDocument();            }
 
             return confirmation;
         },
+
+        onUnload: function() {
+            this.inherited(arguments);
+            this.closeDocument();
+        },
+
+        closeDocument: function() {
+            this.dispatcher.removeDocument(this.id);
+            this.triggerEvent('document_closed', {id: this.id});
+        },
+
 
         onSelect: function () { // onShow()
             this.dispatchEvent("document_selected", {id: this.id});
@@ -85,9 +92,12 @@ define([
             this.dispatcher.getGlobalState().currentTabId = id;
             this.dispatcher.getContentCache(id).setMainContentTool(this);
             this.dispatchEvent("document_selected", {id: id});
+        },
+
+        /** @override */
+        getContainer: function () {
+            return this.getParent();
         }
-
-
     });
 
 });

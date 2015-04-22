@@ -37,11 +37,9 @@ define([
             },
 
             addChild: function (contentTool) {
-                // TODO[Xavi] Controlar si la pestanya afegida a de ser visible o no
                 //console.log("S'ha afegit " + contentTool.title);
 
                 // Comprovem si ha de ser visible
-
                 if (contentTool.docId) {
                     if (this.dispatcher.getGlobalState().getCurrentId() === contentTool.docId) {
                         contentTool.showContent();
@@ -56,18 +54,34 @@ define([
             },
 
             clearContainer: function (docId) {
-                // TODO[Xavi] Elimina tots els ContentTools referents associats al docId
                 var children = this.getChildren();
 
+                if (docId) {
+                    this._clearDocChildren(docId, children);
+                } else {
+                    this._clearAllChildren(children);
+
+                }
+            },
+
+            /**
+             * @private
+             */
+            _clearAllChildren: function (children) {
+                for (var child in children) {
+                    children[child].removeContentTool();
+                }
+            },
+
+            /**
+             * @private
+             */
+            _clearDocChildren: function (docId, children) {
                 for (var child in children) {
                     if (children[child].docId == docId) {
                         children[child].removeContentTool();
                     }
                 }
-
             }
-
-
         });
 });
-
