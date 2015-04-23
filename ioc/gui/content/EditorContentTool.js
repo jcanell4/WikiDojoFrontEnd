@@ -1,19 +1,19 @@
 define([
     "dojo/_base/declare",
-    "ioc/gui/ContentTool",
+    "ioc/gui/content/ContentTool",
     "dojo/_base/lang",
 
 ], function (declare, ContentTool, lang) {
 
     /**
-     * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
-     *
-     * @class EditorContentTool
-     * @extends ContentTool, EventObserver
-     * @author Xavier García <xaviergaro.dev@gmail.com>
-     * @protected
-     * @see contentToolFactory
-     */
+    * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
+    *
+    * @class EditorContentTool
+    * @extends ContentTool, EventObserver
+    * @author Xavier García <xaviergaro.dev@gmail.com>
+    * @protected
+    * @see contentToolFactory
+    */
     return declare([ContentTool], {
 
         postLoad: function () {

@@ -1,13 +1,13 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-    "ioc/gui/renderEngineFactory",
+    "ioc/gui/content/renderEngineFactory",
     "dojo/_base/event",
     "dojo/dom-attr",
     "dojo/dom",
     "dojo/on",
-    "ioc/gui/ContentTool",
-    "ioc/gui/EditorContentTool",
+    "ioc/gui/content/ContentTool",
+    "ioc/gui/content/EditorContentTool",
 
 ], function (declare, lang, renderEngineFactory, event, att, dom, on, ContentTool, EditorContentTool) {
 

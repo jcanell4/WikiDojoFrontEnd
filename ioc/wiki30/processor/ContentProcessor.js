@@ -4,9 +4,9 @@ define([
     "dijit/registry",            //search widgets by id
     "dojo/dom",
     "dojo/dom-construct",
-    "ioc/gui/EditorContentTool",
+    "ioc/gui/content/contentToolFactory",
 
-], function (declare, StateUpdaterProcessor, registry, dom, domConstruct, EditorContentTool) {
+], function (declare, StateUpdaterProcessor, registry, dom, domConstruct, contentToolFactory) {
 
     var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor],
         /**
@@ -91,7 +91,6 @@ define([
                     tc.selectChild(cp);
 
 
-
                 } else {
                     tc.selectChild(widget);
                     var node = dom.byId(content.id);
@@ -118,13 +117,16 @@ define([
 
             /** @private */
             _createContentTool: function (content, dispatcher) {
-                return new EditorContentTool({
+                var args = {
                     id:         content.id,
                     title:      content.title,
                     content:    content.content,
                     closable:   true,
                     dispatcher: dispatcher
-                });
+                };
+
+                return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
+                //return new EditorContentTool(args);
             }
         });
     return ret;

@@ -8,7 +8,7 @@ define([], function () {
 
     var renderEngines = {
 
-            default: function (data) {
+            standard: function (data) {
                 var i = typeof data === 'string' ? data : 'Tipus de dada no reconegut.';
                 console.log(i);
                 return i;
@@ -21,8 +21,7 @@ define([], function () {
             //      Si no existeix retornem el generador per defecte, que retorna el contingut tal com s'ha passat
 
 
-
-            return renderEngines[type] ? renderEngines[type] : renderEngines['default'];
+            return renderEngines[type] ? renderEngines[type] : renderEngines['standard'];
 
         },
 
