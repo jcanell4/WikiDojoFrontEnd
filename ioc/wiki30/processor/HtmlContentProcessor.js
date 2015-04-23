@@ -2,7 +2,7 @@ define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
     "ioc/gui/content/contentToolFactory",
-    "dijit/registry",
+    "dijit/registry"
 ], function (declare, ContentProcessor, contentToolFactory, registry) {
 
     var ret = declare([ContentProcessor],
