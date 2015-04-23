@@ -8,7 +8,7 @@ define([
     /**
     * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
     *
-    * @class EditorContentTool
+    * @class DocumentContentTool
     * @extends ContentTool, EventObserver
     * @author Xavier García <xaviergaro.dev@gmail.com>
     * @protected
@@ -92,9 +92,8 @@ define([
             this.dispatcher.getGlobalState().currentTabId = id;
             this.dispatcher.getContentCache(id).setMainContentTool(this);
             this.dispatchEvent("document_selected", {id: id});
-        }
+        },
 
-        
     });
 
 });

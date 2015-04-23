@@ -19,8 +19,8 @@ define([
          */
         {
             "-chains-": {
-                onLoad:   "before",
-                onUnload: "before"
+                onLoad:   "before"
+                //onUnload: "before"
             },
 
             dispatcher: null,
@@ -28,6 +28,8 @@ define([
             data: null,
 
             decorator: null,
+
+            container: null,
 
 
             /**
@@ -140,16 +142,10 @@ define([
                 }
             },
 
-            /**
-             * Chained before
-             */
-            onUnload: function () {
-                this.unregisterFromEvents();
-            },
-
 
             getContainer: function () {
-                return this.getParent().getParent();
+                return this.container;
+                //return this.getParent().getParent();
             },
 
             removeContentTool: function () {
@@ -171,7 +167,10 @@ define([
                 } else {
                     console.error("Decorador no incorporat");
                 }
+            },
 
+            setContainer:function(container) {
+                this.container = container;
             }
 
         });

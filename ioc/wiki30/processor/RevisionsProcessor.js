@@ -71,7 +71,7 @@ define([
                     widgetMetaInfo = registry.byId(this._buildContentId(content));
 
                     if (!widgetMetaInfo) {
-                        cp = this._createContentTool(content, dispatcher, content.id);
+                        cp = this.createContentTool(content, dispatcher, content.id);
                         nodeMetaInfo.addChild(cp);
                         //this.addContentToolToContainer(cp, nodeMetaInfo);
                     }
@@ -131,7 +131,7 @@ define([
              * @param {string} docId
              * @protected
              */
-            _createContentTool: function (content, dispatcher, docId) {
+            createContentTool: function (content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
                     args =
                     {

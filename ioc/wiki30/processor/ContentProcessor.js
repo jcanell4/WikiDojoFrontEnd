@@ -83,7 +83,7 @@ define([
 
 
                 if (!widget) {
-                    cp = this._createContentTool(content, dispatcher);
+                    cp = this.createContentTool(content, dispatcher);
 
 
                     tc.addChild(cp);
@@ -101,32 +101,28 @@ define([
                     cp = dispatcher.getContentCache(content.id).getMainContentTool();
                 }
 
-                //console.log("disp", dispatcher);
-                //console.log("func", dispatcher.addDocument);
-                //console.log("value:", value);
-                //alert("stop");
-
                 dispatcher.addDocument(content);
-                //alert("aqui?");
-                //console.log("docuemnt afegit");
                 cp.setCurrentDocument(content.id);
-                //console.log("establert com actual");
 
                 return 0;
             },
 
-            /** @private */
-            _createContentTool: function (content, dispatcher) {
-                var args = {
-                    id:         content.id,
-                    title:      content.title,
-                    content:    content.content,
-                    closable:   true,
-                    dispatcher: dispatcher
-                };
+            /**
+             * @protected
+             * @abstract
+             */
+            createContentTool: function (content, dispatcher) {
+                console.error("Error. Aquest mètode ha de ser implementat per les subclasses del ContentProcessor");
+                //var args = {
+                //    id:         content.id,
+                //    title:      content.title,
+                //    content:    content.content,
+                //    closable:   true,
+                //    dispatcher: dispatcher
+                //};
+                //
+                //return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
 
-                return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
-                //return new EditorContentTool(args);
             }
         });
     return ret;

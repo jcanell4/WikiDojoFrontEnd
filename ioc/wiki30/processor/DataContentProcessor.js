@@ -3,13 +3,13 @@ define([
     "ioc/dokuwiki/editorManager/Editor",
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
-    //"ioc/wiki30/dispatcherSingleton",
     "dojo/on",
     "dijit/focus",
-    "dojo/ready"
+    "dojo/ready",
+    "ioc/gui/content/contentToolFactory"
 
 
-], function (dom, Editor, declare, ContentProcessor, /*dispatcherSingleton*/ on, focus, ready) {
+], function (dom, Editor, declare, ContentProcessor, on, focus, ready, contentToolFactory) {
 
     var setChangesControl = function (editFormId, wikiTextId, summaryId, dispatcher) {
 
@@ -143,9 +143,19 @@ define([
                 this.inherited(arguments);
                 dispatcher.getGlobalState().pages[value.id]["action"] = "edit";
                 dispatcher.getContentCache(value.id).setEditor(value.editor);
+            },
+
+            createContentTool: function (content, dispatcher) {
+                var args = {
+                    id:         content.id,
+                    title:      content.title,
+                    content:    content.content,
+                    closable:   true,
+                    dispatcher: dispatcher
+                };
+
+                return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             }
-
-
         });
 
 
