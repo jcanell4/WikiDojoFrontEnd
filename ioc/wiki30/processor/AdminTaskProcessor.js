@@ -1,7 +1,8 @@
 define([
     "dojo/_base/declare",
-    "ioc/wiki30/processor/ContentProcessor"
-], function (declare, ContentProcessor) {
+    "ioc/wiki30/processor/ContentProcessor",
+    "ioc/gui/content/contentToolFactory"
+], function (declare, ContentProcessor, contentToolFactory) {
     var ret = declare("ioc.wiki30.processor.AdminTaskProcessor", [ContentProcessor],
     /**
     * @class AdminTaskProcessor
@@ -31,7 +32,20 @@ define([
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
             dispatcher.getGlobalState().pages[value.id]["action"] = "admin";
-        }
+        },
+        
+        createContentTool: function (content, dispatcher) {
+                var args = {
+                    id:         content.id,
+                    title:      content.title,
+                    content:    content.content,
+                    closable:   true,
+                    dispatcher: dispatcher
+                };
+
+                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
+                    .decorate(contentToolFactory.decoration.DOCUMENT, args);
+            }
     });
     return ret;
 });

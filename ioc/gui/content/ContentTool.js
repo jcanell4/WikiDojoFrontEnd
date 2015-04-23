@@ -19,8 +19,8 @@ define([
          */
         {
             "-chains-": {
-                onLoad:   "before",
-                onUnload: "before"
+                onLoad:   "before"
+                //onUnload: "before"
             },
 
             dispatcher: null,
@@ -28,6 +28,10 @@ define([
             data: null,
 
             decorator: null,
+
+            container: null,
+
+            type: null,
 
 
             /**
@@ -43,6 +47,7 @@ define([
                 this.data = null;
                 this.dispatcher = null;
                 this.decorator = null;
+                this.type = null;
 
 
                 this.data = args.data ? args.data : args.content;
@@ -97,7 +102,7 @@ define([
 
             /** @override */
             onClose: function () {
-
+                return true;
             },
 
             setData: function (data) {
@@ -140,16 +145,10 @@ define([
                 }
             },
 
-            /**
-             * Chained before
-             */
-            onUnload: function () {
-                this.unregisterFromEvents();
-            },
-
 
             getContainer: function () {
-                return this.getParent().getParent();
+                return this.container;
+                //return this.getParent().getParent();
             },
 
             removeContentTool: function () {
@@ -171,7 +170,18 @@ define([
                 } else {
                     console.error("Decorador no incorporat");
                 }
+            },
 
+            setContainer:function(container) {
+                this.container = container;
+            },
+
+            setType: function(type) {
+                this.type = type;
+            },
+
+            getType: function(type) {
+                return this.type;
             }
 
         });
