@@ -170,13 +170,7 @@ define([
 
         DocumentContentTool = declare(null, {
 
-            onClose: function () {
-                this.closeDocument();
-                return true;
-            },
-
             onUnload: function () {
-                //this.inherited(arguments);
                 this.closeDocument();
             },
 
@@ -191,7 +185,6 @@ define([
                 this.dispatcher.removeDocument(this.id);
                 this.triggerEvent('document_closed', {id: this.id});
             },
-
 
             onSelect: function () { // onShow()
                 this.dispatchEvent("document_selected", {id: this.id});
@@ -210,9 +203,6 @@ define([
 
         });
 
-    ;
-
-
     return {
 
 
@@ -226,9 +216,8 @@ define([
 
         /** @enum */
         generation: {
-            EDITOR:   'editor',
-            BASE:     'base',
-            DOCUMENT: 'document'
+            EDITOR: 'editor',
+            BASE:   'base',
         },
 
 
@@ -261,21 +250,11 @@ define([
                     }
 
                     decoration = new RequestContentTool();
-                    //console.log("nou requestrcontenttool");
                     break;
 
                 case this.decoration.DOCUMENT:
-                {
-
                     decoration = new DocumentContentTool(args);
                     break;
-                }
-
-                // TODO per implementar
-                //case this.types.EDITOR:
-                //
-                //    decoration = new EditorContentTool();
-                //    break;
 
 
                 default:
@@ -305,11 +284,6 @@ define([
 
                 case this.generation.EDITOR:
                     return new EditorContentTool(args);
-
-                //case this.generation.DOCUMENT:
-                //    console.log("Args: ", args);
-                //    return new DocumentContentTool(args);
-
 
                 default:
                     console.error('No existeix el tipus de ContentTool ' + type);

@@ -121,7 +121,7 @@ define([
 
                 value.editor.select();
 
-                ready(function() {
+                ready(function () {
                     editing(value.editing, dispatcher);
                 });
 
@@ -161,13 +161,10 @@ define([
                     dispatcher: dispatcher
                 };
 
-                console.log("Args are ok");
-
-                return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
-            },
-
+                return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args)
+                    .decorate(contentToolFactory.decoration.DOCUMENT, args);
+            }
         });
-
 
     return ret;
 });

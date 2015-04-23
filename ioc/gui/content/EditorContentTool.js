@@ -30,7 +30,9 @@ define([
          */
         onDocumentChanged: function (data) {
             if (data.id == this.id) {
-                this.controlButton.containerNode.style.color = 'red';
+                if (this.controlButton) {
+                    this.controlButton.containerNode.style.color = 'red';
+                }
             }
         },
 
@@ -41,7 +43,9 @@ define([
          */
         onDocumentChangesReset: function (data) {
             if (data.id == this.id) {
-                this.controlButton.containerNode.style.color = 'black';
+                if (this.controlButton) {
+                    this.controlButton.containerNode.style.color = 'black';
+                }
             }
         },
 
@@ -54,61 +58,11 @@ define([
             }
 
             if (confirmation) {
-                //var currentTabId = this.dispatcher.getGlobalState().currentTabId;
-                //
-                //if (currentTabId === this.id) {
-                //    this.dispatcher.getGlobalState().currentTabId = null;
-                //}
-                //
-                //this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
-                //
-                //
                 this.closeDocument();
             }
 
             return confirmation;
-        },
-
-        onUnload: function () {
-            this.inherited(arguments);
-            this.closeDocument();
-        },
-
-        closeDocument: function () {
-            var currentTabId = this.dispatcher.getGlobalState().currentTabId;
-
-            if (currentTabId === this.id) {
-                this.dispatcher.getGlobalState().currentTabId = null;
-            }
-
-            this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
-            this.dispatcher.removeDocument(this.id);
-            this.triggerEvent('document_closed', {id: this.id});
-        },
-
-        //closeDocument: function() {
-        //    this.dispatcher.removeDocument(this.id);
-        //    this.triggerEvent('document_closed', {id: this.id});
-        //},
-
-
-        onSelect: function () { // onShow()
-            this.dispatchEvent("document_selected", {id: this.id});
-
-        },
-
-        onUnselect: function () { // onHide()
-            this.dispatchEvent("document_unselected", {id: this.id});
-        },
-
-        setCurrentDocument: function (id) {
-            this.dispatcher.getGlobalState().currentTabId = id;
-            this.dispatcher.getContentCache(id).setMainContentTool(this);
-            this.dispatchEvent("document_selected", {id: id});
         }
-
-
     });
-
 });
 

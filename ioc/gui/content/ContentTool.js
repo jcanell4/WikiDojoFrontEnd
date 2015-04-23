@@ -102,7 +102,7 @@ define([
 
             /** @override */
             onClose: function () {
-
+                return true;
             },
 
             setData: function (data) {
