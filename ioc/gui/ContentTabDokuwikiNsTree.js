@@ -22,6 +22,7 @@ define([
                         nsTree.sendRequest("id="+item.id);
                     }
                 }
+                this.tree.openOnClick=true;
             }
         });
     return ret;

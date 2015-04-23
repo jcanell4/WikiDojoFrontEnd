@@ -37,7 +37,7 @@ define([
 
 ], function (declare, query, template, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Tree, aspect,
              ObjectStoreModel, dispatcher, Dialog, Button) {
-    var ret = declare("ioc.gui.NsTreeContainer", [ContentPane, _TemplatedMixin, _LayoutWidget],
+    var ret = declare([ContentPane, _TemplatedMixin, _LayoutWidget],
 
         /**
          * Aquest widget afegeix un panell amb un arbre.
@@ -51,6 +51,9 @@ define([
             // summary:
             templateString: template,
             treeDataSource: null,
+            parameters: undefined,
+            onlyDirs: undefined,
+            sortBy: undefined,
             /*,pageDataSource: null*/
             rootValue:      "_",
             tree:           null,
@@ -95,7 +98,7 @@ define([
 
                     persist: false,
 
-                    openOnClick: true
+                    openOnClick: false
 
                 });
                 var tree = this.tree;
@@ -106,6 +109,7 @@ define([
                     var node = query(".dijitTreeRow", tree.domNode)[0];
                     parentNode.style.width = "" + node.offsetWidth + "px";
                 }, true);
+                this.updateSectok();
             },
 
             /** @override */
@@ -138,9 +142,30 @@ define([
              */
             updateSectok: function (sectok) {
                 if (!sectok) {
-                    sectok = this.getSectok();
+                    if(this.getSectok){
+                        sectok = this.getSectok();
+                    }else{
+                        sectok='0';
+                    }
                 }
-                this.tree.model.store.target = this.treeDataSource + sectok + "/";
+                this._updateParams();                             
+                this.tree.model.store.target = this.treeDataSource 
+                                                    + sectok 
+                                                    + "/"
+                                                    + this.parameters;
+            },
+            
+            _updateParams: function(){
+                if(!this.parameters){
+                    this.parameters="";
+                    if(this.sortBy){
+                        this.parameters = this.onlyDirs?"t/":"f/";
+                        this.parameters += this.sortBy; 
+                        this.parameters += "/"; 
+                    }else if(this.onlyDirs){
+                        this.parameters = "t/";
+                    }
+                }                  
             },
 
 
