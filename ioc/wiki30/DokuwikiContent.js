@@ -14,26 +14,19 @@ define([
             //		,documentHTML: null
             //		,documentWiki: null
 
-            /**
-             * Emmagatzema un hash amb les metadates de la pàgina seleccionada.
-             * El content es una cadena amb el codi html per mostrar.
-             * El id es una cadena amb la id que es fa servir com a index del hash.
-             * El title es el títol que es mostra com a capçalera del widget que mostra les metadates
-             *
-             * @type {Object.<{content: string, id: string, tittle: string}>}
-             */
-            metaData: null,
 
-            editor:      null,
+            editor: null,
 
             aceEditorOn: false,
 
-            wrapperOn:   true,
+            wrapperOn: true,
 
             /** @type  {Object.<string, string>} Hash de ids organitzadas per {tipus : valor} */
             currentIds: {},
 
-            info: [],
+            revisions: null,
+
+            //info: [],
 
             /**
              * Es construeix un objecte d'aquest tipus per cada pestanya que es carrega.
@@ -55,9 +48,10 @@ define([
                     throw new Error("no es reconeix el tipus de id");
                 }
 
-                this.metaData = {};
+
                 this.currentIds = {};
-                this.info = [];
+                //this.info = [];
+                this.revisions = {};
             },
 
             /**
@@ -68,53 +62,23 @@ define([
                 return this.id;
             },
 
-            /**
-             * Afegeix les metadades passades com argument i es fa servir el id com a index al hash on es guarda.
-             * Es cridat cada vegada que es carrega una pestanya, per exemple al carregar la pàgina o al obrir una nova
-             * pàgina.
-             *
-             * @param {{content: string, id: string, tittle: string}} content objecte amb les metadades a afegir.
-             */
-            putMetaData: function (content) {
-                this.metaData[content.id] = content;
-            },
-
-            /**
-             * Es crida al canviar de pestanya. Si es pasa la id retorna només l'element corresponent a la id, en cas
-             * contrari es retorna tot el hash de metaData.
-             *
-             * @param {string?} id corresponent a la metadata
-             *
-             * @returns {Object.<{content: string, id: string, tittle: string}>|{content: string, id: string, tittle: string}}
-             * la metadada corresponent al id o el hash complet de metadades
-             */
-            getMetaData: function (id) {
-                return id ? this.metaData[id] : this.metaData;
-            },
-
             setEditor: function (editor) {
                 this.editor = editor;
             },
 
-            getEditor:         function () {
+            getEditor:       function () {
                 return this.editor;
             },
 
-            /**
-             * Elimina totes les metadadtes del objecte actual.
-             */
-            removeAllMetaData: function () {
-                this.metaData = {};
-            },
 
             // TODO[Xavi] No es crida enlloc?
-            setDocumentHTML:   function (content) {
+            setDocumentHTML: function (content) {
                 alert("setDocumentHTML");
                 this.documentHTML = content.content;
             },
 
             // TODO[Xavi] No es crida enlloc?
-            setDocumentWiki:   function (content) {
+            setDocumentWiki: function (content) {
                 alert("setDocumentWiki");
                 this.documentWiki = content.content;
             },
@@ -159,7 +123,7 @@ define([
              * @param {string} content - contingut amb el que es reemplaçarà la metadata actual
              */
             replaceMetaDataContent: function (id, content) {
-                this.metaData[id]["content"] = content;
+                this.metaData[id].set('data', content);
             },
 
             /**
@@ -169,7 +133,9 @@ define([
              * @param {string} value - id del panell que volem guardar com actual
              */
             setCurrentId: function (type, value) {
+                //alert("setted: " + value+ " for document: " +this.id);
                 this.currentIds[type] = value;
+
             },
 
             /**
@@ -179,7 +145,20 @@ define([
              * @returns {string} - id del panell actual
              */
             getCurrentId: function (type) {
+                //alert("getted: " + this.currentIds[type]);
                 return this.currentIds[type]
+            },
+
+
+            /** @type EventObserver */
+            mainContentTool : null,
+
+            setMainContentTool:  function (observer) {
+                this.mainContentTool = observer;
+            },
+
+            getMainContentTool: function () {
+                return this.mainContentTool;
             }
         });
 

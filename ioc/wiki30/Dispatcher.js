@@ -29,20 +29,24 @@ define([
     "ioc/wiki30/processor/JsInfoProcessor",
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
+    "ioc/wiki30/processor/RevisionsProcessor",
+    "ioc/wiki30/DokuwikiContent",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-                AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,MetaMediaInfoProcessor,MediaDetailsProcessor,
-                DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
-                LoginProcessor, SectokProcessor, TitleProcessor,
-                RemoveAllContentTabProcessor, RemoveContentTabProcessor,
-                CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
-                InfoManager, ChangesManager) {
+             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
+             DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
+             LoginProcessor, SectokProcessor, TitleProcessor,
+             RemoveAllContentTabProcessor, RemoveContentTabProcessor,
+             CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
+             InfoManager, ChangesManager, RevisionsProcessor,
+             DokuwikiContent, UpdateViewHandler) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
      */
 
-     /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
+
+    /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
     var ret = declare(null,
         /**
          * @class Dispatcher
@@ -132,9 +136,11 @@ define([
                 this.updateViewHandlers = new Array();
                 this.reloadStateHandlers = new Array();
 
+
                 this.infoManager = new InfoManager(this);
                 this.changesManager = new ChangesManager(this);
 
+                this.processors["revisions"] = new RevisionsProcessor();
             },
 
             /**
@@ -224,36 +230,21 @@ define([
              * TODO[Xavi] Sempre es crida amb el dijit i mai com a string?
              * Només es crida desde el contenidor central a scriptsRef.tpl.
              *
-             * @param {DijitContainer|string} pwidget
+             * @param {ContainerContentTool|string} pwidget
              */
             removeAllChildrenWidgets: function (pwidget) {
-                var children;
-                var widget;
-                if (lang.isString(pwidget)) {
-                    widget = registry.byId(pwidget);
-                } else {
-                    widget = pwidget;
-                }
-                if (widget.hasChildren()) {
-                    children = widget.getChildren();
-                    for(var i=0; i<children.length; i++){
-                        if(children[i].unregisterFromEvents){
-                            children[i].unregisterFromEvents();
-                        }
-                    }
-                    widget.destroyDescendants(false);
-                }
-            },
+                var container;
 
-            hideAllChildrenWidgets: function (pwidget) {
-                var widget;
-                if (lang.isString(pwidget)) {
-                    widget = registry.byId(pwidget);
+                if (typeof pwidget === "string") {
+                    container = registry.byId(pwidget);
                 } else {
-                    widget = pwidget;
+                    container = pwidget;
                 }
-                if (widget.hasChildren()) {
-                    widget.destroyDescendants(false);
+
+                if (container.clearContainer) {
+                    container.clearContainer();
+                } else {
+                    container.destroyDescendants(false);
                 }
             },
 
@@ -265,7 +256,7 @@ define([
                 parent = registry.byId(parentId);
                 child = registry.byId(childId);
                 if (parent && child) {
-                    if(child.unregisterFromEvents){
+                    if (child.unregisterFromEvents) {
                         child.unregisterFromEvents();
                     }
                     parent.removeChild(child);
@@ -305,16 +296,6 @@ define([
                 return this.contentCache[id];
             },
 
-            //            /**
-            //             * Retorna la informació de la pàgina mostrada a la pestanya actual.
-            //             *
-            //             * TODO[Xavi] No es crida enlloc?
-            //             *
-            //             * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
-            //             */
-            //            getCurrentPage: function () {
-            //                return this.getGlobalState().pages[this.getGlobalState().currentTabId];
-            //            },
 
             /**
              * Retorna la informació de la pàgina mostrada a la pestanya actual.
@@ -376,7 +357,6 @@ define([
                 // TODO[Xavi] canviar req per that per fer més clara la intenció
                 var req = this;
 
-
                 if (Array.isArray(response)) {
 
                     array.some(response, function (responseItem) {
@@ -390,18 +370,7 @@ define([
 
                 this.updateFromState();
                 return 0;
-                /*
-                 // TODO[Xavi] lang.isArray() està deprecated.
-                 if (lang.isArray(response)) {
-                 array.forEach(response, function (responseItem) {
-                 req._processResponse(responseItem, processors);
-                 });
-                 } else {
-                 req._processResponse(response, processors);
-                 }
-                 this.updateFromState();
-                 return 0;
-                 */
+
             },
 
             /**
@@ -448,57 +417,60 @@ define([
                 return this.infoManager;
             },
 
+
             getChangesManager: function () {
                 return this.changesManager;
             },
 
 
-            events: {}, // string: function[];
+            /**
+             * Mostra un quadre de dialeg demanant confirmació i retorna true o false segons si s'ha de continuar o no.
+             * Aquest missatge només es mostrarà en alguns navegadors (això depen dels navegadors i no de nosaltres).
+             *
+             * @returns {bool}
+             */
+            discardChanges: function () {
+                return confirm("No s'han desat els canvis al document actual, vols descartar els canvis?");
+            },
 
-            observers: [],
 
-            registerToEvent: function (event, callback) {
-                var index,
-                    observer;
+            /**
+             * Afegeix un document.
+             *
+             * @param content
+             */
+            addDocument: function (content) {
+                //console.log('addDocument', content);
+                if (!this.contentCache[content.id]) {
 
-                if (!Array.isArray(this.events[event])) {
-                    this.events[event] = [];
+                    this.contentCache[content.id] = new DokuwikiContent({
+                        "id": content.id
+                    })
                 }
 
-                index = this.events[event].push(callback) -1;
-                observer = {event: event, index: index};
+                if (!this.getGlobalState().pages[content.id]) {
+                    this.getGlobalState().pages[content.id] = {};
+                }
 
-                return this.observers.push(observer) - 1;
+                this.getGlobalState().pages[content.id]["ns"] = content.ns;
+                this.getGlobalState().currentTabId = content.id;
+
+                //console.log('surt de addDocument', content);
             },
 
             /**
-             * Despatcha l'esdeveniment amb les dades passades com argument a tots els observadors.
+             * Elimina el document amb la id passada com argument.
              *
-             * @param {string} event - Nom del esdeveniment
-             * @param {object} data - Dades que es passaran als observadors
+             * @param {string} id
              */
-            dispatchEvent: function (event, data) {
-                var observers = this.events[event];
-                if (observers) {
-                    array.forEach(observers, function (callback) {
-                        if (callback) {
-                            callback(data);
-                        }
-                    });
+            removeDocument: function (id) {
+                if (this.getGlobalState().pages[id]) {
+                    delete this.getGlobalState().pages[id];
                 }
-            },
 
-            /**
-             * Alliberem els objectes però no els esborrem per no alterar la correspondencia dels index de al resta dels
-             * subscriptors
-             *
-             * @param {int} observerId - Identificador del event observat
-             */
-            removeObserver: function (observerId) {
-                var subscriber = this.observers[observerId];
-
-                this.events[subscriber.event][subscriber.index] = null;
-                this.observers[observerId] = null;
+                if (this.contentCache[id]) {
+                    delete this.contentCache[id];
+                }
             }
 
 
