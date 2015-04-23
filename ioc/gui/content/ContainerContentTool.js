@@ -87,6 +87,25 @@ define([
                         children[child].removeContentTool();
                     }
                 }
+            },
+
+
+            /**
+             * Retrona la posició dins del contenidor o -1 si no s'ha trobat.
+             *
+             * @param {string} id
+             * @returns {int}
+             */
+            getChildIndex: function (id) {
+                var children = this.getChildren();
+                for (var i = 0; i < children.length; i++) {
+                    if (children[i].id === id) {
+                        return i;
+                    }
+                }
+                return -1;
             }
+
+
         });
 });

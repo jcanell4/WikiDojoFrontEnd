@@ -145,6 +145,13 @@ define([
                 dispatcher.getContentCache(value.id).setEditor(value.editor);
             },
 
+            /**
+             *
+             * @param content
+             * @param dispatcher
+             * @returns {*}
+             * @private
+             */
             createContentTool: function (content, dispatcher) {
                 var args = {
                     id:         content.id,
@@ -154,8 +161,11 @@ define([
                     dispatcher: dispatcher
                 };
 
+                console.log("Args are ok");
+
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
-            }
+            },
+
         });
 
 

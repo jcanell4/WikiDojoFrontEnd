@@ -31,6 +31,8 @@ define([
 
             container: null,
 
+            type: null,
+
 
             /**
              * Aquest component treballa amb la propietat data a la que dona format segons la implementació de les
@@ -45,6 +47,7 @@ define([
                 this.data = null;
                 this.dispatcher = null;
                 this.decorator = null;
+                this.type = null;
 
 
                 this.data = args.data ? args.data : args.content;
@@ -171,6 +174,14 @@ define([
 
             setContainer:function(container) {
                 this.container = container;
+            },
+
+            setType: function(type) {
+                this.type = type;
+            },
+
+            getType: function(type) {
+                return this.type;
             }
 
         });

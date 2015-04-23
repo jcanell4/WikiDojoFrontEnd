@@ -53,7 +53,7 @@ define([
 
                         if (!registry.byId(currentMetaContent.id)) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
 
-                            cp = this.createContentTool(currentMetaContent, dispatcher, content.id);
+                            cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
                             nodeMetaInfo.addChild(cp);
                             //this.addContentToolToContainer(cp, nodeMetaInfo);
 
@@ -123,7 +123,7 @@ define([
              * @param {string} docId
              * @protected
              */
-            createContentTool: function (content, dispatcher, docId) {
+            _createContentTool: function (content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
                     args = {
                         id:         meta.id,

@@ -16,12 +16,7 @@ define([
      */
     return declare([ContentTool], {
 
-        constructor: function () {
-            alert("S'ha cridat al constructor del editor");
-        },
-
         postLoad: function () {
-            alert("Creat un EditorContentTool");
             // TODO[Xavi] Reactivar quan es mogui el ChangesManager
             this.registerToEvent(this, "document_changed", lang.hitch(this, this.onDocumentChanged));
             this.registerToEvent(this, "document_changes_reset", lang.hitch(this, this.onDocumentChangesReset));
@@ -34,7 +29,6 @@ define([
          * @protected
          */
         onDocumentChanged: function (data) {
-            console.log("Tic tic tic");
             if (data.id == this.id) {
                 this.controlButton.containerNode.style.color = 'red';
             }

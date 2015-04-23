@@ -76,54 +76,51 @@ define([
              * @private
              */
             __newTab: function (content, dispatcher) {
-
-                var tc = registry.byId(dispatcher.containerNodeId),
-                    widget = registry.byId(content.id),
-                    cp;
-
-
-                if (!widget) {
-                    cp = this.createContentTool(content, dispatcher);
-
-
-                    tc.addChild(cp);
-
-                    tc.selectChild(cp);
-
-
-                } else {
-                    tc.selectChild(widget);
-                    var node = dom.byId(content.id);
-                    while (node.firstChild) {
-                        node.removeChild(node.firstChild);
-                    }
-                    domConstruct.place(content.content, node);
-                    cp = dispatcher.getContentCache(content.id).getMainContentTool();
-                }
-
-                dispatcher.addDocument(content);
-                cp.setCurrentDocument(content.id);
+                var container = registry.byId(dispatcher.containerNodeId);
+                this.addContent(content, dispatcher, container);
 
                 return 0;
             },
 
+
             /**
-             * @protected
+             *
+             * @param content
+             * @param dispatcher
+             *
              * @abstract
+             * @protected
              */
             createContentTool: function (content, dispatcher) {
                 console.error("Error. Aquest mètode ha de ser implementat per les subclasses del ContentProcessor");
-                //var args = {
-                //        id:         content.id,
-                //        title:      content.title,
-                //        content:    content.content,
-                //        closable:   true,
-                //        dispatcher: dispatcher
-                //    };
-                //
-                //    return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
+            },
 
+            /**
+             * Aquesta es la implementació per defecte que pot ser sobrescrita per les subclasses.
+             *
+             * Aquesta implementació afegeix un ContentTool si no hi ha un amb el mateix id o el reemplaça si es així.
+             *
+             * @protected
+             *
+             */
+            addContent: function (content, dispatcher, container) {
+                var oldContentTool = registry.byId(content.id),
+                    cp,
+                    position = 0;
+
+                if (oldContentTool) {
+                    position = container.getChildIndex(oldContentTool.id);
+                    oldContentTool.removeContentTool();
+                }
+
+                cp = this.createContentTool(content, dispatcher);
+                container.addChild(cp, position);
+                container.selectChild(cp);
+
+                dispatcher.addDocument(content);
+                cp.setCurrentDocument(content.id);
             }
         });
     return ret;
-});
+})
+;
