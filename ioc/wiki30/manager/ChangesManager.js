@@ -1,7 +1,6 @@
 define([
-        'dojo/_base/declare',
-        'dijit/registry',
-    ], function (declare, registry) {
+        'dojo/_base/declare'
+    ], function (declare) {
         return declare(null,
             /**
              * Gestiona el control de canvis als documents des de la última vegada que es van desar.
@@ -18,9 +17,12 @@ define([
 
                 lastChecked: null,
 
+
+
                 constructor: function (dispatcher) {
                     this.documentsChanged = {};
                     this.dispatcher = dispatcher;
+
                 },
 
                 /**
@@ -33,13 +35,15 @@ define([
                 },
 
                 /**
-                 * Retorna si el document passat com argument o el document actual han sigut canviat.s
+                 * Retorna si el document passat com argument o el document actual han sigut canviat.
                  *
                  * @param {string?} id - id del document a comprovar
                  * @returns {boolean} - Cert si hi han hagut canvis o Fals en cas contrari
                  */
                 isDocumentChanged: function (id) {
                     var content = this._getCurrentContent(),
+                        contentCache,
+                        observer,
                         result;
 
                     id = id || this._getCurrentId();
@@ -52,7 +56,16 @@ define([
                     }
 
                     if (result) {
-                        this.dispatcher.dispatchEvent("document_changed", {id: id});
+                        // TODO[Xavi] l'avís s'ha de passar al content tool
+                        contentCache = this.dispatcher.getContentCache(id);
+
+                        if (contentCache) {
+                            observer = contentCache.getMainContentTool();
+                            observer.dispatchEvent("document_changed", {id: id});
+                        }
+
+
+                        //this.eventManager.dispatchEvent("document_changed", {id: id});
                     }
 
                     return result;
@@ -86,7 +99,6 @@ define([
                         return null;
                         //console.log("Error detectat: ", error);
                     }
-
                 },
 
                 /**
@@ -118,8 +130,6 @@ define([
                     }
 
 
-
-
                     return result;
                 },
 
@@ -145,14 +155,28 @@ define([
                  *
                  * @param {string?} id - Id del document a reiniciatlizar
                  */
-                resetDocumentChangeState:   function (id) {
+                resetDocumentChangeState: function (id) {
+                    var contentCache, observer;
+
                     id = id || this._getCurrentId();
 
                     if (this.documentsChanged[id]) {
                         delete this.documentsChanged[id];
                     }
 
-                    this.dispatcher.dispatchEvent("document_changes_reset", {id: id});
+
+                    //console.log(this.eventManager);
+
+                    // Recuperem el mainContentTool
+                    contentCache = this.dispatcher.getContentCache(id);
+
+                    if (contentCache) {
+                        observer = contentCache.getMainContentTool();
+                        observer.dispatchEvent("document_changes_reset", {id: id});
+                    }
+
+                    //this.eventManager.dispatchEvent("document_changes_reset", {id: id});
+
 
                 },
 
