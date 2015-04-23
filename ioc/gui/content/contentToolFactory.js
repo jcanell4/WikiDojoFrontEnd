@@ -8,6 +8,7 @@ define([
     "dojo/on",
     "ioc/gui/content/ContentTool",
     "ioc/gui/content/EditorContentTool",
+    //"ioc/gui/content/DocumentContentTool",
 
 ], function (declare, lang, renderEngineFactory, event, att, dom, on, ContentTool, EditorContentTool) {
 
@@ -165,7 +166,51 @@ define([
 
             }
 
+        }),
+
+        DocumentContentTool = declare(null, {
+
+            onClose: function () {
+                this.closeDocument();
+                return true;
+            },
+
+            onUnload: function () {
+                //this.inherited(arguments);
+                this.closeDocument();
+            },
+
+            closeDocument: function () {
+                var currentTabId = this.dispatcher.getGlobalState().currentTabId;
+
+                if (currentTabId === this.id) {
+                    this.dispatcher.getGlobalState().currentTabId = null;
+                }
+
+                this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
+                this.dispatcher.removeDocument(this.id);
+                this.triggerEvent('document_closed', {id: this.id});
+            },
+
+
+            onSelect: function () { // onShow()
+                this.dispatchEvent("document_selected", {id: this.id});
+
+            },
+
+            onUnselect: function () { // onHide()
+                this.dispatchEvent("document_unselected", {id: this.id});
+            },
+
+            setCurrentDocument: function (id) {
+                this.dispatcher.getGlobalState().currentTabId = id;
+                this.dispatcher.getContentCache(id).setMainContentTool(this);
+                this.dispatchEvent("document_selected", {id: id});
+            }
+
         });
+
+    ;
 
 
     return {
@@ -173,16 +218,17 @@ define([
 
         /** @enum */
         decoration: {
-            META:    'meta',
-            RENDER:  'render',
-            REQUEST: 'request',
-            EDITOR:  'editor'
+            META:     'meta',
+            RENDER:   'render',
+            REQUEST:  'request',
+            DOCUMENT: 'document'
         },
 
         /** @enum */
         generation: {
-            EDITOR: 'editor',
-            BASE:   'base'
+            EDITOR:   'editor',
+            BASE:     'base',
+            DOCUMENT: 'document'
         },
 
 
@@ -218,6 +264,12 @@ define([
                     //console.log("nou requestrcontenttool");
                     break;
 
+                case this.decoration.DOCUMENT:
+                {
+
+                    decoration = new DocumentContentTool(args);
+                    break;
+                }
 
                 // TODO per implementar
                 //case this.types.EDITOR:
@@ -253,6 +305,11 @@ define([
 
                 case this.generation.EDITOR:
                     return new EditorContentTool(args);
+
+                //case this.generation.DOCUMENT:
+                //    console.log("Args: ", args);
+                //    return new DocumentContentTool(args);
+
 
                 default:
                     console.error('No existeix el tipus de ContentTool ' + type);

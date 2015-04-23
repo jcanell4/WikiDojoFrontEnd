@@ -6,29 +6,35 @@ define([
 ], function (declare, ContentTool, lang) {
 
     /**
-    * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
-    *
-    * @class EditorContentTool
-    * @extends ContentTool, EventObserver
-    * @author Xavier García <xaviergaro.dev@gmail.com>
-    * @protected
-    * @see contentToolFactory
-    */
+     * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
+     *
+     * @class EditorContentTool
+     * @extends ContentTool, EventObserver
+     * @author Xavier García <xaviergaro.dev@gmail.com>
+     * @protected
+     * @see contentToolFactory
+     */
     return declare([ContentTool], {
 
+        constructor: function () {
+            alert("S'ha cridat al constructor del editor");
+        },
+
         postLoad: function () {
+            alert("Creat un EditorContentTool");
             // TODO[Xavi] Reactivar quan es mogui el ChangesManager
-            this.registerToEvent(this, "document_changed", lang.hitch(this, this._onDocumentChanged));
-            this.registerToEvent(this, "document_changes_reset", lang.hitch(this, this._onDocumentChangesReset));
+            this.registerToEvent(this, "document_changed", lang.hitch(this, this.onDocumentChanged));
+            this.registerToEvent(this, "document_changes_reset", lang.hitch(this, this.onDocumentChangesReset));
         },
 
         /**
          * Accio a realitzar quan hi han canvis al document
          *
          * @param {object} data - dades amb informació sobre l'esdeveniment
-         * @private
+         * @protected
          */
-        _onDocumentChanged: function (data) {
+        onDocumentChanged: function (data) {
+            console.log("Tic tic tic");
             if (data.id == this.id) {
                 this.controlButton.containerNode.style.color = 'red';
             }
@@ -37,9 +43,9 @@ define([
         /**
          *
          * @param {object} data - dades amb informació sobre l'esdeveniment
-         * @private
+         * @protected
          */
-        _onDocumentChangesReset: function (data) {
+        onDocumentChangesReset: function (data) {
             if (data.id == this.id) {
                 this.controlButton.containerNode.style.color = 'black';
             }
@@ -54,29 +60,42 @@ define([
             }
 
             if (confirmation) {
-                var currentTabId = this.dispatcher.getGlobalState().currentTabId;
-
-                if (currentTabId === this.id) {
-                    this.dispatcher.getGlobalState().currentTabId = null;
-                }
-
-                this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
-
-                // TODO[Xavi] S'hauria de restaurar la visibilitat dels botons i els panells d'informació <-- Enregistrat als events?
-                this.closeDocument();            }
+                //var currentTabId = this.dispatcher.getGlobalState().currentTabId;
+                //
+                //if (currentTabId === this.id) {
+                //    this.dispatcher.getGlobalState().currentTabId = null;
+                //}
+                //
+                //this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
+                //
+                //
+                this.closeDocument();
+            }
 
             return confirmation;
         },
 
-        onUnload: function() {
+        onUnload: function () {
             this.inherited(arguments);
             this.closeDocument();
         },
 
-        closeDocument: function() {
+        closeDocument: function () {
+            var currentTabId = this.dispatcher.getGlobalState().currentTabId;
+
+            if (currentTabId === this.id) {
+                this.dispatcher.getGlobalState().currentTabId = null;
+            }
+
+            this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
             this.dispatcher.removeDocument(this.id);
             this.triggerEvent('document_closed', {id: this.id});
         },
+
+        //closeDocument: function() {
+        //    this.dispatcher.removeDocument(this.id);
+        //    this.triggerEvent('document_closed', {id: this.id});
+        //},
 
 
         onSelect: function () { // onShow()
@@ -94,7 +113,7 @@ define([
             this.dispatchEvent("document_selected", {id: id});
         }
 
-        
+
     });
 
 });

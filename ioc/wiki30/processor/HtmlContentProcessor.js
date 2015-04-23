@@ -39,15 +39,20 @@ define([
 
             createContentTool: function (content, dispatcher) {
                 var args = {
-                    id:         content.id,
-                    title:      content.title,
-                    content:    content.content,
-                    closable:   true,
-                    dispatcher: dispatcher
-                };
+                        id:         content.id,
+                        title:      content.title,
+                        content:    content.content,
+                        closable:   true,
+                        dispatcher: dispatcher
+                    },
+                    //contentTool = contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
+                    //contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
+                    contentTool = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
 
-                return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
+                contentTool.decorate(contentToolFactory.decoration.DOCUMENT, args);
 
+
+                return contentTool;
             }
         });
     return ret;

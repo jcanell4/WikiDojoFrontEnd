@@ -114,14 +114,14 @@ define([
             createContentTool: function (content, dispatcher) {
                 console.error("Error. Aquest mètode ha de ser implementat per les subclasses del ContentProcessor");
                 //var args = {
-                //    id:         content.id,
-                //    title:      content.title,
-                //    content:    content.content,
-                //    closable:   true,
-                //    dispatcher: dispatcher
-                //};
+                //        id:         content.id,
+                //        title:      content.title,
+                //        content:    content.content,
+                //        closable:   true,
+                //        dispatcher: dispatcher
+                //    };
                 //
-                //return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
+                //    return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
 
             }
         });
