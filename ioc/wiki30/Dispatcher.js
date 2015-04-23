@@ -33,7 +33,7 @@ define([
     "ioc/wiki30/DokuwikiContent",
     "ioc/wiki30/UpdateViewHandler"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,MetaMediaInfoProcessor,MediaDetailsProcessor,
+             AlertProcessor, HtmlContentProcessor, MediaProcessor, MetaInfoProcessor,
              DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
              LoginProcessor, SectokProcessor, TitleProcessor,
              RemoveAllContentTabProcessor, RemoveContentTabProcessor,
