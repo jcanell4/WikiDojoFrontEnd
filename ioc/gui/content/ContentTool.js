@@ -4,35 +4,39 @@ define([
     "ioc/wiki30/manager/EventObserver",
     "dojo/dom-style",
     "dojo/dom"
-
 ], function (declare, ContentPane, EventObserver, domStyle, dom) {
 
     return declare([ContentPane, EventObserver],
+
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
+         *
+         * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
+         * en el futur.
          *
          * @class ContentTool
          * @extends ContentPane, EventObserver
          * @author Xavier García <xaviergaro.dev@gmail.com>
-         * @protected
-         * @see contentToolFactory
+         * @private
+         * @see contentToolFactory.generate()
          */
         {
             "-chains-": {
-                onLoad:   "before"
-                //onUnload: "before"
+                onLoad: "before"
             },
-
-            dispatcher: null,
 
             data: null,
 
             decorator: null,
 
+            /** @type Dispatcher */
+            dispatcher: null,
+
+            /** @type ContainerContentTool */
             container: null,
 
+            /** @type string */
             type: null,
-
 
             /**
              * Aquest component treballa amb la propietat data a la que dona format segons la implementació de les
@@ -49,45 +53,70 @@ define([
                 this.decorator = null;
                 this.type = null;
 
-
                 this.data = args.data ? args.data : args.content;
 
                 declare.safeMixin(this, args);
-
             },
 
             /**
+             * Acció portada a terme quan l'element es seleccionat. Aquest mètode es cridat automàticament, l'he afegit
+             * per centralitzar tota la funcionalitat al mateix lloc.
+             *
              * @private
+             * @override
+             * @see onSelect()
              */
             onShow: function () {
                 this.onSelect();
             },
 
             /**
+             * Acció portada a terme quan l'element es des-seleccionat. Aquest mètode es cridat automàticament, l'he
+             * afegit per centralitzar tota la funcionalitat al mateix lloc.
+             *
              * @private
+             * @override
+             * @see onUnselect()
              */
             onHide: function () {
                 this.onUnselect();
             },
 
 
-            onSelect: function () { // onShow()
+            /**
+             * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
+             */
+            onSelect: function () {
                 this.triggerEvent("content_selected", {id: this.id});
             },
 
-            onUnselect: function () { // onHide()
+            /**
+             * Dispara l'esdeveniment que indica que el contingut ha estat des-seleccionat.
+             */
+            onUnselect: function () {
                 this.triggerEvent("content_unselected", {id: this.id});
             },
 
+            /**
+             * TODO[Xavi] vam parlar d'afegir-lo però actualment no fa res i no es crida automàticament
+             */
             onResize: function () {
 
             },
 
-            getId: function () { // get('id')
+            /**
+             * Retorna la id d'aquest ContentTool
+             *
+             * @returns {string}
+             */
+            getId: function () {
                 return this.get('id');
             },
 
-            /** @override */
+
+            /**
+             * @override
+             */
             startup: function () {
 
                 this.watch('data', function (name, oldValue, value) {
@@ -100,20 +129,35 @@ define([
                 }
             },
 
-            /** @override */
+            /**
+             * Aquest mètode es cridat al tancar la pestanya
+             *
+             * @return bool - true si volem continuar o false per evitar el tancament
+             * @override
+             */
             onClose: function () {
                 return true;
             },
 
+            /**
+             * Estableix les dades del ContentTool
+             *
+             * @param {*} data - Dades per establir, amb un format diferent segons el tipus de ContentTool o decoració
+             * aplicada.
+             */
             setData: function (data) {
                 this.set('data', data);
             },
 
             /**
-             * Chained before
+             * Aquest mètode es crida automàticament desde las subclasses abans d'executar el onLoad() propi.
+             *
+             * Chained: before
+             *
+             * @override
              */
             onLoad: function () {
-                // aquì s'han d'afegir els watchers i listeners comuns
+                // TODO[Xavi] Aquì s'han d'afegir els watchers i listeners comuns
                 this.postLoad();
             },
 
@@ -130,6 +174,9 @@ define([
             },
 
 
+            /**
+             * Amaga el contingut del ContentTool
+             */
             hideContent: function () {
                 if (dom.byId(this.domNode.id)) {
                     domStyle.set(this.domNode.id + "_wrapper", {display: "none"});
@@ -137,6 +184,9 @@ define([
                 }
             },
 
+            /**
+             * Mostra el contingut del ContentTool
+             */
             showContent: function () {
                 if (dom.byId(this.domNode.id)) {
                     domStyle.set(this.domNode.id + "_wrapper", {display: ""});
@@ -145,12 +195,30 @@ define([
                 }
             },
 
-
+            /**
+             * Retorna el contenidor al que estan afegits o undefined si no ha estat afegit a cap contenidor.
+             *
+             * @returns {ContainerContentTool|null} - Contenidor al que estan afegits o undefined si no s'ha afegit a cap
+             */
             getContainer: function () {
                 return this.container;
-                //return this.getParent().getParent();
             },
 
+            /**
+             * Estableix el contenidor al que s'ha afegit aquest ContentTool. Cridat automàticament per
+             * ContainerContentTool.
+             *
+             * @param {ContainerContentTool} container - Contenidor al que s'ha afegit
+             * @see ContainerContentTool.addChild()
+             */
+            setContainer: function (container) {
+                this.container = container;
+            },
+
+            /**
+             * Elimina aquest ContentTool del ContainerContentTool en el que es trobi i es destrueix junt amb tots els
+             * elements que el composin.
+             */
             removeContentTool: function () {
                 var parent = this.getContainer();
 
@@ -163,6 +231,13 @@ define([
             },
 
 
+            /**
+             * Decora aquest ContentTool amb la decoració passada com argument i amb els valors passats com arguments.
+             *
+             * @param {string} type - tipus de decoració
+             * @param {*} args - arguments necesaris per passar al decorador
+             * @returns {ContainerContentTool}
+             */
             decorate: function (type, args) {
 
                 if (this.decorator) {
@@ -172,17 +247,23 @@ define([
                 }
             },
 
-            setContainer:function(container) {
-                this.container = container;
-            },
 
-            setType: function(type) {
+            /**
+             * Estableix el tipus de ContentTool que estem tractant.
+             *
+             * @param {string} type - referencia que volem donar al ContentTool
+             */
+            setType: function (type) {
                 this.type = type;
             },
 
-            getType: function(type) {
+            /**
+             * Retorna el tipus que s'ha establert per aquest ContentTool o null si no s'ha establert cap.
+             *
+             * @returns {string|null}
+             */
+            getType: function () {
                 return this.type;
             }
-
         });
 });

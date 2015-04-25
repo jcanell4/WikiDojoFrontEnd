@@ -6,8 +6,11 @@ define([
 
 
 ], function (declare, registry, contentToolFactory, AbstractResponseProcessor) {
-    var ret = declare([AbstractResponseProcessor],
+    return declare([AbstractResponseProcessor],
         /**
+         * Aquesta classe s'encarrega de processar la informació de tipus metadada, generar el ContentTool del tipus
+         * adequat i afegirlo al ContainerContentTool que li pertoca.
+         *
          * @class MetaInfoProcessor
          * @extends AbstractResponseProcessor
          * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
@@ -15,9 +18,15 @@ define([
         {
             type: "meta",
 
+            /**
+             * Processa el valor passat com argument per generar un ContentTool i afegir-lo a la secció de metadades.
+             *
+             * @param {{id: string, meta:Content[]}} value
+             * @param {Dispatcher} dispatcher
+             * @override
+             */
             process: function (value, dispatcher) {
                 this._processMetaInfo(value, dispatcher);
-                this._processContentCache(dispatcher, value);
             },
 
             /**
@@ -26,7 +35,7 @@ define([
              *
              * @param {{id: string, meta:Content[]}} content
              * @param {Dispatcher} dispatcher
-             * @returns {number} sempre es 0
+             * @returns {number} - Sempre es 0
              * @protected
              */
             _processMetaInfo: function (content, dispatcher) {
@@ -40,9 +49,8 @@ define([
                     currentMetaContent,
                     contentCache = dispatcher.getContentCache(content.id);
 
-                //this.clearContainer(nodeMetaInfo, content.id); // TODO[Xavi] Això haurà de anar al ContainerContentTool
+                // TODO[Xavi] La neteja del container s'hauria de fer a traves del RemoveAllContentProcessor. Compte amb el setCurrentId que deixaría de funcionar!
                 nodeMetaInfo.clearContainer(content.id);
-
                 contentCache.setCurrentId("metadataPane", null);
 
 
@@ -53,7 +61,7 @@ define([
 
                         if (!registry.byId(currentMetaContent.id)) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
 
-                            cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
+                            cp = this.createContentTool(currentMetaContent, dispatcher, content.id);
                             nodeMetaInfo.addChild(cp);
                             //this.addContentToolToContainer(cp, nodeMetaInfo);
 
@@ -66,12 +74,10 @@ define([
                             }
 
                         } else {
-                            console.log("ja existeix");
-                            alert("JA EXISTEIX -> comprovar quin es aquest cas i perquè"); // TODO[Xavi] Si no es produeix mai -> esborrar: moure la
+                            console.error("Ja existeix un ContentTool amb aquest id.");
                         }
                     }
                 }
-
 
                 selectedPane = contentCache.getCurrentId("metadataPane");
 
@@ -79,51 +85,40 @@ define([
                     selectedPane = defaultSelected;
                 } else if (!selectedPane) {
                     selectedPane = firstPane;
-
                 }
 
                 nodeMetaInfo.selectChild(selectedPane);
                 contentCache.setCurrentId("metadataPane", selectedPane);
 
-
                 return 0;
             },
 
             /**
-             * TODO[Xavi] Els paràmetres estan al contrari que a la resta de mètodes, canviar per consistencia?
+             * Formata la informació per inicialitzar el ContentTool apropiat.
              *
-             * Afegeix les metadades al contentCache.
-             *
-             * @param {Dispatcher} dispatcher
-             * @param {{id: string, meta:Content[]}} value
-             * @protected
+             * @param {Content} content
+             * @returns {{id: string, data: (content.content|' '), title: (content.title|*), action: *}}
+             * @private
              */
-            _processContentCache: function (dispatcher, value) {
-                // TODO[Xavi] Actulament no es fa servir per a res
-
-            },
-
-            /** @private */
             _convertMetaData: function (content) {
                 return {
-                    id:     this._buildContentId(content), // El id corresponent a la metadata s'estableix al DokuModelAdapter
+                    id:     this.buildContentId(content), // El id corresponent a la metadata s'estableix al DokuModelAdapter
                     data:   content.content || ' ',
                     title:  content.title,
                     action: content.action
                 };
             },
 
-
             /**
              * Crea un ContentTool apropiat i el retorna.
              *
-             * @param {object} content
+             * @param {Content} content
              * @param {Dispatcher} dispatcher
              * @returns {MetaContentTool}
              * @param {string} docId
              * @protected
              */
-            _createContentTool: function (content, dispatcher, docId) {
+            createContentTool: function (content, dispatcher, docId) {
                 var meta = this._convertMetaData(content),
                     args = {
                         id:         meta.id,
@@ -142,16 +137,12 @@ define([
              * Contrueix la id a partir del content passat com argument. Ens assegurem que només hi ha un punt on ho hem
              * de canviar si volem una estructura diferent.
              *
-             * @param content
+             * @param {Content} content
              * @returns {string}
              * @protected
              */
-            _buildContentId:           function (content) {
+            buildContentId: function (content) {
                 return content.id;
             }
-
-
         });
-    return ret;
 });
-

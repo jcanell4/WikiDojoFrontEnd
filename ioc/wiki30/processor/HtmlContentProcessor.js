@@ -5,19 +5,23 @@ define([
     "dijit/registry"
 ], function (declare, ContentProcessor, contentToolFactory, registry) {
 
-    var ret = declare([ContentProcessor],
+    return declare([ContentProcessor],
         /**
+         * Aquesta classe s'encarrega de processar els continguts per documents de tipus Html, generar els ContentTool
+         * apropiat i afegir-lo al contenidor adequat.
+         *
          * @class HtmlContentProcessor
          * @extends ContentProcessor
+         * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-
             type: "html",
 
             /**
-             * @param {Content} value
-             * @param {Dispatcher} dispatcher
+             * Processa el valor rebut com argument com a contingut Html per mostrar un document en mode Html
              *
+             * @param {Content} value - Valor per processar
+             * @param {Dispatcher} dispatcher - Dispatcher al que està lligat aquest document.
              * @override
              */
             process: function (value, dispatcher) {
@@ -28,9 +32,8 @@ define([
              * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument, i afegeix
              * el valor de la acció a "view".
              *
-             * @param {Dispatcher} dispatcher
-             * @param {Content} value
-             *
+             * @param {Dispatcher} dispatcher - Dispatcher al que està lligat aquest process
+             * @param {Content} value - Valor per processar
              * @override
              */
             updateState: function (dispatcher, value) {
@@ -38,6 +41,15 @@ define([
                 dispatcher.getGlobalState().pages[value.id]["action"] = "view";
             },
 
+            /**
+             * Genera un ContentTool decorat adecuadament per funcionar com document de només lectura.
+             *
+             * @param {Content} content - Contingut a partir del qual es generarà el ContentTool
+             * @param {Dispatcher} dispatcher - Dispatcher al que estarà lligat el ContentTool
+             * @returns {ContentTool} ContentTool decorat com a tipus document.
+             * @protected
+             * @override
+             */
             createContentTool: function (content, dispatcher) {
                 var args = {
                     id:         content.id,
@@ -52,11 +64,12 @@ define([
             },
 
             /**
+             * Creat un ContentTool del tipus apropiat per aquest processador i l'afegeix al contenidor passat com
+             * argument.
              *
-             * @param content
-             * @param dispatcher
-             * @param container
-             *
+             * @param {Content} content - Contingut a partir del qual es generarà el ContentTool
+             * @param {Dispatcher} dispatcher - Dispatcher lligat tant al ContentTool com al ContainerContentTool
+             * @param {ContainerContentTool} container - Contenidor al que s'afegirà el ContentTool
              * @protected
              * @override
              */
@@ -85,6 +98,5 @@ define([
                 cp.setCurrentDocument(content.id);
             }
         });
-    return ret;
 });
 

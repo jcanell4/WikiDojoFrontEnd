@@ -2,35 +2,51 @@
  * Aquesta classe es una Factoria de motors de renderització que permet afegir nous tipus i obtenir els motors pels
  * tipus coneguts.
  *
+ * @moudle renderEngineFactory
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
 define([], function () {
 
+    /**
+     * Array amb tots els motors de render disponibles per defecte
+     *
+     * @type {{string: function}}
+     */
     var renderEngines = {
 
+            /**
+             * Aquest motor de render espera que el format de les dades sigui string i retorna el mateix contingut
+             * o un missatge d'error.
+             *
+             * @param {string} data
+             * @returns {string}
+             */
             standard: function (data) {
-                var i = typeof data === 'string' ? data : 'Tipus de dada no reconegut.';
-                console.log(i);
-                return i;
+                return typeof data === 'string' ? data : 'Tipus de dada no reconegut.';
             }
         },
 
+        /**
+         * Retorna el motor de render pel tipus especificat o un generic si no existeix.
+         *
+         * @param {string} type - Tipus de motor de render
+         * @returns {function} - Motor del tipus especificat o un generic si no s'ha trobat
+         * @private
+         */
         _getRenderEngine = function (type) {
-            // Comprovem si el tipus existeix
-            //      Si existeix el retornem
-            //      Si no existeix retornem el generador per defecte, que retorna el contingut tal com s'ha passat
-
-
             return renderEngines[type] ? renderEngines[type] : renderEngines['standard'];
-
         },
 
+        /**
+         * Afegeix el motor de render amb el tipus especificat.
+         *
+         * @param {string} type - Nom del tipus de motor de render
+         * @param {function} renderEngine - Funció que actuará com a motor de render
+         * @private
+         */
         _addRenderEngine = function (type, renderEngine) {
-
-
             renderEngines[type] = renderEngine;
         };
-
 
     return {
         // Retornem només els mètodes exposats del closure

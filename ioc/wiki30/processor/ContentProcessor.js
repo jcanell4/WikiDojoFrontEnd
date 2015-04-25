@@ -1,23 +1,31 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/StateUpdaterProcessor",
-    "dijit/registry",            //search widgets by id
-    "dojo/dom",
-    "dojo/dom-construct",
-    "ioc/gui/content/contentToolFactory",
+    "dijit/registry"
+], function (declare, StateUpdaterProcessor, registry) {
 
-], function (declare, StateUpdaterProcessor, registry, dom, domConstruct, contentToolFactory) {
-
-    var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor],
+    return declare([StateUpdaterProcessor],
         /**
+         * Aquesta es la superclasse a partir de la qual heretan altres processadors de contingut. Aquests continguts
+         * seràn processats, es generarà un ContentTool apropiat pel tipus de contingut i s'afegiran al contenidor
+         * principal.
+         *
          * @class ContentProcessor
          * @extends StateUpdaterProcessor
+         * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
             /**
-             * @param {*} value
-             * @param {Dispatcher} dispatcher
+             * Comprova si ja existeix un document amb la mateixa id carregat, si es així comprova si s'han produit
+             * canvis, i en cas afirmatiu mostra un missatge demanant si es volen descartar els canvis.
              *
+             * En cas de que no hi hagi cap document amb aquesta id, o que no hi hagin canvis, o que es descartin els
+             * canvis es processarà el contingut, es generarà un nou ContentTool del tipus apropiat i s'afegira
+             * al ContainerContentTool principal.
+             *
+             * @param {*} value - Valor per processar
+             * @param {Dispatcher} dispatcher - Dispatcher al que està lligat el processador
+             * @returns {int} - 0 en cas de que s'hagi generat el contingut o 100 en cas contrari
              * @override
              */
             process: function (value, dispatcher) {
@@ -26,14 +34,12 @@ define([
                     confirmation = false,
                     id = value.id;
 
-
                 if (changesManager.isChanged(id)) {
                     confirmation = dispatcher.discardChanges();
 
                 } else {
                     confirmation = true;
                 }
-
 
                 if (confirmation) {
                     changesManager.resetDocumentChangeState(id);
@@ -42,20 +48,21 @@ define([
                 }
 
                 return confirmation ? 0 : 100;
-
             },
 
-            /** @private */
-            _loadTab: function (value, dispatcher, args) {
-
-                this.__newTab(value, dispatcher);
-
+            /**
+             * Localitza el ContainerContentTool i li afegeix el contingut passat com argument
+             *
+             * @private
+             */
+            _loadTab: function (content, dispatcher, args) {
+                var container = registry.byId(dispatcher.containerNodeId);
+                this.addContent(content, dispatcher, container);
                 this.inherited("process", args);
             },
 
-
             /**
-             * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument.
+             * TODO[Xavi] Actualment no fa res. Anotarla com a abstract?
              *
              * @param {Dispatcher} dispatcher
              * @param {Content} value
@@ -63,30 +70,14 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
-                //dispatcher.addDocument(value);
-
             },
 
             /**
-             * Si existeix una pestanya amb aquesta id carrega el contingut a aquesta pestanya, si no construeix una de nova.
+             * Aquest mètode ha de ser implementat obligatoriament per les subclasses per generar el tipus de
+             * ContentTool i decorar-lo com sigui necessari.
              *
-             * @param {Content} content
-             * @param {Dispatcher} dispatcher
-             * @returns {number}
-             * @private
-             */
-            __newTab: function (content, dispatcher) {
-                var container = registry.byId(dispatcher.containerNodeId);
-                this.addContent(content, dispatcher, container);
-
-                return 0;
-            },
-
-
-            /**
-             *
-             * @param content
-             * @param dispatcher
+             * @param {*} content - Contingut a partir del que es generarà el ContentTool
+             * @param {Dispatcher} dispatcher - Dispatcher al que quedarà lligat el ContentTool
              *
              * @abstract
              * @protected
@@ -96,12 +87,17 @@ define([
             },
 
             /**
-             * Aquesta es la implementació per defecte que pot ser sobrescrita per les subclasses.
+             * Crea un ContentTool apropiat pel tipus de processador i l'afegeix al contenidor passat com argument.
+             *
+             * Aquesta es una implementació per defecte que pot ser sobrescrita per les subclasses.
              *
              * Aquesta implementació afegeix un ContentTool si no hi ha un amb el mateix id o el reemplaça si es així.
              *
+             * @param {*} content - Contingut a partir del cual es generarà el ContentTool apropiat
+             * @param {Dispatcher} dispatcher - Dispatcher al que estaran lligats tant el ContainerContentTool com
+             * el ContentTool creat.
+             * @param {ContainerContentTool} container - Contenidor al que s'afegira el ContentTool creat
              * @protected
-             *
              */
             addContent: function (content, dispatcher, container) {
                 var oldContentTool = registry.byId(content.id),
@@ -121,5 +117,4 @@ define([
                 cp.setCurrentDocument(content.id);
             }
         });
-    return ret;
 });

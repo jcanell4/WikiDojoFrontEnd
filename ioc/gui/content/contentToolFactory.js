@@ -1,3 +1,18 @@
+/**
+ * Aquest mòdul exposa la creació i decoració de objectes ContentTool a través dels métodes públics les propietats
+ * que exposa.
+ *
+ * Tots els tipus de ContentTool seran creats i decorats a travès d'aquesta factoria, sent les classes específiques tant
+ * per instancar-los com per decorar-los privades a aquest mòdul.
+ *
+ * Encara que actualment el codi d'un o mès d'aquestes classes es trobi en un fitxer independent s'ha de considerar
+ * que son privats a aquesta classe i així s'han anotat.
+ *
+ * No es pot garantir que les classes marcades com a privades siguien accessibles en el futur.
+ *
+ * @module contentToolFactory
+ * @author Xavier García <xaviergaro.dev@gmail.com>
+ */
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
@@ -7,204 +22,262 @@ define([
     "dojo/dom",
     "dojo/on",
     "ioc/gui/content/ContentTool",
-    "ioc/gui/content/EditorContentTool",
-    //"ioc/gui/content/DocumentContentTool",
-
+    "ioc/gui/content/EditorContentTool"
 ], function (declare, lang, renderEngineFactory, event, att, dom, on, ContentTool, EditorContentTool) {
 
-    /**
-     * Aquesta classe requereix que es faci un mixin amb un ContentTool per poder funcionar.
-     *
-     * @class MetaContentTool
-     * @extends EventObserver
-     */
-    var MetaContentTool = declare(null, {
+    var MetaContentToolDecoration = declare(null,
             /**
-             * @override
-             * @protected
-             */
-            postLoad: function () {
-                //console.log("Postload");
-                var observed = this.dispatcher.getContentCache(this.docId).getMainContentTool();
-                //console.log("docid: ", this.docId);
-                //console.log("observer: ", observed);
-
-
-                this.registerToEvent(observed, "document_closed", lang.hitch(this, this._onDocumentClosed));
-                this.registerToEvent(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
-                this.registerToEvent(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
-                //console.log("observer despres de registrar: ", observed);
-
-                this.watch("selected", function (name, oldValue, newValue) {
-                    var contentCache = this.dispatcher.getContentCache(this.docId);
-                    if (contentCache) {
-                        contentCache.setCurrentId("metadataPane", this.id)
-                    }
-                })
-            },
-
-            /** @private */
-            _onDocumentClosed: function (data) {
-                if (data.id == this.docId) {
-                    this.removeContentTool();
-                }
-            },
-
-            /** @private */
-            _onDocumentSelected: function (data) {
-                var selectedPane,
-                    parent;
-
-
-                if (data.id == this.docId && this.domNode) {
-
-                    this.showContent();
-                    selectedPane = this.dispatcher.getContentCache(this.docId).getCurrentId('metadataPane');
-
-
-                    if (selectedPane == this.id) {
-                        parent = this.getContainer();
-                        parent.selectChild(this);
-                    }
-                }
-            },
-
-            /** @private */
-            _onDocumentUnselected: function (data) {
-                //console.log("Rebut unselected");
-                if (data.id == this.docId && this.domNode) {
-                    this.hideContent();
-                }
-            }
-        }),
-
-
-        /**
-         * Aquesta classe requereix que es faci un mixin amb un ContentTool per poder funcionar.
-         *
-         * @class MetaContentTool
-         * @extends EventObserver
-         */
-        RenderContentTool = declare(null, {
-            /** @type string */
-            //type: null,
-
-            /** @type function */
-            //renderEngine: null,
-
-
-            /**
+             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
              *
-             * @protected
-             */
-            render: function () {
-                this.set('content', this.renderEngine(this.data));
-            },
-
-
-            startup: function () {
-
-                this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
-
-                this.watch("data", function () {
-                    this.render();
-                });
-
-                if (this.data) {
-                    this.render();
-                }
-            }
-
-        }),
-
-
-        RequestContentTool = declare(null, {
-
-            /** @type Request */
-            requester: null,
-
-            constructor: function () {
-
-
-                require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
-                    this.requester = new Request();
-                }));
-            },
-
-            /**
+             * Afegeix els métodes per observar a un altre document el que permet que reaccioni als seus esdeveniments
+             * de la següent manera:
+             *      - Si el document es seleccionat es fa visible
+             *      - Si el document es des-seleccionat s'amaga
+             *      - Si el document es tanca es destrueix
              *
-             * @protected
+             * Requereix una propietat docId quan es fa el mixin per determinar a quin document ha de observar.
+             *
+             * @class MetaContentToolDecoration
+             * @extends ContentTool
+             * @private
              */
-            render: function () {
-                this.set('content', this.renderEngine(this.data));
-                this.replaceLinksWithRequest();
-            },
+            {
+                /**
+                 * Accions a realitza desprès de carregar.
+                 *
+                 * S'enregistra al document a observar.
+                 * @override
+                 * @protected
+                 */
+                postLoad: function () {
+                    var observed = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
-            /** @private */
-            replaceLinksWithRequest: function () {
-                var q = null;
-                //var tab = this.requester;
+                    this.registerToEvent(observed, "document_closed", lang.hitch(this, this._onDocumentClosed));
+                    this.registerToEvent(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
+                    this.registerToEvent(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
 
+                    this.watch("selected", function (name, oldValue, newValue) {
+                        var contentCache = this.dispatcher.getContentCache(this.docId);
+                        if (contentCache) {
+                            contentCache.setCurrentId("metadataPane", this.id)
+                        }
+                    })
+                },
 
-                var self = this;
+                /**
+                 * Aquest ContentTool s'elimina
+                 *
+                 * @private
+                 */
+                _onDocumentClosed: function (data) {
+                    if (data.id == this.docId) {
+                        this.removeContentTool();
+                    }
+                },
 
-                var node = dom.byId(this.id);
+                /**
+                 * Aquest ContentTool es fa visible.
+                 *
+                 * @private
+                 */
+                _onDocumentSelected: function (data) {
+                    var selectedPane,
+                        parent;
 
-                on(node, "a:click", function (e) {
+                    if (data.id == this.docId && this.domNode) {
 
-                    var arr = att.get(this, "href").split("?");
+                        this.showContent();
+                        selectedPane = this.dispatcher.getContentCache(this.docId).getCurrentId('metadataPane');
 
+                        if (selectedPane == this.id) {
+                            parent = this.getContainer();
+                            parent.selectChild(this);
+                        }
+                    }
+                },
 
-                    if (arr.length > 1) {
-                        q = arr[1];
+                /**
+                 * Aquest ContentTool s'amaga.
+                 *
+                 * @private
+                 */
+                _onDocumentUnselected: function (data) {
+                    if (data.id == this.docId && this.domNode) {
+                        this.hideContent();
+                    }
+                }
+            }),
+
+        RenderContentToolDecoration = declare(null,
+            /**
+             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
+             *
+             * Aquesta decoració afegeix un motor de render al ContentTool el que li permet mostrar la informació
+             * de manera diferent segons el tipus de render especificat.
+             *
+             * Requereix una propietat type quan es fa el mixin per determinar a quin tipus de motor de render s'ha
+             * de fer servir per interpretar les dades.
+             *
+             * @class RenderContentToolDecoration
+             * @extends ContentTool
+             * @private
+             */
+            {
+                /**
+                 * Processa les dades a través del motor de render i les afegeix al contingut amb el format obtingut.
+                 *
+                 * @protected
+                 */
+                render: function () {
+                    this.set('content', this.renderEngine(this.data));
+                },
+
+                /**
+                 * Afegeix un observador per renderitzar les dades quan aquestes canviin
+                 *
+                 * @override
+                 */
+                startup: function () {
+                    this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
+
+                    this.watch("data", function () {
+                        this.render();
+                    });
+
+                    if (this.data) {
+                        this.render();
+                    }
+                }
+            }),
+
+        RequestContentToolDecoration = declare(null,
+            /**
+             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
+             *
+             * Aquesta decoració substitueix el codi html dels enllaços que es trobin en el contingut per crides
+             * AJAX fent servir un objecte de tipus Request.
+             *
+             * Aquesta decoració requereix que sigui present també una decoració de tipus RenderContentToolDecoration,
+             * que es afegida automàticament pel mòdul en cas de no trobar-se.
+             *
+             * @class RequestContentToolDecoration
+             * @extends ContentTool
+             * @private
+             * @see RenderContentToolDecoration
+             */
+            {
+                /** @type Request */
+                requester: null,
+
+                /**
+                 * Carrega el objecte request en diferit per evitar conflictes
+                 */
+                constructor: function () {
+                    require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
+                        this.requester = new Request();
+                    }));
+                },
+
+                /**
+                 * Aquest métode realitza la renderització de els dades i la substitució dels enllaços per crides AJAX.
+                 * @protected
+                 */
+                render: function () {
+                    this.set('content', this.renderEngine(this.data));
+                    this.replaceLinksWithRequest();
+                },
+
+                /**
+                 * Afegeix un listener als enllaços trobats en aquest ContentTool per realitzar la crida via AJAX.
+                 *
+                 * @private
+                 */
+                replaceLinksWithRequest: function () {
+                    var q = null,
+                        self = this,
+                        node = dom.byId(this.id);
+
+                    on(node, "a:click", function (e) {
+                        var arr = att.get(this, "href").split("?");
+
+                        if (arr.length > 1) {
+                            q = arr[1];
+                        }
+
+                        self.requester.sendRequest(q);
+                        event.stop(e);
+                    });
+                }
+            }),
+
+        DocumentContentToolDecoration = declare(null,
+            /**
+             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
+             *
+             * Aquesta decoració modifica el ContentTool per disparar els esdeveniments corresponents a documents.
+             *
+             * @class DocumentContentToolDecoration
+             * @extends ContentTool
+             * @private
+             */
+            {
+                /**
+                 * Aquest mètode es cridat automàticament al descarregar-se el ContentTool, en aquest cas s'encarrega
+                 * de que es faci el tancament adequat.
+                 *
+                 * @override
+                 */
+                onUnload: function () {
+                    this.closeDocument();
+                },
+
+                /**
+                 * Realitza les accions de neteja abans de tancar el document i dispara l'esdeveniment de tancament
+                 * del document.
+                 *
+                 * @override
+                 */
+                closeDocument: function () {
+                    var currentTabId = this.dispatcher.getGlobalState().currentTabId;
+
+                    if (currentTabId === this.id) {
+                        this.dispatcher.getGlobalState().currentTabId = null;
                     }
 
-                    self.requester.sendRequest(q);
+                    this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
+                    this.dispatcher.removeDocument(this.id);
+                    this.triggerEvent('document_closed', {id: this.id});
+                },
 
-                    event.stop(e); // TODO[Xavi] fer servir e.stopPropagation()?
-                });
+                /**
+                 * Dispara l'esdeveniment de selecció del document.
+                 *
+                 * @override
+                 */
+                onSelect: function () {
+                    this.dispatchEvent("document_selected", {id: this.id});
+                },
 
-            }
+                /**
+                 * Dispara l'esdeveniment de des-selecció del document.
+                 *
+                 * @override
+                 */
+                onUnselect: function () {
+                    this.dispatchEvent("document_unselected", {id: this.id});
+                },
 
-        }),
-
-        DocumentContentTool = declare(null, {
-
-            onUnload: function () {
-                this.closeDocument();
-            },
-
-            closeDocument: function () {
-                var currentTabId = this.dispatcher.getGlobalState().currentTabId;
-
-                if (currentTabId === this.id) {
-                    this.dispatcher.getGlobalState().currentTabId = null;
+                /**
+                 * Aquest métode s'encarrega d'establir aquest ContentTool com document actiu
+                 */
+                setCurrentDocument: function (id) {
+                    this.dispatcher.getGlobalState().currentTabId = id;
+                    this.dispatcher.getContentCache(id).setMainContentTool(this);
+                    this.dispatchEvent("document_selected", {id: id});
                 }
-
-                this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
-                this.dispatcher.removeDocument(this.id);
-                this.triggerEvent('document_closed', {id: this.id});
-            },
-
-            onSelect: function () { // onShow()
-                this.dispatchEvent("document_selected", {id: this.id});
-
-            },
-
-            onUnselect: function () { // onHide()
-                this.dispatchEvent("document_unselected", {id: this.id});
-            },
-
-            setCurrentDocument: function (id) {
-                this.dispatcher.getGlobalState().currentTabId = id;
-                this.dispatcher.getContentCache(id).setMainContentTool(this);
-                this.dispatchEvent("document_selected", {id: id});
-            }
-
-        });
+            });
 
     return {
-
 
         /** @enum */
         decoration: {
@@ -217,68 +290,68 @@ define([
         /** @enum */
         generation: {
             EDITOR: 'editor',
-            BASE:   'base',
+            BASE:   'base'
         },
 
-
+        /**
+         * Decora el ContentTool amb el tipus de decoració i valors passats com arguments.
+         *
+         * Aquest mètode es cridat automàticament pels ContentTools, no cal cridar-lo manualment.
+         *
+         * @param {string} type - Tipus de decoració
+         * @param {ContentTool} contentTool - ContentTool a decorar
+         * @param {*} args - Arguments necessaris per configurar la decoració
+         * @returns {ContentTool} - ContentTool decorat
+         * @protected
+         * @see ContentTool.decorate()
+         */
         decorate: function (type, contentTool, args) {
             var decoration;
 
-
             switch (type) {
                 case this.decoration.META:
-                    decoration = new MetaContentTool(args);
-                    //console.log("nou metacontenttool");
+                    decoration = new MetaContentToolDecoration(args);
                     break;
 
                 case this.decoration.RENDER:
-                    decoration = new RenderContentTool(args);
-                    //console.log("nou rendercontenttool");
-
+                    decoration = new RenderContentToolDecoration(args);
                     break;
 
                 case this.decoration.REQUEST:
-                    // TODO comprovar si contentTool es instance of RenderContentTool i si no ho es fer primer el mixin amb el RenderContentTool
-
-
                     if (!contentTool.render) {
-                        //console.log("no hi ha render");
                         contentTool.decorate(this.decoration.RENDER, args);
-
-                    } else {
-                        //console.log("hi ha render");
                     }
 
-                    decoration = new RequestContentTool();
+                    decoration = new RequestContentToolDecoration();
                     break;
 
                 case this.decoration.DOCUMENT:
-                    decoration = new DocumentContentTool(args);
+                    decoration = new DocumentContentToolDecoration(args);
                     break;
 
 
                 default:
                     console.error('No existeix el tipus de decoració ' + type);
-
             }
-
-            //console.log(contentTool);
-
 
             if (decoration) {
                 return declare.safeMixin(contentTool, decoration);
             } else {
                 return contentTool;
             }
-
         },
 
+        /**
+         * Genera un ContentTool del tipus especificat amb els arguments passats.
+         *
+         * @param {string} type - Tipus del ContentTool a generar
+         * @param {*} args -
+         * @returns {ContentTool} - ContentTool instanciat
+         */
         generate: function (type, args) {
-
             args.decorator = this;
 
             switch (type) {
-
                 case this.generation.BASE:
                     return new ContentTool(args);
 
@@ -288,10 +361,6 @@ define([
                 default:
                     console.error('No existeix el tipus de ContentTool ' + type);
             }
-
         }
-
     }
-
-
 });
