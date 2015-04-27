@@ -144,6 +144,14 @@ define([
                 this.observers[observerId] = null;
 
                 //console.log("Eliminat observador: ", observerId);
+            },
+
+
+            /**
+             * Chained before
+             */
+            onUnload: function () {
+                this.unregisterFromEvents();
             }
 
         })

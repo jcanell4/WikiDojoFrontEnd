@@ -1,15 +1,11 @@
 define([
     "dojo/_base/declare",
     "dijit/registry",
-    "ioc/gui/contentToolFactory",
+    "ioc/gui/content/contentToolFactory",
     "ioc/wiki30/processor/AbstractResponseProcessor",
 
-    // TODO[Xavi] Tests, esborrar
-    "dijit/layout/TabContainer",
-    "ioc/gui/ContainerContentTool"
 
-
-], function (declare, registry, contentToolFactory, AbstractResponseProcessor, TabContainer, ContainerContentTool) {
+], function (declare, registry, contentToolFactory, AbstractResponseProcessor) {
     var ret = declare([AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor

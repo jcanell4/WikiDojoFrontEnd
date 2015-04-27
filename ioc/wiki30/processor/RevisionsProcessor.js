@@ -2,8 +2,8 @@ define([
     "dojo/_base/declare",
     "dijit/registry",
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "ioc/gui/renderEngineFactory",
-    "ioc/gui/contentToolFactory",
+    "ioc/gui/content/renderEngineFactory",
+    "ioc/gui/content/contentToolFactory",
 
 ], function (declare, registry, AbstractResponseProcessor,
              renderEngineFactory, contentToolFactory) {
@@ -33,7 +33,7 @@ define([
             return html;
         });
 
-    return declare("ioc.wiki30.processor.RevisionsProcessor", [AbstractResponseProcessor],
+    return declare([AbstractResponseProcessor],
         /**
          * @class RevisionsProcessor
          * @extends AbstractResponseProcessor
@@ -161,7 +161,7 @@ define([
              * @returns {string}
              * @protected
              */
-            _buildContentId:           function (content) {
+            _buildContentId: function (content) {
                 return content.id + '_revisions';
             },
             //

@@ -3,7 +3,7 @@ define([
     "ioc/wiki30/processor/StateUpdaterProcessor",
     "dojo/dom"
 ], function (declare, StateUpdaterProcessor, dom) {
-    var ret = declare("ioc.wiki30.processor.LoginProcessor", [StateUpdaterProcessor],
+    var ret = declare([StateUpdaterProcessor],
 
         /**
          * @class LoginProcessor
@@ -19,8 +19,11 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+
                 this._processLogin(value, dispatcher);
+
                 this.inherited(arguments);
+
             },
 
             /**
@@ -33,11 +36,13 @@ define([
              * @private
              */
             _processLogin: function (result, dispatcher) {
+
                 if (result.loginRequest && !result.loginResult) {
                     // TODO[Xavi] el missatge d'error es mostra cridant a un mètode privat.
                     dispatcher._processError("Usuari o contrasenya incorrectes");
 
                 }
+
             },
 
             /**
@@ -51,6 +56,7 @@ define([
             updateState: function (dispatcher, value) {
                 dispatcher.getGlobalState().login = value.loginResult;
                 dispatcher.getGlobalState().userId = value.userId;
+
             }
 
         });

@@ -1,6 +1,6 @@
 define([
     "dojo/_base/declare",
-    "ioc/gui/ContainerContentTool",
+    "ioc/gui/content/ContainerContentTool",
     "dijit/layout/AccordionContainer",
     "dijit/layout/TabContainer"
 

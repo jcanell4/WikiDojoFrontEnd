@@ -1,12 +1,12 @@
 define([
     "dojo/_base/declare",
     "dijit/registry",
-    "dijit/layout/ContentPane",
+    "ioc/gui/content/contentToolFactory",
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "ioc/dokuwiki/guiSharedFunctions"
-], function (declare, registry, ContentPane, AbstractResponseProcessor, guiSharedFunctions) {
-    
-    var ret = declare("ioc.wiki30.processor.MetaMediaInfoProcessor", [AbstractResponseProcessor],
+
+
+], function (declare, registry, contentToolFactory, AbstractResponseProcessor) {
+    var ret = declare([AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
          * @extends AbstractResponseProcessor
@@ -32,7 +32,7 @@ define([
             _processMetaMediaInfo: function (content, dispatcher) {
                 var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
                     nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
-                    widgetMetaInfo,
+                    currentMetaContent,
                     cp,
                     m,
                     currentPaneId,
@@ -43,20 +43,22 @@ define([
                 
                 for (m in content.meta) {
                     if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
-                        widgetMetaInfo = registry.byId(content.meta[m].id);
-                        if (!widgetMetaInfo) {
+                        currentMetaContent = content.meta[m];
+                        //widgetMetaInfo = registry.byId(content.meta[m].id);
+                        if (!registry.byId(currentMetaContent.id)) {
                             /*Construeix un nou contenidor de meta-info*/
-                            cp = new ContentPane({
+                            /*cp = new ContentPane({
                                 id:      content.meta[m].id,
                                 title:   content.meta[m].title,
                                 //content: "<div>ASI ES TOTAL</div>"
                                 content: content.meta[m].content
-                            });
+                            });*/
+                            cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
 
-                            guiSharedFunctions.addWatchToMetadataPane(cp, content.docId, cp.id, dispatcher);
-                            guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
+                            //guiSharedFunctions.addWatchToMetadataPane(cp, content.docId, cp.id, dispatcher);
+                            //guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
 
                         }
                     }
@@ -118,6 +120,53 @@ define([
                         }
                     }
                 }
+            },
+
+            /** @private */
+            _convertMetaData: function (content) {
+                return {
+                    id:     this._buildContentId(content), // El id corresponent a la metadata s'estableix al DokuModelAdapter
+                    data:   content.content || ' ',
+                    title:  content.title,
+                    action: content.action
+                };
+            },
+
+
+            /**
+             * Crea un ContentTool apropiat i el retorna.
+             *
+             * @param {object} content
+             * @param {Dispatcher} dispatcher
+             * @returns {MetaContentTool}
+             * @param {string} docId
+             * @protected
+             */
+            _createContentTool: function (content, dispatcher, docId) {
+                var meta = this._convertMetaData(content),
+                    args = {
+                        id:         meta.id,
+                        title:      meta.title,
+                        data:       meta.data,
+                        dispatcher: dispatcher,
+                        docId:      docId,
+                        action:     meta.action
+                    };
+
+                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
+                    .decorate(contentToolFactory.decoration.META);
+            },
+
+            /**
+             * Contrueix la id a partir del content passat com argument. Ens assegurem que només hi ha un punt on ho hem
+             * de canviar si volem una estructura diferent.
+             *
+             * @param content
+             * @returns {string}
+             * @protected
+             */
+            _buildContentId:           function (content) {
+                return content.id;
             }
 
         });
