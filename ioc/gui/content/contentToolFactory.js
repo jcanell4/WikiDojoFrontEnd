@@ -175,6 +175,7 @@ define([
                 constructor: function () {
                     require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
                         this.requester = new Request();
+                        this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=page";
                     }));
                 },
 

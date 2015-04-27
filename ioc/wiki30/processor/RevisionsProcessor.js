@@ -17,7 +17,10 @@ define([
             html += '<table>';
 
             for (var i in data) {
-                link = '?call=page&id=' + data[i]['id'];
+
+                //link = '?call=page&id=' + data[i]['id']+"&rev="+i;
+                link = '?id=' + data[i]['id']+"&rev="+i;
+                //link = '?id=' + data[i]['id'];
 
                 html += '<tr>';
                 html += '<td><a href="' + link + '">' + data[i]['date'] + '</a></td>';
