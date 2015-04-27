@@ -4,7 +4,7 @@ define([
     "ioc/gui/content/contentToolFactory"
 ], function (declare, ContentProcessor, contentToolFactory) {
 
-    var ret = declare("ioc.wiki30.processor.MediaDetailsProcessor", [ContentProcessor],
+    var ret = declare([ContentProcessor],
         /**
          * @class MediaDetailsProcessor
          * @extends ContentProcessor

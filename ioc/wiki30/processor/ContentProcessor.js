@@ -8,7 +8,7 @@ define([
 
 ], function (declare, StateUpdaterProcessor, registry, dom, domConstruct, contentToolFactory) {
 
-    var ret = declare("ioc.wiki30.processor.ContentProcessor", [StateUpdaterProcessor],
+    var ret = declare([StateUpdaterProcessor],
         /**
          * @class ContentProcessor
          * @extends StateUpdaterProcessor

@@ -3,7 +3,7 @@ define([
     "ioc/wiki30/processor/StateUpdaterProcessor",
     "dijit/registry"
 ], function (declare, StateUpdaterProcessor, registry) {
-    var ret = declare("ioc.wiki30.processor.RemoveContentTabProcessor", [StateUpdaterProcessor],
+    var ret = declare([StateUpdaterProcessor],
 
         /**
          * @class RemoveContentTabProcessor
