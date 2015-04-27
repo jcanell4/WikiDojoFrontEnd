@@ -7,7 +7,7 @@ define([
     "dojo/_base/array",
     "dojo/_base/kernel"
 ], function (declare, AbstractResponseProcessor, registry, domStyle, lang, array, dojo) {
-    return declare("ioc.wiki30.processor.CommandProcessor", [AbstractResponseProcessor],
+    return declare([AbstractResponseProcessor],
         /**
          * @class CommandProcessor
          * @extends AbstractResponseProcessor

@@ -78,7 +78,6 @@ define([
              *
              * @param {*} content - Contingut a partir del que es generarà el ContentTool
              * @param {Dispatcher} dispatcher - Dispatcher al que quedarà lligat el ContentTool
-             *
              * @abstract
              * @protected
              */
