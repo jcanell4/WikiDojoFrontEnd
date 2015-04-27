@@ -3,7 +3,7 @@ define([
     "ioc/wiki30/processor/StateUpdaterProcessor",
 
 ], function (declare, StateUpdaterProcessor) {
-    var ret = declare("ioc.wiki30.processor.InfoStatusProcessor", [StateUpdaterProcessor],
+    var ret = declare([StateUpdaterProcessor],
         /**
          * @class InfoStatusProcessor
          * @extends StateUpdaterProcessor

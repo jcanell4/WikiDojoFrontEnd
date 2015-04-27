@@ -3,7 +3,7 @@ define([
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "dijit/registry"
 ], function (declare, AbstractResponseProcessor,registry) {
-    var ret = declare("ioc.wiki30.processor.AdminTabProcessor", [AbstractResponseProcessor],
+    var ret = declare([AbstractResponseProcessor],
     /**
     * @class AdminTabProcessor
     * @extends AbstractResponseProcessor

@@ -92,7 +92,7 @@ define([
         };
 
 
-    var ret = declare("ioc.wiki30.processor.DataContentProcessor", [ContentProcessor],
+    var ret = declare([ContentProcessor],
         /**
          * @class DataContentProcessor
          * @extends ContentProcessor

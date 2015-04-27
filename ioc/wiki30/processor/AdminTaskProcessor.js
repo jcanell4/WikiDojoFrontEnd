@@ -3,7 +3,7 @@ define([
     "ioc/wiki30/processor/ContentProcessor",
     "ioc/gui/content/contentToolFactory"
 ], function (declare, ContentProcessor, contentToolFactory) {
-    var ret = declare("ioc.wiki30.processor.AdminTaskProcessor", [ContentProcessor],
+    var ret = declare([ContentProcessor],
     /**
     * @class AdminTaskProcessor
     * @extends AbstractResponseProcessor

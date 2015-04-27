@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare"
 ], function (declare) {
-    var ret = declare("ioc.wiki30.processor.AbstractResponseProcessor", [],
+    var ret = declare(null,
         /**
          * Superclasse de tots els processors.
          *
