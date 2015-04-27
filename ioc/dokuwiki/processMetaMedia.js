@@ -171,7 +171,7 @@ define([
             }
             event.stop(e);
             var elid = dispatcher.getGlobalState().pages["media"]["ns"];
-            var q = document.getElementById("mediaSearchq").getAttribute("value");
+            var q = document.getElementById("mediaSearchq").value;
             var elid = dispatcher.getGlobalState().pages["media"]["ns"];
             var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
             var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
