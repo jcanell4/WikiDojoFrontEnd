@@ -37,7 +37,7 @@ define([
              * @private
              * @override
              */
-            _onClick: function (evt) {
+             _onClick: function (evt) {
                 this.inherited(arguments);
                 if (this.clickListener) {
                     for (var i in this.clickListener) {
@@ -48,7 +48,14 @@ define([
                         }
                     }
                 }
-                this.sendRequest();
+                var isOk = this.onClick(evt);
+                if(typeof isOk === "undefined"){
+                    isOk=true;
+                }
+                if(isOk){
+                    this.sendRequest();
+                }
+                return isOk;
             },
 
             /** @override */

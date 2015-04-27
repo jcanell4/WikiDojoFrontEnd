@@ -14,8 +14,8 @@ define([
          * per igualar-lo a la mida del seu contenidor pare.
          *
          * @class IocDropDownButton
-         * @extends dijit.form.DropDownButton
-         * @extends dijit._TemplatedMixin
+         * @extends DropDownButton
+         * @extends _TemplatedMixin
          * @extends IocResizableComponent
          * @extends Request
          */

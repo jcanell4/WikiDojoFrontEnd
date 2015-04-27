@@ -1,25 +1,26 @@
 define([
-    "dojo/_base/declare", // declare
-    "ioc/wiki30/processor/StateUpdaterProcessor",
-    "dojo/query"
-], function (declare, StateUpdaterProcessor, query) {
-    var ret = declare("ioc.wiki30.processor.RemoveAllContentTabProcessor", [StateUpdaterProcessor],
+    "dojo/_base/declare",
+    "ioc/wiki30/processor/RemoveAllContentProcessor",
+], function (declare, RemoveAllContentProcessor) {
+    var ret = declare([RemoveAllContentProcessor],
 
         /**
          * @class RemoveAllContentTabProcessor
-         * @extends StateUpdaterProcessor
+         * @extends RemoveAllContentProcessor
          */
         {
             type: "removeall",
 
             /**
+             * TODO[Xavi] El valor en aquest cas sempre ha de ser buit, no es fa servir
+             *
              * @param {*} value
              * @param {Dispatcher} dispatcher
              *
              * @override
              */
             process: function (value, dispatcher) {
-                dispatcher.removeAllChildrenWidgets(dispatcher.containerNodeId);
+                arguments[0] = {container: dispatcher.containerNodeId};
                 this.inherited(arguments);
             },
 
