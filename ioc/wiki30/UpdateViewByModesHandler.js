@@ -2,7 +2,7 @@ define([
     "dojo/_base/declare" // declare
     , "ioc/wiki30/dispatcherSingleton"
 ], function (declare, dispatcher) {
-    var ret = declare("ioc.wiki30.UpdateViewByModesHandler", [],
+    var ret = declare(null,
         /**
          * @class UpdateViewHandler
          */

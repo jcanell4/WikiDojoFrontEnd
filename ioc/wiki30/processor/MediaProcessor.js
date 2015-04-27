@@ -3,7 +3,7 @@ define([
     "ioc/wiki30/processor/ContentProcessor"
 ], function (declare, ContentProcessor) {
 
-    var ret = declare("ioc.wiki30.processor.MediaProcessor", [ContentProcessor],
+    var ret = declare([ContentProcessor],
         /**
          * @class MediaProcessor
          * @extends ContentProcessor

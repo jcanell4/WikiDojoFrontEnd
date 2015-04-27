@@ -2,7 +2,7 @@ define([
     "dojo/_base/declare", // declare
     "require" // TODO[Xavi] No es fa servir
 ], function (declare, require) {
-    var ret = declare("ioc.wiki30.SectokManager", [],
+    var ret = declare(null,
         /**
          * @class SectokManager
          */

@@ -2,7 +2,7 @@ define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/AbstractResponseProcessor"
 ], function (declare, AbstractResponseProcessor) {
-    var ret = declare("ioc.wiki30.processor.AlertProcessor", [AbstractResponseProcessor],
+    var ret = declare([AbstractResponseProcessor],
         /**
          * @class AlertProcessor
          * @extends AbstractResponseProcessor
