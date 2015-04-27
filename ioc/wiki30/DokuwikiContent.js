@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare"
 ], function (declare) {
-    var DokuwikiContent = declare(null,
+    var DokuwikiContent = declare("ioc.wiki30.DokuwikiContent", [],
         /**
          * @class DokuwikiContent
          * @author Josep Cañellas <jcanell4@ioc.cat>

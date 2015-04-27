@@ -7,8 +7,7 @@ define([
     "ioc/wiki30/Request",
     "dijit/registry",
     "dojo/dom-form",
-    "dijit/form/Form", //cridat per ActionHiddenDialogDokuwiki.html
-    "dijit/form/Button" //cridat per ActionHiddenDialogDokuwiki.html
+    "dijit/form/Form" //cridat per ActionHiddenDialogDokuwiki.html
 ], function (declare, template, TooltipDialog, _WidgetsInTemplateMixin, popup, Request, registry, domForm) { 
 
     var ret = declare("ioc.gui.ActionHiddenDialogDokuwiki", [TooltipDialog, _WidgetsInTemplateMixin, Request],

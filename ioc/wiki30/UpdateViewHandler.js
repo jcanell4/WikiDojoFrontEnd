@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare" // declare
 ], function (declare) {
-    var ret = declare(null,
+    var ret = declare("ioc.wiki30.UpdateViewHandler", [],
         /**
          * @class UpdateViewHandler
          */

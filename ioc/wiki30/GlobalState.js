@@ -25,6 +25,9 @@ define([
 
         /** @type {string} id de la secció seleccionada */
         currentSectionId: null,
+        
+        /** @type {string} id de l'element seleccionat */
+        currentElementId: null,        
 
         /** @type {string} id de la pestanya del panell de navegacio seleccionat */
         currentNavigationId: null,
@@ -72,6 +75,29 @@ define([
          */
         getCurrentSectionId: function () {
             return this.currentSectionId;
+        },
+
+         /**
+         * Node es un node del DOM o una cadena amb el nom de l'element
+         *
+         * @param {string|*} node on es troba la nova selecció, o nom de l'element
+         */
+        setCurrentElementId: function (node,typeId) {
+            if (typeof node === "string") {//recibe directamente el id
+                this.currentElementId = node;
+            } else {
+                this.currentElementId = dwPageUi.getElementWhithNodeId(node,typeId);
+            }
+        },
+
+        /**
+         * Aquest mètode es cridat quan es clica un element i quan es carrega la página.
+         *
+         *
+         * @returns {null|string} nom de l'element seleccionat
+         */
+        getCurrentElementId: function () {
+            return this.currentElementId;
         },
 
         /**

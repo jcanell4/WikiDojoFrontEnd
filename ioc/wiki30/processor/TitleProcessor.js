@@ -3,7 +3,7 @@ define([
     "ioc/wiki30/processor/StateUpdaterProcessor",
     "dojo/query"
 ], function (declare, StateUpdaterProcessor, query) {
-    var ret = declare([StateUpdaterProcessor],
+    var ret = declare("ioc.wiki30.processor.TitleProcessor", [StateUpdaterProcessor],
         /**
          * @class TitleProcessor
          * @extends StateUpdaterProcessor
