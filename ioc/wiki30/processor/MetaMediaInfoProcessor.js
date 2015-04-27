@@ -92,7 +92,7 @@ define([
              * @private
              */
             _processContentCache: function (dispatcher, value) {
-                dispatcher.getContentCache(value.docId).removeAllMetaData();
+                /*dispatcher.getContentCache(value.docId).removeAllMetaData();
 
                 if (dispatcher.contentCache[value.docId]) {
                     var meta = value.meta;
@@ -100,7 +100,7 @@ define([
                     for (var i = 0; i < meta.length; i++) {
                         dispatcher.contentCache[value.docId].putMetaData(meta[i]);
                     }
-                }
+                }*/
             },
 
             /**
