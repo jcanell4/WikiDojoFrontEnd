@@ -2,9 +2,7 @@ define([
     "dojo/_base/declare",
     "dijit/registry",
     "ioc/gui/content/contentToolFactory",
-    "ioc/wiki30/processor/AbstractResponseProcessor",
-
-
+    "ioc/wiki30/processor/AbstractResponseProcessor"
 ], function (declare, registry, contentToolFactory, AbstractResponseProcessor) {
     return declare([AbstractResponseProcessor],
         /**
@@ -26,6 +24,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                console.log("docid?", value);
                 this._processMetaInfo(value, dispatcher);
             },
 

@@ -22,8 +22,8 @@ define([
     "dojo/dom",
     "dojo/on",
     "ioc/gui/content/ContentTool",
-    "ioc/gui/content/EditorContentTool"
-], function (declare, lang, renderEngineFactory, event, att, dom, on, ContentTool, EditorContentTool) {
+    "ioc/gui/content/DocumentContentTool",
+], function (declare, lang, renderEngineFactory, event, att, dom, on, ContentTool, DocumentContentTool) {
 
     var MetaContentToolDecoration = declare(null,
             /**
@@ -211,6 +211,82 @@ define([
                 }
             }),
 
+        EditorContentToolDecorator = declare(null,
+            /**
+             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
+             *
+             * Aquesta decoració modifica el ContentTool per fer la comprovació de canvis abans de tancar-se i canviar
+             * el color de la pestanya a vermell si es produeixen canvis.
+             *
+             * Aquesta decoració s'ha d'aplicar a un DocumentContentTool o que afegeixi un métode closeDocument() per poder
+             * realitzar la comprovació de canvis abans de tancar-se.
+             *
+             * @class EditorContentTool
+             * @extends DocumentContentTool
+             * @private
+             */
+            {
+                /**
+                 * Es registra com observador de si mateix per modificar el estat quan es produeixen canvis.
+                 *
+                 * @override
+                 */
+                postLoad: function () {
+                    // TODO[Xavi] Reactivar quan es mogui el ChangesManager
+                    this.registerToEvent(this, "document_changed", lang.hitch(this, this.onDocumentChanged));
+                    this.registerToEvent(this, "document_changes_reset", lang.hitch(this, this.onDocumentChangesReset));
+                },
+
+                /**
+                 * Accio a realitzar quan hi han canvis al document.
+                 *
+                 * @param {object} data - Dades amb informació sobre l'esdeveniment
+                 * @protected
+                 */
+                onDocumentChanged: function (data) {
+                    if (data.id == this.id) {
+                        if (this.controlButton) {
+                            this.controlButton.containerNode.style.color = 'red';
+                        }
+                    }
+                },
+
+                /**
+                 * Acció a realitzar quan es reinicialitza el document.
+                 *
+                 * @param {object} data - Dades amb informació sobre l'esdeveniment
+                 * @protected
+                 */
+                onDocumentChangesReset: function (data) {
+                    if (data.id == this.id) {
+                        if (this.controlButton) {
+                            this.controlButton.containerNode.style.color = 'black';
+                        }
+                    }
+                },
+
+                /**
+                 * Acció a realitzar quan es tanca el document. Si detecta canvis demana confirmació i en cas de que no hi hagin
+                 * o es descartin el canvis retorna cert i es procedeix al tancament del document.
+                 *
+                 * @returns {boolean}
+                 */
+                onClose: function () {
+                    var changesManager = this.dispatcher.getChangesManager(),
+                        confirmation = true;
+
+                    if (changesManager.isChanged(this.id)) {
+                        confirmation = this.dispatcher.discardChanges();
+                    }
+
+                    if (confirmation) {
+                        this.closeDocument();
+                    }
+
+                    return confirmation;
+                }
+            }),
+
         DocumentContentToolDecoration = declare(null,
             /**
              * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
@@ -279,19 +355,18 @@ define([
             });
 
     return {
-
         /** @enum */
         decoration: {
-            META:     'meta',
-            RENDER:   'render',
-            REQUEST:  'request',
-            DOCUMENT: 'document'
+            META:    'meta',
+            RENDER:  'render',
+            REQUEST: 'request',
+            EDITOR:  'editor'
         },
 
         /** @enum */
         generation: {
-            EDITOR: 'editor',
-            BASE:   'base'
+            BASE:     'base',
+            DOCUMENT: 'document'
         },
 
         /**
@@ -330,6 +405,9 @@ define([
                     decoration = new DocumentContentToolDecoration(args);
                     break;
 
+                case this.decoration.EDITOR:
+                    decoration = new EditorContentToolDecorator(args);
+                    break;
 
                 default:
                     console.error('No existeix el tipus de decoració ' + type);
@@ -356,8 +434,8 @@ define([
                 case this.generation.BASE:
                     return new ContentTool(args);
 
-                case this.generation.EDITOR:
-                    return new EditorContentTool(args);
+                case this.generation.DOCUMENT:
+                    return new DocumentContentTool(args);
 
                 default:
                     console.error('No existeix el tipus de ContentTool ' + type);

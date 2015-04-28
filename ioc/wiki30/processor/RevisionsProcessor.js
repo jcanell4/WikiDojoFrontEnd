@@ -12,18 +12,23 @@ define([
     renderEngineFactory.addRenderEngine('revisions',
         function (data) {
             var html = '',
-                link;
+                linkRev, linkDiff;
 
             html += '<table>';
 
             for (var i in data) {
 
                 //link = '?call=page&id=' + data[i]['id']+"&rev="+i;
-                link = '?id=' + data[i]['id']+"&rev="+i;
+                linkRev = '?id=' + data[i]['id'] + "&rev=" + i;
+                linkRev = '?id=' + data[i]['id'] + "&rev=" + i + "&do='diff'";
                 //link = '?id=' + data[i]['id'];
 
                 html += '<tr>';
-                html += '<td><a href="' + link + '">' + data[i]['date'] + '</a></td>';
+                html += '<td><a href="' + linkRev + '">' + data[i]['date'] + '</a></td>';
+                html += '<td><a href="' + linkDiff + '">';
+                html += '<img width="15" height="11" alt="Mostra diferències amb la versió actual"';
+                html += 'title="Mostra diferències amb la versió actual" src="/iocjslib/ioc/gui/img/diff.png" />';
+                html += '</a></td>';
                 html += '<td>' + data[i]['sum'] + '</td>';
                 html += '</tr>';
             }

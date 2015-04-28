@@ -1,24 +1,25 @@
 define([
     "dojo/_base/declare",
-    "ioc/gui/content/AbstractContentTool",
     "dijit/layout/ContentPane",
     "ioc/wiki30/manager/EventObserver",
     "dojo/dom-style",
     "dojo/dom"
-], function (declare, AbstractContentTool, ContentPane, EventObserver, domStyle, dom) {
+], function (declare, ContentPane, EventObserver, domStyle, dom) {
 
     return declare([ContentPane, EventObserver],
 
         /**
-         * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
+         * Aquesta classe no s'ha de instanciar, es fa servir com a base per afegir tota la funcionalitat bàsica del
+         * ContentTool que no ha de ser modificada.
          *
          * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
          * en el futur.
          *
-         * @class ContentTool
-         * @extends AbstractContentTool
+         * @class AbstractContentTool
+         * @extends ContentPane, EventObserver
          * @author Xavier García <xaviergaro.dev@gmail.com>
          * @private
+         * @abstract
          * @see contentToolFactory.generate()
          */
         {
