@@ -80,13 +80,15 @@ define([
              */
             _processMetaInfo: function (content, dispatcher) {
                 var nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
-                    widgetMetaInfo = registry.byId(this.buildContentId(content)),
+                    widgetMetaInfo = registry.byId(this._buildContentId(content)),
                     contentTool,
                     selectedPane,
                     contentCache = dispatcher.getContentCache(content.id);
 
 
                 if (!widgetMetaInfo) {
+                    content.dispatcher = dispatcher;
+
                     contentTool = this.createContentTool(content, dispatcher, content.id);
                     nodeMetaInfo.addChild(contentTool);
                 }
@@ -104,24 +106,6 @@ define([
             },
 
             /**
-             * Formata la informació per inicialitzar el ContentTool apropiat.
-             *
-             * @param {Revisions} content - Contingut a formatar
-             * @returns {{id: string, data: {object}, title: string, type: string}} - Dades formatades
-             * @private
-             */
-            _convertMetaData: function (content) {
-                var count = Object.keys(content.revisions).length;
-
-                return {
-                    id:    this.buildContentId(content),
-                    data:  content.revisions,
-                    title: 'Revisions (' + count + ')',
-                    type:  'revisions'
-                };
-            },
-
-            /**
              * Genera un ContentTool per gestionar les revisions amb les dades rebudes.
              *
              * @param {Revisions} content - Objecte amb tota la informació necessaria per generar el ContentTool
@@ -130,19 +114,18 @@ define([
              * @returns {ContentTool} - ContentTool generat amb les dades passades com argument
              * @protected
              */
-            createContentTool: function (content, dispatcher, docId) {
-                var meta = this._convertMetaData(content),
+            createContentTool: function (content) {
+                var count = Object.keys(content.revisions).length,
                     args =
                     {
-                        id:         meta.id,
-                        title:      meta.title,
-                        data:       meta.data,
-                        type:       meta.type,
-                        dispatcher: dispatcher,
-                        docId:      docId,
+                        id:         this._buildContentId(content),
+                        title:      'Revisions (' + count + ')',
+                        data:       content.revisions,
+                        type:       'revisions', // TODO[Xavi] Això ha de passar-se desde el server
+                        dispatcher: content.dispatcher,
+                        docId:      content.id,
                         action:     'view'
                     };
-
 
                 return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
                     .decorate(contentToolFactory.decoration.REQUEST)
@@ -155,9 +138,9 @@ define([
              *
              * @param {Revisions} content - Contingut a partir del qual construim la nova id
              * @returns {string} - id específica per aquest ContentTool
-             * @protected
+             * @private
              */
-            buildContentId: function (content) {
+            _buildContentId: function (content) {
                 return content.id + '_revisions';
             }
         });
