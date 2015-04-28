@@ -89,6 +89,15 @@ define([
                 this.currentElementId = dwPageUi.getElementWhithNodeId(node,typeId);
             }
         },
+        
+        /**
+         * 
+         * Return dwPageUi
+         */
+        
+        getDwPageUi: function(){
+            return dwPageUi;
+        },
 
         /**
          * Aquest mètode es cridat quan es clica un element i quan es carrega la página.
