@@ -113,7 +113,7 @@ define([
              *
              * @param {Content} content
              * @param {Dispatcher} dispatcher
-             * @returns {MetaContentTool}
+             * @returns {ContentTool}
              * @param {string} docId
              * @protected
              */

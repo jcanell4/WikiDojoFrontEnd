@@ -16,14 +16,13 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-    "ioc/gui/content/renderEngineFactory",
     "dojo/_base/event",
     "dojo/dom-attr",
     "dojo/dom",
     "dojo/on",
     "ioc/gui/content/ContentTool",
     "ioc/gui/content/DocumentContentTool",
-], function (declare, lang, renderEngineFactory, event, att, dom, on, ContentTool, DocumentContentTool) {
+], function (declare, lang, event, att, dom, on, ContentTool, DocumentContentTool) {
 
     var MetaContentToolDecoration = declare(null,
             /**
@@ -104,48 +103,6 @@ define([
                 _onDocumentUnselected: function (data) {
                     if (data.id == this.docId && this.domNode) {
                         this.hideContent();
-                    }
-                }
-            }),
-
-        RenderContentToolDecoration = declare(null,
-            /**
-             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
-             *
-             * Aquesta decoració afegeix un motor de render al ContentTool el que li permet mostrar la informació
-             * de manera diferent segons el tipus de render especificat.
-             *
-             * Requereix una propietat type quan es fa el mixin per determinar a quin tipus de motor de render s'ha
-             * de fer servir per interpretar les dades.
-             *
-             * @class RenderContentToolDecoration
-             * @extends ContentTool
-             * @private
-             */
-            {
-                /**
-                 * Processa les dades a través del motor de render i les afegeix al contingut amb el format obtingut.
-                 *
-                 * @protected
-                 */
-                render: function () {
-                    this.set('content', this.renderEngine(this.data));
-                },
-
-                /**
-                 * Afegeix un observador per renderitzar les dades quan aquestes canviin
-                 *
-                 * @override
-                 */
-                startup: function () {
-                    this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
-
-                    this.watch("data", function () {
-                        this.render();
-                    });
-
-                    if (this.data) {
-                        this.render();
                     }
                 }
             }),
@@ -358,7 +315,7 @@ define([
         /** @enum */
         decoration: {
             META:    'meta',
-            RENDER:  'render',
+            //RENDER:  'render',
             REQUEST: 'request',
             EDITOR:  'editor'
         },
@@ -389,15 +346,7 @@ define([
                     decoration = new MetaContentToolDecoration(args);
                     break;
 
-                case this.decoration.RENDER:
-                    decoration = new RenderContentToolDecoration(args);
-                    break;
-
                 case this.decoration.REQUEST:
-                    if (!contentTool.render) {
-                        contentTool.decorate(this.decoration.RENDER, args);
-                    }
-
                     decoration = new RequestContentToolDecoration();
                     break;
 

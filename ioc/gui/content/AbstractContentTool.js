@@ -3,8 +3,9 @@ define([
     "dijit/layout/ContentPane",
     "ioc/wiki30/manager/EventObserver",
     "dojo/dom-style",
-    "dojo/dom"
-], function (declare, ContentPane, EventObserver, domStyle, dom) {
+    "dojo/dom",
+    "ioc/gui/content/renderEngineFactory"
+], function (declare, ContentPane, EventObserver, domStyle, dom, renderEngineFactory) {
 
     return declare([ContentPane, EventObserver],
 
@@ -140,19 +141,47 @@ define([
 
 
             /**
+             * Processa les dades a través del motor de render i les afegeix al contingut amb el format obtingut.
+             *
+             * @protected
+             */
+            render: function () {
+                this.set('content', this.renderEngine(this.data));
+            },
+
+            /**
+             * Afegeix un observador per renderitzar les dades quan aquestes canviin
+             *
              * @override
              */
             startup: function () {
+                this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
 
-                this.watch('data', function (name, oldValue, value) {
-                    this.set('content', value);
+                this.watch("data", function () {
+                    this.render();
                 });
 
                 if (this.data) {
-                    this.set('content', this.data);
-
+                    this.render();
                 }
             },
+
+
+            //
+            ///**
+            // * @override
+            // */
+            //startup: function () {
+            //
+            //    this.watch('data', function (name, oldValue, value) {
+            //        this.set('content', value);
+            //    });
+            //
+            //    if (this.data) {
+            //        this.set('content', this.data);
+            //
+            //    }
+            //},
 
             /**
              * Aquest mètode es cridat al tancar la pestanya
@@ -252,7 +281,6 @@ define([
                 parent.removeChild(this);
                 this.destroyRecursive();
             },
-
 
             /**
              * Decora aquest ContentTool amb la decoració passada com argument i amb els valors passats com arguments.
