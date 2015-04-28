@@ -242,80 +242,12 @@ define([
 
                     return confirmation;
                 }
-            }),
-
-        DocumentContentToolDecoration = declare(null,
-            /**
-             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
-             *
-             * Aquesta decoració modifica el ContentTool per disparar els esdeveniments corresponents a documents.
-             *
-             * @class DocumentContentToolDecoration
-             * @extends ContentTool
-             * @private
-             */
-            {
-                /**
-                 * Aquest mètode es cridat automàticament al descarregar-se el ContentTool, en aquest cas s'encarrega
-                 * de que es faci el tancament adequat.
-                 *
-                 * @override
-                 */
-                onUnload: function () {
-                    this.closeDocument();
-                },
-
-                /**
-                 * Realitza les accions de neteja abans de tancar el document i dispara l'esdeveniment de tancament
-                 * del document.
-                 *
-                 * @override
-                 */
-                closeDocument: function () {
-                    var currentTabId = this.dispatcher.getGlobalState().currentTabId;
-
-                    if (currentTabId === this.id) {
-                        this.dispatcher.getGlobalState().currentTabId = null;
-                    }
-
-                    this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
-                    this.dispatcher.removeDocument(this.id);
-                    this.triggerEvent('document_closed', {id: this.id});
-                },
-
-                /**
-                 * Dispara l'esdeveniment de selecció del document.
-                 *
-                 * @override
-                 */
-                onSelect: function () {
-                    this.dispatchEvent("document_selected", {id: this.id});
-                },
-
-                /**
-                 * Dispara l'esdeveniment de des-selecció del document.
-                 *
-                 * @override
-                 */
-                onUnselect: function () {
-                    this.dispatchEvent("document_unselected", {id: this.id});
-                },
-
-                /**
-                 * Aquest métode s'encarrega d'establir aquest ContentTool com document actiu
-                 */
-                setCurrentDocument: function (id) {
-                    this.dispatcher.getGlobalState().currentTabId = id;
-                    this.dispatcher.getContentCache(id).setMainContentTool(this);
-                    this.dispatchEvent("document_selected", {id: id});
-                }
             });
 
     return {
         /** @enum */
         decoration: {
             META:    'meta',
-            //RENDER:  'render',
             REQUEST: 'request',
             EDITOR:  'editor'
         },
@@ -348,10 +280,6 @@ define([
 
                 case this.decoration.REQUEST:
                     decoration = new RequestContentToolDecoration();
-                    break;
-
-                case this.decoration.DOCUMENT:
-                    decoration = new DocumentContentToolDecoration(args);
                     break;
 
                 case this.decoration.EDITOR:
