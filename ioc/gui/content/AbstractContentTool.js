@@ -108,7 +108,7 @@ define([
              */
             onResize: function (args) {
                 // Per defecte no fa res especial
-                console.log("Resizing:", args);
+                // console.log("Resizing:", args);
             },
 
             /**
@@ -195,7 +195,6 @@ define([
              */
             postLoad: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
-                this.inherited(arguments);
             },
 
 
@@ -216,7 +215,6 @@ define([
                 if (dom.byId(this.domNode.id)) {
                     domStyle.set(this.domNode.id + "_wrapper", {display: ""});
                     this.getContainer().resize();
-
                 }
             },
 

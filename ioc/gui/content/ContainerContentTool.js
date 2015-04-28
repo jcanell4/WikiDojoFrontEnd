@@ -64,7 +64,9 @@ define([
                     contentTool.setContainer(this);
                 }
 
+
                 this.inherited(arguments);
+                this.resize();
             },
 
             /**
