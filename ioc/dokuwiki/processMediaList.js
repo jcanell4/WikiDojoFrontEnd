@@ -20,7 +20,10 @@ define([
         setSelectedElement(node, true);
         if(oldId){
             if(oldId!==dispatcher.getGlobalState().getCurrentElementId()){
-                setSelectedElement(dwPageUi.getElementParentNodeId(oldId,"LI"), false);
+                var nodeOld = dwPageUi.getElementParentNodeId(oldId,"LI");
+                if(nodeOld){
+                    setSelectedElement(nodeOld, false);
+                }
             }
         }
         dispatcher.updateFromState();
