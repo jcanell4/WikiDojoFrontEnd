@@ -2,41 +2,8 @@ define([
     "dojo/_base/declare",
     "dijit/registry",
     "ioc/wiki30/processor/AbstractResponseProcessor",
-    "ioc/gui/content/renderEngineFactory",
     "ioc/gui/content/contentToolFactory"
-], function (declare, registry, AbstractResponseProcessor,
-             renderEngineFactory, contentToolFactory) {
-
-    // TODO[Xavi] això està aqui a mode de demostració, tots els renders habiutals han d'anar al renderEngineFactory
-    // Definim el render engine que emprearem per formatar les revisions
-    renderEngineFactory.addRenderEngine('revisions',
-        function (data) {
-            var html = '',
-                linkRev, linkDiff;
-
-            html += '<table>';
-
-            for (var i in data) {
-
-                //link = '?call=page&id=' + data[i]['id']+"&rev="+i;
-                linkRev = '?id=' + data[i]['id'] + "&rev=" + i;
-                linkRev = '?id=' + data[i]['id'] + "&rev=" + i + "&do='diff'";
-                //link = '?id=' + data[i]['id'];
-
-                html += '<tr>';
-                html += '<td><a href="' + linkRev + '">' + data[i]['date'] + '</a></td>';
-                html += '<td><a href="' + linkDiff + '">';
-                html += '<img width="15" height="11" alt="Mostra diferències amb la versió actual"';
-                html += 'title="Mostra diferències amb la versió actual" src="/iocjslib/ioc/gui/img/diff.png" />';
-                html += '</a></td>';
-                html += '<td>' + data[i]['sum'] + '</td>';
-                html += '</tr>';
-            }
-
-            html += '</table>';
-
-            return html;
-        });
+], function (declare, registry, AbstractResponseProcessor, contentToolFactory) {
 
     return declare([AbstractResponseProcessor],
         /**
@@ -109,15 +76,12 @@ define([
              * Genera un ContentTool per gestionar les revisions amb les dades rebudes.
              *
              * @param {Revisions} content - Objecte amb tota la informació necessaria per generar el ContentTool
-             * @param {Dispatcher} dispatcher - Dispatcher al que està associat aquest ContentTool
-             * @param {string} docId - Id del document al que està lligat aquest ContentTool
              * @returns {ContentTool} - ContentTool generat amb les dades passades com argument
              * @protected
              */
             createContentTool: function (content) {
                 var count = Object.keys(content.revisions).length,
-                    args =
-                    {
+                    args = {
                         id:         this._buildContentId(content),
                         title:      'Revisions (' + count + ')',
                         data:       content.revisions,

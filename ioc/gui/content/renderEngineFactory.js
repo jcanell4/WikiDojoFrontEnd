@@ -1,30 +1,27 @@
 /**
- * Aquesta classe es una Factoria de motors de renderització que permet afegir nous tipus i obtenir els motors pels
+ * Aquesta mòdul es una Factoria de motors de renderització que permet afegir nous tipus i obtenir els motors pels
  * tipus coneguts.
  *
- * @moudle renderEngineFactory
+ * @module renderEngineFactory
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
-define([], function () {
+define([
+    "ioc/gui/content/engines/standardRenderEngine",
+    "ioc/gui/content/engines/revisionRenderEngine"
 
-    /**
-     * Array amb tots els motors de render disponibles per defecte
-     *
-     * @type {{string: function}}
-     */
-    var renderEngines = {
 
-            /**
-             * Aquest motor de render espera que el format de les dades sigui string i retorna el mateix contingut
-             * o un missatge d'error.
-             *
-             * @param {string} data
-             * @returns {string}
-             */
-            standard: function (data) {
-                return typeof data === 'string' ? data : 'Tipus de dada no reconegut.';
-            }
-        },
+], function (standardRenderEngine, revisionRenderEngine) {
+
+
+    var /** @type function */
+        defaultRenderEngine = null,
+
+        /**
+         * Array amb tots els motors de render disponibles per defecte
+         *
+         * @type {{string: function}}
+         */
+        renderEngines = {},
 
         /**
          * Retorna el motor de render pel tipus especificat o un generic si no existeix.
@@ -34,7 +31,7 @@ define([], function () {
          * @private
          */
         _getRenderEngine = function (type) {
-            return renderEngines[type] ? renderEngines[type] : renderEngines['standard'];
+            return renderEngines[type] ? renderEngines[type] : defaultRenderEngine;
         },
 
         /**
@@ -46,7 +43,15 @@ define([], function () {
          */
         _addRenderEngine = function (type, renderEngine) {
             renderEngines[type] = renderEngine;
+        },
+
+        _init = function () {
+            _addRenderEngine('revisions', revisionRenderEngine);
+            _addRenderEngine('standard', standardRenderEngine);
+            defaultRenderEngine = _getRenderEngine('standard');
         };
+
+    _init();
 
     return {
         // Retornem només els mètodes exposats del closure
