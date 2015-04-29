@@ -22,7 +22,8 @@ define([
     "dojo/on",
     "ioc/gui/content/ContentTool",
     "ioc/gui/content/DocumentContentTool",
-], function (declare, lang, event, att, dom, on, ContentTool, DocumentContentTool) {
+    "ioc/gui/content/requestReplacerFactory"
+], function (declare, lang, event, att, dom, on, ContentTool, DocumentContentTool, requestReplacerFactory) {
 
     var MetaContentToolDecoration = declare(null,
             /**
@@ -107,32 +108,54 @@ define([
                 }
             }),
 
+
         RequestContentToolDecoration = declare(null,
             /**
              * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
              *
-             * Aquesta decoració substitueix el codi html dels enllaços que es trobin en el contingut per crides
-             * AJAX fent servir un objecte de tipus Request.
-             *
-             * Aquesta decoració requereix que sigui present també una decoració de tipus RenderContentToolDecoration,
-             * que es afegida automàticament pel mòdul en cas de no trobar-se.
+             * Aquesta decoració reemplaça els continguts que enllacin a altres direccións per crides ajax que
+             * respondran a diferents esdevenimets.
              *
              * @class RequestContentToolDecoration
              * @extends ContentTool
              * @private
-             * @see RenderContentToolDecoration
              */
             {
                 /** @type Request */
                 requester: null,
 
+                replacers: {},
+
+                replacersParams: {},
+
                 /**
-                 * Carrega el objecte request en diferit per evitar conflictes
+                 *
                  */
-                constructor: function () {
+                constructor: function (args) {
+                    if (args.requester) {
+                        this.requester = args.requester;
+                    } else {
+                        this._createRequest();
+                    }
+                },
+
+                /**
+                 * Carrega i genera un nou objecte Request. Aquest objecte no inclou urlBase, aquesta s'ha de passar
+                 * via el reemplaçador.
+                 *
+                 * @private
+                 */
+                _createRequest: function () {
+
                     require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
                         this.requester = new Request();
-                        this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=page";
+
+                        this.requester.updateSectok = function (sectok) {
+                            this.sectok = sectok;
+                        };
+
+                        this.requester.sectok = this.requester.dispatcher.getSectok();
+                        this.requester.dispatcher.toUpdateSectok.push(this.requester);
                     }));
                 },
 
@@ -142,33 +165,55 @@ define([
                  */
                 render: function () {
                     this.set('content', this.renderEngine(this.data));
-                    this.replaceLinksWithRequest();
+                    this._replaceContent();
                 },
 
                 /**
-                 * Afegeix un listener als enllaços trobats en aquest ContentTool per realitzar la crida via AJAX.
-                 *
+                 * Itera sobre tots els reemplaçadors afegits i realitza la substitució cridant a la funció de reemplaç
                  * @private
                  */
-                replaceLinksWithRequest: function () {
-                    var q = null,
-                        self = this,
-                        node = dom.byId(this.id);
+                _replaceContent: function () {
+                    for (var replacer in this.replacers) {
+                        lang.hitch(this, this.replacers[replacer])(this.replacersParams[replacer]);
+                    }
 
-                    on(node, "a:click", function (e) {
-                        var arr = att.get(this, "href").split("?");
+                    this.inherited(arguments);
+                },
 
-                        if (arr.length > 1) {
-                            q = arr[1];
-                        }
+                /**
+                 * Afegeix un reemplaçador de continguts específic.
+                 * TODO[Xavi] Cal que sigui un Hash o pot ser un array?
+                 *
+                 * @param {string} type - tipus per identificar aquest reemplaçador
+                 * @param {function} replacer - funció que es cridarà quan calgui fer el reemplaç
+                 */
+                addReplacer: function (type, replacer, params) {
+                    if (!this.replacers) {
+                        this.replacers = {};
+                        this.replacersParams = {};
+                    }
 
-                        self.requester.sendRequest(q);
-                        event.stop(e);
-                    });
+                    params.request = this.requester;
+                    this.replacersParams[type] = params;
+                    this.replacers[type] = replacer;
+                },
+
+                /**
+                 * Afegeix un hash de reemplaçadors.
+                 *
+                 * @param {{string:{type: string, replacer:function, params:{query: string, nodeId:string, trigger:string}}}} replacers
+                 */
+                addReplacers: function (replacers) {
+                    for (var replacer in replacers) {
+                        this.addReplacer(
+                            replacers[replacer]['type'],
+                            replacers[replacer]['replacer'],
+                            replacers[replacer]['params']);
+                    }
                 }
             }),
 
-        EditorContentToolDecorator = declare(null,
+        EditorContentToolDecoration = declare(null,
             /**
              * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
              *
@@ -247,9 +292,11 @@ define([
     return {
         /** @enum */
         decoration: {
-            META:    'meta',
-            REQUEST: 'request',
-            EDITOR:  'editor'
+            META:         'meta',
+            EDITOR:       'editor',
+            REQUEST:      'request',
+            REQUEST_LINK: 'request_link',
+            REQUEST_FORM: 'request_form'
         },
 
         /** @enum */
@@ -272,19 +319,59 @@ define([
          */
         decorate: function (type, contentTool, args) {
             var decoration;
+            args = args ? args : {};
+            args.requester = contentTool.requester;
+
 
             switch (type) {
                 case this.decoration.META:
                     decoration = new MetaContentToolDecoration(args);
                     break;
 
-                case this.decoration.REQUEST:
-                    decoration = new RequestContentToolDecoration();
+                case this.decoration.EDITOR:
+                    decoration = new EditorContentToolDecoration(args);
                     break;
 
-                case this.decoration.EDITOR:
-                    decoration = new EditorContentToolDecorator(args);
+                case this.decoration.REQUEST:
+                    // Aquest request no afegeix res, els replaces han d'anar ja afegits als arguments dins del
+                    // args.replacers.
+                    //
+                    // Aquest es un exemple de com s'afegiría el tipus link manualment:
+
+                    //args.replacers = {
+                    //    'link': {
+                    //        type: 'link',
+                    //        replacer: requestReplacerFactory.getRequestReplacer('link'),
+                    //        params: {
+                    //            trigger: "click"
+                    //        }
+                    //    }
+                    //};
+                    decoration = new RequestContentToolDecoration(args);
+
+                    if (args.replacers) {
+                        decoration.addReplacers(args.replacers);
+                    }
+
                     break;
+
+                case this.decoration.REQUEST_LINK:
+                    decoration = new RequestContentToolDecoration(args);
+                    decoration.addReplacer('link', requestReplacerFactory.getRequestReplacer('link'), {
+                        trigger: "click",
+                        urlBase: args.urlBase
+                    });
+                    break;
+
+                case this.decoration.REQUEST_FORM:
+                    decoration = new RequestContentToolDecoration(args);
+                    decoration.addReplacer('form', requestReplacerFactory.getRequestReplacer('form'), {
+                        trigger: "click",
+                        urlBase: args.urlBase,
+                        form:    args.form
+                    });
+                    break;
+
 
                 default:
                     console.error('No existeix el tipus de decoració ' + type);
@@ -292,7 +379,8 @@ define([
 
             if (decoration) {
                 return declare.safeMixin(contentTool, decoration);
-            } else {
+            }
+            else {
                 return contentTool;
             }
         },
@@ -319,4 +407,5 @@ define([
             }
         }
     }
-});
+})
+;

@@ -81,6 +81,7 @@ define([
              */
             createContentTool: function (content) {
                 var count = Object.keys(content.revisions).length,
+
                     args = {
                         id:         this._buildContentId(content),
                         title:      'Revisions (' + count + ')',
@@ -89,10 +90,16 @@ define([
                         dispatcher: content.dispatcher,
                         docId:      content.id,
                         action:     'view'
+                    },
+
+                    argsRequestLink = {
+                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=page" // TODO[Xavi] aquest valor ha d'arribar des de el servidor
                     };
 
+
                 return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.REQUEST)
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM)
+                    .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
                     .decorate(contentToolFactory.decoration.META);
             },
 

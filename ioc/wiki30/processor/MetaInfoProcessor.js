@@ -24,7 +24,6 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("docid?", value);
                 this._processMetaInfo(value, dispatcher);
             },
 
