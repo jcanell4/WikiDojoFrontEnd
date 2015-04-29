@@ -11,7 +11,7 @@ define(["dojo/_base/event",
     "dojo/on"
 ], function (event, domAttr, dom, on) {
     /**
-     * Es crea un backup
+     * Es crea un backup del urlBase original abans d'establir el propi.
      *
      * @params {trigger: string, request: {Request}, urlBase: string} params: el trigger te el format: 'click', 'mouseover', etc.
      */

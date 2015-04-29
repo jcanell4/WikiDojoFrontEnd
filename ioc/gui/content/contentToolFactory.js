@@ -333,17 +333,19 @@ define([
                     break;
 
                 case this.decoration.REQUEST:
-                    // Aquest request no afegeix res, els replaces han d'anar ja afegits als arguments dins del
-                    // args.replacers.
+                    //Aquest request no afegeix res, els replaces han d'anar ja afegits als arguments dins del
+                    //args.replacers.
                     //
-                    // Aquest es un exemple de com s'afegiría el tipus link manualment:
+                    //Aquest es un exemple de com s'afegiría el tipus link manualment:
 
                     //args.replacers = {
                     //    'link': {
                     //        type: 'link',
                     //        replacer: requestReplacerFactory.getRequestReplacer('link'),
                     //        params: {
-                    //            trigger: "click"
+                    //            trigger: "click",
+                    //            urlBase: args.urlBase
+                    //
                     //        }
                     //    }
                     //};

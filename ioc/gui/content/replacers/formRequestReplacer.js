@@ -17,10 +17,11 @@ define([
     /**
      * TODO[Xavi] Sense provar! Pendent d'implementar la comparació de revisions
      *
+     * Es crea un backup del urlBase original abans d'establir el propi.
+     *
      * @params {trigger: string, request: {Request}, form} params: el trigger te el format: 'click'.
      */
     return function (params) {
-
 
         var form = query(params.form),
             handle = on(form, "input[type=submit]:" + params.trigger, function (e) {

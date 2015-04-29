@@ -17,8 +17,6 @@ define([
 
                 lastChecked: null,
 
-
-
                 constructor: function (dispatcher) {
                     this.documentsChanged = {};
                     this.dispatcher = dispatcher;

@@ -98,7 +98,6 @@ define([
 
 
                 return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM)
                     .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
                     .decorate(contentToolFactory.decoration.META);
             },
