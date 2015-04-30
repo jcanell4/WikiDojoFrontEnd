@@ -10,33 +10,17 @@ define([
 
 ], function (dom, Editor, declare, ContentProcessor, on, focus, ready, contentToolFactory) {
 
-    var setChangesControl = function (editFormId, wikiTextId, summaryId, dispatcher) {
+    var editing = function (params, dispatcher) {
+            var toolbar = window[params.varName];
 
-
-            //var editform = dom.byId(editFormId),
-            //
-            //    edit_text = dom.byId(wikiTextId),
-
-            //summary = dom.byId(summaryId),
+            // TODO[Xavi] Segurament això està directament enllaçat amb el problema detectat al recarregar la pagina
+            // Moure la inicialització del toolbar al aceProcessEditor?
+            if (toolbar && params.toolbarId && params.wikiTextId) {
+                initToolbar(params.toolbarId, params.wikiTextId, toolbar);
+                jQuery('#' + params.toolbarId).attr('role', 'toolbar');
+            }
 
             var changesManager = dispatcher.getChangesManager();
-
-
-            // TODO[Xavi] Això només canvia l'estil del quadre del summary si el seu valor es null, aspecte visual, i a més no sembla que funcioni o no està l'estil definit
-            //    checkfunc = function () {
-            //        var currentId = dispatcher.getGlobalState().getCurrentId();
-            //        changesManager.updateDocumentChangeState(currentId);
-            //        summaryCheck();
-            //    };
-            //
-            //
-            //if (!editform || (edit_text && edit_text.readOnly)) {
-            //    return;
-            //}
-
-
-            //console.log("del edit text: ", edit_text.value);
-            // changesManager.setDocument(edit_text.value);
 
             // TODO[Xavi] Això hauria de activarse globalment, no només per un tipus concret de document
             window.addEventListener("beforeunload", function (event) {
@@ -47,48 +31,8 @@ define([
                 deleteDraft();
             });
 
-            //// TODO[Xavi] No trobo que això tingui cap efecte actualment
-            //if (edit_text) {
-            //    // set focus and place cursor at the start
-            //    var sel = getSelection(edit_text);
-            //    sel.start = 0;
-            //    sel.end = 0;
-            //    setSelection(sel);
-            //    focus.focus(edit_text);
-            //    //            edit_text.focus();
-            //}
-
-            // TODO[Xavi] El control de canvis produits s'ha de moure al ContentTool pertinent
-
-            // TODO[Xavi] en lloc del editform es pot aplicar al contenttool.id?
-            //on(editform, 'keyup', checkfunc);
-            //on(editform, 'paste', checkfunc);
-            //on(editform, 'cut', checkfunc);
-            //on(editform, 'focusout', checkfunc);
-
-            //alert("existe summary?");
-            //on(summary, "change", summaryCheck);
-            //on(summary, "keyup", summaryCheck);
-
-            //
-            //if (changesManager.thereAreChangedDocuments()) {
-            //    summaryCheck();
-            //}
-
             dw_editor.init();
-        },
 
-        editing = function (params, dispatcher) {
-            var toolbar = window[params.varName];
-
-            // TODO[Xavi] Segurament això està directament enllaçat amb el problema detectat al recarregar la pagina
-            // Moure la inicialització del toolbar al aceProcessEditor?
-            if (toolbar && params.toolbarId && params.wikiTextId) {
-                initToolbar(params.toolbarId, params.wikiTextId, toolbar);
-                jQuery('#' + params.toolbarId).attr('role', 'toolbar');
-            }
-
-            setChangesControl(params.editFormId, params.wikiTextId, params.summaryId, dispatcher);
             dw_locktimer.init(params.timeout, params.draft);
         };
 
