@@ -8,8 +8,6 @@
 define([
     "ioc/gui/content/engines/standardRenderEngine",
     "ioc/gui/content/engines/revisionRenderEngine"
-
-
 ], function (standardRenderEngine, revisionRenderEngine) {
 
 

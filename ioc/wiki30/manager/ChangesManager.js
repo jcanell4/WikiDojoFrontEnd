@@ -3,13 +3,13 @@ define([
     ], function (declare) {
         return declare(null,
             /**
-             * Gestiona el control de canvis als documents des de la última vegada que es van desar.
+             * Gestiona el control de canvis als continguts dels ContentTools.
              *
-             * @class NewChangesManager
+             * @class ChangesManager
              * @author Xavier Garcia <xaviergaro.dev@gmail.com>
              */
             {
-                contentsChanged:  {},
+                contentsChanged: {},
 
                 contentsToCheck: {},
 
@@ -22,7 +22,7 @@ define([
                 },
 
                 /**
-                 * Retorna si hi han hagut canvis a cap dels documents carregats.
+                 * Retorna si hi han hagut canvis a cap dels continguts enregistrats.
                  *
                  * @returns {boolean} - Cert si hi han hagut canvis o Fals en cas contrari
                  */
@@ -31,48 +31,51 @@ define([
                 },
 
                 /**
-                 * Retorna si el document passat com argument o el document actual han sigut canviat.
+                 * Retorna si el ContenTool amb la id passad com argument te els continguts canviats o no.
                  *
-                 * TODO[Xavi] la comprovació de si el document ha canviat es delega al ContentTool
-                 * @param {string?} id - id del document a comprovar
+                 * @param {string} id - id del ContentTool a comprovar
                  * @returns {boolean} - Cert si hi han hagut canvis o Fals en cas contrari
                  */
                 isContentChanged: function (id) {
                     return this._getContentTool(id).isContentChanged();
                 },
 
+                /**
+                 * Retorna el ContentTool amb la id passada com argument
+                 *
+                 * @param {string} id - id del ContentTool a retornar
+                 * @returns {AbstractChangesManagerDecoration} - ContentTool amb la id demanada
+                 * @private
+                 */
                 _getContentTool: function (id) {
                     return this.contentsToCheck[id];
                 },
 
+                /**
+                 * Afegeix el ContentTool passat com argument
+                 * @param {AbstractChangesManagerDecoration} contentTool
+                 */
                 setContentTool: function (contentTool) {
                     this.contentsToCheck[contentTool.id] = contentTool;
                 },
 
-                removeContentTool: function(id) {
+                /**
+                 * Elimina de la gestió de canvis el ContentTool amb la id passada com argument
+                 *
+                 * @param {string} id - id del ContentTool a eliminar
+                 */
+                removeContentTool: function (id) {
                     delete this.contentsToCheck[id];
+                    delete this.contentsChanged[id];
                 },
 
                 /**
-                 * Retorna la id del document actual.
+                 * Comprova si hi han canvis, i si es així afegeix el id al array de continguts canviats i si no l'elimina
                  *
-                 * TODO[Xavi] Deixar com a helper method? Afegir-lo a un decorador? <-- Es necessari, cridat per altres
-                 * @returns {string} - Id del document actual
-                 * @private
+                 * @param {string} id - Id del ContentTool a comprovar
+                 * @return {boolean} - Cert si el contingut ha canviat o Fals en cas contrari
                  */
-                _getCurrentId: function () {
-                    return this.dispatcher.getGlobalState().getCurrentId();
-                },
-
-                /**
-                 * Comprova si hi han canvis, i si es així afegeix el id al array de documents canviats i si no l'elimina
-                 *
-                 * @param {string?} id - Id del document a comprovar
-                 * @return {boolean} - Cert si el document ha canviat o Fals en cas contrari
-                 */
-                updateDocumentChangeState: function (id) {
-
-                    id = id || this._getCurrentId();
+                updateContentChangeState: function (id) {
 
                     var result = this.isContentChanged(id); // Si existeix o hi han canvis retorna cert
 
@@ -86,18 +89,14 @@ define([
                 },
 
                 /**
-                 * Reinicia l'estat del contingut passat com argument o del document actual si no s'especifica una id
+                 * Reinicia l'estat del contingut passat com argument
                  *
-                 * @param {string?} id - Id del contingut a reiniciatlizar
+                 * @param {string} id - Id del contingut a reiniciatlizar
                  */
                 resetContentChangeState: function (id) {
                     var contentTool;
 
-                    id = id || this._getCurrentId();
-
-                    if (this.contentsChanged[id]) {
-                        delete this.contentsChanged[id];
-                    }
+                    delete this.contentsChanged[id];
 
                     contentTool = this._getContentTool(id);
 
@@ -107,17 +106,15 @@ define([
                 },
 
                 /**
-                 * Retorna si el document amb la id especificada ha canviat, si no s'especifica es comprova el document
-                 * actual. Aquest mètode es diferencia d'altres perquè no realitza la comprovació del canvi en si, només
-                 * retorna si es troba a la llista de canviats o no.
+                 * Comprova si el ContentTool amb la id passada per argument es a la llista de continguts canviats i si
+                 * es així retorna cert i si no es troba retorna false.
                  *
-                 * @param {string?} id - Id del document a comprovar
-                 * @returns {boolean} - Cert si el document es troba a la llista de documents canviats
+                 * @param {string} id - Id del ContentTool a comprovar
+                 * @returns {boolean} - Cert si el ContentTool es troba a la llista de continguts canviats
                  */
                 isChanged: function (id) {
                     return this.contentsChanged[id] ? true : false;
                 }
-
             }
         )
     }

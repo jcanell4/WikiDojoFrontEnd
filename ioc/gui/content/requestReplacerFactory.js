@@ -8,7 +8,6 @@
 define([
     "ioc/gui/content/replacers/linkRequestReplacer",
     "ioc/gui/content/replacers/formRequestReplacer"
-
 ], function (linkRequestReplacer, formRequestReplacer) {
 
 
@@ -44,6 +43,11 @@ define([
             requestReplacers[type] = requestReplacer;
         },
 
+        /**
+         * Inicialització dels reemplaçadors i establiment del reemplaçador per defecte
+         *
+         * @private
+         */
         _init = function () {
             _addRequestReplacer('link', linkRequestReplacer);
             _addRequestReplacer('form', formRequestReplacer);
@@ -57,8 +61,4 @@ define([
         getRequestReplacer: _getRequestReplacer,
         addRequestReplacer: _addRequestReplacer
     };
-
 });
-
-
-

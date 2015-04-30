@@ -121,7 +121,7 @@ define([
              * @private
              */
             _checkChanges: function () {
-                this.changesManager.updateDocumentChangeState(this.id);
+                this.changesManager.updateContentChangeState(this.id);
             },
 
             /**

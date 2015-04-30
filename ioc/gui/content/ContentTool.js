@@ -1,6 +1,6 @@
 define([
     "dojo/_base/declare",
-    "ioc/gui/content/AbstractContentTool",
+    "ioc/gui/content/AbstractContentTool"
 ], function (declare, AbstractContentTool) {
 
     return declare([AbstractContentTool],

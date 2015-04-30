@@ -1,40 +1,25 @@
 define([
-    "dojo/dom",
     "ioc/dokuwiki/editorManager/Editor",
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
-    "dojo/on",
-    "dijit/focus",
     "dojo/ready",
     "ioc/gui/content/contentToolFactory",
 
-], function (dom, Editor, declare, ContentProcessor, on, focus, ready, contentToolFactory) {
+], function (Editor, declare, ContentProcessor, ready, contentToolFactory) {
 
     var editing = function (params, dispatcher) {
-            var toolbar = window[params.varName];
+        var toolbar = window[params.varName];
 
-            // TODO[Xavi] Segurament això està directament enllaçat amb el problema detectat al recarregar la pagina
-            // Moure la inicialització del toolbar al aceProcessEditor?
-            if (toolbar && params.toolbarId && params.wikiTextId) {
-                initToolbar(params.toolbarId, params.wikiTextId, toolbar);
-                jQuery('#' + params.toolbarId).attr('role', 'toolbar');
-            }
+        // TODO[Xavi] Segurament això està directament enllaçat amb el problema detectat al recarregar la pagina
+        // TODO[Xavi] Moure la inicialització del toolbar al aceProcessEditor
+        if (toolbar && params.toolbarId && params.wikiTextId) {
+            initToolbar(params.toolbarId, params.wikiTextId, toolbar);
+            jQuery('#' + params.toolbarId).attr('role', 'toolbar');
+        }
 
-            var changesManager = dispatcher.getChangesManager();
-
-            // TODO[Xavi] Això hauria de activarse globalment, no només per un tipus concret de document
-            window.addEventListener("beforeunload", function (event) {
-                if (changesManager.thereAreChangedContents()) {
-                    event.returnValue = LANG.notsavedyet;
-                }
-
-                deleteDraft();
-            });
-
-            dw_editor.init();
-
-            dw_locktimer.init(params.timeout, params.draft);
-        };
+        dw_editor.init();
+        dw_locktimer.init(params.timeout, params.draft);
+    };
 
     return declare([ContentProcessor],
         /**
@@ -101,7 +86,6 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
-                //console.log("Creando el content Tool");
                 var args = {
                         id:         content.id,
                         title:      content.title,
@@ -122,14 +106,10 @@ define([
                 var nodes = parentNode.children;
 
                 for (var i = 0; i < nodes.length; i++) {
-                    //console.log("NODE: ", nodes[i]);
                     if (nodes[i].className == "editBox") {
-                        //console.log("Trobat");
                         return nodes[i].lastElementChild.textContent;
                     }
                 }
-
             }
-
         });
 });
