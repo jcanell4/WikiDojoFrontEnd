@@ -42,8 +42,8 @@ define([
                 }
 
                 if (confirmation) {
-                    changesManager.resetDocumentChangeState(id);
-
+                    changesManager.removeContentTool(id);
+                    changesManager.resetContentChangeState(id);
                     this._loadTab(value, dispatcher, arguments);
                 }
 

@@ -45,7 +45,7 @@ define([
                     this.dispatcher.getGlobalState().currentTabId = null;
                 }
 
-                this.dispatcher.getChangesManager().resetDocumentChangeState(this.id);
+                //this.dispatcher.getChangesManager().resetDocumentChangeState(this.id); //TODO[xavi] Aquests documents no poden canviar, el onclose dels que canvian ha de sobrescriure aquest
                 this.dispatcher.removeDocument(this.id);
                 this.triggerEvent('document_closed', {id: this.id});
             },

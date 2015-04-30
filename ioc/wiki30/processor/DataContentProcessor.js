@@ -6,70 +6,74 @@ define([
     "dojo/on",
     "dijit/focus",
     "dojo/ready",
-    "ioc/gui/content/contentToolFactory"
+    "ioc/gui/content/contentToolFactory",
 
 ], function (dom, Editor, declare, ContentProcessor, on, focus, ready, contentToolFactory) {
 
     var setChangesControl = function (editFormId, wikiTextId, summaryId, dispatcher) {
 
 
-            var editform = dom.byId(editFormId),
-
-                edit_text = dom.byId(wikiTextId),
+            //var editform = dom.byId(editFormId),
+            //
+            //    edit_text = dom.byId(wikiTextId),
 
             //summary = dom.byId(summaryId),
 
-                changesManager = dispatcher.getChangesManager(),
+            var changesManager = dispatcher.getChangesManager();
 
 
-                checkfunc = function () {
-                    var currentId = dispatcher.getGlobalState().getCurrentId();
-                    changesManager.updateDocumentChangeState(currentId);
-                    summaryCheck();
-                };
+            // TODO[Xavi] Això només canvia l'estil del quadre del summary si el seu valor es null, aspecte visual, i a més no sembla que funcioni o no està l'estil definit
+            //    checkfunc = function () {
+            //        var currentId = dispatcher.getGlobalState().getCurrentId();
+            //        changesManager.updateDocumentChangeState(currentId);
+            //        summaryCheck();
+            //    };
+            //
+            //
+            //if (!editform || (edit_text && edit_text.readOnly)) {
+            //    return;
+            //}
 
 
-            if (!editform || (edit_text && edit_text.readOnly)) {
-                return;
-            }
-
-            changesManager.setDocument(edit_text.value);
+            //console.log("del edit text: ", edit_text.value);
+            // changesManager.setDocument(edit_text.value);
 
             // TODO[Xavi] Això hauria de activarse globalment, no només per un tipus concret de document
             window.addEventListener("beforeunload", function (event) {
-                if (changesManager.thereAreChangedDocuments()) {
+                if (changesManager.thereAreChangedContents()) {
                     event.returnValue = LANG.notsavedyet;
                 }
 
                 deleteDraft();
             });
 
-            // TODO[Xavi] No trobo que això tingui cap efecte actualment
-            if (edit_text) {
-                // set focus and place cursor at the start
-                var sel = getSelection(edit_text);
-                sel.start = 0;
-                sel.end = 0;
-                setSelection(sel);
-                focus.focus(edit_text);
-                //            edit_text.focus();
-            }
+            //// TODO[Xavi] No trobo que això tingui cap efecte actualment
+            //if (edit_text) {
+            //    // set focus and place cursor at the start
+            //    var sel = getSelection(edit_text);
+            //    sel.start = 0;
+            //    sel.end = 0;
+            //    setSelection(sel);
+            //    focus.focus(edit_text);
+            //    //            edit_text.focus();
+            //}
 
             // TODO[Xavi] El control de canvis produits s'ha de moure al ContentTool pertinent
 
-            on(editform, 'keyup', checkfunc);
-            on(editform, 'paste', checkfunc);
-            on(editform, 'cut', checkfunc);
-            on(editform, 'focusout', checkfunc);
+            // TODO[Xavi] en lloc del editform es pot aplicar al contenttool.id?
+            //on(editform, 'keyup', checkfunc);
+            //on(editform, 'paste', checkfunc);
+            //on(editform, 'cut', checkfunc);
+            //on(editform, 'focusout', checkfunc);
 
             //alert("existe summary?");
             //on(summary, "change", summaryCheck);
             //on(summary, "keyup", summaryCheck);
 
-
-            if (changesManager.thereAreChangedDocuments()) {
-                summaryCheck();
-            }
+            //
+            //if (changesManager.thereAreChangedDocuments()) {
+            //    summaryCheck();
+            //}
 
             dw_editor.init();
         },
@@ -120,6 +124,7 @@ define([
                 ret = this.inherited(arguments);
                 value.editor.select();
 
+
                 ready(function () {
                     editing(value.editing, dispatcher);
                 });
@@ -152,20 +157,35 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
+                //console.log("Creando el content Tool");
                 var args = {
-                    id:         content.id,
-                    title:      content.title,
-                    content:    content.content,
-                    closable:   true,
-                    dispatcher: dispatcher
-                };
-
-                //return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args)
-                //    .decorate(contentToolFactory.decoration.DOCUMENT, args);
+                        id:         content.id,
+                        title:      content.title,
+                        content:    content.content,
+                        closable:   true,
+                        dispatcher: dispatcher,
+                    },
+                    originalContent = this._extractContentFromNode(content.editor.editorNode),
+                    argsEditor = {
+                        originalContent: originalContent
+                    };
 
                 return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args)
-                    .decorate(contentToolFactory.decoration.EDITOR, args);;
+                    .decorate(contentToolFactory.decoration.EDITOR, argsEditor);
+            },
+
+            _extractContentFromNode: function (parentNode) {
+                var nodes = parentNode.children;
+
+                for (var i = 0; i < nodes.length; i++) {
+                    //console.log("NODE: ", nodes[i]);
+                    if (nodes[i].className == "editBox") {
+                        //console.log("Trobat");
+                        return nodes[i].lastElementChild.textContent;
+                    }
+                }
 
             }
+
         });
 });

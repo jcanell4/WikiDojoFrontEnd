@@ -25,7 +25,7 @@ define([
          */
         {
             "-chains-": {
-                onLoad: "before"
+                onLoad: "after"
             },
 
             data: null,
@@ -165,23 +165,6 @@ define([
                     this.render();
                 }
             },
-
-
-            //
-            ///**
-            // * @override
-            // */
-            //startup: function () {
-            //
-            //    this.watch('data', function (name, oldValue, value) {
-            //        this.set('content', value);
-            //    });
-            //
-            //    if (this.data) {
-            //        this.set('content', this.data);
-            //
-            //    }
-            //},
 
             /**
              * Aquest mètode es cridat al tancar la pestanya

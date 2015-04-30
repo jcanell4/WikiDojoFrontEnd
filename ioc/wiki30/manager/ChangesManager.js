@@ -9,7 +9,7 @@ define([
              * @author Xavier Garcia <xaviergaro.dev@gmail.com>
              */
             {
-                documentsChanged: {},
+                contentsChanged: {},
 
                 documentsOriginal: {},
 
@@ -17,8 +17,10 @@ define([
 
                 lastChecked: null,
 
+
+
                 constructor: function (dispatcher) {
-                    this.documentsChanged = {};
+                    this.contentsChanged = {};
                     this.dispatcher = dispatcher;
 
                 },
@@ -28,8 +30,8 @@ define([
                  *
                  * @returns {boolean} - Cert si hi han hagut canvis o Fals en cas contrari
                  */
-                thereAreChangedDocuments: function () {
-                    return Object.keys(this.documentsChanged).length > 0;
+                thereAreChangedContents: function () {
+                    return Object.keys(this.contentsChanged).length > 0;
                 },
 
                 /**
@@ -38,7 +40,7 @@ define([
                  * @param {string?} id - id del document a comprovar
                  * @returns {boolean} - Cert si hi han hagut canvis o Fals en cas contrari
                  */
-                isDocumentChanged: function (id) {
+                isContentChanged: function (id) {
                     var content = this._getCurrentContent(),
                         contentCache,
                         observer,
@@ -119,12 +121,12 @@ define([
                     id = id || this._getCurrentId();
 
 
-                    var result = this.isDocumentChanged(id); // Si existeix o hi han canvis retorna cert
+                    var result = this.isContentChanged(id); // Si existeix o hi han canvis retorna cert
 
                     if (result) {
-                        this.documentsChanged[id] = true; // Si hi han canvis modifica la variable
+                        this.contentsChanged[id] = true; // Si hi han canvis modifica la variable
                     } else {
-                        this.resetDocumentChangeState(id); // Si no els hi ha fa un reset del document
+                        this.resetContentChangeState(id); // Si no els hi ha fa un reset del document
                     }
 
 
@@ -142,7 +144,7 @@ define([
                     id = id || this._getCurrentId();
                     content = content || this._getCurrentContent(id);
 
-                    this.resetDocumentChangeState(id);
+                    this.resetContentChangeState(id);
                     this.documentsOriginal[id] = content;
 
 
@@ -153,13 +155,13 @@ define([
                  *
                  * @param {string?} id - Id del document a reiniciatlizar
                  */
-                resetDocumentChangeState: function (id) {
+                resetContentChangeState: function (id) {
                     var contentCache, observer;
 
                     id = id || this._getCurrentId();
 
-                    if (this.documentsChanged[id]) {
-                        delete this.documentsChanged[id];
+                    if (this.contentsChanged[id]) {
+                        delete this.contentsChanged[id];
                     }
 
 
@@ -189,7 +191,7 @@ define([
                  */
                 isChanged: function (id) {
                     id = id || this._getCurrentId();
-                    return this.documentsChanged[id] ? true : false;
+                    return this.contentsChanged[id] ? true : false;
                 }
 
             }

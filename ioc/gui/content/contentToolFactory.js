@@ -228,16 +228,36 @@ define([
              * @private
              */
             {
+                constructor: function (args) {
+                    this._setOriginalContent(args.originalContent);
+                },
+
                 /**
                  * Es registra com observador de si mateix per modificar el estat quan es produeixen canvis.
-                 *
+                 * TODO[Xavi] s'ha de moure tot el sistema de detecció de canvis del editor a aquest decorador i això segurament no serà necessari
                  * @override
                  */
                 postLoad: function () {
-                    // TODO[Xavi] Reactivar quan es mogui el ChangesManager
                     this.registerToEvent(this, "document_changed", lang.hitch(this, this.onDocumentChanged));
                     this.registerToEvent(this, "document_changes_reset", lang.hitch(this, this.onDocumentChangesReset));
+
+
+                    //console.log("POSTLOAD Original Content: ", this.originalContent);
+                    this.registerToChangesManager();
+
+                    on(this.domNode, 'keyup', lang.hitch(this, this.checkChanges));
+                    on(this.domNode, 'paste', lang.hitch(this, this.checkChanges));
+                    on(this.domNode, 'cut', lang.hitch(this, this.checkChanges));
+                    on(this.domNode, 'focusout', lang.hitch(this, this.checkChanges));
+
                 },
+
+                checkChanges: function () {
+                    var changesManager = this.dispatcher.getChangesManager();
+                    changesManager.updateDocumentChangeState(this.id);
+                    //summaryCheck();
+                },
+
 
                 /**
                  * Accio a realitzar quan hi han canvis al document.
@@ -267,6 +287,94 @@ define([
                     }
                 },
 
+                registerToChangesManager: function () {
+                    var changesManager = this.dispatcher.getChangesManager();
+                    changesManager.setContentTool(this);
+                },
+
+                _getOriginalContent: function () {
+                    return this.originalContent;
+                },
+
+                _setOriginalContent: function (content) {
+
+
+                    this.originalContent = content;
+                },
+
+                isContentChanged:         function () {
+                    var content = this._getCurrentContent(),
+                        result = !(this._getOriginalContent() == content);
+
+
+                    //console.log("Conntent");
+                    //console.log(content);
+                    //console.log("Original");
+                    //console.log(this._getOriginalContent());
+
+                    if (result) {
+                        this.dispatchEvent("document_changed", {id: this.id});
+
+                    }
+
+                    //console.log("Hi han canvis?", result);
+                    return result;
+                    //this.eventManager.dispatchEvent("document_changed", {id: id});
+                },
+
+                resetContentChangeState: function () {
+                    this._setOriginalContent(this._getCurrentContent());
+                    this.dispatchEvent("document_changes_reset", {id: this.id});
+
+                },
+                /**
+                 * Retorna el text contingut al editor per la id passada com argument o la del id del document actual si
+                 * no s'especifica.
+                 *
+                 * TODO[Xavi] Això es propi només del EditorContentTool, no es global
+                 *
+                 * @param {string?} id - id del document del que volem recuperar el contingut
+                 * @returns {string|null} - Text contingut al editor
+                 * o null si no existeix
+                 * @private
+                 */
+                _getCurrentContent:       function () {
+                    var contentCache,
+
+                        content;
+
+
+                    contentCache = this.dispatcher.getContentCache(this.id);
+
+                    try {
+                        if (contentCache.isAceEditorOn()) {
+                            content = contentCache.getEditor().iocAceEditor.getText();
+
+                        } else {
+                            content = contentCache.getEditor().$textArea.context.value;
+                        }
+
+                        content = '\n' + content + '\n';
+
+                    } catch (error) {
+                        console.error("Error detectat: ", error);
+                    }
+
+                    return content;
+                },
+
+                /**
+                 * Retorna la id del document actual.
+                 *
+                 * TODO[Xavi] Deixar com a helper method? Afegir-lo a un decorador? <-- Es necessari, cridat per altres
+                 * @returns {string} - Id del document actual
+                 * @private
+                 */
+                _getCurrentId: function () {
+                    return this.dispatcher.getGlobalState().getCurrentId();
+                },
+
+
                 /**
                  * Acció a realitzar quan es tanca el document. Si detecta canvis demana confirmació i en cas de que no hi hagin
                  * o es descartin el canvis retorna cert i es procedeix al tancament del document.
@@ -283,7 +391,9 @@ define([
 
                     if (confirmation) {
                         this.closeDocument();
+                        changesManager.removeContentTool(this.id);
                     }
+
 
                     return confirmation;
                 }
@@ -322,6 +432,7 @@ define([
             args = args ? args : {};
             args.requester = contentTool.requester;
 
+            //console.log("Hi ha arguments al decorador?", args);
 
             switch (type) {
                 case this.decoration.META:
@@ -329,7 +440,10 @@ define([
                     break;
 
                 case this.decoration.EDITOR:
-                    decoration = new EditorContentToolDecoration(args);
+                    decoration = new EditorContentToolDecoration(args)
+                    //console.log("Decoration:", decoration);
+                    //console.log("Decoration args:", args);
+                    //alert("stop");
                     break;
 
                 case this.decoration.REQUEST:
