@@ -26,7 +26,7 @@ define([
     "ioc/wiki30/processor/AdminTaskProcessor",
     "ioc/wiki30/processor/JsInfoProcessor",
     "ioc/wiki30/manager/InfoManager",
-    "ioc/wiki30/manager/NewChangesManager",
+    "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/processor/RevisionsProcessor",
     "ioc/wiki30/DokuwikiContent",
     "ioc/wiki30/UpdateViewHandler"
