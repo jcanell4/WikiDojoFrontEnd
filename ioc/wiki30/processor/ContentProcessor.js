@@ -86,34 +86,83 @@ define([
             },
 
             /**
-             * Crea un ContentTool apropiat pel tipus de processador i l'afegeix al contenidor passat com argument.
+             * Creat un ContentTool del tipus apropiat per aquest processador i l'afegeix al contenidor passat com
+             * argument.
              *
-             * Aquesta es una implementació per defecte que pot ser sobrescrita per les subclasses.
-             *
-             * Aquesta implementació afegeix un ContentTool si no hi ha un amb el mateix id o el reemplaça si es així.
-             *
-             * @param {*} content - Contingut a partir del cual es generarà el ContentTool apropiat
-             * @param {Dispatcher} dispatcher - Dispatcher al que estaran lligats tant el ContainerContentTool com
-             * el ContentTool creat.
-             * @param {ContainerContentTool} container - Contenidor al que s'afegira el ContentTool creat
+             * @param {Content} content - Contingut a partir del qual es generarà el ContentTool
+             * @param {Dispatcher} dispatcher - Dispatcher lligat tant al ContentTool com al ContainerContentTool
+             * @param {ContainerContentTool} container - Contenidor al que s'afegirà el ContentTool
              * @protected
+             * @override
              */
             addContent: function (content, dispatcher, container) {
                 var oldContentTool = registry.byId(content.id),
-                    cp,
+                    contentTool,
                     position = 0;
 
-                if (oldContentTool) {
-                    position = container.getChildIndex(oldContentTool.id);
-                    oldContentTool.removeContentTool();
+
+                if (this.isOldContentAllowed(oldContentTool, this.getAllowedTypes(content))) {
+                    oldContentTool.setData(content.content);
+                    contentTool = oldContentTool;
+                    console.log("ALLOWED");
+
+                } else {
+                    if (oldContentTool) {
+                        position = container.getChildIndex(oldContentTool.id);
+                        oldContentTool.removeContentTool();
+                    }
+
+                    contentTool = this.createContentTool(content, dispatcher);
+                    container.addChild(contentTool, position);
+                    container.selectChild(contentTool);
+                    console.log("NOT ALLOWED");
+                }
+                dispatcher.addDocument(content);
+                contentTool.setCurrentDocument(content.id);
+            },
+
+            /**
+             * Retorna cert o fals si el tipus del oldContentTool es troba a la llista de allowedTypes.
+             *
+             * @param {ContentTool} oldContentTool - Contenidor antic a comprovar
+             * @param {string|string[]} allowedTypes - Tipus permesos
+             * @returns {boolean} - true si es un tipus permes o false en cas contrari
+             * @protected
+             */
+            isOldContentAllowed: function (oldContentTool, allowedTypes) {
+                var oldContentToolType;
+
+                if (!oldContentTool || !allowedTypes) {
+                    return false;
                 }
 
-                cp = this.createContentTool(content, dispatcher);
-                container.addChild(cp, position);
-                container.selectChild(cp);
+                oldContentToolType = oldContentTool.getType();
 
-                dispatcher.addDocument(content);
-                cp.setCurrentDocument(content.id);
+                if (typeof allowedTypes === 'string' && oldContentTool.getType() == allowedTypes) {
+                    return true;
+
+                } else {
+                    for (var type in allowedTypes) {
+                        if (oldContentToolType === allowedTypes[type]) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            },
+
+            /**
+             * Retorna la llista de tipus permesos. Aquest mètode s'ha de sobrescriure amb la lògica necessaria pels
+             * diferents processors.
+             *
+             * @params {*} content - objecte d'on es poden extreure les dades necessaries per generar la llista de tipus
+             * permesos
+             * @returns {string|string[]}
+             * @protected
+             */
+            getAllowedTypes: function (content) {
+                return null;
             }
         });
 });

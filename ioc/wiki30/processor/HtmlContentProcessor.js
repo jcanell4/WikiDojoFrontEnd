@@ -1,9 +1,8 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
-    "ioc/gui/content/contentToolFactory",
-    "dijit/registry"
-], function (declare, ContentProcessor, contentToolFactory, registry) {
+    "ioc/gui/content/contentToolFactory"
+], function (declare, ContentProcessor, contentToolFactory) {
 
     return declare([ContentProcessor],
         /**
@@ -53,52 +52,23 @@ define([
              */
             createContentTool: function (content, dispatcher) {
                 var args = {
-                    id:         content.id,
-                    title:      content.title,
-                    content:    content.content,
-                    closable:   true,
-                    dispatcher: dispatcher
-                };
+                        id:         content.id,
+                        title:      content.title,
+                        content:    content.content,
+                        closable:   true,
+                        dispatcher: dispatcher
+                    },
 
-                //return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                //    .decorate(contentToolFactory.decoration.DOCUMENT, args);
+                    contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
 
-                return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
+                contentTool.setType('HTML');
+
+                return contentTool;
             },
 
-            /**
-             * Creat un ContentTool del tipus apropiat per aquest processador i l'afegeix al contenidor passat com
-             * argument.
-             *
-             * @param {Content} content - Contingut a partir del qual es generarà el ContentTool
-             * @param {Dispatcher} dispatcher - Dispatcher lligat tant al ContentTool com al ContainerContentTool
-             * @param {ContainerContentTool} container - Contenidor al que s'afegirà el ContentTool
-             * @protected
-             * @override
-             */
-            addContent: function (content, dispatcher, container) {
-                var oldContentTool = registry.byId(content.id),
-                    cp,
-                    position = 0;
-
-                if (oldContentTool && oldContentTool.getType() == 'HTML') {
-                    oldContentTool.setData(content.content);
-                    cp = oldContentTool;
-
-                } else {
-                    if (oldContentTool) {
-                        position = container.getChildIndex(oldContentTool.id);
-                        oldContentTool.removeContentTool();
-                    }
-
-                    cp = this.createContentTool(content, dispatcher);
-
-                    cp.setType('HTML');
-                    container.addChild(cp, position);
-                    container.selectChild(cp);
-                }
-                dispatcher.addDocument(content);
-                cp.setCurrentDocument(content.id);
+            // TODO[Xavi] això provoca un error de duplicació dels nombres de secció, ho posem només per les proves
+            getAllowedTypes:   function (content) {
+                return 'HTML';
             }
         });
 });
