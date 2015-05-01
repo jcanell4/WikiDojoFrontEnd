@@ -8,7 +8,7 @@
  * amb un ACE-Editor.
  *
  * @class EditorContentToolDecoration
- * @extends EditorContentTool
+ * @extends DocumentContentTool
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
  * @see contentToolFactory.decorate()
@@ -32,7 +32,7 @@ define([
          * realitzar la comprovació de canvis abans de tancar-se.
          *
          * @class EditorContentTool
-         * @extends DocumentContentTool
+         * @extends DocumentContentTool, AbstractChangesManagerDecoration
          * @private
          */
         {
@@ -196,17 +196,8 @@ define([
                 }
 
                 return content;
-            },
-
-            /**
-             * Retorna la id del document actual.
-             *
-             * TODO[Xavi] Deixar com a helper method? Afegir-lo a un decorador? <-- Es necessari, cridat per altres
-             * @returns {string} - Id del document actual
-             * @private
-             */
-            _getCurrentId: function () {
-                return this.dispatcher.getGlobalState().getCurrentId();
             }
+
+
         })
 });

@@ -59,7 +59,7 @@ define([
                         if (contentCache) {
                             contentCache.setCurrentId("metadataPane", this.id)
                         }
-                    })
+                    });
 
                     this.inherited(arguments);
                 },
@@ -121,16 +121,15 @@ define([
              * @private
              */
             {
-                /** @type Request */
+                /** @type Request @protecte*/
                 requester: null,
 
+                /** @private */
                 replacers: {},
 
+                /** @private */
                 replacersParams: {},
 
-                /**
-                 *
-                 */
                 constructor: function (args) {
                     if (args.requester) {
                         this.requester = args.requester;
@@ -186,6 +185,7 @@ define([
                  *
                  * @param {string} type - tipus per identificar aquest reemplaçador
                  * @param {function} replacer - funció que es cridarà quan calgui fer el reemplaç
+                 * @param {*} params - arguments necessaris per efectuar el reemplaç
                  */
                 addReplacer: function (type, replacer, params) {
                     if (!this.replacers) {

@@ -45,7 +45,7 @@ define([
                 }
 
                 this.dispatcher.removeDocument(this.id);
-                this.triggerEvent('document_closed', {id: this.id});
+                this.dispatchEvent('document_closed', {id: this.id});
             },
 
             /**
@@ -66,10 +66,8 @@ define([
                 this.dispatchEvent("document_unselected", {id: this.id});
             },
 
-            /**
-             * Aquest métode s'encarrega d'establir aquest ContentTool com document actiu
-             */
-            setCurrentDocument: function (id) {
+            setCurrentDocument: function () {
+                var id = this.id;
                 this.dispatcher.getGlobalState().currentTabId = id;
                 this.dispatcher.getContentCache(id).setMainContentTool(this);
                 this.dispatchEvent("document_selected", {id: id});

@@ -28,17 +28,19 @@ define([
                 onLoad: "after"
             },
 
+            /** @private*/
             data: null,
 
+            /** @private */
             decorator: null,
 
-            /** @type Dispatcher */
+            /** @type Dispatcher @private*/
             dispatcher: null,
 
-            /** @type ContainerContentTool */
+            /** @type ContainerContentTool @private */
             container: null,
 
-            /** @type string */
+            /** @type string @private*/
             type: null,
 
             /**
@@ -90,14 +92,14 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
              */
             onSelect: function () {
-                this.triggerEvent("content_selected", {id: this.id});
+                this.dispatchEvent("content_selected", {id: this.id});
             },
 
             /**
              * Dispara l'esdeveniment que indica que el contingut ha estat des-seleccionat.
              */
             onUnselect: function () {
-                this.triggerEvent("content_unselected", {id: this.id});
+                this.dispatchEvent("content_unselected", {id: this.id});
             },
 
             /**

@@ -20,7 +20,7 @@ define([
 
         return declare(null, {
 
-                /** @type ChangesManager */
+                /** @type ChangesManager @protected */
                 changesManager: null,
 
                 /** @protected */

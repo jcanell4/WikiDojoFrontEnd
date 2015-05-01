@@ -61,7 +61,7 @@ define([
 
                     contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
 
-                contentTool.setType('HTML');
+                contentTool.setType('HTML'); //TODO[Xavi] Això podria obtenir-se de this.type;
 
                 return contentTool;
             },

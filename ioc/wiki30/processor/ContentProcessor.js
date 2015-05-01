@@ -78,6 +78,7 @@ define([
              *
              * @param {*} content - Contingut a partir del que es generarà el ContentTool
              * @param {Dispatcher} dispatcher - Dispatcher al que quedarà lligat el ContentTool
+             * @returns {ContentTool} - ContentTool generat i decorat.
              * @abstract
              * @protected
              */
@@ -93,7 +94,6 @@ define([
              * @param {Dispatcher} dispatcher - Dispatcher lligat tant al ContentTool com al ContainerContentTool
              * @param {ContainerContentTool} container - Contenidor al que s'afegirà el ContentTool
              * @protected
-             * @override
              */
             addContent: function (content, dispatcher, container) {
                 var oldContentTool = registry.byId(content.id),
@@ -118,7 +118,7 @@ define([
                     console.log("NOT ALLOWED");
                 }
                 dispatcher.addDocument(content);
-                contentTool.setCurrentDocument(content.id);
+                contentTool.setCurrentDocument();
             },
 
             /**

@@ -4,19 +4,33 @@ define([
 ], function (declare, dojoArray) {
     return declare(null,
         /**
+         * Aquesta classe permet enregistrar-se com observador o enregistrar-se a altres observadors per comunicar
+         * quan es disparen determinats esdeveniments.
+         *
+         * La comunicació es realitza mitjançant una funció que es cridada amb les dades que es pasin al disparar-se
+         * el esdeveniment.
+         *
+         * No es guarda cap referencia als sucriptors, només la funció a la que caldrà cridar, que al tractar-se de
+         * closures continuen tenint accès al seu contexte original (el EventObserver suscriptor).
+         *
          * @class EventObserver
+         * @author Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-
             "-chains-": {
                 onUnload: "before"
             },
 
-            events: {}, // {string: function[]};
+            /** @type {{string?: function[]}} @private */
+            events: {},
 
+            /** @type EventObserver[] @private */
             observers: [],
 
-            /** @type {{observed: EventObserver, id: int}[]} indentificador propi dels events als que està subscrit */
+            /**
+             * @type {{observed: EventObserver, id: int}[]} indentificador propi dels events als que està subscrit
+             * @private
+             */
             registeredToEvents: [],
 
             constructor: function (args) {
@@ -27,13 +41,11 @@ define([
                 }
 
                 declare.safeMixin(this, args);
-                //this.eventManager = args.dispatcher.getEventManager();
 
                 this.registeredToEvents = [];
                 this.events = {};
                 this.observers = [];
             },
-
 
             /**
              * Es registra al esdeveniment i respón amb la funció passada com argument quan es escoltat.
@@ -47,17 +59,10 @@ define([
              */
 
             registerToEvent: function (observer, event, callback) {
-                //console.log("Observed: ", observer);
-                //console.log("Metode: ", observer.registerObserverToEvent);
-                //alert("dins de register");
-
-
                 var reference = {
                     "observed": observer,
                     "id":       observer.registerObserverToEvent(event, callback)
                 };
-
-                //console.log("Vull enregistrarme!");
                 this.registeredToEvents.push(reference);
             },
 
@@ -78,43 +83,33 @@ define([
             },
 
             /**
-             * @deprecated Use dispatchEvent(event, data)
-             * @param event
-             * @param data
+             * Dispara l'esdeveniment cridant cadascunta de les funcions dels observadors enregistrats amb les dades
+             * passades com argument.
+             *
+             * @param {string} event - Nom del esdeveniment
+             * @param {*} data - Dades a passar a les funcions dels observadors
              */
-            triggerEvent: function (event, data) {
-                //this.eventManager.dispatchEvent(event, data);
-                this.dispatchEvent(event, data);
-            },
-
             dispatchEvent: function (event, data) {
                 var observers = this.events[event];
 
-                //console.log("llençant esdeveniment:", event, data);
-                //
-                //console.log("Interessats:", observers);
-                //console.log("Totals:",this.events);
-
                 if (observers) {
                     dojoArray.forEach(observers, function (callback) {
-                        //console.log("Cridat");
                         if (callback) {
                             callback(data);
                         }
                     });
                 }
-
             },
 
-
             /**
+             * Registra la funció al esdeveniment amb el nom passat com argument.
              *
-             * @param {string} event
-             * @param {function} callback
-             * @returns {int}
+             * @param {string} event - Nom del esdeveniment que llençarà la funció.
+             * @param {function} callback - Funció que es cridarà al disparar-se el esdeveniment.
+             * @returns {int} - Id de referencia per poder desenregistrar-se
+             * @protected
              */
             registerObserverToEvent: function (event, callback) {
-                //alert("dins de registerObserver");
                 var index,
                     observer;
 
@@ -124,9 +119,6 @@ define([
 
                 index = this.events[event].push(callback) - 1;
                 observer = {event: event, index: index};
-
-
-                //console.log("Enregistrat observador al esdeveniment:"+event);
 
                 return this.observers.push(observer) - 1;
             },
@@ -142,18 +134,15 @@ define([
 
                 this.events[subscriber.event][subscriber.index] = null;
                 this.observers[observerId] = null;
-
-                //console.log("Eliminat observador: ", observerId);
             },
 
-
             /**
+             * Es desenregistra automàticament de tots esl esdeveniments.
+             *
              * Chained before
              */
             onUnload: function () {
                 this.unregisterFromEvents();
             }
-
         })
-
 });
