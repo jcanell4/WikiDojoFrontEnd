@@ -97,9 +97,9 @@ define([
                     };
 
 
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
-                    .decorate(contentToolFactory.decoration.META);
+                return contentToolFactory.generate(contentToolFactory.generation.META, args)
+                    .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink);
+//                    .decorate(contentToolFactory.decoration.META);
             },
 
             /**

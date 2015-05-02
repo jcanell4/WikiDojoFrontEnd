@@ -16,100 +16,100 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-    "dojo/dom-attr",
     "ioc/gui/content/ContentTool",
     "ioc/gui/content/DocumentContentTool",
+    "ioc/gui/content/MetaInfoContentTool",
     "ioc/gui/content/EditorContentToolDecoration",
     "ioc/gui/content/requestReplacerFactory"
-], function (declare, lang, att, ContentTool, DocumentContentTool, EditorContentToolDecoration, requestReplacerFactory) {
+], function (declare, lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentToolDecoration, requestReplacerFactory) {
 
-    var MetaContentToolDecoration = declare(null,
-            /**
-             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
-             *
-             * Afegeix els métodes per observar a un altre document el que permet que reaccioni als seus esdeveniments
-             * de la següent manera:
-             *      - Si el document es seleccionat es fa visible
-             *      - Si el document es des-seleccionat s'amaga
-             *      - Si el document es tanca es destrueix
-             *
-             * Requereix una propietat docId quan es fa el mixin per determinar a quin document ha de observar.
-             *
-             * @class MetaContentToolDecoration
-             * @extends ContentTool
-             * @private
-             */
-            {
-                /**
-                 * Accions a realitza desprès de carregar.
-                 *
-                 * S'enregistra al document a observar.
-                 * @override
-                 * @protected
-                 */
-                postLoad: function () {
-                    var observed = this.dispatcher.getContentCache(this.docId).getMainContentTool();
+//    var MetaContentToolDecoration = declare(null,
+//            /**
+//             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
+//             *
+//             * Afegeix els métodes per observar a un altre document el que permet que reaccioni als seus esdeveniments
+//             * de la següent manera:
+//             *      - Si el document es seleccionat es fa visible
+//             *      - Si el document es des-seleccionat s'amaga
+//             *      - Si el document es tanca es destrueix
+//             *
+//             * Requereix una propietat docId quan es fa el mixin per determinar a quin document ha de observar.
+//             *
+//             * @class MetaContentToolDecoration
+//             * @extends ContentTool
+//             * @private
+//             */
+//            {
+//                /**
+//                 * Accions a realitza desprès de carregar.
+//                 *
+//                 * S'enregistra al document a observar.
+//                 * @override
+//                 * @protected
+//                 */
+//                postLoad: function () {
+//                    var observed = this.dispatcher.getContentCache(this.docId).getMainContentTool();
+//
+//                    this.registerToEvent(observed, "document_closed", lang.hitch(this, this._onDocumentClosed));
+//                    this.registerToEvent(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
+//                    this.registerToEvent(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
+//
+//                    this.watch("selected", function (name, oldValue, newValue) {
+//                        var contentCache = this.dispatcher.getContentCache(this.docId);
+//                        if (contentCache) {
+//                            contentCache.setCurrentId("metadataPane", this.id)
+//                        }
+//                    });
+//
+//                    this.inherited(arguments);
+//                },
+//
+//                /**
+//                 * Aquest ContentTool s'elimina
+//                 *
+//                 * @private
+//                 */
+//                _onDocumentClosed: function (data) {
+//                    if (data.id == this.docId) {
+//                        this.removeContentTool();
+//                    }
+//                },
+//
+//                /**
+//                 * Aquest ContentTool es fa visible.
+//                 *
+//                 * @private
+//                 */
+//                _onDocumentSelected: function (data) {
+//                    var selectedPane,
+//                        parent;
+//
+//                    if (data.id == this.docId && this.domNode) {
+//
+//                        this.showContent();
+//                        selectedPane = this.dispatcher.getContentCache(this.docId).getCurrentId('metadataPane');
+//
+//                        if (selectedPane == this.id) {
+//                            parent = this.getContainer();
+//                            parent.selectChild(this);
+//                        }
+//                    }
+//                },
+//
+//                /**
+//                 * Aquest ContentTool s'amaga.
+//                 *
+//                 * @private
+//                 */
+//                _onDocumentUnselected: function (data) {
+//                    if (data.id == this.docId && this.domNode) {
+//                        this.hideContent();
+//                    }
+//                }
+//            }),
 
-                    this.registerToEvent(observed, "document_closed", lang.hitch(this, this._onDocumentClosed));
-                    this.registerToEvent(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
-                    this.registerToEvent(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
 
-                    this.watch("selected", function (name, oldValue, newValue) {
-                        var contentCache = this.dispatcher.getContentCache(this.docId);
-                        if (contentCache) {
-                            contentCache.setCurrentId("metadataPane", this.id)
-                        }
-                    });
-
-                    this.inherited(arguments);
-                },
-
-                /**
-                 * Aquest ContentTool s'elimina
-                 *
-                 * @private
-                 */
-                _onDocumentClosed: function (data) {
-                    if (data.id == this.docId) {
-                        this.removeContentTool();
-                    }
-                },
-
-                /**
-                 * Aquest ContentTool es fa visible.
-                 *
-                 * @private
-                 */
-                _onDocumentSelected: function (data) {
-                    var selectedPane,
-                        parent;
-
-                    if (data.id == this.docId && this.domNode) {
-
-                        this.showContent();
-                        selectedPane = this.dispatcher.getContentCache(this.docId).getCurrentId('metadataPane');
-
-                        if (selectedPane == this.id) {
-                            parent = this.getContainer();
-                            parent.selectChild(this);
-                        }
-                    }
-                },
-
-                /**
-                 * Aquest ContentTool s'amaga.
-                 *
-                 * @private
-                 */
-                _onDocumentUnselected: function (data) {
-                    if (data.id == this.docId && this.domNode) {
-                        this.hideContent();
-                    }
-                }
-            }),
-
-
-        RequestContentToolDecoration = declare(null,
+       var RequestContentToolDecoration = declare(null,
             /**
              * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
              *
@@ -216,7 +216,7 @@ define([
     return {
         /** @enum */
         decoration: {
-            META:         'meta',
+//            META:         'meta',
             EDITOR:       'editor',
             REQUEST:      'request',
             REQUEST_LINK: 'request_link',
@@ -226,6 +226,7 @@ define([
         /** @enum */
         generation: {
             BASE:     'base',
+            META:     'meta',
             DOCUMENT: 'document'
         },
 
@@ -249,9 +250,9 @@ define([
             //console.log("Hi ha arguments al decorador?", args);
 
             switch (type) {
-                case this.decoration.META:
-                    decoration = new MetaContentToolDecoration(args);
-                    break;
+//                case this.decoration.META:
+//                    decoration = new MetaContentToolDecoration(args);
+//                    break;
 
                 case this.decoration.EDITOR:
                     decoration = new EditorContentToolDecoration(args)
@@ -328,6 +329,9 @@ define([
             switch (type) {
                 case this.generation.BASE:
                     return new ContentTool(args);
+
+                case this.generation.META:
+                     return new MetaInfoContentTool(args);
 
                 case this.generation.DOCUMENT:
                     return new DocumentContentTool(args);

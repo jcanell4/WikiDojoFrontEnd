@@ -111,8 +111,8 @@ define([
                     action:     metaContent.action
                 };
 
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.META);
+                return contentToolFactory.generate(contentToolFactory.generation.META, args);
+//                    .decorate(contentToolFactory.decoration.META);
             }
 
         });
