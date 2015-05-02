@@ -1,23 +1,3 @@
-/*
-Et proposo dividir la classe actual (ioc/gui/ContentTabDokuwikiNsTree) en dues:
-
-    ioc/gui/NsTreeContainer: igual a ioc/gui/ContentTabDokuwikiNsTree,
-    però eliminat la part d'herència el Request + l'onClick
-
-ioc/gui/ContentTabDokuwikiNsTree: que hereti de NsTreeContainer i Request i afegeixi
- la funció onClick orginal per tal que acabi fent el mateix que la implementació actual.
-
-    Un com feta la implementació, a nosaltres ens interessarà la classe ioc/gui/NsTreeContainer i
-    caldrà crear una instància programàticament.
-     EL datasource d'on treure els nodes de l'arbre és:
-     treeDataSource:'lib/plugins/ajaxcommand/ajaxrest.php/ns_tree_rest/.
-
-SI ho implementes correctament, no et caldrà fer massa més canvis.
-Només donar el treeDataSource en el moment de fer la instanciació
-i fer l'StartUp (imprescindible quan els widgets es creen programaticament.
-
-T'atreveixes? Ànims. Qualsevol dubte ja saps.
-*/
 
 define([
     "dojo/_base/declare", // declare
@@ -27,16 +7,18 @@ define([
     'dijit/layout/_LayoutWidget',
     'dijit/_TemplatedMixin',
     "dojo/store/JsonRest",
+    "dojo/store/Memory",
     "dijit/Tree",
     "dojo/aspect",
     "dijit/tree/ObjectStoreModel",
     "ioc/wiki30/dispatcherSingleton",
     "dijit/Dialog",
     "dijit/form/Button",
+    "dojo/store/Observable",
     "dojo/NodeList-dom" // NodeList.style
 
-], function (declare, query, template, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Tree, aspect,
-             ObjectStoreModel, dispatcher, Dialog, Button) {
+], function (declare, query, template, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Memory, Tree, aspect,
+             ObjectStoreModel, dispatcher, Dialog, Button,Observable) {
     var ret = declare([ContentPane, _TemplatedMixin, _LayoutWidget],
 
         /**
@@ -65,23 +47,57 @@ define([
                 var vid = this.id;
                 var tds = this.treeDataSource;
                 var root = this.rootValue;
+               /*
+                // set up the store to get the tree data, plus define the method
+                // to query the children of a node
+                var governmentStore = new Memory({
+                    data: json.parse(data),
+                    getChildren: function(object){
+                        return this.query({parent: object.id});
+                    }
+                });
+
+                // create model to interface Tree to store
+                var model = new ObjectStoreModel({
+                    store: governmentStore,
+
+                    // query to get root node
+                    query: {id: "root"}
+                });
+*/              var jsonRest = new JsonRest({
+                        target: tds,
+                        /*                            put: function(object, options){
+                         // fire the onChildrenChange event
+                         this.onChildrenChange(object, object.children);
+                         // fire the onChange event
+                         this.onChange(object);
+                         // execute the default action
+                         return dojo.store.JsonRest.prototype.put.apply(this, arguments);
+                         },
+                         */
+                        getChildren: function (object) {
+                            return this.get(object.id).then(
+                                function (fullObject) {
+                                    return fullObject.children;
+                                },
+                                function (error) {/*console.log(error);*/
+                                }
+                            );
+                        }
+                    });
+                jsonRest = Observable(jsonRest);
+                var myStore = new Memory({
+                    data: jsonRest,
+                    getChildren: function(object){
+                        return this.query({parent: object.id});
+                    }
+                });
+
                 this.tree = new Tree({
                     id: vid + "_nTree",
 
                     model: new ObjectStoreModel({
-                        store: new JsonRest({
-                            target: tds,
-
-                            getChildren: function (object) {
-                                return this.get(object.id).then(
-                                    function (fullObject) {
-                                        return fullObject.children;
-                                    },
-                                    function (error) {/*console.log(error);*/
-                                    }
-                                );
-                            }
-                        }),
+                        store: jsonRest,
 
                         getRoot: function (onItem) {
                             this.store.get(root).then(onItem);
