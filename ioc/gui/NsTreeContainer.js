@@ -14,11 +14,12 @@ define([
     "ioc/wiki30/dispatcherSingleton",
     "dijit/Dialog",
     "dijit/form/Button",
+    "dojo/store/Cache",
     "dojo/store/Observable",
     "dojo/NodeList-dom" // NodeList.style
 
 ], function (declare, query, template, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Memory, Tree, aspect,
-             ObjectStoreModel, dispatcher, Dialog, Button,Observable) {
+             ObjectStoreModel, dispatcher, Dialog, Button, Cache, Observable) {
     var ret = declare([ContentPane, _TemplatedMixin, _LayoutWidget],
 
         /**
@@ -64,7 +65,8 @@ define([
                     // query to get root node
                     query: {id: "root"}
                 });
-*/              var jsonRest = new JsonRest({
+*/
+                var jsonRest = new JsonRest({
                         target: tds,
                         /*                            put: function(object, options){
                          // fire the onChildrenChange event
@@ -85,8 +87,19 @@ define([
                             );
                         }
                     });
-                jsonRest = Observable(jsonRest);
-                var myStore = new Memory({
+                //jsonRest = Observable(jsonRest);
+
+                var memoryStore = new Memory({});
+                /*var governmentStore = new Memory({
+                    //data: json.parse(data),
+                    getChildren: function(object){
+                        return this.query({parent: object.id});
+                    }
+                });
+                */
+                var myStore = new Observable(new Cache(jsonRest, memoryStore));
+
+                var myStoreM = new Memory({
                     data: jsonRest,
                     getChildren: function(object){
                         return this.query({parent: object.id});
@@ -97,7 +110,7 @@ define([
                     id: vid + "_nTree",
 
                     model: new ObjectStoreModel({
-                        store: jsonRest,
+                        store: myStore,
 
                         getRoot: function (onItem) {
                             this.store.get(root).then(onItem);
