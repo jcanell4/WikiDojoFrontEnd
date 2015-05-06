@@ -6,6 +6,7 @@ define([
          * Superclasse de tots els processors.
          *
          * @class AbstractResponseProcessor
+         * @abstract
          */
         {
             /** @type string */

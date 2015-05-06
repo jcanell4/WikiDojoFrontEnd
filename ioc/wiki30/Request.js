@@ -113,7 +113,7 @@ define([
              * @param {Error} error
              */
             errorHandler: function (error) {
-                console.log(error);
+                console.error(error);
                 this.dispatcher.processError(error);
                 if (this._standby) {
                     this._standby.hide();
@@ -186,6 +186,8 @@ define([
                     document.body.appendChild(this._standby.domNode);
                     this._standby.startup();
                 }
+
+
                 /*It sets the Standby object in a variable to be accessible from any site.
                  *The private attibute is used to control the construction of the object
                  */
@@ -194,6 +196,9 @@ define([
                 if (this.urlBase === null || this.dispatcher === null) {
                     return;
                 }
+
+                //console.log(this.dispatcher.getGlobalState());
+
                 var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
                     (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
                 var vUrl = this.urlBase;
@@ -245,6 +250,7 @@ define([
                         }
                     );
                 }
+
                 return resp;
             }
         });

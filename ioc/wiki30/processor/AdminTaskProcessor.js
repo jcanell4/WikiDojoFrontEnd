@@ -13,7 +13,7 @@ define([
 
         /**
         * @param {*} value
-        * @param {ioc.wiki30.Dispatcher} dispatcher
+        * @param {Dispatcher} dispatcher
         * @override
         */
         process: function (value, dispatcher) {
@@ -24,7 +24,7 @@ define([
          * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument, i afegeix
          * el valor de la acció a "view".
          *
-         * @param {ioc.wiki30.Dispatcher} dispatcher
+         * @param {Dispatcher} dispatcher
          * @param {{id: string, ns: string, title: string, content: string}} value
          *
          * @override
@@ -43,8 +43,8 @@ define([
                     dispatcher: dispatcher
                 };
 
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.DOCUMENT, args);
+                return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
+
             }
     });
     return ret;

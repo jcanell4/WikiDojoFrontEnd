@@ -1,36 +1,55 @@
 /**
- * Aquesta classe es una Factoria de motors de renderització que permet afegir nous tipus i obtenir els motors pels
+ * Aquesta mòdul es una Factoria de motors de renderització que permet afegir nous tipus i obtenir els motors pels
  * tipus coneguts.
  *
+ * @module renderEngineFactory
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
-define([], function () {
+define([
+    "ioc/gui/content/engines/standardRenderEngine",
+    "ioc/gui/content/engines/revisionRenderEngine"
+], function (standardRenderEngine, revisionRenderEngine) {
 
-    var renderEngines = {
 
-            standard: function (data) {
-                var i = typeof data === 'string' ? data : 'Tipus de dada no reconegut.';
-                console.log(i);
-                return i;
-            }
-        },
+    var /** @type function */
+        defaultRenderEngine = null,
 
+        /**
+         * Array amb tots els motors de render disponibles per defecte
+         *
+         * @type {{string: function}}
+         */
+        renderEngines = {},
+
+        /**
+         * Retorna el motor de render pel tipus especificat o un generic si no existeix.
+         *
+         * @param {string} type - Tipus de motor de render
+         * @returns {function} - Motor del tipus especificat o un generic si no s'ha trobat
+         * @private
+         */
         _getRenderEngine = function (type) {
-            // Comprovem si el tipus existeix
-            //      Si existeix el retornem
-            //      Si no existeix retornem el generador per defecte, que retorna el contingut tal com s'ha passat
-
-
-            return renderEngines[type] ? renderEngines[type] : renderEngines['standard'];
-
+            return renderEngines[type] ? renderEngines[type] : defaultRenderEngine;
         },
 
+        /**
+         * Afegeix el motor de render amb el tipus especificat.
+         *
+         * @param {string} type - Nom del tipus de motor de render
+         * @param {function} renderEngine - Funció que actuará com a motor de render
+         * @private
+         */
         _addRenderEngine = function (type, renderEngine) {
-
-
             renderEngines[type] = renderEngine;
+        },
+
+        _init = function () {
+            _addRenderEngine('revisions', revisionRenderEngine);
+            _addRenderEngine('standard', standardRenderEngine);
+            defaultRenderEngine = _getRenderEngine('standard');
         };
 
+    _init();
 
     return {
         // Retornem només els mètodes exposats del closure

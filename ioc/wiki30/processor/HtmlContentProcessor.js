@@ -1,23 +1,26 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
-    "ioc/gui/content/contentToolFactory",
-    "dijit/registry"
-], function (declare, ContentProcessor, contentToolFactory, registry) {
+    "ioc/gui/content/contentToolFactory"
+], function (declare, ContentProcessor, contentToolFactory) {
 
-    var ret = declare([ContentProcessor],
+    return declare([ContentProcessor],
         /**
+         * Aquesta classe s'encarrega de processar els continguts per documents de tipus Html, generar els ContentTool
+         * apropiat i afegir-lo al contenidor adequat.
+         *
          * @class HtmlContentProcessor
          * @extends ContentProcessor
+         * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-
             type: "html",
 
             /**
-             * @param {Content} value
-             * @param {Dispatcher} dispatcher
+             * Processa el valor rebut com argument com a contingut Html per mostrar un document en mode Html
              *
+             * @param {Content} value - Valor per processar
+             * @param {Dispatcher} dispatcher - Dispatcher al que està lligat aquest document.
              * @override
              */
             process: function (value, dispatcher) {
@@ -28,63 +31,45 @@ define([
              * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument, i afegeix
              * el valor de la acció a "view".
              *
-             * @param {Dispatcher} dispatcher
-             * @param {Content} value
-             *
+             * @param {Dispatcher} dispatcher - Dispatcher al que està lligat aquest process
+             * @param {Content} value - Valor per processar
              * @override
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
                 dispatcher.getGlobalState().pages[value.id]["action"] = "view";
-            },
-
-            createContentTool: function (content, dispatcher) {
-                var args = {
-                    id:         content.id,
-                    title:      content.title,
-                    content:    content.content,
-                    closable:   true,
-                    dispatcher: dispatcher
-                };
-
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.DOCUMENT, args);
+                dispatcher.getGlobalState().pages[value.id]["rev"] = value.rev;
             },
 
             /**
+             * Genera un ContentTool decorat adecuadament per funcionar com document de només lectura.
              *
-             * @param content
-             * @param dispatcher
-             * @param container
-             *
+             * @param {Content} content - Contingut a partir del qual es generarà el ContentTool
+             * @param {Dispatcher} dispatcher - Dispatcher al que estarà lligat el ContentTool
+             * @returns {ContentTool} ContentTool decorat com a tipus document.
              * @protected
              * @override
              */
-            addContent: function (content, dispatcher, container) {
-                var oldContentTool = registry.byId(content.id),
-                    cp,
-                    position = 0;
+            createContentTool: function (content, dispatcher) {
+                var args = {
+                        id:         content.id,
+                        title:      content.title,
+                        content:    content.content,
+                        closable:   true,
+                        dispatcher: dispatcher
+                    },
 
-                if (oldContentTool && oldContentTool.getType() == 'HTML') {
-                    oldContentTool.setData(content.content);
-                    cp = oldContentTool;
+                    contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
 
-                } else {
-                    if (oldContentTool) {
-                        position = container.getChildIndex(oldContentTool.id);
-                        oldContentTool.removeContentTool();
-                    }
+                contentTool.setType('HTML'); //TODO[Xavi] Això podria obtenir-se de this.type;
 
-                    cp = this.createContentTool(content, dispatcher);
+                return contentTool;
+            },
 
-                    cp.setType('HTML');
-                    container.addChild(cp, position);
-                    container.selectChild(cp);
-                }
-                dispatcher.addDocument(content);
-                cp.setCurrentDocument(content.id);
+            // TODO[Xavi] això provoca un error de duplicació dels nombres de secció, ho posem només per les proves
+            getAllowedTypes:   function (content) {
+                return 'HTML';
             }
         });
-    return ret;
 });
 
