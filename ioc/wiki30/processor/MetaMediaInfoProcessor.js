@@ -1,11 +1,12 @@
 define([
     "dojo/_base/declare",
     "dijit/registry",
+    "dojo/dom-construct",
     "ioc/gui/content/contentToolFactory",
-    "ioc/wiki30/processor/AbstractResponseProcessor",
+    "ioc/wiki30/processor/AbstractResponseProcessor"
+    
 
-
-], function (declare, registry, contentToolFactory, AbstractResponseProcessor) {
+], function (declare, registry, domConstruct, contentToolFactory, AbstractResponseProcessor) {
     var ret = declare([AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -45,6 +46,12 @@ define([
                     if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
                         currentMetaContent = content.meta[m];
                         //widgetMetaInfo = registry.byId(content.meta[m].id);
+                                /*
+         * 20150430 Miguel Angel Lozano
+         * Canvi per fer servir ContentTabDokuWikiNsTree
+         * Amb l'id metaMedia, s'ha de construir l'arbre ContentTabDokuWikiNsTree
+         * Es fa amb una nova funció perquè són diversos passos
+         */
                         if (!registry.byId(currentMetaContent.id)) {
                             /*Construeix un nou contenidor de meta-info*/
                             /*cp = new ContentPane({
@@ -53,7 +60,12 @@ define([
                                 //content: "<div>ASI ES TOTAL</div>"
                                 content: content.meta[m].content
                             });*/
-                            cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
+                            if(currentMetaContent.id === 'metaMedia'){
+                                cp = this._createNsTree(currentMetaContent, dispatcher, content.id)
+                            }else{
+                                cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
+                            }
+
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
 
@@ -167,6 +179,35 @@ define([
              */
             _buildContentId:           function (content) {
                 return content.id;
+            },
+            
+            /**
+             * 
+             */
+            
+            _createNsTree: function (content, dispatcher, docId) {
+                require(["ioc/gui/ContentTabDokuwikiNsTree"], function(ContentTabDokuwikiNsTree){    
+                var divNsTree = domConstruct.toDom("<div id='media__tree'></div>");
+                
+                var dialogTree = new ContentTabDokuwikiNsTree({
+                    treeDataSource: 'lib/plugins/ajaxcommand/ajaxrest.php/ns_tree_rest/',
+                    onlyDirs:true
+                }).placeAt(divNsTree);
+                
+                dialogTree.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media" +
+                        '&do=media&list='+content.list+'&sort='+content.sort;
+                
+                var newContent = [];
+                newContent["id"] = docId;
+                newContent["title"] = "Índex";
+                newContent["content"] = divNsTree;
+                
+                
+                
+                return this._createContentTool(newContent, dispatcher, docId);
+                dialogTree.startup();
+                });
+
             }
 
         });
