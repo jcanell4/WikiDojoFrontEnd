@@ -1,10 +1,9 @@
 define([
     "dojo/Stateful",
     "dojo/_base/declare",
-    "ioc/wiki30/dispatcherSingleton",
     "ioc/dokuwiki/AceManager/patcher",
     'ioc/wiki30/GlobalState',
-], function (Stateful, declare, dispatcher, patcher, GlobalState) {
+], function (Stateful, declare, patcher, GlobalState) {
     return declare([Stateful],
         /**
          * Embolcall per manipular un textarea.
