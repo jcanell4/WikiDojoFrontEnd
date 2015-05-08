@@ -15,6 +15,8 @@ define([
          */
         {
             type: "metaMedia",
+            dialogTree: null,
+            newContent: null,
 
             process: function (value, dispatcher) {
                 this._processMetaMediaInfo(value, dispatcher);
@@ -61,13 +63,20 @@ define([
                                 content: content.meta[m].content
                             });*/
                             if(currentMetaContent.id === 'metaMedia'){
-                                cp = this._createNsTree(currentMetaContent, dispatcher, content.id)
+                                this._createNsTree(currentMetaContent, dispatcher, 'metaMedia');
+                                cp = this._createContentTool(newContent, dispatcher, 'metaMedia');
+                                //dialogTree.startup();
+
                             }else{
                                 cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
                             }
 
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
+                            if(currentMetaContent.id === 'metaMedia'){
+                                dialogTree.startup();
+                            }
+                            
 
                             //guiSharedFunctions.addWatchToMetadataPane(cp, content.docId, cp.id, dispatcher);
                             //guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
@@ -165,8 +174,8 @@ define([
                         action:     meta.action
                     };
 
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.META);
+                return contentToolFactory.generate(contentToolFactory.generation.META, args);
+                    //.decorate(contentToolFactory.decoration.META);
             },
 
             /**
@@ -187,25 +196,23 @@ define([
             
             _createNsTree: function (content, dispatcher, docId) {
                 require(["ioc/gui/ContentTabDokuwikiNsTree"], function(ContentTabDokuwikiNsTree){    
-                var divNsTree = domConstruct.toDom("<div id='media__tree'></div>");
+                    var divNsTree = domConstruct.toDom("<div id='media__tree'></div>");
+
+                    dialogTree = new ContentTabDokuwikiNsTree({
+                        treeDataSource: 'lib/plugins/ajaxcommand/ajaxrest.php/ns_tree_rest/',
+                        onlyDirs:true
+                    }).placeAt(divNsTree);
                 
-                var dialogTree = new ContentTabDokuwikiNsTree({
-                    treeDataSource: 'lib/plugins/ajaxcommand/ajaxrest.php/ns_tree_rest/',
-                    onlyDirs:true
-                }).placeAt(divNsTree);
-                
-                dialogTree.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media" +
-                        '&do=media&list='+content.list+'&sort='+content.sort;
-                
-                var newContent = [];
-                newContent["id"] = docId;
-                newContent["title"] = "Índex";
-                newContent["content"] = divNsTree;
-                
-                
-                
-                return this._createContentTool(newContent, dispatcher, docId);
-                dialogTree.startup();
+                    dialogTree.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media" +
+                            '&do=media&list='+content.list+'&sort='+content.sort;
+                    /*dialogTree.startup = function(){
+                        dialogTree.inherited(arguments);
+                        dialogTree.tree.startup();
+                    };*/
+                    newContent = [];
+                    newContent["id"] = docId;
+                    newContent["title"] = "Índex";
+                    newContent["content"] = divNsTree.innerHTML;
                 });
 
             }

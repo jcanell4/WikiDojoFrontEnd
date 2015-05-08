@@ -1,23 +1,31 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/StateUpdaterProcessor",
-    "dijit/registry",            //search widgets by id
-    "dojo/dom",
-    "dojo/dom-construct",
-    "ioc/gui/content/contentToolFactory",
+    "dijit/registry"
+], function (declare, StateUpdaterProcessor, registry) {
 
-], function (declare, StateUpdaterProcessor, registry, dom, domConstruct, contentToolFactory) {
-
-    var ret = declare([StateUpdaterProcessor],
+    return declare([StateUpdaterProcessor],
         /**
+         * Aquesta es la superclasse a partir de la qual heretan altres processadors de contingut. Aquests continguts
+         * seràn processats, es generarà un ContentTool apropiat pel tipus de contingut i s'afegiran al contenidor
+         * principal.
+         *
          * @class ContentProcessor
          * @extends StateUpdaterProcessor
+         * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
             /**
-             * @param {*} value
-             * @param {Dispatcher} dispatcher
+             * Comprova si ja existeix un document amb la mateixa id carregat, si es així comprova si s'han produit
+             * canvis, i en cas afirmatiu mostra un missatge demanant si es volen descartar els canvis.
              *
+             * En cas de que no hi hagi cap document amb aquesta id, o que no hi hagin canvis, o que es descartin els
+             * canvis es processarà el contingut, es generarà un nou ContentTool del tipus apropiat i s'afegira
+             * al ContainerContentTool principal.
+             *
+             * @param {*} value - Valor per processar
+             * @param {Dispatcher} dispatcher - Dispatcher al que està lligat el processador
+             * @returns {int} - 0 en cas de que s'hagi generat el contingut o 100 en cas contrari
              * @override
              */
             process: function (value, dispatcher) {
@@ -26,7 +34,6 @@ define([
                     confirmation = false,
                     id = value.id;
 
-
                 if (changesManager.isChanged(id)) {
                     confirmation = dispatcher.discardChanges();
 
@@ -34,28 +41,28 @@ define([
                     confirmation = true;
                 }
 
-
                 if (confirmation) {
-                    changesManager.resetDocumentChangeState(id);
-
+                    changesManager.removeContentTool(id);
+                    changesManager.resetContentChangeState(id);
                     this._loadTab(value, dispatcher, arguments);
                 }
 
                 return confirmation ? 0 : 100;
-
             },
 
-            /** @private */
-            _loadTab: function (value, dispatcher, args) {
-
-                this.__newTab(value, dispatcher);
-
+            /**
+             * Localitza el ContainerContentTool i li afegeix el contingut passat com argument
+             *
+             * @private
+             */
+            _loadTab: function (content, dispatcher, args) {
+                var container = registry.byId(dispatcher.containerNodeId);
+                this.addContent(content, dispatcher, container);
                 this.inherited("process", args);
             },
 
-
             /**
-             * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument.
+             * TODO[Xavi] Actualment no fa res. Anotarla com a abstract?
              *
              * @param {Dispatcher} dispatcher
              * @param {Content} value
@@ -63,31 +70,15 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
-                //dispatcher.addDocument(value);
-
             },
 
             /**
-             * Si existeix una pestanya amb aquesta id carrega el contingut a aquesta pestanya, si no construeix una de nova.
+             * Aquest mètode ha de ser implementat obligatoriament per les subclasses per generar el tipus de
+             * ContentTool i decorar-lo com sigui necessari.
              *
-             * @param {Content} content
-             * @param {Dispatcher} dispatcher
-             * @returns {number}
-             * @private
-             */
-            __newTab: function (content, dispatcher) {
-                var container = registry.byId(dispatcher.containerNodeId);
-                this.addContent(content, dispatcher, container);
-
-                return 0;
-            },
-
-
-            /**
-             *
-             * @param content
-             * @param dispatcher
-             *
+             * @param {*} content - Contingut a partir del que es generarà el ContentTool
+             * @param {Dispatcher} dispatcher - Dispatcher al que quedarà lligat el ContentTool
+             * @returns {ContentTool} - ContentTool generat i decorat.
              * @abstract
              * @protected
              */
@@ -96,30 +87,82 @@ define([
             },
 
             /**
-             * Aquesta es la implementació per defecte que pot ser sobrescrita per les subclasses.
+             * Creat un ContentTool del tipus apropiat per aquest processador i l'afegeix al contenidor passat com
+             * argument.
              *
-             * Aquesta implementació afegeix un ContentTool si no hi ha un amb el mateix id o el reemplaça si es així.
-             *
+             * @param {Content} content - Contingut a partir del qual es generarà el ContentTool
+             * @param {Dispatcher} dispatcher - Dispatcher lligat tant al ContentTool com al ContainerContentTool
+             * @param {ContainerContentTool} container - Contenidor al que s'afegirà el ContentTool
              * @protected
-             *
              */
             addContent: function (content, dispatcher, container) {
                 var oldContentTool = registry.byId(content.id),
-                    cp,
+                    contentTool,
                     position = 0;
 
-                if (oldContentTool) {
-                    position = container.getChildIndex(oldContentTool.id);
-                    oldContentTool.removeContentTool();
+
+                if (this.isOldContentAllowed(oldContentTool, this.getAllowedTypes(content))) {
+                    oldContentTool.setData(content.content);
+                    contentTool = oldContentTool;
+                    console.log("ALLOWED");
+
+                } else {
+                    if (oldContentTool) {
+                        position = container.getChildIndex(oldContentTool.id);
+                        oldContentTool.removeContentTool();
+                    }
+
+                    contentTool = this.createContentTool(content, dispatcher);
+                    container.addChild(contentTool, position);
+                    container.selectChild(contentTool);
+                    console.log("NOT ALLOWED");
+                }
+                dispatcher.addDocument(content);
+                contentTool.setCurrentDocument();
+            },
+
+            /**
+             * Retorna cert o fals si el tipus del oldContentTool es troba a la llista de allowedTypes.
+             *
+             * @param {ContentTool} oldContentTool - Contenidor antic a comprovar
+             * @param {string|string[]} allowedTypes - Tipus permesos
+             * @returns {boolean} - true si es un tipus permes o false en cas contrari
+             * @protected
+             */
+            isOldContentAllowed: function (oldContentTool, allowedTypes) {
+                var oldContentToolType;
+
+                if (!oldContentTool || !allowedTypes) {
+                    return false;
                 }
 
-                cp = this.createContentTool(content, dispatcher);
-                container.addChild(cp, position);
-                container.selectChild(cp);
+                oldContentToolType = oldContentTool.getType();
 
-                dispatcher.addDocument(content);
-                cp.setCurrentDocument(content.id);
+                if (typeof allowedTypes === 'string' && oldContentTool.getType() == allowedTypes) {
+                    return true;
+
+                } else {
+                    for (var type in allowedTypes) {
+                        if (oldContentToolType === allowedTypes[type]) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            },
+
+            /**
+             * Retorna la llista de tipus permesos. Aquest mètode s'ha de sobrescriure amb la lògica necessaria pels
+             * diferents processors.
+             *
+             * @params {*} content - objecte d'on es poden extreure les dades necessaries per generar la llista de tipus
+             * permesos
+             * @returns {string|string[]}
+             * @protected
+             */
+            getAllowedTypes: function (content) {
+                return null;
             }
         });
-    return ret;
 });

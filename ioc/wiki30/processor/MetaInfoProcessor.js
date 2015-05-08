@@ -2,12 +2,13 @@ define([
     "dojo/_base/declare",
     "dijit/registry",
     "ioc/gui/content/contentToolFactory",
-    "ioc/wiki30/processor/AbstractResponseProcessor",
-
-
+    "ioc/wiki30/processor/AbstractResponseProcessor"
 ], function (declare, registry, contentToolFactory, AbstractResponseProcessor) {
-    var ret = declare([AbstractResponseProcessor],
+    return declare([AbstractResponseProcessor],
         /**
+         * Aquesta classe s'encarrega de processar la informació de tipus metadada, generar el ContentTool del tipus
+         * adequat i afegirlo al ContainerContentTool que li pertoca.
+         *
          * @class MetaInfoProcessor
          * @extends AbstractResponseProcessor
          * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
@@ -15,9 +16,15 @@ define([
         {
             type: "meta",
 
+            /**
+             * Processa el valor passat com argument per generar un ContentTool i afegir-lo a la secció de metadades.
+             *
+             * @param {{id: string, meta:Content[]}} value
+             * @param {Dispatcher} dispatcher
+             * @override
+             */
             process: function (value, dispatcher) {
                 this._processMetaInfo(value, dispatcher);
-                this._processContentCache(dispatcher, value);
             },
 
             /**
@@ -26,7 +33,7 @@ define([
              *
              * @param {{id: string, meta:Content[]}} content
              * @param {Dispatcher} dispatcher
-             * @returns {number} sempre es 0
+             * @returns {number} - Sempre es 0
              * @protected
              */
             _processMetaInfo: function (content, dispatcher) {
@@ -40,9 +47,8 @@ define([
                     currentMetaContent,
                     contentCache = dispatcher.getContentCache(content.id);
 
-                //this.clearContainer(nodeMetaInfo, content.id); // TODO[Xavi] Això haurà de anar al ContainerContentTool
+                // TODO[Xavi] La neteja del container s'hauria de fer a traves del RemoveAllContentProcessor. Compte amb el setCurrentId que deixaría de funcionar!
                 nodeMetaInfo.clearContainer(content.id);
-
                 contentCache.setCurrentId("metadataPane", null);
 
 
@@ -53,9 +59,12 @@ define([
 
                         if (!registry.byId(currentMetaContent.id)) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
 
-                            cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
+                            // Afegim la informació extra necessaria per generar el ContentTool
+                            currentMetaContent.dispatcher = dispatcher;
+                            currentMetaContent.docId = content.id;
+
+                            cp = this.createContentTool(currentMetaContent);
                             nodeMetaInfo.addChild(cp);
-                            //this.addContentToolToContainer(cp, nodeMetaInfo);
 
                             if (!firstPane) {
                                 firstPane = cp.id;
@@ -66,12 +75,10 @@ define([
                             }
 
                         } else {
-                            console.log("ja existeix");
-                            alert("JA EXISTEIX -> comprovar quin es aquest cas i perquè"); // TODO[Xavi] Si no es produeix mai -> esborrar: moure la
+                            console.error("Ja existeix un ContentTool amb aquest id.");
                         }
                     }
                 }
-
 
                 selectedPane = contentCache.getCurrentId("metadataPane");
 
@@ -79,79 +86,34 @@ define([
                     selectedPane = defaultSelected;
                 } else if (!selectedPane) {
                     selectedPane = firstPane;
-
                 }
 
                 nodeMetaInfo.selectChild(selectedPane);
                 contentCache.setCurrentId("metadataPane", selectedPane);
 
-
                 return 0;
             },
 
             /**
-             * TODO[Xavi] Els paràmetres estan al contrari que a la resta de mètodes, canviar per consistencia?
-             *
-             * Afegeix les metadades al contentCache.
-             *
-             * @param {Dispatcher} dispatcher
-             * @param {{id: string, meta:Content[]}} value
-             * @protected
-             */
-            _processContentCache: function (dispatcher, value) {
-                // TODO[Xavi] Actulament no es fa servir per a res
-
-            },
-
-            /** @private */
-            _convertMetaData: function (content) {
-                return {
-                    id:     this._buildContentId(content), // El id corresponent a la metadata s'estableix al DokuModelAdapter
-                    data:   content.content || ' ',
-                    title:  content.title,
-                    action: content.action
-                };
-            },
-
-
-            /**
              * Crea un ContentTool apropiat i el retorna.
              *
-             * @param {object} content
-             * @param {Dispatcher} dispatcher
-             * @returns {MetaContentTool}
-             * @param {string} docId
+             * @param {Content} metaContent
+             * @returns {ContentTool}
              * @protected
              */
-            _createContentTool: function (content, dispatcher, docId) {
-                var meta = this._convertMetaData(content),
-                    args = {
-                        id:         meta.id,
-                        title:      meta.title,
-                        data:       meta.data,
-                        dispatcher: dispatcher,
-                        docId:      docId,
-                        action:     meta.action
-                    };
+            createContentTool: function (metaContent) {
+                var args = {
+                    id:         metaContent.id,
+                    title:      metaContent.title,
+                    data:       metaContent.content || ' ',
+                    dispatcher: metaContent.dispatcher,
+                    docId:      metaContent.docId,
+                    action:     metaContent.action
+                };
 
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.META);
-            },
-
-            /**
-             * Contrueix la id a partir del content passat com argument. Ens assegurem que només hi ha un punt on ho hem
-             * de canviar si volem una estructura diferent.
-             *
-             * @param content
-             * @returns {string}
-             * @protected
-             */
-            _buildContentId:           function (content) {
-                return content.id;
+                return contentToolFactory.generate(contentToolFactory.generation.META, args);
+//                    .decorate(contentToolFactory.decoration.META);
             }
 
-
         });
-    return ret;
 });
-

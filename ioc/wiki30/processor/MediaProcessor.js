@@ -59,8 +59,8 @@ define([
                     dispatcher: dispatcher
                 };
 
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.DOCUMENT, args);
+                return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
+                    // NO és necessita pq classe Document .decorate(contentToolFactory.decoration.DOCUMENT, args);
             }
             
         });

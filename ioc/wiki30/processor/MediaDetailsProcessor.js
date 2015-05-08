@@ -48,8 +48,8 @@ define([
                     dispatcher: dispatcher
                 };
 
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.DOCUMENT, args);
+                return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
+                    //.decorate(contentToolFactory.decoration.DOCUMENT, args);
             }
         });
     return ret;

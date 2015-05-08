@@ -49,6 +49,9 @@ define([
 
 
     /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
+
+    /** @typedef {{id: string, ns: string, title: string, content: string, editor: {Editor}, editing: *}} EditorContent */
+
     var ret = declare(null,
         /**
          * @class Dispatcher
