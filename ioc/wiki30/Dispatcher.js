@@ -30,8 +30,7 @@ define([
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/processor/RevisionsProcessor",
-    "ioc/wiki30/DokuwikiContent",
-    "ioc/wiki30/UpdateViewHandler"
+    "ioc/wiki30/DokuwikiContent"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor,
              MetaInfoProcessor,MetaMediaInfoProcessor,MediaDetailsProcessor,
@@ -41,7 +40,7 @@ define([
              CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
              RevisionsProcessor,
-             DokuwikiContent, UpdateViewHandler) {
+             DokuwikiContent) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor

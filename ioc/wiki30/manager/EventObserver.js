@@ -33,14 +33,14 @@ define([
              */
             registeredToEvents: [],
 
-            constructor: function (args) {
+            constructor: function (params) {
 
-                if (!args.dispatcher) {
+                if (!params.dispatcher) {
                     console.error("El EventObserver no pot funcionar sense una referencia al dispatcher");
                     throw new Error("S'ha depassar una referencia al dispatcher");
                 }
 
-                declare.safeMixin(this, args);
+                declare.safeMixin(this, params);
 
                 this.registeredToEvents = [];
                 this.events = {};
