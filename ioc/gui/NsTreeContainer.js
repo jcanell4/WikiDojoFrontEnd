@@ -7,19 +7,16 @@ define([
     'dijit/layout/_LayoutWidget',
     'dijit/_TemplatedMixin',
     "dojo/store/JsonRest",
-    "dojo/store/Memory",
     "dijit/Tree",
     "dojo/aspect",
     "dijit/tree/ObjectStoreModel",
     "ioc/wiki30/dispatcherSingleton",
     "dijit/Dialog",
     "dijit/form/Button",
-    "dojo/store/Cache",
-    "dojo/store/Observable",
     "dojo/NodeList-dom" // NodeList.style
 
-], function (declare, query, template, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Memory, Tree, aspect,
-             ObjectStoreModel, dispatcher, Dialog, Button, Cache, Observable) {
+], function (declare, query, template, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Tree, aspect,
+             ObjectStoreModel, dispatcher, Dialog, Button) {
     var ret = declare([ContentPane, _TemplatedMixin, _LayoutWidget],
 
         /**
@@ -48,35 +45,13 @@ define([
                 var vid = this.id;
                 var tds = this.treeDataSource;
                 var root = this.rootValue;
-               /*
-                // set up the store to get the tree data, plus define the method
-                // to query the children of a node
-                var governmentStore = new Memory({
-                    data: json.parse(data),
-                    getChildren: function(object){
-                        return this.query({parent: object.id});
-                    }
-                });
+                this.tree = new Tree({
+                    id: vid + "_nTree",
 
-                // create model to interface Tree to store
-                var model = new ObjectStoreModel({
-                    store: governmentStore,
+                    model: new ObjectStoreModel({
+                        store: new JsonRest({
+                            target: tds,
 
-                    // query to get root node
-                    query: {id: "root"}
-                });
-*/
-                var jsonRest = new JsonRest({
-                        target: tds,
-                        /*                            put: function(object, options){
-                         // fire the onChildrenChange event
-                         this.onChildrenChange(object, object.children);
-                         // fire the onChange event
-                         this.onChange(object);
-                         // execute the default action
-                         return dojo.store.JsonRest.prototype.put.apply(this, arguments);
-                         },
-                         */
                         getChildren: function (object) {
                             return this.get(object.id).then(
                                 function (fullObject) {
@@ -86,31 +61,7 @@ define([
                                 }
                             );
                         }
-                    });
-                //jsonRest = Observable(jsonRest);
-
-                var memoryStore = new Memory({});
-                /*var governmentStore = new Memory({
-                    //data: json.parse(data),
-                    getChildren: function(object){
-                        return this.query({parent: object.id});
-                    }
-                });
-                */
-                var myStore = new Observable(new Cache(jsonRest, memoryStore));
-
-                var myStoreM = new Memory({
-                    data: jsonRest,
-                    getChildren: function(object){
-                        return this.query({parent: object.id});
-                    }
-                });
-
-                this.tree = new Tree({
-                    id: vid + "_nTree",
-
-                    model: new ObjectStoreModel({
-                        store: myStore,
+                        }),
 
                         getRoot: function (onItem) {
                             this.store.get(root).then(onItem);
