@@ -20,7 +20,7 @@ define([], function () {
         for (var i in data) {
 
             linkRev = '?id=' + data[i]['id'] + "&rev=" + i;
-            linkDiff = '?id=' + data[i]['id'] + "&rev=" + i + "&do='diff'";
+            linkDiff = '?id=' + data[i]['id'] + "&rev=" + i + "&do=diff";
 
             html += '<tr>';
             html += '<td><a href="' + linkRev + '">' + data[i]['date'] + '</a></td>';
