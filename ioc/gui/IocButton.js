@@ -48,10 +48,6 @@ define([
                         }
                     }
                 }
-//                var isOk = evt.defaultPrevented;
-//                if(typeof isOk === "undefined"){
-//                    isOk=true;
-//                }
                 if(!evt.defaultPrevented){
                     this.sendRequest();
                 }
