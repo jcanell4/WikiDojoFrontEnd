@@ -35,23 +35,7 @@ define([
         var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
             var queryString = "";
-
-            var data = "";//domform.toQuery(this.form);
-            data += "acl_t="+ domform.toObject(this.form).acl_t;
-            data += "&usuari="+ domform.toObject(this.form).usuari;
-            data += "&acl_w="+ domform.toObject(this.form).acl_w;
-            data += "&acl="+ domform.toObject(this.form).acl;
-            var ns=domform.toObject(this.form).ns;
-            if (domform.toObject(this.form).ns != ""){
-                data += "&ns="+ domform.toObject(this.form).ns;
-            }
-            if (domform.toObject(this.form).id != ""){
-                data += "&id="+ domform.toObject(this.form).id;
-            }
-            data += "&do="+ domform.toObject(this.form).do;
-            data += "&page="+ domform.toObject(this.form).page;
-            data += "&current_ns="+ domform.toObject(this.form).ns;
-            data += "&current_id="+ domform.toObject(this.form).id;
+            var data = domform.toQuery(this.form);
             data += "&" + this.name + "="+ domform.fieldToObject(this);
             if (data){
               queryString = data;
