@@ -48,14 +48,10 @@ define([
                         }
                     }
                 }
-                var isOk = this.onClick(evt);
-                if(typeof isOk === "undefined"){
-                    isOk=true;
-                }
-                if(isOk){
+                if(!evt.defaultPrevented){
                     this.sendRequest();
                 }
-                return isOk;
+                return !evt.defaultPrevented;
             },
 
             /** @override */

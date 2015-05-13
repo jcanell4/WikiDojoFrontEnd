@@ -1,23 +1,3 @@
-/*
-Et proposo dividir la classe actual (ioc/gui/ContentTabDokuwikiNsTree) en dues:
-
-    ioc/gui/NsTreeContainer: igual a ioc/gui/ContentTabDokuwikiNsTree,
-    però eliminat la part d'herència el Request + l'onClick
-
-ioc/gui/ContentTabDokuwikiNsTree: que hereti de NsTreeContainer i Request i afegeixi
- la funció onClick orginal per tal que acabi fent el mateix que la implementació actual.
-
-    Un com feta la implementació, a nosaltres ens interessarà la classe ioc/gui/NsTreeContainer i
-    caldrà crear una instància programàticament.
-     EL datasource d'on treure els nodes de l'arbre és:
-     treeDataSource:'lib/plugins/ajaxcommand/ajaxrest.php/ns_tree_rest/.
-
-SI ho implementes correctament, no et caldrà fer massa més canvis.
-Només donar el treeDataSource en el moment de fer la instanciació
-i fer l'StartUp (imprescindible quan els widgets es creen programaticament.
-
-T'atreveixes? Ànims. Qualsevol dubte ja saps.
-*/
 
 define([
     "dojo/_base/declare", // declare
@@ -72,15 +52,15 @@ define([
                         store: new JsonRest({
                             target: tds,
 
-                            getChildren: function (object) {
-                                return this.get(object.id).then(
-                                    function (fullObject) {
-                                        return fullObject.children;
-                                    },
-                                    function (error) {/*console.log(error);*/
-                                    }
-                                );
-                            }
+                        getChildren: function (object) {
+                            return this.get(object.id).then(
+                                function (fullObject) {
+                                    return fullObject.children;
+                                },
+                                function (error) {/*console.log(error);*/
+                                }
+                            );
+                        }
                         }),
 
                         getRoot: function (onItem) {

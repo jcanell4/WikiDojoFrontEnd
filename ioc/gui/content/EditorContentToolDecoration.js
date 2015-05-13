@@ -7,7 +7,7 @@
  * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
  * amb un ACE-Editor.
  *
- * @class EditorContentToolDecoration
+ * @class EditorContentToolDecoration, ContentToolCentralDecorator
  * @extends DocumentContentTool
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
@@ -17,10 +17,11 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "dojo/on",
-    "ioc/gui/content/AbstractChangesManagerDecoration"
-], function (declare, lang, on, AbstractChangesManagerDecoration) {
+    "ioc/gui/content/AbstractChangesManagerDecoration",
+    "ioc/gui/content/AbstractContentToolCentralDecoration"
+], function (declare, lang, on, AbstractChangesManagerDecoration, AbstractContentToolCentralDecoration) {
 
-    return declare([AbstractChangesManagerDecoration],
+    return declare([AbstractChangesManagerDecoration, AbstractContentToolCentralDecoration],
 
         /**
          * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
@@ -56,7 +57,8 @@ define([
                     result = !(this._getOriginalContent() == content);
 
                 if (result) {
-                    this.dispatchEvent("document_changed", {id: this.id});
+                    this.onDocumentChanged();
+
                 }
 
                 return result;
@@ -68,28 +70,7 @@ define([
              */
             resetContentChangeState: function () {
                 this._setOriginalContent(this._getCurrentContent());
-                this.dispatchEvent("document_changes_reset", {id: this.id});
-            },
-
-            /**
-             * Acció a realitzar quan es tanca el document. Si detecta canvis demana confirmació i en cas de que no hi hagin
-             * o es descartin el canvis retorna cert i es procedeix al tancament del document.
-             *
-             * @returns {boolean}
-             */
-            onClose: function () {
-                var confirmation = true;
-
-                if (this.changesManager.isChanged(this.id)) {
-                    confirmation = this.dispatcher.discardChanges();
-                }
-
-                if (confirmation) {
-                    this.closeDocument();
-                    this.changesManager.removeContentTool(this.id);
-                }
-
-                return confirmation;
+                this.onDocumentChangesReset();
             },
 
             /**
@@ -103,9 +84,6 @@ define([
             postLoad: function () {
                 //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
                 this.registerToChangesManager();
-
-                this.registerToEvent(this, "document_changed", lang.hitch(this, this._onDocumentChanged));
-                this.registerToEvent(this, "document_changes_reset", lang.hitch(this, this._onDocumentChangesReset));
 
                 on(this.domNode, 'keyup', lang.hitch(this, this._checkChanges));
                 on(this.domNode, 'paste', lang.hitch(this, this._checkChanges));
@@ -122,28 +100,6 @@ define([
              */
             _checkChanges: function () {
                 this.changesManager.updateContentChangeState(this.id);
-            },
-
-            /**
-             * Accio a realitzar quan hi han canvis al document.
-             *
-             * @private
-             */
-            _onDocumentChanged: function () {
-                if (this.controlButton) {
-                    this.controlButton.containerNode.style.color = 'red';
-                }
-            },
-
-            /**
-             * Acció a realitzar quan es reinicialitza el document.
-             *
-             * @private
-             */
-            _onDocumentChangesReset: function () {
-                if (this.controlButton) {
-                    this.controlButton.containerNode.style.color = 'black';
-                }
             },
 
             /**
@@ -197,7 +153,5 @@ define([
 
                 return content;
             }
-
-
         })
 });
