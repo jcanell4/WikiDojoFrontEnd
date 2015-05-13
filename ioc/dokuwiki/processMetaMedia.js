@@ -20,16 +20,17 @@ define([
 
 
     var res = function (id, params) {
+        var domNode = dom.byId(id);
         //JSINFO.id=params.ns;
 
-        var $tree = jQuery('#media__tree');
+        /*var $tree = jQuery('#media__tree');
         $tree.dw_tree({toggle_selector: 'img',
             toggle_display: function ($clicky, opening) {
                 $clicky.attr('src',
                         DOKU_BASE + 'lib/images/' +
                         (opening ? 'minus' : 'plus') + '.gif');
             }});
-        var domNode = dom.byId(id);
+
         //Es desconnecten els esdeveniments que havia connectats en aquest domNode.id
         /*dojo.forEach(connects[domNode.id], function (handle) {
          dojo.disconnect(handle);
@@ -41,7 +42,7 @@ define([
         };
 
 
-        eventHandlers.push(on(domNode, 'img:click', function (e) {
+        /*eventHandlers.push(on(domNode, 'img:click', function (e) {
             if (domClass.contains(this.parentNode, "open")) {
                 event.stop(e);
                 var unHandler;
@@ -96,7 +97,7 @@ define([
             requestMedia.sendRequest(query);
 
         })
-                );
+                );*/
 
         eventHandlers.push(on(domNode, '[name="fileoptions"]:change', function (checked) {
             if (checked) {
@@ -121,7 +122,7 @@ define([
                 var elid = dispatcher.getGlobalState().pages["media"]["ns"];
                 var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
                 var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
-                query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
+                query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort+"&preserveMetaData=true";
                 requestMedia.sendRequest(query);
             }
         })
@@ -151,9 +152,9 @@ define([
                 }
                 var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
                 var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
-                query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort+
+                var query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort+
                         '&qqfile=' + file.name + '&tab_details=view' + '&tab_files=files' + '&isupload=upload'
-                        + ow + mediaid;
+                        + ow + mediaid+"&preserveMetaData=true";
                 requestMedia.sendForm("dw__upload", query);
             } else {
                 alert("S'ha de seleccionar un fitxer");
@@ -175,8 +176,8 @@ define([
             var elid = dispatcher.getGlobalState().pages["media"]["ns"];
             var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
             var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
-            query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
-            query = query + '&tab_files=search&mediado=searchlist&q='+q;
+            var query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
+            query = query + '&tab_files=search&mediado=searchlist&q='+q+"&preserveMetaData=true";
             requestMedia.sendRequest(query);
 
 
