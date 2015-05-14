@@ -52,6 +52,7 @@ define([
              */
             createContentTool: function (content, dispatcher) {
                 var args = {
+                        ns:         content.ns,
                         id:         content.id,
                         title:      content.title,
                         content:    content.content,
@@ -66,7 +67,6 @@ define([
                 return contentTool;
             },
 
-            // TODO[Xavi] això provoca un error de duplicació dels nombres de secció, ho posem només per les proves
             getAllowedTypes:   function (content) {
                 return 'HTML';
             }

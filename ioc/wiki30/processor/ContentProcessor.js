@@ -58,7 +58,9 @@ define([
             _loadTab: function (content, dispatcher, args) {
                 var container = registry.byId(dispatcher.containerNodeId);
                 this.addContent(content, dispatcher, container);
+
                 this.inherited("process", args);
+
             },
 
             /**
@@ -70,6 +72,7 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
+
             },
 
             /**
@@ -100,10 +103,11 @@ define([
                     contentTool,
                     position = 0;
 
+                // TODO[Xavi] Quan es fa així les metas no s'actualitzan correctament quan s'obra una revisió
+
                 if (this.isOldContentAllowed(oldContentTool, this.getAllowedTypes(content))) {
-                    oldContentTool.setData(content.content);
-                    contentTool = oldContentTool;
-                    console.log("ALLOWED");
+                    oldContentTool.updateDocument(content.content);
+                    //console.log("ALLOWED");
 
                 } else {
                     if (oldContentTool) {
@@ -113,13 +117,10 @@ define([
 
                     contentTool = this.createContentTool(content, dispatcher);
                     container.addChild(contentTool, position);
-                    container.selectChild(contentTool);
-                    console.log("NOT ALLOWED");
+
+                    //console.log("NOT ALLOWED");
                 }
 
-                // TODO[Xavi] Buscar un lloc més adient
-                dispatcher.addDocument(content);
-                contentTool.setCurrentDocument();
             },
 
             /**

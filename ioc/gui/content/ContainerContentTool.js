@@ -1,7 +1,9 @@
 define([
     'dojo/_base/declare',
-    'ioc/wiki30/manager/EventObserver'
+    'ioc/wiki30/manager/EventObserver',
 ], function (declare, EventObserver) {
+
+
 
     return declare([EventObserver],
 
@@ -51,6 +53,7 @@ define([
              * @param {ContentTool} contentTool - ContentTool per afegir
              */
             addChild: function (contentTool) {
+
                 if (contentTool.docId) {
                     if (this.dispatcher.getGlobalState().getCurrentId() === contentTool.docId) {
                         contentTool.showContent();
@@ -59,14 +62,15 @@ define([
                     }
                 }
 
+                this.inherited(arguments);
+
                 // TODO[Xavi] Comprovació necessaria temporalment per controlar la adició de elements que no son ContentTools
                 if (contentTool.setContainer) {
                     contentTool.setContainer(this);
                 }
 
-
-                this.inherited(arguments);
                 this.resize();
+
             },
 
             /**

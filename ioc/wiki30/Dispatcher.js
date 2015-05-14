@@ -446,7 +446,7 @@ define([
              * @param content
              */
             addDocument: function (content) {
-                //console.log('addDocument', content);
+                console.log('addDocument', content);
                 if (!this.contentCache[content.id]) {
 
                     this.contentCache[content.id] = new DokuwikiContent({
@@ -454,11 +454,15 @@ define([
                     })
                 }
 
+                console.log("que hi ha al content cache?", this.contentCache[content.id]);
+
                 //if (!this.getGlobalState().pages[content.id]) {
                 //    this.getGlobalState().pages[content.id] = {};
                 //}
 
                 this.getGlobalState().getContent(content.id).ns = content.ns;
+
+                console.log("Al ispatcher el global state conté:", this.getGlobalState().getContent(content.id));
                 //this.getGlobalState().currentTabId = content.id;
 
                 //console.log('surt de addDocument', content);
