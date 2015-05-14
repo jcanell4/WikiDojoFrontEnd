@@ -33,7 +33,7 @@ define([
              */
             updateState: function (dispatcher, value) {
                 delete dispatcher.contentCache[value]
-                delete dispatcher.getGlobalState().pages[value];
+                delete dispatcher.getGlobalState().getContent(value);
                 var container = registry.byId(dispatcher.containerNodeId);
                 dispatcher.getGlobalState().currentTabId = container.selectedChildWidget.id;
             }
