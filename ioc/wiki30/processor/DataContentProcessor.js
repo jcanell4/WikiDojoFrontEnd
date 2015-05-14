@@ -71,7 +71,7 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                dispatcher.getGlobalState().pages[value.id]["action"] = "edit";
+                dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
                 dispatcher.getContentCache(value.id).setEditor(value.editor);
             },
 

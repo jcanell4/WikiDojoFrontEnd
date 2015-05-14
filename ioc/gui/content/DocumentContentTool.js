@@ -46,6 +46,7 @@ define([
 
                 this.dispatcher.removeDocument(this.id);
                 this.dispatchEvent('document_closed', {id: this.id});
+                this.dispatcher.updateFromState();
             },
 
             /**
@@ -54,7 +55,10 @@ define([
              * @override
              */
             onSelect: function () {
+                this.setCurrentDocument();
+                this.dispatcher.getInfoManager().refreshInfo(this.id);
                 this.dispatchEvent("document_selected", {id: this.id});
+                this.dispatcher.updateFromState();
             },
 
             /**
@@ -69,8 +73,10 @@ define([
             setCurrentDocument: function () {
                 var id = this.id;
                 this.dispatcher.getGlobalState().currentTabId = id;
-                this.dispatcher.getContentCache(id).setMainContentTool(this);
-                //this.dispatchEvent("document_selected", {id: id});
+                if(this.dispatcher.getContentCache(id)){
+                    this.dispatcher.getContentCache(id).setMainContentTool(this);
+                }
+                this.dispatchEvent("document_selected", {id: id}); //[JOSEP] Perquè document_selected es llança a dos llocs diferents?
             }
         });
 });

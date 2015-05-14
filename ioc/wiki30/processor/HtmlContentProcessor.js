@@ -37,8 +37,8 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                dispatcher.getGlobalState().pages[value.id]["action"] = "view";
-                dispatcher.getGlobalState().pages[value.id]["rev"] = value.rev;
+                dispatcher.getGlobalState().getContent(value.id)["action"] = "view";
+                dispatcher.getGlobalState().getContent(value.id)["rev"] = value.rev;
             },
 
             /**
