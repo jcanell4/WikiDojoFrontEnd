@@ -68,7 +68,10 @@ define([
                 this.setCurrentDocument();
                 this.dispatcher.getInfoManager().refreshInfo(this.id);
                 this.dispatchEvent("document_selected", {id: this.id});
+
                 this.dispatcher.updateFromState();
+
+
             },
 
             /**
