@@ -437,6 +437,10 @@ define([
             /**
              * Afegeix un document.
              *
+             * TODO[Xavi] Aixó es mourà al onAttach() del documentContentTool()
+             *
+             * @deprecated
+             *
              * @param content
              */
             addDocument: function (content) {
@@ -448,6 +452,7 @@ define([
                     })
                 }
 
+                // TODO[Xavi] Aixpo es pot agafar del GlobalState#getContent(), en el canvi de Josep pendent de fusionar
                 if (!this.getGlobalState().pages[content.id]) {
                     this.getGlobalState().pages[content.id] = {};
                 }

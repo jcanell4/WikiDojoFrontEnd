@@ -100,7 +100,6 @@ define([
                     contentTool,
                     position = 0;
 
-
                 if (this.isOldContentAllowed(oldContentTool, this.getAllowedTypes(content))) {
                     oldContentTool.setData(content.content);
                     contentTool = oldContentTool;
@@ -117,6 +116,8 @@ define([
                     container.selectChild(contentTool);
                     console.log("NOT ALLOWED");
                 }
+
+                // TODO[Xavi] Buscar un lloc més adient
                 dispatcher.addDocument(content);
                 contentTool.setCurrentDocument();
             },

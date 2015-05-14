@@ -70,7 +70,7 @@ define([
                 var id = this.id;
                 this.dispatcher.getGlobalState().currentTabId = id;
                 this.dispatcher.getContentCache(id).setMainContentTool(this);
-                this.dispatchEvent("document_selected", {id: id});
+                //this.dispatchEvent("document_selected", {id: id});
             }
         });
 });
