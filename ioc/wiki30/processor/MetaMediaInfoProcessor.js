@@ -42,7 +42,7 @@ define([
                     defaultSelected,
                     selectedPane;
 
-                dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
+                //dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
                 //contentCache.setCurrentId("metadataPane", null);
                 
                 for (m in content.meta) {
@@ -59,7 +59,7 @@ define([
                             //currentMetaContent.dispatcher = dispatcher;
                             //currentMetaContent.docId = content.id;
 
-                            if(currentMetaContent.id === 'metaMedia'){
+                            if(currentMetaContent.id === "metaMedia"){
                                 this._createNsTree(currentMetaContent, dispatcher, 'metaMedia');
                                 cp = this._createContentTool(newContent, dispatcher, 'metaMedia');
                                 //dialogTree.startup();
@@ -70,17 +70,19 @@ define([
 
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
-                            if(currentMetaContent.id === 'metaMedia'){
+                            if(currentMetaContent.id === "metaMedia"){
                                 this.dialogTree.startup();
                             }
 
                         }
                     }
                 }
-
+                
+                
+                
 
                 currentPaneId = dispatcher.getContentCache(content.docId).getCurrentId("metadataPane");
-                defaultSelected = content.defaultSelected;
+                defaultSelected = "metaMedia";
 
                 if (!currentPaneId && defaultSelected) {
                     dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", defaultSelected)
