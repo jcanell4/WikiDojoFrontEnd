@@ -64,6 +64,15 @@ define([
             postLoad: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
                 this.inherited(arguments);
+            },
+
+            /**
+             * Aquest mètode es cridat automàticament quan s'afegeix el ContentTool a un ContainerContentTool
+             *
+             * @protected
+             */
+            onAttach: function () {
+                //alert("attached");
             }
 
         });

@@ -59,13 +59,13 @@ define([
                     }
                 }
 
+                this.inherited(arguments);
+
                 // TODO[Xavi] Comprovació necessaria temporalment per controlar la adició de elements que no son ContentTools
                 if (contentTool.setContainer) {
                     contentTool.setContainer(this);
                 }
 
-
-                this.inherited(arguments);
                 this.resize();
             },
 

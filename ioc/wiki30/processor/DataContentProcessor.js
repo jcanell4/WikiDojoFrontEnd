@@ -87,6 +87,7 @@ define([
              */
             createContentTool: function (content, dispatcher) {
                 var args = {
+                        ns:         content.ns,
                         id:         content.id,
                         title:      content.title,
                         content:    content.content,

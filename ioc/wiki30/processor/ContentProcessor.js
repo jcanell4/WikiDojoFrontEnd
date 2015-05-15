@@ -100,11 +100,11 @@ define([
                     contentTool,
                     position = 0;
 
+                // TODO[Xavi] Quan es fa així les metas no s'actualitzan correctament quan s'obra una revisió
 
                 if (this.isOldContentAllowed(oldContentTool, this.getAllowedTypes(content))) {
-                    oldContentTool.setData(content.content);
-                    contentTool = oldContentTool;
-                    console.log("ALLOWED");
+                    oldContentTool.updateDocument(content.content);
+                    //console.log("ALLOWED");
 
                 } else {
                     if (oldContentTool) {
@@ -114,11 +114,10 @@ define([
 
                     contentTool = this.createContentTool(content, dispatcher);
                     container.addChild(contentTool, position);
-                    container.selectChild(contentTool);
-                    console.log("NOT ALLOWED");
+
+                    //console.log("NOT ALLOWED");
                 }
-                dispatcher.addDocument(content);
-                contentTool.setCurrentDocument();
+
             },
 
             /**
