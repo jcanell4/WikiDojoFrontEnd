@@ -30,6 +30,7 @@ define([
     "ioc/wiki30/manager/InfoManager",
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/processor/RevisionsProcessor",
+    "ioc/wiki30/processor/ExtraContentStateProcessor",
     "ioc/wiki30/DokuwikiContent"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor,
@@ -39,7 +40,7 @@ define([
              RemoveAllContentTabProcessor, RemoveContentTabProcessor,
              CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
-             RevisionsProcessor,
+             RevisionsProcessor,ExtraContentStateProcessor,
              DokuwikiContent) {
     /**
      * @typedef {object} DijitWidget widget
@@ -145,6 +146,7 @@ define([
                 this.changesManager = new ChangesManager(this);
 
                 this.processors["revisions"] = new RevisionsProcessor();
+                this.processors["extraContentState"] = new ExtraContentStateProcessor();
             },
 
             /**
@@ -452,12 +454,12 @@ define([
                     })
                 }
 
-                if (!this.getGlobalState().pages[content.id]) {
-                    this.getGlobalState().pages[content.id] = {};
-                }
+//                if (!this.getGlobalState().pages[content.id]) {
+//                    this.getGlobalState().pages[content.id] = {};
+//                }
 
-                this.getGlobalState().pages[content.id]["ns"] = content.ns;
-                this.getGlobalState().currentTabId = content.id;
+                this.getGlobalState().getContent(content.id).ns = content.ns;
+                //this.getGlobalState().currentTabId = content.id;
 
                 //console.log('surt de addDocument', content);
             },
@@ -468,9 +470,7 @@ define([
              * @param {string} id
              */
             removeDocument: function (id) {
-                if (this.getGlobalState().pages[id]) {
-                    delete this.getGlobalState().pages[id];
-                }
+                this.getGlobalState().deleteContent(id);
 
                 if (this.contentCache[id]) {
                     delete this.contentCache[id];

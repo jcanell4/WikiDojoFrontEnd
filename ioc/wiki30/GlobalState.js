@@ -154,13 +154,13 @@ define([
             if (this.pages[id]) {
                 ret = this.pages[id];
             } else {
-                ret = {};
+                ret = this.pages[id] = {};
             }
             return ret;
         },
 
         getCurrentContent: function () {
-            return this.pages[this.currentTabId];
+            return this.getContent(this.currentTabId);
         },
 
         getCurrentId: function () {
@@ -201,6 +201,12 @@ define([
          */
         setCurrentNavigationId: function(navigationId) {
             this.currentNavigationId = navigationId;
+        },
+        
+        deleteContent: function(id){
+            if (this.pages[id]) {
+                delete this.pages[id];
+            }            
         }
     };
 
