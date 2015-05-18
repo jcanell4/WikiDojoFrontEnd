@@ -78,7 +78,6 @@ define([
                     observed.unregister(id);
                 }
 
-                //console.log("Desenregistrat observadors");
                 this.registeredToEvents = [];
             },
 

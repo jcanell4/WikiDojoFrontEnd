@@ -30,6 +30,7 @@ define([
                  * @protected
                  */
                 postLoad: function () {
+
                     var observed = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
                     this.registerToEvent(observed, "document_closed", lang.hitch(this, this._onDocumentClosed));
@@ -52,6 +53,7 @@ define([
                  * @private
                  */
                 _onDocumentClosed: function (data) {
+
                     if (data.id == this.docId) {
                         this.removeContentTool();
                     }

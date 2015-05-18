@@ -34,7 +34,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                this._processMetaInfo(value, dispatcher);
+//                this._processMetaInfo(value, dispatcher);
             },
 
             /**

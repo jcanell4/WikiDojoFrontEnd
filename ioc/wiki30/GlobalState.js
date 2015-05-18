@@ -148,8 +148,8 @@ define([
         },
 
         getContent: function (id) {
-            var ret = undefined;
 
+            var ret = undefined;
 
             if (this.pages[id]) {
                 ret = this.pages[id];

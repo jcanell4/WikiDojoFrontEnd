@@ -250,6 +250,7 @@ define([
              */
             setContainer: function (container) {
                 this.container = container;
+                this.onAttach();
             },
 
             /**
@@ -300,6 +301,16 @@ define([
              */
             getType: function () {
                 return this.type;
+            },
+
+            /**
+             * Aquest mètode es cridat automàticament quan s'afegeix el ContentTool a un ContainerContentTool.
+             *
+             * @abstract
+             * @protected
+             */
+            onAttach: function () {
+
             }
         });
 });

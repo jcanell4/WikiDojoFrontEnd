@@ -31,6 +31,7 @@ define([
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/processor/RevisionsProcessor",
     "ioc/wiki30/processor/ExtraContentStateProcessor",
+    "ioc/wiki30/processor/ExtraMetaInfoProcessor",
     "ioc/wiki30/DokuwikiContent"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor,
@@ -40,7 +41,7 @@ define([
              RemoveAllContentTabProcessor, RemoveContentTabProcessor,
              CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
-             RevisionsProcessor,ExtraContentStateProcessor,
+             RevisionsProcessor,ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent) {
     /**
      * @typedef {object} DijitWidget widget
@@ -147,6 +148,7 @@ define([
 
                 this.processors["revisions"] = new RevisionsProcessor();
                 this.processors["extraContentState"] = new ExtraContentStateProcessor();
+                this.processors["extra_metainfo"] = new ExtraMetaInfoProcessor();
             },
 
             /**
@@ -443,10 +445,14 @@ define([
             /**
              * Afegeix un document.
              *
+             * TODO[Xavi] Aixó es mourà al onAttach() del documentContentTool()
+             * 
+             * @deprecated
+             * 
              * @param content
              */
             addDocument: function (content) {
-                //console.log('addDocument', content);
+                console.log('addDocument', content);
                 if (!this.contentCache[content.id]) {
 
                     this.contentCache[content.id] = new DokuwikiContent({
@@ -454,11 +460,15 @@ define([
                     })
                 }
 
-//                if (!this.getGlobalState().pages[content.id]) {
-//                    this.getGlobalState().pages[content.id] = {};
-//                }
+                console.log("que hi ha al content cache?", this.contentCache[content.id]);
+
+                //if (!this.getGlobalState().pages[content.id]) {
+                //    this.getGlobalState().pages[content.id] = {};
+                //}
 
                 this.getGlobalState().getContent(content.id).ns = content.ns;
+
+                console.log("Al ispatcher el global state conté:", this.getGlobalState().getContent(content.id));
                 //this.getGlobalState().currentTabId = content.id;
 
                 //console.log('surt de addDocument', content);

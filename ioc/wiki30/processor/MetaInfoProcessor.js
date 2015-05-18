@@ -14,7 +14,7 @@ define([
          * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-            type: "meta",
+            type: "metainfo",
 
             /**
              * Processa el valor passat com argument per generar un ContentTool i afegir-lo a la secció de metadades.
@@ -37,15 +37,13 @@ define([
              * @protected
              */
             _processMetaInfo: function (content, dispatcher) {
-                var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
-                    nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
-                    cp,
+                var nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
                     m,
-                    defaultSelected,
+                    defaultSelected=0,
+                    firstPane=1,
                     selectedPane,
-                    firstPane,
-                    currentMetaContent,
-                    contentCache = dispatcher.getContentCache(content.id);
+                    contentCache = dispatcher.getContentCache(content.id),
+                    ret=[null, null];
 
                 // TODO[Xavi] La neteja del container s'hauria de fer a traves del RemoveAllContentProcessor. Compte amb el setCurrentId que deixaría de funcionar!
                 nodeMetaInfo.clearContainer(content.id);
@@ -53,45 +51,55 @@ define([
 
 
                 for (m in content.meta) {
-
-                    if (widgetCentral && widgetCentral.id === content.id) { // aquesta metainfo pertany a la pestanya activa
-                        currentMetaContent = content.meta[m];
-
-                        if (!registry.byId(currentMetaContent.id)) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
-
-                            // Afegim la informació extra necessaria per generar el ContentTool
-                            currentMetaContent.dispatcher = dispatcher;
-                            currentMetaContent.docId = content.id;
-
-                            cp = this.createContentTool(currentMetaContent);
-                            nodeMetaInfo.addChild(cp);
-
-                            if (!firstPane) {
-                                firstPane = cp.id;
-                            }
-
-                            if (content.defaultSelected) {
-                                defaultSelected = cp.id;
-                            }
-
-                        } else {
-                            console.error("Ja existeix un ContentTool amb aquest id.");
-                        }
-                    }
+                    this._addMetainfo(content.id, content.meta[m], dispatcher, nodeMetaInfo, content.defaultSelected, ret);
                 }
 
                 selectedPane = contentCache.getCurrentId("metadataPane");
 
-                if (!selectedPane && defaultSelected) {
-                    selectedPane = defaultSelected;
+                if (!selectedPane && ret[defaultSelected]) {
+                    selectedPane = ret[defaultSelected];
                 } else if (!selectedPane) {
-                    selectedPane = firstPane;
+                    selectedPane = ret[firstPane];
                 }
 
                 nodeMetaInfo.selectChild(selectedPane);
                 contentCache.setCurrentId("metadataPane", selectedPane);
 
                 return 0;
+            },
+            
+            _addMetainfo:function(id, meta, dispatcher, nodeMetaInfo, needDefault, ret){
+                var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
+                    cp,
+                    defaultSelected=0,
+                    firstPane=1,
+                    currentMetaContent;
+
+                if (widgetCentral && widgetCentral.id === id) { // aquesta metainfo pertany a la pestanya activa
+                    currentMetaContent = meta;
+
+                    if (!registry.byId(currentMetaContent.id)) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
+
+                        // Afegim la informació extra necessaria per generar el ContentTool
+                        currentMetaContent.dispatcher = dispatcher;
+                        currentMetaContent.docId = id;
+
+                        cp = this.createContentTool(currentMetaContent);
+                        nodeMetaInfo.addChild(cp);
+
+                        if (!ret[firstPane]) {
+                            ret[firstPane]= cp.id;
+                        }
+
+                        //if (content.defaultSelected) {  //[JOSEP] No entenc aquest instrucció. content arriba amb defaultselected? No serà una de les metadades. O potser el content indica si cal marcar alguna cosa per defecte? He suposat això darrer
+                        if (needDefault) {
+                            ret[defaultSelected ]= cp.id;
+                        }
+
+                    } else {
+                        console.error("Ja existeix un ContentTool amb aquest id.");
+                    }
+                }
             },
 
             /**

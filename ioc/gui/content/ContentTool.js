@@ -53,7 +53,7 @@ define([
             onClose: function () {
                 return this.inherited(arguments);
             },
-            
+
             /**
              * Dins d'aquest mètode s'ha d'afegir tot el codi que volguem assegurar-nos que s'executa quan el
              * ContentTool ha estat afegit efectivament a la pàgina. Es el lloc indicat per afegir els watchers,
@@ -64,6 +64,15 @@ define([
             postLoad: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
                 this.inherited(arguments);
+            },
+
+            /**
+             * Aquest mètode es cridat automàticament quan s'afegeix el ContentTool a un ContainerContentTool
+             *
+             * @protected
+             */
+            onAttach: function () {
+                //alert("attached");
             }
 
         });
