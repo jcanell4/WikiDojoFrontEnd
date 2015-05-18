@@ -29,6 +29,7 @@ define([
     "ioc/wiki30/manager/ChangesManager",
     "ioc/wiki30/processor/RevisionsProcessor",
     "ioc/wiki30/processor/ExtraContentStateProcessor",
+    "ioc/wiki30/processor/ExtraMetaInfoProcessor",
     "ioc/wiki30/DokuwikiContent"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor,
@@ -38,7 +39,7 @@ define([
              RemoveAllContentTabProcessor, RemoveContentTabProcessor,
              CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
-             RevisionsProcessor,ExtraContentStateProcessor,
+             RevisionsProcessor,ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent) {
     /**
      * @typedef {object} DijitWidget widget
@@ -143,6 +144,7 @@ define([
 
                 this.processors["revisions"] = new RevisionsProcessor();
                 this.processors["extraContentState"] = new ExtraContentStateProcessor();
+                this.processors["extra_metainfo"] = new ExtraMetaInfoProcessor();
             },
 
             /**
