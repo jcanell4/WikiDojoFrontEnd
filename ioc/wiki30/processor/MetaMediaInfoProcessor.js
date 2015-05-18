@@ -42,7 +42,8 @@ define([
                     defaultSelected,
                     selectedPane;
 
-                dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
+                //dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
+                //contentCache.setCurrentId("metadataPane", null);
                 
                 for (m in content.meta) {
                     if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
@@ -55,14 +56,10 @@ define([
          * Es fa amb una nova funció perquè són diversos passos
          */
                         if (!registry.byId(currentMetaContent.id)) {
-                            /*Construeix un nou contenidor de meta-info*/
-                            /*cp = new ContentPane({
-                                id:      content.meta[m].id,
-                                title:   content.meta[m].title,
-                                //content: "<div>ASI ES TOTAL</div>"
-                                content: content.meta[m].content
-                            });*/
-                            if(currentMetaContent.id === 'metaMedia'){
+                            //currentMetaContent.dispatcher = dispatcher;
+                            //currentMetaContent.docId = content.id;
+
+                            if(currentMetaContent.id === "metaMedia"){
                                 this._createNsTree(currentMetaContent, dispatcher, 'metaMedia');
                                 cp = this._createContentTool(newContent, dispatcher, 'metaMedia');
                                 //dialogTree.startup();
@@ -73,21 +70,19 @@ define([
 
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
-                            if(currentMetaContent.id === 'metaMedia'){
-                                dialogTree.startup();
+                            if(currentMetaContent.id === "metaMedia"){
+                                this.dialogTree.startup();
                             }
-                            
-
-                            //guiSharedFunctions.addWatchToMetadataPane(cp, content.docId, cp.id, dispatcher);
-                            //guiSharedFunctions.addChangeListenersToMetadataPane(cp.domNode.id, dispatcher)
 
                         }
                     }
                 }
-
+                
+                
+                
 
                 currentPaneId = dispatcher.getContentCache(content.docId).getCurrentId("metadataPane");
-                defaultSelected = content.defaultSelected;
+                defaultSelected = "metaMedia";
 
                 if (!currentPaneId && defaultSelected) {
                     dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", defaultSelected)
@@ -99,6 +94,17 @@ define([
                     nodeMetaInfo.selectChild(selectedPane);
                     dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", selectedPane);
                 }
+                
+                /*selectedPane = contentCache.getCurrentId("metaMedia");
+
+                if (!selectedPane && defaultSelected) {
+                    selectedPane = defaultSelected;
+                } else if (!selectedPane) {
+                    selectedPane = firstPane;
+                }
+
+                nodeMetaInfo.selectChild(selectedPane);
+                contentCache.setCurrentId("metaMedia", selectedPane);*/
 
                 return 0;
             },
@@ -170,7 +176,7 @@ define([
                         title:      meta.title,
                         data:       meta.data,
                         dispatcher: dispatcher,
-                        docId:      docId,
+                        docId:      "media",
                         action:     meta.action
                     };
 
@@ -195,24 +201,26 @@ define([
              */
             
             _createNsTree: function (content, dispatcher, docId) {
+                var self = this;
                 require(["ioc/gui/ContentTabDokuwikiNsTree"], function(ContentTabDokuwikiNsTree){    
                     var divNsTree = domConstruct.toDom("<div id='media__tree'></div>");
 
-                    dialogTree = new ContentTabDokuwikiNsTree({
+                    self.dialogTree = new ContentTabDokuwikiNsTree({
                         treeDataSource: 'lib/plugins/ajaxcommand/ajaxrest.php/ns_tree_rest/',
                         onlyDirs:true
                     }).placeAt(divNsTree);
                 
-                    dialogTree.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media" +
+                    self.dialogTree.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media" +
                             '&do=media&list='+content.list+'&sort='+content.sort;
-                    /*dialogTree.startup = function(){
-                        dialogTree.inherited(arguments);
-                        dialogTree.tree.startup();
-                    };*/
-                    newContent = [];
-                    newContent["id"] = docId;
-                    newContent["title"] = "Índex";
-                    newContent["content"] = divNsTree.innerHTML;
+                    
+                    self.dialogTree.getQuery = function(){
+                        return "id="+this.item.id+"&ns="+this.item.id+"&preserveMetaData=true";
+                    };
+
+                    this.newContent = [];
+                    this.newContent["id"] = docId;
+                    this.newContent["title"] = "Índex";
+                    this.newContent["content"] = divNsTree.innerHTML;
                 });
 
             }

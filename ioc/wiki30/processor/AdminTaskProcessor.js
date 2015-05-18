@@ -31,7 +31,7 @@ define([
          */
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
-            dispatcher.getGlobalState().pages[value.id]["action"] = "admin";
+            dispatcher.getGlobalState().getContent(value.id)["action"] = "admin";
         },
         
         createContentTool: function (content, dispatcher) {

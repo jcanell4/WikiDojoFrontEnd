@@ -27,7 +27,7 @@ define([
 
             query:       "",
 
-            processors:  [],
+            processors:  null,
 
             content:     null,
 

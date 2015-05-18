@@ -18,11 +18,13 @@ define([
                 this.inherited(arguments);
                 var nsTree = this;
                 this.tree.onClick = function(item){
-                    if(!this.model.mayHaveChildren(item)){
-                        nsTree.sendRequest("id="+item.id);
-                    }
-                }
-                this.tree.openOnClick=true;
+                    //if(!this.model.mayHaveChildren(item)){
+                        nsTree.item = item;
+                        nsTree.query = "id="+item.id;
+                        nsTree.sendRequest();
+                    //}
+                };
+                //this.tree.openOnClick=true;
             }
         });
     return ret;

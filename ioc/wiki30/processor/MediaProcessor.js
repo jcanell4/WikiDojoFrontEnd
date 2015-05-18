@@ -20,7 +20,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //dispatcher.getGlobalState().pages[value.id]["action"] = "media";
+                //dispatcher.getGlobalState().getContent(value.id)["action"] = "media";
                 this.inherited(arguments);
                 
                 

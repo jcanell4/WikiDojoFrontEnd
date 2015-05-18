@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-    "ioc/gui/content/ContentTool",
+    "ioc/gui/content/ContentTool"
 ], function (declare, lang, ContentTool) {
 
     return declare([ContentTool],
