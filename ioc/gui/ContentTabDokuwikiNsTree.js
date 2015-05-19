@@ -1,8 +1,9 @@
 define([
     "dojo/_base/declare", // declare
     "ioc/wiki30/Request",
-    "ioc/gui/NsTreeContainer"
-], function (declare, Request, NsTreeContainer) {
+    "ioc/gui/NsTreeContainer",
+    "dojo/_base/lang"
+], function (declare, Request, NsTreeContainer, lang) {
     var ret = declare("ioc.gui.ContentTabDokuwikiNsTree", [NsTreeContainer, Request],
 
         /**
@@ -13,18 +14,22 @@ define([
          * @extends Request
          */
         {
+            constructor: function (args) {
+                var openOnClick = args.openOnClick? args.openOnClick: true;
+                this.set("openOnClick", openOnClick);
+            },
+
             /** @override */
             buildRendering: function () {
                 this.inherited(arguments);
                 var nsTree = this;
-                this.tree.onClick = function(item){
-                    //if(!this.model.mayHaveChildren(item)){
-                        nsTree.item = item;
-                        nsTree.query = "id="+item.id;
-                        nsTree.sendRequest();
-                    //}
+                var oc = lang.hitch(this.tree, this.tree.onClick) ;
+                this.tree.onClick = function(item, node){
+                    oc(arguments);
+                    nsTree.item = item;
+                    nsTree.query = "id="+item.id;
+                    nsTree.sendRequest();
                 };
-                //this.tree.openOnClick=true;
             }
         });
     return ret;

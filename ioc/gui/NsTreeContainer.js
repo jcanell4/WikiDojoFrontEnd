@@ -37,14 +37,16 @@ define([
             /*,pageDataSource: null*/
             rootValue:      "_",
             tree:           null,
-            //       ,widgetsInTemplate: true
-
+            openOnClick: false,
+            processOnClickAndOpenOnClick:false,
+            
             /** @override */
             buildRendering: function () {
                 this.inherited(arguments);
                 var vid = this.id;
                 var tds = this.treeDataSource;
                 var root = this.rootValue;
+                var self = this;
                 this.tree = new Tree({
                     id: vid + "_nTree",
 
@@ -78,8 +80,12 @@ define([
 
                     persist: false,
 
-                    openOnClick: false
-
+                    onClick: function(item, node, event){
+                        if(self.processOnClickAndOpenOnClick && this.model.mayHaveChildren(item)){
+                            this._onExpandoClick({node: node, item: item});
+                        }
+                    }
+                    
                 });
                 var tree = this.tree;
                 //           this.tree.model.store.query(this.getSectok());
@@ -89,6 +95,10 @@ define([
                     var node = query(".dijitTreeRow", tree.domNode)[0];
                     parentNode.style.width = "" + node.offsetWidth + "px";
                 }, true);
+
+                this.tree.openOnClick= self.openOnClick && !this.processOnClickAndOpenOnClick;
+                    
+
                 this.updateSectok();
             },
 
@@ -181,7 +191,26 @@ define([
                 // Rebuild the tree
                 this.tree.postMixInProperties();
                 this.tree._load();
+            },
+            
+            _openOnClickGetter: function(){
+                return this.openOnClick;
+            },
+            
+            _openOnClickSetter:function(value){
+                this.openOnClick = value;
+                this.tree.set("openOnClick", this.openOnClick && !this.processOnClickAndOpenOnClick);
+            },
+            
+            _processOnClickAndOpenOnClickGetter: function(){
+                return this.processOnClickAndOpenOnClick;
+            },
+            
+            _processOnClickAndOpenOnClickSetter:function(value){
+                this.processOnClickAndOpenOnClick=value;
+                this.tree.set("openOnClick", this.openOnClick && !this.processOnClickAndOpenOnClick);
             }
+            
 
         });
     return ret;

@@ -207,7 +207,8 @@ define([
 
                     self.dialogTree = new ContentTabDokuwikiNsTree({
                         treeDataSource: 'lib/plugins/ajaxcommand/ajaxrest.php/ns_tree_rest/',
-                        onlyDirs:true
+                        onlyDirs:true,
+                        processOnClickAndOpenOnClick:true
                     }).placeAt(divNsTree);
                 
                     self.dialogTree.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media" +
