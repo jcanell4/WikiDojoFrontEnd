@@ -4,7 +4,7 @@ define([
     var DokuwikiContent = declare(null,
         /**
          * @class DokuwikiContent
-         * @author Josep Cañellas <jcanell4@ioc.cat>
+         * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
             /** @type {string} */
@@ -22,35 +22,33 @@ define([
             wrapperOn: true,
 
             /** @type  {Object.<string, string>} Hash de ids organitzadas per {tipus : valor} */
-            currentIds: {},
+            currentIds: null,
 
+            /** @type {Revisions} */
             revisions: null,
 
-            //info: [],
-
             /**
-             * Es construeix un objecte d'aquest tipus per cada pestanya que es carrega.
+             * Crea un objecte que guarda la informació lligada a un document. Es pot crear passant només la id del
+             * document o un objecte amb un hash de configuració per exemple:
+             *      {
+             *          id: 'id del document,
+             *          rev: 'revisió del document'
+             *      }
              *
-             * TODO[Xavi] Sembla que hi ha un error, o s'està passant un objecte i hauria de ser un string, o s'està
-             * assignant l'objecte en lloc del string que porta com id. DE VEGADES ARRIBA D
-             *
-             * @param {{id: string}|string} id - objecte anonim amb una cadena
+             * @param {Object.<string, string>|string} params - id o objecte de configuració
              * @constructor
              */
-            constructor: function (id) {
-                this.inherited(arguments); // TODO[Xavi] te cap efecte? el constructor de la superclasse es crida automàticament
+                constructor: function(params) {
 
-                if (typeof id === "string") {
-                    this.id = id
-                } else if (typeof id.id === "string") {
-                    this.id = id.id
+                if (typeof params === "string") {
+                    this.id = params;
                 } else {
-                    throw new Error("no es reconeix el tipus de id");
+                    declare.safeMixin(this, params);
                 }
 
 
                 this.currentIds = {};
-                //this.info = [];
+
                 this.revisions = {};
             },
 

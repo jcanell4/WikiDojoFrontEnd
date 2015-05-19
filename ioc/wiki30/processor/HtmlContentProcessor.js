@@ -57,17 +57,20 @@ define([
                         title:      content.title,
                         content:    content.content,
                         closable:   true,
-                        dispatcher: dispatcher
+                        dispatcher: dispatcher,
+                        rev:        content.rev
                     },
+
 
                     contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
 
                 contentTool.setType('HTML'); //TODO[Xavi] Això podria obtenir-se de this.type;
 
+
                 return contentTool;
             },
 
-            getAllowedTypes:   function (content) {
+            getAllowedTypes: function (content) {
                 return 'HTML';
             }
         });
