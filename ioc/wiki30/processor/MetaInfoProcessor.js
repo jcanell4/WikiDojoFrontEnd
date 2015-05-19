@@ -39,11 +39,11 @@ define([
             _processMetaInfo: function (content, dispatcher) {
                 var nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
                     m,
-                    defaultSelected=0,
-                    firstPane=1,
+                    //defaultSelected=0,
+                    //firstPane=1,
                     selectedPane,
                     contentCache = dispatcher.getContentCache(content.id),
-                    ret=[null, null];
+                    ret={};
 
                 // TODO[Xavi] La neteja del container s'hauria de fer a traves del RemoveAllContentProcessor. Compte amb el setCurrentId que deixaría de funcionar!
                 nodeMetaInfo.clearContainer(content.id);
@@ -51,15 +51,15 @@ define([
 
 
                 for (m in content.meta) {
-                    this._addMetainfo(content.id, content.meta[m], dispatcher, nodeMetaInfo, content.defaultSelected, ret);
+                    this._addMetainfo(content.id, content.meta[m], dispatcher, nodeMetaInfo, ret);
                 }
 
                 selectedPane = contentCache.getCurrentId("metadataPane");
 
-                if (!selectedPane && ret[defaultSelected]) {
-                    selectedPane = ret[defaultSelected];
+                if (!selectedPane && ret.defaultSelected) {
+                    selectedPane = ret.defaultSelected;
                 } else if (!selectedPane) {
-                    selectedPane = ret[firstPane];
+                    selectedPane = ret.firstPane;
                 }
 
                 nodeMetaInfo.selectChild(selectedPane);
@@ -68,11 +68,11 @@ define([
                 return 0;
             },
             
-            _addMetainfo:function(id, meta, dispatcher, nodeMetaInfo, needDefault, ret){
+            _addMetainfo:function(id, meta, dispatcher, nodeMetaInfo, ret){
                 var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
                     cp,
-                    defaultSelected=0,
-                    firstPane=1,
+                    //defaultSelected=0,
+                    //firstPane=1,
                     currentMetaContent;
 
                 if (widgetCentral && widgetCentral.id === id) { // aquesta metainfo pertany a la pestanya activa
@@ -87,13 +87,12 @@ define([
                         cp = this.createContentTool(currentMetaContent);
                         nodeMetaInfo.addChild(cp);
 
-                        if (!ret[firstPane]) {
-                            ret[firstPane]= cp.id;
+                        if (!ret.firstPane) {
+                            ret.firstPane= cp.id;
                         }
 
-                        //if (content.defaultSelected) {  //[JOSEP] No entenc aquest instrucció. content arriba amb defaultselected? No serà una de les metadades. O potser el content indica si cal marcar alguna cosa per defecte? He suposat això darrer
-                        if (needDefault) {
-                            ret[defaultSelected ]= cp.id;
+                        if (meta.defaultSelected) { //Des del servidor ens marquen aquesta opció com a defaultSelected
+                            ret.defaultSelected= cp.id;
                         }
 
                     } else {
