@@ -208,11 +208,7 @@ define([
                 delete this.pages[id];
             }            
         }
-
-
     };
-
-
 
     return ret;
 });

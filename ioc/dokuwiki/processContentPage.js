@@ -43,10 +43,11 @@ define([
     
     var res = function(id, params){
         //JSINFO.id=params.ns;
+
         listHeadings(id);
-        runRender(id);   
+        runRender(id);
         runQuiz();
-        
+
         var domNode = dom.byId(id);
         var requestEdita = new Request();
         requestEdita.updateSectok=function(sk){
@@ -113,7 +114,7 @@ define([
             var node = dom.byId(dispatcher.getGlobalState().getCurrentSectionId());
             toggleClass(dwPageUi.getAllSectionNodes(node), "section_selected", true);
         }
-        
+
     };
     return res;
 });
