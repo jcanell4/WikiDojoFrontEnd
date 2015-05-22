@@ -301,38 +301,40 @@ define([
             _initTimer:function(){
                 var counterDiv=null;
                 var self = this;
-                var textRatio = 0.3;
+                var textSize;
                 this._timer = new timing.Timer(1000);
                 this._timer.counter= 0;
                 this._timer.onStop = function(){
                     domConstruct.destroy(counterDiv);
                     counterDiv=null;
                 }
-                this._timer.onStart = function(){
-                    textRatio = 0.3;
+                this._timer.onStart = function(){                   
                     this.counter=0;
                     if(self._standby){
                         var output = domGeom.getContentBox(self.standbyId, style.getComputedStyle(self.standbyId));
+                        textSize=output.w<(output.h/2)?output.w:output.h/2;
                         counterDiv = domConstruct.toDom(
                             "<div style='text-align: center;vertical-align: middle;"
                             +"height: 100%;'><span id='counter_"+self.standbyId
-                            + "' style='font-size:"+(output.h*textRatio)+"px;'>"+this.counter+"</span></div>"
+                            + "' style='font-size:"+(textSize)+"px;'>"+this.counter+"</span></div>"
                         );
                         domConstruct.place(counterDiv, self.standbyId);
                     }
                 };
                 this._timer.onTick= function(){
                         var nodeCounter = dom.byId("counter_"+ self.standbyId);
-//                        var outputExt = domGeom.getContentBox(self.standbyId, style.getComputedStyle(self.standbyId));
-//                        var outputInt = domGeom.getContentBox(nodeCounter, style.getComputedStyle(nodeCounter));
+                        var outputExt = domGeom.getContentBox(self.standbyId, style.getComputedStyle(self.standbyId));
+                        var outputInt = domGeom.getContentBox(nodeCounter, style.getComputedStyle(nodeCounter));
                         this.counter++;
                         nodeCounter.innerHTML=this.counter;
-//                        while(outputExt.w<outputInt.w){
-//                            textRatio-=0.01;
-//                            style.set(nodeCounter, "font-size", outputExt.h*textRatio);
-//                            outputInt = domGeom.getContentBox(nodeCounter, style.getComputedStyle(nodeCounter));
-//                            nodeCounter.innerHTML=this.counter;
-//                        }
+                        if(outputExt.w<outputInt.w){
+                            //textSize=(textSize-30)<(outputExt.h/2)?textSize-30:outputExt.h/2;
+                            textSize=textSize-outputInt.w+outputExt.w-2;
+                            if(textSize>outputExt.h/2){
+                                textSize=outputExt.h/2
+                            }
+                            nodeCounter.style["font-size"] = "" + (textSize) + "px";
+                        }
                 };               
             }                        
         });
