@@ -4,14 +4,24 @@ define([
     "dojo/request",
     "dojo/request/iframe",
     "ioc/wiki30/dispatcherSingleton",
-    "dojo/Stateful"
-], function (declare, Standby, request, iframe, dispatcherSingleton, Stateful) {
+    "dojo/Stateful",
+    "dojox/timing",
+    "dojo/dom-construct",
+    "dojo/dom-geometry",
+    "dojo/dom-style",
+    "dojo/dom"
+], function (declare, Standby, request, iframe, dispatcherSingleton, Stateful
+                , timing, domConstruct, domGeom, style, dom) {
     var ret = declare([Stateful],
         /**
          * @class Request
          */
         {
             standbyId:   null,
+            
+            hasTimer:   false,
+
+            _timer:      null,
 
             urlBase:     null,
 
@@ -30,6 +40,10 @@ define([
             processors:  null,
 
             content:     null,
+            
+            constructor: function(){
+                this._initTimer();
+            },
 
             /**
              *
@@ -99,9 +113,10 @@ define([
              */
             responseHandler: function (data) {
                 this.dispatcher.processResponse(data, this.processors);
-                if (this._standby) {
-                    this._standby.hide();
-                }
+                this._stopStandby();
+//                if (this._standby) {
+//                    this._standby.hide();
+//                }
             },
 
             /**
@@ -115,9 +130,10 @@ define([
             errorHandler: function (error) {
                 console.error(error);
                 this.dispatcher.processError(error);
-                if (this._standby) {
-                    this._standby.hide();
-                }
+                this._stopStandby();
+//                if (this._standby) {
+//                    this._standby.hide();
+//                }
             },
 
             sendForm: function (formObject, buttonQuery) {
@@ -130,7 +146,7 @@ define([
                 /*It sets the Standby object in a variable to be accessible from any site.
                  *The private attibute is used to control the construction of the object
                  */
-                var standby = this._standby;
+                //var standby = this._standby;
 
                 if (this.urlBase === null || this.dispatcher === null) {
                     return;
@@ -146,9 +162,11 @@ define([
                 if (gSect) {
                     vUrl += linkChar + this.sectokParam + "=" + gSect;
                 }
-                if (standby) {
-                    standby.show();
-                }
+                
+                this._startStandby();
+//                if (standby) {
+//                    standby.show();
+//                }
                 var resp;
                 var req = this;
                 var configPost = {handleAs: "json"};
@@ -167,6 +185,7 @@ define([
                 );
                 return resp;                
             },
+            
             /**
              * Realitzar una petició ajax, pot ser només una ordre o més d'una per exemple:
              *      'id=start'
@@ -191,7 +210,7 @@ define([
                 /*It sets the Standby object in a variable to be accessible from any site.
                  *The private attibute is used to control the construction of the object
                  */
-                var standby = this._standby;
+                //var standby = this._standby;
 
                 if (this.urlBase === null || this.dispatcher === null) {
                     return;
@@ -218,9 +237,11 @@ define([
                 if (gSect) {
                     vUrl += linkChar + this.sectokParam + "=" + gSect;
                 }
-                if (standby) {
-                    standby.show();
-                }
+
+                this._startStandby();
+//                if (standby) {
+//                    standby.show();
+//                }
                 var resp;
                 var req = this;
                 var configPost = {handleAs: "json"};
@@ -252,7 +273,68 @@ define([
                 }
 
                 return resp;
-            }
+            },
+            
+            _standbyIdSetter: function(id){
+                this.standbyId=id;
+                this._standby=null;
+            },
+            
+            _startStandby: function(){
+                if(this._standby){
+                    this._standby.show();
+                    if(this.hasTimer){
+                        this._timer.start();
+                    }
+                }
+            },
+            
+            _stopStandby: function(){
+                if(this._standby){
+                   this._standby.hide();
+                }
+                if(this.hasTimer && this._timer.isRunning){
+                    this._timer.stop();
+                }
+            },
+            
+            _initTimer:function(){
+                var counterDiv=null;
+                var self = this;
+                var textRatio = 0.3;
+                this._timer = new timing.Timer(1000);
+                this._timer.counter= 0;
+                this._timer.onStop = function(){
+                    domConstruct.destroy(counterDiv);
+                    counterDiv=null;
+                }
+                this._timer.onStart = function(){
+                    textRatio = 0.3;
+                    this.counter=0;
+                    if(self._standby){
+                        var output = domGeom.getContentBox(self.standbyId, style.getComputedStyle(self.standbyId));
+                        counterDiv = domConstruct.toDom(
+                            "<div style='text-align: center;vertical-align: middle;"
+                            +"height: 100%;'><span id='counter_"+self.standbyId
+                            + "' style='font-size:"+(output.h*textRatio)+"px;'>"+this.counter+"</span></div>"
+                        );
+                        domConstruct.place(counterDiv, self.standbyId);
+                    }
+                };
+                this._timer.onTick= function(){
+                        var nodeCounter = dom.byId("counter_"+ self.standbyId);
+//                        var outputExt = domGeom.getContentBox(self.standbyId, style.getComputedStyle(self.standbyId));
+//                        var outputInt = domGeom.getContentBox(nodeCounter, style.getComputedStyle(nodeCounter));
+                        this.counter++;
+                        nodeCounter.innerHTML=this.counter;
+//                        while(outputExt.w<outputInt.w){
+//                            textRatio-=0.01;
+//                            style.set(nodeCounter, "font-size", outputExt.h*textRatio);
+//                            outputInt = domGeom.getContentBox(nodeCounter, style.getComputedStyle(nodeCounter));
+//                            nodeCounter.innerHTML=this.counter;
+//                        }
+                };               
+            }                        
         });
     return ret;
 });

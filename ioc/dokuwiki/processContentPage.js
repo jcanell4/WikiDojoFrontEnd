@@ -45,7 +45,7 @@ define([
         //JSINFO.id=params.ns;
         listHeadings(id);
         runRender(id);   
-        runQuiz();
+        runQuiz(id);
         
         var domNode = dom.byId(id);
         var requestEdita = new Request();

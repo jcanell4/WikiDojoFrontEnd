@@ -1,5 +1,5 @@
 define([], function(){
-    var res = function(){
+    var res = function(idNode){
 	var checkquiz = function(e){
 	  var target = jQuery(e);
 	  var form = target.parents('form');
@@ -135,18 +135,19 @@ define([], function(){
 		}
 		return false;
 	}
-	
-	jQuery('.btn_solution').click(function (){
-		checkquiz(this);
-	});
-	
-	jQuery('.btn_solution2').click(function (){
-		checkquiz2(this);
-	});
-	
-	jQuery('.btn_solution3').click(function (){
-		showsol(this);
-	});
+	jQuery(document).ready(function(){	
+                jQuery('#' + idNode).find('.btn_solution').click(function (){
+                        checkquiz(this);
+                });
+
+                jQuery('#' + idNode).find('.btn_solution2').click(function (){
+                        checkquiz2(this);
+                });
+
+                jQuery('#' + idNode).find('.btn_solution3').click(function (){
+                        showsol(this);
+                });
+        });
     }
     return res;
 });
