@@ -20,6 +20,8 @@ define([
             standbyId:   null,
             
             hasTimer:   false,
+            
+            disableOnSend: false,
 
             _timer:      null,
 
@@ -112,11 +114,8 @@ define([
              * @param {Command|Command[]} data dades per processar.
              */
             responseHandler: function (data) {
-                this.dispatcher.processResponse(data, this.processors);
                 this._stopStandby();
-//                if (this._standby) {
-//                    this._standby.hide();
-//                }
+                this.dispatcher.processResponse(data, this.processors);
             },
 
             /**
@@ -129,11 +128,8 @@ define([
              */
             errorHandler: function (error) {
                 console.error(error);
-                this.dispatcher.processError(error);
                 this._stopStandby();
-//                if (this._standby) {
-//                    this._standby.hide();
-//                }
+                this.dispatcher.processError(error);
             },
 
             sendForm: function (formObject, buttonQuery) {
@@ -146,7 +142,6 @@ define([
                 /*It sets the Standby object in a variable to be accessible from any site.
                  *The private attibute is used to control the construction of the object
                  */
-                //var standby = this._standby;
 
                 if (this.urlBase === null || this.dispatcher === null) {
                     return;
@@ -164,9 +159,7 @@ define([
                 }
                 
                 this._startStandby();
-//                if (standby) {
-//                    standby.show();
-//                }
+
                 var resp;
                 var req = this;
                 var configPost = {handleAs: "json"};
@@ -210,13 +203,9 @@ define([
                 /*It sets the Standby object in a variable to be accessible from any site.
                  *The private attibute is used to control the construction of the object
                  */
-                //var standby = this._standby;
-
                 if (this.urlBase === null || this.dispatcher === null) {
                     return;
                 }
-
-                //console.log(this.dispatcher.getGlobalState());
 
                 var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
                     (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
@@ -239,9 +228,7 @@ define([
                 }
 
                 this._startStandby();
-//                if (standby) {
-//                    standby.show();
-//                }
+
                 var resp;
                 var req = this;
                 var configPost = {handleAs: "json"};
@@ -275,6 +262,10 @@ define([
                 return resp;
             },
             
+            setStandbyId: function(id){
+                this.set("standbyId", id);
+                this._standby=null;                
+            },
             _standbyIdSetter: function(id){
                 this.standbyId=id;
                 this._standby=null;
@@ -287,6 +278,9 @@ define([
                         this._timer.start();
                     }
                 }
+                if(this.disableOnSend){
+                    this.set("disabled", true);
+                }
             },
             
             _stopStandby: function(){
@@ -295,6 +289,9 @@ define([
                 }
                 if(this.hasTimer && this._timer.isRunning){
                     this._timer.stop();
+                }      
+                if(this.disableOnSend){
+                    this.set("disabled", false);
                 }
             },
             
@@ -328,7 +325,6 @@ define([
                         this.counter++;
                         nodeCounter.innerHTML=this.counter;
                         if(outputExt.w<outputInt.w){
-                            //textSize=(textSize-30)<(outputExt.h/2)?textSize-30:outputExt.h/2;
                             textSize=textSize-outputInt.w+outputExt.w-2;
                             if(textSize>outputExt.h/2){
                                 textSize=outputExt.h/2

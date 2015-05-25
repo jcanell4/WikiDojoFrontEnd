@@ -31,23 +31,22 @@ define([
                     firstPane=1,
                     selectedPane,
                     contentCache = dispatcher.getContentCache(content.id),
-                    ret=[null, null];
+                    ret={};
 
                 if(Array.isArray(content.meta) && Object.keys(content.meta).indexOf('0')>0 ){
                     for (m in content.meta) {
-                        this._addMetainfo(content.id, content.meta[m], dispatcher, nodeMetaInfo, content.defaultSelected, ret);
+                        this._addMetainfo(content.id, content.meta[m], dispatcher, nodeMetaInfo, ret);
                     }                    
                 }else{
-                    this._addMetainfo(content.id, content.meta, dispatcher, nodeMetaInfo, false, ret);
+                    this._addMetainfo(content.id, content.meta, dispatcher, nodeMetaInfo, ret);
                 }
-
-
+                
                 selectedPane = contentCache.getCurrentId("metadataPane");
 
-                if (!selectedPane && ret[defaultSelected]) {
-                    selectedPane = ret[defaultSelected];
+                if (!selectedPane && ret.defaultSelected) {
+                    selectedPane = ret.defaultSelected;
                 } else if (!selectedPane) {
-                    selectedPane = ret[firstPane];
+                    selectedPane = ret.firstPane;
                 }
 
                 nodeMetaInfo.selectChild(selectedPane);

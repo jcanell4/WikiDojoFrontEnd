@@ -73,12 +73,14 @@ define([
                     cp,
                     //defaultSelected=0,
                     //firstPane=1,
+                    currentMetaItem,
                     currentMetaContent;
 
                 if (widgetCentral && widgetCentral.id === id) { // aquesta metainfo pertany a la pestanya activa
                     currentMetaContent = meta;
-
-                    if (!registry.byId(currentMetaContent.id)) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
+                    
+                    currentMetaItem = registry.byId(currentMetaContent.id);
+                    if (!currentMetaItem) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
 
                         // Afegim la informació extra necessaria per generar el ContentTool
                         currentMetaContent.dispatcher = dispatcher;
@@ -91,13 +93,14 @@ define([
                             ret.firstPane= cp.id;
                         }
 
-                        if (meta.defaultSelected) { //Des del servidor ens marquen aquesta opció com a defaultSelected
-                            ret.defaultSelected= cp.id;
-                        }
-
                     } else {
-                        console.error("Ja existeix un ContentTool amb aquest id.");
+                        currentMetaItem.setData(meta.content);
+                        cp=currentMetaItem;
                     }
+                    if (meta.defaultSelected) { //Des del servidor ens marquen aquesta opció com a defaultSelected
+                        ret.defaultSelected= cp.id;                        
+                    }
+                    ret.firstPane = cp.id;
                 }
             },
 
