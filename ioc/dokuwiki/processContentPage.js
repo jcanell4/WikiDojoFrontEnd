@@ -43,6 +43,7 @@ define([
     
     var res = function(id, params){
         //JSINFO.id=params.ns;
+
         listHeadings(id);
         runRender(id);   
         runQuiz(id);
@@ -113,7 +114,7 @@ define([
             var node = dom.byId(dispatcher.getGlobalState().getCurrentSectionId());
             toggleClass(dwPageUi.getAllSectionNodes(node), "section_selected", true);
         }
-        
+
     };
     return res;
 });

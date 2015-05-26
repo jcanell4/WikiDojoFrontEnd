@@ -91,7 +91,6 @@ define([
                 }
             },
 
-
             /**
              *
              * @protected
@@ -106,15 +105,18 @@ define([
              * @protected
              */
             addDocument: function () {
+
                 var id = this.id,
                     ns = this.ns,
+                    rev = this.rev,
                     contentCache = this.dispatcher.contentCache,
                     globalState = this.dispatcher.getGlobalState();
 
                 if (!contentCache[id]) {
                     contentCache[id] = new DokuwikiContent({
-                        "id": id
-                    })
+                        "id":  id,
+                        "rev": rev
+                    });
                 }
 
                 globalState.getContent(id).ns = ns;
@@ -128,9 +130,8 @@ define([
              * @param content
              */
             updateDocument: function (content) {
-                this.setData(content);
+                this.setData(content.content);
                 this.addDocument();
             }
         });
-
 });

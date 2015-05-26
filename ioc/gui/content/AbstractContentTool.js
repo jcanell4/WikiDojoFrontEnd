@@ -161,6 +161,7 @@ define([
              * @override
              */
             startup: function () {
+
                 this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
 
                 this.watch("data", function () {
