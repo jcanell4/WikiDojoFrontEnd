@@ -22,6 +22,18 @@ define([
          * @see contentToolFactory.generate()
          */
         {
+                        /**
+                * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
+                */
+               onSelect: function () {
+                   //console.log("MetaInfoContentTool#onSelect");
+                   var contentCache = this.dispatcher.getContentCache(this.docId);
+                   if (contentCache) {
+                        contentCache.setCurrentId("metadataPane", this.id)
+                   }
+                   this.inherited(arguments);
+               },
+
                 /**
                  * Accions a realitza desprès de carregar.
                  *
@@ -36,13 +48,14 @@ define([
                     this.registerToEvent(observed, "document_closed", lang.hitch(this, this._onDocumentClosed));
                     this.registerToEvent(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
                     this.registerToEvent(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
-
+                    /*
                     this.watch("selected", function (name, oldValue, newValue) {
                         var contentCache = this.dispatcher.getContentCache(this.docId);
                         if (contentCache) {
                             contentCache.setCurrentId("metadataPane", this.id)
                         }
                     });
+                    */
 
                     this.inherited(arguments);
                 },
