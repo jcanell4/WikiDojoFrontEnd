@@ -24,7 +24,7 @@ define([
                 this.inherited(arguments);
                 var nsTree = this;
                 var oc = lang.hitch(this.tree, this.tree.onClick) ;
-                this.tree.onClick = function(item, node){
+                this.tree.onClick = function(item, node){                    
                     oc(arguments);
                     nsTree.item = item;
                     nsTree.query = "id="+item.id;
