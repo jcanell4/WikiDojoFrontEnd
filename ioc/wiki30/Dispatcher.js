@@ -470,7 +470,7 @@ define([
              *
              * @param {string} id
              */
-            removeDocument: function (id) {
+            removeDocumentState: function (id) {
                 this.getGlobalState().deleteContent(id);
 
                 if (this.contentCache[id]) {

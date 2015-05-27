@@ -29,7 +29,7 @@ define([
          * Aquesta decoració modifica el ContentTool per fer la comprovació de canvis abans de tancar-se i canviar
          * el color de la pestanya a vermell si es produeixen canvis.
          *
-         * Aquesta decoració s'ha d'aplicar a un DocumentContentTool o que afegeixi un métode closeDocument() per poder
+         * Aquesta decoració s'ha d'aplicar a un DocumentContentTool o que afegeixi un métode removeState() per poder
          * realitzar la comprovació de canvis abans de tancar-se.
          *
          * @class EditorContentTool

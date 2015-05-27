@@ -67,7 +67,7 @@ define([
             }
 
             if (confirmation) {
-                this.closeDocument();
+                this.removeState();
                 this.changesManager.removeContentTool(this.id);
             }
 
