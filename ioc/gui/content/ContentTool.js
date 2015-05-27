@@ -20,19 +20,19 @@ define([
         {
             /**
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
-             *//* TO DO [Josep] NO CAL. Quan hi hagi funcionalitat ja s'escriurà
+             */
             onSelect: function () {
                 //console.log("ContentTool#onSelect");
                 this.dispatchEvent("content_selected", {id: this.id});
-            },*/
+            },
 
             /**
              * Dispara l'esdeveniment que indica que el contingut ha estat des-seleccionat.
-             *//* TO DO [Josep] NO CAL. Quan hi hagi funcionalitat ja s'escriurà
+             */
             onUnselect: function () {
                 //console.log("ContentTool#onUnselect");
                 this.dispatchEvent("content_unselected", {id: this.id});
-            }
+            },
 
             /**
              * Aquest mètode es cridat automàticament quan es realitza un canvi de mida del ContentTool.
@@ -40,11 +40,11 @@ define([
              * @param {*} args - el objecte amb els arguments pot tenir diferents hash amb informació sobre el canvi
              * sent els estandard changeSize i resultSize.
              * @see resize()
-             *//* TO DO [Josep] NO CAL. Quan hi hagi funcionalitat ja s'escriurà
+             */
             onResize: function (args) {
                 console.log("ContentTool#onResize");
                 this.inherited(arguments);
-            },*/
+            },
 
             /**
              * Aquest mètode es cridat al tancar la pestanya, per defecte retornarà true. Si volem evitar aquest
@@ -52,11 +52,11 @@ define([
              *
              * @return bool - true si volem continuar o false per evitar el tancament
              * @override
-             *//* TO DO [Josep] NO CAL. Quan hi hagi funcionalitat ja s'escriurà
+             */
             onClose: function () {
                 console.log("ContentTool#onClose");
                 return this.inherited(arguments);
-            },*/
+            },
 
             /**
              * Dins d'aquest mètode s'ha d'afegir tot el codi que volguem assegurar-nos que s'executa quan el
@@ -64,21 +64,20 @@ define([
              * listeners i enregistrament a esdeveniments.
              *
              * @protected
-             *//* TO DO [Josep] NO CAL. Quan hi hagi funcionalitat ja s'escriurà
+             */
             postLoad: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
                 this.inherited(arguments);
-            },*/
+            },
 
             /**
              * Aquest mètode es cridat automàticament quan s'afegeix el ContentTool a un ContainerContentTool
              *
              * @protected
-             *//* TO DO [Josep] NO CAL. Quan hi hagi funcionalitat ja s'escriurà
+             */
             onAttach: function () {
-                //alert("attached");
-                console.log("ContentTool#onAttach");                
-            }*/
+                //console.log("ContentTool#onAttach");                
+            }
 
         });
 });
