@@ -57,18 +57,23 @@ define([
                         title:      content.title,
                         content:    content.content,
                         closable:   true,
-                        dispatcher: dispatcher
+                        dispatcher: dispatcher,
+                        rev:        content.rev
                     },
+
 
                     contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
 
-                contentTool.setType('HTML'); //TODO[Xavi] Això podria obtenir-se de this.type;
+                contentTool.setType(content.type); //TODO[Xavi] Canviar per establir-lo a partir del que arriba del server
+
 
                 return contentTool;
             },
 
-            getAllowedTypes:   function (content) {
-                return 'HTML';
+            getAllowedTypes: function (content) {
+                return content.type; // TODO[Xavi] Amb aquesta implementació es permet sobrescriure sempre que es tracti del mateix tipus
+
+                //return 'HTML';
             }
         });
 });

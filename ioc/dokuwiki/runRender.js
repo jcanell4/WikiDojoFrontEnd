@@ -1,11 +1,16 @@
 define([], function () {
     var res = function (idBodyContent) {
-        if (!JSINFO['plugin_iocexportl']['toccontents']) {
+
+        //TODO [Josep] Sempre hauria d'haver JSINFO[plugin_iocexportl] excepte si eliminem el plugin (REVISAR)
+        if (!JSINFO['plugin_iocexportl'] || !JSINFO['plugin_iocexportl']['toccontents']) {
             $toc = jQuery('#toc__inside');
             $toc.css('display', 'none');
             $tocul = $toc.children('ul.toc');
             $tocul.css('display', 'none');
         }
+
+
+
 
         jQuery.expr[':'].parents = function (a, i, m) {
             return jQuery(a).parents(m[3]).length < 1;

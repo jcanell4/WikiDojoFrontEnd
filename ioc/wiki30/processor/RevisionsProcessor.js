@@ -46,6 +46,7 @@ define([
              * @protected
              */
             _processMetaInfo: function (content, dispatcher) {
+
                 var nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
                     widgetMetaInfo = registry.byId(this._buildContentId(content)),
                     contentTool,
@@ -68,6 +69,7 @@ define([
 
                 nodeMetaInfo.selectChild(selectedPane);
                 contentCache.setCurrentId("metadataPane", selectedPane);
+
 
                 return 0;
             },

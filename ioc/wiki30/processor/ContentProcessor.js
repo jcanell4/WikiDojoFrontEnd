@@ -103,10 +103,9 @@ define([
                     contentTool,
                     position = 0;
 
-                // TODO[Xavi] Quan es fa així les metas no s'actualitzan correctament quan s'obra una revisió
-
                 if (this.isOldContentAllowed(oldContentTool, this.getAllowedTypes(content))) {
-                    oldContentTool.updateDocument(content.content);
+                    oldContentTool.updateDocument(content);
+                    //oldContentTool.updateDocument(content.content);
                     //console.log("ALLOWED");
 
                 } else {
@@ -139,6 +138,7 @@ define([
                 }
 
                 oldContentToolType = oldContentTool.getType();
+
 
                 if (typeof allowedTypes === 'string' && oldContentTool.getType() == allowedTypes) {
                     return true;

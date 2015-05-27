@@ -362,12 +362,12 @@ define([
              * @returns {number} sempre es 0
              */
             processResponse: function (response, processors) {
-                // TODO[Xavi] canviar req per that per fer més clara la intenció
                 var req = this;
 
-                if (Array.isArray(response)) {
 
+                if (Array.isArray(response)) {
                     array.some(response, function (responseItem) {
+
                         var result = req._processResponse(responseItem, processors);
                         return result != 0; // Surt del bucle quan es true
                     });
@@ -391,6 +391,8 @@ define([
              * @private
              */
             _processResponse: function (response, processors) {
+
+                //console.log("Processant:", response);
                 var result;
 
                 if (processors && processors[response.type]) {
@@ -452,7 +454,7 @@ define([
              * @param content
              */
             addDocument: function (content) {
-                console.log('addDocument', content);
+
                 if (!this.contentCache[content.id]) {
 
                     this.contentCache[content.id] = new DokuwikiContent({
@@ -460,18 +462,7 @@ define([
                     })
                 }
 
-                console.log("que hi ha al content cache?", this.contentCache[content.id]);
-
-                //if (!this.getGlobalState().pages[content.id]) {
-                //    this.getGlobalState().pages[content.id] = {};
-                //}
-
                 this.getGlobalState().getContent(content.id).ns = content.ns;
-
-                console.log("Al ispatcher el global state conté:", this.getGlobalState().getContent(content.id));
-                //this.getGlobalState().currentTabId = content.id;
-
-                //console.log('surt de addDocument', content);
             },
 
             /**
