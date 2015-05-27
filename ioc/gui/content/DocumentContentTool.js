@@ -22,6 +22,8 @@ define([
          * @see contentToolFactory.generate()
          */
         {
+            updating: false,
+                    
             /**
              * Aquest mètode es cridat automàticament al descarregar-se el ContentTool, en aquest cas s'encarrega
              * de que es faci el tancament adequat.
@@ -31,13 +33,12 @@ define([
              * @override
              */
             onUnload: function () {
+                console.log("DocumentContentTool#onUnload");                
                 var isCached = this.dispatcher.getGlobalState().getContent(this.id).ns;
 
-                if (isCached) {
+                if (!this.updating && isCached) {
                     this.closeDocument();
                 }
-
-
             },
 
             /**
@@ -65,6 +66,7 @@ define([
              * @override
              */
             onSelect: function () {
+                console.log("DocumentContentTool#onSelect");                
                 this.setCurrentDocument();
                 this.dispatcher.getInfoManager().refreshInfo(this.id);
                 this.dispatchEvent("document_selected", {id: this.id});
@@ -80,6 +82,7 @@ define([
              * @override
              */
             onUnselect: function () {
+                console.log("DocumentContentTool#onUnselect");                
                 this.dispatchEvent("document_unselected", {id: this.id});
             },
 
@@ -97,6 +100,7 @@ define([
              * @override
              */
             onAttach: function () {
+                console.log("DocumentContentTool#onAttach");                
                 this.addDocument();
                 this.inherited(arguments);
             },
@@ -130,8 +134,10 @@ define([
              * @param content
              */
             updateDocument: function (content) {
+                this.updating = true;
                 this.setData(content.content);
                 this.addDocument();
+                this.updating = false;
             }
         });
 });
