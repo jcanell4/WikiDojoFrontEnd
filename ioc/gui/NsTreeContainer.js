@@ -1,22 +1,16 @@
 
 define([
     "dojo/_base/declare", // declare
-    "dojo/query",
     "dojo/text!./templates/ContentTabDokuwikiNsTree.html",
     "dijit/layout/ContentPane",
     'dijit/layout/_LayoutWidget',
     'dijit/_TemplatedMixin',
     "dojo/store/JsonRest",
     "dijit/Tree",
-    "dojo/aspect",
     "dijit/tree/ObjectStoreModel",
-    "ioc/wiki30/dispatcherSingleton",
-    "dijit/Dialog",
-    "dijit/form/Button",
     "dojo/NodeList-dom" // NodeList.style
-
-], function (declare, query, template, ContentPane, _LayoutWidget, _TemplatedMixin, JsonRest, Tree, aspect,
-             ObjectStoreModel, dispatcher, Dialog, Button) {
+], function (declare, template, ContentPane, _LayoutWidget, _TemplatedMixin, 
+                JsonRest, Tree, ObjectStoreModel) {
     var ret = declare([ContentPane, _TemplatedMixin, _LayoutWidget],
 
         /**
@@ -87,14 +81,14 @@ define([
                     }
                     
                 });
-                var tree = this.tree;
-                //           this.tree.model.store.query(this.getSectok());
-                aspect.after(this.tree, "_adjustWidths", function () {
-                    //               tree._adjustWidths();
-                    var parentNode = tree.domNode.parentNode;
-                    var node = query(".dijitTreeRow", tree.domNode)[0];
-                    parentNode.style.width = "" + node.offsetWidth + "px";
-                }, true);
+//                var tree = this.tree;
+//                //           this.tree.model.store.query(this.getSectok());
+//                aspect.after(this.tree, "_adjustWidths", function () {
+//                    //               tree._adjustWidths();
+//                    var parentNode = tree.domNode.parentNode;
+//                    var node = query(".dijitTreeRow", tree.domNode)[0];
+//                    parentNode.style.width = "" + node.offsetWidth + "px";
+//                }, true);
 
                 this.tree.openOnClick= self.openOnClick && !this.processOnClickAndOpenOnClick;
                     
@@ -102,11 +96,11 @@ define([
                 this.updateSectok();
             },
 
-            /** @override */
-            updateRendering: function () {
-                this.inherited(arguments);
-                this.tree._adjustWidths();
-            },
+//            /** @override */
+//            updateRendering: function () {
+//                this.inherited(arguments);
+//                this.tree._adjustWidths();
+//            },
 
             /** @override */
             startup: function () {
