@@ -74,6 +74,10 @@ define([
                 return content.type; // TODO[Xavi] Amb aquesta implementació es permet sobrescriure sempre que es tracti del mateix tipus
 
                 //return 'HTML';
+            },
+
+            isTypeAllowed: function () {
+
             }
         });
 });

@@ -11,6 +11,8 @@ define([
          * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
          * en el futur.
          *
+         *
+         *
          * @class ContentTool
          * @extends AbstractContentTool
          * @author Xavier García <xaviergaro.dev@gmail.com>

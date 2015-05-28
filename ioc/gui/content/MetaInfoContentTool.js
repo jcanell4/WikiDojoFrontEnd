@@ -48,14 +48,6 @@ define([
                     this.registerToEvent(observed, "destroy", lang.hitch(this, this._onContentDestroyed));
                     this.registerToEvent(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
                     this.registerToEvent(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
-                    /*
-                    this.watch("selected", function (name, oldValue, newValue) {
-                        var contentCache = this.dispatcher.getContentCache(this.docId);
-                        if (contentCache) {
-                            contentCache.setCurrentId("metadataPane", this.id)
-                        }
-                    });
-                    */
 
                     this.inherited(arguments);
                 },
