@@ -31,6 +31,7 @@ define([
              * @override
              */
             onUnload: function () {
+                console.log("DocumentContentTool#onUnload");
                 var isCached = this.dispatcher.getGlobalState().getContent(this.id).ns;
 
                 if (isCached) {
@@ -65,6 +66,7 @@ define([
              * @override
              */
             onSelect: function () {
+                console.log("DocumentContentTool#onSelect");
                 this.setCurrentDocument();
                 this.dispatcher.getInfoManager().refreshInfo(this.id);
                 this.dispatchEvent("document_selected", {id: this.id});
@@ -80,6 +82,7 @@ define([
              * @override
              */
             onUnselect: function () {
+                console.log("DocumentContentTool#onUnselect");
                 this.dispatchEvent("document_unselected", {id: this.id});
             },
 
@@ -97,6 +100,7 @@ define([
              * @override
              */
             onAttach: function () {
+                console.log("DocumentContentTool#onAttach");
                 this.addDocument();
                 this.inherited(arguments);
             },

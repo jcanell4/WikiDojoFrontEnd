@@ -22,7 +22,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
              */
             onSelect: function () {
-                //console.log("ContentTool#onSelect");
+                console.log("ContentTool#onSelect");
                 this.dispatchEvent("content_selected", {id: this.id});
             },
 
@@ -30,7 +30,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat des-seleccionat.
              */
             onUnselect: function () {
-                //console.log("ContentTool#onUnselect");
+                console.log("ContentTool#onUnselect");
                 this.dispatchEvent("content_unselected", {id: this.id});
             },
 
@@ -76,7 +76,7 @@ define([
              * @protected
              */
             onAttach: function () {
-                //console.log("ContentTool#onAttach");                
+                console.log("ContentTool#onAttach");                
             }
 
         });

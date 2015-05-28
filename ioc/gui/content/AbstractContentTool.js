@@ -73,7 +73,7 @@ define([
              */
             onShow: function () {
                 this.onSelect();
-                //console.log("AbstractContentTool#onShow");
+                console.log("AbstractContentTool#onShow");
             },
 
             /**
@@ -86,7 +86,7 @@ define([
              */
             onHide: function () {
                 this.onUnselect();
-                //console.log("AbstractContentTool#onHide");
+                console.log("AbstractContentTool#onHide");
             },
 
 
@@ -94,7 +94,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
              */
             onSelect: function () {
-                //console.log("AbstractContentTool#onSelect");
+                console.log("AbstractContentTool#onSelect");
                 this.dispatchEvent("content_selected", {id: this.id});
             },
 
@@ -102,7 +102,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat des-seleccionat.
              */
             onUnselect: function () {
-                //console.log("AbstractContentTool#onUnselect");
+                console.log("AbstractContentTool#onUnselect");
                 this.dispatchEvent("content_unselected", {id: this.id});
             },
 
@@ -115,7 +115,7 @@ define([
              */
             onResize: function (args) {
                 // Per defecte no fa res especial
-                //console.log("AbstractContentTool#onResizie(", args, ")");
+                console.log("AbstractContentTool#onResizie(", args, ")");
             },
 
             /**
@@ -180,7 +180,7 @@ define([
              * @override
              */
             onClose: function () {
-                //console.log("AbstractContentTool#onClose");
+                console.log("AbstractContentTool#onClose");
                 return true;
             },
 
@@ -203,7 +203,7 @@ define([
              */
             onLoad: function () {
                 // TODO[Xavi] Aquì s'han d'afegir els watchers i listeners comuns
-                //console.log("AbstractContentTool#onLoad");
+                console.log("AbstractContentTool#onLoad");
                 this.postLoad();
             },
 
@@ -317,7 +317,7 @@ define([
              * @protected
              */
             onAttach: function () {
-                //console.log("AbstractContentTool#onAttach");
+                console.log("AbstractContentTool#onAttach");
             }
         });
 });
