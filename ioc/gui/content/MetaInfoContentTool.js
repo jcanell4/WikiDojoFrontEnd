@@ -45,7 +45,7 @@ define([
 
                     var observed = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
-                    this.registerToEvent(observed, "document_closed", lang.hitch(this, this._onDocumentClosed));
+                    this.registerToEvent(observed, "destroy", lang.hitch(this, this._onContentDestroyed));
                     this.registerToEvent(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
                     this.registerToEvent(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
                     /*
@@ -65,7 +65,7 @@ define([
                  *
                  * @private
                  */
-                _onDocumentClosed: function (data) {
+                _onContentDestroyed: function (data) {
 
                     if (data.id == this.docId) {
                         this.removeContentTool();

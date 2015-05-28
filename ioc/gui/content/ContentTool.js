@@ -19,6 +19,14 @@ define([
          */
         {
             /**
+             * Dispara l'esdeveniment que indica que el ContentToool esta a punt de destruir-se
+             * Previament a la seva execusió es llança la subscripció del succés anomenat "destroy".
+             */
+            onDestroy: function () {
+                //console.log("ContentTool#onDestroy");
+            },
+
+            /**
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
              */
             onSelect: function () {
@@ -42,8 +50,7 @@ define([
              * @see resize()
              */
             onResize: function (args) {
-                console.log("ContentTool#onResize");
-                this.inherited(arguments);
+                //console.log("ContentTool#onResize");
             },
 
             /**
@@ -54,8 +61,8 @@ define([
              * @override
              */
             onClose: function () {
-                console.log("ContentTool#onClose");
-                return this.inherited(arguments);
+                //console.log("ContentTool#onClose");
+                return true;
             },
 
             /**

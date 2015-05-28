@@ -140,8 +140,14 @@ define([
              *
              * Chained before
              */
-            onUnload: function () {
+            _onDestroy: function () {
+//                console.log("EventObserver#_onDestroy");
+                this.onDestroy();
                 this.unregisterFromEvents();
+            },
+            
+            onDestroy:function(){                
+//                console.log("EventObserver#_onDestroy");
             }
         })
 });

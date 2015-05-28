@@ -2,8 +2,10 @@ define([
     "dojo/_base/declare", // declare
     "ioc/wiki30/Request",
     "ioc/gui/NsTreeContainer",
+    "dojo/aspect",    
+    "dojo/query",
     "dojo/_base/lang"
-], function (declare, Request, NsTreeContainer, lang) {
+], function (declare, Request, NsTreeContainer, aspect, query, lang) {
     var ret = declare("ioc.gui.ContentTabDokuwikiNsTree", [NsTreeContainer, Request],
 
         /**
@@ -30,7 +32,18 @@ define([
                     nsTree.query = "id="+item.id;
                     nsTree.sendRequest();
                 };
-            }
+                var tree = this.tree;
+                aspect.after(this.tree, "_adjustWidths", function () {
+                    var parentNode = tree.domNode.parentNode;
+                    var node = query(".dijitTreeRow", tree.domNode)[0];
+                    parentNode.style.width = "" + node.offsetWidth + "px";
+                }, true);
+            },
+            /** @override */
+            updateRendering: function () {
+                this.inherited(arguments);
+                this.tree._adjustWidths();
+            },                    
         });
     return ret;
 });
