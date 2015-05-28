@@ -31,12 +31,12 @@ define([
              * @override
              */
             onDestroy: function () {
-                //console.log("DocumentContentTool#onDestroy"); 
-                var isCached = this.dispatcher.getGlobalState().getContent(this.id).ns;
+                console.log("DocumentContentTool#onDestroy");
+                //var isCached = this.dispatcher.getGlobalState().getContent(this.id).ns;
 
-                if (isCached) {
+                //if (isCached) {
                     this.removeState();
-                }
+                //}
             },
 
             /**
@@ -52,7 +52,6 @@ define([
                     this.dispatcher.getGlobalState().currentTabId = null;
                 }
 
-
                 this.dispatcher.removeDocumentState(this.id);
                 //this.dispatchEvent('document_closed', {id: this.id});
                 this.dispatcher.updateFromState();
@@ -64,7 +63,6 @@ define([
              * @override
              */
             onSelect: function () {
-                //console.log("DocumentContentTool#onSelect");                
                 this.setCurrentDocument();
                 this.dispatcher.getInfoManager().refreshInfo(this.id);
                 this.dispatchEvent("document_selected", {id: this.id});

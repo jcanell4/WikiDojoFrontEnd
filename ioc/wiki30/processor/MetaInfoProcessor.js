@@ -49,8 +49,8 @@ define([
                 nodeMetaInfo.clearContainer(content.id);
                 contentCache.setCurrentId("metadataPane", null);
 
-
                 for (m in content.meta) {
+                    //console.log("Meta type:", content.meta[m].type);
                     this._addMetainfo(content.id, content.meta[m], dispatcher, nodeMetaInfo, ret);
                 }
 
