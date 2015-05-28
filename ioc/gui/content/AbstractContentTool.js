@@ -117,8 +117,7 @@ define([
              * @see resize()
              */
             onResize: function (args) {
-                // Per defecte no fa res especial
-                console.log("AbstractContentTool#onResize(", args, ")");
+                //console.log("AbstractContentTool#_onResize(", args, ")");
             },
 
             /**
@@ -183,7 +182,7 @@ define([
              * @override
              */
             onClose: function () {
-                console.log("AbstractContentTool#onClose");
+                //console.log("AbstractContentTool#onClose");
                 return true;
             },
 
@@ -196,6 +195,7 @@ define([
             setData: function (data) {
                 this.updating = true;
                 this.set('data', data);
+                this.dispatchEvent("data_replaced", {id: this.id});
                 this.updating = false;
             },
 
@@ -333,7 +333,7 @@ define([
             },
             
             _destroyContentTool: function(){
-                this.dispatchEvent('destroyed', {id: this.id});
+                this.dispatchEvent('destroy', {id: this.id});
                 this._onDestroy();
             },
         });

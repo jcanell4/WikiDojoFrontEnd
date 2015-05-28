@@ -31,7 +31,7 @@ define([
              * @override
              */
             onDestroy: function () {
-                console.log("DocumentContentTool#onDestroy"); 
+                //console.log("DocumentContentTool#onDestroy"); 
                 var isCached = this.dispatcher.getGlobalState().getContent(this.id).ns;
 
                 if (isCached) {
@@ -64,7 +64,7 @@ define([
              * @override
              */
             onSelect: function () {
-                console.log("DocumentContentTool#onSelect");                
+                //console.log("DocumentContentTool#onSelect");                
                 this.setCurrentDocument();
                 this.dispatcher.getInfoManager().refreshInfo(this.id);
                 this.dispatchEvent("document_selected", {id: this.id});
@@ -100,7 +100,6 @@ define([
             onAttach: function () {
                 console.log("DocumentContentTool#onAttach");                
                 this.addDocument();
-                this.inherited(arguments);
             },
 
             /**

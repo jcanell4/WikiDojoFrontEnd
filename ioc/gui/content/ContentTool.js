@@ -19,10 +19,18 @@ define([
          */
         {
             /**
+             * Dispara l'esdeveniment que indica que el ContentToool esta a punt de destruir-se
+             * Previament a la seva execusió es llança l'esdeveniment del EventObserver anomenat "destroy".
+             */
+            onDestroy: function () {
+                //console.log("ContentTool#onDestroy");
+            },
+
+            /**
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
              */
             onSelect: function () {
-                console.log("ContentTool#onSelect");
+                //console.log("ContentTool#onSelect");
                 this.dispatchEvent("content_selected", {id: this.id});
             },
 
@@ -30,7 +38,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat des-seleccionat.
              */
             onUnselect: function () {
-                console.log("ContentTool#onUnselect");
+                //console.log("ContentTool#onUnselect");
                 this.dispatchEvent("content_unselected", {id: this.id});
             },
 
@@ -42,8 +50,7 @@ define([
              * @see resize()
              */
             onResize: function (args) {
-                console.log("ContentTool#onResize");
-                this.inherited(arguments);
+                //console.log("ContentTool#onResize");
             },
 
             /**
@@ -54,8 +61,8 @@ define([
              * @override
              */
             onClose: function () {
-                console.log("ContentTool#onClose");
-                return this.inherited(arguments);
+                //console.log("ContentTool#onClose");
+                return true;
             },
 
             /**
@@ -76,7 +83,7 @@ define([
              * @protected
              */
             onAttach: function () {
-                console.log("ContentTool#onAttach");                
+                //console.log("ContentTool#onAttach");                
             }
 
         });
