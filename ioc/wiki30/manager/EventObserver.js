@@ -141,13 +141,13 @@ define([
              * Chained before
              */
             _onDestroy: function () {
-                console.log("EventObserver#_onDestroy");
+//                console.log("EventObserver#_onDestroy");
                 this.onDestroy();
                 this.unregisterFromEvents();
             },
             
             onDestroy:function(){                
-                console.log("EventObserver#_onDestroy");
+//                console.log("EventObserver#_onDestroy");
             }
         })
 });
