@@ -31,12 +31,8 @@ define([
              * @override
              */
             onDestroy: function () {
-                console.log("DocumentContentTool#onDestroy");
-                //var isCached = this.dispatcher.getGlobalState().getContent(this.id).ns;
-
-                //if (isCached) {
-                    this.removeState();
-                //}
+                //console.log("DocumentContentTool#onDestroy");
+                this.removeState();
             },
 
             /**
@@ -78,7 +74,7 @@ define([
              * @override
              */
             onUnselect: function () {
-//                console.log("DocumentContentTool#onUnselect");                
+                //                console.log("DocumentContentTool#onUnselect");
                 this.dispatchEvent("document_unselected", {id: this.id});
             },
 
@@ -96,7 +92,7 @@ define([
              * @override
              */
             onAttach: function () {
-//                console.log("DocumentContentTool#onAttach");                
+                //                console.log("DocumentContentTool#onAttach");
                 this.addDocument();
             },
 

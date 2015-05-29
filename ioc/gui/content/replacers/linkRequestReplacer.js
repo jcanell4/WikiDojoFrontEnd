@@ -23,6 +23,8 @@ define(["dojo/_base/event",
     }
 
     /**
+     * Reemplaça el comportament del enllaços del node passat com argument per una crida ajax.
+     *
      * Es crea un backup del urlBase original abans d'establir el propi.
      *
      * @params {trigger: string, request: {Request}, urlBase: string, standbyTarget: string?} params: el trigger te el format: 'click', 'mouseover', etc.

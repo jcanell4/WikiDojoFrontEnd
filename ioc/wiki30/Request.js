@@ -11,39 +11,39 @@ define([
     "dojo/dom-style",
     "dojo/dom"
 ], function (declare, Standby, request, iframe, dispatcherSingleton, Stateful
-                , timing, domConstruct, domGeom, style, dom) {
+    , timing, domConstruct, domGeom, style, dom) {
     var ret = declare([Stateful],
         /**
          * @class Request
          */
         {
-            standbyId:   null,
-            
-            hasTimer:   false,
-            
+            standbyId: null,
+
+            hasTimer: false,
+
             disableOnSend: false,
 
-            _timer:      null,
+            _timer: null,
 
-            urlBase:     null,
+            urlBase: null,
 
-            method:      "post",
+            method: "post",
 
-            dispatcher:  dispatcherSingleton,
+            dispatcher: dispatcherSingleton,
 
-            _standby:    null,
+            _standby: null,
 
-            sectokId:    null,
+            sectokId: null,
 
             sectokParam: "sectok",
 
-            query:       "",
+            query: "",
 
-            processors:  null,
+            processors: null,
 
-            content:     null,
-            
-            constructor: function(){
+            content: null,
+
+            constructor: function () {
                 this._initTimer();
             },
 
@@ -148,8 +148,8 @@ define([
                 }
                 var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
                     (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
-                var vUrl = this.urlBase;               
-                if(buttonQuery){
+                var vUrl = this.urlBase;
+                if (buttonQuery) {
                     vUrl += linkChar + buttonQuery;
                     linkChar = "&";
                 }
@@ -157,7 +157,7 @@ define([
                 if (gSect) {
                     vUrl += linkChar + this.sectokParam + "=" + gSect;
                 }
-                
+
                 this._startStandby();
 
                 var resp;
@@ -168,7 +168,7 @@ define([
                 }
                 configPost.form = formObject;
                 configPost.data = {iframe: 1};
-                
+
                 resp = iframe.post(vUrl, configPost).then(
                     function (data) {
                         return req.responseHandler(data);
@@ -176,9 +176,9 @@ define([
                         return req.errorHandler(error);
                     }
                 );
-                return resp;                
+                return resp;
             },
-            
+
             /**
              * Realitzar una petició ajax, pot ser només una ordre o més d'una per exemple:
              *      'id=start'
@@ -261,78 +261,81 @@ define([
 
                 return resp;
             },
-            
-            setStandbyId: function(id){
+
+            setStandbyId:     function (id) {
                 this.set("standbyId", id);
-                this._standby=null;                
+                this._standby = null;
             },
-            _standbyIdSetter: function(id){
-                this.standbyId=id;
-                this._standby=null;
+            _standbyIdSetter: function (id) {
+                this.standbyId = id;
+                this._standby = null;
             },
-            
-            _startStandby: function(){
-                if(this._standby){
+
+            _startStandby: function () {
+                if (this._standby) {
                     this._standby.show();
-                    if(this.hasTimer){
+                    if (this.hasTimer) {
                         this._timer.start();
                     }
                 }
-                if(this.disableOnSend){
+                if (this.disableOnSend) {
                     this.set("disabled", true);
                 }
             },
-            
-            _stopStandby: function(){
-                if(this._standby){
-                   this._standby.hide();
+
+            _stopStandby: function () {
+                if (this._standby) {
+                    this._standby.hide();
                 }
-                if(this.hasTimer && this._timer.isRunning){
+                if (this.hasTimer && this._timer.isRunning) {
                     this._timer.stop();
-                }      
-                if(this.disableOnSend){
+                }
+                if (this.disableOnSend) {
                     this.set("disabled", false);
                 }
             },
-            
-            _initTimer:function(){
-                var counterDiv=null;
+
+            _initTimer: function () {
+                var counterDiv = null;
                 var self = this;
                 var textSize;
                 this._timer = new timing.Timer(1000);
-                this._timer.counter= 0;
-                this._timer.onStop = function(){
+                this._timer.counter = 0;
+                this._timer.onStop = function () {
                     domConstruct.destroy(counterDiv);
-                    counterDiv=null;
-                }
-                this._timer.onStart = function(){                   
-                    this.counter=0;
-                    if(self._standby){
+                    counterDiv = null;
+                };
+
+                this._timer.onStart = function () {
+                    this.counter = 0;
+                    if (self._standby) {
                         var output = domGeom.getContentBox(self.standbyId, style.getComputedStyle(self.standbyId));
-                        textSize=output.w<(output.h/2)?output.w:output.h/2;
+                        textSize = output.w < (output.h / 2) ? output.w : output.h / 2;
                         counterDiv = domConstruct.toDom(
                             "<div style='text-align: center;vertical-align: middle;"
-                            +"height: 100%;'><span id='counter_"+self.standbyId
-                            + "' style='font-size:"+(textSize)+"px;'>"+this.counter+"</span></div>"
+                            + "height: 100%;'><span id='counter_" + self.standbyId
+                            + "' style='font-size:" + (textSize) + "px;'>" + this.counter + "</span></div>"
                         );
                         domConstruct.place(counterDiv, self.standbyId);
                     }
                 };
-                this._timer.onTick= function(){
-                        var nodeCounter = dom.byId("counter_"+ self.standbyId);
-                        var outputExt = domGeom.getContentBox(self.standbyId, style.getComputedStyle(self.standbyId));
-                        var outputInt = domGeom.getContentBox(nodeCounter, style.getComputedStyle(nodeCounter));
-                        this.counter++;
-                        nodeCounter.innerHTML=this.counter;
-                        if(outputExt.w<outputInt.w){
-                            textSize=textSize-outputInt.w+outputExt.w-2;
-                            if(textSize>outputExt.h/2){
-                                textSize=outputExt.h/2
-                            }
-                            nodeCounter.style["font-size"] = "" + (textSize) + "px";
+
+                this._timer.onTick = function () {
+                    var nodeCounter = dom.byId("counter_" + self.standbyId);
+                    var outputExt = domGeom.getContentBox(self.standbyId, style.getComputedStyle(self.standbyId));
+                    var outputInt = domGeom.getContentBox(nodeCounter, style.getComputedStyle(nodeCounter));
+                    this.counter++;
+                    nodeCounter.innerHTML = this.counter;
+                    if (outputExt.w < outputInt.w) {
+                        textSize = textSize - outputInt.w + outputExt.w - 2;
+                        if (textSize > outputExt.h / 2) {
+                            textSize = outputExt.h / 2
                         }
-                };               
-            }                        
+                        nodeCounter.style["font-size"] = "" + (textSize) + "px";
+                    }
+                };
+            },
+
         });
     return ret;
 });

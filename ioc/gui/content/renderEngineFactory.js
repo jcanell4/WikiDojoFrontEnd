@@ -7,9 +7,8 @@
  */
 define([
     "ioc/gui/content/engines/standardRenderEngine",
-    "ioc/gui/content/engines/revisionRenderEngine",
-    "ioc/gui/content/engines/diffRenderEngine"
-], function (standardRenderEngine, revisionRenderEngine, diffRenderEngine) {
+    "ioc/gui/content/engines/revisionRenderEngine"
+], function (standardRenderEngine, revisionRenderEngine) {
 
 
     var /** @type function */
@@ -47,7 +46,6 @@ define([
         _init = function () {
             _addRenderEngine('revisions', revisionRenderEngine);
             _addRenderEngine('standard', standardRenderEngine);
-            _addRenderEngine('diff', diffRenderEngine);
             defaultRenderEngine = _getRenderEngine('standard');
         };
 

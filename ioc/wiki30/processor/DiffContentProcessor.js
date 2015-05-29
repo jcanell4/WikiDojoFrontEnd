@@ -24,6 +24,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                //console.log(value.content);
                 return this.inherited(arguments);
             },
 
