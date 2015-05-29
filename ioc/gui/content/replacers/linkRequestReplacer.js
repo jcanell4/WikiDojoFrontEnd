@@ -8,12 +8,24 @@
 define(["dojo/_base/event",
     "dojo/dom-attr",
     "dojo/dom",
-    "dojo/on"
-], function (event, domAttr, dom, on) {
+    "dojo/on",
+    "dojox/widget/Standby"
+], function (event, domAttr, dom, on, Standby) {
+
+
+    function _startStandBy(request) {
+        var standbyId = request.standbyId || request.dispatcher.containerNodeId;
+
+        request._standby = new Standby({target: standbyId});
+        document.body.appendChild(request._standby.domNode);
+        request._standby.startup();
+
+    }
+
     /**
      * Es crea un backup del urlBase original abans d'establir el propi.
      *
-     * @params {trigger: string, request: {Request}, urlBase: string} params: el trigger te el format: 'click', 'mouseover', etc.
+     * @params {trigger: string, request: {Request}, urlBase: string, standbyTarget: string?} params: el trigger te el format: 'click', 'mouseover', etc.
      */
     return function (params) {
         var query = null,
@@ -22,18 +34,29 @@ define(["dojo/_base/event",
 
         on(node, 'a:' + params.trigger, function (e) {
             var arr = domAttr.get(this, "href").split("?"),
-                originalUrlBase = params.request.urlBase; //TODO[Xavi] es innecessari perquè sempre es null
+                originalUrlBase = params.request.urlBase,
+                call = domAttr.get(this, "data-call"),
+                pattern = /(call=page)[^&]?/;
 
-            params.request.urlBase = params.urlBase;
+            if (call) {
+                params.request.urlBase = params.urlBase.replace(pattern, 'call=' + call);
+            } else {
+                params.request.urlBase = params.urlBase;
+            }
 
             if (arr.length > 1) {
                 query = arr[1];
             }
 
+            params.request.setStandbyId(params.standbyTarget);
+
+            _startStandBy(params.request);
+
             params.request.sendRequest(query);
+
             event.stop(e);
 
-            params.request.urlBase = originalUrlBase; //TODO[Xavi] es innecessari perquè sempre es null
+            params.request.urlBase = originalUrlBase;
         });
 
     }

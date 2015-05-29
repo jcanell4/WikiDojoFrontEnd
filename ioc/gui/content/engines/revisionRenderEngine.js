@@ -20,11 +20,11 @@ define([], function () {
         for (var i in data) {
 
             linkRev = '?id=' + data[i]['id'] + "&rev=" + i;
-            linkDiff = '?id=' + data[i]['id'] + "&rev=" + i + "&do=diff";
+            linkDiff = '?id=' + data[i]['id'] + "&rev=" + i;
 
             html += '<tr>';
             html += '<td><a href="' + linkRev + '">' + data[i]['date'] + '</a></td>';
-            html += '<td><a href="' + linkDiff + '">';
+            html += '<td><a href="' + linkDiff + '" data-call="diff">';
             html += '<img width="15" height="11" alt="Mostra diferències amb la versió actual"';
             html += 'title="Mostra diferències amb la versió actual" src="/iocjslib/ioc/gui/img/diff.png" />';
             html += '</a></td>';

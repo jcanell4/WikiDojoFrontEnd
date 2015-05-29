@@ -32,7 +32,8 @@ define([
     "ioc/wiki30/processor/RevisionsProcessor",
     "ioc/wiki30/processor/ExtraContentStateProcessor",
     "ioc/wiki30/processor/ExtraMetaInfoProcessor",
-    "ioc/wiki30/DokuwikiContent"
+    "ioc/wiki30/DokuwikiContent",
+    "ioc/wiki30/processor/DiffContentProcessor",
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor,
              MetaInfoProcessor,MetaMediaInfoProcessor,MediaDetailsProcessor,
@@ -42,7 +43,7 @@ define([
              CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
              RevisionsProcessor,ExtraContentStateProcessor, ExtraMetaInfoProcessor,
-             DokuwikiContent) {
+             DokuwikiContent,DiffContentProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -149,6 +150,7 @@ define([
                 this.processors["revisions"] = new RevisionsProcessor();
                 this.processors["extraContentState"] = new ExtraContentStateProcessor();
                 this.processors["extra_metainfo"] = new ExtraMetaInfoProcessor();
+                this.processors["diff"] = new DiffContentProcessor();
             },
 
             /**
