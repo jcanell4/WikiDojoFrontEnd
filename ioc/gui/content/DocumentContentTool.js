@@ -31,14 +31,8 @@ define([
              * @override
              */
             onDestroy: function () {
-                //console.log("DocumentContentTool#onDestroy"); 
-            onUnload: function () {
-                console.log("DocumentContentTool#onUnload");
-                var isCached = this.dispatcher.getGlobalState().getContent(this.id).ns;
-
-                if (isCached) {
-                    this.removeState();
-                }
+                //console.log("DocumentContentTool#onDestroy");
+                this.removeState();
             },
 
             /**
@@ -54,7 +48,6 @@ define([
                     this.dispatcher.getGlobalState().currentTabId = null;
                 }
 
-
                 this.dispatcher.removeDocumentState(this.id);
                 //this.dispatchEvent('document_closed', {id: this.id});
                 this.dispatcher.updateFromState();
@@ -66,7 +59,6 @@ define([
              * @override
              */
             onSelect: function () {
-                //console.log("DocumentContentTool#onSelect");                
                 this.setCurrentDocument();
                 this.dispatcher.getInfoManager().refreshInfo(this.id);
                 this.dispatchEvent("document_selected", {id: this.id});
@@ -82,7 +74,7 @@ define([
              * @override
              */
             onUnselect: function () {
-//                console.log("DocumentContentTool#onUnselect");                
+                //                console.log("DocumentContentTool#onUnselect");
                 this.dispatchEvent("document_unselected", {id: this.id});
             },
 
@@ -100,7 +92,7 @@ define([
              * @override
              */
             onAttach: function () {
-//                console.log("DocumentContentTool#onAttach");                
+                //                console.log("DocumentContentTool#onAttach");
                 this.addDocument();
             },
 

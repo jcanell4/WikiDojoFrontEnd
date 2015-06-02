@@ -88,20 +88,20 @@ define([
                         id:         this._buildContentId(content),
                         title:      'Revisions (' + count + ')',
                         data:       content.revisions,
-                        type:       'revisions', // TODO[Xavi] Això ha de passar-se desde el server
+                        type:       content.type,
+                        //type:       'revisions', // TODO[Xavi] Això ha de passar-se desde el server
                         dispatcher: content.dispatcher,
-                        docId:      content.id,
-                        action:     'view'
+                        docId:      content.id
                     },
 
                     argsRequestLink = {
-                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=page" // TODO[Xavi] aquest valor ha d'arribar des de el servidor
+                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=page" // TODO[Xavi] aquest valor ha d'arribar des de el servidor?
                     };
 
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
                     .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink);
-//                    .decorate(contentToolFactory.decoration.META);
+                //                    .decorate(contentToolFactory.decoration.META);
             },
 
             /**

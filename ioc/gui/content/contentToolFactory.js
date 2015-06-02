@@ -290,7 +290,8 @@ define([
                     decoration = new RequestContentToolDecoration(args);
                     decoration.addReplacer('link', requestReplacerFactory.getRequestReplacer('link'), {
                         trigger: "click",
-                        urlBase: args.urlBase
+                        urlBase: args.urlBase,
+                        standbyTarget: args.standbyTarget
                     });
                     break;
 
@@ -299,7 +300,8 @@ define([
                     decoration.addReplacer('form', requestReplacerFactory.getRequestReplacer('form'), {
                         trigger: "click",
                         urlBase: args.urlBase,
-                        form:    args.form
+                        form:    args.form,
+                        standbyTarget: args.standbyTarget
                     });
                     break;
 

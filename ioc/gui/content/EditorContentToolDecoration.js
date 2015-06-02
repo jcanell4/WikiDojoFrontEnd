@@ -152,6 +152,42 @@ define([
                 }
 
                 return content;
+            },
+
+
+            /**
+             * Al ser seleccionat aquest ContentTool estableix l'editor com a sel·leccionat.
+             *
+             * La primera vegada que es selecciona el content tool encara no es troba carregat al ContentCache per això
+             * s'ha de fer la comprovació.
+             *
+             * @override
+             */
+            onSelect: function () {
+                var contentCache = this.dispatcher.getContentCache(this.id);
+
+                if (contentCache && contentCache.getEditor()) {
+                    this.dispatcher.getContentCache(this.id).getEditor().select();
+                }
+
+                this.inherited(arguments);
+            },
+
+            /**
+             * Al ser des-seleccionat aquest ContentTool es des-selecciona l'editor.
+             *
+             * Ens assegurem que existeix l'editor abans de des-seleccionar-lo per evitar errors.
+             *
+             * @override
+             */
+            onUnselect: function () {
+                var contentCache = this.dispatcher.getContentCache(this.id);
+
+                if (contentCache && contentCache.getEditor()) {
+                    this.dispatcher.getContentCache(this.id).getEditor().unselect();
+                }
+
+                this.inherited(arguments);
             }
-        })
+        });
 });

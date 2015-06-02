@@ -25,9 +25,9 @@ define([
 
         /** @type {string} id de la secció seleccionada */
         currentSectionId: null,
-        
+
         /** @type {string} id de l'element seleccionat */
-        currentElementId: null,        
+        currentElementId: null,
 
         /** @type {string} id de la pestanya del panell de navegacio seleccionat */
         currentNavigationId: null,
@@ -77,25 +77,25 @@ define([
             return this.currentSectionId;
         },
 
-         /**
+        /**
          * Node es un node del DOM o una cadena amb el nom de l'element
          *
          * @param {string|*} node on es troba la nova selecció, o nom de l'element
          */
-        setCurrentElementId: function (node,typeId) {
+        setCurrentElementId: function (node, typeId) {
             if (typeof node === "string") {//recibe directamente el id
                 this.currentElementId = node;
             } else {
-                this.currentElementId = dwPageUi.getElementWhithNodeId(node,typeId);
+                this.currentElementId = dwPageUi.getElementWhithNodeId(node, typeId);
             }
         },
-        
+
         /**
-         * 
+         *
          * Return dwPageUi
          */
-        
-        getDwPageUi: function(){
+
+        getDwPageUi: function () {
             return dwPageUi;
         },
 
@@ -154,7 +154,9 @@ define([
             if (this.pages[id]) {
                 ret = this.pages[id];
             } else {
+
                 ret = this.pages[id] = {};
+                //console.error("Creada nova pàgina buida per: ", id);
             }
             return ret;
         },
@@ -199,14 +201,14 @@ define([
          * Estableix el id de la pestanya del panell de navegació activa
          * @param {string} navigationId
          */
-        setCurrentNavigationId: function(navigationId) {
+        setCurrentNavigationId: function (navigationId) {
             this.currentNavigationId = navigationId;
         },
-        
-        deleteContent: function(id){
+
+        deleteContent: function (id) {
             if (this.pages[id]) {
                 delete this.pages[id];
-            }            
+            }
         }
     };
 
