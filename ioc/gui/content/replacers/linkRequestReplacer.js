@@ -8,20 +8,8 @@
 define(["dojo/_base/event",
     "dojo/dom-attr",
     "dojo/dom",
-    "dojo/on",
-    "dojox/widget/Standby"
-], function (event, domAttr, dom, on, Standby) {
-
-
-    // TODO[Xavi] Codi duplicat a linkRequestReplacer, això s'ha de moure al Request
-    function _startStandBy(request) {
-        var standbyId = request.standbyId || request.dispatcher.containerNodeId;
-
-        request._standby = new Standby({target: standbyId});
-        document.body.appendChild(request._standby.domNode);
-        request._standby.startup();
-
-    }
+    "dojo/on"
+], function (event, domAttr, dom, on) {
 
     /**
      * Reemplaça el comportament del enllaços del node passat com argument per una crida ajax.
@@ -51,9 +39,7 @@ define(["dojo/_base/event",
                 query = arr[1];
             }
 
-            params.request.setStandbyId(params.standbyTarget);
-
-            _startStandBy(params.request);
+            params.request.startStandBy(params.standbyTarget);
 
             params.request.sendRequest(query);
 

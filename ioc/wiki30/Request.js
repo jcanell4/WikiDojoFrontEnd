@@ -9,9 +9,12 @@ define([
     "dojo/dom-construct",
     "dojo/dom-geometry",
     "dojo/dom-style",
-    "dojo/dom"
+    "dojo/dom",
+    "dojox/widget/Standby",
+
+
 ], function (declare, Standby, request, iframe, dispatcherSingleton, Stateful
-    , timing, domConstruct, domGeom, style, dom) {
+    , timing, domConstruct, domGeom, style, dom, Standby) {
     var ret = declare([Stateful],
         /**
          * @class Request
@@ -335,6 +338,15 @@ define([
                     }
                 };
             },
+
+            startStandBy: function (id) {
+                this.setStandbyId(id);
+
+                var standbyId = this.standbyId || this.dispatcher.containerNodeId;
+                this._standby = new Standby({target: standbyId});
+                document.body.appendChild(this._standby.domNode);
+                this._standby.startup();
+            }
 
         });
     return ret;
