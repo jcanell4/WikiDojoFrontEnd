@@ -100,8 +100,59 @@ define([
 
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
-                    .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink);
-                //                    .decorate(contentToolFactory.decoration.META);
+                    .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
+                    .decorate(contentToolFactory.decoration.CONTROL_CHANGES,
+                    {
+                        controlsToCheck: [
+                            {
+                                node: null,
+
+                                selector: 'input.check:change',
+
+                                callback: function (evt) {
+
+                                    //console.log("control 1", evt);
+
+                                    if (evt.target.checked && this.controlsChecked < 2) {
+
+                                        this.controlsChecked++;
+
+                                    } else if (!evt.target.checked) {
+
+                                        this.controlsChecked--;
+
+                                    } else {
+
+                                        evt.target.checked = false;
+                                        alert("Només es poden comparar les diferencies entre 2 documents alhora");
+                                    }
+
+                                    console.log("Controls checked:", this.controlsChecked);
+
+                                }
+                            },
+
+                            {
+                                node:     'topBloc',
+                                selector: 'click',
+                                callback: function () {
+                                    console.log("Exemple 2: click al div superior de la pàgina");
+                                }
+                            },
+
+                            {
+                                node:     'no existeix',
+                                selector: 'click',
+                                callback: function () {
+                                    console.log("Aquest node no existeix, el comportament esperat es que mostri un error a la consola");
+                                }
+                            }
+                        ],
+
+                        controlsChecked: 0
+                    })
+                    ;
+
             },
 
             /**
