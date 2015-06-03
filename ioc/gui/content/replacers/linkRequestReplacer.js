@@ -39,7 +39,7 @@ define(["dojo/_base/event",
                 query = arr[1];
             }
 
-            params.request.startStandBy(params.standbyTarget);
+            params.request.startStandby(params.standbyTarget);
 
             params.request.sendRequest(query);
 

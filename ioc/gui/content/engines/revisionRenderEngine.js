@@ -100,7 +100,6 @@ define(function () {
             html += '</tr>';
         }
 
-
         html += '</table>';
         html += '</form>';
 

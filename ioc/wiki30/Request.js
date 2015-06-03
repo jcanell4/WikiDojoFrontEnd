@@ -339,7 +339,7 @@ define([
                 };
             },
 
-            startStandBy: function (id) {
+            startStandby: function (id) {
                 this.setStandbyId(id);
 
                 var standbyId = this.standbyId || this.dispatcher.containerNodeId;

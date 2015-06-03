@@ -36,7 +36,7 @@ define([
                 query = data;
             }
 
-            params.request.startStandBy(params.standbyTarget);
+            params.request.startStandby(params.standbyTarget);
 
             params.request.sendRequest(query);
             event.stop(e);
