@@ -132,33 +132,9 @@ define([
                         controlsChecked: 0
                     };
 
-                //,argsControlsToCheck2 = {
-                    //    controlsToCheck: [
-                    //
-                    //        {
-                    //            node:     'topBloc',
-                    //            selector: 'click',
-                    //            callback: function () {
-                    //                console.log("Exemple 2: click al div superior de la pàgina");
-                    //            }
-                    //        },
-                    //
-                    //        {
-                    //            node:     'no existeix',
-                    //            selector: 'click',
-                    //            callback: function () {
-                    //                console.log("Aquest node no existeix, el comportament esperat es que mostri un error a la consola");
-                    //            }
-                    //        }
-                    //    ]
-                    //
-                    //};
-
-
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
                     .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
                     .decorate(contentToolFactory.decoration.CONTROL_CHANGES, argsControlsToCheck)
-                    //.decorate(contentToolFactory.decoration.CONTROL_CHANGES, argsControlsToCheck2)
                     .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
             },
 

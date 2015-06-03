@@ -21,28 +21,17 @@ define([
     "ioc/gui/content/MetaInfoContentTool",
     "ioc/gui/content/EditorContentToolDecoration",
     "ioc/gui/content/requestReplacerFactory",
-    "ioc/gui/content/AbstractChangesManagerDecoration",
     "dojo/query", // Encara que no es cridi el dojo/query es necessari per que funcione la delegació dels listeners
     "dojo/on",
     "dojo/dom"
 ], function (declare, lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentToolDecoration,
-             requestReplacerFactory, AbstractChangesManagerDecoration, dojoQuery, on, dom) {
+             requestReplacerFactory, dojoQuery, on, dom) {
 
-    var ControlChangeContentToolDecoration = declare([AbstractChangesManagerDecoration], {
-
-            // Es passa com arguments un hash amb aquesta estructura:
-            //controlsToCheck: {
-            //    node:     string || domNode,
-            //    selector:    string, // pot ser una llista de events separats per coma, per exemple "dblclick, touchend"
-            // pot incloure selector css com a event: "butto.myClass:click"
-            // El selector no pot incloure informació sobre els atributs, per això caldria afegir un objecte de tipus selector() de dojo que no es troba ni documentat a la web ni a la nostra versió de dojo.
-            //    callback: function
-            //},
-            //
+    var ControlChangeContentToolDecoration = declare(null, {
 
             /** @typedef {{node:string, selector:string, callback:function}} ControlToCheck */
 
-            /** @type {ControlToCheck[]} */
+            /** @type {ControlToCheck[]} no es posa com a null perquè llavors falla al fer el mixin */
             //controlsToCheck: null,
 
             /**
@@ -50,18 +39,14 @@ define([
              * informació per enllaçar els controls.
              */
             constructor: function (args) {
-                //this.controlsToCheck = args.controlsToCheck
                 declare.safeMixin(this, args);
-
             },
-
 
             /**
              * S'afegeixen tota la llista de controls a comprovar als nodes i events que corresponguin. Si no hi ha
              * un node especifica es fa servir el node pare d'aquest ContentTool.
              */
             postLoad: function () {
-                this.registerToChangesManager();
 
                 this.controlsToCheck.forEach(lang.hitch(this, function (control) {
                     var node;
@@ -75,7 +60,6 @@ define([
 
                     if (node) {
                         on(node, control.selector, lang.hitch(this, control.callback));
-                        console.log("Afegit un listener: ", node);
                     } else {
                         console.error("No s'ha trobat el node: ", control);
                     }
@@ -83,23 +67,19 @@ define([
                 }));
 
                 this.inherited(arguments);
-                console.log("sortint postload");
-
             },
 
-            isContentChanged: function () {
-                // TODO[Xavi] Això s'ha de passar des del constructor com argument
-                console.log("Sempre que es clica un element el valor canvia");
-                return true;
-
-            },
-
-            resetContentChangeState: function () {
-                // TODO[Xavi] Això s'ha de passar des del constructor com argument
-
-                console.log("S'ha fet un reset dels controls");
+            /**
+             * Combina els arguments passats que han de ser soportats per aquest decorador amb el decorador ja
+             * existent.
+             *
+             * @param args
+             */
+            merge: function (args) {
+                this.controlsToCheck = this.controlsToCheck.concat(args.controlsToCheck);
+                delete(args.controlsToCheck);
+                declare.safeMixin(this, args);
             }
-
         }
     );
 
@@ -298,17 +278,19 @@ define([
                     break;
 
                 case this.decoration.CONTROL_CHANGES:
-
-                    console.log("Control Changes decoration");
-
                     if (!args.controlsToCheck) {
                         console.error("Error: s'ha de passar un array amb la informació dels controls a observar");
-                        decoration = {};
                     } else {
+
                         if (!Array.isArray(args.controlsToCheck)) {
                             args.controlsToCheck = [args.controlsToCheck];
                         }
-                        decoration = new ControlChangeContentToolDecoration(args);
+
+                        if (contentTool.controlsToCheck) {
+                            contentTool.merge(args);
+                        } else {
+                            decoration = new ControlChangeContentToolDecoration(args);
+                        }
                     }
 
                     break;
@@ -351,5 +333,4 @@ define([
             }
         }
     }
-})
-;
+});

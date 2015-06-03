@@ -13,6 +13,7 @@ define(["dojo/_base/event",
 ], function (event, domAttr, dom, on, Standby) {
 
 
+    // TODO[Xavi] Codi duplicat a linkRequestReplacer, això s'ha de moure al Request
     function _startStandBy(request) {
         var standbyId = request.standbyId || request.dispatcher.containerNodeId;
 
