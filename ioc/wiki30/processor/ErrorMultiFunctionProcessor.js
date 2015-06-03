@@ -16,6 +16,7 @@ define([
                     this.errorAction = new Array();
                 }
                 this.errorAction[code]=action;
+                console.log("ErrorMultiFunctionProcessor#addErrorAction:code="+code+". action="+action);
             },
             
             /**
@@ -31,8 +32,10 @@ define([
                 }else{
                     this._processError(value.message, dispatcher);
                 }
+                console.log("ErrorMultiFunctionProcessor#process:value.code="+value.code+". dispatcher="+dispatcher);
             }
         });
+    console.log("ErrorMultiFunctionProcessor#ret");
     return ret;
 });
 
