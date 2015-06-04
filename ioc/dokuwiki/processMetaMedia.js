@@ -152,6 +152,9 @@ define([
                 }
                 var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
                 var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+                //Al formulari hi ha un camp input amb l'ns, el canvio també per tal de que el post el faci bé
+                var myNs = dojo.query('input[name=ns]')[0];              
+                myNs.value = elid;
                 var query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort+
                         '&qqfile=' + file.name + '&tab_details=view' + '&tab_files=files' + '&isupload=upload'
                         + ow + mediaid+"&preserveMetaData=true";
@@ -165,14 +168,23 @@ define([
                 );
 
         //Search del Media Manager
-        eventHandlers.push(on(domNode, '#dw__mediasearch:submit', function (e) {
+        eventHandlers.push(on(domNode, '#mediaSearchs:click', function (e) {
             var unHandler;
             while (unHandler = eventHandlers.pop()) {
                 unHandler.remove();
             }
             event.stop(e);
+
+            
             var elid = dispatcher.getGlobalState().pages["media"]["ns"];
             var q = document.getElementById("mediaSearchq").value;
+            
+            //Mostrant el botó de desfer filtre (style display)
+            if(q!==""){
+                var searchR = document.getElementById("mediaSearchr");
+                searchR.style.display = "inline";
+            }
+            
             var elid = dispatcher.getGlobalState().pages["media"]["ns"];
             var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
             var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
@@ -180,6 +192,38 @@ define([
             query = query + '&tab_files=search&mediado=searchlist&q='+q+"&preserveMetaData=true";
             requestMedia.sendRequest(query);
 
+
+        })
+                );
+        
+                //Search del Media Manager --> Desfer el filtre
+        eventHandlers.push(on(domNode, '#mediaSearchr:click', function (e) {
+            var unHandler;
+            while (unHandler = eventHandlers.pop()) {
+                unHandler.remove();
+            }
+            event.stop(e);
+            //Ocultant el botó de desfer filtre (style display) i inicialitzant l'input
+            var searchR = document.getElementById("mediaSearchr");
+            searchR.style.display = "none";
+            var qi = document.getElementById("mediaSearchq");
+            qi.value = "";
+            var elid = dispatcher.getGlobalState().pages["media"]["ns"];
+            var q = "";
+
+            var elid = dispatcher.getGlobalState().pages["media"]["ns"];
+            var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
+            var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+            var query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
+            query = query + '&tab_files=search&mediado=searchlist&q='+q+"&preserveMetaData=true";
+            requestMedia.sendRequest(query);
+
+
+        })
+                );
+        //Search del Media Manager --> Focus a l'input text implica selecció de tot el text
+        eventHandlers.push(on(domNode, '#mediaSearchq:focusin', function (e) {
+            this.select();
 
         })
                 );

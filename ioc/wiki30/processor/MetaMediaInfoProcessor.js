@@ -95,6 +95,10 @@ define([
                     dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", selectedPane);
                 }
                 
+                //Al fileupload expliquem que el nom per defecte és el nom del fitxer
+                var nameUpload = document.getElementById("upload__name");
+                nameUpload.placeholder = "Per defecte és el nom del fitxer";
+                
                 /*selectedPane = contentCache.getCurrentId("metaMedia");
 
                 if (!selectedPane && defaultSelected) {
