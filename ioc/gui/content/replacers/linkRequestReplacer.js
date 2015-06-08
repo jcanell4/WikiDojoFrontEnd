@@ -27,7 +27,8 @@ define(["dojo/_base/event",
             var arr = domAttr.get(this, "href").split("?"),
                 originalUrlBase = params.request.urlBase,
                 call = domAttr.get(this, "data-call"),
-                pattern = /(call=page)[^&]?/;
+                pattern = /(call=page)[^&]?/,
+                targetId = params.standbyTarget || params.request.dispatcher.containerNodeId;
 
             if (call) {
                 params.request.urlBase = params.urlBase.replace(pattern, 'call=' + call);
@@ -39,8 +40,7 @@ define(["dojo/_base/event",
                 query = arr[1];
             }
 
-            params.request.startStandby(params.standbyTarget);
-
+            params.request.setStandbyId(targetId);
             params.request.sendRequest(query);
 
             event.stop(e);

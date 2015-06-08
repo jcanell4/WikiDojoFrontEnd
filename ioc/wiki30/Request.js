@@ -337,17 +337,8 @@ define([
                         nodeCounter.style["font-size"] = "" + (textSize) + "px";
                     }
                 };
-            },
-
-            startStandby: function (id) {
-                this.setStandbyId(id);
-
-                var standbyId = this.standbyId || this.dispatcher.containerNodeId;
-                this._standby = new Standby({target: standbyId});
-                document.body.appendChild(this._standby.domNode);
-                this._standby.startup();
             }
-
+            
         });
     return ret;
 });
