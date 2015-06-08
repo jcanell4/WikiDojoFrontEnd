@@ -43,8 +43,8 @@ define([
 
         var mediaButton = new iocButton({
             "label": params.modifyImageLabel
-            , "urlBase": "lib/plugins/ajaxcommand/ajax.php?call=media"
-            , "query": 'id='+params.fromId +'&image=' + params.imageId+'&img='+params.imageId+'&do=media'                   
+            , "urlBase": "lib/plugins/ajaxcommand/ajax.php?call=mediadetails"
+            , "query": 'id='+params.fromId +'&image=' + params.imageId//+'&img='+params.imageId+'&do=media'                   
         });
 
         mediaButton.addClickListener(function() {
