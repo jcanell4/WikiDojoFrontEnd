@@ -96,6 +96,8 @@ define([
          * @private
          */
         {
+
+
             /** @type Request @protecte*/
             requester: null,
 
@@ -105,12 +107,16 @@ define([
             /** @private */
             replacersParams: {},
 
+            /** @private */
+            //listeners: null; // es millor no declarar-lo per evitar problemes amb els mixins
+
             constructor: function (args) {
                 if (args.requester) {
                     this.requester = args.requester;
                 } else {
                     this._createRequest();
                 }
+                this.listenerHandlers = [];
             },
 
             /**
@@ -139,6 +145,7 @@ define([
              */
             render: function () {
                 this.set('content', this.renderEngine(this.data));
+                this.removeListenerHandlers();
                 this._replaceContent();
             },
 
@@ -148,7 +155,7 @@ define([
              */
             _replaceContent: function () {
                 for (var replacer in this.replacers) {
-                    lang.hitch(this, this.replacers[replacer])(this.replacersParams[replacer]);
+                    this.addListenerHandler(lang.hitch(this, this.replacers[replacer])(this.replacersParams[replacer]));
                 }
 
                 this.inherited(arguments);
@@ -185,6 +192,26 @@ define([
                         replacers[replacer]['replacer'],
                         replacers[replacer]['params']);
                 }
+            },
+
+            addListenerHandler: function (handler) {
+                if (Array.isArray(handler)) {
+                    this.listenerHandlers = this.listenerHandlers.concat(handler)
+                } else {
+                    this.listenerHandlers.push(handler);
+                }
+                console.log("RequestContentToolDecoration#addListenerHandler()");
+
+            },
+
+            removeListenerHandlers: function () {
+                console.log("RequestContentToolDecoration#removeListenerHandlers()");
+                this.listenerHandlers.forEach(function (handler) {
+                    handler.remove();
+                    console.log("Eliminat");
+                });
+
+                this.listenerHandlers = [];
             }
         });
 

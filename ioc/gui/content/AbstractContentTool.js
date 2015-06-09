@@ -220,6 +220,7 @@ define([
              * @protected
              */
             postLoad: function () {
+                console.log("CRIDAT POSTLOAD: ", this.id);
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
             },
 
@@ -335,6 +336,8 @@ define([
             _destroyContentTool: function(){
                 this.dispatchEvent('destroy', {id: this.id});
                 this._onDestroy();
-            },
+            }
+
+
         });
 });

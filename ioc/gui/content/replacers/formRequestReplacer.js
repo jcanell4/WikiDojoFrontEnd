@@ -22,9 +22,10 @@ define([
      */
     return function (params) {
         var form = query(params.form),
-            targetId = params.standbyTarget || params.request.dispatcher.containerNodeId;;
+            targetId = params.standbyTarget || params.request.dispatcher.containerNodeId;
 
-        on(form, 'input[type="submit"]:' + params.trigger, function (e) {
+
+        return on(form, 'input[type="submit"]:' + params.trigger, function (e) {
 
             var query = "",
                 data = domForm.toQuery(this.form),
