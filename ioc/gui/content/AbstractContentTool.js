@@ -25,7 +25,8 @@ define([
          */
         {
             "-chains-": {
-                onLoad: "after"
+                //onLoad: "after"
+                onAttach: "after"
             },
 
             /** @private*/
@@ -154,7 +155,9 @@ define([
              * @protected
              */
             render: function () {
+                console.log("------------RENDER ABANS de modificar el content");
                 this.set('content', this.renderEngine(this.data));
+                console.log("------------RENDER DEPRÉS de modificar el content");
             },
 
             /**
@@ -207,9 +210,8 @@ define([
              * @override
              */
             onLoad: function () {
-                // TODO[Xavi] Aquì s'han d'afegir els watchers i listeners comuns
-                //console.log("AbstractContentTool#onLoad");
-                this.postLoad();
+                console.log("AbstractContentTool#onLoad");
+                //this.postLoad();
             },
 
             /**
@@ -323,7 +325,8 @@ define([
              * @protected
              */
             onAttach: function () {
-                //console.log("AbstractContentTool#onAttach");
+                console.log("AbstractContentTool#onAttach");
+                this.postLoad();
             },
             
             onUnload: function () {

@@ -23,9 +23,10 @@ define([
     "ioc/gui/content/requestReplacerFactory",
     "dojo/query", // Encara que no es cridi el dojo/query es necessari per que funcione la delegació dels listeners
     "dojo/on",
-    "dojo/dom"
+    "dojo/dom",
+    "ioc/gui/content/AbstractContentToolListenersManagement",
 ], function (declare, lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentToolDecoration,
-             requestReplacerFactory, dojoQuery, on, dom) {
+             requestReplacerFactory, dojoQuery, on, dom, AbstractContentToolListenersManagement) {
 
     var ControlChangeContentToolDecoration = declare(null, {
 
@@ -48,8 +49,124 @@ define([
              */
             postLoad: function () {
 
-                this.controlsToCheck.forEach(lang.hitch(this, function (control) {
-                    var node;
+                //this.controlsToCheck.forEach(lang.hitch(this, function (control) {
+                //    var node, handler;
+                //
+                //    if (control.node && typeof control.node === 'string') {
+                //        node = dom.byId(control.node);
+                //    } else {
+                //        node = control.node || this.domNode;
+                //    }
+                //
+                //
+                //    if (node) {
+                //        handler = on(node, control.selector, lang.hitch(this, control.callback));
+                //    } else {
+                //        console.error("No s'ha trobat el node: ", control);
+                //    }
+                //
+                //    if (control.volatile) {
+                //        console.log("VOLATILE!");
+                //        this.addListenerHandler(handler);
+                //    }
+                //
+                //
+                //}));
+
+                this._addListenersToControl(this.controlsToCheck);
+                //TODO[Xavi] Compta! es dupliquen els handlers dels volatils cada vegada! la comprovació dels handlers
+                // s'ha de fer per altre banda
+
+
+                this.inherited(arguments);
+                console.log("CRIDAT POSTLOAD A CONTROL CHANGE: ", this.id);
+            },
+
+            postRender: function () {
+
+                //var handlers = this._addListenersToControl(this._getVolatileControls);
+
+                this._addListenersToControl(this._getVolatileControls());
+
+                this._resetcontrols();
+
+                //this.addListenerHandler(handlers);
+                console.log("AbstractContentToolListenersManagement#postRender()");
+
+            },
+
+            _resetcontrols: function () {
+                var context = this,
+                    resetableControls = this._getResetableControls();
+
+                console.log("Controls resetables", resetableControls);
+
+                resetableControls.forEach(function (control) {
+
+                    //if (control.reset) {
+                        //console.log("context que se va a pasar: ", context);
+                        control.reset(context);
+                        //control.reset();
+                    //}
+
+                });
+            },
+
+            _getResetableControls: function () {
+                return this.controlsToCheck.filter(function (control) {
+                    return control.reset ? true : false;
+                });
+
+            },
+
+            _getVolatileControls: function () {
+                return this._getControls(true);
+            },
+
+            _getNotVolatileControls: function () {
+                return this._getControls(false);
+            },
+
+            _getControls: function (volatile) {
+                var controls = this.controlsToCheck.filter(function (control) {
+                    //console.log("*** VOLATIL :", volatile, control);
+
+                    if (volatile) {
+                        //console.log("Es volatil? ", control.volatile ? true : false);
+
+                        return control.volatile ? true : false;
+                    } else {
+                        //console.log("NO Es volatil");
+                        return control.volatile ? false : true;
+                    }
+                });
+
+                //console.log("Retornant controls:", controls, volatile);
+                return controls;
+            },
+
+            /**
+             * Afegeix el listener al control, en cas de ser volatil l'afegeix al hash de listeners que s'esborraran
+             * quan es fasi un render() i retorna la llista de aquests mateixos handlers volatils.
+             *
+             * TODO[Xavi] Actualment aquest valor de retorn no es fa servir per a res, es pot eliminar o canviar pel
+             * array complet de handlers.
+             *
+             * @param listeners
+             * @returns {Handler[]} - handlers corresponents als listeners volatils
+             * @private
+             */
+            _addListenersToControl: function (listeners) {
+                var handlers = [];
+
+                listeners.forEach(lang.hitch(this, function (control) {
+
+
+                    var node, handler;
+
+                    if (!control.volatile) {
+
+                    }
 
                     if (control.node && typeof control.node === 'string') {
                         node = dom.byId(control.node);
@@ -59,23 +176,31 @@ define([
 
 
                     if (node) {
-                        on(node, control.selector, lang.hitch(this, control.callback));
+                        handler = on(node, control.selector, lang.hitch(this, control.callback));
                     } else {
                         console.error("No s'ha trobat el node: ", control);
                     }
 
+                    if (control.volatile) {
+                        handlers.push(handler);
+                        console.log("VOLATILE!");
+                    }
                 }));
 
-                this.inherited(arguments);
-            },
 
+                this.addListenerHandler(handlers);
+
+                return handlers;
+
+
+            },
             /**
              * Combina els arguments passats que han de ser soportats per aquest decorador amb el decorador ja
              * existent.
              *
              * @param args
              */
-            merge: function (args) {
+            merge:                  function (args) {
                 this.controlsToCheck = this.controlsToCheck.concat(args.controlsToCheck);
                 delete(args.controlsToCheck);
                 declare.safeMixin(this, args);
@@ -84,7 +209,7 @@ define([
     );
 
 
-    var RequestContentToolDecoration = declare(null,
+    var RequestContentToolDecoration = declare(AbstractContentToolListenersManagement,
         /**
          * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
          *
@@ -92,7 +217,7 @@ define([
          * respondran a diferents esdevenimets.
          *
          * @class RequestContentToolDecoration
-         * @extends ContentTool
+         * @extends ContentTool, AbstractContentToolListenersManagement
          * @private
          */
         {
@@ -144,8 +269,12 @@ define([
              * @protected
              */
             render: function () {
+                //console.log("ABANS de modificar el content");
                 this.set('content', this.renderEngine(this.data));
-                this.removeListenerHandlers();
+                //console.log("DEPRÉS de modificar el content");
+
+                //this.set('content', this.renderEngine(this.data));
+                //this.removeListenerHandlers();
                 this._replaceContent();
             },
 
@@ -154,8 +283,19 @@ define([
              * @private
              */
             _replaceContent: function () {
+                var handler;
+
+
                 for (var replacer in this.replacers) {
-                    this.addListenerHandler(lang.hitch(this, this.replacers[replacer])(this.replacersParams[replacer]));
+                    handler = lang.hitch(this, this.replacers[replacer])(this.replacersParams[replacer]);
+
+                    if (this.replacersParams[replacer].volatile) {
+                        this.addListenerHandler(handler);
+                    } else {
+                        delete(this.replacers[replacer]);
+                        delete(this.replacersParams[replacer]);
+                    }
+
                 }
 
                 this.inherited(arguments);
@@ -194,25 +334,25 @@ define([
                 }
             },
 
-            addListenerHandler: function (handler) {
-                if (Array.isArray(handler)) {
-                    this.listenerHandlers = this.listenerHandlers.concat(handler)
-                } else {
-                    this.listenerHandlers.push(handler);
-                }
-                console.log("RequestContentToolDecoration#addListenerHandler()");
-
-            },
-
-            removeListenerHandlers: function () {
-                console.log("RequestContentToolDecoration#removeListenerHandlers()");
-                this.listenerHandlers.forEach(function (handler) {
-                    handler.remove();
-                    console.log("Eliminat");
-                });
-
-                this.listenerHandlers = [];
-            }
+            //addListenerHandler: function (handler) {
+            //    if (Array.isArray(handler)) {
+            //        this.listenerHandlers = this.listenerHandlers.concat(handler)
+            //    } else {
+            //        this.listenerHandlers.push(handler);
+            //    }
+            //    console.log("RequestContentToolDecoration#addListenerHandler()");
+            //
+            //},
+            //
+            //removeListenerHandlers: function () {
+            //    console.log("RequestContentToolDecoration#removeListenerHandlers()");
+            //    this.listenerHandlers.forEach(function (handler) {
+            //        handler.remove();
+            //        console.log("Eliminat");
+            //    });
+            //
+            //    this.listenerHandlers = [];
+            //}
         });
 
     return {
@@ -248,6 +388,10 @@ define([
             var decoration;
             args = args ? args : {};
             args.requester = contentTool.requester;
+
+            //this._mixArrays(contentTool, args);
+
+            //console.log(args.listenerHandlers);
 
             //console.log("Hi ha arguments al decorador?", args);
 
@@ -290,7 +434,8 @@ define([
                     decoration.addReplacer('link', requestReplacerFactory.getRequestReplacer('link'), {
                         trigger:       "click",
                         urlBase:       args.urlBase,
-                        standbyTarget: args.standbyTarget
+                        standbyTarget: args.standbyTarget,
+                        volatile:      false
                     });
                     break;
 
@@ -300,7 +445,8 @@ define([
                         trigger:       "click",
                         urlBase:       args.urlBase,
                         form:          args.form,
-                        standbyTarget: args.standbyTarget
+                        standbyTarget: args.standbyTarget,
+                        volatile:      false
                     });
                     break;
 
@@ -358,6 +504,49 @@ define([
                 default:
                     console.error('No existeix el tipus de ContentTool ' + type);
             }
-        }
+        },
+
+        ///**
+        // * Aquest métode comprova si hi ha coincidencia entre els arrays dels arguments i del ContentTool i si es el cas
+        // * els concatena i els passa als arguments que es faran servir al decorador.
+        // *
+        // * Això permet que els valors originals dels arrays no es perdin en el cas de que es generi el mateix array al
+        // * nou decorador.
+        // *
+        // * Els valors no son eliminats del ContentTool original perquè no sempre son reemplaçats.
+        // *
+        // * El valor dels arguments s'ajusta per referència per això no es retorna cap valor.
+        // *
+        // * @param {ContentTool} contentTool
+        // * @param {*} args
+        // * @private
+        // */
+        //_mixArrays: function (contentTool, args) {
+        //    //args.listenerHandlers = ["test"];
+        //
+        //    // TODO[Xavi] Prova: es poden extreure els arrays del contentTool?
+        //    console.log(".......................");
+        //    console.log("ID: ", contentTool.id, contentTool);
+        //    for (var property in contentTool) {
+        //        //if (contentTool.hasOwnProperty(property)) {
+        //        //    console.log("Checking: ", property);
+        //        //}
+        //
+        //        if (contentTool.hasOwnProperty(property) && Array.isArray(contentTool[property])) {
+        //            console.log("Trobat array (PROPI):", property,contentTool[property].length);
+        //            if (args[property]) {
+        //                if (!Array.isArray(args[property])) {
+        //                    console.error("S'ha trobat la propietat " + property+ " però no era un array.");
+        //                } else {
+        //                    args[property] = contentTool[property].concat(args[property]);
+        //                    console.log("Afegits arrays", args[property]);
+        //                }
+        //            }
+        //        }
+        //
+        //    }
+        //    console.log(".......................");
+        //
+        //}
     }
 });

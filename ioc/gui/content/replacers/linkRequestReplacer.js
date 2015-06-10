@@ -25,6 +25,9 @@ define(["dojo/_base/event",
 
 
         return [on(node, 'a:' + params.trigger, function (e) {
+            console.log("link click");
+
+
             var arr = domAttr.get(this, "href").split("?"),
                 originalUrlBase = params.request.urlBase,
                 call = domAttr.get(this, "data-call"),
