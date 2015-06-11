@@ -60,7 +60,7 @@ define([
                         dispatcher: dispatcher,
                         rev:        content.rev
                     },
-                    contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
+                contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
 
                 contentTool.setType(content.type); //TODO[Xavi] Canviar per establir-lo a partir del que arriba del server
 
