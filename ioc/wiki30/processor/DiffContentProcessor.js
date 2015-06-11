@@ -9,12 +9,12 @@ define([
          * Aquesta classe s'encarrega de processar els continguts per documents de tipus Html, generar els ContentTool
          * apropiat i afegir-lo al contenidor adequat.
          *
-         * @class HtmlContentProcessor
+         * @class DiffContentProcessor
          * @extends ContentProcessor
-         * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
+         * @author Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-            type: "html",
+            type: "diff",
 
             /**
              * Processa el valor rebut com argument com a contingut Html per mostrar un document en mode Html
@@ -24,6 +24,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                //console.log(value.content);
                 return this.inherited(arguments);
             },
 
@@ -37,9 +38,8 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                dispatcher.getGlobalState().getContent(value.id)["action"] = "view";
-                dispatcher.getGlobalState().getContent(value.id)["rev"] = value.rev;
-                console.log("HtmlContentProcessor:updateState");
+                dispatcher.getGlobalState().getContent(value.id)["action"] = "diff";
+                //dispatcher.getGlobalState().getContent(value.id)["rev"] = value.rev;
             },
 
             /**
@@ -61,17 +61,19 @@ define([
                         dispatcher: dispatcher,
                         rev:        content.rev
                     },
+
+
                     contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
 
                 contentTool.setType(content.type); //TODO[Xavi] Canviar per establir-lo a partir del que arriba del server
 
-                console.log("HtmlContentProcessor:createContentTool");
 
                 return contentTool;
             },
 
             getAllowedTypes: function (content) {
                 return content.type; // TODO[Xavi] Amb aquesta implementació es permet sobrescriure sempre que es tracti del mateix tipus
+
                 //return 'HTML';
             },
 

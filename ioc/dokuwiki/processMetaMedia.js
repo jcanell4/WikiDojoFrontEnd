@@ -36,7 +36,7 @@ define([
          dojo.disconnect(handle);
          });*/
         var requestMedia = new Request();
-        requestMedia.urlBase = "/dokuwiki_30/lib/plugins/ajaxcommand/ajax.php?call=media";
+        requestMedia.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media";
         requestMedia.updateSectok = function (sk) {
             this.sectok = sk;
         };

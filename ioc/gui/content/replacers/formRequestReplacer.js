@@ -15,30 +15,32 @@ define([
 ], function (event, on, query, domform) {
 
     /**
-     * TODO[Xavi] Sense provar! Pendent d'implementar la comparació de revisions
+     * Reemplaça el comportament del botó submit del formulari passat com argument per una crida ajax.
      *
      * Es crea un backup del urlBase original abans d'establir el propi.
      *
      * @params {trigger: string, request: {Request}, form} params: el trigger te el format: 'click'.
      */
     return function (params) {
+        var form = query(params.form);
 
-        var form = query(params.form),
-            handle = on(form, "input[type=submit]:" + params.trigger, function (e) {
-                var query = "",
-                    data = domform.toQuery(this.form),
-                    originalUrlBase = params.request.urlBase; //TODO[Xavi] es innecessari perque sempre es null
+        on(form, 'input[type="submit"]:' + params.trigger, function (e) {
 
-                params.request.urlBase = params.urlBase;
+            var query = "",
+                data = domform.toQuery(this.form),
+                originalUrlBase = params.request.urlBase;
 
-                data += "&" + this.name + "=" + domform.fieldToObject(this);
-                if (data) {
-                    query = data;
-                }
-                params.request.sendRequest(query);
-                event.stop(e);
-                handle.remove();
-                params.request.urlBase = originalUrlBase; //TODO[Xavi] es innecessari perque sempre es null
-            });
+            params.request.urlBase = params.urlBase;
+
+            data += "&" + this.name + "=" + domform.fieldToObject(this);
+            if (data) {
+                query = data;
+            }
+
+            params.request.sendRequest(query);
+            event.stop(e);
+
+            params.request.urlBase = originalUrlBase;
+        });
     }
 });

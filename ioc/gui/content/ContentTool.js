@@ -11,6 +11,8 @@ define([
          * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
          * en el futur.
          *
+         *
+         *
          * @class ContentTool
          * @extends AbstractContentTool
          * @author Xavier García <xaviergaro.dev@gmail.com>
@@ -20,7 +22,7 @@ define([
         {
             /**
              * Dispara l'esdeveniment que indica que el ContentToool esta a punt de destruir-se
-             * Previament a la seva execusió es llança l'esdeveniment del EventObserver anomenat "destroy".
+             * Previament a la seva execusió es llança la subscripció del succés anomenat "destroy".
              */
             onDestroy: function () {
                 //console.log("ContentTool#onDestroy");
