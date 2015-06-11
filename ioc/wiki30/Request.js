@@ -334,8 +334,8 @@ define([
                         nodeCounter.style["font-size"] = "" + (textSize) + "px";
                     }
                 };
-            },
-
+            }
+            
         });
     return ret;
 });

@@ -8,19 +8,8 @@
 define(["dojo/_base/event",
     "dojo/dom-attr",
     "dojo/dom",
-    "dojo/on",
-    "dojox/widget/Standby"
-], function (event, domAttr, dom, on, Standby) {
-
-
-    function _startStandBy(request) {
-        var standbyId = request.standbyId || request.dispatcher.containerNodeId;
-
-        request._standby = new Standby({target: standbyId});
-        document.body.appendChild(request._standby.domNode);
-        request._standby.startup();
-
-    }
+    "dojo/on"
+], function (event, domAttr, dom, on) {
 
     /**
      * Reemplaça el comportament del enllaços del node passat com argument per una crida ajax.
@@ -38,7 +27,8 @@ define(["dojo/_base/event",
             var arr = domAttr.get(this, "href").split("?"),
                 originalUrlBase = params.request.urlBase,
                 call = domAttr.get(this, "data-call"),
-                pattern = /(call=page)[^&]?/;
+                pattern = /(call=page)[^&]?/,
+                targetId = params.standbyTarget || params.request.dispatcher.containerNodeId;
 
             if (call) {
                 params.request.urlBase = params.urlBase.replace(pattern, 'call=' + call);
@@ -50,10 +40,7 @@ define(["dojo/_base/event",
                 query = arr[1];
             }
 
-            params.request.setStandbyId(params.standbyTarget);
-
-            _startStandBy(params.request);
-
+            params.request.setStandbyId(targetId);
             params.request.sendRequest(query);
 
             event.stop(e);

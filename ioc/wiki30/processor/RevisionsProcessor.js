@@ -95,13 +95,47 @@ define([
                     },
 
                     argsRequestLink = {
-                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=page" // TODO[Xavi] aquest valor ha d'arribar des de el servidor?
+                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=page"
+                    },
+
+
+                    argsRequestForm = {
+                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=diff",
+                        form:    '#revisions_selector_' + content.id
+                    },
+
+                    argsControlsToCheck = {
+                        controlsToCheck: [
+                            {
+                                node: null,
+
+                                selector: 'input.check:change',
+
+                                callback: function (evt) {
+
+                                    if (evt.target.checked && this.controlsChecked < 2) {
+
+                                        this.controlsChecked++;
+
+                                    } else if (!evt.target.checked) {
+
+                                        this.controlsChecked--;
+
+                                    } else {
+
+                                        evt.target.checked = false;
+                                        alert("Només es poden comparar les diferencies entre 2 documents alhora");
+                                    }
+                                }
+                            }],
+
+                        controlsChecked: 0
                     };
 
-
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
-                    .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink);
-                //                    .decorate(contentToolFactory.decoration.META);
+                    .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
+                    .decorate(contentToolFactory.decoration.CONTROL_CHANGES, argsControlsToCheck)
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
             },
 
             /**
