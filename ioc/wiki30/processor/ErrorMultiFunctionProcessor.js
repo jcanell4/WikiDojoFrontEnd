@@ -25,12 +25,14 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+//                console.log("ErrorMultiFunctionProcessor#process_start( " + value.code +")");
                 if(this.errorAction[value.code]){
                     var action = this.errorAction[value.code];
                     action(dispatcher);
                 }else{
                     this._processError(value.message, dispatcher);
                 }
+//                console.log("ErrorMultiFunctionProcessor#process_end");
             }
         });
     return ret;
