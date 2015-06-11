@@ -9,12 +9,9 @@ define([
     "dojo/dom-construct",
     "dojo/dom-geometry",
     "dojo/dom-style",
-    "dojo/dom",
-    "dojox/widget/Standby",
-
-
+    "dojo/dom"
 ], function (declare, Standby, request, iframe, dispatcherSingleton, Stateful
-    , timing, domConstruct, domGeom, style, dom, Standby) {
+    , timing, domConstruct, domGeom, style, dom) {
     var ret = declare([Stateful],
         /**
          * @class Request

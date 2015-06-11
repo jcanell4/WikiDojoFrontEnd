@@ -379,7 +379,7 @@ define([
                 } else {
                     req._processResponse(response, processors);
                 }
-                console.log("updateFromState when response type: " + response[0].type);
+
                 this.updateFromState();
                 return 0;
 
