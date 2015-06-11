@@ -39,7 +39,6 @@ define([
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "view";
                 dispatcher.getGlobalState().getContent(value.id)["rev"] = value.rev;
-                console.log("HtmlContentProcessor:updateState");
             },
 
             /**
@@ -64,8 +63,6 @@ define([
                     contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
 
                 contentTool.setType(content.type); //TODO[Xavi] Canviar per establir-lo a partir del que arriba del server
-
-                console.log("HtmlContentProcessor:createContentTool");
 
                 return contentTool;
             },
