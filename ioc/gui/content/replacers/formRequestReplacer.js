@@ -10,9 +10,8 @@ define([
     "dojo/_base/event",
     "dojo/on",
     "dojo/query",
-    "dojo/dom-form"
-
-], function (event, on, query, domform) {
+    "dojo/dom-form",
+], function (event, on, query, domForm) {
 
     /**
      * Reemplaça el comportament del botó submit del formulari passat com argument per una crida ajax.
@@ -22,25 +21,28 @@ define([
      * @params {trigger: string, request: {Request}, form} params: el trigger te el format: 'click'.
      */
     return function (params) {
-        var form = query(params.form);
+        var form = query(params.form),
+            targetId = params.standbyTarget || params.request.dispatcher.containerNodeId;;
 
         on(form, 'input[type="submit"]:' + params.trigger, function (e) {
 
             var query = "",
-                data = domform.toQuery(this.form),
+                data = domForm.toQuery(this.form),
                 originalUrlBase = params.request.urlBase;
 
             params.request.urlBase = params.urlBase;
 
-            data += "&" + this.name + "=" + domform.fieldToObject(this);
+            data += "&" + this.name + "=" + domForm.fieldToObject(this);
             if (data) {
                 query = data;
             }
 
+            params.request.setStandbyId(targetId);
             params.request.sendRequest(query);
             event.stop(e);
 
             params.request.urlBase = originalUrlBase;
         });
     }
+
 });
