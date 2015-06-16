@@ -191,7 +191,7 @@ define([
              * @returns {?dojo.promise.Promise}
              */
             sendRequest: function (query) {
-                console.log(query);
+//                console.log("Request:sendRequest ("+query+")");
                 //run standby resource while ajax response doesn't arribe
                 if (this.standbyId !== null && !this._standby) {
                     this._standby = new Standby({target: this.standbyId});
@@ -334,8 +334,8 @@ define([
                         nodeCounter.style["font-size"] = "" + (textSize) + "px";
                     }
                 };
-            },
-
+            }
+            
         });
     return ret;
 });
