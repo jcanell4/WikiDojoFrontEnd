@@ -47,9 +47,12 @@ define([
                     closable:   true,
                     dispatcher: dispatcher
                 };
+                var argsMediaDetailsDecor = {
+                        elAlert: "un decorador amb esdeveniments"
+                    };
 
-                return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
-                    //.decorate(contentToolFactory.decoration.DOCUMENT, args);
+                return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args)
+                    .decorate(contentToolFactory.decoration.MEDIADETAILS, argsMediaDetailsDecor);
             }
         });
     return ret;

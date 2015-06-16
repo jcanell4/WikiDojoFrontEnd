@@ -20,8 +20,10 @@ define([
     "ioc/gui/content/DocumentContentTool",
     "ioc/gui/content/MetaInfoContentTool",
     "ioc/gui/content/EditorContentToolDecoration",
-    "ioc/gui/content/requestReplacerFactory"
-], function (declare, lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentToolDecoration, requestReplacerFactory) {
+    "ioc/gui/content/requestReplacerFactory",
+    "ioc/gui/content/MediaDetailsContentToolDecoration",
+    "ioc/gui/content/MetaMediaDetailsCTDecoration"
+], function (declare, lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentToolDecoration, requestReplacerFactory,MediaDetailsContentToolDecoration,MetaMediaDetailsCTDecoration) {
 
 //    var MetaContentToolDecoration = declare(null,
 //            /**
@@ -216,11 +218,13 @@ define([
     return {
         /** @enum */
         decoration: {
-//            META:         'meta',
-            EDITOR:       'editor',
-            REQUEST:      'request',
-            REQUEST_LINK: 'request_link',
-            REQUEST_FORM: 'request_form'
+//          META:               'meta',
+            EDITOR:             'editor',
+            REQUEST:            'request',
+            REQUEST_LINK:       'request_link',
+            REQUEST_FORM:       'request_form',
+            MEDIADETAILS:       'mediadetails',
+            METAMEDIADETAILS:   'metamediadetails'
         },
 
         /** @enum */
@@ -304,7 +308,16 @@ define([
                         standbyTarget: args.standbyTarget
                     });
                     break;
+                case this.decoration.MEDIADETAILS:
 
+                    decoration = new MediaDetailsContentToolDecoration(args);
+
+                    break;
+                case this.decoration.METAMEDIADETAILS:
+
+                    decoration = new MetaMediaDetailsCTDecoration(args);
+
+                    break;
 
                 default:
                     console.error('No existeix el tipus de decoració ' + type);
