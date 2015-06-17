@@ -7,25 +7,40 @@ define([
          * Classe per afegir la funcionalitat que controla la correcta eliminació dels listeners que s'afegeixen durant
          * la renderització.
          *
+         * @deprecated
          * @class AbstractContentToolListenersManagement
          * @author Xavier García <xaviergaro.dev@gmail.com>
          */
         {
 
-            "-chains-": {
-                render: "after"
-            },
 
             /** @typedef {remove: function} Handler */
 
             ///** @type {Handler[]} */
             //listeners:null,
 
-            render: function () {
-                console.log("AbstractContentToolListenersManagement#render()");
+            preRender: function () {
+                console.log("AbstractContentToolListenersManagement#preRender()", this.id);
+                //alert("Ara s'esborren els listeners");
+
+                //alert("preRender dels Listeners");
                 this.removeListenerHandlers();
-                this.postRender();
+
+                //if (this.postRender) {
+                //    this.postRender();
+                //} else {
+                //    console.warning("no existeix el porsRender()", this);
+                //}
+
+                this.inherited(arguments);
             },
+
+            postRender: function() {
+                console.log("AbstractContentToolListenersManagement#postRender()", this.id);
+                alert("useless");
+                this.inherited(arguments);
+            },
+
 
             // Compte, si aquest existeix es cridat en lloc del propi de la subclasse
             //postRender: function() {
@@ -39,12 +54,12 @@ define([
                 } else {
                     this._getListenerHandlers().push(handler);
                 }
-                console.log("AbstractContentToolListenersManagement#addListenerHandler()");
+                console.log("AbstractContentToolListenersManagement#addListenerHandler()", this.id);
 
             },
 
             removeListenerHandlers: function () {
-                console.log("AbstractContentToolListenersManagement#removeListenerHandlers()");
+                console.log("AbstractContentToolListenersManagement#removeListenerHandlers()", this.id);
 
                 this._getListenerHandlers().forEach(function (handler) {
                     handler.remove();

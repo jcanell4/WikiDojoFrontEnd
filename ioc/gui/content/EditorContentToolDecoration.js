@@ -81,7 +81,7 @@ define([
              *
              * @override
              */
-            postLoad: function () {
+            postAttach: function () {
                 //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
                 this.registerToChangesManager();
 

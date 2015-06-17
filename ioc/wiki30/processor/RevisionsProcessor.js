@@ -58,7 +58,10 @@ define([
                     content.dispatcher = dispatcher;
 
                     contentTool = this.createContentTool(content, dispatcher, content.id);
+                    //console.log("Creat ContentTool: ", contentTool);
                     nodeMetaInfo.addChild(contentTool);
+
+
                 }
 
                 selectedPane = contentCache.getCurrentId("metadataPane");
@@ -115,7 +118,11 @@ define([
 
                                 callback: function (evt) {
 
-                                    console.log("Context:", this);
+                                    //console.log("Context:", this);
+
+                                    if (!this.controlsChecked) {
+                                        this.controlsChecked = 0;
+                                    }
 
                                     if (evt.target.checked && this.controlsChecked < 2) {
 
@@ -139,9 +146,8 @@ define([
 
                             }
 
-                        ],
+                        ]
 
-                        controlsChecked: 0
                     },
 
                     args2 = {
@@ -152,7 +158,7 @@ define([
                                 volatile: true,
                                 callback: function () {
                                     this.render();
-                                    console.log("Exemple 2: click al div superior de la pàgina provoca un render()");
+                                    console.log(" *** Exemple 2: click al div superior de la pàgina provoca un render() ***");
                                 }
 
                             }]
@@ -160,9 +166,9 @@ define([
 
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
-                    .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
+                    //.decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
                     .decorate(contentToolFactory.decoration.CONTROL_CHANGES, argsControlsToCheck)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
+                    //.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
                     .decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
             },
 

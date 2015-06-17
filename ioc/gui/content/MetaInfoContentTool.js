@@ -41,7 +41,7 @@ define([
                  * @override
                  * @protected
                  */
-                postLoad: function () {
+                postAttach: function () {
 
                     var observed = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
