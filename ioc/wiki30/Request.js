@@ -9,12 +9,9 @@ define([
     "dojo/dom-construct",
     "dojo/dom-geometry",
     "dojo/dom-style",
-    "dojo/dom",
-    "dojox/widget/Standby",
-
-
+    "dojo/dom"
 ], function (declare, Standby, request, iframe, dispatcherSingleton, Stateful
-    , timing, domConstruct, domGeom, style, dom, Standby) {
+    , timing, domConstruct, domGeom, style, dom) {
     var ret = declare([Stateful],
         /**
          * @class Request
@@ -194,7 +191,7 @@ define([
              * @returns {?dojo.promise.Promise}
              */
             sendRequest: function (query) {
-                console.log(query);
+//                console.log("Request:sendRequest ("+query+")");
                 //run standby resource while ajax response doesn't arribe
                 if (this.standbyId !== null && !this._standby) {
                     this._standby = new Standby({target: this.standbyId});
