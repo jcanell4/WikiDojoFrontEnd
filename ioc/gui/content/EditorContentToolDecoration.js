@@ -17,11 +17,11 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "dojo/on",
-    "ioc/gui/content/AbstractChangesManagerDecoration",
+    "ioc/gui/content/DocumentContentTool",
     "ioc/gui/content/AbstractContentToolCentralDecoration"
-], function (declare, lang, on, AbstractChangesManagerDecoration, AbstractContentToolCentralDecoration) {
+], function (declare, lang, on, DocumentContentTool, AbstractContentToolCentralDecoration) {
 
-    return declare([AbstractChangesManagerDecoration, AbstractContentToolCentralDecoration],
+    return declare([DocumentContentTool, AbstractContentToolCentralDecoration],
 
         /**
          * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.

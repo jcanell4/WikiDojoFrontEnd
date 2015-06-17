@@ -1,4 +1,8 @@
 /**
+ * Aquest métode es fa servir juntament amb extend(), els mètodes seràn reemplaçats, es a dir no continua
+ * la cadena de crides.
+ *
+ *
  * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
  *
  * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
@@ -21,11 +25,69 @@
  * @abstract
  * @see contentToolFactory.decorate()
  */
-define([
-    "dojo/_base/declare"
-], function (declare) {
 
-    return declare(null, {
+    //define([], function () {
+    //
+    //    return function () {
+    //
+    //        return {
+    //            /**
+    //             * Accio a realitzar quan hi han canvis al document.
+    //             *
+    //             * @protected
+    //             */
+    //            onDocumentChanged: function () {
+    //                this.dispatchEvent("document_changed");
+    //
+    //                if (this.controlButton) {
+    //                    this.controlButton.containerNode.style.color = 'red';
+    //                }
+    //            },
+    //
+    //            /**
+    //             * Acció a realitzar quan es reinicialitza el document.
+    //             *
+    //             * @protected
+    //             */
+    //            onDocumentChangesReset: function () {
+    //                this.dispatchEvent("document_changes_reset");
+    //
+    //                if (this.controlButton) {
+    //                    this.controlButton.containerNode.style.color = 'black';
+    //                }
+    //            },
+    //
+    //            /**
+    //             * Acció a realitzar quan es tanca el document. Si detecta canvis demana confirmació i en cas de que no hi hagin
+    //             * o es descartin el canvis retorna cert i es procedeix al tancament del document.
+    //             *
+    //             * @returns {boolean}
+    //             */
+    //            onClose: function () {
+    //                var confirmation = true;
+    //
+    //                if (this.getChangesManager().isChanged(this.id)) {
+    //                    confirmation = this.dispatcher.discardChanges();
+    //                }
+    //
+    //                if (confirmation) {
+    //                    this.removeState();
+    //                    this.getChangesManager().removeContentTool(this.id);
+    //                }
+    //
+    //                return confirmation;
+    //            }
+    //        }
+    //    };
+    //});
+
+
+define([
+    "dojo/_base/declare",
+    "ioc/gui/content/AbstractChangesManagerDecoration",
+], function (declare, AbstractChangesManagerDecoration) {
+
+    return declare([AbstractChangesManagerDecoration], {
 
         /**
          * Accio a realitzar quan hi han canvis al document.

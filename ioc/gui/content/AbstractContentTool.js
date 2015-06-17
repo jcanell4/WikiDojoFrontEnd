@@ -233,7 +233,7 @@ define([
              * @protected
              */
             postAttach: function () {
-                console.log("AbstractContentTool#postAttach, this.id");
+                console.log("AbstractContentTool#postAttach", this.id);
             },
 
 
@@ -348,6 +348,7 @@ define([
             
             _destroyContentTool: function(){
                 this.dispatchEvent('destroy', {id: this.id});
+                this.removeListenerHandlers();
                 this._onDestroy();
             },
 
@@ -366,7 +367,7 @@ define([
                 } else {
                     this._getListenerHandlers().push(handler);
                 }
-                console.log("AbstractContentToolListenersManagement#addListenerHandler()");
+                console.log("AbstractContentToolListenersManagement#addListenerHandler", this.id, handler);
 
             },
 
@@ -375,11 +376,10 @@ define([
 
                 this._getListenerHandlers().forEach(function (handler) {
                     handler.remove();
-                    console.log("Eliminat");
+                    //console.log("Eliminat");
                 });
 
                 this._setListenerHandlers([]);
-                //this.listenerHandlers = [];
             },
 
             _getListenerHandlers: function () {

@@ -151,7 +151,7 @@ define([
                     },
 
                     args2 = {
-                        controlsToCheck: [
+                        controlsToCheck:
                             {
                                 node:     'topBloc',
                                 selector: 'click',
@@ -161,14 +161,14 @@ define([
                                     console.log(" *** Exemple 2: click al div superior de la pàgina provoca un render() ***");
                                 }
 
-                            }]
+                            }
                     };
 
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
-                    //.decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
+                    .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
                     .decorate(contentToolFactory.decoration.CONTROL_CHANGES, argsControlsToCheck)
-                    //.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
                     .decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
             },
 

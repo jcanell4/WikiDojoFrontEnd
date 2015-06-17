@@ -14,7 +14,6 @@
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
 define([
-        "dojo/_base/declare",
         "dojo/_base/lang",
         "ioc/gui/content/ContentTool",
         "ioc/gui/content/DocumentContentTool",
@@ -24,9 +23,8 @@ define([
         "dojo/query", // Encara que no es cridi el dojo/query es necessari per que funcione la delegació dels listeners
         "dojo/on",
         "dojo/dom",
-        "ioc/gui/content/AbstractContentToolListenersManagement",
-    ], function (declare, lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentToolDecoration,
-                 requestReplacerFactory, dojoQuery, on, dom, AbstractContentToolListenersManagement) {
+    ], function (lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentToolDecoration,
+                 requestReplacerFactory, dojoQuery, on, dom ) {
 
         var patch = function (source, target) {
                 return function () {
@@ -68,6 +66,16 @@ define([
              * informació per enllaçar els controls.
              */
             ControlChangeContentToolDecoration = function (args) {
+
+                if (!args.controlsToCheck) {
+                    console.error("Error: s'ha de passar un array amb la informació dels controls a observar");
+                    args.controlsToCheck = [];
+                }
+
+
+                if (!Array.isArray(args.controlsToCheck)) {
+                    args.controlsToCheck = [args.controlsToCheck];
+                }
 
                 var _resetcontrols = function () {
                         var context = this,
@@ -111,7 +119,7 @@ define([
                      * array complet de handlers.
                      *
                      * @param listeners
-                     * @returns {Handler[]} - handlers corresponents als listeners volatils
+                     * @returns {Handler[]} - handlers a afegir
                      * @private
                      */
                     _addListenersToControl = function (listeners) {
@@ -122,16 +130,11 @@ define([
 
                             var node, handler;
 
-                            if (!control.volatile) {
-
-                            }
-
                             if (control.node && typeof control.node === 'string') {
                                 node = dom.byId(control.node);
                             } else {
                                 node = control.node || self.domNode;
                             }
-
 
                             if (node) {
                                 handler = on(node, control.selector, lang.hitch(this, control.callback));
@@ -144,8 +147,8 @@ define([
                             }
                         }));
 
-
                         this.addListenerHandler(handlers);
+
                         return handlers;
                     };
 
@@ -155,12 +158,13 @@ define([
                      * un node especifica es fa servir el node pare d'aquest ContentTool.
                      */
                     postAttach: function () {
-                        console.log("ConstrolChangeContentToolDecoration#postLoad()", this.id);
-                        lang.hitch(this, _addListenersToControl)(args.controlsToCheck);
+                        console.log("ControlChangeContentToolDecoration#postAttach", this.id);
+                        var controls = lang.hitch(this, _getNotVolatileControls)();
+                        lang.hitch(this, _addListenersToControl)(controls);
                     },
 
                     postRender: function () {
-                        console.log("ConstrolChangeContentToolDecoration#postRender()");
+                        console.log("ControlChangeContentToolDecoration#postRender", this.id);
                         var controls = lang.hitch(this, _getVolatileControls)();
                         lang.hitch(this, _addListenersToControl)(controls);
                         lang.hitch(this, _resetcontrols)();
@@ -170,151 +174,96 @@ define([
                 }
             };
 
-        var RequestContentToolDecoration = declare(AbstractContentToolListenersManagement,
+
+        /**
+         * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
+         *
+         * Aquesta decoració reemplaça els continguts que enllacin a altres direccións per crides ajax que
+         * respondran a diferents esdevenimets.
+         *
+         * @class RequestContentToolDecoration
+         * @extends ContentTool, AbstractContentToolListenersManagement
+         * @private
+         */
+        var RequestContentToolDecoration = function (args) {
+
             /**
-             * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
+             * Carrega i genera un nou objecte Request. Aquest objecte no inclou urlBase, aquesta s'ha de passar
+             * via el reemplaçador.
              *
-             * Aquesta decoració reemplaça els continguts que enllacin a altres direccións per crides ajax que
-             * respondran a diferents esdevenimets.
-             *
-             * @class RequestContentToolDecoration
-             * @extends ContentTool, AbstractContentToolListenersManagement
              * @private
              */
-            {
-
-
-                /** @type Request @protecte*/
-                requester: null,
-
-                /** @private */
-                replacers: {},
-
-                /** @private */
-                replacersParams: {},
-
-                /** @private */
-                //listeners: null; // es millor no declarar-lo per evitar problemes amb els mixins
-
-                constructor: function (args) {
-                    if (args.requester) {
-                        this.requester = args.requester;
-                    } else {
-                        this._createRequest();
-                    }
-                    this.listenerHandlers = [];
-                },
-
-                /**
-                 * Carrega i genera un nou objecte Request. Aquest objecte no inclou urlBase, aquesta s'ha de passar
-                 * via el reemplaçador.
-                 *
-                 * @private
-                 */
-                _createRequest: function () {
-
-                    require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
-                        this.requester = new Request();
-
-                        this.requester.updateSectok = function (sectok) {
-                            this.sectok = sectok;
-                        };
-
-                        this.requester.sectok = this.requester.dispatcher.getSectok();
-                        this.requester.dispatcher.toUpdateSectok.push(this.requester);
-                    }));
-                },
-
-                /**
-                 * Aquest métode realitza la renderització de els dades i la substitució dels enllaços per crides AJAX.
-                 * @protected
-                 */
-
-                postRender: function() {
-                    this._replaceContent();
-                },
+            var requester = args.requester,
+                replacers = args.replacers || {},
 
                 /**
                  * Itera sobre tots els reemplaçadors afegits i realitza la substitució cridant a la funció de reemplaç
                  * @private
                  */
-                _replaceContent: function () {
+                _replaceContent = function () {
                     var handler;
 
 
-                    for (var replacer in this.replacers) {
-                        handler = lang.hitch(this, this.replacers[replacer])(this.replacersParams[replacer]);
+                    console.log("Request replacers: ", replacers);
+                    for (var type in replacers) {
+                        var replacer = replacers[type],
+                            params = replacer.params;
 
-                        if (this.replacersParams[replacer].volatile) {
+                        params.request = requester;
+
+                        handler = lang.hitch(this, replacer.replacer)(params);
+
+                        if (params.volatile) {
+
                             this.addListenerHandler(handler);
+
                         } else {
-                            delete(this.replacers[replacer]);
-                            delete(this.replacersParams[replacer]);
+
+                            delete(replacers[type]);
+
                         }
 
                     }
+                    console.log("Sortint");
+                };
 
-                    this.inherited(arguments);
-                },
+            // si no existeix el requester es genera un de nou
+            (function () {
+
+                if (!requester) {
+                    require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) { // TODO[Xavi] comprovar si cal el hitch, no es fa servir el this per a res
+                        requester = new Request();
+
+                        requester.updateSectok = function (sectok) {
+                            this.sectok = sectok;
+                        };
+
+                        requester.sectok = requester.dispatcher.getSectok();
+                        requester.dispatcher.toUpdateSectok.push(requester);
+                    }));
+                }
+            })();
+
+
+            return {
 
                 /**
-                 * Afegeix un reemplaçador de continguts específic.
-                 * TODO[Xavi] Cal que sigui un Hash o pot ser un array?
-                 *
-                 * @param {string} type - tipus per identificar aquest reemplaçador
-                 * @param {function} replacer - funció que es cridarà quan calgui fer el reemplaç
-                 * @param {*} params - arguments necessaris per efectuar el reemplaç
+                 * Aquest métode realitza la renderització de els dades i la substitució dels enllaços per crides AJAX.
+                 * @protected
                  */
-                addReplacer: function (type, replacer, params) {
-                    if (!this.replacers) {
-                        this.replacers = {};
-                        this.replacersParams = {};
-                    }
+                postRender: function () {
+                    console.log("RequestContentToolDecoration#postRender", this.id);
+                    lang.hitch(this, _replaceContent)();
+                }
 
-                    params.request = this.requester;
-                    this.replacersParams[type] = params;
-                    this.replacers[type] = replacer;
-                },
+            };
 
-                /**
-                 * Afegeix un hash de reemplaçadors.
-                 *
-                 * @param {{string:{type: string, replacer:function, params:{query: string, nodeId:string, trigger:string}}}} replacers
-                 */
-                addReplacers: function (replacers) {
-                    for (var replacer in replacers) {
-                        this.addReplacer(
-                            replacers[replacer]['type'],
-                            replacers[replacer]['replacer'],
-                            replacers[replacer]['params']);
-                    }
-                },
-
-                //addListenerHandler: function (handler) {
-                //    if (Array.isArray(handler)) {
-                //        this.listenerHandlers = this.listenerHandlers.concat(handler)
-                //    } else {
-                //        this.listenerHandlers.push(handler);
-                //    }
-                //    console.log("RequestContentToolDecoration#addListenerHandler()");
-                //
-                //},
-                //
-                //removeListenerHandlers: function () {
-                //    console.log("RequestContentToolDecoration#removeListenerHandlers()");
-                //    this.listenerHandlers.forEach(function (handler) {
-                //        handler.remove();
-                //        console.log("Eliminat");
-                //    });
-                //
-                //    this.listenerHandlers = [];
-                //}
-            });
+        };
 
         return {
             /** @enum */
             decoration: {
-                EDITOR:          'editor',
+                //EDITOR:          'editor',
                 REQUEST:         'request',
                 REQUEST_LINK:    'request_link',
                 REQUEST_FORM:    'request_form',
@@ -325,7 +274,8 @@ define([
             generation: {
                 BASE:     'base',
                 META:     'meta',
-                DOCUMENT: 'document'
+                DOCUMENT: 'document',
+                EDITOR:    'editor',
             },
 
             /**
@@ -343,79 +293,62 @@ define([
             decorate: function (type, contentTool, args) {
                 var decoration;
                 args = args ? args : {};
-                args.requester = contentTool.requester;
+
+
+                // Aquesta comprovació es genèrica per tots els decoradors de tipus request
+                if (type.indexOf("request")>-1 && !args.replacers) {
+                    args.replacers = {};
+                }
 
                 switch (type) {
 
-                    case this.decoration.EDITOR:
-                        decoration = new EditorContentToolDecoration(args)
-                        break;
+                    //case this.decoration.EDITOR:
+                    //    decoration = new EditorContentToolDecoration(args);
+                    //    break;
 
                     case this.decoration.REQUEST:
-                        //Aquest request no afegeix res, els replaces han d'anar ja afegits als arguments dins del
-                        //args.replacers.
-                        //
-                        //Aquest es un exemple de com s'afegiría el tipus link manualment:
-
-                        //args.replacers = {
-                        //    'link': {
-                        //        type: 'link',
-                        //        replacer: requestReplacerFactory.getRequestReplacer('link'),
-                        //        params: {
-                        //            trigger: "click",
-                        //            urlBase: args.urlBase
-                        //
-                        //        }
-                        //    }
-                        //};
                         decoration = new RequestContentToolDecoration(args);
-
-                        if (args.replacers) {
-                            decoration.addReplacers(args.replacers);
-                        }
 
                         break;
 
                     case this.decoration.REQUEST_LINK:
+
+                        args.replacers['link'] = {
+                            type:     'link',
+                            replacer: requestReplacerFactory.getRequestReplacer('link'),
+                            params:   {
+                                trigger:       "click",
+                                urlBase:       args.urlBase,
+                                standbyTarget: args.standbyTarget,
+                                volatile:      false
+                            }
+                        };
+
                         decoration = new RequestContentToolDecoration(args);
-                        decoration.addReplacer('link', requestReplacerFactory.getRequestReplacer('link'), {
-                            trigger:       "click",
-                            urlBase:       args.urlBase,
-                            standbyTarget: args.standbyTarget,
-                            volatile:      false
-                        });
+
                         break;
 
                     case this.decoration.REQUEST_FORM:
+
+                        args.replacers['form'] = {
+                            type:     'form',
+                            replacer: requestReplacerFactory.getRequestReplacer('form'),
+                            params:   {
+                                trigger:       "click",
+                                urlBase:       args.urlBase,
+                                form:          args.form,
+                                standbyTarget: args.standbyTarget,
+                                volatile:      false
+                            }
+                        };
+
                         decoration = new RequestContentToolDecoration(args);
-                        decoration.addReplacer('form', requestReplacerFactory.getRequestReplacer('form'), {
-                            trigger:       "click",
-                            urlBase:       args.urlBase,
-                            form:          args.form,
-                            standbyTarget: args.standbyTarget,
-                            volatile:      false
-                        });
+
                         break;
 
                     case this.decoration.CONTROL_CHANGES:
-                        console.log("**************");
-                        if (!args.controlsToCheck) {
-                            console.error("Error: s'ha de passar un array amb la informació dels controls a observar");
-                        } else {
 
-                            if (!Array.isArray(args.controlsToCheck)) {
-                                args.controlsToCheck = [args.controlsToCheck];
-                            }
-
-                            //if (contentTool.controlsToCheck) {
-                            //    contentTool.merge(args);
-                            //} else {
-                            //decoration = new ControlChangeContentToolDecoration(args);
-                            console.log("----abans de cridar la creació de controlcheck");
-                            decoration = new ControlChangeContentToolDecoration(args);
-                            console.log("s'ha creat el nouControlCheck");
-                            //}
-                        }
+                        decoration = new ControlChangeContentToolDecoration(args);
 
                         break;
 
@@ -425,6 +358,7 @@ define([
                 }
 
                 if (decoration) {
+                    console.log("Type: ", type);
                     return mix(contentTool, decoration);
                     //return declare.safeMixin(contentTool, decoration);
                 }
@@ -453,11 +387,14 @@ define([
                     case this.generation.DOCUMENT:
                         return new DocumentContentTool(args);
 
+                    case this.generation.EDITOR:
+                        return new EditorContentToolDecoration(args);
+                        break;
+
                     default:
                         console.error('No existeix el tipus de ContentTool ' + type);
                 }
             }
-
 
         }
     }
