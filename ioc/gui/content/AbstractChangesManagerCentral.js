@@ -8,7 +8,7 @@
  * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
  * en el futur.
  *
- * Aquesta classe s'espera que es mescli amb un DocumentContentTool que incorpori un AbstractChangesManagerDecoration
+ * Aquesta classe s'espera que es mescli amb un DocumentContentTool que incorpori un AbstractChangesManager
  * per afegir-li les funcionalitats comunes dels documents editables de la pestanya central que son:
  *
  *      - Canviar el color de la pestanya a vermell quan hi han canvis
@@ -18,12 +18,11 @@
  *
  * Les crides a aquests mètodes es faran desde la clase decorada.
  *
- * @class EditorContentToolDecoration
- * @extends DocumentContentTool, AbstractChangesManagerDecoration
+ * @class AbstractChangesManagerCentral
+ * @extends DocumentContentTool, AbstractChangesManager
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
  * @abstract
- * @see contentToolFactory.decorate()
  */
 
     //define([], function () {
@@ -84,10 +83,10 @@
 
 define([
     "dojo/_base/declare",
-    "ioc/gui/content/AbstractChangesManagerDecoration",
-], function (declare, AbstractChangesManagerDecoration) {
+    "ioc/gui/content/AbstractChangesManager",
+], function (declare, AbstractChangesManager) {
 
-    return declare([AbstractChangesManagerDecoration], {
+    return declare([AbstractChangesManager], {
 
         /**
          * Accio a realitzar quan hi han canvis al document.

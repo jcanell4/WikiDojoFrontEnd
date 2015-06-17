@@ -86,23 +86,6 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
-                //var args = {
-                //        ns:         content.ns,
-                //        id:         content.id,
-                //        title:      content.title,
-                //        content:    content.content,
-                //        closable:   true,
-                //        dispatcher: dispatcher
-                //    },
-                //    originalContent = this._extractContentFromNode(content.editor.editorNode),
-                //    argsEditor = {
-                //        originalContent: originalContent
-                //    };
-
-                //return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args)
-                //    .decorate(contentToolFactory.decoration.EDITOR, argsEditor);
-
-
                 var args = {
                         ns:         content.ns,
                         id:         content.id,
@@ -111,7 +94,7 @@ define([
                         closable:   true,
                         dispatcher: dispatcher,
                         originalContent : this._extractContentFromNode(content.editor.editorNode)
-                    }
+                    };
 
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             },

@@ -158,7 +158,7 @@ define([
              * @protected
              */
             render: function () {
-                console.log("AbstractContentTool#render()", this.id);
+                console.log("AbstractContentTool#render", this.id);
                 this.set('content', this.renderEngine(this.data));
             },
 
@@ -221,8 +221,7 @@ define([
              * @override
              */
             onLoad: function () {
-                console.log("AbstractContentTool#onLoad");
-                //this.postLoad();
+                //console.log("AbstractContentTool#onLoad");
             },
 
             /**
@@ -347,51 +346,50 @@ define([
             },
             
             _destroyContentTool: function(){
+                //console.log("AbstractContentTool#destroyContentTool", this.id);
                 this.dispatchEvent('destroy', {id: this.id});
                 this.removeListenerHandlers();
                 this._onDestroy();
             },
 
             preRender: function () {
-                console.log("AbstractContentTool#preRender()", this.id);
+                console.log("AbstractContentTool#preRender", this.id);
                 this.removeListenerHandlers();
             },
 
             postRender: function () {
-                console.log("AbstractContentTool#postRender()", this.id);
+                console.log("AbstractContentTool#postRender", this.id);
             },
 
             addListenerHandler: function (handler) {
+                //console.log("AbstractContentTool#addListenerHandler", this.id, handler);
                 if (Array.isArray(handler)) {
                     this._setListenerHandlers(this._getListenerHandlers().concat(handler));
                 } else {
                     this._getListenerHandlers().push(handler);
                 }
-                console.log("AbstractContentToolListenersManagement#addListenerHandler", this.id, handler);
-
             },
 
             removeListenerHandlers: function () {
-                console.log("AbstractContentToolListenersManagement#removeListenerHandlers()", this._getListenerHandlers() );
+                //console.log("AbstractContentTool#removeListenerHandlers()", this.id, this._getListenerHandlers() );
 
                 this._getListenerHandlers().forEach(function (handler) {
                     handler.remove();
-                    //console.log("Eliminat");
                 });
 
                 this._setListenerHandlers([]);
             },
 
             _getListenerHandlers: function () {
-                //console.log("AbstractContentToolListenersManagement#_getListenerHandlers()", this.listenerHandlers);
+                //console.log("AbstractContentTool#_getListenerHandlers()", this.listenerHandlers);
                 return (this.listenerHandlers ? this.listenerHandlers : []);
-
             },
 
             _setListenerHandlers: function (listenerHandlers) {
                 this.listenerHandlers = listenerHandlers;
-                //console.log("AbstractContentToolListenersManagement#_setListenerHandlers()", listenerHandlers);
+                //console.log("AbstractContentTool#_setListenerHandlers()", listenerHandlers);
             }
+
 
 
         });

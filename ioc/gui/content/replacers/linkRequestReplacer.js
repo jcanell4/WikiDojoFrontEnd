@@ -23,12 +23,10 @@ define(["dojo/_base/event",
         var query = null,
             node = dom.byId(this.id);
 
-        console.log("S'ha creat un linkReplacer per ", this.id);
+        //console.log("S'ha creat un linkReplacer per ", this.id);
 
         return [on(node, 'a:' + params.trigger, function (e) {
-            //console.log("link click");
-
-
+            //console.log("S'ha fet click a un link");
 
             var arr = domAttr.get(this, "href").split("?"),
                 originalUrlBase = params.request.urlBase,

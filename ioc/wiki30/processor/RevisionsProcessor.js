@@ -61,7 +61,6 @@ define([
                     //console.log("Creat ContentTool: ", contentTool);
                     nodeMetaInfo.addChild(contentTool);
 
-
                 }
 
                 selectedPane = contentCache.getCurrentId("metadataPane");
@@ -157,7 +156,9 @@ define([
                                 selector: 'click',
                                 volatile: true,
                                 callback: function () {
+                                    this.updating = true;
                                     this.render();
+                                    this.updating = false;
                                     console.log(" *** Exemple 2: click al div superior de la pàgina provoca un render() ***");
                                 }
 

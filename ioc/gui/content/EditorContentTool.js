@@ -7,21 +7,21 @@
  * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
  * amb un ACE-Editor.
  *
- * @class EditorContentToolDecoration, ContentToolCentralDecorator
- * @extends DocumentContentTool
+ * @class EditorContentTool
+ * @extends DocumentContentTool, AbstractChangesManagerCentral
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
- * @see contentToolFactory.decorate()
+ * @see contentToolFactory.generate()
  */
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "dojo/on",
     "ioc/gui/content/DocumentContentTool",
-    "ioc/gui/content/AbstractContentToolCentralDecoration"
-], function (declare, lang, on, DocumentContentTool, AbstractContentToolCentralDecoration) {
+    "ioc/gui/content/AbstractChangesManagerCentral"
+], function (declare, lang, on, DocumentContentTool, AbstractChangesManagerCentral) {
 
-    return declare([DocumentContentTool, AbstractContentToolCentralDecoration],
+    return declare([DocumentContentTool, AbstractChangesManagerCentral],
 
         /**
          * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.

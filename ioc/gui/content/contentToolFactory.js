@@ -18,15 +18,15 @@ define([
         "ioc/gui/content/ContentTool",
         "ioc/gui/content/DocumentContentTool",
         "ioc/gui/content/MetaInfoContentTool",
-        "ioc/gui/content/EditorContentToolDecoration",
+        "ioc/gui/content/EditorContentTool",
         "ioc/gui/content/requestReplacerFactory",
         "dojo/query", // Encara que no es cridi el dojo/query es necessari per que funcione la delegació dels listeners
         "dojo/on",
         "dojo/dom",
-    ], function (lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentToolDecoration,
+    ], function (lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentTool,
                  requestReplacerFactory, dojoQuery, on, dom ) {
 
-        var patch = function (source, target) {
+        var patch = function (target, source) {
                 return function () {
                     source.apply(this, arguments);
                     return target.apply(this, arguments);
@@ -36,8 +36,6 @@ define([
             mix = function (target, source) {
                 var targetProp, sourceProp;
 
-                console.log("Mixing!");
-
                 for (var prop in source) {
                     targetProp = target[prop];
                     sourceProp = source[prop];
@@ -46,8 +44,8 @@ define([
                         target[prop] = sourceProp;
 
                     } else if (typeof source[prop] === 'function') {
-                        console.log("Fent patch per funció: ", prop);
-                        target[prop] = patch(sourceProp, targetProp);
+                        //console.log("Aplicant patch per funció: ", prop);
+                        target[prop] = patch(targetProp, sourceProp);
 
                     } else if (Array.isArray(source[prop])) {
                         console.warn("S'ha decorat amb un array, el valor reemplaçarà als enteriors.");
@@ -203,8 +201,6 @@ define([
                 _replaceContent = function () {
                     var handler;
 
-
-                    console.log("Request replacers: ", replacers);
                     for (var type in replacers) {
                         var replacer = replacers[type],
                             params = replacer.params;
@@ -224,7 +220,6 @@ define([
                         }
 
                     }
-                    console.log("Sortint");
                 };
 
             // si no existeix el requester es genera un de nou
@@ -263,7 +258,6 @@ define([
         return {
             /** @enum */
             decoration: {
-                //EDITOR:          'editor',
                 REQUEST:         'request',
                 REQUEST_LINK:    'request_link',
                 REQUEST_FORM:    'request_form',
@@ -275,7 +269,7 @@ define([
                 BASE:     'base',
                 META:     'meta',
                 DOCUMENT: 'document',
-                EDITOR:    'editor',
+                EDITOR:    'editor'
             },
 
             /**
@@ -301,10 +295,6 @@ define([
                 }
 
                 switch (type) {
-
-                    //case this.decoration.EDITOR:
-                    //    decoration = new EditorContentToolDecoration(args);
-                    //    break;
 
                     case this.decoration.REQUEST:
                         decoration = new RequestContentToolDecoration(args);
@@ -358,7 +348,7 @@ define([
                 }
 
                 if (decoration) {
-                    console.log("Type: ", type);
+                    //console.log("Type: ", type);
                     return mix(contentTool, decoration);
                     //return declare.safeMixin(contentTool, decoration);
                 }
@@ -388,7 +378,7 @@ define([
                         return new DocumentContentTool(args);
 
                     case this.generation.EDITOR:
-                        return new EditorContentToolDecoration(args);
+                        return new EditorContentTool(args);
                         break;
 
                     default:

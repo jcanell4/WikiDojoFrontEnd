@@ -11,12 +11,11 @@
  * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
  * amb un ACE-Editor.
  *
- * @class AbstractChangesManagerDecoration
+ * @class AbstractChangesManager
  * @extends ContentTool
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
  * @abstract
- * @see contentToolFactory.decorate()
  */
 
 //define([], function () {
