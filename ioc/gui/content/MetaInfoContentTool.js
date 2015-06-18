@@ -15,11 +15,12 @@ define([
          * esdeveniments adequats quan hi ha canvis, es reinicien els canvis o es tanca el document a més de exposar
          * el mètode setCurrentMètode() que estableix aquest document com actiu per a la aplicació.
          *
-         * @class DocumentContentTool
+         * @class MetaInfoContentTool
          * @extends ContentTool
          * @author Xavier García <xaviergaro.dev@gmail.com>
          * @private
          * @see contentToolFactory.generate()
+         * @deprecated
          */
         {
                         /**
@@ -94,6 +95,6 @@ define([
                     if (data.id == this.docId && this.domNode) {
                         this.hideContent();
                     }
-                }                                
+                }
         });
 });

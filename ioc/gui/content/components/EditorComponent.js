@@ -7,7 +7,7 @@
  * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
  * amb un ACE-Editor.
  *
- * @class EditorContentTool
+ * @class EditorComponent
  * @extends DocumentContentTool, AbstractChangesManagerCentral
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
@@ -16,12 +16,10 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-    "dojo/on",
-    "ioc/gui/content/DocumentContentTool",
-    "ioc/gui/content/AbstractChangesManagerCentral"
-], function (declare, lang, on, DocumentContentTool, AbstractChangesManagerCentral) {
+    "dojo/on"
+], function (declare, lang, on) {
 
-    return declare([DocumentContentTool, AbstractChangesManagerCentral],
+    return declare(null,
 
         /**
          * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
@@ -32,10 +30,9 @@ define([
          * Aquesta decoració s'ha d'aplicar a un DocumentContentTool o que afegeixi un métode removeState() per poder
          * realitzar la comprovació de canvis abans de tancar-se.
          *
-         * @class EditorContentTool
+         * @class EditorComponent
          * @extends DocumentContentTool, AbstractChangesManagerDecoration
          * @private
-         * @deprecated
          */
         {
             /**
@@ -127,7 +124,7 @@ define([
              * Retorna el text contingut al editor per la id passada com argument o la del id del document actual si
              * no s'especifica.
              *
-             * TODO[Xavi] Això es propi només del EditorContentTool, no es global
+             * TODO[Xavi] Això es propi només del EditorComponent, no es global
              *
              * @param {string?} id - id del document del que volem recuperar el contingut
              * @returns {string|null} - Text contingut al editor

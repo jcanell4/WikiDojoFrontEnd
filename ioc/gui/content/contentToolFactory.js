@@ -23,8 +23,12 @@ define([
         "dojo/query", // Encara que no es cridi el dojo/query es necessari per que funcione la delegació dels listeners
         "dojo/on",
         "dojo/dom",
-    ], function (lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentTool,
-                 requestReplacerFactory, dojoQuery, on, dom ) {
+        "ioc/gui/content/components/MetaInfoComponent",
+        "ioc/gui/content/components/DocumentComponent",
+        "ioc/gui/content/components/ChangesManagerCentralComponent",
+        "ioc/gui/content/components/EditorComponent",
+    ], function (lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentTool, requestReplacerFactory,
+                 dojoQuery, on, dom, MetaInfoComponent, DocumentComponent, ChangesManagerCentralComponent, EditorComponent) {
 
         var patch = function (target, source) {
                 return function () {
@@ -269,7 +273,7 @@ define([
                 BASE:     'base',
                 META:     'meta',
                 DOCUMENT: 'document',
-                EDITOR:    'editor'
+                EDITOR:   'editor'
             },
 
             /**
@@ -290,7 +294,7 @@ define([
 
 
                 // Aquesta comprovació es genèrica per tots els decoradors de tipus request
-                if (type.indexOf("request")>-1 && !args.replacers) {
+                if (type.indexOf("request") > -1 && !args.replacers) {
                     args.replacers = {};
                 }
 
@@ -369,23 +373,70 @@ define([
 
                 switch (type) {
                     case this.generation.BASE:
-                        return new ContentTool(args);
+                        return this.generateClass(args)
+                            .build();
+                    //return new ContentTool(args);
 
                     case this.generation.META:
-                        return new MetaInfoContentTool(args);
+                        return this.generateClass(args)
+                            .decorateClass(MetaInfoComponent)
+                            .build();
+                    //return new MetaInfoContentTool(args);
 
                     case this.generation.DOCUMENT:
-                        return new DocumentContentTool(args);
+                        return this.generateClass(args)
+                            .decorateClass('DocumentComponent')
+                            //.decorateClass(DocumentComponent)
+                            .build();
+                    //return new DocumentContentTool(args);
 
                     case this.generation.EDITOR:
-                        return new EditorContentTool(args);
+
+                        return this.generateClass(args)
+                            .decorateClass(DocumentComponent)
+                            .decorateClass(ChangesManagerCentralComponent)
+                            .decorateClass(EditorComponent)
+                            .build();
+
+                        //return new EditorContentTool(args);
                         break;
 
                     default:
                         console.error('No existeix el tipus de ContentTool ' + type);
                 }
-            }
+            },
 
+            generateClass: function (args) {
+
+                args.decorator = this;
+
+                /**
+                 * Builder que ens permet construir la classe personalitzada
+                 */
+                return {
+
+                    classes: [],
+
+                    decorateClass: function (klass) {
+                        var self = this;
+
+                        if (typeof klass === 'string') {
+                            require(["ioc/gui/content/components/" + klass], function (klazz) {
+                                self.classes.push(klazz)
+                            });
+                        } else {
+                            this.classes.push(klass);
+                        }
+
+                        return this;
+                    },
+
+
+                    build: function () {
+                        return new (ContentTool.createSubclass(this.classes))(args);
+                    }
+                }
+            }
         }
     }
 );

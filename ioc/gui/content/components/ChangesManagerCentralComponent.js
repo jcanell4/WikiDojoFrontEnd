@@ -23,7 +23,6 @@
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
  * @abstract
- * @deprecated
  */
 
 define([
