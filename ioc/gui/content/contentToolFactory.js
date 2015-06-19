@@ -16,19 +16,16 @@
 define([
         "dojo/_base/lang",
         "ioc/gui/content/ContentTool",
-        "ioc/gui/content/DocumentContentTool",
-        "ioc/gui/content/MetaInfoContentTool",
-        "ioc/gui/content/EditorContentTool",
         "ioc/gui/content/requestReplacerFactory",
         "dojo/query", // Encara que no es cridi el dojo/query es necessari per que funcione la delegació dels listeners
         "dojo/on",
         "dojo/dom",
-        "ioc/gui/content/components/MetaInfoComponent",
-        "ioc/gui/content/components/DocumentComponent",
-        "ioc/gui/content/components/ChangesManagerCentralComponent",
-        "ioc/gui/content/components/EditorComponent",
-    ], function (lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentTool, requestReplacerFactory,
-                 dojoQuery, on, dom, MetaInfoComponent, DocumentComponent, ChangesManagerCentralComponent, EditorComponent) {
+        "ioc/gui/content/subclasses/MetaInfoSubclass",
+        "ioc/gui/content/subclasses/DocumentSubclass",
+        "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
+        "ioc/gui/content/subclasses/EditorSubclass",
+    ], function (lang, ContentTool, requestReplacerFactory,
+                 dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, ChangesManagerCentralSubclass, EditorSubclass) {
 
         var patch = function (target, source) {
                 return function () {
@@ -222,7 +219,6 @@ define([
                             delete(replacers[type]);
 
                         }
-
                     }
                 };
 
@@ -292,7 +288,6 @@ define([
                 var decoration;
                 args = args ? args : {};
 
-
                 // Aquesta comprovació es genèrica per tots els decoradors de tipus request
                 if (type.indexOf("request") > -1 && !args.replacers) {
                     args.replacers = {};
@@ -352,9 +347,7 @@ define([
                 }
 
                 if (decoration) {
-                    //console.log("Type: ", type);
                     return mix(contentTool, decoration);
-                    //return declare.safeMixin(contentTool, decoration);
                 }
                 else {
                     return contentTool;
@@ -368,74 +361,73 @@ define([
              * @param {*} args -
              * @returns {ContentTool} - ContentTool instanciat
              */
-            generate: function (type, args) {
+            generate:    function (type, args) {
                 args.decorator = this;
+                return new (this.createClass(type))(args);
+            },
+
+            // TODO[Xavi] Cap de les classes actuals requereix l'us dels arguments, però espoden afegir
+            createClass: function (type, args) {
+                var GeneratedContentTool = null,
+                    base = ContentTool;
 
                 switch (type) {
                     case this.generation.BASE:
-                        return this.generateClass(args)
-                            .build();
-                    //return new ContentTool(args);
+                        GeneratedContentTool = base;
+                        break;
 
                     case this.generation.META:
-                        return this.generateClass(args)
-                            .decorateClass(MetaInfoComponent)
-                            .build();
-                    //return new MetaInfoContentTool(args);
+                        GeneratedContentTool = base
+                            .createSubclass(MetaInfoSubclass);
+                        break;
 
                     case this.generation.DOCUMENT:
-                        return this.generateClass(args)
-                            .decorateClass('DocumentComponent')
-                            //.decorateClass(DocumentComponent)
-                            .build();
-                    //return new DocumentContentTool(args);
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass);
+                        break;
 
                     case this.generation.EDITOR:
-
-                        return this.generateClass(args)
-                            .decorateClass(DocumentComponent)
-                            .decorateClass(ChangesManagerCentralComponent)
-                            .decorateClass(EditorComponent)
-                            .build();
-
-                        //return new EditorContentTool(args);
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(ChangesManagerCentralSubclass)
+                            .createSubclass(EditorSubclass);
                         break;
 
                     default:
-                        console.error('No existeix el tipus de ContentTool ' + type);
+                        console.error('No existeix el tipus de ContentTool: ' + type);
                 }
-            },
 
-            generateClass: function (args) {
-
-                args.decorator = this;
-
-                /**
-                 * Builder que ens permet construir la classe personalitzada
-                 */
-                return {
-
-                    classes: [],
-
-                    decorateClass: function (klass) {
-                        var self = this;
-
-                        if (typeof klass === 'string') {
-                            require(["ioc/gui/content/components/" + klass], function (klazz) {
-                                self.classes.push(klazz)
-                            });
-                        } else {
-                            this.classes.push(klass);
-                        }
-
-                        return this;
-                    },
+                console.log("Generat");
+                return GeneratedContentTool;
 
 
-                    build: function () {
-                        return new (ContentTool.createSubclass(this.classes))(args);
-                    }
-                }
+                ///**
+                // * Builder que ens permet construir la classe personalitzada
+                // */
+                //return {
+                //
+                //    classes: [],
+                //
+                //    decorateClass: function (klass) {
+                //        var self = this;
+                //
+                //        if (typeof klass === 'string') {
+                //            require(["ioc/gui/content/subclasses/" + klass], function (klazz) {
+                //                self.classes.push(klazz)
+                //            });
+                //        } else {
+                //            this.classes.push({});
+                //        }
+                //
+                //        return this;
+                //    },
+                //
+                //
+                //    //// fora, retorna
+                //    //build: function () {
+                //    //    return new (ContentTool.createSubclass(this.classes))(args); // falta afegir Javascript object
+                //    //}
+                //}
             }
         }
     }

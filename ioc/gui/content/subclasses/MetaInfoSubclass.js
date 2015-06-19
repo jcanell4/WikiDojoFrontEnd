@@ -7,7 +7,7 @@ define([
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
          *
-         * @class MetaInfoComponent
+         * @class MetaInfoSubclass
          * @extends ContentTool
          * @author Xavier García <xaviergaro.dev@gmail.com>
          * @private

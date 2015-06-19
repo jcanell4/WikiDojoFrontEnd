@@ -8,8 +8,7 @@ define([
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
          *
          *
-         * @class DocumentComponent
-         * @extends ContentTool
+         * @class DocumentSubclass
          * @author Xavier García <xaviergaro.dev@gmail.com>
          * @private
          * @see contentToolFactory.generate()

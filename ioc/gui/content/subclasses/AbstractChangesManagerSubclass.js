@@ -11,7 +11,7 @@
  * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
  * amb un ACE-Editor.
  *
- * @class AbstractChangesManager
+ * @class AbstractChangesManagerSubclass
  * @extends ContentTool
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private

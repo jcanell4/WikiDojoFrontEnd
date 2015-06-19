@@ -18,20 +18,19 @@
  *
  * Les crides a aquests mètodes es faran desde la clase decorada.
  *
- * @class AbstractChangesManagerCentral
- * @extends DocumentContentTool, AbstractChangesManager
+ * @class AbstractChangesManagerCentralSubclass
+ * @extends AbstractChangesManagerSubclass
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
  * @abstract
- * @deprecated
  */
 
 define([
     "dojo/_base/declare",
-    "ioc/gui/content/AbstractChangesManager",
-], function (declare, AbstractChangesManager) {
+    "ioc/gui/content/subclasses/AbstractChangesManagerSubclass",
+], function (declare, AbstractChangesManagerSubclass) {
 
-    return declare([AbstractChangesManager], {
+    return declare([AbstractChangesManagerSubclass], {
 
         /**
          * Accio a realitzar quan hi han canvis al document.
