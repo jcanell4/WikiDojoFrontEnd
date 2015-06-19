@@ -397,7 +397,6 @@ define([
                         console.error('No existeix el tipus de ContentTool: ' + type);
                 }
 
-                console.log("Generat");
                 return GeneratedContentTool;
 
 
