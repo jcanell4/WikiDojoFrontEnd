@@ -60,6 +60,12 @@ define([
                             //currentMetaContent.docId = content.id;
 
                             if(currentMetaContent.id === "metaMedia"){
+                                
+                                /*
+                                 * TO DO
+                                 * Miguel Angel 20150605
+                                 * Queda pendent construir l'arbre com a decorator
+                                 */
                                 this._createNsTree(currentMetaContent, dispatcher, 'metaMedia');
                                 cp = this._createContentTool(newContent, dispatcher, 'metaMedia');
                                 //dialogTree.startup();
@@ -94,6 +100,10 @@ define([
                     nodeMetaInfo.selectChild(selectedPane);
                     dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", selectedPane);
                 }
+                
+                //Al fileupload expliquem que el nom per defecte és el nom del fitxer
+                var nameUpload = document.getElementById("upload__name");
+                nameUpload.placeholder = "Per defecte és el nom del fitxer";
                 
                 /*selectedPane = contentCache.getCurrentId("metaMedia");
 
@@ -206,16 +216,19 @@ define([
                     var divNsTree = domConstruct.toDom("<div id='media__tree'></div>");
 
                     self.dialogTree = new ContentTabDokuwikiNsTree({
-                        treeDataSource: 'lib/plugins/ajaxcommand/ajaxrest.php/ns_tree_rest/',
+                        treeDataSource: 'lib/plugins/ajaxcommand/ajaxrest.php/ns_mediatree_rest/',
                         onlyDirs:true,
                         processOnClickAndOpenOnClick:true
                     }).placeAt(divNsTree);
                 
                     self.dialogTree.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media" +
-                            '&do=media&list='+content.list+'&sort='+content.sort;
+                            '&do=media';
                     
                     self.dialogTree.getQuery = function(){
-                        return "id="+this.item.id+"&ns="+this.item.id+"&preserveMetaData=true";
+                        var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
+                        var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+                        return "id="+this.item.id+"&ns="+this.item.id+"&preserveMetaData=true"+
+                                '&list='+list+'&sort='+sort;
                     };
 
                     this.newContent = [];

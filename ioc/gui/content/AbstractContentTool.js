@@ -101,7 +101,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
              */
             onSelect: function () {
-                //console.log("AbstractContentTool#onSelect");
+                console.log("AbstractContentTool#onSelect");
                 this.dispatchEvent("content_selected", {id: this.id});
             },
 
@@ -109,7 +109,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat des-seleccionat.
              */
             onUnselect: function () {
-                //console.log("AbstractContentTool#onUnselect");
+                console.log("AbstractContentTool#onUnselect");
                 this.dispatchEvent("content_unselected", {id: this.id});
             },
 
@@ -196,7 +196,7 @@ define([
              * @override
              */
             onClose: function () {
-                //console.log("AbstractContentTool#onClose");
+                console.log("AbstractContentTool#onClose");
                 return true;
             },
 
