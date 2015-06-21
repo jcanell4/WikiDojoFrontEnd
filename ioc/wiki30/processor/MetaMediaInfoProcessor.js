@@ -40,7 +40,8 @@ define([
                     m,
                     currentPaneId,
                     defaultSelected,
-                    selectedPane;
+                    selectedPane,
+                    versioupload = null;
 
                 //dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
                 //contentCache.setCurrentId("metadataPane", null);
@@ -49,6 +50,11 @@ define([
                     if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
                         currentMetaContent = content.meta[m];
                         //widgetMetaInfo = registry.byId(content.meta[m].id);
+                            if(currentMetaContent.id === "metaMediafileupload"){
+                                if(currentMetaContent.versioupload){
+                                    versioupload = currentMetaContent.versioupload;
+                                }
+                            }
                                 /*
          * 20150430 Miguel Angel Lozano
          * Canvi per fer servir ContentTabDokuWikiNsTree
@@ -86,24 +92,34 @@ define([
                 
                 
                 
-
+                var nameUpload = document.getElementById("upload__name");
+                var ovwUpload = document.getElementById("dw__ow");
+                nameUpload.placeholder = "Per defecte és el nom del fitxer";
                 currentPaneId = dispatcher.getContentCache(content.docId).getCurrentId("metadataPane");
-                defaultSelected = "metaMedia";
-
-                if (!currentPaneId && defaultSelected) {
-                    dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", defaultSelected)
+                if(versioupload!=null){
+                    defaultSelected = "metaMediafileupload";
+                    selectedPane = "metaMediafileupload";
+                    var versiouploadArray = versioupload.split(":");
+                    var versiouploadIndex = versiouploadArray.length;
+                    nameUpload.value = versiouploadArray[versiouploadIndex -1]
+                    ovwUpload.checked = true;
+                }else{
+                    defaultSelected = "metaMedia";
+                    selectedPane = this._setSelectedPane(content.meta, [currentPaneId, defaultSelected]);
                 }
-
-                selectedPane = this._setSelectedPane(content.meta, [currentPaneId, defaultSelected]);
-
+                
                 if (selectedPane) {
                     nodeMetaInfo.selectChild(selectedPane);
                     dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", selectedPane);
                 }
+                if (!currentPaneId && defaultSelected) {
+                    dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", defaultSelected)
+                }
+
+
                 
                 //Al fileupload expliquem que el nom per defecte és el nom del fitxer
-                var nameUpload = document.getElementById("upload__name");
-                nameUpload.placeholder = "Per defecte és el nom del fitxer";
+                
                 
                 /*selectedPane = contentCache.getCurrentId("metaMedia");
 

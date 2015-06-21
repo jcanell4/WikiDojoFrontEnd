@@ -50,6 +50,17 @@ define([
         var domNode = dom.byId(id);        
         
         on(domNode, 'li:click', function(e){
+            var myAnchor = dwPageUi.getElementWhithNodeId(this,"A");            
+            var myAnchorArray = myAnchor.id.split(".");
+            var myAnchorIndex = myAnchorArray.length;
+            var myMime = myAnchorArray[myAnchorIndex -1];
+            var myDL = this.firstChild;           
+            var myDLT= myDL.title;            
+            if(myMime.toUpperCase() === "JPEG"){
+                dispatcher.getGlobalState().pages["media"][myDLT] = true;
+            }else{
+                dispatcher.getGlobalState().pages["media"][myDLT] = false;
+            }
             setCurrentElement(this);
             event.stop(e); 
         });

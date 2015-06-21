@@ -21,12 +21,13 @@ define([
     "ioc/gui/content/MetaInfoContentTool",
     "ioc/gui/content/EditorContentToolDecoration",
     "ioc/gui/content/requestReplacerFactory",
+    "ioc/gui/content/MediaDetailsContentToolDecoration",
     "ioc/gui/content/MetaMediaDetailsCTDecoration",
     "dojo/query", // Encara que no es cridi el dojo/query es necessari per que funcione la delegació dels listeners
     "dojo/on",
     "dojo/dom"
 ], function (declare, lang, ContentTool, DocumentContentTool, MetaInfoContentTool, EditorContentToolDecoration,
-             requestReplacerFactory, MetaMediaDetailsCTDecoration, dojoQuery, on, dom) {
+             requestReplacerFactory, MediaDetailsContentToolDecoration, MetaMediaDetailsCTDecoration, dojoQuery, on, dom) {
 
     var ControlChangeContentToolDecoration = declare(null, {
 

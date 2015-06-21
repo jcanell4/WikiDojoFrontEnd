@@ -21,10 +21,11 @@ define([
      * @params {trigger: string, request: {Request}, form} params: el trigger te el format: 'click'.
      */
     return function (params) {
-        var form = query(params.form),
+        var form = query(document.forms[params.form]),
             targetId = params.standbyTarget || params.request.dispatcher.containerNodeId;;
 
         on(form, 'input[type="submit"]:' + params.trigger, function (e) {
+            e.preventDefault();
 
             var query = "",
                 data = domForm.toQuery(this.form),

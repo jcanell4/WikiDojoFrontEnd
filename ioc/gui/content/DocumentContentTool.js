@@ -127,6 +127,15 @@ define([
             updateDocument: function (content) {
                 this.setData(content.content);
                 this.addDocument();
+            },
+            
+            /*
+             * 
+             */
+            
+            getDocumentId: function(){
+                return this.id;
             }
+            
         });
 });

@@ -94,6 +94,13 @@ define([
                     if (data.id == this.docId && this.domNode) {
                         this.hideContent();
                     }
-                }                                
+                },
+                
+                /*
+                 * 
+                 */
+                getDocumentId: function(){
+                    return this.docId;
+                }
         });
 });
