@@ -148,11 +148,17 @@ define([
                         docId:      docId,
                         action:     meta.action
                     };
-                var argsMetaMediaDetailsDecor = {
-                        elAlert: "un decorador amb esdeveniments"
-                    };
+
+                var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                var urlBase1 = urlBase+"&img="+docId+"&mediado=diff&do=media&tab_details=history&tab_files=files&image="+docId+"&ns="+content.ns;
+                var argsMediaDetailsDecor = {
+                    urlBase:  urlBase1,
+
+                    form: "page__revisions_"+docId
+                };
+
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
-                        .decorate(contentToolFactory.decoration.METAMEDIADETAILS, argsMetaMediaDetailsDecor);
+                        .decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsDecor);
             },
 
             /**

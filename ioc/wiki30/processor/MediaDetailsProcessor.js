@@ -27,6 +27,7 @@ define([
                                 //this._detailsProcess(value, dispatcher);
                                 this.inherited(arguments);
                             }
+                            dw_mediamanager.image_diff();
 
 
                         },
@@ -69,6 +70,11 @@ define([
                             this.inherited(arguments);
                             dispatcher.getGlobalState().pages[value.id]["action"] = "mediadetails";
                             dispatcher.getGlobalState().pages[value.id]["ns"] = value.ns;
+                            if(value.mediado){
+                                if(value.mediado === "diff"){
+                                    dispatcher.getGlobalState().pages[value.id]["mediado"] = value.mediado;
+                                }
+                            }
                         },
                         createContentTool: function (content, dispatcher) {
                             var args = {
