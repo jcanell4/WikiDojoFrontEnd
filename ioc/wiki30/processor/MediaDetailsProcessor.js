@@ -84,16 +84,23 @@ define([
                                 closable: true,
                                 dispatcher: dispatcher
                             };
+                            var argsMediaDetailsDecor = {
+                                id: content.id,
+                                urlBase:  urlBase1,
+                                
+                                form: "form_"+content.id
+                            };
                             var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
                             var urlBase1 = urlBase+"&img="+content.id+"&mediado=save&do=media&tab_details=view&tab_files=files&image="+content.id+"&ns="+content.ns;
-                            var argsMediaDetailsDecor = {
+                            var argsMediaDetailsForm = {
                                 urlBase:  urlBase1,
                                 
                                 form: "form_"+content.id
                             };
 
                             return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args)
-                                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsDecor);
+                                    .decorate(contentToolFactory.decoration.MEDIADETAILS, argsMediaDetailsDecor)
+                                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsForm);
                         }
                     });
             return ret;

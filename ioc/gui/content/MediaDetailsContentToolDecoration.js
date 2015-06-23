@@ -84,6 +84,22 @@ define([
             postLoad: function () {
                 //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
                 this.registerToChangesManager();
+                var rev = ["","Actual"];
+                var myNode =  document.getElementById("panelMedia_"+this.id);                
+                var revNodes = myNode.getElementsByClassName('wikilink1');
+                for(var i=0; i<revNodes.length; i++) {
+                    alert(revNodes[i].href );
+                    var hrefArrayPrev = revNodes[i].href.split("?");
+                    var hrefArrayAfter = hrefArrayPrev[1].split("&");
+                    var revArray = hrefArrayAfter[0];
+                    var revSplit = revArray.split("=");
+                    if(revSplit[0]==="rev"){
+                        rev[i] = revSplit[1];
+                    }
+                }
+                for(var i=0; i<rev.length; i++) {
+                    alert("rev["+i+"]="+rev[i]);
+                }
 
                 /*on(this.domNode, 'keyup', '#dw__upload:submit',  lang.hitch(this, this._checkChanges));
                 on(this.domNode, 'paste', lang.hitch(this, this._checkChanges));

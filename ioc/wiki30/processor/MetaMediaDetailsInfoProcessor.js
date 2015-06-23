@@ -152,13 +152,18 @@ define([
                 var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
                 var urlBase1 = urlBase+"&img="+docId+"&mediado=diff&do=media&tab_details=history&tab_files=files&image="+docId+"&ns="+content.ns;
                 var argsMediaDetailsDecor = {
+                    docId:      docId,
+                    ns:         content.ns
+                };
+                var argsMediaDetailsForm = {
                     urlBase:  urlBase1,
 
                     form: "page__revisions_"+docId
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
-                        .decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsDecor);
+                    .decorate(contentToolFactory.decoration.METAMEDIADETAILS, argsMediaDetailsDecor)
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsForm);
             },
 
             /**

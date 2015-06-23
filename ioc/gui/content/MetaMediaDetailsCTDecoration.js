@@ -17,8 +17,9 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "dojo/on",
+    "dojo/dom-attr",
     "ioc/gui/content/AbstractChangesManagerDecoration"
-], function (declare, lang, on, AbstractChangesManagerDecoration) {
+], function (declare, lang, on, domAttr, AbstractChangesManagerDecoration) {
 
     return declare([AbstractChangesManagerDecoration],
 
@@ -36,6 +37,7 @@ define([
          * @private
          */
         {
+            controlsChecked: 0,
             /**
              * El contingut original inicial s'ha de passar a travès del constructor dins dels arguments com la
              * propietat originalContent.
@@ -89,18 +91,67 @@ define([
                 on(this.domNode, 'paste', lang.hitch(this, this._checkChanges));
                 on(this.domNode, 'cut', lang.hitch(this, this._checkChanges));
                 on(this.domNode, 'focusout', lang.hitch(this, this._checkChanges));*/
-                on(this.domNode,'.provadetail:click',  lang.hitch(this, this._doClick));
+                on(this.domNode,'input[type="checkbox"]:change',  lang.hitch(this, this._doCheckCount));
+                on(this.domNode,'.wikilink1:click',  lang.hitch(this, this._doClickLink));
+                on(this.domNode,'.diff_link:click',  lang.hitch(this, this._doClickUll));
 
                 this.inherited(arguments);
             },
+            
+            _doCheckCount: function (evt) {
+                if (evt.target.checked && this.controlsChecked < 2) {
 
+                    this.controlsChecked++;
+
+                } else if (!evt.target.checked) {
+
+                    this.controlsChecked--;
+
+                } else {
+
+                    evt.target.checked = false;
+                    alert("Només es poden comparar les diferencies entre 2 versions alhora");
+                }
+            },
+            
             /**
              * Prova de clic a contingut
              *
              * @private
              */
-            _doClick: function () {
-                alert("Aquest és el media touch me"+this.domNode.id);
+            _doClickLink: function (evt) {
+                evt.preventDefault();
+                alert("Es pot seleccionar una versió a comparar amb el check o les ulleres.");
+            },
+            
+            _doClickUll: function (evt) {
+                evt.preventDefault();
+                var source = evt.target || evt.srcElement;
+                if(source.tagName.toUpperCase() != "A"){
+                    source = source.parentNode;
+                }
+                var arr = source.href.split("&");
+                //var arr = domAttr.get(this, "href").split("?");
+                var arr2 = arr[2].split("=");
+                var rev = arr2[1];
+                this._createRequest();
+                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                var query = "img="+this.docId+"&rev="+rev+"&mediado=diff&do=media&tab_details=history&tab_files=files&image="+this.docId+"&ns="+this.ns;
+                this.requester.sendRequest(query);
+            },
+
+            _createRequest: function () {
+
+                require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
+                    this.requester = new Request();
+
+                    this.requester.updateSectok = function (sectok) {
+                        this.sectok = sectok;
+                    };
+
+                    this.requester.sectok = this.requester.dispatcher.getSectok();
+                    this.requester.dispatcher.toUpdateSectok.push(this.requester);
+                }));
             },
 
             /**
