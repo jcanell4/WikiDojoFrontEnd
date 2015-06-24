@@ -17,8 +17,9 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "dojo/on",
+    "dojo/dom",
     "ioc/gui/content/AbstractChangesManagerDecoration"
-], function (declare, lang, on, AbstractChangesManagerDecoration) {
+], function (declare, lang, on, dom, AbstractChangesManagerDecoration) {
 
     return declare([AbstractChangesManagerDecoration],
 
@@ -82,13 +83,15 @@ define([
              * @override
              */
             postLoad: function () {
-                //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
+                //Les funcions natives posen els id dels forms fixes, com per exemple "mediamanager__btn_restore"
+                //Al servidor s'ha afegit l'id de la imatge
+                //No obstant això, pel formulari de restore, encara li hem d'afegir la revisió (rev)
                 this.registerToChangesManager();
                 var rev = ["","Actual"];
                 var myNode =  document.getElementById("panelMedia_"+this.id);                
                 var revNodes = myNode.getElementsByClassName('wikilink1');
                 for(var i=0; i<revNodes.length; i++) {
-                    alert(revNodes[i].href );
+                    revNodes[i].target = "_blank";
                     var hrefArrayPrev = revNodes[i].href.split("?");
                     var hrefArrayAfter = hrefArrayPrev[1].split("&");
                     var revArray = hrefArrayAfter[0];
@@ -97,26 +100,97 @@ define([
                         rev[i] = revSplit[1];
                     }
                 }
-                for(var i=0; i<rev.length; i++) {
-                    alert("rev["+i+"]="+rev[i]);
+                //Si s'està comparant la versió actual amb ella mateixa, es suprimeix els botons de la primera versió
+                if(rev[0]===""){
+                    var formDelete = document.getElementById("mediamanager__btn_delete_"+this.id);
+                    formDelete.parentNode.removeChild(formDelete);
+                    var formUpdate = document.getElementById("mediamanager__btn_update_"+this.id);
+                    formUpdate.parentNode.removeChild(formUpdate);                    
+                }
+                var i = 0;
+                var formRestore = document.getElementById("mediamanager__btn_restore_"+this.id);
+                while (formRestore || i>1){
+                    formRestore.id = "mediamanager__btn_restore_"+this.id + "_"+ rev[i];
+                    formRestore.action = "";
+                    //
+                    //on(this.domNode,'#'+formRestore.id+':submit',  lang.hitch(this, this._doFormRestore));
+                    on(dom.byId(formRestore.id),"submit",  lang.hitch(this, this._doFormRestore));
+                    formRestore = document.getElementById("mediamanager__btn_restore_"+this.id);
+                    i++;
                 }
 
-                /*on(this.domNode, 'keyup', '#dw__upload:submit',  lang.hitch(this, this._checkChanges));
-                on(this.domNode, 'paste', lang.hitch(this, this._checkChanges));
-                on(this.domNode, 'cut', lang.hitch(this, this._checkChanges));
-                on(this.domNode, 'focusout', lang.hitch(this, this._checkChanges));*/
-                on(this.domNode,'.panelContent:click',  lang.hitch(this, this._doClick));
-
+                //on(this.domNode,'.panelContent:click',  lang.hitch(this, this._doClick));
+                
+                on(dom.byId("mediamanager__btn_delete_"+this.id),"submit",  lang.hitch(this, this._doFormDelete));
+                on(dom.byId("mediamanager__btn_update_"+this.id),"submit",  lang.hitch(this, this._doFormUpload));
                 this.inherited(arguments);
             },
 
-            /**
-             * Prova de clic a contingut
-             *
-             * @private
-             */
-            _doClick: function () {
-                alert("Aquest és el clic");
+
+        /*on(form, 'input[type="submit"]:' + params.trigger, function (e) {
+            e.preventDefault();
+
+            var query = "",
+                data = domForm.toQuery(this.form),
+                originalUrlBase = params.request.urlBase;
+
+            params.request.urlBase = params.urlBase;
+
+            data += "&" + this.name + "=" + domForm.fieldToObject(this);
+            if (data) {
+                query = data;
+            }
+
+            params.request.setStandbyId(targetId);
+            params.request.sendRequest(query);
+            event.stop(e);
+
+            params.request.urlBase = originalUrlBase;
+        }),*/
+            _doFormRestore: function (evt) {
+                evt.preventDefault();
+                var source = evt.target || evt.srcElement;
+                this._createRequest();
+                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                var query = "img="+this.id+"&do=media&tab_details=history&tab_files=files&image="+this.id+"&ns="+this.ns;
+                this.requester.sendForm(source.id, query);
+            },
+            _doFormDelete: function (evt) {
+                evt.preventDefault();
+                var source = evt.target || evt.srcElement;
+                var confirmar=confirm("Suprimiu aquesta entrada?");
+                if (confirmar){ 
+                    this._createRequest();
+                    this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                    var query = "img="+this.id+"&do=media&delete="+this.id+"&image="+this.id+"&ns="+this.ns;
+                    this.requester.sendForm(source.id, query); 
+                }
+                                              
+            },
+            _doFormUpload: function (evt) {
+                evt.preventDefault();
+                var ns = this.dispatcher.getGlobalState().getContent(this.dispatcher.getGlobalState().currentTabId)["ns"];
+                var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
+                var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+                this._createRequest();
+                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media";
+                var query = 'id=' + this.id + '&ns=' + ns + '&do=media&list='+list+'&sort='+sort+"&versioupload=true";
+                this.requester.sendRequest(query);                
+            },
+            
+
+            _createRequest: function () {
+
+                require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
+                    this.requester = new Request();
+
+                    this.requester.updateSectok = function (sectok) {
+                        this.sectok = sectok;
+                    };
+
+                    this.requester.sectok = this.requester.dispatcher.getSectok();
+                    this.requester.dispatcher.toUpdateSectok.push(this.requester);
+                }));
             },
 
             /**
@@ -142,60 +216,10 @@ define([
              * @private
              */
             _getCurrentContent: function () {
-                /*var contentCache = this.dispatcher.getContentCache(this.id),
-                    content;
 
-                try {
-                    if (contentCache.isAceEditorOn()) {
-                        content = contentCache.getEditor().iocAceEditor.getText();
-
-                    } else {
-                        content = contentCache.getEditor().$textArea.context.value;
-                    }
-
-                    content = '\n' + content + '\n';
-
-                } catch (error) {
-                    console.error("Error detectat: ", error);
-                }
-
-                return content;*/
             },
 
 
-            /**
-             * Al ser seleccionat aquest ContentTool estableix l'editor com a sel·leccionat.
-             *
-             * La primera vegada que es selecciona el content tool encara no es troba carregat al ContentCache per això
-             * s'ha de fer la comprovació.
-             *
-             * @override
-             */
-            /*onSelect: function () {
-                var contentCache = this.dispatcher.getContentCache(this.id);
-
-                if (contentCache && contentCache.getEditor()) {
-                    this.dispatcher.getContentCache(this.id).getEditor().select();
-                }
-
-                this.inherited(arguments);
-            },*/
-
-            /**
-             * Al ser des-seleccionat aquest ContentTool es des-selecciona l'editor.
-             *
-             * Ens assegurem que existeix l'editor abans de des-seleccionar-lo per evitar errors.
-             *
-             * @override
-             */
-            /*onUnselect: function () {
-                var contentCache = this.dispatcher.getContentCache(this.id);
-
-                if (contentCache && contentCache.getEditor()) {
-                    this.dispatcher.getContentCache(this.id).getEditor().unselect();
-                }
-
-                this.inherited(arguments);
-            }*/
+          
         });
 });
