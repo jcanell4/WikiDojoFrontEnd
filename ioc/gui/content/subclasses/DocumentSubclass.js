@@ -1,22 +1,14 @@
 define([
     "dojo/_base/declare",
-    "ioc/gui/content/ContentTool",
     "ioc/wiki30/DokuwikiContent",
-], function (declare, ContentTool, DokuwikiContent) {
+], function (declare, DokuwikiContent) {
 
-    return declare([ContentTool],
+    return declare(null,
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
          *
-         * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
-         * en el futur.
          *
-         * Aquesta classe extend el ContentTool per realitzar la gestió correcta dels documents disparant els
-         * esdeveniments adequats quan hi ha canvis, es reinicien els canvis o es tanca el document a més de exposar
-         * el mètode setCurrentMètode() que estableix aquest document com actiu per a la aplicació.
-         *
-         * @class DocumentContentTool
-         * @extends ContentTool
+         * @class DocumentSubclass
          * @author Xavier García <xaviergaro.dev@gmail.com>
          * @private
          * @see contentToolFactory.generate()
@@ -31,7 +23,7 @@ define([
              * @override
              */
             onDestroy: function () {
-                //console.log("DocumentContentTool#onDestroy");
+                //console.log("DocumentComponent#onDestroy");
                 this.removeState();
             },
 
@@ -74,7 +66,7 @@ define([
              * @override
              */
             onUnselect: function () {
-                //                console.log("DocumentContentTool#onUnselect");
+                //                console.log("DocumentComponent#onUnselect");
                 this.dispatchEvent("document_unselected", {id: this.id});
             },
 
@@ -92,7 +84,7 @@ define([
              * @override
              */
             onAttach: function () {
-                //                console.log("DocumentContentTool#onAttach");
+                //                console.log("DocumentComponent#onAttach");
                 this.addDocument();
             },
 

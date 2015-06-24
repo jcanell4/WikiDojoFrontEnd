@@ -92,15 +92,11 @@ define([
                         title:      content.title,
                         content:    content.content,
                         closable:   true,
-                        dispatcher: dispatcher
-                    },
-                    originalContent = this._extractContentFromNode(content.editor.editorNode),
-                    argsEditor = {
-                        originalContent: originalContent
+                        dispatcher: dispatcher,
+                        originalContent : this._extractContentFromNode(content.editor.editorNode)
                     };
 
-                return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args)
-                    .decorate(contentToolFactory.decoration.EDITOR, argsEditor);
+                return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             },
 
             _extractContentFromNode: function (parentNode) {

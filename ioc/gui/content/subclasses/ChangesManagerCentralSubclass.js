@@ -1,10 +1,14 @@
 /**
+ * Aquest métode es fa servir juntament amb extend(), els mètodes seràn reemplaçats, es a dir no continua
+ * la cadena de crides.
+ *
+ *
  * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
  *
  * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
  * en el futur.
  *
- * Aquesta classe s'espera que es mescli amb un DocumentContentTool que incorpori un AbstractChangesManagerDecoration
+ * Aquesta classe s'espera que es mescli amb un DocumentContentTool que incorpori un AbstractChangesManager
  * per afegir-li les funcionalitats comunes dels documents editables de la pestanya central que son:
  *
  *      - Canviar el color de la pestanya a vermell quan hi han canvis
@@ -14,18 +18,19 @@
  *
  * Les crides a aquests mètodes es faran desde la clase decorada.
  *
- * @class EditorContentToolDecoration
- * @extends DocumentContentTool, AbstractChangesManagerDecoration
+ * @class AbstractChangesManagerCentralSubclass
+ * @extends AbstractChangesManagerSubclass
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
  * @abstract
- * @see contentToolFactory.decorate()
  */
-define([
-    "dojo/_base/declare"
-], function (declare) {
 
-    return declare(null, {
+define([
+    "dojo/_base/declare",
+    "ioc/gui/content/subclasses/AbstractChangesManagerSubclass",
+], function (declare, AbstractChangesManagerSubclass) {
+
+    return declare([AbstractChangesManagerSubclass], {
 
         /**
          * Accio a realitzar quan hi han canvis al document.

@@ -17,13 +17,17 @@ define(["dojo/_base/event",
      * Es crea un backup del urlBase original abans d'establir el propi.
      *
      * @params {trigger: string, request: {Request}, urlBase: string, standbyTarget: string?} params: el trigger te el format: 'click', 'mouseover', etc.
+     * @return el listener que es pot fer servir com a referencia per eliminar-lo.
      */
     return function (params) {
         var query = null,
             node = dom.byId(this.id);
 
+        //console.log("S'ha creat un linkReplacer per ", this.id);
 
-        on(node, 'a:' + params.trigger, function (e) {
+        return [on(node, 'a:' + params.trigger, function (e) {
+            //console.log("S'ha fet click a un link");
+
             var arr = domAttr.get(this, "href").split("?"),
                 originalUrlBase = params.request.urlBase,
                 call = domAttr.get(this, "data-call"),
@@ -46,7 +50,7 @@ define(["dojo/_base/event",
             event.stop(e);
 
             params.request.urlBase = originalUrlBase;
-        });
+        })];
 
     }
 });

@@ -87,23 +87,8 @@ define([
             } else {
                 return generateFromContainer(container, args);
             }
-        },
-
-        /**
-         * Decora una ContainerContentTool amb una decoració del tipus adequat i valors especificats passats com argument.
-         *
-         * TODO[Xavi] Actualment no hi ha cap decorador aplicable als ContainerContentTool.
-         *
-         * @param {string} type - tipus de decoració a aplicar
-         * @param {ContainerContentTool} container
-         * @param {*} args - arguments necessaris per configurar la decoració
-         * @return {ContainerContentTool} - Contenidor decorat
-         * @protected
-         * @see ContainerContentTool.decorate()
-         */
-        decorate: function (type, container, args) {
-            console.error("Aquesta funció no està implementada encara");
         }
+
     }
 
 

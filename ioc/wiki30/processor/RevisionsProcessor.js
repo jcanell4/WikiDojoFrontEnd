@@ -58,7 +58,9 @@ define([
                     content.dispatcher = dispatcher;
 
                     contentTool = this.createContentTool(content, dispatcher, content.id);
+                    //console.log("Creat ContentTool: ", contentTool);
                     nodeMetaInfo.addChild(contentTool);
+
                 }
 
                 selectedPane = contentCache.getCurrentId("metadataPane");
@@ -111,7 +113,15 @@ define([
 
                                 selector: 'input.check:change',
 
+                                volatile: false,
+
                                 callback: function (evt) {
+
+                                    //console.log("Context:", this);
+
+                                    if (!this.controlsChecked) {
+                                        this.controlsChecked = 0;
+                                    }
 
                                     if (evt.target.checked && this.controlsChecked < 2) {
 
@@ -126,16 +136,41 @@ define([
                                         evt.target.checked = false;
                                         alert("Només es poden comparar les diferencies entre 2 documents alhora");
                                     }
-                                }
-                            }],
+                                },
 
-                        controlsChecked: 0
+
+                                reset: function (context) {
+                                    context.controlsChecked = 0;
+                                }
+
+                            }
+
+                        ]
+
+                    },
+
+                    args2 = {
+                        controlsToCheck:
+                            {
+                                node:     'topBloc',
+                                selector: 'click',
+                                volatile: true,
+                                callback: function () {
+                                    this.updating = true;
+                                    this.render();
+                                    this.updating = false;
+                                    console.log(" *** Exemple 2: click al div superior de la pàgina provoca un render() ***");
+                                }
+
+                            }
                     };
+
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
                     .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
                     .decorate(contentToolFactory.decoration.CONTROL_CHANGES, argsControlsToCheck)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
+                    .decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
             },
 
             /**

@@ -1,4 +1,8 @@
 /**
+ *
+ * Aquest métode es fa servir juntament amb extend(), els mètodes seràn reemplaçats, es a dir no continua
+ * la cadena de crides.
+ *
  * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
  *
  * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
@@ -7,15 +11,15 @@
  * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
  * amb un ACE-Editor.
  *
- * @class AbstractChangesManagerDecoration
+ * @class AbstractChangesManagerSubclass
  * @extends ContentTool
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
  * @abstract
- * @see contentToolFactory.decorate()
  */
+
 define([
-        "dojo/_base/declare"
+        "dojo/_base/declare",
     ], function (declare) {
 
         return declare(null, {

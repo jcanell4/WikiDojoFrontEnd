@@ -4,8 +4,9 @@ define([
     "ioc/wiki30/manager/EventObserver",
     "dojo/dom-style",
     "dojo/dom",
-    "ioc/gui/content/renderEngineFactory"
-], function (declare, ContentPane, EventObserver, domStyle, dom, renderEngineFactory) {
+    "ioc/gui/content/renderEngineFactory",
+    "dojo/aspect",
+], function (declare, ContentPane, EventObserver, domStyle, dom, renderEngineFactory, aspect) {
 
     return declare([ContentPane, EventObserver],
 
@@ -24,8 +25,11 @@ define([
          * @see contentToolFactory.generate()
          */
         {
+            /** @typedef {remove: function} Handler */
+
             "-chains-": {
-                onLoad: "after"
+                onAttach: "after",
+                render: "after"
             },
 
             /** @private*/
@@ -154,6 +158,7 @@ define([
              * @protected
              */
             render: function () {
+                console.log("AbstractContentTool#render", this.id);
                 this.set('content', this.renderEngine(this.data));
             },
 
@@ -166,13 +171,22 @@ define([
 
                 this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
 
+                // Establim els aspectes
+
+                aspect.after(this, "render", this.postRender);
+
+                aspect.before(this, "render", this.preRender);
+
                 this.watch("data", function () {
                     this.render();
                 });
 
                 if (this.data) {
+                    this.setData(this.data);
                     this.render();
                 }
+
+
             },
 
             /**
@@ -207,9 +221,7 @@ define([
              * @override
              */
             onLoad: function () {
-                // TODO[Xavi] Aquì s'han d'afegir els watchers i listeners comuns
                 //console.log("AbstractContentTool#onLoad");
-                this.postLoad();
             },
 
             /**
@@ -219,8 +231,8 @@ define([
              *
              * @protected
              */
-            postLoad: function () {
-                // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
+            postAttach: function () {
+                console.log("AbstractContentTool#postAttach", this.id);
             },
 
 
@@ -322,7 +334,8 @@ define([
              * @protected
              */
             onAttach: function () {
-                //console.log("AbstractContentTool#onAttach");
+                console.log("AbstractContentTool#onAttach");
+                this.postAttach();
             },
             
             onUnload: function () {
@@ -333,8 +346,51 @@ define([
             },
             
             _destroyContentTool: function(){
+                //console.log("AbstractContentTool#destroyContentTool", this.id);
                 this.dispatchEvent('destroy', {id: this.id});
+                this.removeListenerHandlers();
                 this._onDestroy();
             },
+
+            preRender: function () {
+                console.log("AbstractContentTool#preRender", this.id);
+                this.removeListenerHandlers();
+            },
+
+            postRender: function () {
+                console.log("AbstractContentTool#postRender", this.id);
+            },
+
+            addListenerHandler: function (handler) {
+                //console.log("AbstractContentTool#addListenerHandler", this.id, handler);
+                if (Array.isArray(handler)) {
+                    this._setListenerHandlers(this._getListenerHandlers().concat(handler));
+                } else {
+                    this._getListenerHandlers().push(handler);
+                }
+            },
+
+            removeListenerHandlers: function () {
+                //console.log("AbstractContentTool#removeListenerHandlers()", this.id, this._getListenerHandlers() );
+
+                this._getListenerHandlers().forEach(function (handler) {
+                    handler.remove();
+                });
+
+                this._setListenerHandlers([]);
+            },
+
+            _getListenerHandlers: function () {
+                //console.log("AbstractContentTool#_getListenerHandlers()", this.listenerHandlers);
+                return (this.listenerHandlers ? this.listenerHandlers : []);
+            },
+
+            _setListenerHandlers: function (listenerHandlers) {
+                this.listenerHandlers = listenerHandlers;
+                //console.log("AbstractContentTool#_setListenerHandlers()", listenerHandlers);
+            }
+
+
+
         });
 });

@@ -7,21 +7,19 @@
  * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
  * amb un ACE-Editor.
  *
- * @class EditorContentToolDecoration, ContentToolCentralDecorator
- * @extends DocumentContentTool
+ * @class EditorSubclass
+ * @extends DocumentSubclass, AbstractChangesManagerCentral
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
- * @see contentToolFactory.decorate()
+ * @see contentToolFactory.generate()
  */
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-    "dojo/on",
-    "ioc/gui/content/AbstractChangesManagerDecoration",
-    "ioc/gui/content/AbstractContentToolCentralDecoration"
-], function (declare, lang, on, AbstractChangesManagerDecoration, AbstractContentToolCentralDecoration) {
+    "dojo/on"
+], function (declare, lang, on) {
 
-    return declare([AbstractChangesManagerDecoration, AbstractContentToolCentralDecoration],
+    return declare(null,
 
         /**
          * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
@@ -32,7 +30,7 @@ define([
          * Aquesta decoració s'ha d'aplicar a un DocumentContentTool o que afegeixi un métode removeState() per poder
          * realitzar la comprovació de canvis abans de tancar-se.
          *
-         * @class EditorContentTool
+         * @class EditorComponent
          * @extends DocumentContentTool, AbstractChangesManagerDecoration
          * @private
          */
@@ -81,7 +79,7 @@ define([
              *
              * @override
              */
-            postLoad: function () {
+            postAttach: function () {
                 //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
                 this.registerToChangesManager();
 
@@ -126,7 +124,7 @@ define([
              * Retorna el text contingut al editor per la id passada com argument o la del id del document actual si
              * no s'especifica.
              *
-             * TODO[Xavi] Això es propi només del EditorContentTool, no es global
+             * TODO[Xavi] Això es propi només del EditorComponent, no es global
              *
              * @param {string?} id - id del document del que volem recuperar el contingut
              * @returns {string|null} - Text contingut al editor

@@ -74,7 +74,7 @@ define([
              *
              * @protected
              */
-            postLoad: function () {
+            postAttach: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
                 this.inherited(arguments);
             },
