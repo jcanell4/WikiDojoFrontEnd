@@ -139,6 +139,8 @@ define([
              * @protected
              */
             _createContentTool: function (content, dispatcher, docId) {
+                var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                var urlBase1 = urlBase+"&img="+docId+"&mediado=diff&do=media&tab_details=history&tab_files=files&image="+docId+"&ns="+content.ns;                
                 var meta = this._convertMetaData(content),
                     args = {
                         id:         meta.id,
@@ -146,24 +148,25 @@ define([
                         data:       meta.data,
                         dispatcher: dispatcher,
                         docId:      docId,
-                        action:     meta.action
+                        action:     meta.action,
+                        ns:         content.ns                        
                     };
 
-                var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
-                var urlBase1 = urlBase+"&img="+docId+"&mediado=diff&do=media&tab_details=history&tab_files=files&image="+docId+"&ns="+content.ns;
+
                 var argsMediaDetailsDecor = {
                     docId:      docId,
                     ns:         content.ns
                 };
+                var myForm = document.getElementById("page__revisions_"+docId);
                 var argsMediaDetailsForm = {
                     urlBase:  urlBase1,
 
-                    form: "page__revisions_"+docId
+                    form: myForm
                 };
 
-                return contentToolFactory.generate(contentToolFactory.generation.META, args)
-                    .decorate(contentToolFactory.decoration.METAMEDIADETAILS, argsMediaDetailsDecor)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsForm);
+                return contentToolFactory.generate(contentToolFactory.generation.METAMEDIADETAILS, args);
+                    //.decorate(contentToolFactory.decoration.METAMEDIADETAILS, argsMediaDetailsDecor)
+                    //.decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsForm);
             },
 
             /**

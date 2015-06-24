@@ -24,11 +24,11 @@ define([
         "ioc/gui/content/subclasses/DocumentSubclass",
         "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
         "ioc/gui/content/subclasses/EditorSubclass",
-        "ioc/gui/content/MediaDetailsContentToolDecoration",
-        "ioc/gui/content/MetaMediaDetailsCTDecoration"
+        "ioc/gui/content/subclasses/MediaDetailsSubclass",
+        "ioc/gui/content/subclasses/MetaMediaDetailsSubclass"
     ], function (lang, ContentTool, requestReplacerFactory,
                  dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, ChangesManagerCentralSubclass, EditorSubclass,
-                 MediaDetailsContentToolDecoration, MetaMediaDetailsCTDecoration) {
+                 MediaDetailsSubclass, MetaMediaDetailsSubclass) {
 
         var patch = function (target, source) {
                 return function () {
@@ -272,7 +272,9 @@ define([
                 BASE:     'base',
                 META:     'meta',
                 DOCUMENT: 'document',
-                EDITOR:   'editor'
+                EDITOR:   'editor',
+                MEDIADETAILS: 'mediadetails',
+                METAMEDIADETAILS: 'metamediadetails'
             },
 
             /**
@@ -336,16 +338,7 @@ define([
 
                         decoration = new RequestContentToolDecoration(args);
 
-                        break;
-                    case this.decoration.MEDIADETAILS:
-                        decoration = new MediaDetailsContentToolDecoration(args);
-
-                        break;
-                    case this.decoration.METAMEDIADETAILS:
-
-                        decoration = new MetaMediaDetailsCTDecoration(args);
-
-                        break;        
+                        break;       
 
                     case this.decoration.CONTROL_CHANGES:
 
@@ -403,6 +396,16 @@ define([
                             .createSubclass(DocumentSubclass)
                             .createSubclass(ChangesManagerCentralSubclass)
                             .createSubclass(EditorSubclass);
+                        break;
+                    case this.generation.MEDIADETAILS:
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(MediaDetailsSubclass);
+                        break;
+                    case this.generation.METAMEDIADETAILS:
+                        GeneratedContentTool = base
+                            .createSubclass(MetaInfoSubclass)
+                            .createSubclass(MetaMediaDetailsSubclass);
                         break;
 
                     default:

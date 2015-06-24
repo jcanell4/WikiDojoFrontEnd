@@ -77,12 +77,16 @@ define([
                             }
                         },
                         createContentTool: function (content, dispatcher) {
+                            var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                            var urlBase1 = urlBase+"&img="+content.id+"&mediado=save&do=media&tab_details=view&tab_files=files&image="+content.id+"&ns="+content.ns;
                             var args = {
                                 id: content.id,
                                 title: content.title,
                                 content: content.content,
                                 closable: true,
-                                dispatcher: dispatcher
+                                dispatcher: dispatcher,
+                                urlBase:  urlBase1,
+                                form: "form_"+content.id
                             };
                             var argsMediaDetailsDecor = {
                                 id: content.id,
@@ -90,17 +94,16 @@ define([
                                 
                                 form: "form_"+content.id
                             };
-                            var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
-                            var urlBase1 = urlBase+"&img="+content.id+"&mediado=save&do=media&tab_details=view&tab_files=files&image="+content.id+"&ns="+content.ns;
+                            var myForm = document.getElementById("form_"+content.id);
                             var argsMediaDetailsForm = {
                                 urlBase:  urlBase1,
                                 
-                                form: "form_"+content.id
+                                form: myForm
                             };
 
-                            return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args)
-                                    .decorate(contentToolFactory.decoration.MEDIADETAILS, argsMediaDetailsDecor)
-                                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsForm);
+                            return contentToolFactory.generate(contentToolFactory.generation.MEDIADETAILS, args);
+                                    //.decorate(contentToolFactory.decoration.MEDIADETAILS, argsMediaDetailsDecor)
+                                    //.decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsForm);
                         }
                     });
             return ret;
