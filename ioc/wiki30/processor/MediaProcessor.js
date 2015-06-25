@@ -54,25 +54,8 @@ define([
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
-                    // NO és necessita pq classe Document .decorate(contentToolFactory.decoration.DOCUMENT, args);
-            },
-            
-             /**
-              * REDEFINIT PER NO RETORNAR NULL
-             * Retorna la llista de tipus permesos. Aquest mètode s'ha de sobrescriure amb la lògica necessaria pels
-             * diferents processors.
-             *
-             * @params {*} content - objecte d'on es poden extreure les dades necessaries per generar la llista de tipus
-             * permesos
-             * @returns {string|string[]}
-             * @protected
-             */
-            getAllowedTypes: function (content) {
-                return this.type;
             }
-            
             
         });
     return ret;
 });
-

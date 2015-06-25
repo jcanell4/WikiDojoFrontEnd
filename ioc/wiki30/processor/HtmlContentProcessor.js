@@ -52,29 +52,18 @@ define([
              */
             createContentTool: function (content, dispatcher) {
                 var args = {
-                        ns:         content.ns,
-                        id:         content.id,
-                        title:      content.title,
-                        content:    content.content,
-                        closable:   true,
-                        dispatcher: dispatcher,
-                        rev:        content.rev
-                    },
-                contentTool = contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
+                    ns:         content.ns,
+                    id:         content.id,
+                    title:      content.title,
+                    content:    content.content,
+                    closable:   true,
+                    dispatcher: dispatcher,
+                    rev:        content.rev,
+                    type:       this.type
+                };
 
-                contentTool.setType(content.type); //TODO[Xavi] Canviar per establir-lo a partir del que arriba del server
-
-                return contentTool;
-            },
-
-            getAllowedTypes: function (content) {
-                return content.type; // TODO[Xavi] Amb aquesta implementació es permet sobrescriure sempre que es tracti del mateix tipus
-                //return 'HTML';
-            },
-
-            isTypeAllowed: function () {
-
+                return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
             }
+
         });
 });
-

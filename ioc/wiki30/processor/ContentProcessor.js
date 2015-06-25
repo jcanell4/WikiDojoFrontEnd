@@ -15,6 +15,11 @@ define([
          * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
+
+            blackList: [/*"html"*/],
+
+            type: null,
+
             /**
              * Comprova si ja existeix un document amb la mateixa id carregat, si es així comprova si s'han produit
              * canvis, i en cas afirmatiu mostra un missatge demanant si es volen descartar els canvis.
@@ -101,13 +106,17 @@ define([
             addContent: function (content, dispatcher, container) {
                 var oldContentTool = registry.byId(content.id),
                     contentTool,
-                    position = 0;
+                    position = 0,
+                    refreshContent;
 
-                if (this.isOldContentAllowed(oldContentTool, this.getAllowedTypes(content))) {
+                if (oldContentTool) {
+                    refreshContent = this.isRefreshableContent(oldContentTool.type);
+                } else {
+                    refreshContent = false;
+                }
+
+                if (refreshContent) {
                     oldContentTool.updateDocument(content);
-                    //oldContentTool.updateDocument(content.content);
-                    //console.log("ALLOWED");
-
                 } else {
                     if (oldContentTool) {
                         position = container.getChildIndex(oldContentTool.id);
@@ -116,10 +125,21 @@ define([
 
                     contentTool = this.createContentTool(content, dispatcher);
                     container.addChild(contentTool, position);
-
-                    //console.log("NOT ALLOWED");
                 }
 
+
+            },
+
+            isRefreshableContent: function (oldType) {
+                //return oldType === this.type && this.blackList.indexOf(this.type) === -1; TODO[Xavi] es pot reduir a això
+
+                if (oldType === this.type && this.blackList.indexOf(this.type) === -1) {
+                    console.log('ContentProcessor#isRefreshableContent', true);
+                    return true;
+                }
+                console.log('ContentProcessor#isRefreshableContent', false);
+
+                return false;
             },
 
             /**
@@ -128,6 +148,7 @@ define([
              * @param {ContentTool} oldContentTool - Contenidor antic a comprovar
              * @param {string|string[]} allowedTypes - Tipus permesos
              * @returns {boolean} - true si es un tipus permes o false en cas contrari
+             * @deprecated
              * @protected
              */
             isOldContentAllowed: function (oldContentTool, allowedTypes) {
@@ -162,6 +183,7 @@ define([
              * permesos
              * @returns {string|string[]}
              * @protected
+             * @deprecated
              */
             getAllowedTypes: function (content) {
                 return null;

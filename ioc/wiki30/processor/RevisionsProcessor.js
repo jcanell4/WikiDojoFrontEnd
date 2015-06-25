@@ -24,7 +24,7 @@ define([
              * @typedef {{id: string, revisions: {string: Revision}}} Revisions
              */
 
-            type: "meta",
+            type: "revisions",
 
             /**
              * Processa el valor passat com argument per generar un ContentTool i afegir-lo a la secció de metadades.
@@ -90,8 +90,7 @@ define([
                         id:         this._buildContentId(content),
                         title:      'Revisions (' + count + ')',
                         data:       content.revisions,
-                        type:       content.type,
-                        //type:       'revisions', // TODO[Xavi] Això ha de passar-se desde el server
+                        type:       this.type,
                         dispatcher: content.dispatcher,
                         docId:      content.id
                     },
