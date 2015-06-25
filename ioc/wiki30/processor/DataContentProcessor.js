@@ -10,15 +10,17 @@ define([
     var editing = function (params, dispatcher) {
         var toolbar = window[params.varName];
 
-        // TODO[Xavi] Segurament això està directament enllaçat amb el problema detectat al recarregar la pagina
         // TODO[Xavi] Moure la inicialització del toolbar al aceProcessEditor
         if (toolbar && params.toolbarId && params.wikiTextId) {
             initToolbar(params.toolbarId, params.wikiTextId, toolbar);
             jQuery('#' + params.toolbarId).attr('role', 'toolbar');
         }
 
+
         dw_editor.init();
         dw_locktimer.init(params.timeout, params.draft);
+
+
     };
 
     return declare([ContentProcessor],
@@ -87,14 +89,15 @@ define([
              */
             createContentTool: function (content, dispatcher) {
                 var args = {
-                        ns:         content.ns,
-                        id:         content.id,
-                        title:      content.title,
-                        content:    content.content,
-                        closable:   true,
-                        dispatcher: dispatcher,
-                        originalContent : this._extractContentFromNode(content.editor.editorNode)
-                    };
+                    ns:              content.ns,
+                    id:              content.id,
+                    title:           content.title,
+                    content:         content.content,
+                    closable:        true,
+                    dispatcher:      dispatcher,
+                    originalContent: this._extractContentFromNode(content.editor.editorNode),
+                    type:            this.type
+                };
 
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             },

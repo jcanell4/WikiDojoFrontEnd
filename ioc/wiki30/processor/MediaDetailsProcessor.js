@@ -38,18 +38,18 @@ define([
                 this.inherited(arguments);
                 dispatcher.getGlobalState().pages[value.id]["action"] = "mediadetails";
             },
-            
+
             createContentTool: function (content, dispatcher) {
                 var args = {
                     id:         content.id,
                     title:      content.title,
                     content:    content.content,
                     closable:   true,
-                    dispatcher: dispatcher
+                    dispatcher: dispatcher,
+                    type:       this.type
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
-                    //.decorate(contentToolFactory.decoration.DOCUMENT, args);
             }
         });
     return ret;

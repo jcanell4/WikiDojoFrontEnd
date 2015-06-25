@@ -39,11 +39,11 @@ define([
             _processMetaInfo: function (content, dispatcher) {
                 var nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
                     m,
-                    //defaultSelected=0,
-                    //firstPane=1,
+                //defaultSelected=0,
+                //firstPane=1,
                     selectedPane,
                     contentCache = dispatcher.getContentCache(content.id),
-                    ret={};
+                    ret = {};
 
                 // TODO[Xavi] La neteja del container s'hauria de fer a traves del RemoveAllContentProcessor. Compte amb el setCurrentId que deixaría de funcionar!
                 nodeMetaInfo.clearContainer(content.id);
@@ -67,18 +67,18 @@ define([
 
                 return 0;
             },
-            
-            _addMetainfo:function(id, meta, dispatcher, nodeMetaInfo, ret){
+
+            _addMetainfo: function (id, meta, dispatcher, nodeMetaInfo, ret) {
                 var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
                     cp,
-                    //defaultSelected=0,
-                    //firstPane=1,
+                //defaultSelected=0,
+                //firstPane=1,
                     currentMetaItem,
                     currentMetaContent;
 
                 if (widgetCentral && widgetCentral.id === id) { // aquesta metainfo pertany a la pestanya activa
                     currentMetaContent = meta;
-                    
+
                     currentMetaItem = registry.byId(currentMetaContent.id);
                     if (!currentMetaItem) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
 
@@ -90,15 +90,15 @@ define([
                         nodeMetaInfo.addChild(cp);
 
                         if (!ret.firstPane) {
-                            ret.firstPane= cp.id;
+                            ret.firstPane = cp.id;
                         }
 
                     } else {
                         currentMetaItem.setData(meta.content);
-                        cp=currentMetaItem;
+                        cp = currentMetaItem;
                     }
                     if (meta.defaultSelected) { //Des del servidor ens marquen aquesta opció com a defaultSelected
-                        ret.defaultSelected= cp.id;                        
+                        ret.defaultSelected = cp.id;
                     }
                     ret.firstPane = cp.id;
                 }
@@ -118,11 +118,12 @@ define([
                     data:       metaContent.content || ' ',
                     dispatcher: metaContent.dispatcher,
                     docId:      metaContent.docId,
-                    action:     metaContent.action
+                    action:     metaContent.action,
+                    type:       this.type
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args);
-//                    .decorate(contentToolFactory.decoration.META);
+                //                    .decorate(contentToolFactory.decoration.META);
             }
 
         });
