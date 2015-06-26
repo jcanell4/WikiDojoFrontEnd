@@ -13,6 +13,7 @@ define([
              */
                     {
                         type: "mediadetails",
+                        idSelect: null,
                         requester: null,
                         /**
                          * @param {*} value
@@ -27,9 +28,10 @@ define([
                                 //this._detailsProcess(value, dispatcher);
                                 this.inherited(arguments);
                             }
-                            dw_mediamanager.image_diff();
-
-
+                            this.idSelect = value.id.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
+                            this.portions_slider();
+                            this.opacity_slider();
+                            
                         },
                         _detailsRemoveProcess: function (value, dispatcher) {
                             var container = registry.byId(dispatcher.containerNodeId);
@@ -86,6 +88,8 @@ define([
                                 closable: true,
                                 dispatcher: dispatcher,
                                 urlBase:  urlBase1,
+                                ns: content.ns,
+                                difftype: content.difftype,
                                 form: "form_"+content.id
                             };
                             var argsMediaDetailsDecor = {
@@ -104,7 +108,72 @@ define([
                             return contentToolFactory.generate(contentToolFactory.generation.MEDIADETAILS, args);
                                     //.decorate(contentToolFactory.decoration.MEDIADETAILS, argsMediaDetailsDecor)
                                     //.decorate(contentToolFactory.decoration.REQUEST_FORM, argsMediaDetailsForm);
-                        }
+                        },
+                        /**
+                        * Sets options for opacity diff slider
+                        *
+                        * @author Kate Arzamastseva <pshns@ukr.net>
+                        */
+                       opacity_slider: function () {
+                           var $slider = jQuery( "#mediamanager__diff"+ this.idSelect+" div.slider" );
+                           if (!$slider.length) return;
+                           $slider.idSelect = this.idSelect;
+                           jQuery("#mediamanager__diff"+ this.idSelect).addClass("mediadetailswithid");
+                           var $image = jQuery('#mediamanager__diff'+ this.idSelect+' div.imageDiff.opacity div.image1 img');
+                           if (!$image.length) return;
+                           $slider.width($image.width()-20);
+
+                           $slider.slider();
+                           $slider.slider("option", "min", 0);
+                           $slider.slider("option", "max", 0.999);
+                           $slider.slider("option", "step", 0.001);
+                           $slider.slider("option", "value", 0.5);
+                           $slider.bind("slide", function(event, ui) {
+                               jQuery('#mediamanager__diff'+ $slider.idSelect+' div.imageDiff.opacity div.image2 img').css({ opacity: $slider.slider("option", "value")});
+                           });
+                       },
+
+                        /**
+                        * Sets options for red line diff slider
+                        *
+                        * @author Kate Arzamastseva <pshns@ukr.net>
+                        */
+                       portions_slider: function () {
+                           var $image1 = jQuery('#mediamanager__diff'+ this.idSelect+' div.imageDiff.portions div.image1 img');
+                           var $image2 = jQuery('#mediamanager__diff'+ this.idSelect+' div.imageDiff.portions div.image2 img');
+                           if (!$image1.length || !$image2.length) return;
+
+                           var $div = jQuery("#mediamanager__diff"+ this.idSelect);
+                           jQuery("#mediamanager__diff"+ this.idSelect).addClass("mediadetailswithid");
+                           if (!$div.length) return;
+
+                           $div.width('100%');
+                           $image2.parent().width('97%');
+                           $image1.width('100%');
+                           $image2.width('100%');
+
+                           if ($image1.width() < $div.width()) {
+                               $div.width($image1.width());
+                           }
+
+                           $image2.parent().width('50%');
+                           $image2.width($image1.width());
+                           $image1.width($image1.width());
+
+                           var $slider = jQuery("#mediamanager__diff"+ this.idSelect+" div.slider");
+                           if (!$slider.length) return;
+                           $slider.idSelect = this.idSelect;
+                           $slider.width($image1.width()-20);
+
+                           $slider.slider();
+                           $slider.slider("option", "min", 0);
+                           $slider.slider("option", "max", 97);
+                           $slider.slider("option", "step", 1);
+                           $slider.slider("option", "value", 50);
+                           $slider.bind("slide", function(event, ui) {
+                               jQuery('#mediamanager__diff'+ $slider.idSelect+' div.imageDiff.portions div.image2').css({ width: $slider.slider("option", "value")+'%'});
+                           });
+                       }
                     });
             return ret;
         });

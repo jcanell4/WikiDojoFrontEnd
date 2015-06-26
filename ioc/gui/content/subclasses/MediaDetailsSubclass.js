@@ -17,8 +17,9 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "dojo/on",
-    "dojo/dom"
-], function (declare, lang, on, dom) {
+    "dojo/dom",
+    "dojo/query"    
+], function (declare, lang, on, dom,query) {
 
     return declare(null,
 
@@ -36,6 +37,7 @@ define([
          * @private
          */
         {
+            idSelect: null,
             /**
              * El contingut original inicial s'ha de passar a travès del constructor dins dels arguments com la
              * propietat originalContent.
@@ -83,6 +85,24 @@ define([
              */
             //postLoad: function () {
             postAttach: function () {
+                
+                //Es canvien ids del select "Comparació de versions" per permetre més d'una imatge (s'afegeix id d'imatge)
+                var divDiff = document.getElementById("mediamanager__diff");
+                if(divDiff){
+                    divDiff.id = "mediamanager__diff" + this.id;
+                }
+                
+                var formDiff = document.getElementById("mediamanager__form_diffview");
+                if(formDiff){
+                    formDiff.id = "mediamanager__form_diffview" + this.id;
+                    formDiff.method = "POST";
+                    this.idSelect = this.id.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
+                    this._controlSelect();
+                }  
+                //Es crida al control del select
+                
+
+             
                 //Les funcions natives posen els id dels forms fixes, com per exemple "mediamanager__btn_restore"
                 //Al servidor s'ha afegit l'id de la imatge
                 //No obstant això, pel formulari de restore, encara li hem d'afegir la revisió (rev)
@@ -113,7 +133,7 @@ define([
                 }
                 var i = 0;
                 var formRestore = document.getElementById("mediamanager__btn_restore_"+this.id);
-                while (formRestore || i>1){
+                while (formRestore && i<2){
                     formRestore.id = "mediamanager__btn_restore_"+this.id + "_"+ rev[i];
                     formRestore.action = "";
                     //
@@ -140,26 +160,6 @@ define([
             },
 
 
-        /*on(form, 'input[type="submit"]:' + params.trigger, function (e) {
-            e.preventDefault();
-
-            var query = "",
-                data = domForm.toQuery(this.form),
-                originalUrlBase = params.request.urlBase;
-
-            params.request.urlBase = params.urlBase;
-
-            data += "&" + this.name + "=" + domForm.fieldToObject(this);
-            if (data) {
-                query = data;
-            }
-
-            params.request.setStandbyId(targetId);
-            params.request.sendRequest(query);
-            event.stop(e);
-
-            params.request.urlBase = originalUrlBase;
-        }),*/
             _doFormEdit: function (evt) {
                 evt.preventDefault();
                 var source = evt.target || evt.srcElement;
@@ -239,6 +239,91 @@ define([
             _getCurrentContent: function () {
 
             },
+            
+            /*
+             * Control del select amb les diverses vistes per comparar les versions (slider, ...)
+             */
+            _controlSelect: function(){
+                //Construcció del select
+                this.image_diff();
+                on(dom.byId('mediamanager__difftype'+this.id),"change",  lang.hitch(this, this._doSelectChange));
+                
+            },
+            
+            //Contrucció del select
+            image_diff: function () {
+                if (jQuery('#mediamanager__difftype'+ this.idSelect).length) return;
+
+                var myForm = jQuery('#mediamanager__form_diffview'+ this.idSelect);
+                if (!myForm.length) return;
+                myForm.method = "POST";
+                
+                
+                var myLabel = jQuery(document.createElement('label'));
+                myLabel.append('<span>'+LANG.media_diff+'</span> ');
+                var mySelect = jQuery(document.createElement('select'))
+                 .attr('id', 'mediamanager__difftype'+ this.id)
+                 .attr('name', 'difftype'+ this.id);
+                var selectedBoth = false; 
+                var selectedOpacity = false;
+                var selectedPortions = false;
+                if(this.difftype != undefined){
+                    switch(this.difftype) {
+                        case "both":
+                            selectedBoth = true;
+                            break;
+                        case "opacity":
+                            selectedOpacity = true;
+                            break;
+                        case "portions":
+                            selectedPortions = true;
+                            break;
+                        default:
+                            selectedBoth = true;
+                            break;
+                    }                    
+                }else{
+                    selectedBoth = true;
+                }
+
+                mySelect.append(new Option(LANG.media_diff_both, "both",selectedBoth));
+                mySelect.append(new Option(LANG.media_diff_opacity, "opacity",selectedOpacity));
+                mySelect.append(new Option(LANG.media_diff_portions, "portions",selectedPortions));
+                myLabel.append(mySelect);
+                myForm.append(myLabel);
+
+                // for IE
+                var select = document.getElementById('mediamanager__difftype'+this.id);
+                select.options[0].text = LANG.media_diff_both;
+                select.options[1].text = LANG.media_diff_opacity;
+                select.options[2].text = LANG.media_diff_portions;
+            },
+            
+            _doSelectChange: function(evt){
+                evt.preventDefault();
+                var source = evt.target || evt.srcElement;
+                this._createRequest();
+                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                var query = "img="+this.id+"&mediado=diff&do=media&tab_details=history&tab_files=files&image="+this.id+"&ns="+this.ns+"&difftype="+source.value;
+                //document.getElementById('mediamanager__form_diffview'+ this.id).method ="post";
+                //this.requester.sendForm('#mediamanager__form_diffview'+ this.idSelect, query);
+                
+                //Es seleccionen els input hidden del formulari (no entenc perquè el sendForm amb method post no funciona,
+                //és a dir, no envia les dades (input type hidden
+                /*
+                 *  <input type="hidden" value="1434878341" name="rev2[]">
+                 *  <input type="hidden" value="1434878350" name="rev2[]">
+                 */
+                
+                var myForm = dom.byId('mediamanager__form_diffview'+ this.id);
+                var myHiddens = dojo.query('input[type="hidden"]', myForm);
+                for(var i = 0; i < myHiddens.length; i++){
+                    query += "&"+ myHiddens[i].name + "=" + myHiddens[i].value;
+                }
+
+                this.requester.sendRequest(query);
+                
+            }
 
 
           
