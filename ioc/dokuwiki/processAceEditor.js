@@ -19,6 +19,7 @@ define([
 ], function (registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container,
              IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style, on) {
 
+
     var
         /**
          * Activa l'editor ACE a la pestanya actual o la pestanya pasada com argument per evitar problemas al recarregar.
@@ -120,26 +121,13 @@ define([
     toolbarManager.addButton(confEnableAce, funcEnableAce);
     toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
 
+
     return function (params) {
+
         // Comprovem la versió del explorador i que existeix l'entorn de la dokuwiki abans de fer res
         if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById(params.textAreaId))) {
             return;
         }
-
-        var contentNode = dom.byId(params.id),
-            h = geometry.getContentBox(contentNode).h;
-
-        style.set(params.textAreaId, "height", "" + h - 20 + "px");
-
-        on(window, 'resize', function () {
-
-            var editor = dispatcher.getContentCache(params.id).getEditor(),
-                h = geometry.getContentBox(contentNode).h;
-
-            style.set(editor.containerId, "height", "" + h - 20 + "px");
-            style.set(params.textAreaId, "height", "" + h - 20 + "px");
-
-        });
 
 
         var currentEditor = dispatcher.getContentCache(params.id).getEditor(),
@@ -220,6 +208,28 @@ define([
         if (JSINFO.plugin_aceeditor["default"] || dispatcher.getContentCache(id).isAceEditorOn()) {
             enable(params.id);
         }
+
+        var fillEditorContainer = function () {
+            var contentNode = dom.byId(params.id),
+                editor = dispatcher.getContentCache(params.id).getEditor(),
+                h = geometry.getContentBox(contentNode).h;
+
+            console.log("Canviant mida del texarea a: " + h);
+            style.set(params.textAreaId, "height", "" + h - 20 + "px");
+
+            //if (editor) {
+            console.log("Canviant mida del editor a: " + h);
+            style.set(editor.containerId, "height", "" + h - 20 + "px");
+            //}
+
+        };
+
+        on(window, 'resize', function () {
+            fillEditorContainer();
+        });
+
+        // Incialitzem la mida dels editors
+        fillEditorContainer();
 
         console.log("Carregat en " + (new Date().getTime() - inici));
     };

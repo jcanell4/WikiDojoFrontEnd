@@ -4,7 +4,7 @@ define([
     "dojo/dom-construct",
     "ioc/gui/content/contentToolFactory",
     "ioc/wiki30/processor/AbstractResponseProcessor"
-    
+
 
 ], function (declare, registry, domConstruct, contentToolFactory, AbstractResponseProcessor) {
     var ret = declare([AbstractResponseProcessor],
@@ -14,7 +14,7 @@ define([
          * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-            type: "metaMedia",
+            type:       "metaMedia",
             dialogTree: null,
             newContent: null,
 
@@ -45,7 +45,7 @@ define([
 
                 //dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
                 //contentCache.setCurrentId("metadataPane", null);
-                
+
                 for (m in content.meta) {
                     if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
                         currentMetaContent = content.meta[m];
@@ -65,8 +65,8 @@ define([
                             //currentMetaContent.dispatcher = dispatcher;
                             //currentMetaContent.docId = content.id;
 
-                            if(currentMetaContent.id === "metaMedia"){
-                                
+                            if (currentMetaContent.id === "metaMedia") {
+
                                 /*
                                  * TO DO
                                  * Miguel Angel 20150605
@@ -76,13 +76,13 @@ define([
                                 cp = this._createContentTool(newContent, dispatcher, 'metaMedia');
                                 //dialogTree.startup();
 
-                            }else{
+                            } else {
                                 cp = this._createContentTool(currentMetaContent, dispatcher, content.id);
                             }
 
                             nodeMetaInfo.addChild(cp);
                             nodeMetaInfo.resize();
-                            if(currentMetaContent.id === "metaMedia"){
+                            if (currentMetaContent.id === "metaMedia") {
                                 this.dialogTree.startup();
                             }
 
@@ -123,14 +123,14 @@ define([
                 
                 /*selectedPane = contentCache.getCurrentId("metaMedia");
 
-                if (!selectedPane && defaultSelected) {
-                    selectedPane = defaultSelected;
-                } else if (!selectedPane) {
-                    selectedPane = firstPane;
-                }
+                 if (!selectedPane && defaultSelected) {
+                 selectedPane = defaultSelected;
+                 } else if (!selectedPane) {
+                 selectedPane = firstPane;
+                 }
 
-                nodeMetaInfo.selectChild(selectedPane);
-                contentCache.setCurrentId("metaMedia", selectedPane);*/
+                 nodeMetaInfo.selectChild(selectedPane);
+                 contentCache.setCurrentId("metaMedia", selectedPane);*/
 
                 return 0;
             },
@@ -147,13 +147,13 @@ define([
             _processContentCache: function (dispatcher, value) {
                 /*dispatcher.getContentCache(value.docId).removeAllMetaData();
 
-                if (dispatcher.contentCache[value.docId]) {
-                    var meta = value.meta;
+                 if (dispatcher.contentCache[value.docId]) {
+                 var meta = value.meta;
 
-                    for (var i = 0; i < meta.length; i++) {
-                        dispatcher.contentCache[value.docId].putMetaData(meta[i]);
-                    }
-                }*/
+                 for (var i = 0; i < meta.length; i++) {
+                 dispatcher.contentCache[value.docId].putMetaData(meta[i]);
+                 }
+                 }*/
             },
 
             /**
@@ -203,11 +203,12 @@ define([
                         data:       meta.data,
                         dispatcher: dispatcher,
                         docId:      "media",
-                        action:     meta.action
+                        action:     meta.action,
+                        type:       this.type
                     };
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args);
-                    //.decorate(contentToolFactory.decoration.META);
+                //.decorate(contentToolFactory.decoration.META);
             },
 
             /**
@@ -218,33 +219,33 @@ define([
              * @returns {string}
              * @protected
              */
-            _buildContentId:           function (content) {
+            _buildContentId: function (content) {
                 return content.id;
             },
-            
+
             /**
-             * 
+             *
              */
-            
+
             _createNsTree: function (content, dispatcher, docId) {
                 var self = this;
-                require(["ioc/gui/ContentTabDokuwikiNsTree"], function(ContentTabDokuwikiNsTree){    
+                require(["ioc/gui/ContentTabDokuwikiNsTree"], function (ContentTabDokuwikiNsTree) {
                     var divNsTree = domConstruct.toDom("<div id='media__tree'></div>");
 
                     self.dialogTree = new ContentTabDokuwikiNsTree({
-                        treeDataSource: 'lib/plugins/ajaxcommand/ajaxrest.php/ns_mediatree_rest/',
-                        onlyDirs:true,
-                        processOnClickAndOpenOnClick:true
+                        treeDataSource:               'lib/plugins/ajaxcommand/ajaxrest.php/ns_mediatree_rest/',
+                        onlyDirs:                     true,
+                        processOnClickAndOpenOnClick: true
                     }).placeAt(divNsTree);
-                
+
                     self.dialogTree.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media" +
-                            '&do=media';
-                    
-                    self.dialogTree.getQuery = function(){
+                    '&do=media';
+
+                    self.dialogTree.getQuery = function () {
                         var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
                         var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
-                        return "id="+this.item.id+"&ns="+this.item.id+"&preserveMetaData=true"+
-                                '&list='+list+'&sort='+sort;
+                        return "id=" + this.item.id + "&ns=" + this.item.id + "&preserveMetaData=true" +
+                            '&list=' + list + '&sort=' + sort;
                     };
 
                     this.newContent = [];
@@ -258,4 +259,3 @@ define([
         });
     return ret;
 });
-

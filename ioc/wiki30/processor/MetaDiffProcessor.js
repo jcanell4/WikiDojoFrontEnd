@@ -29,12 +29,13 @@ define([
                         title:      metaContent.title,
                         data:       metaContent.content || ' ',
                         dispatcher: metaContent.dispatcher,
-                        docId:      metaContent.docId
+                        docId:      metaContent.docId,
+                        type:       this.type
                     },
 
                     argsRequestForm = {
                         urlBase: "lib/plugins/ajaxcommand/ajax.php?call=diff", // TODO[Xavi] aquest valor ha d'arribar des de el servidor?
-                        form: '#switch_mode_' + metaContent.docId
+                        form:    '#switch_mode_' + metaContent.docId
                         //,standbyTarget: 'topBloc'
                     };
 
