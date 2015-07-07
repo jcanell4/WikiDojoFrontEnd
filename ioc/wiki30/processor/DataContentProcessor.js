@@ -4,22 +4,24 @@ define([
     "ioc/wiki30/processor/ContentProcessor",
     "dojo/ready",
     "ioc/gui/content/contentToolFactory",
+    "ioc/dokuwiki/AceManager/toolbarManager",
+    "ioc/dokuwiki/editorManager/locktimer",
 
-], function (Editor, declare, ContentProcessor, ready, contentToolFactory) {
+], function (Editor, declare, ContentProcessor, ready, contentToolFactory, toolbarManager, locktimer) {
 
-    var editing = function (params, dispatcher) {
-        var toolbar = window[params.varName];
+    var editing = function (params, docId, dispatcher) {
 
-        // TODO[Xavi] Moure la inicialització del toolbar al aceProcessEditor
-        if (toolbar && params.toolbarId && params.wikiTextId) {
-            initToolbar(params.toolbarId, params.wikiTextId, toolbar);
-            jQuery('#' + params.toolbarId).attr('role', 'toolbar');
-        }
+        console.log("params:", params);
 
+        toolbarManager.setToolbar(params.varName, params.toolbarId, params.wikiTextId);
 
         dw_editor.init();
-        dw_locktimer.init(params.timeout, params.draft);
 
+        //dw_locktimer.init(params.timeout, params.draft);
+        //locktimer.init(params.timeout, params.draft);
+
+        // Ho instanciem com a classe, hi ha d'haver 1 timer per cada document
+        new locktimer(docId, dispatcher).init(5, params.draft); // Temps en segons
 
     };
 
@@ -53,11 +55,14 @@ define([
 
 
                 ret = this.inherited(arguments);
+
+                // En aquest punt ja ha d'estar el ContentTool creat
+
                 value.editor.select();
 
 
                 ready(function () {
-                    editing(value.editing, dispatcher);
+                    editing(value.editing, value.id, dispatcher);
                 });
 
                 return ret;

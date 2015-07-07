@@ -118,9 +118,10 @@ define([
             return false;
         };
 
-    toolbarManager.addButton(confEnableAce, funcEnableAce);
-    toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
 
+
+        toolbarManager.addButton(confEnableAce, funcEnableAce);
+        toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
 
     return function (params) {
 
@@ -229,7 +230,10 @@ define([
         });
 
         // Incialitzem la mida dels editors
+
         fillEditorContainer();
+        funcEnableWrapper();
+        toolbarManager.initToolbar();
 
         console.log("Carregat en " + (new Date().getTime() - inici));
     };

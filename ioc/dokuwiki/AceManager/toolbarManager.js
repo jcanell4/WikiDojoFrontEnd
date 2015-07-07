@@ -5,7 +5,31 @@
  */
 define([], function () {
 
+    var _toolbar,
+        _toolbarId,
+        _wikiTextId;
+
     return {
+
+        setToolbar: function (toolbarName, toolbarId, wikiTextId) {
+            //console.log("toolbarManager#setToolbar");
+            _toolbar = window[toolbarName];
+            _toolbarId = toolbarId;
+            _wikiTextId = wikiTextId;
+        },
+
+        initToolbar: function () {
+            //console.log("toolbarManager#initToolbar");
+
+            if (_toolbar && _toolbarId && _wikiTextId) {
+                initToolbar(_toolbarId, _wikiTextId, _toolbar);
+                jQuery('#' + _toolbarId).attr('role', 'toolbar');
+            } else {
+                alert("error al inicialitzar la barra d'eines");
+            }
+
+        },
+
         /**
          * Afegeix un botó a la barra de eines amb la configuració passada com argument i que executará la funció
          * al fer click sobre ell.
@@ -22,10 +46,10 @@ define([], function () {
 
             };
 
-            if (typeof window.toolbar !== 'undefined') {
-                window.toolbar[window.toolbar.length] = conf
+            if (typeof _toolbar !== 'undefined') {
+                _toolbar[_toolbar.length] = conf
             } else {
-                alert("No existeix la barra d'eines"); // TODO[Xavi] per determinar com tractar aquest error, no ha de passar mai
+                console.error("No existeix la barra d'eines"); // TODO[Xavi] per determinar com tractar aquest error, no ha de passar mai
             }
         },
 
@@ -38,18 +62,18 @@ define([], function () {
         removeButton: function (title) {
             var button;
 
-            if (typeof window.toolbar === 'undefined') {
+            if (typeof _toolbar === 'undefined') {
                 return;
             }
 
-            if (typeof title === 'number' && window.toolbar.length >= title) {
-                window.toolbar.splice(title, 1);
+            if (typeof title === 'number' && _toolbar.length >= title) {
+                _toolbar.splice(title, 1);
 
             } else {
-                for (var i = 0, len = window.toolbar.length; i < len; i++) {
-                    button = window.toolbar[i];
+                for (var i = 0, len = _toolbar.length; i < len; i++) {
+                    button = _toolbar[i];
                     if (button.title == title) {
-                        window.toolbar.splice(i, 1);
+                        _toolbar.splice(i, 1);
                         break;
                     }
                 }
