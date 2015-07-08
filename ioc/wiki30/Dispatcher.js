@@ -368,7 +368,6 @@ define([
             processResponse: function (response, processors) {
                 var req = this;
 
-
                 if (Array.isArray(response)) {
                     array.some(response, function (responseItem) {
 

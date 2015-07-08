@@ -80,6 +80,7 @@ define([
              * @override
              */
             postAttach: function () {
+
                 //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
                 this.registerToChangesManager();
 
@@ -87,6 +88,7 @@ define([
                 on(this.domNode, 'paste', lang.hitch(this, this._checkChanges));
                 on(this.domNode, 'cut', lang.hitch(this, this._checkChanges));
                 on(this.domNode, 'focusout', lang.hitch(this, this._checkChanges));
+
 
                 this.inherited(arguments);
             },
@@ -97,7 +99,10 @@ define([
              * @private
              */
             _checkChanges: function () {
-                this.changesManager.updateContentChangeState(this.id);
+                // Si el document està bloquejat mai hi hauran canvis
+                if (!this.locked) {
+                    this.changesManager.updateContentChangeState(this.id);
+                }
             },
 
             /**
