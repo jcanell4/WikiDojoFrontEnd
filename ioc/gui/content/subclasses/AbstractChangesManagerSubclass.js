@@ -52,7 +52,13 @@ define([
                  */
                 resetContentChangeState: function () {
                     console.error("Sense implementar resetContentChangeState()");
+                },
+
+                discardChanges: function() {
+                    this.changesManager.resetContentChangeState(this.id);
                 }
+
+
             }
         )
     }

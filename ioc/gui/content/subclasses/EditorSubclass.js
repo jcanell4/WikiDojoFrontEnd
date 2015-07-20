@@ -1,18 +1,3 @@
-/**
- * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
- *
- * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
- * en el futur.
- *
- * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
- * amb un ACE-Editor.
- *
- * @class EditorSubclass
- * @extends DocumentSubclass, AbstractChangesManagerCentral
- * @author Xavier García <xaviergaro.dev@gmail.com>
- * @private
- * @see contentToolFactory.generate()
- */
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
@@ -22,17 +7,19 @@ define([
     return declare(null,
 
         /**
-         * Aquesta classe es una decoració i requereix que es faci un mixin amb un ContentTool per poder funcionar.
+         * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
          *
-         * Aquesta decoració modifica el ContentTool per fer la comprovació de canvis abans de tancar-se i canviar
-         * el color de la pestanya a vermell si es produeixen canvis.
+         * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
+         * en el futur.
          *
-         * Aquesta decoració s'ha d'aplicar a un DocumentContentTool o que afegeixi un métode removeState() per poder
-         * realitzar la comprovació de canvis abans de tancar-se.
+         * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
+         * amb un ACE-Editor.
          *
-         * @class EditorComponent
-         * @extends DocumentContentTool, AbstractChangesManagerDecoration
+         * @class EditorSubclass
+         * @extends DocumentSubclass, AbstractChangesManagerCentral
+         * @author Xavier García <xaviergaro.dev@gmail.com>
          * @private
+         * @see contentToolFactory.generate()
          */
         {
             /**
@@ -51,7 +38,7 @@ define([
              * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
              */
             isContentChanged: function () {
-                var content = this._getCurrentContent(),
+                var content = this.getCurrentContent(),
                     result = !(this._getOriginalContent() == content);
 
                 if (result) {
@@ -67,7 +54,7 @@ define([
              * actual.
              */
             resetContentChangeState: function () {
-                this._setOriginalContent(this._getCurrentContent());
+                this._setOriginalContent(this.getCurrentContent());
                 this.onDocumentChangesReset();
             },
 
@@ -129,14 +116,10 @@ define([
              * Retorna el text contingut al editor per la id passada com argument o la del id del document actual si
              * no s'especifica.
              *
-             * TODO[Xavi] Això es propi només del EditorComponent, no es global
-             *
-             * @param {string?} id - id del document del que volem recuperar el contingut
              * @returns {string|null} - Text contingut al editor
              * o null si no existeix
-             * @private
              */
-            _getCurrentContent: function () {
+            getCurrentContent: function () {
                 var contentCache = this.dispatcher.getContentCache(this.id),
                     content;
 
@@ -191,6 +174,18 @@ define([
                 }
 
                 this.inherited(arguments);
+            },
+
+
+            /**
+             * Descarta els canvis al document actual i restaura els originals
+             */
+            discardChanges: function () {
+                // TODO: fer la substitució del contingut i comprovar que està sincronitzat amb el ACEEditor, i si no ho està comprovar si es necessari sincronitzar-lo.
+
+                this.inherited(arguments);
             }
+
+
         });
 });
