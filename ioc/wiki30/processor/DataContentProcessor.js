@@ -13,37 +13,15 @@ define([
 
     var editing = function (params, docId, dispatcher) {
 
-        console.log("params:", params);
+        //console.log("params:", params);
 
         toolbarManager.setToolbar(params.varName, params.toolbarId, params.wikiTextId);
 
-        // Locked:
-
         dw_editor.init();
 
-        //dw_locktimer.init(params.timeout, params.draft);
-        //locktimer.init(params.timeout, params.draft);
 
-        // Ho instanciem com a classe, hi ha d'haver 1 timer per cada document
-        //new locktimer(docId, dispatcher).init(5, params.draft); // Temps en segons
-
-
-        //var btn = "#" + dispatcher.saveButtonId;
-        //console.log("button:", btn);
-
-
-        //console.log("jQuery.node", jQuery(btn).css('display', 'none'));
-        //console.log("parent", jQuery(btn).parent().css('display', 'none'));
-
-
-        if (params.locked) {
-
-            // Document bloquejat
-
-
-        } else {
-
-            // Només activem el temportizador si el document està bloquejat
+        if (!params.locked) {
+            // Només activem el temportizador si el document no està bloquejat
             //new locktimer(docId, dispatcher).init(params.timeout, params.draft); // TODO[Xavi] Aquest es el correcte
             new locktimer(docId, dispatcher).init(10, params.draft);
         }
@@ -74,6 +52,25 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                console.log("DataContentProcessor#process", value);
+
+                // TODO[Xavi] Falta per afegir el dialog, per les proves fem que si es troba un draft es carregui el draft en lloc del document actual
+
+                var currentContent = jQuery(value.content).find('textarea').val(),
+                    draft = value.draft,
+                    $content = jQuery(value.content);
+
+                // Reemplaçem el contingut del content amb el del draft
+                if (value.draft!=null) {
+                    $content.find('textarea').html(draft);
+                    value.content = jQuery('<div>').append($content.clone()).html();
+                }
+
+
+                //console.log("Nou content amb draft: ", $newContent);
+                //alert("Stop abans de que s'esborri");
+
+
                 var ret;
 
                 value.editor = new Editor(value.id, value.content);
