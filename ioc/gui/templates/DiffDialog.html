@@ -1,0 +1,32 @@
+<div class="dijitDialog" role="dialog" aria-labelledby="diff-dialog_title">
+    <div data-dojo-attach-point="titleBar" class="dijitDialogTitleBar">
+		<span data-dojo-attach-point="titleNode" class="dijitDialogTitle" id="diff-dialog_title"
+              role="header" level="1"></span>
+        <span data-dojo-attach-point="closeButtonNode" class="dijitDialogCloseIcon"
+              data-dojo-attach-event="ondijitclick: onCancel" title="" role="button" tabIndex="-1">
+			<span data-dojo-attach-point="closeText" class="closeText" title="">x</span>
+		</span>
+
+    </div>
+    <div data-dojo-attach-point="containerNode" class="dijitDialogPaneContent">
+        S'ha trobat un esborrany per aquest document. Vols obrir l'esborrany o la última versió guardada
+        del document?
+        <!-- Your dialog's content goes here -->
+        <div data-dojo-attach-point="diffNode" class="">
+
+        </div>
+
+
+        <div class="dijitDialogPaneActionBar">
+            <button data-dojo-type="dijit/form/Button" type="button" data-dojo-attach-point="openDocumentButtonNode"
+                    data-dojo-attach-event="onClick:onOpenDocument" title="Obrir document">Document
+            </button>
+            <button data-dojo-type="dijit/form/Button" type="button" data-dojo-attach-point="openDraftButtonNode"
+                    data-dojo-attach-event="onClick:onOpenDraft" title="Obrir esborrany">Esborrany
+            </button>
+
+        </div>
+    </div>
+
+
+</div>

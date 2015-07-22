@@ -20,6 +20,8 @@ define([
              IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style, on) {
 
 
+
+
     var
         /**
          * Activa l'editor ACE a la pestanya actual o la pestanya pasada com argument per evitar problemas al recarregar.
@@ -119,7 +121,6 @@ define([
         };
 
 
-
         toolbarManager.addButton(confEnableAce, funcEnableAce);
         toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
 
@@ -129,6 +130,7 @@ define([
         if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById(params.textAreaId))) {
             return;
         }
+
 
 
         var currentEditor = dispatcher.getContentCache(params.id).getEditor(),
