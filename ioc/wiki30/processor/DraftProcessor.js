@@ -1,7 +1,8 @@
 define([
     'dojo/_base/declare',
     'ioc/wiki30/processor/AbstractResponseProcessor',
-    'ioc/gui/DiffDialog'
+    'ioc/gui/DiffDialog',
+
 ], function (declare, AbstractResponseProcessor, DiffDialog) {
     var ret = declare([AbstractResponseProcessor],
         /**
@@ -28,6 +29,7 @@ define([
              * @private
              */
             _processDialog: function (value, dispatcher) {
+                console.log("tenim la data del document?", value);
 
                 // TODO: Cada botó envia la petició ajaxcomand al client per editar la pàgina però passant un valor indicant pel cas que es trobi un draft
                 // recoverDraft=true.
@@ -39,21 +41,21 @@ define([
                 //      Acció 2 carregar el draft
 
                 var currentContent = jQuery(value.content).find('textarea').val(),
-                    draft = value.draft.content,
+                //draft = value.draft.content,
                     $content = jQuery(value.content);
 
                 var dialog = new DiffDialog({
-                        title:    "S'ha trobat un esborrany",
-                        style:    "width: 300px",
-                        document: currentContent,
-                        draft:    draft,
-                        docId:       value.id,
-                        rev:      value.rev,
-                        closable: false
-                    });
+                    title:    "S'ha trobat un esborrany",
+                    style:    "width: 700px",
+                    document: {content: currentContent, date: value.lastmod},
+                    draft:    {content: value.draft.content, date: value.draft.date},
+                    docId:    value.id,
+                    rev:      value.rev,
+                    //closable: false
+                });
 
 
-                    dialog.show();
+                dialog.show();
 
 
             }

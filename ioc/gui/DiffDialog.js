@@ -6,10 +6,11 @@ define([
     "dojo/_base/lang",
     'dojo/on',
     'dojo/dom',
+    'ioc/gui/jsdifflib/jsdifflib-amd',
     "dojo/text!./templates/DiffDialog.html",
     "dijit/form/Button",
 
-], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, lang, on, dom, template) {
+], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, lang, on, dom, jsdifflib, template) {
 
 
     // TODO[Xavi] Solució temporal per evitar duplicacións a pantalla si es clica multiples vegades el botó d'editar. S'hauria de refactoritzar i convetir en un singleton.
@@ -57,6 +58,21 @@ define([
 
             console.log("Inici del timer");
             this.timerID = window.setTimeout(this.onTimeout, 5000, this);
+
+            console.log("Afegim el diff");
+
+            var documentLabel = "Document (" + this.document.date + ")";
+            var draftLabel = "Esborrany (" + this.draft.date + ")";
+
+            var diff = jsdifflib.getDiff(this.document.content, this.draft.content, documentLabel, draftLabel);
+
+
+            this.diffNode.appendChild(diff);
+
+            //console.log(jsdifflib.getDiff(currentContent, draft));
+
+
+            jQuery(this.diffNode).animate({scrollTop: (0)});
 
         },
 
@@ -137,7 +153,10 @@ define([
             requester.sendRequest();
         },
 
+        onCancel: function() {
+            isShown = false;
+            this.clearTimer();
+        }
 
     });
-})
-;
+});
