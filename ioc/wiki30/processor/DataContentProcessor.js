@@ -5,7 +5,7 @@ define([
     "dojo/ready",
     "ioc/gui/content/contentToolFactory",
     "ioc/dokuwiki/AceManager/toolbarManager",
-    "ioc/dokuwiki/editorManager/locktimer",
+    "ioc/dokuwiki/Locktimer",
     "dojo/dom",
     "dojo/dom-style",
 ], function (Editor, declare, ContentProcessor, ready, contentToolFactory, toolbarManager, locktimer, dom, domStyle) {

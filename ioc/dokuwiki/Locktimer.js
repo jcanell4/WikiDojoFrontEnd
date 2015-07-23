@@ -1,5 +1,5 @@
 define([
-    '../../../dojo/dojo/_base/declare',
+    'dojo/_base/declare',
     'dojo/_base/lang',
     'dijit/Dialog',
     "dojo/dom",
