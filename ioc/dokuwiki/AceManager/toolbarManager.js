@@ -48,8 +48,10 @@ define([], function () {
 
             if (typeof _toolbar !== 'undefined') {
                 _toolbar[_toolbar.length] = conf
+                return true;
             } else {
-                console.error("No existeix la barra d'eines"); // TODO[Xavi] per determinar com tractar aquest error, no ha de passar mai
+                //console.error("No existeix la barra d'eines");
+                return false;
             }
         },
 
