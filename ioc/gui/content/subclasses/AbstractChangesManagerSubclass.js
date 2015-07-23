@@ -29,6 +29,7 @@ define([
 
                 /** @protected */
                 registerToChangesManager: function () {
+                    //console.log("AbstractChangesManagerSubclass#registerToChangesManager");
                     this.changesManager = this.dispatcher.getChangesManager();
                     this.changesManager.setContentTool(this);
                 },
@@ -51,7 +52,13 @@ define([
                  */
                 resetContentChangeState: function () {
                     console.error("Sense implementar resetContentChangeState()");
+                },
+
+                discardChanges: function() {
+                    this.changesManager.resetContentChangeState(this.id);
                 }
+
+
             }
         )
     }
