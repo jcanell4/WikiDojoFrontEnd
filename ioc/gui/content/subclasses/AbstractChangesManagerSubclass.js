@@ -29,7 +29,7 @@ define([
 
                 /** @protected */
                 registerToChangesManager: function () {
-                    console.log("AbstractChangesManagerSubclass#registerToChangesManager");
+                    //console.log("AbstractChangesManagerSubclass#registerToChangesManager");
                     this.changesManager = this.dispatcher.getChangesManager();
                     this.changesManager.setContentTool(this);
                 },

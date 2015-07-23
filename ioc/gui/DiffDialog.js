@@ -35,7 +35,6 @@ define([
             }
         },
 
-
         postMixInProperties: function () {
             this.inherited(arguments);
         },
@@ -51,26 +50,13 @@ define([
         startup: function () {
             this.inherited(arguments);
 
-            // Start timer
+            this.timerID = window.setTimeout(this.onTimeout, this.timeout * 1000, this);
 
-
-            //this.timerID = window.setTimeout(this.ontimeout, this.timeout);
-
-            console.log("Inici del timer");
-            this.timerID = window.setTimeout(this.onTimeout, 5000, this);
-
-            console.log("Afegim el diff");
-
-            var documentLabel = "Document (" + this.document.date + ")";
-            var draftLabel = "Esborrany (" + this.draft.date + ")";
-
-            var diff = jsdifflib.getDiff(this.document.content, this.draft.content, documentLabel, draftLabel);
-
+            var documentLabel = "Document (" + this.document.date + ")",
+                draftLabel = "Esborrany (" + this.draft.date + ")",
+                diff = jsdifflib.getDiff(this.document.content, this.draft.content, documentLabel, draftLabel);
 
             this.diffNode.appendChild(diff);
-
-            //console.log(jsdifflib.getDiff(currentContent, draft));
-
 
             jQuery(this.diffNode).animate({scrollTop: (0)});
 
@@ -98,15 +84,9 @@ define([
         },
 
         onTimeout: function (context) {
-            // Ajaxcomand call cancel conservant el draft
-
-            console.log("Timeout");
             // Canviem el missatge per informar
             context.clearTimer();
-
-            console.log("Button: ", dom.byId("ok-timeout"));
-
-
+            this.unlock();
             context.set('title', "Document desbloquejat");
             context.set('content', "El temps de bloqueig s'ha exhaurit i el document ha estat desbloquejat."
                 + "<div class=\"dijitDialogPaneActionBar\">"
@@ -121,7 +101,29 @@ define([
                 isShown = false;
             });
 
+        },
 
+        unlock: function () {
+
+            var requester;
+
+            require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
+                requester = new Request();
+
+                requester.updateSectok = function (sectok) {
+                    this.sectok = sectok;
+                };
+
+                requester.sectok = requester.dispatcher.getSectok();
+                requester.dispatcher.toUpdateSectok.push(requester);
+            }));
+
+
+            requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.docId.replace('_',':')
+                + '&keep_draft=true';
+
+            requester.setStandbyId(this.dispatcher.containerNodeId);
+            requester.sendRequest();
         },
 
 
@@ -142,7 +144,6 @@ define([
 
             var id = this.docId.replace('_', ':')
 
-
             requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=edit'
                 + '&id=' + id
                 + (this.rev ? '&rev=' + this.rev : '')
@@ -153,8 +154,9 @@ define([
             requester.sendRequest();
         },
 
-        onCancel: function() {
+        onCancel: function () {
             isShown = false;
+            this.unlock();
             this.clearTimer();
         }
 

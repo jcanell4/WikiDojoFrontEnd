@@ -12,8 +12,6 @@ define([
 
     var editing = function (params, docId, dispatcher) {
 
-        //console.log("params:", params);
-
         toolbarManager.setToolbar(params.varName, params.toolbarId, params.wikiTextId);
 
         dw_editor.init();
@@ -21,8 +19,7 @@ define([
 
         if (!params.locked) {
             // Només activem el temportizador si el document no està bloquejat
-            //new locktimer(docId, dispatcher).init(params.timeout, params.draft); // TODO[Xavi] Aquest es el correcte
-            new locktimer(docId, dispatcher).init(10, params.draft);
+            new locktimer(docId, dispatcher).init(params.timeout, params.draft);
         }
 
 
@@ -51,31 +48,15 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("DataContentProcessor#process", value);
+                //console.log("DataContentProcessor#process", value);
 
-
-                //alert("Check els valors");
-                // TODO[Xavi] Falta per afegir el dialog, per les proves fem que si es troba un draft es carregui el draft en lloc del document actual
-
-
-                //if (!value.draft) {
-                //    value.draft = {};
-                //}
-
-                var currentContent = jQuery(value.content).find('textarea').val(),
-                    //draft = value.draft.content,
-                    $content = jQuery(value.content);
+                var $content = jQuery(value.content);
 
                 // Reemplaçem el contingut del content amb el del draft
                 if (value.draft != null && value.recover_draft === "true") {
                     $content.find('textarea').html(value.draft.content);
                     value.content = jQuery('<div>').append($content.clone()).html();
                 }
-
-
-                //console.log("Nou content amb draft: ", $newContent);
-                //alert("Stop abans de que s'esborri");
-
 
                 var ret;
 
@@ -97,53 +78,6 @@ define([
 
                 return ret;
             },
-
-            //
-            ///**@override */
-            //addContent:  function (value, dispatcher, container) {
-            //
-            //
-            //console.log("Interromput");
-            //
-            //    var currentContent = jQuery(value.content).find('textarea').val(),
-            //        draft = value.draft.content,
-            //        $content = jQuery(value.content);
-            //
-            //    // Reemplaçem el contingut del content amb el del draft <-- aqui es mostrarà el dialeg si cal
-            //    //if (value.draft != null) {
-            //    //    $content.find('textarea').html(draft);
-            //    //    value.content = jQuery('<div>').append($content.clone()).html();
-            //    //}
-            //
-            //
-            //    var myArguments = arguments;
-            //
-            //
-            //
-            //    var self = this,
-            //        dialog = new DiffDialog({
-            //            title:    "S'ha trobat un eborrany",
-            //            style:    "width: 300px",
-            //            document: currentContent,
-            //            draft:    value.draft,
-            //            closable: false,
-            //
-            //            followUpCallback: function (text) {
-            //                value.content = text;
-            //                console.log("following");
-            //                self.inherited(myArguments);
-            //                console.log("inherited called");
-            //                this.destroyRecursive();
-            //
-            //                //self.process2(value, dispatcher);
-            //            }
-            //        });
-            //
-            //    dialog.show();
-            //
-            //    //self.inherited(myArguments);
-            //
-            //},
 
             /**
              * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument, i afegeix

@@ -157,13 +157,13 @@ define([
                      * un node especifica es fa servir el node pare d'aquest ContentTool.
                      */
                     postAttach: function () {
-                        console.log("ControlChangeContentToolDecoration#postAttach", this.id);
+                        //console.log("ControlChangeContentToolDecoration#postAttach", this.id);
                         var controls = lang.hitch(this, _getNotVolatileControls)();
                         lang.hitch(this, _addListenersToControl)(controls);
                     },
 
                     postRender: function () {
-                        console.log("ControlChangeContentToolDecoration#postRender", this.id);
+                        //console.log("ControlChangeContentToolDecoration#postRender", this.id);
                         var controls = lang.hitch(this, _getVolatileControls)();
                         lang.hitch(this, _addListenersToControl)(controls);
                         lang.hitch(this, _resetcontrols)();
@@ -247,7 +247,7 @@ define([
                  * @protected
                  */
                 postRender: function () {
-                    console.log("RequestContentToolDecoration#postRender", this.id);
+                    //console.log("RequestContentToolDecoration#postRender", this.id);
                     lang.hitch(this, _replaceContent)();
                 }
 

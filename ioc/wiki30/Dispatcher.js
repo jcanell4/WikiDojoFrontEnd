@@ -368,15 +368,7 @@ define([
              * @returns {number} sempre es 0
              */
             processResponse: function (response, processors) {
-
-                console.log("Resposta rebuda:", response);
-
-                console.log(".");
-                console.log(".");
-                console.log(".");
-                console.log(".");
-
-
+                //console.log("Dispatcher#processResponse:", response);
                 var req = this;
 
                 if (Array.isArray(response)) {

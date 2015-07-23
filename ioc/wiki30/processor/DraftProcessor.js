@@ -29,20 +29,9 @@ define([
              * @private
              */
             _processDialog: function (value, dispatcher) {
-                console.log("tenim la data del document?", value);
+                //console.log("DraftProcessor#_processDialog", value);
 
-                // TODO: Cada botó envia la petició ajaxcomand al client per editar la pàgina però passant un valor indicant pel cas que es trobi un draft
-                // recoverDraft=true.
-
-                // Aquest dialog ha de tenir un timer, amb el timeout+60s (el que arriba del server per les pàgines normals.
-
-                //
-                //      Acció 1 carregar el document actual
-                //      Acció 2 carregar el draft
-
-                var currentContent = jQuery(value.content).find('textarea').val(),
-                //draft = value.draft.content,
-                    $content = jQuery(value.content);
+                var currentContent = jQuery(value.content).find('textarea').val();
 
                 var dialog = new DiffDialog({
                     title:    "S'ha trobat un esborrany",
@@ -51,7 +40,8 @@ define([
                     draft:    {content: value.draft.content, date: value.draft.date},
                     docId:    value.id,
                     rev:      value.rev,
-                    //closable: false
+                    timeout: value.timeout,
+                    dispatcher: dispatcher
                 });
 
 
