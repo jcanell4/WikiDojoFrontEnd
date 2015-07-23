@@ -54,4 +54,3 @@ define([
         });
     return ret;
 });
-
