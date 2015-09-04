@@ -50,6 +50,9 @@ define([
         startup: function () {
             this.inherited(arguments);
 
+            // TEST value
+            // this.timerID = window.setTimeout(this.onTimeout, this.timeout * 10, this);
+
             this.timerID = window.setTimeout(this.onTimeout, this.timeout * 1000, this);
 
             var documentLabel = "Document (" + this.document.date + ")",
@@ -86,7 +89,7 @@ define([
         onTimeout: function (context) {
             // Canviem el missatge per informar
             context.clearTimer();
-            this.unlock();
+            context.unlock();
             context.set('title', "Document desbloquejat");
             context.set('content', "El temps de bloqueig s'ha exhaurit i el document ha estat desbloquejat."
                 + "<div class=\"dijitDialogPaneActionBar\">"

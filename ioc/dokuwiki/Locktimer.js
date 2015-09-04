@@ -101,9 +101,14 @@ define([
                 // init values
                 this.timeoutWarning = timeout * 1000;
                 this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 1000;
-                //
-                //console.log("Warning: ", this.timeoutWarning)
-                //console.log("Timeout: ", this.timeout)
+
+                // TEST Values
+                //this.timeoutWarning = timeout * 10;
+                //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 20;
+
+
+                console.log("Warning: ", this.timeoutWarning)
+                console.log("Timeout: ", this.timeout)
 
 
                 this.draft = draft;
