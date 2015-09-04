@@ -244,10 +244,10 @@ define([
 
         // Incialitzem la mida dels editors
 
-        fillEditorContainer();
+
         funcEnableWrapper();
         toolbarManager.initToolbar();
-
+        fillEditorContainer();
         console.log("Carregat en " + (new Date().getTime() - inici));
     };
 });
