@@ -90,7 +90,7 @@ define([
              */
             dispatchEvent: function (event, data) {
                 var observers = this.events[event];
-
+                //console.log("EventOvserver#dispatchEvent: ", event);
                 if (observers) {
                     dojoArray.forEach(observers, function (callback) {
                         if (callback) {

@@ -45,9 +45,9 @@ define(function () {
             return revision['sum'] ? 'Resum: ' + revision['sum'] : 'No hi ha cap resum per la revisió del ' + revision['date'];
         },
 
-        _generateHtmlForDiff = function (revisionId, revision) {
+        _generateHtmlForDiff = function (revision) {
             var html = '',
-                linkDiff = '?id=' + revision['id'] + "&rev=" + revisionId + "&difftype=sidebyside";
+                linkDiff = '?id=' + revision['id'] + "&rev=" + revision['rev'] + "&difftype=sidebyside";
 
             html += '<td><a href="' + linkDiff + '" data-call="diff">';
             html += '<img width="15" height="11" alt="Mostra diferències amb la versió actual"';
@@ -74,9 +74,26 @@ define(function () {
         html += '<table class="meta-revisions">';
         html += '<tr><th colspan="4" style="text-align: center"><input type="submit" name="submit" value="comparar revisions"/></th></tr>'; // TODO[Xavi]no funciona, surt fora de la taula, perquè?
 
-        for (var i in data) {
-            linkRev = '?id=' + data[i]['id'] + "&rev=" + i;
-            linkTime = data[i]['date'].substring(0, 10);
+        // extreiem cada objecte i l'afegim a un array per poder ordenar-los
+        var sortable = [];
+
+        for (var j in data) {
+            data[j]['rev'] = j;
+            sortable.push(data[j]);
+        }
+
+        // Ordenem el array
+        sortable.sort(function(a,b) {
+            //console.log(a);
+           return a['rev']> b['rev'] ? -1 : 1;
+        });
+
+
+
+
+        for (var i = 0; i< sortable.length; i++) {
+            linkRev = '?id=' + sortable[i]['id'] + "&rev=" + sortable[i]['rev'];
+            linkTime = sortable[i]['date'].substring(0, 10);
 
             html += '<tr>';
 
@@ -88,14 +105,14 @@ define(function () {
                 html += '</a></td>';
 
             } else {
-                html += _generateHtmlForCheckRevision(i);
-                html += '<td><a href="' + linkRev + '" title="' + 'Obrir la revisió del ' + data[i]['date'] + '">';
+                html += _generateHtmlForCheckRevision(sortable[i]['rev']);
+                html += '<td><a href="' + linkRev + '" title="' + 'Obrir la revisió del ' + sortable[i]['date'] + '">';
                 html += linkTime;
                 html += '</a></td>';
-                html += _generateHtmlForDiff(i, data[i]);
+                html += _generateHtmlForDiff(sortable[i]);
             }
 
-            html += _generateHtmlForSummary(data[i]);
+            html += _generateHtmlForSummary(sortable[i]);
 
             html += '</tr>';
         }

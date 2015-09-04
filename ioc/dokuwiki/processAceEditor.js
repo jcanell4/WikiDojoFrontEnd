@@ -70,9 +70,9 @@ define([
         },
 
         confEnableAce = {
-            type:  "EnableAce",
+            type: "EnableAce",
             title: "Activar/Desactivar ACE",
-            icon:  "/iocjslib/ioc/gui/img/toggle_on.png"
+            icon: "/iocjslib/ioc/gui/img/toggle_on.png"
         },
 
         /**
@@ -92,9 +92,9 @@ define([
         },
 
         confEnableWrapper = {
-            type:  "EnableWrapper", // we havea new type that links to the function
+            type: "EnableWrapper", // we havea new type that links to the function
             title: "Activar/Desactivar embolcall",
-            icon:  "/iocjslib/ioc/gui/img/wrap.png"
+            icon: "/iocjslib/ioc/gui/img/wrap.png"
         },
 
         /**
@@ -109,20 +109,35 @@ define([
             if (content.isWrapperOn()) {
                 dw_editor.setWrap(textArea, 'off');
                 content.setWrapperOn(false);
+                return false;
 
             } else {
                 dw_editor.setWrap(textArea, 'on');
                 content.setWrapperOn(true);
+                return true;
             }
 
-            return false;
-        };
+        },
 
-    toolbarManager.addButton(confEnableAce, funcEnableAce);
-    toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
+        /**
+         * Afegeix els botons i canvia el valor de buttonsCreated a cert si es crean amb exit o fals si algun falla.
+         *
+         * @returns {boolean}
+         */
+        addButtons = function () {
+            buttonsCreated = true;
 
+            buttonsCreated &= toolbarManager.addButton(confEnableAce, funcEnableAce);
+            buttonsCreated &= toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
+        },
+
+        buttonsCreated = false;
 
     return function (params) {
+
+        if (!buttonsCreated) {
+            addButtons();
+        }
 
         // Comprovem la versió del explorador i que existeix l'entorn de la dokuwiki abans de fer res
         if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById(params.textAreaId))) {
@@ -136,20 +151,20 @@ define([
 
             iocAceMode = new IocAceMode({
                 baseHighlighters: lang_rules,
-                ruleSets:         [new IocRuleSet()],
-                xmlTags:          JSINFO.plugin_aceeditor.xmltags
+                ruleSets: [new IocRuleSet()],
+                xmlTags: JSINFO.plugin_aceeditor.xmltags
             }),
 
             mode = iocAceMode.getMode(),
 
             iocAceEditor = new IocAceEditor({
-                mode:        mode,
+                mode: mode,
                 containerId: "editor" + params.id,
-                theme:       JSINFO.plugin_aceeditor.colortheme,
-                readOnly:    jQuery(document.getElementById(params.textAreaId)).attr('readonly'),
-                wraplimit:   JSINFO.plugin_aceeditor.wraplimit,
-                wrapMode:    jQuery(document.getElementById(params.textAreaId)).attr('wrap') !== 'off',
-                mdpage:      JSINFO.plugin_aceeditor.mdpage
+                theme: JSINFO.plugin_aceeditor.colortheme,
+                readOnly: jQuery(document.getElementById(params.textAreaId)).attr('readonly'),
+                wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+                wrapMode: jQuery(document.getElementById(params.textAreaId)).attr('wrap') !== 'off',
+                mdpage: JSINFO.plugin_aceeditor.mdpage
             }),
 
             aceWrapper = new AceWrapper(iocAceEditor),
@@ -217,10 +232,8 @@ define([
             console.log("Canviant mida del texarea a: " + h);
             style.set(params.textAreaId, "height", "" + h - 20 + "px");
 
-            //if (editor) {
             console.log("Canviant mida del editor a: " + h);
             style.set(editor.containerId, "height", "" + h - 20 + "px");
-            //}
 
         };
 
@@ -229,7 +242,10 @@ define([
         });
 
         // Incialitzem la mida dels editors
+
+        toolbarManager.initToolbar();
         fillEditorContainer();
+        funcEnableWrapper();
 
         console.log("Carregat en " + (new Date().getTime() - inici));
     };
