@@ -4,21 +4,23 @@ define([
     "ioc/wiki30/processor/ContentProcessor",
     "dojo/ready",
     "ioc/gui/content/contentToolFactory",
+    "ioc/dokuwiki/AceManager/toolbarManager",
+    "ioc/dokuwiki/Locktimer",
+    "dojo/dom",
+    "dojo/dom-style",
+], function (Editor, declare, ContentProcessor, ready, contentToolFactory, toolbarManager, locktimer, dom, domStyle) {
 
-], function (Editor, declare, ContentProcessor, ready, contentToolFactory) {
+    var editing = function (params, docId, dispatcher) {
 
-    var editing = function (params, dispatcher) {
-        var toolbar = window[params.varName];
-
-        // TODO[Xavi] Moure la inicialització del toolbar al aceProcessEditor
-        if (toolbar && params.toolbarId && params.wikiTextId) {
-            initToolbar(params.toolbarId, params.wikiTextId, toolbar);
-            jQuery('#' + params.toolbarId).attr('role', 'toolbar');
-        }
-
+        toolbarManager.setToolbar(params.varName, params.toolbarId, params.wikiTextId);
 
         dw_editor.init();
-        dw_locktimer.init(params.timeout, params.draft);
+
+
+        if (!params.locked) {
+            // Només activem el temportizador si el document no està bloquejat
+            new locktimer(docId, dispatcher).init(params.timeout, params.draft);
+        }
 
 
     };
@@ -46,6 +48,16 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                //console.log("DataContentProcessor#process", value);
+
+                var $content = jQuery(value.content);
+
+                // Reemplaçem el contingut del content amb el del draft
+                if (value.draft != null && value.recover_draft === "true") {
+                    $content.find('textarea').html(value.draft.content);
+                    value.content = jQuery('<div>').append($content.clone()).html();
+                }
+
                 var ret;
 
                 value.editor = new Editor(value.id, value.content);
@@ -53,12 +65,16 @@ define([
 
 
                 ret = this.inherited(arguments);
+
+                // En aquest punt ja ha d'estar el ContentTool creat
+
                 value.editor.select();
 
 
                 ready(function () {
-                    editing(value.editing, dispatcher);
+                    editing(value.editing, value.id, dispatcher);
                 });
+
 
                 return ret;
             },
@@ -75,6 +91,8 @@ define([
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
                 dispatcher.getContentCache(value.id).setEditor(value.editor);
+
+
             },
 
             /**
@@ -96,7 +114,8 @@ define([
                     closable:        true,
                     dispatcher:      dispatcher,
                     originalContent: this._extractContentFromNode(content.editor.editorNode),
-                    type:            this.type
+                    type:            this.type,
+                    locked:          content.editing.locked
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);

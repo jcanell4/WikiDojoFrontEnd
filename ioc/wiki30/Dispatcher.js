@@ -36,6 +36,7 @@ define([
     "ioc/wiki30/DokuwikiContent",
     "ioc/wiki30/processor/DiffContentProcessor",
     "ioc/wiki30/processor/MetaDiffProcessor",
+    "ioc/wiki30/processor/DraftProcessor",
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor,
              MetaInfoProcessor,MetaMediaInfoProcessor,MediaDetailsProcessor,MetaMediaDetailsInfoProcessor,
@@ -45,7 +46,7 @@ define([
              CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
              RevisionsProcessor,ExtraContentStateProcessor, ExtraMetaInfoProcessor,
-             DokuwikiContent,DiffContentProcessor, MetaDiffProcessor) {
+             DokuwikiContent,DiffContentProcessor, MetaDiffProcessor, DraftProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -155,6 +156,7 @@ define([
                 this.processors["extra_metainfo"] = new ExtraMetaInfoProcessor();
                 this.processors["diff"] = new DiffContentProcessor();
                 this.processors["diff_metainfo"] = new MetaDiffProcessor();
+                this.processors["draft_dialog"] = new DraftProcessor();
             },
 
             /**
@@ -360,7 +362,7 @@ define([
 
             /**
              * Processa la resposta passada com argument.
-             *
+             *z
              * TODO[Xavi] no es fa servir la resposta en lloc.
              *
              * @param {Array.<{type: string, value: *}>|{type: string, value: *}} response resposta per processar.
@@ -368,8 +370,8 @@ define([
              * @returns {number} sempre es 0
              */
             processResponse: function (response, processors) {
+                //console.log("Dispatcher#processResponse:", response);
                 var req = this;
-
 
                 if (Array.isArray(response)) {
                     array.some(response, function (responseItem) {

@@ -116,13 +116,27 @@ define([
             }
 
             return false;
-        };
+        },
 
-    toolbarManager.addButton(confEnableAce, funcEnableAce);
-    toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
+        /**
+         * Afegeix els botons i canvia el valor de buttonsCreated a cert si es crean amb exit o fals si algun falla.
+         *
+         * @returns {boolean}
+         */
+        addButtons = function () {
+            buttonsCreated = true;
 
+            buttonsCreated &= toolbarManager.addButton(confEnableAce, funcEnableAce);
+            buttonsCreated &= toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
+        },
+
+        buttonsCreated = false;
 
     return function (params) {
+
+        if (!buttonsCreated) {
+            addButtons();
+        }
 
         // Comprovem la versió del explorador i que existeix l'entorn de la dokuwiki abans de fer res
         if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById(params.textAreaId))) {
@@ -229,8 +243,11 @@ define([
         });
 
         // Incialitzem la mida dels editors
-        fillEditorContainer();
 
+
+        funcEnableWrapper();
+        toolbarManager.initToolbar();
+        fillEditorContainer();
         console.log("Carregat en " + (new Date().getTime() - inici));
     };
 });
