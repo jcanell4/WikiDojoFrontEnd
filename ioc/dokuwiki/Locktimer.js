@@ -366,7 +366,8 @@ define([
                         this.dialogs[dialog] = null;
                     }
                 } else {
-                    console.error("No es pot eliminar el dialog " + dialog + " perquè no es troba: ", this.dialogs);
+                    // Normalment no hi ha dialog, així que no cal mostrar l'error
+                    // console.error("No es pot eliminar el dialog " + dialog + " perquè no es troba: ", this.dialogs);
                 }
             },
 

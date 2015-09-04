@@ -112,7 +112,7 @@ define([
              */
             _clearDocChildren: function (docId, children) {
                 for (var child in children) {
-                    if (children[child].getDocumentId() == docId) {
+                    if (children[child].docId == docId) {
                         children[child].removeContentTool();
                     }
                 }
