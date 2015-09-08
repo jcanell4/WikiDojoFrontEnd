@@ -245,8 +245,8 @@ define([
 
         toolbarManager.initToolbar();
         fillEditorContainer();
-        funcEnableWrapper();
-
+        //funcEnableWrapper();
+        enable();
         console.log("Carregat en " + (new Date().getTime() - inici));
     };
 });
