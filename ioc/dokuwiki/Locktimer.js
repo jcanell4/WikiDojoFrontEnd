@@ -87,6 +87,8 @@ define([
                 this.contentTool = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
                 this.changesDetected = false;
+
+                this.stop = false;
             },
 
 
@@ -132,9 +134,11 @@ define([
             reset: function () {
                 this.clear();
 
-                this._initWarningTimer();
-                this._initTimeoutTimer();
-                this._initRefreshTimer();
+                if (!this.stop) {
+                    this._initWarningTimer();
+                    this._initTimeoutTimer();
+                    this._initRefreshTimer();
+                }
 
             },
 
@@ -286,6 +290,8 @@ define([
 
 
                 }, this.timeout);
+
+
             },
 
             _generateDialogTimeout: function () {
@@ -378,6 +384,7 @@ define([
              * Remove the current warning timer
              */
             clear: function (timerName) {
+
                 var clearTimersIDs;
 
                 if (timerName) {
@@ -396,6 +403,8 @@ define([
             },
 
             destroy: function () {
+                this.stop = true;
+
                 this.clear();
                 if (this.dialogs.warning !== null) {
                     this._cancelDialog('warning');
