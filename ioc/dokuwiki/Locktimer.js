@@ -80,8 +80,8 @@ define([
                 this.timeout = 0;
                 this.draft = false;
                 this.msg = {
-                    continue: LANG.willexpire1 + "<b>" + docId + "</b>" + LANG.willexpire2,
-                    timeout:  LANG.lock_timeout
+                    continue: LANG.template['ioc-template'].willexpire1 + "<b>" + docId + "</b>" + LANG.template['ioc-template'].willexpire2,
+                    timeout: LANG.template['ioc-template'].lock_timeout
                 };
                 this.pageid = '';
                 this.contentTool = this.dispatcher.getContentCache(this.docId).getMainContentTool();
@@ -206,13 +206,13 @@ define([
                 if (error != '1') {
 
                     info = {
-                        type:  "info",
+                        type: "info",
                         value: {
-                            duration:  -1,
-                            id:        this.docId,
-                            message:   "S'ha produit un error, el document no s'ha bloquejat.",
+                            duration: -1,
+                            id: this.docId,
+                            message: "S'ha produit un error, el document no s'ha bloquejat.",
                             timestamp: new Date(Date.now()).toLocaleFormat('%d/%m/%y %H:%M:%S'),
-                            type:      "error"
+                            type: "error"
                         }
                     };
 
@@ -292,16 +292,16 @@ define([
                 var self = this;
 
                 this.dialogs.timeout = new Dialog({
-                    title:    "Temps d'espera esgotat",
-                    content:  self.msg.timeout
-                              + "<div class=\"dijitDialogPaneActionBar\">"
-                              + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"ok-confirmation\">Ok</button>"
-                              + "</div>",
-                    style:    "width: 300px",
+                    title: "Temps d'espera esgotat",
+                    content: self.msg.timeout
+                    + "<div class=\"dijitDialogPaneActionBar\">"
+                    + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"ok-confirmation-" + this.docId + "\">Ok</button>"
+                    + "</div>",
+                    style: "width: 300px",
                     closable: false,
 
                     startup: function () {
-                        var okBtn = dom.byId("ok-confirmation");
+                        var okBtn = dom.byId("ok-confirmation-" + self.docId);
 
                         self.cancelEditing(true);
 
@@ -320,17 +320,19 @@ define([
                 var self = this;
 
                 this.dialogs.warning = new Dialog({
-                    title:   "Continuar editant?",
+                    title: "Continuar editant?",
                     content: self.msg.continue
-                             + "<div class=\"dijitDialogPaneActionBar\">"
-                             + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"save-confirmation\">desar</button>"
-                             + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"discard-confirmation\">descartar</button>",
-                    style:   "width: 300px"
-                             + "</div>",
+                    + "<div class=\"dijitDialogPaneActionBar\">"
+                    + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"save-confirmation-" + self.docId + "\">desar</button>"
+                    + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"discard-confirmation-" + self.docId + "\">descartar</button>",
+                    style: "width: 300px"
+                    + "</div>",
 
                     startup: function () {
-                        var saveBtn = dom.byId("save-confirmation"),
-                            cancelBtn = dom.byId("discard-confirmation");
+
+                        console.log(self.docId);
+                        var saveBtn = dom.byId("save-confirmation-" + self.docId),
+                            cancelBtn = dom.byId("discard-confirmation-" + self.docId);
 
                         on(saveBtn, 'click',
                             function () {
