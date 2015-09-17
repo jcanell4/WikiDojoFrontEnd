@@ -84,7 +84,7 @@ define([
              * @protected
              */
             createContentTool: function (content) {
-                var count = Object.keys(content.revisions).length,
+                var count = Object.keys(content.revisions).length - 2,
 
                     args = {
                         id:         this._buildContentId(content),
@@ -146,30 +146,31 @@ define([
 
                         ]
 
-                    },
-
-                    args2 = {
-                        controlsToCheck:
-                            {
-                                node:     'topBloc',
-                                selector: 'click',
-                                volatile: true,
-                                callback: function () {
-                                    this.updating = true;
-                                    this.render();
-                                    this.updating = false;
-                                    console.log(" *** Exemple 2: click al div superior de la pàgina provoca un render() ***");
-                                }
-
-                            }
                     };
+
+                    // TODO[Xavi] això es codi de demostració
+                    //args2 = {
+                    //    controlsToCheck:
+                    //        {
+                    //            node:     'topBloc',
+                    //            selector: 'click',
+                    //            volatile: true,
+                    //            callback: function () {
+                    //                this.updating = true;
+                    //                this.render();
+                    //                this.updating = false;
+                    //                console.log(" *** Exemple 2: click al div superior de la pàgina provoca un render() ***");
+                    //            }
+                    //
+                    //        }
+                    //};
 
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
                     .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
                     .decorate(contentToolFactory.decoration.CONTROL_CHANGES, argsControlsToCheck)
                     .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
-                    .decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
+                    //.decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
             },
 
             /**

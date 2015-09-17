@@ -64,53 +64,66 @@ define(function () {
 
 
     return function (data) {
-        var id = _getIdFromData(data),
+        var id = data.docId,
             html = '',
-            first = true,
-            linkRev, linkTime;
+        //first = true,
+            linkRev,
+            linkTime,
+            sortable = [],
+            linkCurrent;
+
 
         html += '<form id="' + _generateFormId(id) + '" action="" method="post">';
         html += '<input name="id" value="' + id + '" type="hidden">';
         html += '<table class="meta-revisions">';
         html += '<tr><th colspan="4" style="text-align: center"><input type="submit" name="submit" value="comparar revisions"/></th></tr>'; // TODO[Xavi]no funciona, surt fora de la taula, perquè?
 
-        // extreiem cada objecte i l'afegim a un array per poder ordenar-los
-        var sortable = [];
 
+        // Comprovem si existeix el actual i si es així l'eliminem de la llista de revisions
+        if (data[data.current]) {
+            delete data[data.current];
+        }
+
+        delete(data.current);
+
+        linkCurrent = '?id=' + data.docId;
+
+        delete(data.docId);
+
+
+        // extreiem cada objecte i l'afegim a un array per poder ordenar-los
         for (var j in data) {
             data[j]['rev'] = j;
             sortable.push(data[j]);
         }
 
+
+
         // Ordenem el array
-        sortable.sort(function(a,b) {
-            //console.log(a);
-           return a['rev']> b['rev'] ? -1 : 1;
+        sortable.sort(function (a, b) {
+            return a['rev'] > b['rev'] ? -1 : 1;
         });
 
 
+        // Afegim el actual
+        html += "<td></td>";
+        html += '<td colspan="3" class="current-revision"><a href="' + linkCurrent + '" title="' + 'Obrir la revisió actual">';
+        html += 'Versió actual';
+        html += '</a></td>';
 
 
-        for (var i = 0; i< sortable.length; i++) {
+        for (var i = 0; i < sortable.length; i++) {
             linkRev = '?id=' + sortable[i]['id'] + "&rev=" + sortable[i]['rev'];
             linkTime = sortable[i]['date'].substring(0, 10);
 
             html += '<tr>';
 
-            if (first) {
-                html += "<td></td>";
-                html += '<td colspan="2" class="current-revision"><a href="' + linkRev + '" title="' + 'Obrir la revisió actual">';
-                first = false;
-                html += 'Versió actual';
-                html += '</a></td>';
-
-            } else {
-                html += _generateHtmlForCheckRevision(sortable[i]['rev']);
-                html += '<td><a href="' + linkRev + '" title="' + 'Obrir la revisió del ' + sortable[i]['date'] + '">';
-                html += linkTime;
-                html += '</a></td>';
-                html += _generateHtmlForDiff(sortable[i]);
-            }
+            html += _generateHtmlForCheckRevision(sortable[i]['rev']);
+            html += '<td><a href="' + linkRev + '" title="' + 'Obrir la revisió del ' + sortable[i]['date'] + '">';
+            html += linkTime;
+            html += '</a></td>';
+            html += _generateHtmlForDiff(sortable[i]);
+            //}
 
             html += _generateHtmlForSummary(sortable[i]);
 
