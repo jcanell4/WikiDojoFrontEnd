@@ -194,8 +194,8 @@ define([
                 var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
                 var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
                 this._createRequest();
-                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media";
-                var query = 'id=' + this.id + '&ns=' + ns + '&do=media&list='+list+'&sort='+sort+"&versioupload=true";
+                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                var query = "img="+this.id+"&do=media&&image="+this.id+"&ns="+this.ns+"&versioupload=true";
                 this.requester.sendRequest(query);                
             },
             
