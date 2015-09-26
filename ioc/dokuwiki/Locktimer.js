@@ -80,13 +80,15 @@ define([
                 this.timeout = 0;
                 this.draft = false;
                 this.msg = {
-                    continue: LANG.willexpire1 + "<b>" + docId + "</b>" + LANG.willexpire2,
-                    timeout:  LANG.lock_timeout
+                    continue: LANG.template['ioc-template'].willexpire1 + "<b>" + docId + "</b>" + LANG.template['ioc-template'].willexpire2,
+                    timeout: LANG.template['ioc-template'].lock_timeout
                 };
                 this.pageid = '';
                 this.contentTool = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
                 this.changesDetected = false;
+
+                this.stop = false;
             },
 
 
@@ -101,9 +103,14 @@ define([
                 // init values
                 this.timeoutWarning = timeout * 1000;
                 this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 1000;
-                //
-                //console.log("Warning: ", this.timeoutWarning)
-                //console.log("Timeout: ", this.timeout)
+
+                // TEST Values
+                //this.timeoutWarning = timeout * 10;
+                //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 20;
+
+
+                console.log("Warning: ", this.timeoutWarning)
+                console.log("Timeout: ", this.timeout)
 
 
                 this.draft = draft;
@@ -127,9 +134,11 @@ define([
             reset: function () {
                 this.clear();
 
-                this._initWarningTimer();
-                this._initTimeoutTimer();
-                this._initRefreshTimer();
+                if (!this.stop) {
+                    this._initWarningTimer();
+                    this._initTimeoutTimer();
+                    this._initRefreshTimer();
+                }
 
             },
 
@@ -201,13 +210,13 @@ define([
                 if (error != '1') {
 
                     info = {
-                        type:  "info",
+                        type: "info",
                         value: {
-                            duration:  -1,
-                            id:        this.docId,
-                            message:   "S'ha produit un error, el document no s'ha bloquejat.",
+                            duration: -1,
+                            id: this.docId,
+                            message: "S'ha produit un error, el document no s'ha bloquejat.",
                             timestamp: new Date(Date.now()).toLocaleFormat('%d/%m/%y %H:%M:%S'),
-                            type:      "error"
+                            type: "error"
                         }
                     };
 
@@ -281,22 +290,24 @@ define([
 
 
                 }, this.timeout);
+
+
             },
 
             _generateDialogTimeout: function () {
                 var self = this;
 
                 this.dialogs.timeout = new Dialog({
-                    title:    "Temps d'espera esgotat",
-                    content:  self.msg.timeout
-                              + "<div class=\"dijitDialogPaneActionBar\">"
-                              + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"ok-confirmation\">Ok</button>"
-                              + "</div>",
-                    style:    "width: 300px",
+                    title: "Temps d'espera esgotat",
+                    content: self.msg.timeout
+                    + "<div class=\"dijitDialogPaneActionBar\">"
+                    + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"ok-confirmation-" + this.docId + "\">Ok</button>"
+                    + "</div>",
+                    style: "width: 300px",
                     closable: false,
 
                     startup: function () {
-                        var okBtn = dom.byId("ok-confirmation");
+                        var okBtn = dom.byId("ok-confirmation-" + self.docId);
 
                         self.cancelEditing(true);
 
@@ -315,17 +326,19 @@ define([
                 var self = this;
 
                 this.dialogs.warning = new Dialog({
-                    title:   "Continuar editant?",
+                    title: "Continuar editant?",
                     content: self.msg.continue
-                             + "<div class=\"dijitDialogPaneActionBar\">"
-                             + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"save-confirmation\">desar</button>"
-                             + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"discard-confirmation\">descartar</button>",
-                    style:   "width: 300px"
-                             + "</div>",
+                    + "<div class=\"dijitDialogPaneActionBar\">"
+                    + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"save-confirmation-" + self.docId + "\">desar</button>"
+                    + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"discard-confirmation-" + self.docId + "\">descartar</button>",
+                    style: "width: 300px"
+                    + "</div>",
 
                     startup: function () {
-                        var saveBtn = dom.byId("save-confirmation"),
-                            cancelBtn = dom.byId("discard-confirmation");
+
+                        console.log(self.docId);
+                        var saveBtn = dom.byId("save-confirmation-" + self.docId),
+                            cancelBtn = dom.byId("discard-confirmation-" + self.docId);
 
                         on(saveBtn, 'click',
                             function () {
@@ -361,7 +374,8 @@ define([
                         this.dialogs[dialog] = null;
                     }
                 } else {
-                    console.error("No es pot eliminar el dialog " + dialog + " perquè no es troba: ", this.dialogs);
+                    // Normalment no hi ha dialog, així que no cal mostrar l'error
+                    // console.error("No es pot eliminar el dialog " + dialog + " perquè no es troba: ", this.dialogs);
                 }
             },
 
@@ -370,6 +384,7 @@ define([
              * Remove the current warning timer
              */
             clear: function (timerName) {
+
                 var clearTimersIDs;
 
                 if (timerName) {
@@ -388,6 +403,8 @@ define([
             },
 
             destroy: function () {
+                this.stop = true;
+
                 this.clear();
                 if (this.dialogs.warning !== null) {
                     this._cancelDialog('warning');
