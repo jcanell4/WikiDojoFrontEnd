@@ -72,7 +72,7 @@ define([
             REAL_TIMEOUT_DIFF: 60,
 
             /** @type int temps entre auto saves del esborrany, temps en segons */
-            AUTOSAVE_TIME: 15,
+            AUTOSAVE_TIME: 5,
 
             constructor: function (docId, dispatcher) {
                 this.docId = docId;
@@ -124,6 +124,7 @@ define([
                 this.reset();
 
                 this.contentTool.registerObserverToEvent("document_changed", lang.hitch(this, this.refreshNeeded));
+                this.contentTool.registerObserverToEvent("document_changes_reset", lang.hitch(this, this.refreshReset));
                 this.contentTool.registerObserverToEvent("destroy", lang.hitch(this, this.destroy));
 
             },
@@ -158,6 +159,10 @@ define([
                 this.refreshTimer = true;
             },
 
+            refreshReset: function () {
+                this.refreshTimer = false;
+            },
+
             /**
              * Refresh the lock via AJAX
              *
@@ -172,6 +177,8 @@ define([
                 if (!this.refreshTimer) {
                     return;
                 }
+
+                this.refreshTimer = false;
 
                 var currentContent = this.contentTool.getCurrentContent();
 
@@ -190,9 +197,7 @@ define([
                         self.refreshed(data, self);
                     }
                 );
-
-
-                this.refreshTimer = false;
+;
             }
             ,
 
@@ -264,7 +269,7 @@ define([
             _initRefreshTimer: function () {
                 //console.log("Refresh Timer iniciat:", this);
                 // Guardem la referencia del timer
-                this.timersID.refresh = window.setInterval(lang.hitch(this, this.refresh), 1000 * this.draftAutosave);
+                this.timersID.refresh = window.setInterval(lang.hitch(this, this.refresh), 1000 * this.AUTOSAVE_TIME);
                 // L'activem
 
             },
