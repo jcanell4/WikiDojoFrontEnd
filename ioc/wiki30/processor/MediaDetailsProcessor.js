@@ -77,6 +77,9 @@ define([
                                     dispatcher.getGlobalState().pages[value.id]["mediado"] = value.mediado;
                                 }
                             }
+                            dispatcher.getGlobalState().getContent(value.id)["action"] = "mediadetails";
+                            dispatcher.getGlobalState().pages[value.id]["ns"] = value.ns;
+                            dispatcher.getGlobalState().pages[value.id]["myid"] = value.id;
                         },
                         createContentTool: function (content, dispatcher) {
                             var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";

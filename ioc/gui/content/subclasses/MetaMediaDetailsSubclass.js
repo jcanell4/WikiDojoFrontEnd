@@ -96,6 +96,11 @@ define([
                 on(this.domNode,'input[type="checkbox"]:change',  lang.hitch(this, this._doCheckCount));
                 on(this.domNode,'.wikilink1:click',  lang.hitch(this, this._doClickLink));
                 on(this.domNode,'.diff_link:click',  lang.hitch(this, this._doClickUll));
+                //
+                var midom = dom.byId("dw__upload_"+this.docId);
+                if(midom != null){
+                    on(midom,"submit",  lang.hitch(this, this._doFormUpLoad));
+                }
 
                 this.inherited(arguments);
             },
@@ -115,6 +120,44 @@ define([
                     alert("Només es poden comparar les diferencies entre 2 versions alhora");
                 }
             },
+            _doFormUpLoad: function (evt) {
+                evt.preventDefault();
+                var source = evt.target || evt.srcElement;
+                this._createRequest();
+                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                var x = document.getElementById("upload__file_"+this.docId);
+                var file = x.files[0];
+                if (file != null) {
+                    var ow = "";
+                    if (document.getElementById("dw__ow_"+this.docId).getAttribute("checked")) {
+                        ow = "&ow=checked";
+                    }
+                    var mediaid = "";
+                    if (document.getElementById("upload__name_"+this.docId).getAttribute("value")) {
+                        mediaid = document.getElementById("upload__name_"+this.docId).getAttribute("value");
+                        if (mediaid != "") {
+                            mediaid = "&mediaid=" + mediaid;
+                        }
+                    }
+                    var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
+                    var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+                    //Al formulari hi ha un camp input amb l'ns, el canvio també per tal de que el post el faci bé
+                    //var myNs = dojo.query('input[name=ns]')[0];              
+                    //myNs.value = this.docId;
+                    var query = "img="+this.docId+"&do=media&tab_details=view&tab_files=files&image="+this.docId
+                        +'&qqfile=' + file.name+ow+mediaid+"&id="+this.docId+"&isupload=upload"
+                        +"&ns="+this.ns;
+                    this.requester.sendForm("dw__upload_"+this.docId, query);
+                } else {
+                    alert("S'ha de seleccionar un fitxer");
+                }
+
+            },
+            /*
+             * 
+             * @param {type} evt
+             * @returns {undefined}
+             */
             _doForm: function (evt) {
                 evt.preventDefault();
                 var source = evt.target || evt.srcElement;
@@ -123,6 +166,7 @@ define([
                 var query = "img="+this.docId+"&do=media&tab_details=history&tab_files=files&image="+this.docId+"&ns="+this.ns;
                 this.requester.sendForm(source.id, query);
             },
+            
             /**
              * Prova de clic a contingut
              *

@@ -194,8 +194,8 @@ define([
                 var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
                 var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
                 this._createRequest();
-                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media";
-                var query = 'id=' + this.id + '&ns=' + ns + '&do=media&list='+list+'&sort='+sort+"&versioupload=true";
+                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                var query = "img="+this.id+"&do=media&&image="+this.id+"&ns="+this.ns+"&versioupload=true";
                 this.requester.sendRequest(query);                
             },
             
@@ -267,16 +267,20 @@ define([
                 var selectedBoth = false; 
                 var selectedOpacity = false;
                 var selectedPortions = false;
+                var toChange = "both";
                 if(this.difftype != undefined){
                     switch(this.difftype) {
                         case "both":
                             selectedBoth = true;
+                            toChange = "both";
                             break;
                         case "opacity":
                             selectedOpacity = true;
+                            toChange = "opacity";                            
                             break;
                         case "portions":
                             selectedPortions = true;
+                            toChange = "portions";                            
                             break;
                         default:
                             selectedBoth = true;
@@ -286,9 +290,9 @@ define([
                     selectedBoth = true;
                 }
 
-                mySelect.append(new Option(LANG.media_diff_both, "both",selectedBoth));
-                mySelect.append(new Option(LANG.media_diff_opacity, "opacity",selectedOpacity));
-                mySelect.append(new Option(LANG.media_diff_portions, "portions",selectedPortions));
+                mySelect.append(new Option(LANG.media_diff_both, "both"));
+                mySelect.append(new Option(LANG.media_diff_opacity, "opacity"));
+                mySelect.append(new Option(LANG.media_diff_portions, "portions"));
                 myLabel.append(mySelect);
                 myForm.append(myLabel);
 
@@ -297,6 +301,10 @@ define([
                 select.options[0].text = LANG.media_diff_both;
                 select.options[1].text = LANG.media_diff_opacity;
                 select.options[2].text = LANG.media_diff_portions;
+                
+                // for Chrome
+                var x = document.getElementById("mediamanager__difftype"+this.id);
+                x.querySelector("option[value='"+toChange+"']").selected = true;
             },
             
             _doSelectChange: function(evt){

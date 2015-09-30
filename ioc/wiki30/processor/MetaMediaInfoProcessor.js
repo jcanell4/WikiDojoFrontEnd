@@ -101,7 +101,7 @@ define([
                     selectedPane = "metaMediafileupload";
                     var versiouploadArray = versioupload.split(":");
                     var versiouploadIndex = versiouploadArray.length;
-                    nameUpload.value = versiouploadArray[versiouploadIndex -1]
+                    nameUpload.value = versiouploadArray[versiouploadIndex -1];
                     ovwUpload.checked = true;
                 }else{
                     defaultSelected = "metaMedia";
