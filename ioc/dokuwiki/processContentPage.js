@@ -21,6 +21,7 @@ define([
         if(oldId!==dispatcher.getGlobalState().getCurrentSectionId()){
             setSelectedSection(dom.byId(oldId), false);
         }
+        dispatcher.updateFromState();
     }
     
     function toggleClass(aNodes, className, toggle){
