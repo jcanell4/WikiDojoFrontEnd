@@ -16,11 +16,12 @@ define([
     
     function setCurrentSection(node){
         var oldId = dispatcher.getGlobalState().getCurrentSectionId();
-        dispatcher.getGlobalState().setCurrentSectionId(node);    
+        dispatcher.getGlobalState().setCurrentSectionId(node); 
         setSelectedSection(node, true);
         if(oldId!==dispatcher.getGlobalState().getCurrentSectionId()){
             setSelectedSection(dom.byId(oldId), false);
         }
+        dispatcher.updateFromState();
     }
     
     function toggleClass(aNodes, className, toggle){
