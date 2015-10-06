@@ -23,9 +23,6 @@ define([
 
         currentTabId: null,
 
-        /** @type {string} id de la secció seleccionada */
-        /**currentSectionId: null,**/
-
         /** @type {string} id de l'element seleccionat */
         currentElementId: null,
 
@@ -74,11 +71,6 @@ define([
          * @returns {null|string} nom de la secció seleccionada
          */
         getCurrentSectionId: function () {
-//            var ret = null;
-//            if(this.getCurrentContent().currentSectionId){
-//                ret = this.getCurrentContent().currentSectionId;
-//            }
-//            return  ret;
             return this.getCurrentContent().currentSectionId;
         },
 
@@ -153,13 +145,11 @@ define([
         },
 
         getContent: function (id) {
-
             var ret = undefined;
 
             if (this.pages[id]) {
                 ret = this.pages[id];
             } else {
-
                 ret = this.pages[id] = {};
                 //console.error("Creada nova pàgina buida per: ", id);
             }
