@@ -122,8 +122,11 @@ define([
             }));
 
 
-            requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.docId.replace('_',':')
+            console.log(this.ns);
+            requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.ns
                 + '&keep_draft=true';
+            //requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.docId.replace('_',':')
+            //    + '&keep_draft=true';
 
             requester.setStandbyId(this.dispatcher.containerNodeId);
             requester.sendRequest();

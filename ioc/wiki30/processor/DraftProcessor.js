@@ -39,6 +39,7 @@ define([
                     document: {content: currentContent, date: value.lastmod},
                     draft:    {content: value.draft.content, date: value.draft.date},
                     docId:    value.id,
+                    ns: value.ns,
                     rev:      value.rev,
                     timeout: value.timeout,
                     dispatcher: dispatcher
