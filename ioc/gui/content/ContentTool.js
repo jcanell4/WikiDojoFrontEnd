@@ -64,7 +64,7 @@ define([
              */
             onClose: function () {
                 //console.log("ContentTool#onClose");
-                return true;
+                return this.inherited(arguments);
             },
 
             /**
@@ -76,6 +76,7 @@ define([
              */
             postAttach: function () {
                 // per implementar a les subclasses, aquí s'afegiran els watchers i listeners específics
+                //console.log("ContentTool#postAttach", this.id);
                 this.inherited(arguments);
             },
 

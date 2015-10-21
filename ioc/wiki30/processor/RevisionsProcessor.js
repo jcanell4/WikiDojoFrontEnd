@@ -166,6 +166,8 @@ define([
                     //};
 
 
+
+
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)
                     .decorate(contentToolFactory.decoration.REQUEST_LINK, argsRequestLink)
                     .decorate(contentToolFactory.decoration.CONTROL_CHANGES, argsControlsToCheck)

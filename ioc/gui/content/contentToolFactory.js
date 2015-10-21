@@ -25,10 +25,11 @@ define([
         "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
         "ioc/gui/content/subclasses/EditorSubclass",
         "ioc/gui/content/subclasses/MediaDetailsSubclass",
-        "ioc/gui/content/subclasses/MetaMediaDetailsSubclass"
+        "ioc/gui/content/subclasses/MetaMediaDetailsSubclass",
+        "ioc/gui/content/subclasses/StructuredDocumentSubclass"
     ], function (lang, ContentTool, requestReplacerFactory,
                  dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, ChangesManagerCentralSubclass, EditorSubclass,
-                 MediaDetailsSubclass, MetaMediaDetailsSubclass) {
+                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass) {
 
         var patch = function (target, source) {
                 return function () {
@@ -274,7 +275,8 @@ define([
                 DOCUMENT: 'document',
                 EDITOR:   'editor',
                 MEDIADETAILS: 'mediadetails',
-                METAMEDIADETAILS: 'metamediadetails'
+                METAMEDIADETAILS: 'metamediadetails',
+                STRUCTURED_DOCUMENT: 'structured_document'
             },
 
             /**
@@ -351,6 +353,7 @@ define([
                         console.error('No existeix el tipus de decoració ' + type);
                 }
 
+
                 if (decoration) {
                     return mix(contentTool, decoration);
                 }
@@ -397,6 +400,13 @@ define([
                             .createSubclass(ChangesManagerCentralSubclass)
                             .createSubclass(EditorSubclass);
                         break;
+
+                    case this.generation.STRUCTURED_DOCUMENT:
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(StructuredDocumentSubclass);
+                        break;
+
                     case this.generation.MEDIADETAILS:
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass)
@@ -411,6 +421,7 @@ define([
                     default:
                         console.error('No existeix el tipus de ContentTool: ' + type);
                 }
+
 
                 return GeneratedContentTool;
 

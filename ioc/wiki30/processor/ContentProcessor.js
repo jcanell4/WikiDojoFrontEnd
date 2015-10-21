@@ -16,7 +16,7 @@ define([
          */
         {
 
-            blackList: [/*"html"*/],
+            blackList: ['edit_partial'],
 
             type: null,
 

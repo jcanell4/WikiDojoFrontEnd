@@ -64,6 +64,9 @@ define(function () {
 
 
     return function (data) {
+        data = JSON.parse(JSON.stringify(data)); // Com que data es un objecte hem de fer una copia per no modificar l'original
+
+
         var id = data.docId,
             html = '',
         //first = true,

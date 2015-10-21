@@ -112,6 +112,7 @@ define([
              * @protected
              */
             createContentTool: function (metaContent) {
+                //console.log("MetaInfoProcessor#createContentTool", metaContent.id);
                 var args = {
                     id:         metaContent.id,
                     title:      metaContent.title,

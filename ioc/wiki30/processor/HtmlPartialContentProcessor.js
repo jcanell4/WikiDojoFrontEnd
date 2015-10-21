@@ -1,8 +1,9 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
-    "ioc/gui/content/contentToolFactory"
-], function (declare, ContentProcessor, contentToolFactory) {
+    "ioc/gui/content/contentToolFactory",
+    "ioc/gui/content/subclasses/StructuredDocumentSubclass",
+], function (declare, ContentProcessor, contentToolFactory, StructuredDocumentSubclass) {
 
     return declare([ContentProcessor],
         /**
@@ -14,7 +15,7 @@ define([
          * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-            type: "html",
+            type: "edit_partial",
 
             /**
              * Processa el valor rebut com argument com a contingut Html per mostrar un document en mode Html
@@ -24,6 +25,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                //console.log('HtmlPartialContentProcessor#process', value);
                 return this.inherited(arguments);
             },
 
@@ -55,30 +57,23 @@ define([
                     ns:         content.ns,
                     id:         content.id,
                     title:      content.title,
-                    content:    content.content,
+                    content:    content.structure,
                     closable:   true,
                     dispatcher: dispatcher,
                     rev:        content.rev,
-                    type:       this.type
-                },
-                    argsRequestForm = {
-                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial"
-                        // TODO: Tot això son els params del formulari no els hem de possar nosaltres
-                        //+ "&rev="
-                        //+ "&summary="
-                        //+ "&target=section"
-                        //+ "&range=" + "-" + ""
-                        //+ "&id="
-                        //+ "&sectok" // TODO[Xavi] Aquest s'agafa automáticament?
+                    type:       this.type,
 
+                };
+                    //argsRequestForm = {
+                    //    urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
+                    //    form: '.btn_secedit',
+                    //    continue: true
+                    //};
+                    //
+                    //
 
-                        ,
-                        form: '.btn_secedit',
-                        continue: true
-                    };
+                return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
 
-                return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
 
                 //return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
             }

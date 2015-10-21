@@ -122,12 +122,12 @@ define([
             },
             
             /*
-             * 
+             *
              */
-            
+
             getDocumentId: function(){
                 return this.id;
             }
-            
+
         });
 });

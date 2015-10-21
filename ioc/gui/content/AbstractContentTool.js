@@ -159,7 +159,9 @@ define([
              */
             render: function () {
                 //console.log("AbstractContentTool#render", this.id);
+                this.updating = true;
                 this.set('content', this.renderEngine(this.data));
+                this.updating = false;
             },
 
             /**
@@ -207,10 +209,13 @@ define([
              * aplicada.
              */
             setData: function (data) {
-                this.updating = true;
+                if (!data) {
+                    console.error("setData", data);
+                }
+
                 this.set('data', data);
                 this.dispatchEvent("data_replaced", {id: this.id});
-                this.updating = false;
+
             },
 
             /**

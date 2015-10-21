@@ -37,6 +37,7 @@ define([
     "ioc/wiki30/processor/DiffContentProcessor",
     "ioc/wiki30/processor/MetaDiffProcessor",
     "ioc/wiki30/processor/DraftProcessor",
+    "ioc/wiki30/processor/HtmlPartialContentProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor,
              MetaInfoProcessor,MetaMediaInfoProcessor,MediaDetailsProcessor,MetaMediaDetailsInfoProcessor,
@@ -46,7 +47,7 @@ define([
              CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
              RevisionsProcessor,ExtraContentStateProcessor, ExtraMetaInfoProcessor,
-             DokuwikiContent,DiffContentProcessor, MetaDiffProcessor, DraftProcessor) {
+             DokuwikiContent,DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -157,6 +158,7 @@ define([
                 this.processors["diff"] = new DiffContentProcessor();
                 this.processors["diff_metainfo"] = new MetaDiffProcessor();
                 this.processors["draft_dialog"] = new DraftProcessor();
+                this.processors["edit_partial"] = new HtmlPartialContentProcessor();
             },
 
             /**
@@ -309,6 +311,7 @@ define([
              * @returns {DokuwikiContent} el contingut corresponent
              */
             getContentCache: function (id) {
+                //console.log("Dispatcher#getContentCache", id);
                 return this.contentCache[id];
             },
 
@@ -391,7 +394,7 @@ define([
 
             /**
              * Comprova si hi ha definit una resposta d'aquest tipus, i si es així la processa passant-li el valor i aquest
-             * dispatcher com arguments. En cas contrari mostra una alerta avissant.
+             * dispatcher com arguments. En cas contrari mostra una alerta avisant.
              *
              * @param {{type: string, value: *}} response resposta per processar
              *
@@ -462,6 +465,7 @@ define([
              * @param content
              */
             addDocument: function (content) {
+                console.log("Dispatcher#addDocument", id);
 
                 if (!this.contentCache[content.id]) {
 
@@ -479,6 +483,7 @@ define([
              * @param {string} id
              */
             removeDocumentState: function (id) {
+                //console.log("Dispatcher#removeDocumentState", id);
                 this.getGlobalState().deleteContent(id);
 
                 if (this.contentCache[id]) {
