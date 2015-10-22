@@ -14,17 +14,17 @@ define([
          * @see contentToolFactory.generate()
          */
         {
-
-            /**
-             *
-             * @param content
-             */
-            updateDocument: function (content) {
-                console.log("content", content);
-                alert("mira el content");
-                this.setData(content.structured);
-                this.addDocument();
-            }
+            //
+            ///**
+            // *
+            // * @param content
+            // */
+            //updateDocument: function (content) {
+            //    console.log("content", content);
+            //    alert("mira el content");
+            //    this.setData(content.structured);
+            //    this.addDocument();
+            //}
 
         });
 });

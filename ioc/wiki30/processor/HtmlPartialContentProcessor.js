@@ -81,6 +81,7 @@ define([
                 var contentTool = contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
 
 
+                // TODO[Xavi] Per mostrar missatge de no disponible, penden d'eliminar
                 var args2 = {
                     controlsToCheck: [
                         {
@@ -96,17 +97,15 @@ define([
                     ]
 
                 };
-                //argsRequestForm = {
-                //    urlBase: "lib/plugins/ajaxcommand/ajax.php?call=html_partial&do=html_partial",
-                //    form: '.btn_secedit',
-                //    continue: true
-                //};
 
+                argsRequestForm = {
+                    urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
+                    form: '.btn_secedit',
+                    continue: true
+                };
 
-                return contentTool.decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
-
-
-                //return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
+                return contentTool.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
+                //return contentTool.decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
             }
 
         });

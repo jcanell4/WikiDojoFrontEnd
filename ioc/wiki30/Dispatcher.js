@@ -37,17 +37,19 @@ define([
     "ioc/wiki30/processor/DiffContentProcessor",
     "ioc/wiki30/processor/MetaDiffProcessor",
     "ioc/wiki30/processor/DraftProcessor",
-    "ioc/wiki30/processor/HtmlPartialContentProcessor"
+    "ioc/wiki30/processor/HtmlPartialContentProcessor",
+    "ioc/wiki30/processor/EditPartialProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, HtmlContentProcessor, MediaProcessor,
-             MetaInfoProcessor,MetaMediaInfoProcessor,MediaDetailsProcessor,MetaMediaDetailsInfoProcessor,
+             MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
              DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
              LoginProcessor, SectokProcessor, TitleProcessor,
              RemoveAllContentTabProcessor, RemoveContentTabProcessor,
              CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
-             RevisionsProcessor,ExtraContentStateProcessor, ExtraMetaInfoProcessor,
-             DokuwikiContent,DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor) {
+             RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
+             DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
+             EditPartialProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -159,6 +161,7 @@ define([
                 this.processors["diff_metainfo"] = new MetaDiffProcessor();
                 this.processors["draft_dialog"] = new DraftProcessor();
                 this.processors["html_partial"] = new HtmlPartialContentProcessor();
+                this.processors["edit_partial"] = new EditPartialProcessor();
             },
 
             /**
@@ -343,7 +346,7 @@ define([
              *
              * @param {boolean} st
              */
-            setUnsavedChangesState:  function (st) {
+            setUnsavedChangesState: function (st) {
                 alert("SetUnsavedChangesState");
                 this.unsavedChangesState = st;
                 window.textChanged = st;
@@ -459,9 +462,9 @@ define([
              * Afegeix un document.
              *
              * TODO[Xavi] Aixó es mourà al onAttach() del documentContentTool()
-             * 
+             *
              * @deprecated
-             * 
+             *
              * @param content
              */
             addDocument: function (content) {

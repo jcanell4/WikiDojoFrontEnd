@@ -158,7 +158,7 @@ define([
              * @protected
              */
             render: function () {
-                //console.log("AbstractContentTool#render", this.id);
+                console.log("AbstractContentTool#render", this.id);
                 this.updating = true;
                 this.set('content', this.renderEngine(this.data));
                 this.updating = false;
@@ -179,9 +179,11 @@ define([
 
                 aspect.before(this, "render", this.preRender);
 
-                this.watch("data", function () {
-                    this.render();
-                });
+                //// TODO[Xavi] Això no funciona
+                //this.watch("data", function () {
+                //    alert("activado el watch");
+                //    this.render();
+                //});
 
                 if (this.data) {
                     this.setData(this.data);
@@ -215,6 +217,7 @@ define([
 
                 this.set('data', data);
                 this.dispatchEvent("data_replaced", {id: this.id});
+                console.log("Data establerta a: ", this.data)
 
             },
 

@@ -12,6 +12,7 @@ define(function () {
      */
 
     return function (data) {
+        console.log("*** RENDER DE DATA PARCIAL ***");
         var $container, $viewContainer, $editContainer, $header, $content, $form, $doc, text, aux_id;
         //console.log("Render partial:", data);
         //data = JSON.parse(JSON.stringify(data));
@@ -51,15 +52,18 @@ define(function () {
             // Aquí s'afegirà el espai pels editors i la barra de eines
 
 
-            if (data.id + "_" + data.selected === aux_id) {
+            if (data.chunks[i].text) {
                 text = data.chunks[i].text;
+                console.log("Activant editor per: ", aux_id);
                 $editContainer.css('display', '');
                 $viewContainer.css('display', 'none');
-            } else {
+            } else{
                 $editContainer.css('display', 'none');
                 $viewContainer.css('display', '');
                 text = '';
             }
+
+
             //console.log("Texto entre inici:",data.chunks[i].start-2, " i final: ",  data.chunks[i].end-2);
 
             $editContainer.append('<div id="toolbar_' + aux_id + '"></div>');
@@ -76,18 +80,14 @@ define(function () {
         }
 
 
-        //var $doc, $forms;
-        //
-        //$doc = jQuery(data.html);
-        //
-        //$doc.find('form');
-        //$forms = $doc.find('form');
-        //
-        //
-        //$forms.each(function () {
-        //    jQuery(this).remove();
-        //
-        //});
+        // TODO[Xavi] Duplicat al htmlRenderEngine
+        var $forms = $doc.find('form');
+
+        $forms.each(function () {
+            var $form = jQuery(this).parent(),
+                id = jQuery(this).parent().prev().prev().attr('id');
+            $form.find('div.no').append('<input type="hidden" value="' + id + '" name="section_id"></input>');
+        });
 
         return $doc;
     }

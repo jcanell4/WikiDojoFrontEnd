@@ -16,7 +16,6 @@ define(function () {
 
         $doc = jQuery(data);
 
-        $doc.find('form');
         $forms = $doc.find('form');
 
         $forms.each(function () {
