@@ -24,7 +24,7 @@ define(function () {
         $doc = jQuery('<div>' + data.html + '</div>');
 
         for (var i = 0; i < data.chunks.length; i++) {
-            aux_id = data.id+"_"+data.chunks[i].header_id;
+            aux_id = data.id + "_" + data.chunks[i].header_id;
             $container = jQuery('<div id="container_' + aux_id + '"></div>');
 
             $header = $doc.find('#' + data.chunks[i]['header_id']);
@@ -50,13 +50,21 @@ define(function () {
             $editContainer = jQuery('<div id="edit_' + aux_id + '"></div>');
             // Aquí s'afegirà el espai pels editors i la barra de eines
 
-            text = data.text.substring(data.chunks[i].start-2, data.chunks[i].end-2);
 
+            if (data.id + "_" + data.selected === aux_id) {
+                text = data.chunks[i].text;
+                $editContainer.css('display', '');
+                $viewContainer.css('display', 'none');
+            } else {
+                $editContainer.css('display', 'none');
+                $viewContainer.css('display', '');
+                text = '';
+            }
             //console.log("Texto entre inici:",data.chunks[i].start-2, " i final: ",  data.chunks[i].end-2);
 
-            $editContainer.append('<div id="toolbar_'+aux_id+'"></div>');
-            $editContainer.append('<textarea id="textarea_'+aux_id+'" style="width:100%;height:200px">' + text + '</textarea>');
+            $editContainer.append('<div id="toolbar_' + aux_id + '"></div>');
 
+            $editContainer.append('<textarea id="textarea_' + aux_id + '" style="width:100%;height:200px">' + text + '</textarea>');
 
 
             $container.append($viewContainer);
@@ -64,13 +72,6 @@ define(function () {
 
             //console.log("afegit", chunk_id);
 
-            if (data.id+"_"+data.selected === aux_id) {
-                $editContainer.css('display', '');
-                $viewContainer.css('display', 'none');
-            } else {
-                $editContainer.css('display', 'none');
-                $viewContainer.css('display', '');
-            }
 
         }
 

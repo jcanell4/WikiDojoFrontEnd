@@ -69,7 +69,7 @@ define([
 
                         for (var i = 0; i < content.structure.chunks.length; i++) {
                             var aux_id = content.structure.id + "_" + content.structure.chunks[i].header_id;
-                            console.log("Afegint la toolbar... a", aux_id);
+                            //console.log("Afegint la toolbar... a", aux_id);
                             initToolbar('toolbar_' + aux_id, 'textarea_' + aux_id, window['toolbar']);
 
                         }
