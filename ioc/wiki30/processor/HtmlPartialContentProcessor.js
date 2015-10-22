@@ -101,6 +101,7 @@ define([
                 argsRequestForm = {
                     urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
                     form: '.btn_secedit',
+                    volatile: true,
                     continue: true
                 };
 

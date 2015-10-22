@@ -217,7 +217,6 @@ define([
 
                 this.set('data', data);
                 this.dispatchEvent("data_replaced", {id: this.id});
-                console.log("Data establerta a: ", this.data)
 
             },
 

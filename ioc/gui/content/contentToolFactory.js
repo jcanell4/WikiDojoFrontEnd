@@ -203,12 +203,21 @@ define([
                  * Itera sobre tots els reemplaçadors afegits i realitza la substitució cridant a la funció de reemplaç
                  * @private
                  */
-                _replaceContent = function () {
+                _replaceContent = function (requester, replacers) {
+                    console.log("RequestContentToolDecoration#_replaceContent", this.id);
                     var handler;
+
+
+                    console.log("Hi ha replacers?", replacers);
+                    console.log("Hi ha requester?", requester);
+
 
                     for (var type in replacers) {
                         var replacer = replacers[type],
                             params = replacer.params;
+
+
+
 
                         params.request = requester;
 
@@ -220,6 +229,7 @@ define([
 
                         } else {
 
+                            console.log("eliminant replacer:", type);
                             delete(replacers[type]);
 
                         }
@@ -251,8 +261,9 @@ define([
                  * @protected
                  */
                 postRender: function () {
-                    //console.log("RequestContentToolDecoration#postRender", this.id);
-                    lang.hitch(this, _replaceContent)();
+
+                    console.log("RequestContentToolDecoration#postRender", this.id);
+                    lang.hitch(this, _replaceContent)(requester, replacers);
                 }
 
             };
@@ -334,7 +345,7 @@ define([
                                 urlBase:       args.urlBase,
                                 form:          args.form,
                                 standbyTarget: args.standbyTarget,
-                                volatile:      false
+                                volatile:      args.volatile || false
                             }
                         };
 
