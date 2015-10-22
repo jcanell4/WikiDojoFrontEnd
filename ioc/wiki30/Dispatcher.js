@@ -158,7 +158,7 @@ define([
                 this.processors["diff"] = new DiffContentProcessor();
                 this.processors["diff_metainfo"] = new MetaDiffProcessor();
                 this.processors["draft_dialog"] = new DraftProcessor();
-                this.processors["edit_partial"] = new HtmlPartialContentProcessor();
+                this.processors["html_partial"] = new HtmlPartialContentProcessor();
             },
 
             /**

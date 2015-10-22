@@ -3,7 +3,8 @@ define([
     "ioc/wiki30/processor/ContentProcessor",
     "ioc/gui/content/contentToolFactory",
     "ioc/gui/content/subclasses/StructuredDocumentSubclass",
-], function (declare, ContentProcessor, contentToolFactory, StructuredDocumentSubclass) {
+    'dojo/_base/event'
+], function (declare, ContentProcessor, contentToolFactory, StructuredDocumentSubclass, event) {
 
     return declare([ContentProcessor],
         /**
@@ -15,7 +16,7 @@ define([
          * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-            type: "edit_partial",
+            type: "html_partial",
 
             /**
              * Processa el valor rebut com argument com a contingut Html per mostrar un document en mode Html
@@ -54,25 +55,55 @@ define([
              */
             createContentTool: function (content, dispatcher) {
                 var args = {
-                    ns:         content.ns,
-                    id:         content.id,
-                    title:      content.title,
-                    content:    content.structure,
-                    closable:   true,
+                    ns: content.ns,
+                    id: content.id,
+                    title: content.title,
+                    content: content.structure,
+                    closable: true,
                     dispatcher: dispatcher,
-                    rev:        content.rev,
-                    type:       this.type,
+                    rev: content.rev,
+                    type: this.type,
+
+                    postRender: function () {
+                        this.inherited(arguments);
+
+                        for (var i = 0; i < content.structure.chunks.length; i++) {
+                            var aux_id = content.structure.id + "_" + content.structure.chunks[i].header_id;
+                            console.log("Afegint la toolbar... a", aux_id);
+                            initToolbar('toolbar_' + aux_id, 'textarea_' + aux_id, window['toolbar']);
+
+                        }
+
+                    }
+                };
+
+
+                var contentTool = contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
+
+
+                var args2 = {
+                    controlsToCheck: [
+                        {
+                            node: contentTool.parentNode,
+                            selector: 'submit',
+                            volatile: true,
+                            callback: function (e) {
+                                event.stop(e);
+
+                                alert("Pendent d'implementar, encara no es pot visualitzar més d'un");
+                            }
+                        }
+                    ]
 
                 };
-                    //argsRequestForm = {
-                    //    urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
-                    //    form: '.btn_secedit',
-                    //    continue: true
-                    //};
-                    //
-                    //
+                //argsRequestForm = {
+                //    urlBase: "lib/plugins/ajaxcommand/ajax.php?call=html_partial&do=html_partial",
+                //    form: '.btn_secedit',
+                //    continue: true
+                //};
 
-                return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
+
+                return contentTool.decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
 
 
                 //return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);

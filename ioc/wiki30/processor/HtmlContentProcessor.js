@@ -62,7 +62,7 @@ define([
                     type:       this.type
                 },
                     argsRequestForm = {
-                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial"
+                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=html_partial&do=html_partial"
                         // TODO: Tot això son els params del formulari no els hem de possar nosaltres
                         //+ "&rev="
                         //+ "&summary="
