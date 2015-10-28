@@ -54,7 +54,8 @@ define([
              * @override
              */
             createContentTool: function (content, dispatcher) {
-                var args = {
+                var args;
+                args = {
                     ns: content.ns,
                     id: content.id,
                     title: content.title,
@@ -72,8 +73,22 @@ define([
                             //console.log("Afegint la toolbar... a", aux_id);
                             initToolbar('toolbar_' + aux_id, 'textarea_' + aux_id, window['toolbar']);
                         }
+                    },
 
+                    preRender: function () {
+                        console.log("PRERENDER------------------");
+                        // Actualitzem la estructura del document amb els valors dels textareas que no siguin buits?
+                        console.log(this.content.chunks.length);
+                        for (var i=0; i<this.content.chunks.length; i++) {
+                            var aux_id = this.id+"_"+this.content.chunks[i].header_id,
+                                text = jQuery("#textarea_"+aux_id).val();
 
+                            if (text && this.content.chunks[i].text && text.length>0) {
+                                this.content.chunks[i].text.editing = text;
+                                console.log("Preserved:", text);
+                            }
+                        }
+                        console.log("------------------------------");
                     }
                 };
 
@@ -114,8 +129,8 @@ define([
                 };
 
                 return contentTool.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm2);
-                    //.decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm2)
+                    .decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
 
 
                 //return contentTool.decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);

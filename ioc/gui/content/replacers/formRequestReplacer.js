@@ -28,16 +28,7 @@ define([
         return on(form, 'input[type="submit"]:' + params.trigger, function (e) {
             console.log("formRequestReplacer#onSubmit", e);
             //console.log("this: ", this);
-            console.log("data type: ", jQuery(this).attr('data-call-type'));
-
-
-
-
-
-
-
-
-
+            //console.log("data type: ", jQuery(this).attr('data-call-type'));
 
 
 

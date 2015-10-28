@@ -13,7 +13,7 @@ define(function () {
 
     return function (data) {
         console.log("*** RENDER DE DATA PARCIAL ***");
-        var $container, $viewContainer, $editContainer, $header, $content, $form, $doc, $textArea, text, aux_id;
+        var $container, $viewContainer, $editContainer, $header, $content, $form, $doc, $textArea, text, aux_id, i;
         //console.log("Render partial:", data);
         //data = JSON.parse(JSON.stringify(data));
 
@@ -24,7 +24,19 @@ define(function () {
 
         $doc = jQuery('<div>' + data.html + '</div>');
 
-        for (var i = 0; i < data.chunks.length; i++) {
+        var editing_chunks = [];
+
+        for (i = 0; i < data.chunks.length; i++) {
+            //TODO: només afegim els chunks amb text, ho deixem així per provar
+            if (data.chunks[i].text) {
+                editing_chunks.push(data.chunks[i].header_id);
+            }
+            //editing_chunks.push(data.chunks[i].header_id);
+        }
+
+
+
+        for (i = 0; i < data.chunks.length; i++) {
             aux_id = data.id + "_" + data.chunks[i].header_id;
             $container = jQuery('<div id="container_' + aux_id + '"></div>');
 
@@ -69,14 +81,15 @@ define(function () {
 
             $editContainer.append('<div id="toolbar_' + aux_id + '"></div>');
 
-            $form = jQuery('<form method="post" accept-charset="urf-8" action="" class="form_save"></form>'); // TODO[Xavi] L'action no cal perqué s'afegirà al AJAX?
+            $form = jQuery('<form id="form_'+aux_id+'" data-form="'+ data.ns+'" method="post" accept-charset="urf-8" action="" class="form_save"></form>'); // TODO[Xavi] L'action no cal perqué s'afegirà al AJAX?
             $editContainer.append($form);
 
             // method="post"
             // accept-charset="utf-8"
-            $textArea = jQuery('<textarea id="textarea_' + aux_id + '" style="width:100%;height:200px"></textarea>');
+            $textArea = jQuery('<textarea id="textarea_' + aux_id + '" style="width:100%;height:200px" name="wikitext"></textarea>');
             $form.append($textArea);
 
+            //$form.append('<input name="do" value="save_partial" type="hidden">'); // TODO[Xavi] aquí es on s'ha d'establir el command pel desar parcial
             $form.append('<input name="do" value="save_partial" type="hidden">'); // TODO[Xavi] aquí es on s'ha d'establir el command pel desar parcial
             $form.append('<input name="rev" value="' + data.rev + '" type="hidden">');
             $form.append('<input name="date" value="' + data.date + '" type="hidden">');
@@ -84,7 +97,8 @@ define(function () {
             $form.append('<input name="target" value="section" type="hidden">');
             $form.append('<input name="range" value="' + data.chunks[i].start + '-' + data.chunks[i].end + '" type="hidden">');
             $form.append('<input name="id" value="' + data.ns + '" type="hidden">'); // TODO[Xavi] comprovar si es el id o el ns el que cal passar
-            $form.append('<input name="section_id" value="' + data.chunks[i].title + '" type="hidden">');
+            $form.append('<input name="section_id" value="' + data.chunks[i].header_id + '" type="hidden">');
+            $form.append('<input name="editing_chunks" value="' + editing_chunks + '" type="hidden">');
 
             if (data.chunks[i].text) {
                 console.log("afegint text");

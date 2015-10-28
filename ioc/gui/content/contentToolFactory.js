@@ -204,13 +204,8 @@ define([
                  * @private
                  */
                 _replaceContent = function (requester, replacers) {
-                    console.log("RequestContentToolDecoration#_replaceContent", this.id);
+                    //console.log("RequestContentToolDecoration#_replaceContent", this.id);
                     var handler;
-
-
-                    console.log("Hi ha replacers?", replacers);
-                    console.log("Hi ha requester?", requester);
-
 
                     for (var type in replacers) {
                         var replacer = replacers[type],
