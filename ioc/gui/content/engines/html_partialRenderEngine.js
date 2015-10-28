@@ -13,7 +13,7 @@ define(function () {
 
     return function (data) {
         console.log("*** RENDER DE DATA PARCIAL ***");
-        var $container, $viewContainer, $editContainer, $header, $content, $form, $doc, text, aux_id;
+        var $container, $viewContainer, $editContainer, $header, $content, $form, $doc, $textArea, text, aux_id;
         //console.log("Render partial:", data);
         //data = JSON.parse(JSON.stringify(data));
 
@@ -49,15 +49,16 @@ define(function () {
             $viewContainer.append($form);
 
             $editContainer = jQuery('<div id="edit_' + aux_id + '"></div>');
+
             // Aquí s'afegirà el espai pels editors i la barra de eines
 
 
             if (data.chunks[i].text) {
-                text = data.chunks[i].text;
+                //text = data.chunks[i].text.editing; // TODO afegir al formulari el text.pre i text.suf
                 console.log("Activant editor per: ", aux_id);
                 $editContainer.css('display', '');
                 $viewContainer.css('display', 'none');
-            } else{
+            } else {
                 $editContainer.css('display', 'none');
                 $viewContainer.css('display', '');
                 text = '';
@@ -68,8 +69,38 @@ define(function () {
 
             $editContainer.append('<div id="toolbar_' + aux_id + '"></div>');
 
-            $editContainer.append('<textarea id="textarea_' + aux_id + '" style="width:100%;height:200px">' + text + '</textarea>');
+            $form = jQuery('<form method="post" accept-charset="urf-8" action="" class="form_save"></form>'); // TODO[Xavi] L'action no cal perqué s'afegirà al AJAX?
+            $editContainer.append($form);
 
+            // method="post"
+            // accept-charset="utf-8"
+            $textArea = jQuery('<textarea id="textarea_' + aux_id + '" style="width:100%;height:200px"></textarea>');
+            $form.append($textArea);
+
+            $form.append('<input name="do" value="save_partial" type="hidden">'); // TODO[Xavi] aquí es on s'ha d'establir el command pel desar parcial
+            $form.append('<input name="rev" value="' + data.rev + '" type="hidden">');
+            $form.append('<input name="date" value="' + data.date + '" type="hidden">');
+            $form.append('<input name="summary" value="[' + data.chunks[i].title + ']" type="hidden">');
+            $form.append('<input name="target" value="section" type="hidden">');
+            $form.append('<input name="range" value="' + data.chunks[i].start + '-' + data.chunks[i].end + '" type="hidden">');
+            $form.append('<input name="id" value="' + data.ns + '" type="hidden">'); // TODO[Xavi] comprovar si es el id o el ns el que cal passar
+            $form.append('<input name="section_id" value="' + data.chunks[i].title + '" type="hidden">');
+
+            if (data.chunks[i].text) {
+                console.log("afegint text");
+                $textArea.val(data.chunks[i].text.editing);
+                $form.append('<input name="changecheck" value="' + data.chunks[i].text.changecheck + '" type="hidden">');
+
+                var $pre = jQuery('<input name="prefix" value="" type="hidden">');
+                var $suf = jQuery('<input name="suffix" value="" type="hidden">');
+                $form.append($pre);
+                $form.append($suf);
+                $pre.val(data.chunks[i].text.pre);
+                $suf.val(data.chunks[i].text.suf);
+            }
+
+
+            $form.append('<div><input value="Tornar" type="submit" data-call-type="cancel_partial"/><input value="Desar" type="submit" data-call-type="save_partial"/></div>');
 
             $container.append($viewContainer);
             $container.append($editContainer);
@@ -80,7 +111,8 @@ define(function () {
         }
 
 
-        // TODO[Xavi] Duplicat al htmlRenderEngine
+        // TODO[Xavi] Duplicat al htmlRenderEngine. Aquest es pels botons del ajax command edit_partial, cal un diferent pels form save_partial
+
         var $forms = $doc.find('form');
 
         $forms.each(function () {

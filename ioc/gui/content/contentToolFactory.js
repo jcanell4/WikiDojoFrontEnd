@@ -217,8 +217,6 @@ define([
                             params = replacer.params;
 
 
-
-
                         params.request = requester;
 
                         handler = lang.hitch(this, replacer.replacer)(params);

@@ -71,8 +71,8 @@ define([
                             var aux_id = content.structure.id + "_" + content.structure.chunks[i].header_id;
                             //console.log("Afegint la toolbar... a", aux_id);
                             initToolbar('toolbar_' + aux_id, 'textarea_' + aux_id, window['toolbar']);
-
                         }
+
 
                     }
                 };
@@ -91,7 +91,8 @@ define([
                             callback: function (e) {
                                 event.stop(e);
 
-                                alert("Pendent d'implementar, encara no es pot visualitzar més d'un");
+                                console.log(jQuery(this));
+                                alert("Pendent d'implementar, has fet click a un botó");
                             }
                         }
                     ]
@@ -105,7 +106,18 @@ define([
                     continue: true
                 };
 
-                return contentTool.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
+                argsRequestForm2 = {
+                    //urlBase: "lib/plugins/ajaxcommand/ajax.php?call=save_partial",
+                    form: '.form_save',
+                    volatile: true,
+                    continue: false
+                };
+
+                return contentTool.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm2);
+                    //.decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
+
+
                 //return contentTool.decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
             }
 

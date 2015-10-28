@@ -26,13 +26,33 @@ define([
 
 
         return on(form, 'input[type="submit"]:' + params.trigger, function (e) {
-            //console.log("formRequestReplacer#onSubmit", e);
+            console.log("formRequestReplacer#onSubmit", e);
+            //console.log("this: ", this);
+            console.log("data type: ", jQuery(this).attr('data-call-type'));
+
+
+
+
+
+
+
+
+
+
+
 
             var query = "",
                 data = domForm.toQuery(this.form),
-                originalUrlBase = params.request.urlBase;
+                originalUrlBase = params.request.urlBase,
+                dataCall = jQuery(this).attr('data-call-type');
 
-            params.request.urlBase = params.urlBase;
+
+            if (dataCall) {
+                params.request.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
+            } else {
+                params.request.urlBase = params.urlBase;
+            }
+
 
             data += "&" + this.name + "=" + domForm.fieldToObject(this);
             if (data) {
