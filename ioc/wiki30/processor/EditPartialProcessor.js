@@ -20,6 +20,8 @@ define([
             },
 
             _processPartialEdition: function (content, dispatcher) {
+                var i;
+
                 console.log("*** PARTIAL EDITION ***");
                 console.log(content);
 
@@ -30,8 +32,32 @@ define([
                     chunk;
 
 
-                for (var i=0; i<newStructure.chunks.length; i++) {
+                // Fem la cancelació.
+
+                console.log("Recorrent chunks per cancelar: ", oldStructure.chunks.length);
+                console.log("Llista de cancels: ", newStructure.cancel);
+                for (i = 0; i < oldStructure.chunks.length; i++) {
+                    var cancelThis = newStructure.cancel && newStructure.cancel.indexOf(oldStructure.chunks[i].header_id) > -1;
+                    console.log("Cancel this:", cancelThis);
+                    if (cancelThis) {
+                        oldStructure.chunks[i].text = null;
+
+                    }
+
+
+                }
+
+                // Actualitzem el HTML
+                //console.log("Hi ha nou html?", newStructure.html);
+                oldStructure.html = newStructure.html;
+
+
+                oldStructure.date = newStructure.date;
+
+                for (i = 0; i < newStructure.chunks.length; i++) {
                     chunk = newStructure.chunks[i];
+
+
                     if (chunk.header_id === newStructure.selected) {
                         oldStructure.chunks[i].text = chunk.text;
                         console.log("Afegit text:", oldStructure);
@@ -41,17 +67,6 @@ define([
 
                 mainContentTool.setData(oldStructure);
                 mainContentTool.render();
-
-
-                //  1 - Trobar el content tool amb el mateix id
-                //  2 - Adaptar la estructura amb la nova informació
-                //      Que pot haver canviat?
-                //      No res, els canvis a la estructura es reben a la resposta del save_partial
-                //      Afegir el nou text que es troba identificat pel selected a la estructura
-                //      Llegir las dades, afegir el text, i fer setData de nou
-
-
-
 
                 return 0;
             }

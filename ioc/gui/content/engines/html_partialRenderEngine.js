@@ -62,8 +62,6 @@ define(function () {
 
             $editContainer = jQuery('<div id="edit_' + aux_id + '"></div>');
 
-            // Aquí s'afegirà el espai pels editors i la barra de eines
-
 
             if (data.chunks[i].text) {
                 //text = data.chunks[i].text.editing; // TODO afegir al formulari el text.pre i text.suf
