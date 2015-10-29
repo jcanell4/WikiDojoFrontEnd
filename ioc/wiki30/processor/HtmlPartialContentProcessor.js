@@ -76,43 +76,22 @@ define([
                     },
 
                     preRender: function () {
-                        console.log("PRERENDER------------------");
-                        // Actualitzem la estructura del document amb els valors dels textareas que no siguin buits?
-                        console.log(this.content.chunks.length);
-                        for (var i=0; i<this.content.chunks.length; i++) {
-                            var aux_id = this.id+"_"+this.content.chunks[i].header_id,
-                                text = jQuery("#textarea_"+aux_id).val();
+                        // Compte! es al data i no al content perquè en aquest punt el content encara no s'ha actualitzat
+                        for (var i = 0; i < this.data.chunks.length; i++) {
+                            var aux_id = this.id + "_" + this.data.chunks[i].header_id,
+                                text = jQuery("#textarea_" + aux_id).val();
 
-                            if (text && this.content.chunks[i].text && text.length>0) {
-                                this.content.chunks[i].text.editing = text;
-                                console.log("Preserved:", text);
+                            //if (text && this.content.chunks[i].text && text.length>0) {
+                            if (text && text.length > 0 && this.data.chunks[i].text) {
+                                this.data.chunks[i].text.editing = text;
                             }
                         }
-                        console.log("------------------------------");
+
                     }
                 };
 
 
                 var contentTool = contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
-
-
-                // TODO[Xavi] Per mostrar missatge de no disponible, penden d'eliminar
-                var args2 = {
-                    controlsToCheck: [
-                        {
-                            node: contentTool.parentNode,
-                            selector: 'submit',
-                            volatile: true,
-                            callback: function (e) {
-                                event.stop(e);
-
-                                console.log(jQuery(this));
-                                alert("Pendent d'implementar, has fet click a un botó");
-                            }
-                        }
-                    ]
-
-                };
 
                 argsRequestForm = {
                     urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
@@ -129,12 +108,8 @@ define([
                 };
 
                 return contentTool.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm2)
-                    .decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm2);
 
-
-                //return contentTool.decorate(contentToolFactory.decoration.CONTROL_CHANGES, args2);
             }
-
         });
 });

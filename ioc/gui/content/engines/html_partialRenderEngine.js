@@ -12,15 +12,9 @@ define(function () {
      */
 
     return function (data) {
-        console.log("*** RENDER DE DATA PARCIAL ***");
         var $container, $viewContainer, $editContainer, $header, $content, $form, $doc, $textArea, text, aux_id, i;
-        //console.log("Render partial:", data);
-        //data = JSON.parse(JSON.stringify(data));
 
-        console.log("Structure: ", data);
-        // Recorrem totes les seccions, tenim el id de cadascuna
-        // Cerquem el id del header i agafem aquest i els 2 next siblings per ficar-los dins d'un div
-        // El div contindra dos divs, un de vista i un d'edició
+        //console.log("Structure: ", data);
 
         $doc = jQuery('<div>' + data.html + '</div>');
 
@@ -31,7 +25,6 @@ define(function () {
             if (data.chunks[i].text) {
                 editing_chunks.push(data.chunks[i].header_id);
             }
-            //editing_chunks.push(data.chunks[i].header_id);
         }
 
 
@@ -65,7 +58,7 @@ define(function () {
 
             if (data.chunks[i].text) {
                 //text = data.chunks[i].text.editing; // TODO afegir al formulari el text.pre i text.suf
-                console.log("Activant editor per: ", aux_id);
+                //console.log("Activant editor per: ", aux_id);
                 $editContainer.css('display', '');
                 $viewContainer.css('display', 'none');
             } else {
@@ -99,7 +92,7 @@ define(function () {
             $form.append('<input name="editing_chunks" value="' + editing_chunks + '" type="hidden">');
 
             if (data.chunks[i].text) {
-                console.log("afegint text");
+                //console.log("afegint text");
                 $textArea.val(data.chunks[i].text.editing);
                 $form.append('<input name="changecheck" value="' + data.chunks[i].text.changecheck + '" type="hidden">');
 

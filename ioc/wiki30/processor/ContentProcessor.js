@@ -134,10 +134,10 @@ define([
                 //return oldType === this.type && this.blackList.indexOf(this.type) === -1; TODO[Xavi] es pot reduir a això
 
                 if (oldType === this.type && this.blackList.indexOf(this.type) === -1) {
-                    console.log('ContentProcessor#isRefreshableContent', true);
+                    //console.log('ContentProcessor#isRefreshableContent', true);
                     return true;
                 }
-                console.log('ContentProcessor#isRefreshableContent', false);
+                //console.log('ContentProcessor#isRefreshableContent', false);
 
                 return false;
             },

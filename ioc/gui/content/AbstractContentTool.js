@@ -158,7 +158,7 @@ define([
              * @protected
              */
             render: function () {
-                console.log("AbstractContentTool#render", this.id);
+                //console.log("AbstractContentTool#render", this.id);
                 this.updating = true;
                 this.set('content', this.renderEngine(this.data));
                 this.updating = false;
@@ -211,6 +211,7 @@ define([
              * aplicada.
              */
             setData: function (data) {
+                //console.log("AbstractContentTool#setData", data);
                 if (!data) {
                     console.error("setData", data);
                 }

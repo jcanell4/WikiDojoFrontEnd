@@ -221,8 +221,7 @@ define([
                             this.addListenerHandler(handler);
 
                         } else {
-
-                            console.log("eliminant replacer:", type);
+                            //console.log("eliminant replacer:", type);
                             delete(replacers[type]);
 
                         }
@@ -254,8 +253,7 @@ define([
                  * @protected
                  */
                 postRender: function () {
-
-                    console.log("RequestContentToolDecoration#postRender", this.id);
+                    //console.log("RequestContentToolDecoration#postRender", this.id);
                     lang.hitch(this, _replaceContent)(requester, replacers);
                 }
 
