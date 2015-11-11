@@ -86,19 +86,18 @@ define([
                                 this.data.chunks[i].text.editing = text;
                             }
                         }
-
                     }
                 };
 
 
-                var contentTool = contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
+                var contentTool = contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args),
 
                 argsRequestForm = {
                     urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
                     form: '.btn_secedit',
                     volatile: true,
                     continue: true
-                };
+                },
 
                 argsRequestForm2 = {
                     //urlBase: "lib/plugins/ajaxcommand/ajax.php?call=save_partial",

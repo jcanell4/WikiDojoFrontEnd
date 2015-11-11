@@ -28,26 +28,21 @@ define(function () {
         }
 
 
-
         for (i = 0; i < data.chunks.length; i++) {
             aux_id = data.id + "_" + data.chunks[i].header_id;
             $container = jQuery('<div id="container_' + aux_id + '"></div>');
 
             $header = $doc.find('#' + data.chunks[i]['header_id']);
-
-
-            $content = $header.next();
+            $content = $header.nextUntil(".editbutton_section");
             $form = $content.next();
-            //
+
             //console.log("header:", $header);
             //console.log("content:", $content);
             //console.log("form:", $form);
 
             $header.before($container);
 
-
             $viewContainer = jQuery('<div id="view_' + aux_id + '"></div>');
-
 
             $viewContainer.append($header);
             $viewContainer.append($content);
@@ -72,7 +67,7 @@ define(function () {
 
             $editContainer.append('<div id="toolbar_' + aux_id + '"></div>');
 
-            $form = jQuery('<form id="form_'+aux_id+'" data-form="'+ data.ns+'" method="post" accept-charset="urf-8" action="" class="form_save"></form>'); // TODO[Xavi] L'action no cal perqué s'afegirà al AJAX?
+            $form = jQuery('<form id="form_' + aux_id + '" data-form="' + data.ns + '" method="post" accept-charset="urf-8" action="" class="form_save"></form>'); // TODO[Xavi] L'action no cal perqué s'afegirà al AJAX?
             $editContainer.append($form);
 
             // method="post"
@@ -101,7 +96,7 @@ define(function () {
                 $form.append($pre);
                 $form.append($suf);
                 $pre.val(data.chunks[i].text.pre);
-                $suf.val(data.chunks[i].text.suf);
+                $suf.val(data.chunks[i].text.suf || '');
             }
 
 
@@ -122,8 +117,17 @@ define(function () {
 
         $forms.each(function () {
             var $form = jQuery(this).parent(),
-                id = jQuery(this).parent().prev().prev().attr('id');
-            $form.find('div.no').append('<input type="hidden" value="' + id + '" name="section_id"></input>');
+                id,
+                $candidateHeaders = jQuery($form.closest('div')).prevAll(':header');
+
+            for (var i = 0; i < $candidateHeaders.length; i++) {
+                if ($candidateHeaders[i].className.indexOf("sectionedit") > -1) {
+                    id = $candidateHeaders[i].id;
+                    break;
+                }
+            }
+
+            $form.find('div.no').append('<input type="hidden" value="' + id + '" name="section_id"/>');
         });
 
         return $doc;

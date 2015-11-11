@@ -20,8 +20,17 @@ define(function () {
 
         $forms.each(function () {
             var $form = jQuery(this).parent(),
-                id = jQuery(this).parent().prev().prev().attr('id');
-            $form.find('div.no').append('<input type="hidden" value="' + id + '" name="section_id"></input>');
+                id,
+                $candidateHeaders = jQuery($form.closest('div')).prevAll(':header');
+
+            for (var i = 0; i < $candidateHeaders.length; i++) {
+                if ($candidateHeaders[i].className.indexOf("sectionedit") > -1) {
+                    id = $candidateHeaders[i].id;
+                    break;
+                }
+            }
+
+            $form.find('div.no').append('<input type="hidden" value="' + id + '" name="section_id"/>');
         });
 
         return $doc;
