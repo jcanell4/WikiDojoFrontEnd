@@ -48,14 +48,6 @@ define([
 
     return function (param) {
 
-        //if (param.inputs) {
-        //    for (var i in param.inputs) {
-        //        _setValueFromFormId(param.formId, i, param.inputs[i]);
-        //    }
-        //} else {
-        //    _setValueFromFormId(param.formId, param.inputName, param.inputValue);
-        //}
-
         _resetDateToAllForms(param.docId, param.date);
 
 

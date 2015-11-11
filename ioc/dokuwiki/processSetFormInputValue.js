@@ -7,6 +7,7 @@ define([
     };
     
     var res = function(param){
+
         if(param.inputs){
             for(var i in param.inputs){         
                 _setValueFromFormId(param.formId, i,
