@@ -112,6 +112,7 @@ define(function () {
 
 
         // TODO[Xavi] Duplicat al htmlRenderEngine. Aquest es pels botons del ajax command edit_partial, cal un diferent pels form save_partial
+        // TODO[Xavi] Afegit nou camp occult, ja no es identic
 
         var $forms = $doc.find('form');
 
@@ -127,7 +128,9 @@ define(function () {
                 }
             }
 
-            $form.find('div.no').append('<input type="hidden" value="' + id + '" name="section_id"/>');
+            var $divInsideForm = $form.find('div.no');
+            $divInsideForm.append('<input type="hidden" value="' + id + '" name="section_id"/>');
+            $divInsideForm.append('<input name="editing_chunks" value="' + editing_chunks + '" type="hidden">');
         });
 
         return $doc;

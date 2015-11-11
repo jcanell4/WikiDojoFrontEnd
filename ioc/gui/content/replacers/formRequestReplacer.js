@@ -28,6 +28,7 @@ define([
         return on(form, 'input[type="submit"]:' + params.trigger, function (e) {
             //console.log("formRequestReplacer#onSubmit", e);
 
+            alert("Form request");
             var query = "",
                 data = domForm.toQuery(this.form),
                 originalUrlBase = params.request.urlBase,
