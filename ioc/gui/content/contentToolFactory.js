@@ -264,18 +264,18 @@ define([
         return {
             /** @enum */
             decoration: {
-                REQUEST:         'request',
-                REQUEST_LINK:    'request_link',
-                REQUEST_FORM:    'request_form',
+                REQUEST: 'request',
+                REQUEST_LINK: 'request_link',
+                REQUEST_FORM: 'request_form',
                 CONTROL_CHANGES: 'control_changes'
             },
 
             /** @enum */
             generation: {
-                BASE:     'base',
-                META:     'meta',
+                BASE: 'base',
+                META: 'meta',
                 DOCUMENT: 'document',
-                EDITOR:   'editor',
+                EDITOR: 'editor',
                 MEDIADETAILS: 'mediadetails',
                 METAMEDIADETAILS: 'metamediadetails',
                 STRUCTURED_DOCUMENT: 'structured_document'
@@ -312,13 +312,14 @@ define([
                     case this.decoration.REQUEST_LINK:
 
                         args.replacers['link'] = {
-                            type:     'link',
+                            type: 'link',
                             replacer: requestReplacerFactory.getRequestReplacer('link'),
-                            params:   {
-                                trigger:       "click",
-                                urlBase:       args.urlBase,
+                            params: {
+                                trigger: "click",
+                                urlBase: args.urlBase,
                                 standbyTarget: args.standbyTarget,
-                                volatile:      false
+                                volatile: false,
+                                continue: args.continue
                             }
                         };
 
@@ -329,20 +330,21 @@ define([
                     case this.decoration.REQUEST_FORM:
 
                         args.replacers['form'] = {
-                            type:     'form',
+                            type: 'form',
                             replacer: requestReplacerFactory.getRequestReplacer('form'),
-                            params:   {
-                                trigger:       "click",
-                                urlBase:       args.urlBase,
-                                form:          args.form,
+                            params: {
+                                trigger: "click",
+                                urlBase: args.urlBase,
+                                form: args.form,
                                 standbyTarget: args.standbyTarget,
-                                volatile:      args.volatile || false
+                                volatile: args.volatile || false,
+                                continue: args.continue
                             }
                         };
 
                         decoration = new RequestContentToolDecoration(args);
 
-                        break;       
+                        break;
 
                     case this.decoration.CONTROL_CHANGES:
 
@@ -371,7 +373,7 @@ define([
              * @param {*} args -
              * @returns {ContentTool} - ContentTool instanciat
              */
-            generate:    function (type, args) {
+            generate: function (type, args) {
                 args.decorator = this;
                 return new (this.createClass(type))(args);
             },

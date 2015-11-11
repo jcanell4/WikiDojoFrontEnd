@@ -64,7 +64,7 @@ define([
                     argsRequestForm = {
                         urlBase: "lib/plugins/ajaxcommand/ajax.php?call=html_partial&do=html_partial",
                         form: '.btn_secedit',
-                        continue: true
+                        continue: false
                     };
 
                 return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args)

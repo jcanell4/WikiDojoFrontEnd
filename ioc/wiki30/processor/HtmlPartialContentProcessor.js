@@ -66,7 +66,9 @@ define([
                     rev: content.rev,
                     type: this.type,
 
+
                     postRender: function () {
+
                         this.inherited(arguments);
 
                         for (var i = 0; i < content.chunks.length; i++) {
@@ -74,6 +76,60 @@ define([
                             //console.log("Afegint la toolbar... a", aux_id);
                             initToolbar('toolbar_' + aux_id, 'textarea_' + aux_id, window['toolbar']);
                         }
+
+
+                        // Afegim el handler pel submit
+                        var that = this;
+
+                        jQuery('input[data-call-type="save_partial"]').on('click', function () {
+
+
+                            var $form = jQuery(this).closest('form');
+
+                            var values = {};
+                            jQuery.each($form.serializeArray(), function (i, field) {
+                                values[field.name] = field.value;
+                            });
+
+                            var header_id = values['section_id'];
+                            var pre = '';
+
+                            // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
+                            var chunks = that.data.chunks;
+
+
+                            var editingIndex = -1;
+
+                            // TODO: Només fins al actual Fins al actual,
+                            for (var i = 0; i < chunks.length; i++) {
+
+                                if (chunks[i].header_id === header_id) {
+                                    editingIndex = i;
+                                    pre += chunks[i].text.pre;
+                                    break;
+                                }
+
+                                if (chunks[i].text) {
+                                    pre += chunks[i].text.pre;
+                                    pre += chunks[i].text.editing;
+                                }
+                            }
+
+                            var suf = '';
+
+                            for (i = editingIndex + 1; i < chunks.length; i++) {
+                                if (chunks[i].text) {
+                                    suf += chunks[i].text.pre;
+                                    suf += chunks[i].text.editing;
+                                }
+                            }
+                            suf += that.data.suf || '';
+
+                            // Actualitzem el formulari
+                            jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre);
+                            jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
+
+                        })
                     },
 
                     preRender: function () {
@@ -93,19 +149,20 @@ define([
 
                 var contentTool = contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args),
 
-                argsRequestForm = {
-                    urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
-                    form: '.btn_secedit',
-                    volatile: true,
-                    continue: true
-                },
+                    argsRequestForm = {
+                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
+                        form: '.btn_secedit',
+                        volatile: true,
+                        continue: false
+                    },
 
-                argsRequestForm2 = {
-                    //urlBase: "lib/plugins/ajaxcommand/ajax.php?call=save_partial",
-                    form: '.form_save',
-                    volatile: true,
-                    continue: false
-                };
+                    argsRequestForm2 = {
+                        //urlBase: "lib/plugins/ajaxcommand/ajax.php?call=save_partial",
+                        form: '.form_save',
+                        volatile: true,
+                        continue: false
+                    };
+
 
                 return contentTool.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
                     .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm2);
