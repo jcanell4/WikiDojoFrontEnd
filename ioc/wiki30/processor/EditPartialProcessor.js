@@ -23,7 +23,7 @@ define([
                 var i, j,
                     mainContentTool = dispatcher.getContentCache(content.id).getMainContentTool(),
                     oldStructure = mainContentTool.data,
-                    newStructure = content.structure;
+                    newStructure = content;
 
                 for (i = 0; i < oldStructure.chunks.length; i++) {
                     var cancelThis = newStructure.cancel && newStructure.cancel.indexOf(oldStructure.chunks[i].header_id) > -1;

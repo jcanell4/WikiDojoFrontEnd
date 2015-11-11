@@ -59,7 +59,8 @@ define([
                     ns: content.ns,
                     id: content.id,
                     title: content.title,
-                    content: content.structure,
+                    //content: content.structure,
+                    content: content,
                     closable: true,
                     dispatcher: dispatcher,
                     rev: content.rev,
@@ -68,8 +69,8 @@ define([
                     postRender: function () {
                         this.inherited(arguments);
 
-                        for (var i = 0; i < content.structure.chunks.length; i++) {
-                            var aux_id = content.structure.id + "_" + content.structure.chunks[i].header_id;
+                        for (var i = 0; i < content.chunks.length; i++) {
+                            var aux_id = content.id + "_" + content.chunks[i].header_id;
                             //console.log("Afegint la toolbar... a", aux_id);
                             initToolbar('toolbar_' + aux_id, 'textarea_' + aux_id, window['toolbar']);
                         }
