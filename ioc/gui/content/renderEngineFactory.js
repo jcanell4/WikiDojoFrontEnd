@@ -8,9 +8,8 @@
 define([
     "ioc/gui/content/engines/standardRenderEngine",
     "ioc/gui/content/engines/revisionRenderEngine",
-    "ioc/gui/content/engines/htmlRenderEngine",
     "ioc/gui/content/engines/html_partialRenderEngine"
-], function (standardRenderEngine, revisionRenderEngine, htmlRenderEngine, html_partialRenderEngine) {
+], function (standardRenderEngine, revisionRenderEngine, html_partialRenderEngine) {
 
 
     var /** @type function */
@@ -48,7 +47,6 @@ define([
         _init = function () {
             _addRenderEngine('revisions', revisionRenderEngine);
             _addRenderEngine('standard', standardRenderEngine);
-            _addRenderEngine('html', htmlRenderEngine);
             _addRenderEngine('html_partial', html_partialRenderEngine);
             defaultRenderEngine = _getRenderEngine('standard');
         };

@@ -1,10 +1,9 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
-    "ioc/gui/content/contentToolFactory",
-    "ioc/gui/content/subclasses/StructuredDocumentSubclass",
-    'dojo/_base/event'
-], function (declare, ContentProcessor, contentToolFactory, StructuredDocumentSubclass, event) {
+    "ioc/gui/content/contentToolFactory"
+
+], function (declare, ContentProcessor, contentToolFactory ) {
 
     return declare([ContentProcessor],
         /**
@@ -26,8 +25,18 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //console.log('HtmlPartialContentProcessor#process', value);
-                return this.inherited(arguments);
+
+                // Si ja existeix el ContentTool i es un html_partial, processem la edició parcial
+
+                var cache = dispatcher.getContentCache(value.id);
+                if (cache && cache.getMainContentTool().type ===this.type) {
+                    // Es una edició
+                    return this._processPartialEdition(value, dispatcher);
+                } else {
+                    return this.inherited(arguments);
+                }
+
+
             },
 
             /**
@@ -168,6 +177,36 @@ define([
                 return contentTool.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
                     .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm2);
 
+            },
+
+            _processPartialEdition: function (content, dispatcher) {
+                var i, j,
+                    mainContentTool = dispatcher.getContentCache(content.id).getMainContentTool(),
+                    oldStructure = mainContentTool.data,
+                    newStructure = content;
+
+                for (i = 0; i < oldStructure.chunks.length; i++) {
+                    var cancelThis = newStructure.cancel && newStructure.cancel.indexOf(oldStructure.chunks[i].header_id) > -1;
+                    if (oldStructure.chunks[i].text && !cancelThis) {
+                        // Cerquem el header_id a la nova estructura
+                        for (j = 0; j < newStructure.chunks.length; j++) {
+                            if (newStructure.chunks[j].header_id === oldStructure.chunks[i].header_id) {
+                                newStructure.chunks[j].text.editing = oldStructure.chunks[i].text.editing;
+                                break;
+                            }
+                        }
+                        // Si no es troba es que aquesta secció ha sigut eliminada
+
+                    }
+                }
+
+                //console.log("Nous chunks rebuts:", newStructure);
+
+                mainContentTool.setData(newStructure);
+                mainContentTool.render();
+                return 0;
             }
-        });
+        })
+
+
 });
