@@ -10,7 +10,7 @@ define([
     "ioc/wiki30/GlobalState",
     "ioc/wiki30/SectokManager",
     "ioc/wiki30/processor/AlertProcessor",
-    "ioc/wiki30/processor/HtmlContentProcessor",
+    //"ioc/wiki30/processor/HtmlContentProcessor",
     "ioc/wiki30/processor/MediaProcessor",
     "ioc/wiki30/processor/MetaInfoProcessor",
     "ioc/wiki30/processor/MetaMediaInfoProcessor",
@@ -40,7 +40,7 @@ define([
     "ioc/wiki30/processor/HtmlPartialContentProcessor",
     "ioc/wiki30/processor/EditPartialProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-             AlertProcessor, HtmlContentProcessor, MediaProcessor,
+             AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
              DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
              LoginProcessor, SectokProcessor, TitleProcessor,
@@ -126,7 +126,7 @@ define([
             constructor: function (/*Object*/ pAttributes) {
                 lang.mixin(this, pAttributes); // TODO[Xavi] comprovar si es més apropiat declare.safeMixin()
                 this.processors["alert"] = new AlertProcessor();
-                this.processors["html"] = new HtmlContentProcessor();
+                //this.processors["html"] = new HtmlContentProcessor();
                 this.processors["media"] = new MediaProcessor();
                 this.processors["metainfo"] = new MetaInfoProcessor();
                 this.processors["metaMedia"] = new MetaMediaInfoProcessor();

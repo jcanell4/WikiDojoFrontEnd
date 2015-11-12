@@ -97,7 +97,7 @@ define([
                             // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
                             var chunks = that.data.chunks;
 
-                            console.log("Reconstruint amb chunks: ", chunks);
+                            //console.log("Reconstruint amb chunks: ", chunks);
 
                             var editingIndex = -1;
 

@@ -31,7 +31,6 @@ define([
                         // Cerquem el header_id a la nova estructura
                         for (j = 0; j < newStructure.chunks.length; j++) {
                             if (newStructure.chunks[j].header_id === oldStructure.chunks[i].header_id) {
-                                newStructure.chunks[j].text.pre = oldStructure.chunks[i].text.pre;
                                 newStructure.chunks[j].text.editing = oldStructure.chunks[i].text.editing;
                                 break;
                             }
@@ -40,6 +39,8 @@ define([
 
                     }
                 }
+
+                //console.log("Nous chunks rebuts:", newStructure);
 
                 mainContentTool.setData(newStructure);
                 mainContentTool.render();
