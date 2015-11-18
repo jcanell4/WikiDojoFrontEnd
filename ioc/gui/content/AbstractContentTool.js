@@ -296,8 +296,10 @@ define([
                     parent.selectedChildWidget = null;
                 }
 
+
                 parent.removeChild(this);
                 this.destroyRecursive();
+                //console.log("AbstractContentTool#removeContentTool", this.id);
             },
 
             /**

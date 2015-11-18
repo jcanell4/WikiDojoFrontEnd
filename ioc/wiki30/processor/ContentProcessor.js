@@ -16,6 +16,8 @@ define([
          */
         {
 
+            //blackList: ['html_partial'],
+
             blackList: ['html_partial'],
 
             type: null,
@@ -121,6 +123,7 @@ define([
                     if (oldContentTool) {
                         position = container.getChildIndex(oldContentTool.id);
                         oldContentTool.removeContentTool();
+
                     }
 
                     contentTool = this.createContentTool(content, dispatcher);

@@ -3,7 +3,7 @@ define([
     "ioc/wiki30/processor/ContentProcessor",
     "ioc/gui/content/contentToolFactory"
 
-], function (declare, ContentProcessor, contentToolFactory ) {
+], function (declare, ContentProcessor, contentToolFactory) {
 
     return declare([ContentProcessor],
         /**
@@ -18,7 +18,9 @@ define([
             type: "html_partial",
 
             /**
-             * Processa el valor rebut com argument com a contingut Html per mostrar un document en mode Html
+             * Processa el valor rebut com argument com a un document estructurat. Si el doucument ja existeix refresca
+             * la informació.
+             *
              *
              * @param {Content} value - Valor per processar
              * @param {Dispatcher} dispatcher - Dispatcher al que està lligat aquest document.
@@ -26,16 +28,27 @@ define([
              */
             process: function (value, dispatcher) {
 
-                // Si ja existeix el ContentTool i es un html_partial, processem la edició parcial
+                // Si ja existeix el ContentTool i es un html_partial, processem la edició parcial.
+                // TODO[Xavi] afegir aqui la lògica del changes manager, no estem fent el control de refreshable de ContentProcessor
+                // Per fer-ho s'ha de crear una classe nova i sobrescriure el mètode updateDocument.
 
-                var cache = dispatcher.getContentCache(value.id);
-                if (cache && cache.getMainContentTool().type ===this.type) {
-                    // Es una edició
-                    return this._processPartialEdition(value, dispatcher);
-                } else {
-                    return this.inherited(arguments);
+                var cache = dispatcher.getContentCache(value.id), contentTool;
+
+                if (cache) {
+                    contentTool = cache.getMainContentTool();
                 }
 
+
+                if (contentTool && contentTool.type === this.type) {
+                    // Es una edició, el passem a primer pla
+                    contentTool.getContainer().selectChild(contentTool);
+
+                    return this._processPartialEdition(value, dispatcher);
+
+                } else {
+
+                    return this.inherited(arguments);
+                }
 
             },
 
@@ -68,7 +81,6 @@ define([
                     ns: content.ns,
                     id: content.id,
                     title: content.title,
-                    //content: content.structure,
                     content: content,
                     closable: true,
                     dispatcher: dispatcher,
@@ -129,6 +141,7 @@ define([
 
                             for (i = editingIndex + 1; i < chunks.length; i++) {
                                 if (chunks[i].text) {
+
                                     suf += chunks[i].text.pre;
                                     suf += chunks[i].text.editing;
                                 }
@@ -136,10 +149,45 @@ define([
                             suf += that.data.suf || '';
 
                             // Actualitzem el formulari
-                            jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre);
+                            // Afegim un salt per assegurar que no es perdi cap caràcter
+                            jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre+"\n");
                             jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
 
+
+                            // Actualitcem el contingut del editing
+                            var $textarea = jQuery('#' + $form.attr('id') + " textarea"),
+                                text = $textarea.val();
+                            // TODO[xavi] només cal actualitzar l'editing o es necessari també el start i end? Si es així llavors car fer-ho a la resposta
+
+                            $textarea.val(text);
+                            that.updateChunk(header_id, {'editing': text});
+
+
                         })
+                    },
+
+                    updateChunk: function (header_id, text) {
+                        var chunk, found = false;
+
+                        for (var i = 0; i < this.data.chunks.length && !found; i++) {
+                            chunk = this.data.chunks[i];
+                            if (chunk.header_id === header_id) {
+                                if (chunk.text) {
+                                    for (var item in text) {
+                                        chunk.text[item] = text[item];
+                                        console.log("Actualitat el text: ", item);
+                                        found = true;
+                                        break;
+                                    }
+
+                                } else {
+                                    console.log("Aquest chunk "+ header_id +" no te cap text que actualitzar:", chunk);
+                                    found = true;
+                                }
+
+
+                            }
+                        }
                     },
 
                     preRender: function () {
@@ -191,7 +239,10 @@ define([
                         // Cerquem el header_id a la nova estructura
                         for (j = 0; j < newStructure.chunks.length; j++) {
                             if (newStructure.chunks[j].header_id === oldStructure.chunks[i].header_id) {
-                                newStructure.chunks[j].text.editing = oldStructure.chunks[i].text.editing;
+                                if (newStructure.chunks[j].text) {
+                                    newStructure.chunks[j].text.editing = oldStructure.chunks[i].text.editing;
+                                }
+
                                 break;
                             }
                         }
