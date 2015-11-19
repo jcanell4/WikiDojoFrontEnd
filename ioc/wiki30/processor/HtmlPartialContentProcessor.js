@@ -27,12 +27,18 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                console.log(value);
+
+                var changesManager = dispatcher.getChangesManager(),
+                    confirmation = false,
+                    id = value.id,
+                    cache = dispatcher.getContentCache(value.id),
+                    contentTool;
+
 
                 // Si ja existeix el ContentTool i es un html_partial, processem la edició parcial.
-                // TODO[Xavi] afegir aqui la lògica del changes manager, no estem fent el control de refreshable de ContentProcessor
+                // TODO[Xavi] no estem fent el control de refreshable com al ContentProcessor
                 // Per fer-ho s'ha de crear una classe nova i sobrescriure el mètode updateDocument.
-
-                var cache = dispatcher.getContentCache(value.id), contentTool;
 
                 if (cache) {
                     contentTool = cache.getMainContentTool();
@@ -43,7 +49,58 @@ define([
                     // Es una edició, el passem a primer pla
                     contentTool.getContainer().selectChild(contentTool);
 
-                    return this._processPartialEdition(value, dispatcher);
+                    // Si s'ha retornat un selected es que es tracta d'una nova edició
+                    if (changesManager.isChanged(id) && !value.selected) {
+
+                        // Comprovar si la nova estructura conté tots els headers que estan en edició actualment
+                        // Recorrem els headers en edició actual, si estan tots a la nova estructura no importan els canvis
+
+                        //for (var i=0; i<this.data.chunks.length;i++) {
+                        //    var chunk=this.data.chunks[i];
+                        //    if
+                        //}
+
+                        console.log("old:", contentTool.data);
+                        console.log("new:", value);
+
+                        //
+                        //if (contentTool.cancellingHeader) {
+                        //    confirmation = true;
+                        //} else {
+
+
+
+                        confirmation = dispatcher.discardChanges();
+                        //}
+
+
+                    } else {
+                        confirmation = true;
+                    }
+
+                    if (confirmation) {
+                        if (contentTool.cancellingHeader) {
+                            contentTool.changedChunks[contentTool.cancellingHeader].changed = false;
+                            contentTool.changedChunks[contentTool.cancellingHeader].content= null;
+                        }
+
+
+                        // Si hi ha selected es una edició parcial, conservem l'estat de canvis.
+                        // NO, pot ser que retorni de un tornar!
+                        //if (!contentTool.isContentChanged()) {
+                        //    console.log("Fem el reset de l'estat");
+                        contentTool.resetContentChangeState();
+                        //}else {
+                        //    console.log("No fem el reset");
+                        //}
+                        //
+
+
+                        return this._processPartialEdition(value, dispatcher);
+                    }
+
+                    // Si no hi ha confirmació no fem res, s'ignora el process
+
 
                 } else {
 
@@ -62,8 +119,9 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                dispatcher.getGlobalState().getContent(value.id)["action"] = "view";
-                dispatcher.getGlobalState().getContent(value.id)["rev"] = value.rev;
+                dispatcher.getGlobalState().getContent(value.id).action = "view";
+                dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
+                console.log("Establerta la revisió: ", value.rev);
             },
 
             /**
@@ -76,7 +134,10 @@ define([
              * @override
              */
             createContentTool: function (content, dispatcher) {
-                var args;
+                var args,
+                    changedChunks = this._generateChangedChunks(content.chunks);
+
+
                 args = {
                     ns: content.ns,
                     id: content.id,
@@ -86,6 +147,7 @@ define([
                     dispatcher: dispatcher,
                     rev: content.rev,
                     type: this.type,
+                    changedChunks: changedChunks,
 
 
                     postRender: function () {
@@ -133,7 +195,8 @@ define([
 
                                 if (chunks[i].text) {
                                     pre += chunks[i].text.pre;
-                                    pre += chunks[i].text.editing;
+                                    //pre += chunks[i].text.editing;
+                                    pre += that.changedChunks[chunks[i].header_id].content;
                                 }
                             }
 
@@ -150,7 +213,7 @@ define([
 
                             // Actualitzem el formulari
                             // Afegim un salt per assegurar que no es perdi cap caràcter
-                            jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre+"\n");
+                            jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
                             jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
 
 
@@ -163,11 +226,31 @@ define([
                             that.updateChunk(header_id, {'editing': text});
 
 
-                        })
+                        });
+
+                        jQuery('input[data-call-type="cancel_partial"]').on('click', function () {
+                            var $form = jQuery(this).closest('form');
+
+                            var values = {};
+                            jQuery.each($form.serializeArray(), function (i, field) {
+                                values[field.name] = field.value;
+                            });
+
+                            var header_id = values['section_id'];
+
+                            that.cancellingHeader = header_id;
+                            console.log("This changed?", that._isChunkChanged(header_id));
+
+
+                        });
                     },
 
                     updateChunk: function (header_id, text) {
                         var chunk, found = false;
+
+                        // Actualitzem també els canvis
+                        this.changedChunks[header_id].changed = false;
+                        this.changedChunks[header_id].content = text.editing;
 
                         for (var i = 0; i < this.data.chunks.length && !found; i++) {
                             chunk = this.data.chunks[i];
@@ -181,7 +264,7 @@ define([
                                     }
 
                                 } else {
-                                    console.log("Aquest chunk "+ header_id +" no te cap text que actualitzar:", chunk);
+                                    console.log("Aquest chunk " + header_id + " no te cap text que actualitzar:", chunk);
                                     found = true;
                                 }
 
@@ -201,7 +284,128 @@ define([
                                 this.data.chunks[i].text.editing = text;
                             }
                         }
+                    },
+
+                    postAttach: function () {
+
+                        //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
+                        this.registerToChangesManager();
+
+                        jQuery(this.domNode).on('input', this._checkChanges.bind(this));
+
+                        this.inherited(arguments);
+                    },
+
+                    _checkChanges: function () {
+
+                        // Si el document està bloquejat mai hi hauran canvis
+                        if (!this.locked) {
+                            this.changesManager.updateContentChangeState(this.id);
+                        }
+                    },
+
+                    isContentChanged: function () {
+
+                        // * El editing dels chunks en edicio es diferent del $textarea corresponent
+                        var chunk,
+                            $textarea,
+                            result = false;
+
+
+                        for (var i = 0; i < this.data.chunks.length; i++) {
+                            chunk = this.data.chunks[i];
+
+                            if (chunk.text) {
+                                $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
+
+                                console.log("Content:", this._getOriginalContent(chunk.header_id));
+                                console.log("textare:", $textarea.val());
+                                console.log("son iguals?", this._getOriginalContent(chunk.header_id)==$textarea.val());
+
+
+                                if (this._getOriginalContent(chunk.header_id) != $textarea.val()) {
+
+                                    console.log("Son diferents");
+                                    //if (chunk.text.editing != $textarea.val()) {
+                                    result = true;
+
+                                    this.changedChunks[chunk.header_id].changed = true;
+                                    this.onDocumentChanged();
+                                    //break;
+                                } else {
+                                    console.log("Son iguals");
+                                    this.changedChunks[chunk.header_id].changed = false;
+                                }
+                            }
+                        }
+
+                        console.log("#isContentChanged", result, this.changedChunks);
+                        return result;
+
+                    },
+
+                    _getOriginalContent: function (header_id) {
+                        if (this.changedChunks[header_id] && this.changedChunks[header_id].content) {
+                            return this.changedChunks[header_id].content;
+                        } else {
+                            var chunk;
+
+                            console.log(this.changedChunks);
+                            console.log(" **** No s'ha trobat el content pel header ", header_id, " es retorna el del EDITING (que s'ha modificat al fer el render)");
+                            alert("stop");
+                            for (var i = 0; i < this.data.chunks.length; i++) {
+                                chunk = this.data.chunks[i];
+
+                                if (chunk.text && chunk.header_id == header_id) {
+                                    this.changedChunks[header_id].content = chunk.text.editing;
+                                    return chunk.text.editing;
+                                }
+                            }
+                        }
+                    },
+
+
+                    _isChunkChanged: function (header_id) {
+                        var chunk, $textarea;
+
+                        return !!this.changedChunks[header_id].changed;
+
+                        //for (var i = 0; i < this.data.chunks.length; i++) {
+                        //    chunk = this.data.chunks[i];
+                        //
+                        //    if (chunk.text && chunk.header_id == header_id) {
+                        //        $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
+                        //        if (chunk.text.editing != $textarea.val()) {
+                        //            return true;
+                        //        }
+                        //    }
+                        //}
+                        //
+                        //return false;
+
+                    },
+
+                    /**
+                     * Reinicialitza l'estat del document, eliminant-lo de la llista de modificats
+                     */
+                    resetContentChangeState: function () {
+
+                        console.log(this.changedChunks);
+                        for (var header_id in this.changedChunks) {
+                            if (this.changedChunks[header_id].changed) {
+                                // Mentre hi hagi un chunk amb canvis no es fa
+                                // el reset
+
+                                return;
+                            }
+                        }
+
+                        console.log("#resetContentChangeState");
+                        delete this.changesManager.contentsChanged[this.id];
+                        this.onDocumentChangesReset();
                     }
+
+
                 };
 
 
@@ -227,11 +431,49 @@ define([
 
             },
 
+            _generateChangedChunks: function (chunks) {
+                var chunk,
+                    changedChunks = {};
+
+                for (var i = 0; i < chunks.length; i++) {
+                    chunk = chunks[i];
+                    changedChunks[chunk.header_id] = {};
+                    changedChunks[chunk.header_id].changed = false;
+                    changedChunks[chunk.header_id].content = chunk.editing;
+
+                }
+
+                return changedChunks;
+            },
+
             _processPartialEdition: function (content, dispatcher) {
                 var i, j,
                     mainContentTool = dispatcher.getContentCache(content.id).getMainContentTool(),
                     oldStructure = mainContentTool.data,
                     newStructure = content;
+
+                // Actualitzem la llista de chunks canviats abans de fusionar amb el contingut actual
+                for (i = 0; i < newStructure.chunks.length; i++) {
+                    var chunk = newStructure.chunks[i];
+
+                    if (mainContentTool.changedChunks[chunk.header_id]) {
+                        if (chunk.text) {
+
+                            if (!mainContentTool.changedChunks[chunk.header_id]) {
+                                // Si no existia el creem buit
+                                mainContentTool.changedChunks[chunk.header_id] = {};
+                                mainContentTool.changedChunks[chunk.header_id].changed = false;
+                            }
+
+                            // Actualitzem el contingut amb el rebut
+                            console.log("content ", chunk.header_id, " abans: ", mainContentTool.changedChunks[chunk.header_id].content);
+                            mainContentTool.changedChunks[chunk.header_id].content = chunk.text.editing;
+                            console.log("content ", chunk.header_id, " ara: ", mainContentTool.changedChunks[chunk.header_id].content);
+                        }
+                    }
+                }
+
+
 
                 for (i = 0; i < oldStructure.chunks.length; i++) {
                     var cancelThis = newStructure.cancel && newStructure.cancel.indexOf(oldStructure.chunks[i].header_id) > -1;
@@ -251,10 +493,16 @@ define([
                     }
                 }
 
+
+
                 //console.log("Nous chunks rebuts:", newStructure);
 
                 mainContentTool.setData(newStructure);
                 mainContentTool.render();
+
+                dispatcher.getGlobalState().getContent(content.id).rev = content.rev;
+                console.log("Establerta la revisió: ", content.rev);
+
                 return 0;
             }
         })

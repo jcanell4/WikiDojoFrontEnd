@@ -43,7 +43,6 @@ define([
 
                 if (result) {
                     this.onDocumentChanged();
-
                 }
 
                 return result;
@@ -71,10 +70,11 @@ define([
                 //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
                 this.registerToChangesManager();
 
-                on(this.domNode, 'keyup', lang.hitch(this, this._checkChanges));
-                on(this.domNode, 'paste', lang.hitch(this, this._checkChanges));
-                on(this.domNode, 'cut', lang.hitch(this, this._checkChanges));
-                on(this.domNode, 'focusout', lang.hitch(this, this._checkChanges));
+                on(this.domNode, 'input', lang.hitch(this, this._checkChanges));
+                //on(this.domNode, 'keyup', lang.hitch(this, this._checkChanges));
+                //on(this.domNode, 'paste', lang.hitch(this, this._checkChanges));
+                //on(this.domNode, 'cut', lang.hitch(this, this._checkChanges));
+                //on(this.domNode, 'focusout', lang.hitch(this, this._checkChanges));
 
 
                 this.inherited(arguments);

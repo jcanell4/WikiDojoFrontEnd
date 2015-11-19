@@ -79,7 +79,7 @@ define([
                 this.dispatcher = dispatcher;
                 this.timeout = 0;
                 this.draft = false;
-                this.msg = {
+                this.msg = { // TODO[Xavi] Pendent de canviar, el missatge el passarem per paràmetre
                     continue: LANG.template['ioc-template'].willexpire1 + "<b>" + docId + "</b>" + LANG.template['ioc-template'].willexpire2,
                     timeout: LANG.template['ioc-template'].lock_timeout
                 };
@@ -100,7 +100,7 @@ define([
              */
             init: function (timeout, draft) {
 
-                // init values
+                // Init values
                 this.timeoutWarning = timeout * 1000;
                 this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 1000;
 
@@ -191,13 +191,13 @@ define([
                 }
 
                 jQuery.post(
-                    DOKU_BASE + 'lib/exe/ajax.php',
+                        DOKU_BASE + 'lib/exe/ajax.php',
                     params)
                     .done(function (data) {
-                        self.refreshed(data, self);
-                    }
-                );
-;
+                            self.refreshed(data, self);
+                        }
+                    );
+                ;
             }
             ,
 

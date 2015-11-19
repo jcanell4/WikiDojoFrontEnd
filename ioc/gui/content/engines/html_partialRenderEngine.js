@@ -21,7 +21,6 @@ define(function () {
         var editing_chunks = [];
 
         for (i = 0; i < data.chunks.length; i++) {
-            //TODO: només afegim els chunks amb text, ho deixem així per provar
             if (data.chunks[i].text) {
                 editing_chunks.push(data.chunks[i].header_id);
             }
@@ -36,10 +35,6 @@ define(function () {
             $content = $header.nextUntil(".editbutton_section");
             $form = $content.next();
 
-            //console.log("header:", $header);
-            //console.log("content:", $content);
-            //console.log("form:", $form);
-
             $header.before($container);
 
             $viewContainer = jQuery('<div id="view_' + aux_id + '"></div>');
@@ -52,8 +47,6 @@ define(function () {
 
 
             if (data.chunks[i].text) {
-                //text = data.chunks[i].text.editing; // TODO afegir al formulari el text.pre i text.suf
-                //console.log("Activant editor per: ", aux_id);
                 $editContainer.css('display', '');
                 $viewContainer.css('display', 'none');
             } else {
@@ -61,9 +54,6 @@ define(function () {
                 $viewContainer.css('display', '');
                 text = '';
             }
-
-
-            //console.log("Texto entre inici:",data.chunks[i].start-2, " i final: ",  data.chunks[i].end-2);
 
             $editContainer.append('<div id="toolbar_' + aux_id + '"></div>');
 
