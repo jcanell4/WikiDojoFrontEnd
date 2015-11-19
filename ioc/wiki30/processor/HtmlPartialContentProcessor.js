@@ -2,7 +2,6 @@ define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
     "ioc/gui/content/contentToolFactory"
-
 ], function (declare, ContentProcessor, contentToolFactory) {
 
     return declare([ContentProcessor],
@@ -12,7 +11,7 @@ define([
          *
          * @class HtmlContentProcessor
          * @extends ContentProcessor
-         * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
+         * @author Xavier García <xaviergaro.dev@gmail.com>
          */
         {
             type: "html_partial",
@@ -21,35 +20,44 @@ define([
              * Processa el valor rebut com argument com a un document estructurat. Si el doucument ja existeix refresca
              * la informació.
              *
-             *
-             * @param {Content} value - Valor per processar
+             * @param {*} value - Valor per processar
              * @param {Dispatcher} dispatcher - Dispatcher al que està lligat aquest document.
              * @override
              */
             process: function (value, dispatcher) {
 
                 var changesManager = dispatcher.getChangesManager(),
-                    confirmation = false,
-                    id = value.id,
                     cache = dispatcher.getContentCache(value.id),
+                    confirmation = false,
                     contentTool;
-
-
-                // Si ja existeix el ContentTool i es un html_partial, processem la edició parcial.
-                // TODO[Xavi] no estem fent el control de refreshable com al ContentProcessor
-                // Per fer-ho s'ha de crear una classe nova i sobrescriure el mètode updateDocument.
 
                 if (cache) {
                     contentTool = cache.getMainContentTool();
                 }
 
-
+                // TODO[Xavi] Refactoritzar, massa condicionals
                 if (contentTool && contentTool.type === this.type) {
-                    // Es una edició, el passem a primer pla
+                    // Es una actualització
                     contentTool.getContainer().selectChild(contentTool);
 
-                    // Si s'ha retornat un selected es que es tracta d'una nova edició
-                    if (changesManager.isChanged(id) && !value.selected) {
+                    // Es una nova edició?
+
+
+
+                    // TODO[Xavi] Quan s'ha guardat el isChanged retorna false, s'ha de forçar una comprovació de canvis, però aquest mètode hauria de ser privat
+                    contentTool._checkChanges();
+                    //console.log("is changed?", changesManager.isChanged(value.id) );
+
+
+                    if (changesManager.isChanged(value.id) && value.cancel) {
+
+                        if (contentTool.isAnyChunkChanged(value.cancel)) {
+                            confirmation = dispatcher.discardChanges();
+                        } else {
+                            confirmation = true;
+                        }
+
+                    } else if (changesManager.isChanged(value.id) && !value.selected && !value.cancel) {
 
                         confirmation = dispatcher.discardChanges();
 
@@ -59,24 +67,24 @@ define([
                     }
 
                     if (confirmation) {
-                        if (contentTool.cancellingHeader) {
-                            contentTool.changedChunks[contentTool.cancellingHeader].changed = false;
-                            contentTool.changedChunks[contentTool.cancellingHeader].content = null;
+
+                        if (value.cancel) {
+                            contentTool.resetChangesForChunks(value.cancel);
+                        } else if (!value.selected) {
+                            contentTool.resetAllChangesForChunks();
                         }
 
-                        contentTool.resetContentChangeState();
+                        contentTool.updateDocument(value);
 
-                        return this._processPartialEdition(value, dispatcher);
+                        dispatcher.getGlobalState().getContent(value.id).rev = content.rev;
                     }
-
-                    // Si no hi ha confirmació no fem res, s'ignora el process
-
 
                 } else {
 
                     return this.inherited(arguments);
                 }
 
+                return confirmation ? 0 : 100;
             },
 
             /**
@@ -89,7 +97,7 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                dispatcher.getGlobalState().getContent(value.id).action = "view";
+                dispatcher.getGlobalState().getContent(value.id).action = "view"; // TODO[xavi]
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
             },
 
@@ -103,26 +111,19 @@ define([
              * @override
              */
             createContentTool: function (content, dispatcher) {
-                var args,
-                    changedChunks = this._generateChangedChunks(content.chunks);
+                var /*changedChunks = this._generateEmptyChangedChunks(content.chunks),*/
 
-
-                args = {
-                    ns: content.ns,
-                    id: content.id,
-                    title: content.title,
-                    content: content,
-                    closable: true,
-                    dispatcher: dispatcher,
-                    rev: content.rev,
-                    type: this.type,
-                    changedChunks: changedChunks,
-
-
-                };
-
-
-                var contentTool = contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args),
+                    args = {
+                        ns: content.ns,
+                        id: content.id,
+                        title: content.title,
+                        content: content,
+                        closable: true,
+                        dispatcher: dispatcher,
+                        rev: content.rev,
+                        type: this.type,
+                        //changedChunks: changedChunks
+                    },
 
                     argsRequestForm = {
                         urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
@@ -132,19 +133,24 @@ define([
                     },
 
                     argsRequestForm2 = {
-                        //urlBase: "lib/plugins/ajaxcommand/ajax.php?call=save_partial",
                         form: '.form_save',
                         volatile: true,
                         continue: false
                     };
 
-
-                return contentTool.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
+                return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args)
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
                     .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm2);
 
             },
 
-            _generateChangedChunks: function (chunks) {
+            /**
+             * Crea el llistat pel control de canvis per chunks.
+             * @param chunks
+             * @returns {{}}
+             * @private
+             */
+            _generateEmptyChangedChunks: function (chunks) {
                 var chunk,
                     changedChunks = {};
 
@@ -157,63 +163,7 @@ define([
                 }
 
                 return changedChunks;
-            },
-
-            _processPartialEdition: function (content, dispatcher) {
-                var i, j,
-                    mainContentTool = dispatcher.getContentCache(content.id).getMainContentTool(),
-                    oldStructure = mainContentTool.data,
-                    newStructure = content;
-
-                // Actualitzem la llista de chunks canviats abans de fusionar amb el contingut actual
-                for (i = 0; i < newStructure.chunks.length; i++) {
-                    var chunk = newStructure.chunks[i];
-
-                    if (mainContentTool.changedChunks[chunk.header_id]) {
-                        if (chunk.text) {
-
-                            if (!mainContentTool.changedChunks[chunk.header_id]) {
-                                // Si no existia el creem buit
-                                mainContentTool.changedChunks[chunk.header_id] = {};
-                                mainContentTool.changedChunks[chunk.header_id].changed = false;
-                            }
-
-                            // Actualitzem el contingut amb el rebut
-                            mainContentTool.changedChunks[chunk.header_id].content = chunk.text.editing;
-                        }
-                    }
-                }
-
-
-                for (i = 0; i < oldStructure.chunks.length; i++) {
-                    var cancelThis = newStructure.cancel && newStructure.cancel.indexOf(oldStructure.chunks[i].header_id) > -1;
-                    if (oldStructure.chunks[i].text && !cancelThis) {
-                        // Cerquem el header_id a la nova estructura
-                        for (j = 0; j < newStructure.chunks.length; j++) {
-                            if (newStructure.chunks[j].header_id === oldStructure.chunks[i].header_id) {
-                                if (newStructure.chunks[j].text) {
-                                    newStructure.chunks[j].text.editing = oldStructure.chunks[i].text.editing;
-                                }
-
-                                break;
-                            }
-                        }
-                        // Si no es troba es que aquesta secció ha sigut eliminada
-
-                    }
-                }
-
-
-                //console.log("Nous chunks rebuts:", newStructure);
-
-                mainContentTool.setData(newStructure);
-                mainContentTool.render();
-
-                dispatcher.getGlobalState().getContent(content.id).rev = content.rev;
-
-                return 0;
             }
+
         })
-
-
 });

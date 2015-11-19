@@ -1,15 +1,11 @@
 /**
- * Aquest métode es fa servir juntament amb extend(), els mètodes seràn reemplaçats, es a dir no continua
- * la cadena de crides.
- *
- *
  * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
  *
  * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
  * en el futur.
  *
- * Aquesta classe s'espera que es mescli amb un DocumentContentTool que incorpori un AbstractChangesManager
- * per afegir-li les funcionalitats comunes dels documents editables de la pestanya central que son:
+ * Aquesta classe hereta del AbstractChangesManagerCentralSubclass de manera que afegeix automàticament les
+ * funcionalitats comunes dels documents editables de la pestanya central que son:
  *
  *      - Canviar el color de la pestanya a vermell quan hi han canvis
  *      - Canviar el color de la pestanya a negre quan els canvis es restableixin
@@ -18,8 +14,8 @@
  *
  * Les crides a aquests mètodes es faran desde la clase decorada.
  *
- * @class AbstractChangesManagerCentralSubclass
- * @extends AbstractChangesManagerSubclass
+ * @class StructuredDocumentSubclass
+ * @extends AbstractChangesManagerCentralSubclass
  * @author Xavier García <xaviergaro.dev@gmail.com>
  * @private
  * @abstract
@@ -32,11 +28,23 @@ define([
 
     return declare([ChangesManagerCentralSubclass], {
 
+        constructor: function (args) {
 
+            this._generateEmptyChangedChunks(args.content.chunks);
+        },
+
+
+        /**
+         * Al post render s'afegeix la funcionalitat de reconstruir els prefix i suffinx necessaris per la wiki al
+         * fer click en el botó de desar i s'afegeix la toolbar a cada editor.
+         *
+         * @override
+         */
         postRender: function () {
 
             this.inherited(arguments);
 
+            // Afegeix una toolbar a cada contenidor
             for (var i = 0; i < this.content.chunks.length; i++) {
                 var aux_id = this.content.id + "_" + this.content.chunks[i].header_id;
                 //console.log("Afegint la toolbar... a", aux_id);
@@ -44,7 +52,7 @@ define([
             }
 
 
-            // Afegim el handler pel submit
+            // Afegeix un handler pel submit. TODO[Xavi] hi ha interferencies amb el submit així que fem servir el clik
             var that = this;
 
             jQuery('input[data-call-type="save_partial"]').on('click', function () {
@@ -62,8 +70,6 @@ define([
 
                 // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
                 var chunks = that.data.chunks;
-
-                //console.log("Reconstruint amb chunks: ", chunks);
 
                 var editingIndex = -1;
 
@@ -111,30 +117,25 @@ define([
 
             });
 
-            jQuery('input[data-call-type="cancel_partial"]').on('click', function () {
-                var $form = jQuery(this).closest('form');
-
-                var values = {};
-                jQuery.each($form.serializeArray(), function (i, field) {
-                    values[field.name] = field.value;
-                });
-
-                var header_id = values['section_id'];
-
-                that.cancellingHeader = header_id;
-
-
-            });
         },
 
+        /**
+         * Actualitza el chunk amb la capçalera passada com argument amb el text passat com argument.
+         *
+         * @param {string} header_id - Capçalera del chunk
+         * @param {string} text - Text per substituir
+         */
         updateChunk: function (header_id, text) {
-            var chunk, found = false;
+            var chunk,
+                i = 0,
+                found = false;
 
             // Actualitzem també els canvis
             this.changedChunks[header_id].changed = false;
             this.changedChunks[header_id].content = text.editing;
 
-            for (var i = 0; i < this.data.chunks.length && !found; i++) {
+            while (i < this.data.chunks.length && !found) {
+
                 chunk = this.data.chunks[i];
                 if (chunk.header_id === header_id) {
                     if (chunk.text) {
@@ -145,15 +146,17 @@ define([
                         }
 
                     } else {
-                        //console.log("Aquest chunk " + header_id + " no te cap text que actualitzar:", chunk);
                         found = true;
                     }
-
-
                 }
+                i++;
             }
+
         },
 
+        /**
+         * @override
+         */
         preRender: function () {
             // Compte! es al data i no al content perquè en aquest punt el content encara no s'ha actualitzat
             for (var i = 0; i < this.data.chunks.length; i++) {
@@ -167,16 +170,17 @@ define([
             }
         },
 
+        /**
+         * @override
+         */
         postAttach: function () {
-
-            //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
             this.registerToChangesManager();
-
             jQuery(this.domNode).on('input', this._checkChanges.bind(this));
-
             this.inherited(arguments);
         },
 
+
+        // TODO[Xavi] Actualment no fa res especial
         _checkChanges: function () {
 
             // Si el document està bloquejat mai hi hauran canvis
@@ -185,6 +189,12 @@ define([
             }
         },
 
+        /**
+         * Controla si s'han produït o no canvis en qualsevol dels chunks en edició
+         *
+         * @override
+         * @returns {boolean} Cert si s'ha produït algun canvi
+         */
         isContentChanged: function () {
 
             // * El editing dels chunks en edicio es diferent del $textarea corresponent
@@ -200,13 +210,11 @@ define([
                     $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
 
                     if (this._getOriginalContent(chunk.header_id) != $textarea.val()) {
-
-                        //if (chunk.text.editing != $textarea.val()) {
                         result = true;
 
                         this.changedChunks[chunk.header_id].changed = true;
                         this.onDocumentChanged();
-                        //break;
+
                     } else {
                         this.changedChunks[chunk.header_id].changed = false;
                     }
@@ -218,10 +226,21 @@ define([
 
         },
 
+        /**
+         * Retorna el contingut original corresponent al chunk amb la caçalera passada com argument. La primera
+         * vegada es cerca entre les dades del ContentTool i la caxeja per accedir més ràpidament la pròximament.
+         *
+         * @param header_id - Capçalera del chunk del que s'obtindrà el contingut original
+         * @returns {string} El contingut original rebut del backend
+         * @private
+         */
         _getOriginalContent: function (header_id) {
             if (this.changedChunks[header_id] && this.changedChunks[header_id].content) {
+
                 return this.changedChunks[header_id].content;
+
             } else {
+
                 var chunk;
                 for (var i = 0; i < this.data.chunks.length; i++) {
                     chunk = this.data.chunks[i];
@@ -234,27 +253,6 @@ define([
             }
         },
 
-
-        _isChunkChanged: function (header_id) {
-            var chunk, $textarea;
-
-            return !!this.changedChunks[header_id].changed;
-
-            //for (var i = 0; i < this.data.chunks.length; i++) {
-            //    chunk = this.data.chunks[i];
-            //
-            //    if (chunk.text && chunk.header_id == header_id) {
-            //        $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
-            //        if (chunk.text.editing != $textarea.val()) {
-            //            return true;
-            //        }
-            //    }
-            //}
-            //
-            //return false;
-
-        },
-
         /**
          * Reinicialitza l'estat del document, eliminant-lo de la llista de modificats
          */
@@ -264,7 +262,7 @@ define([
                 if (this.changedChunks[header_id].changed) {
                     // Mentre hi hagi un chunk amb canvis no es fa
                     // el reset
-
+                    console.log("Chunk amb canvis trobat:", header_id, this.changedChunks[header_id]);
                     return;
                 }
             }
@@ -272,6 +270,147 @@ define([
             //console.log("#resetContentChangeState");
             delete this.changesManager.contentsChanged[this.id];
             this.onDocumentChangesReset();
+        },
+
+        /**
+         * Actualitza el document amb el nou contingut
+         *
+         * @param content
+         */
+        updateDocument: function (content) {
+            this._updateChunks(content);
+            this._updateStructure(content);
+            this.setData(content);
+            this.render();
+        },
+
+        /**
+         * Actualitza la estructura anerior del document amb la nova.
+         *
+         * @param content contingut a partir del cual s'actualitza la estructura
+         * @private
+         */
+        _updateStructure: function (content) {
+            var i, j;
+
+            for (i = 0; i < this.data.chunks.length; i++) {
+                var cancelThis = content.cancel && content.cancel.indexOf(this.data.chunks[i].header_id) > -1;
+                if (this.data.chunks[i].text && !cancelThis) {
+
+                    // Cerquem el header_id a la nova estructura
+                    for (j = 0; j < content.chunks.length; j++) {
+                        if (content.chunks[j].header_id === this.data.chunks[i].header_id) {
+                            if (content.chunks[j].text) {
+                                content.chunks[j].text.editing = this.data.chunks[i].text.editing;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+        },
+
+        /**
+         * Actualitza els chunks a partir del nou contingut
+         *
+         * @param content
+         * @private
+         */
+        _updateChunks: function (content) {
+            var i, chunk;
+
+            for (i = 0; i < content.chunks.length; i++) {
+                chunk = content.chunks[i];
+
+                if (this.changedChunks[chunk.header_id]) {
+                    if (chunk.text) {
+
+                        if (!this.changedChunks[chunk.header_id]) {
+                            this._generateEmptyChangedChunk(chunk.header_id);
+                        }
+
+                        this.changedChunks[chunk.header_id].content = chunk.text.editing;
+                    }
+                }
+            }
+        },
+
+        /**
+         * Genera un espai al gestor de canvis pel chunk amb l'id passada com argument
+         * @param header_id
+         * @private
+         */
+        _generateEmptyChangedChunk: function (header_id) {
+            this.changedChunks[header_id] = {};
+            this.changedChunks[header_id].changed = false;
+        },
+
+        /**
+         * Crea el llistat pel control de canvis per chunks.
+         *
+         * @param {[]} chunks Array de chunks per generar el control de canvis
+         * @private
+         */
+        _generateEmptyChangedChunks: function (chunks) {
+            var chunk;
+
+            this.changedChunks = {};
+
+            for (var i = 0; i < chunks.length; i++) {
+                chunk = chunks[i];
+                this._generateEmptyChangedChunk(chunk.header_id);
+                this.changedChunks[chunk.header_id].content = chunk.editing;
+            }
+        },
+
+        /**
+         * Reinicialitza els canvis als chunks passats com argument.
+         *
+         * @param {string[]} headers
+         */
+        resetChangesForChunks: function (headers) {
+            console.log("StructuredDcoument#resetChangesForChunks", headers);
+            if (headers && !Array.isArray(headers)) {
+                headers = [headers];
+            } else if (!headers) {
+                headers = [];
+            }
+
+            for (var i = 0; i < headers.length; i++) {
+                this.changedChunks[headers[i]].changed = false;
+                this.changedChunks[headers[i]].content = null;
+            }
+
+            this.resetContentChangeState();
+        },
+
+        /**
+         * Reinicialitza tots els chunks
+         */
+        resetAllChangesForChunks: function () {
+            //console.log("StructuredDocument#resetAllChangesForChunks");
+            var headers = [];
+            for (var chunk in this.changedChunks) {
+                headers.push(chunk);
+            }
+            this.resetChangesForChunks(headers);
+        },
+
+        /**
+         * Comprova si algún dels chunks amb les capçaleras passades com arguments te canvis.
+         *
+         * @param {string[]}headers_id - Array amb les capçaleras a comprovar
+         * @returns {boolean} - Cert si qualsevol dels chunks te canvis o fals si tots estan sense canvis
+         */
+        isAnyChunkChanged: function(headers_id) {
+            for (var i = 0; i<headers_id.length; i++) {
+                if (this.changedChunks[headers_id[i]] && this.changedChunks[headers_id[i]].changed) {
+                    return true;
+                } else {
+                }
+            }
+            return false;
         }
 
     });
