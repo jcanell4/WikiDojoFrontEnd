@@ -408,7 +408,7 @@ define([
                     case this.generation.STRUCTURED_DOCUMENT:
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass)
-                            .createSubclass(ChangesManagerCentralSubclass);
+                            .createSubclass(StructuredDocumentSubclass);
 
                         break;
 
