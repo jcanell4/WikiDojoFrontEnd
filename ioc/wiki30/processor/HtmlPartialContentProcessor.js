@@ -27,7 +27,6 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log(value);
 
                 var changesManager = dispatcher.getChangesManager(),
                     confirmation = false,
@@ -121,7 +120,6 @@ define([
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id).action = "view";
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
-                console.log("Establerta la revisió: ", value.rev);
             },
 
             /**
@@ -258,13 +256,12 @@ define([
                                 if (chunk.text) {
                                     for (var item in text) {
                                         chunk.text[item] = text[item];
-                                        console.log("Actualitat el text: ", item);
                                         found = true;
                                         break;
                                     }
 
                                 } else {
-                                    console.log("Aquest chunk " + header_id + " no te cap text que actualitzar:", chunk);
+                                    //console.log("Aquest chunk " + header_id + " no te cap text que actualitzar:", chunk);
                                     found = true;
                                 }
 
@@ -318,14 +315,8 @@ define([
                             if (chunk.text) {
                                 $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
 
-                                console.log("Content:", this._getOriginalContent(chunk.header_id));
-                                console.log("textare:", $textarea.val());
-                                console.log("son iguals?", this._getOriginalContent(chunk.header_id)==$textarea.val());
-
-
                                 if (this._getOriginalContent(chunk.header_id) != $textarea.val()) {
 
-                                    console.log("Son diferents");
                                     //if (chunk.text.editing != $textarea.val()) {
                                     result = true;
 
@@ -333,13 +324,12 @@ define([
                                     this.onDocumentChanged();
                                     //break;
                                 } else {
-                                    console.log("Son iguals");
                                     this.changedChunks[chunk.header_id].changed = false;
                                 }
                             }
                         }
 
-                        console.log("#isContentChanged", result, this.changedChunks);
+                        //console.log("#isContentChanged", result, this.changedChunks);
                         return result;
 
                     },
@@ -349,10 +339,6 @@ define([
                             return this.changedChunks[header_id].content;
                         } else {
                             var chunk;
-
-                            console.log(this.changedChunks);
-                            console.log(" **** No s'ha trobat el content pel header ", header_id, " es retorna el del EDITING (que s'ha modificat al fer el render)");
-                            alert("stop");
                             for (var i = 0; i < this.data.chunks.length; i++) {
                                 chunk = this.data.chunks[i];
 
@@ -390,7 +376,6 @@ define([
                      */
                     resetContentChangeState: function () {
 
-                        console.log(this.changedChunks);
                         for (var header_id in this.changedChunks) {
                             if (this.changedChunks[header_id].changed) {
                                 // Mentre hi hagi un chunk amb canvis no es fa
@@ -400,7 +385,7 @@ define([
                             }
                         }
 
-                        console.log("#resetContentChangeState");
+                        //console.log("#resetContentChangeState");
                         delete this.changesManager.contentsChanged[this.id];
                         this.onDocumentChangesReset();
                     }
@@ -466,9 +451,7 @@ define([
                             }
 
                             // Actualitzem el contingut amb el rebut
-                            console.log("content ", chunk.header_id, " abans: ", mainContentTool.changedChunks[chunk.header_id].content);
                             mainContentTool.changedChunks[chunk.header_id].content = chunk.text.editing;
-                            console.log("content ", chunk.header_id, " ara: ", mainContentTool.changedChunks[chunk.header_id].content);
                         }
                     }
                 }
@@ -501,7 +484,6 @@ define([
                 mainContentTool.render();
 
                 dispatcher.getGlobalState().getContent(content.id).rev = content.rev;
-                console.log("Establerta la revisió: ", content.rev);
 
                 return 0;
             }

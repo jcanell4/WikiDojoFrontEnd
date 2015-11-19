@@ -109,8 +109,8 @@ define([
                 //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 20;
 
 
-                console.log("Warning: ", this.timeoutWarning)
-                console.log("Timeout: ", this.timeout)
+                //console.log("Warning: ", this.timeoutWarning);
+                //console.log("Timeout: ", this.timeout);
 
 
                 this.draft = draft;
