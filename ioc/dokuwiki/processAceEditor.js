@@ -220,7 +220,7 @@ define([
         dispatcher.getContentCache(params.id).setEditor(container);
 
         // Si s'ha d'activar l'editor l'activem
-        if (JSINFO.plugin_aceeditor["default"] || dispatcher.getContentCache(id).isAceEditorOn()) {
+        if (JSINFO.plugin_aceeditor["default"] || dispatcher.getContentCache(params.id).isAceEditorOn()) {
             enable(params.id);
         }
 
