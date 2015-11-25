@@ -55,6 +55,7 @@ define([
                 },
 
                 discardChanges: function() {
+                    console.log("AbstractChangesManager@discardChanges");
                     this.changesManager.resetContentChangeState(this.id);
                 }
 

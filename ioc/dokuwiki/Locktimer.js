@@ -171,7 +171,7 @@ define([
             refresh: function () {
                 var now = new Date(),
                     params = 'call=lock&id=' + this.pageid + '&',
-                    self = this;
+                    that = this;
 
                 // Refresca només si hi han canvis
                 if (!this.refreshTimer) {
@@ -194,12 +194,10 @@ define([
                         DOKU_BASE + 'lib/exe/ajax.php',
                     params)
                     .done(function (data) {
-                            self.refreshed(data, self);
+                            that.refreshed(data, that);
                         }
                     );
-                ;
-            }
-            ,
+            },
 
             /**
              * Callback. Resets the warning timer
@@ -290,7 +288,7 @@ define([
 
                 this.timersID.timeout = window.setTimeout(function () {
                     self.clear();
-                    self._cancelDialog('warning');
+                    //self._cancelDialog('warning');
                     self._generateDialogTimeout();
 
 
@@ -399,6 +397,7 @@ define([
                     clearTimersIDs = this.timersID;
                 }
 
+                this._cancelDialog('warning');
                 for (var timerID in clearTimersIDs) {
                     if (this.timersID[timerID] != null) {
                         window.clearTimeout(this.timersID[timerID]); // Comprovar si per l'interval cal window.clearInterval();

@@ -153,13 +153,15 @@ define([
             }
 
             // El post render es crida sempre després d'haver tornat o carregat una nova edició
+            this.discardChanges = false;
             this.isLockNeeded();
+
         },
 
-        getEditingChunks: function() {
+        getEditingChunks: function () {
             var editingChunks = [];
-            for (var i=0; i<this.data.chunks.length; i++) {
-                if (this.data.chunks[i].text){
+            for (var i = 0; i < this.data.chunks.length; i++) {
+                if (this.data.chunks[i].text) {
                     editingChunks.push(this.data.chunks[i].header_id);
                 }
             }
@@ -194,7 +196,7 @@ define([
 
         // TODO[Xavi] No es fa servir actualment
         disableEdition: function (header_id) {
-            console.log("disable edition for: ", header_id);
+            //console.log("StructuredDocumentSubclass#disableEditing", header_id);
 
             var $viewContainer = jQuery('#view_' + aux_id);
             var $editContainer = jQuery('#edit_' + aux_id);
@@ -286,6 +288,11 @@ define([
                 $textarea,
                 result = false;
 
+            if (this.discardChanges) {
+                //this.discardChanges = false;
+                return false;
+            }
+
 
             for (var i = 0; i < this.data.chunks.length; i++) {
                 chunk = this.data.chunks[i];
@@ -339,20 +346,29 @@ define([
 
         /**
          * Reinicialitza l'estat del document, eliminant-lo de la llista de modificats
+         * @override
          */
         resetContentChangeState: function () {
 
             for (var header_id in this.changedChunks) {
                 if (this.changedChunks[header_id].changed) {
-                    // Mentre hi hagi un chunk amb canvis no es fa
-                    // el reset
-                    console.log("Chunk amb canvis trobat:", header_id, this.changedChunks[header_id]);
+                    // Mentre hi hagi un chunk amb canvis no es fa el reset
                     return;
                 }
             }
 
             //console.log("#resetContentChangeState");
             delete this.changesManager.contentsChanged[this.id];
+            this.onDocumentChangesReset();
+        },
+
+        forceReset: function () {
+            this.discardChanges = true;
+
+            delete this.changesManager.contentsChanged[this.id];
+
+
+
             this.onDocumentChangesReset();
         },
 
@@ -454,7 +470,7 @@ define([
          * @param {string[]} headers
          */
         resetChangesForChunks: function (headers) {
-            console.log("StructuredDcoument#resetChangesForChunks", headers);
+            //console.log("StructuredDcoument#resetChangesForChunks", headers);
             if (headers && !Array.isArray(headers)) {
                 headers = [headers];
             } else if (!headers) {
@@ -497,9 +513,9 @@ define([
             return false;
         },
 
-        isLockNeeded: function() {
+        isLockNeeded: function () {
 
-            if (this.getEditingChunks().length>0) {
+            if (this.getEditingChunks().length > 0) {
                 console.log("Cal activar el lock", this.getEditingChunks().length);
                 this.lockDocument();
 
@@ -510,24 +526,35 @@ define([
 
         },
 
-        lockDocument: function() {
+        lockDocument: function () {
             if (!this.locktimer) {
                 //this.locktimer = new locktimer(docId, dispatcher).init(params.timeout, params.draft);
-                this.locktimer = new Locktimer(this.id, this.dispatcher).init(1000, false); // temps en segons i si s'ha de guardar el draft. El temps ha d'arribar des del servidor per algun mitjar
-
+                this.locktimer = new Locktimer(this.id, this.dispatcher);
+                this.locktimer.init(1000, false); // TODO[Xavi] Compte! aquest temps es de prova, s'ha de canviar per altre més sensible o fer el primer refersh immediat. temps en segons i si s'ha de guardar el draft. El temps ha d'arribar des del servidor per algun mitjar
             } else {
-                console.log("TODO: this.locktimer.refresh()")
+                this.locktimer.stop = false;
+                this.locktimer.reset();
             }
-
 
             // Hi ha un request creat: this.requester
             console.log("Lock activat");
         },
 
-        unlockDocument: function() {
+        unlockDocument: function () {
             // Hi ha un request creat: this.requester
             console.log("Lock desactivat");
-        }
+            if (this.locktimer) {
+                this.locktimer.stop = true;
+                this.locktimer.clear(); // TODO[Xavi] Comprovar si amb això es suficient
+            }
 
+            // TODO: Enviar crida ajax per desbloquejar el rdocument
+
+        },
+
+        refreshLock: function (timeout) {
+            console.log("Refreshing lock", timeout);
+            this.locktimer.refreshed(timeout);
+        }
     });
 });
