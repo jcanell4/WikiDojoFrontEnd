@@ -16,7 +16,7 @@ define(function () {
 
         //console.log("Structure: ", data);
 
-        $doc = jQuery('<div>' + data.html + '</div>');
+        $doc = jQuery('<div>' + data.html + '</div><div class="end-of-document></div>"');
 
         var editing_chunks = [];
 
@@ -27,13 +27,30 @@ define(function () {
         }
 
 
+        console.log("chunks:", data.chunks);
+
         for (i = 0; i < data.chunks.length; i++) {
             aux_id = data.id + "_" + data.chunks[i].header_id;
             $container = jQuery('<div id="container_' + aux_id + '"></div>');
 
-            $header = $doc.find('#' + data.chunks[i]['header_id']);
-            $content = $header.nextUntil(".editbutton_section");
-            $form = $content.next();
+            console.log("i:",i, data.chunks.length);
+
+
+            $header = $doc.find('#' + data.chunks[i].header_id);
+
+            if (i+1<data.chunks.length) {
+                $content = $header.nextUntil("#" +data.chunks[i+1].header_id); // TODO[Xavi] Això no hi es, el contingut arribarà fins a nextUntil("#" +chunks[i+1].header_id) excepte l'ultim
+
+            } else {
+                $content = $header.nextUntil(".end-of-document");
+            }
+
+
+            //$content = $header.nextUntil(".editbutton_section"); // TODO[Xavi] Això no hi es, el contingut arribarà fins a nextUntil("#" +chunks[i+1].header_id) excepte l'ultim
+            //$form = $content.next(); // TODO[Xavi] Aquest es el form que envia la informació? En lloc de capturar-lo s'ha de substituir
+
+            console.log("id:", data.chunks[i].header_id);
+            console.log($content);
 
             $header.before($container);
 
@@ -41,7 +58,7 @@ define(function () {
 
             $viewContainer.append($header);
             $viewContainer.append($content);
-            $viewContainer.append($form);
+            //$viewContainer.append($form);$viewContainer.append($form);
 
             $editContainer = jQuery('<div id="edit_' + aux_id + '"></div>');
 
@@ -100,9 +117,6 @@ define(function () {
 
         }
 
-
-        // TODO[Xavi] Duplicat al htmlRenderEngine. Aquest es pels botons del ajax command edit_partial, cal un diferent pels form save_partial
-        // TODO[Xavi] Afegit nou camp occult, ja no es identic
 
         var $forms = $doc.find('form');
 

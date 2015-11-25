@@ -24,13 +24,15 @@
 define([
     "dojo/_base/declare",
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
-], function (declare, ChangesManagerCentralSubclass) {
+    "dojo/_base/lang",
+], function (declare, ChangesManagerCentralSubclass, lang) {
 
     return declare([ChangesManagerCentralSubclass], {
 
         constructor: function (args) {
 
             this._generateEmptyChangedChunks(args.content.chunks);
+            this._createRequest();
         },
 
 
@@ -117,6 +119,84 @@ define([
 
             });
 
+
+            // Al fer doble click s'activa la edició
+            for (i = 0; i < this.content.chunks.length; i++) {
+                aux_id = this.content.id + "_" + this.content.chunks[i].header_id;
+                // TODO[Xavi] Afegir listener per doble click als contenidors (al view)
+                jQuery('#view_' + aux_id).on('dblclick', function () {
+                    console.log (this);
+                    var aux_id = this.id.replace('view_', '');
+
+
+                    //that.enableEdition(aux_id); // TODO[Xavi] es pot esborrar, només es una demostració
+
+                    // TODO[Xavi] fer servir el request
+
+                    var section_id = aux_id.replace(that.id + "_", ''),
+                        editing_chunks;
+
+
+                    that.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
+                    var query = '&do=edit_partial'
+                        + '&section_id=' + section_id
+                        + '&editing_chunks=' + that.getEditingChunks().toString()// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
+                        + '&target=section'
+                        + '&id=' + that.id
+                        + '&rev=' + (that.rev || '')
+                        + '&summary=[' + that.title + ']'
+                        + '&range=-';
+
+                    that.requester.sendRequest(query);
+                });
+            }
+        },
+
+        getEditingChunks: function() {
+            var editingChunks = [];
+            for (var i=0; i<this.data.chunks.length; i++) {
+                if (this.data.chunks[i].text){
+                    editingChunks.push(this.data.chunks[i].header_id);
+                }
+            }
+
+            return editingChunks;
+        },
+
+        // TODO[Xavi] copiat de MetaMediaDeatailsSubclass
+        _createRequest: function () {
+
+            require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
+                this.requester = new Request();
+
+                this.requester.updateSectok = function (sectok) {
+                    this.sectok = sectok;
+                };
+
+                this.requester.sectok = this.requester.dispatcher.getSectok();
+                this.requester.dispatcher.toUpdateSectok.push(this.requester);
+            }));
+        },
+
+        enableEdition: function (aux_id) {
+            console.log("enabling edition for: ", aux_id);
+
+            var $viewContainer = jQuery('#view_' + aux_id);
+            var $editContainer = jQuery('#edit_' + aux_id);
+
+            $editContainer.css('display', '');
+            $viewContainer.css('display', 'none');
+        },
+
+        // TODO[Xavi] No es fa servir actualment
+        disableEdition: function (header_id) {
+            console.log("disable edition for: ", header_id);
+
+            var $viewContainer = jQuery('#view_' + aux_id);
+            var $editContainer = jQuery('#edit_' + aux_id);
+
+            $editContainer.css('display', 'none');
+            $viewContainer.css('display', '');
         },
 
         /**
@@ -403,8 +483,8 @@ define([
          * @param {string[]}headers_id - Array amb les capçaleras a comprovar
          * @returns {boolean} - Cert si qualsevol dels chunks te canvis o fals si tots estan sense canvis
          */
-        isAnyChunkChanged: function(headers_id) {
-            for (var i = 0; i<headers_id.length; i++) {
+        isAnyChunkChanged: function (headers_id) {
+            for (var i = 0; i < headers_id.length; i++) {
                 if (this.changedChunks[headers_id[i]] && this.changedChunks[headers_id[i]].changed) {
                     return true;
                 } else {
