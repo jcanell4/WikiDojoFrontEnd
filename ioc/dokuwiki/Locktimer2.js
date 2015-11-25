@@ -98,19 +98,9 @@ define([
              * @param {int}    timeout Length of timeout in seconds
              * @param {bool}   draft   Whether to save drafts
              */
-            init: function (timeout, draft) {
-
-                // Init values
-                //this.timeoutWarning = timeout * 1000;
-                //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 1000;
-
-                // TEST Values
-                this.timeoutWarning = timeout * 100;
-                this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 100;
+            init: function (draft) {
 
 
-                //console.log("Warning: ", this.timeoutWarning);
-                //console.log("Timeout: ", this.timeout);
 
 
                 this.draft = draft;
@@ -121,11 +111,32 @@ define([
                 this.timersID = {};
                 this.dialogs = {};
 
-                this.reset();
+                //this.reset();
 
                 this.contentTool.registerObserverToEvent("document_changed", lang.hitch(this, this.refreshNeeded));
                 this.contentTool.registerObserverToEvent("document_changes_reset", lang.hitch(this, this.refreshReset));
                 this.contentTool.registerObserverToEvent("destroy", lang.hitch(this, this.destroy));
+
+
+
+
+                // Init values
+                //this.timeoutWarning = timeout * 1000;
+                //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 1000;
+
+                // TEST Values
+                //this.timeoutWarning = timeout * 100;
+                //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 100;
+
+
+                //console.log("Warning: ", this.timeoutWarning);
+                //console.log("Timeout: ", this.timeout);
+
+                if (this.timeout) {
+                    this.reset();
+                } else {
+                    this.lock();
+                }
 
             },
 
@@ -154,6 +165,8 @@ define([
                     this._initWarningTimer();
                     this._initTimeoutTimer();
                     this._initRefreshTimer();
+                } else {
+                    this.unlock();
                 }
             },
 
@@ -190,9 +203,21 @@ define([
                 }
 
                 this.refreshTimer = false;
+                this.lock();
+            },
 
+            lock: function() {
                 this.contentTool.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=lock';
                 var query = '&do=lock'
+                    + '&id=' + this.contentTool.id;
+
+                this.contentTool.requester.sendRequest(query);
+            },
+
+            unlock: function() {
+                //console.log("Locktimer#unlock");
+                this.contentTool.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=unlock';
+                var query = '&do=unlock'
                     + '&id=' + this.contentTool.id;
 
                 this.contentTool.requester.sendRequest(query);

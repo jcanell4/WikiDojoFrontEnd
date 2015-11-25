@@ -45,6 +45,7 @@ define([
          */
         postRender: function () {
 
+
             this.inherited(arguments);
 
             // Afegeix una toolbar a cada contenidor
@@ -126,27 +127,20 @@ define([
                 aux_id = this.content.id + "_" + this.content.chunks[i].header_id;
                 // TODO[Xavi] Afegir listener per doble click als contenidors (al view)
                 jQuery('#view_' + aux_id).on('dblclick', function () {
-                    console.log (this);
-                    var aux_id = this.id.replace('view_', '');
 
-
-                    //that.enableEdition(aux_id); // TODO[Xavi] es pot esborrar, només es una demostració
-
-                    // TODO[Xavi] fer servir el request
-
-                    var section_id = aux_id.replace(that.id + "_", ''),
-                        editing_chunks;
-
+                    var aux_id = this.id.replace('view_', ''),
+                        section_id = aux_id.replace(that.id + "_", ''),
+                        editing_chunks,
+                        query = '&do=edit_partial'
+                            + '&section_id=' + section_id
+                            + '&editing_chunks=' + that.getEditingChunks().toString()// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
+                            + '&target=section'
+                            + '&id=' + that.id
+                            + '&rev=' + (that.rev || '')
+                            + '&summary=[' + that.title + ']'
+                            + '&range=-';
 
                     that.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
-                    var query = '&do=edit_partial'
-                        + '&section_id=' + section_id
-                        + '&editing_chunks=' + that.getEditingChunks().toString()// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
-                        + '&target=section'
-                        + '&id=' + that.id
-                        + '&rev=' + (that.rev || '')
-                        + '&summary=[' + that.title + ']'
-                        + '&range=-';
 
                     that.requester.sendRequest(query);
                 });
@@ -154,7 +148,14 @@ define([
 
             // El post render es crida sempre després d'haver tornat o carregat una nova edició
             this.discardChanges = false;
-            this.isLockNeeded();
+
+
+            if (this.data.locked) {
+                this.lockEditors();
+            } else {
+                this.unlockEditors();
+                this.isLockNeeded();
+            }
 
         },
 
@@ -368,7 +369,6 @@ define([
             delete this.changesManager.contentsChanged[this.id];
 
 
-
             this.onDocumentChangesReset();
         },
 
@@ -516,11 +516,11 @@ define([
         isLockNeeded: function () {
 
             if (this.getEditingChunks().length > 0) {
-                console.log("Cal activar el lock", this.getEditingChunks().length);
+                //console.log("Cal activar el lock", this.getEditingChunks().length);
                 this.lockDocument();
 
             } else {
-                console.log("No cal activar fer el lock");
+                //console.log("No cal activar fer el lock");
                 this.unlockDocument();
             }
 
@@ -530,31 +530,49 @@ define([
             if (!this.locktimer) {
                 //this.locktimer = new locktimer(docId, dispatcher).init(params.timeout, params.draft);
                 this.locktimer = new Locktimer(this.id, this.dispatcher);
-                this.locktimer.init(1000, false); // TODO[Xavi] Compte! aquest temps es de prova, s'ha de canviar per altre més sensible o fer el primer refersh immediat. temps en segons i si s'ha de guardar el draft. El temps ha d'arribar des del servidor per algun mitjar
+                this.locktimer.init(false); // TODO[Xavi] Compte! aquest temps es de prova, s'ha de canviar per altre més sensible o fer el primer refersh immediat. temps en segons i si s'ha de guardar el draft. El temps ha d'arribar des del servidor per algun mitjar
             } else {
                 this.locktimer.stop = false;
                 this.locktimer.reset();
             }
 
-            // Hi ha un request creat: this.requester
-            console.log("Lock activat");
+
+            //console.log("StructuredDocumentSubclass#lockDocument");
         },
 
         unlockDocument: function () {
-            // Hi ha un request creat: this.requester
-            console.log("Lock desactivat");
+            //console.log("StructuredDocumentSubclass#unlockDocument");
             if (this.locktimer) {
                 this.locktimer.stop = true;
-                this.locktimer.clear(); // TODO[Xavi] Comprovar si amb això es suficient
+                this.locktimer.reset();
             }
-
-            // TODO: Enviar crida ajax per desbloquejar el rdocument
-
         },
 
         refreshLock: function (timeout) {
-            console.log("Refreshing lock", timeout);
+            //console.log("Refreshing lock", timeout);
             this.locktimer.refreshed(timeout);
+        },
+
+        lockEditors: function() {
+            jQuery('textarea[name="wikitext"]').each(function() {
+                jQuery(this).attr('readonly','readonly');
+            });
+
+            jQuery('input[data-call-type="save_partial"]').each(function() {
+                jQuery(this).attr('disabled','disabled');
+            })
+        },
+
+        unlockEditors: function() {
+            jQuery('textarea[name="wikitext"]').each(function() {
+                jQuery(this).removeAttr('readonly');
+            });
+
+            jQuery('input[data-call-type="save_partial"]').each(function() {
+                jQuery(this).removeAttr('disabled');
+            })
         }
-    });
+
+
+    })
 });
