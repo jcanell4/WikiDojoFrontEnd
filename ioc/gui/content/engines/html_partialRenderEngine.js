@@ -26,15 +26,9 @@ define(function () {
             }
         }
 
-
-        console.log("chunks:", data.chunks);
-
         for (i = 0; i < data.chunks.length; i++) {
             aux_id = data.id + "_" + data.chunks[i].header_id;
             $container = jQuery('<div id="container_' + aux_id + '"></div>');
-
-            console.log("i:",i, data.chunks.length);
-
 
             $header = $doc.find('#' + data.chunks[i].header_id);
 
@@ -49,8 +43,6 @@ define(function () {
             //$content = $header.nextUntil(".editbutton_section"); // TODO[Xavi] Això no hi es, el contingut arribarà fins a nextUntil("#" +chunks[i+1].header_id) excepte l'ultim
             //$form = $content.next(); // TODO[Xavi] Aquest es el form que envia la informació? En lloc de capturar-lo s'ha de substituir
 
-            console.log("id:", data.chunks[i].header_id);
-            console.log($content);
 
             $header.before($container);
 

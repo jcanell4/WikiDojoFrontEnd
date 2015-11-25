@@ -37,7 +37,8 @@ define([
     "ioc/wiki30/processor/DiffContentProcessor",
     "ioc/wiki30/processor/MetaDiffProcessor",
     "ioc/wiki30/processor/DraftProcessor",
-    "ioc/wiki30/processor/HtmlPartialContentProcessor"
+    "ioc/wiki30/processor/HtmlPartialContentProcessor",
+    "ioc/wiki30/processor/LockDataProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -47,7 +48,8 @@ define([
              CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
              RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
-             DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor) {
+             DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
+             LockDataProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -159,6 +161,7 @@ define([
                 this.processors["diff_metainfo"] = new MetaDiffProcessor();
                 this.processors["draft_dialog"] = new DraftProcessor();
                 this.processors["html_partial"] = new HtmlPartialContentProcessor();
+                this.processors["lock_data"] = new LockDataProcessor();
             },
 
             /**

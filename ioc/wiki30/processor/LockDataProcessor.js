@@ -4,21 +4,22 @@ define([
 ], function (declare, AbstractResponseProcessor) {
     var ret = declare([AbstractResponseProcessor],
         /**
-         * @class AlertProcessor
+         * @class LockDataProcessor
          * @extends AbstractResponseProcessor
+         * @author Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-            type: "alert",
+            type: "lock_data",
 
             /**
-             * Processa un missatge de tipus alert el que fa que es configuri un dialeg i es mostri.
+             * Processa un missatge de tipus lock_data que actualitza el bloqueig corresponent
              *
              * @param {string} value - Missatge que es mostrarà
              * @param {Dispatcher} dispatcher
              * @override
              */
             process: function (value, dispatcher) {
-                this._processAlert(value, dispatcher);
+                this._process(value, dispatcher);
             },
 
             /**
@@ -28,10 +29,14 @@ define([
              * @param {Dispatcher} dispatcher
              * @private
              */
-            _process: function (alert, dispatcher) {
-                dispatcher.diag.set("title", "ALERTA");
-                dispatcher.diag.set("content", alert);
-                dispatcher.diag.show();
+            _process: function (data, dispatcher) {
+                alert("works! " + data.timeout);
+
+                // TODO:
+                // 1. obtenir el content tool corresponent a data.id del dispatcher
+                // 2. Si el timeout es -1 cridar a unlock, el document no ha pogut ser bloquejat
+                // 3. Si el timeout es >0 refrescar el lock amb aquesta quanitat de segons
+
             }
         });
     return ret;

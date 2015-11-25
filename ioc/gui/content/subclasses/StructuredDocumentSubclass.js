@@ -25,7 +25,8 @@ define([
     "dojo/_base/declare",
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
     "dojo/_base/lang",
-], function (declare, ChangesManagerCentralSubclass, lang) {
+    "ioc/dokuwiki/Locktimer2",
+], function (declare, ChangesManagerCentralSubclass, lang, Locktimer) {
 
     return declare([ChangesManagerCentralSubclass], {
 
@@ -37,7 +38,7 @@ define([
 
 
         /**
-         * Al post render s'afegeix la funcionalitat de reconstruir els prefix i suffinx necessaris per la wiki al
+         * Al post render s'afegeix la funcionalitat de reconstruir els prefix i suffix necessaris per la wiki al
          * fer click en el botó de desar i s'afegeix la toolbar a cada editor.
          *
          * @override
@@ -150,6 +151,9 @@ define([
                     that.requester.sendRequest(query);
                 });
             }
+
+            // El post render es crida sempre després d'haver tornat o carregat una nova edició
+            this.isLockNeeded();
         },
 
         getEditingChunks: function() {
@@ -491,6 +495,38 @@ define([
                 }
             }
             return false;
+        },
+
+        isLockNeeded: function() {
+
+            if (this.getEditingChunks().length>0) {
+                console.log("Cal activar el lock", this.getEditingChunks().length);
+                this.lockDocument();
+
+            } else {
+                console.log("No cal activar fer el lock");
+                this.unlockDocument();
+            }
+
+        },
+
+        lockDocument: function() {
+            if (!this.locktimer) {
+                //this.locktimer = new locktimer(docId, dispatcher).init(params.timeout, params.draft);
+                this.locktimer = new Locktimer(this.id, this.dispatcher).init(1000, false); // temps en segons i si s'ha de guardar el draft. El temps ha d'arribar des del servidor per algun mitjar
+
+            } else {
+                console.log("TODO: this.locktimer.refresh()")
+            }
+
+
+            // Hi ha un request creat: this.requester
+            console.log("Lock activat");
+        },
+
+        unlockDocument: function() {
+            // Hi ha un request creat: this.requester
+            console.log("Lock desactivat");
         }
 
     });
