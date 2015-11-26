@@ -560,7 +560,12 @@ define([
 
             jQuery('input[data-call-type="save_partial"]').each(function() {
                 jQuery(this).attr('disabled','disabled');
-            })
+            });
+
+            for (var i=0; i<this.data.chunks.length; i++) {
+                var header_id = this.data.chunks[i].header_id;
+                jQuery('#toolbar_' + this.id+ '_'+header_id).css('display', 'none')
+            }
         },
 
         unlockEditors: function() {
@@ -570,7 +575,13 @@ define([
 
             jQuery('input[data-call-type="save_partial"]').each(function() {
                 jQuery(this).removeAttr('disabled');
-            })
+            });
+
+
+            for (var i=0; i<this.data.chunks.length; i++) {
+                var header_id = this.data.chunks[i].header_id;
+                jQuery('#toolbar_' + this.id+ '_'+header_id).css('display', 'visible')
+            }
         }
 
 
