@@ -604,10 +604,6 @@ define([
                 }
             }
 
-            console.log("Saved:", this.savedDrafts);
-            console.log("Draft:", draft);
-
-
             return draft;
         }
 
