@@ -34,6 +34,7 @@ define([
 
             this._generateEmptyChangedChunks(args.content.chunks);
             this._createRequest();
+            this.savedDrafts = {}
         },
 
 
@@ -530,7 +531,7 @@ define([
             if (!this.locktimer) {
                 //this.locktimer = new locktimer(docId, dispatcher).init(params.timeout, params.draft);
                 this.locktimer = new Locktimer(this.id, this.dispatcher);
-                this.locktimer.init(false); // TODO[Xavi] Compte! aquest temps es de prova, s'ha de canviar per altre més sensible o fer el primer refersh immediat. temps en segons i si s'ha de guardar el draft. El temps ha d'arribar des del servidor per algun mitjar
+                this.locktimer.init(true); // TODO[Xavi] Compte! aquest temps es de prova, s'ha de canviar per altre més sensible o fer el primer refersh immediat. temps en segons i si s'ha de guardar el draft. El temps ha d'arribar des del servidor per algun mitjar
             } else {
                 this.locktimer.stop = false;
                 this.locktimer.reset();
@@ -553,37 +554,62 @@ define([
             this.locktimer.refreshed(timeout);
         },
 
-        lockEditors: function() {
-            jQuery('textarea[name="wikitext"]').each(function() {
-                jQuery(this).attr('readonly','readonly');
+        lockEditors: function () {
+            jQuery('textarea[name="wikitext"]').each(function () {
+                jQuery(this).attr('readonly', 'readonly');
             });
 
-            jQuery('input[data-call-type="save_partial"]').each(function() {
-                jQuery(this).attr('disabled','disabled');
+            jQuery('input[data-call-type="save_partial"]').each(function () {
+                jQuery(this).attr('disabled', 'disabled');
             });
 
-            for (var i=0; i<this.data.chunks.length; i++) {
+            for (var i = 0; i < this.data.chunks.length; i++) {
                 var header_id = this.data.chunks[i].header_id;
-                jQuery('#toolbar_' + this.id+ '_'+header_id).css('display', 'none')
+                jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
             }
         },
 
-        unlockEditors: function() {
-            jQuery('textarea[name="wikitext"]').each(function() {
+        unlockEditors: function () {
+            jQuery('textarea[name="wikitext"]').each(function () {
                 jQuery(this).removeAttr('readonly');
             });
 
-            jQuery('input[data-call-type="save_partial"]').each(function() {
+            jQuery('input[data-call-type="save_partial"]').each(function () {
                 jQuery(this).removeAttr('disabled');
             });
 
 
-            for (var i=0; i<this.data.chunks.length; i++) {
+            for (var i = 0; i < this.data.chunks.length; i++) {
                 var header_id = this.data.chunks[i].header_id;
-                jQuery('#toolbar_' + this.id+ '_'+header_id).css('display', 'visible')
+                jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'visible')
             }
-        }
+        },
 
+        generateDraft: function () {
+            var draft = {
+                type: 'structured',
+                id: this.id,
+                content: {}
+            };
+
+            var editingChunks = this.getEditingChunks();
+
+            for (var i = 0; i < editingChunks.length; i++) {
+
+                var content = jQuery('#textarea_' + this.id + '_' + editingChunks[i]).val();
+
+                if (!this.savedDrafts[editingChunks[i]] || this.savedDrafts[editingChunks[i]] != content) {
+                    draft.content[editingChunks[i]] = content;
+                    this.savedDrafts[editingChunks[i]] = draft.content[editingChunks[i]];
+                }
+            }
+
+            console.log("Saved:", this.savedDrafts);
+            console.log("Draft:", draft);
+
+
+            return draft;
+        }
 
     })
 });

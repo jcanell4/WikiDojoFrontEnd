@@ -111,31 +111,14 @@ define([
                 this.timersID = {};
                 this.dialogs = {};
 
-                //this.reset();
-
                 this.contentTool.registerObserverToEvent("document_changed", lang.hitch(this, this.refreshNeeded));
                 this.contentTool.registerObserverToEvent("document_changes_reset", lang.hitch(this, this.refreshReset));
                 this.contentTool.registerObserverToEvent("destroy", lang.hitch(this, this.destroy));
 
-
-
-
-                // Init values
-                //this.timeoutWarning = timeout * 1000;
-                //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 1000;
-
-                // TEST Values
-                //this.timeoutWarning = timeout * 100;
-                //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 100;
-
-
-                //console.log("Warning: ", this.timeoutWarning);
-                //console.log("Timeout: ", this.timeout);
-
                 if (this.timeout) {
                     this.reset();
                 } else {
-                    this.lock();
+                    this.lock(false);
                 }
 
             },
@@ -143,12 +126,12 @@ define([
             refreshed: function (timeout) {
                 //console.log("Locktimer#refresh",timeout);
                     // Init values
-                    //this.timeoutWarning = timeout * 1000;
-                    //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 1000;
+                    this.timeoutWarning = timeout * 1000;
+                    this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 1000;
 
                     // TEST Values
-                    this.timeoutWarning = timeout * 100;
-                    this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 200;
+                    //this.timeoutWarning = timeout * 100;
+                    //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 200;
 
                 this.reset();
             },
@@ -203,13 +186,19 @@ define([
                 }
 
                 this.refreshTimer = false;
-                this.lock();
+                this.lock(this.draft);
             },
 
-            lock: function() {
+            lock: function(draft) {
+
                 this.contentTool.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=lock';
                 var query = '&do=lock'
                     + '&id=' + this.contentTool.id;
+
+                if (draft) {
+                    var draftQuery = this.contentTool.generateDraft();
+                    query += '&draft=' + JSON.stringify(draftQuery);
+                }
 
                 this.contentTool.requester.sendRequest(query);
             },
