@@ -40,7 +40,7 @@ define([
                 }else{
                     this._addMetainfo(content.id, content.meta, dispatcher, nodeMetaInfo, ret);
                 }
-                
+
                 selectedPane = contentCache.getCurrentId("metadataPane");
 
                 if (!selectedPane && ret.defaultSelected) {

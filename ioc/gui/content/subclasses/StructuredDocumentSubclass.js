@@ -127,16 +127,16 @@ define([
             for (i = 0; i < this.content.chunks.length; i++) {
                 aux_id = this.content.id + "_" + this.content.chunks[i].header_id;
                 // TODO[Xavi] Afegir listener per doble click als contenidors (al view)
-                jQuery('#view_' + aux_id).on('dblclick', function () {
+                jQuery('#container_' + aux_id).on('dblclick', function () {
 
-                    var aux_id = this.id.replace('view_', ''),
+                    var aux_id = this.id.replace('container_', ''),
                         section_id = aux_id.replace(that.id + "_", ''),
                         editing_chunks,
                         query = '&do=edit_partial'
                             + '&section_id=' + section_id
                             + '&editing_chunks=' + that.getEditingChunks().toString()// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
                             + '&target=section'
-                            + '&id=' + that.id
+                            + '&id=' + that.ns
                             + '&rev=' + (that.rev || '')
                             + '&summary=[' + that.title + ']'
                             + '&range=-';
@@ -560,7 +560,7 @@ define([
             });
 
             jQuery('input[data-call-type="save_partial"]').each(function () {
-                jQuery(this).attr('disabled', 'disabled');
+                jQuery(this).css('display', 'none');
             });
 
             for (var i = 0; i < this.data.chunks.length; i++) {
@@ -575,7 +575,7 @@ define([
             });
 
             jQuery('input[data-call-type="save_partial"]').each(function () {
-                jQuery(this).removeAttr('disabled');
+                jQuery(this).css('display', 'visible');
             });
 
 

@@ -69,7 +69,7 @@ define([
 
             /** @type int diferencia real entre el timer enviat per la dokuwiki pel warning i el desbloqueig,
              * temps en segons */
-            REAL_TIMEOUT_DIFF: 60,
+            WARNING_TIMER: 60,
 
             /** @type int temps entre auto saves del esborrany, temps en segons */
             AUTOSAVE_TIME: 1,
@@ -121,12 +121,13 @@ define([
             refreshed: function (timeout) {
                 //console.log("Locktimer#refresh",timeout);
                     // Init values
-                    this.timeoutWarning = timeout * 1000;
-                    this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 1000;
+                this.timeout = timeout*1000;
+                this.timeoutWarning = (timeout - this.WARNING_TIMER) * 1000;;
+
 
                     // TEST Values
                     //this.timeoutWarning = timeout * 100;
-                    //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 200;
+                    //this.timeout = (timeout + this.WARNING_TIMER) * 200;
 
                 this.reset();
             },
