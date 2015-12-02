@@ -36,8 +36,7 @@ define([
             /** @type int */
             timerRefreshID: null,
 
-
-            /** @type Date @deprecated no es fa servir, em canviat el sistema*/
+            /** @type int temps en milisegond del últim update*/
             lasttime: null,
 
             /** @type string */
@@ -74,6 +73,7 @@ define([
             /** @type int temps entre auto saves del esborrany, temps en segons */
             AUTOSAVE_TIME: 1,
 
+
             constructor: function (docId, dispatcher) {
                 this.docId = docId;
                 this.dispatcher = dispatcher;
@@ -99,6 +99,7 @@ define([
              */
             init: function (draft) {
 
+
                 this.draft = draft;
 
                 this.pageid = this.docId;
@@ -106,6 +107,7 @@ define([
                 this.timersID = {};
                 this.dialogs = {};
 
+                this.lasttime = Date.now();
                 this.contentTool.registerObserverToEvent("document_changed", lang.hitch(this, this.refreshNeeded));
                 //this.contentTool.registerObserverToEvent("document_changes_reset", lang.hitch(this, this.refreshReset)); // TODO[Xavi] Això diria que està malament, si fem un reset del document el bloqueig s'ha de mantenir i l'esborrany s'ha d'actualitzar
                 this.contentTool.registerObserverToEvent("destroy", lang.hitch(this, this.destroy));
@@ -119,17 +121,20 @@ define([
             },
 
             refreshed: function (timeout) {
-                //console.log("Locktimer#refresh",timeout);
-                    // Init values
-                this.timeout = timeout*1000;
-                this.timeoutWarning = (timeout - this.WARNING_TIMER) * 1000;;
+                if ((!timeout && !this.inTime()) || timeout < 0) {
+                    this._timeout(this);
+                } else if (!timeout) {
+                    this.reset();
+                } else {
+                    this.timeout = timeout * 1000;
+                    this.timeoutWarning = (timeout - this.WARNING_TIMER) * 1000;
+                    this.reset();
 
+                }
+            },
 
-                    // TEST Values
-                    //this.timeoutWarning = timeout * 100;
-                    //this.timeout = (timeout + this.WARNING_TIMER) * 200;
-
-                this.reset();
+            inTime: function () {
+                return this.lasttime + this.timeout >= Date.now()
             },
 
             /**
@@ -137,12 +142,13 @@ define([
              */
             reset: function () {
                 //console.log("Locktimer#reset", this.stop);
+                this.lasttime = Date.now();
 
                 this.clear();
 
                 if (this.stop) {
                     this.unlock();
-                }else {
+                } else {
                     this._initWarningTimer();
                     this._initTimeoutTimer();
                     this._initRefreshTimer();
@@ -153,13 +159,9 @@ define([
              * Display the warning about the expiring lock
              */
             warning: function (context) {
-
                 context.msg.continue = context.msg.continue.replace("\\n", "<br>");
-
                 context._generateDialogWarning();
-
             },
-
 
             refreshNeeded: function () {
                 this.refreshTimer = true;
@@ -175,6 +177,7 @@ define([
              * Called on keypresses in the edit area
              */
             refresh: function () {
+                //console.log("Locktimer#refresh");
 
                 // Refresca només si hi han canvis
                 if (!this.refreshTimer) {
@@ -185,7 +188,7 @@ define([
                 this.lock(this.draft);
             },
 
-            lock: function(draft) {
+            lock: function (draft) {
 
                 this.contentTool.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=lock';
                 var query = '&do=lock'
@@ -199,7 +202,7 @@ define([
                 this.contentTool.requester.sendRequest(query);
             },
 
-            unlock: function() {
+            unlock: function () {
                 //console.log("Locktimer#unlock");
                 this.contentTool.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=unlock';
                 var query = '&do=unlock'
@@ -210,7 +213,6 @@ define([
 
             cancelEditing: function (keepDraft) {
                 this.contentTool.forceReset(); // Així evitem que demani si volen guardar-se els canvis
-                //this.contentTool.discardChanges(); // Així evitem que demani si volen guardar-se els canvis
                 this.clear();
 
                 // TODO[Xavi] això s'ha de arreglar, funciona però no cal generar al request ja que l'obtenim del content tool i s'ha de modificar el tema del draft
@@ -245,34 +247,25 @@ define([
 
             _initRefreshTimer: function () {
                 //console.log("Refresh Timer iniciat:", this);
-                // Guardem la referencia del timer
+                // Guardem la referencia del timer i l'activem
                 this.timersID.refresh = window.setInterval(lang.hitch(this, this.refresh), 1000 * this.AUTOSAVE_TIME);
-                // L'activem
-
             },
 
             _initWarningTimer: function () {
                 //console.log("Warning Timer iniciat:", this);
-                // Guardem la referencia del timer
-                // L'activem
+                // Guardem la referencia del timer i l'activem
                 this.timersID.warning = window.setTimeout(this.warning, this.timeoutWarning, this);
             },
 
             _initTimeoutTimer: function () {
                 //console.log("Timeout Timer iniciat:", this);
-                 //Guardem la referencia del timer
-                // L'activem
+                // Guardem la referencia del timer i l'activem
+                this.timersID.timeout = window.setTimeout(this._timeout, this.timeout, this);
+            },
 
-                var self = this;
-
-                this.timersID.timeout = window.setTimeout(function () {
-                    self.clear();
-                    self._generateDialogTimeout();
-
-
-                }, this.timeout);
-
-
+            _timeout: function (context) {
+                context.clear();
+                context._generateDialogTimeout();
             },
 
             _generateDialogTimeout: function () {
@@ -295,7 +288,6 @@ define([
                         on(okBtn, 'click',
                             function (e) {
                                 that._cancelDialog('timeout');
-                                //this.destroyRecursive();
                             });
                     }
                 });
@@ -304,6 +296,7 @@ define([
             },
 
             _generateDialogWarning: function () {
+                //console.log("Locktimer#_generateDialogWarning");
                 var self = this;
 
                 this.dialogs.warning = new Dialog({
@@ -324,16 +317,12 @@ define([
                             function () {
                                 self.refreshNeeded();
                                 self.refresh();
-                                //self.reset();
-                                //self._cancelDialog('warning');
-
                             });
 
                         on(cancelBtn, 'click',
                             function () {
                                 self.clear();
                                 self.cancelEditing(false);
-                                //self._cancelDialog('warning');
                             });
 
                     },
@@ -347,7 +336,6 @@ define([
 
 
             },
-
 
             _cancelDialog: function (dialog) {
                 //console.log("Locktimer#_cancelDialog", dialog);
@@ -378,7 +366,6 @@ define([
 
                 for (var timerID in clearTimersIDs) {
 
-                    //console.log("Esborrant timer: ", timerID);
                     if (this.timersID[timerID] != null) {
                         window.clearTimeout(this.timersID[timerID]); // Comprovar si per l'interval cal window.clearInterval();
                         this.timersID[timerID] = null;
@@ -394,12 +381,8 @@ define([
                 if (this.dialogs.warning !== null) {
                     this._cancelDialog('warning');
                 }
-
             }
-
         });
-
-
 });
 
 

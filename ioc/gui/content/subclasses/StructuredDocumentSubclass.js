@@ -605,6 +605,10 @@ define([
             }
 
             return draft;
+        },
+
+        changesNotDiscarded: function() {
+            this.locktimer.refreshed();
         }
 
     })

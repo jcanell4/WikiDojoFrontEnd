@@ -56,7 +56,6 @@ define([
                         }
 
                     } else if (changesManager.isChanged(value.id) && !value.selected && !value.cancel) {
-
                         confirmation = dispatcher.discardChanges();
 
                     } else {
@@ -75,6 +74,10 @@ define([
                         contentTool.updateDocument(value);
 
                         dispatcher.getGlobalState().getContent(value.id).rev = content.rev;
+                    } else {
+
+                        contentTool.changesNotDiscarded();
+
                     }
 
                 } else {
