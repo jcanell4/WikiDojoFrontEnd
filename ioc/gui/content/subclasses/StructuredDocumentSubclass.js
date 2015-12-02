@@ -531,7 +531,7 @@ define([
             if (!this.locktimer) {
                 //this.locktimer = new locktimer(docId, dispatcher).init(params.timeout, params.draft);
                 this.locktimer = new Locktimer(this.id, this.dispatcher);
-                this.locktimer.init(true); // TODO[Xavi] Compte! aquest temps es de prova, s'ha de canviar per altre més sensible o fer el primer refersh immediat. temps en segons i si s'ha de guardar el draft. El temps ha d'arribar des del servidor per algun mitjar
+                this.locktimer.init(true);
             } else {
                 this.locktimer.stop = false;
                 this.locktimer.reset();

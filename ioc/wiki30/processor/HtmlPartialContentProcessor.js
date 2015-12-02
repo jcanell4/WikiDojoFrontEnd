@@ -27,7 +27,7 @@ define([
             process: function (value, dispatcher) {
 
                 var changesManager = dispatcher.getChangesManager(),
-                    cache = dispatcher.getContentCache(value.id),
+                    cache = dispatcher.getContentCache(value.id), // TODO[Xavi] de vegades torna null?
                     confirmation = false,
                     contentTool;
 
@@ -41,8 +41,6 @@ define([
                     contentTool.getContainer().selectChild(contentTool);
 
                     // Es una nova edició?
-
-
 
                     // TODO[Xavi] Quan s'ha guardat el isChanged retorna false, s'ha de forçar una comprovació de canvis, però aquest mètode hauria de ser privat
                     contentTool._checkChanges();
@@ -97,7 +95,7 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                dispatcher.getGlobalState().getContent(value.id).action = "view"; // TODO[xavi]
+                dispatcher.getGlobalState().getContent(value.id).action = "view"; // TODO[xavi] això quan es fa servir?
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
             },
 
@@ -137,6 +135,9 @@ define([
                         volatile: true,
                         continue: false
                     };
+
+                // TODO[Xavi] Pel botó de tornar no hi ha request, es automàtic pel attribut data-call-type. Això es pot veure al formRequestReplacer.js
+                // Això fa que s'envii el formulari en que es troba, amb la mateixa informació que quan es desa, però la reb el ajax command cancel_partial.
 
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args)
                     .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)

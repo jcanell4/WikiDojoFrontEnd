@@ -95,24 +95,19 @@ define([
             /**
              * Initialize the lock timer
              *
-             * @param {int}    timeout Length of timeout in seconds
              * @param {bool}   draft   Whether to save drafts
              */
             init: function (draft) {
 
-
-
-
                 this.draft = draft;
 
-                // TODO[xavi] En lloc d'agafar la referencia pel jQuery que pot ser erronia establim la del docId
                 this.pageid = this.docId;
 
                 this.timersID = {};
                 this.dialogs = {};
 
                 this.contentTool.registerObserverToEvent("document_changed", lang.hitch(this, this.refreshNeeded));
-                this.contentTool.registerObserverToEvent("document_changes_reset", lang.hitch(this, this.refreshReset));
+                //this.contentTool.registerObserverToEvent("document_changes_reset", lang.hitch(this, this.refreshReset)); // TODO[Xavi] Això diria que està malament, si fem un reset del document el bloqueig s'ha de mantenir i l'esborrany s'ha d'actualitzar
                 this.contentTool.registerObserverToEvent("destroy", lang.hitch(this, this.destroy));
 
                 if (this.timeout) {
@@ -144,12 +139,12 @@ define([
 
                 this.clear();
 
-                if (!this.stop) {
+                if (this.stop) {
+                    this.unlock();
+                }else {
                     this._initWarningTimer();
                     this._initTimeoutTimer();
                     this._initRefreshTimer();
-                } else {
-                    this.unlock();
                 }
             },
 
@@ -216,6 +211,8 @@ define([
                 this.contentTool.forceReset(); // Així evitem que demani si volen guardar-se els canvis
                 //this.contentTool.discardChanges(); // Així evitem que demani si volen guardar-se els canvis
                 this.clear();
+
+                // TODO[Xavi] això s'ha de arreglar, funciona però no cal generar al request ja que l'obtenim del content tool i s'ha de modificar el tema del draft
 
                 var requester;
 

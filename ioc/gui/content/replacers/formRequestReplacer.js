@@ -10,7 +10,7 @@ define([
     "dojo/_base/event",
     "dojo/on",
     "dojo/query",
-    "dojo/dom-form",
+    "dojo/dom-form"
 ], function (event, on, query, domForm) {
 
     /**

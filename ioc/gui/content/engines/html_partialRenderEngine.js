@@ -33,16 +33,11 @@ define(function () {
             $header = $doc.find('#' + data.chunks[i].header_id);
 
             if (i+1<data.chunks.length) {
-                $content = $header.nextUntil("#" +data.chunks[i+1].header_id); // TODO[Xavi] Això no hi es, el contingut arribarà fins a nextUntil("#" +chunks[i+1].header_id) excepte l'ultim
+                $content = $header.nextUntil("#" +data.chunks[i+1].header_id);
 
             } else {
                 $content = $header.nextUntil(".end-of-document");
             }
-
-
-            //$content = $header.nextUntil(".editbutton_section"); // TODO[Xavi] Això no hi es, el contingut arribarà fins a nextUntil("#" +chunks[i+1].header_id) excepte l'ultim
-            //$form = $content.next(); // TODO[Xavi] Aquest es el form que envia la informació? En lloc de capturar-lo s'ha de substituir
-
 
             $header.before($container);
 
