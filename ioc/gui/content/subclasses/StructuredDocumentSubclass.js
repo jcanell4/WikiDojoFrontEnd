@@ -56,7 +56,6 @@ define([
                 initToolbar('toolbar_' + aux_id, 'textarea_' + aux_id, window['toolbar']);
             }
 
-
             // Afegeix un handler pel submit. TODO[Xavi] hi ha interferencies amb el submit així que fem servir el clik
             var that = this;
 

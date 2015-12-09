@@ -20,6 +20,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                console.log("value:",value);
                 this._processDialog(value, dispatcher);
             },
 
@@ -31,27 +32,57 @@ define([
             _processDialog: function (value, dispatcher) {
                 //console.log("DraftProcessor#_processDialog", value);
 
-                var currentContent = jQuery(value.content).find('textarea').val();
+
+                // TODO[Xavi] En lloc de fer-ho així cercar una manera de passar directament el valor des de la wiki
+                var document = this._getDocument(value.params),
+                    draft = this._getDraft(value.params);
+
+                console.log("Document: ", document);
+                console.log("Draft: ", draft);
 
                 var dialog = new DiffDialog({
-                    title:    "S'ha trobat un esborrany",
-                    style:    "width: 700px",
-                    document: {content: currentContent, date: value.lastmod},
-                    draft:    {content: value.draft.content, date: value.draft.date},
-                    docId:    value.id,
+                    title: "S'ha trobat un esborrany",
+                    style: "width: 700px",
+                    //document: {content: currentContent, date: value.lastmod},
+                    //draft:    {content: value.draft.content, date: value.draft.date},
+                    document: document,
+                    draft: draft,
+                    docId: value.id,
                     ns: value.ns,
-                    rev:      value.rev,
+                    rev: value.rev,
                     timeout: value.timeout,
-                    dispatcher: dispatcher
+                    dispatcher: dispatcher,
+                    query: 'id=' + value.ns + (value.rev ? '&rev=' + value.rev : ''),
+                    base: DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=edit'
                 });
 
 
                 dialog.show();
 
 
+            },
+
+            // TODO[Xavi] En lloc de fer-ho així cercar una manera de passar directament el valor des de la wiki
+            _getDocument: function (value) {
+                console.log(value);
+                switch (value.type) {
+                    case 'full_document':
+                        var currentContent = jQuery(value.content).find('textarea').val();
+                        return {content: currentContent, date: value.lastmod};
+                }
+
+            },
+
+            // TODO[Xavi] En lloc de fer-ho així cercar una manera de passar directament el valor des de la wiki
+            _getDraft: function (value) {
+                switch (value.type) {
+                    case 'full_document':
+                        return {content: value.draft.content, date: value.draft.date};
+                }
+
             }
         });
+
     return ret;
 });
-
 

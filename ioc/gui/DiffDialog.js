@@ -26,6 +26,31 @@ define([
         /** @type int */
         timerId: null,
 
+        constructor: function () {
+            declare.safeMixin(this, arguments);
+
+            this._createRequest();
+        },
+
+        _createRequest: function () {
+            var that = this;
+
+            require(["ioc/wiki30/Request"], function (Request) {
+                var requester = new Request();
+
+                console.log("requester:", requester);
+                requester.updateSectok = function (sectok) {
+                    this.sectok = sectok;
+                };
+
+                requester.sectok = requester.dispatcher.getSectok();
+                requester.dispatcher.toUpdateSectok.push(requester);
+
+                that.requester = requester;
+                console.log("that:", that);
+                console.log("that.requester:", requester);
+            });
+        },
 
         /** @override */
         show: function () {
@@ -65,13 +90,14 @@ define([
 
         },
 
+        // TODO[Xavi] delegar al LockTimer
         clearTimer: function () {
             window.clearTimeout(this.timerID);
 
         },
 
         onOpenDocument: function () {
-            //alert("obrir el document");
+            alert("obrir el document");
             isShown = false;
             this.clearTimer();
             this.loadDocument(false);
@@ -79,13 +105,14 @@ define([
         },
 
         onOpenDraft: function () {
-            //alert("obrir el draft");
+            alert("obrir el draft");
             isShown = false;
             this.clearTimer();
             this.loadDocument(true);
             this.destroyRecursive();
         },
 
+        // TODO[Xavi] delegar al LockTimer
         onTimeout: function (context) {
             // Canviem el missatge per informar
             context.clearTimer();
@@ -106,6 +133,7 @@ define([
 
         },
 
+        //TODO[Xavi] Delegar al locktimer
         unlock: function () {
 
             var requester;
@@ -122,46 +150,31 @@ define([
             }));
 
 
-            console.log(this.ns);
             requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.ns
                 + '&keep_draft=true';
-            //requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.docId.replace('_',':')
-            //    + '&keep_draft=true';
 
             requester.setStandbyId(this.dispatcher.containerNodeId);
             requester.sendRequest();
         },
 
-
+        /**
+         * @abstract
+         * @param {bool} recoverDraft cert si es vol recuperar el draft o fals per recuperar el document
+         */
         loadDocument: function (recoverDraft) {
-            var requester;
-
-            require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
-                requester = new Request();
-
-                requester.updateSectok = function (sectok) {
-                    this.sectok = sectok;
-                };
-
-                requester.sectok = requester.dispatcher.getSectok();
-                requester.dispatcher.toUpdateSectok.push(requester);
-            }));
-
-
-            var id = this.docId.replace('_', ':')
-
-            requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=edit'
-                + '&id=' + id
-                + (this.rev ? '&rev=' + this.rev : '')
+            var query = this.query
                 + '&recover_draft=' + recoverDraft;
 
-
-            requester.setStandbyId(requester.dispatcher.containerNodeId);
-            requester.sendRequest();
+            this.requester.urlBase = this.base;
+            this.requester.setStandbyId(this.requester.dispatcher.containerNodeId);
+            this.requester.sendRequest(query);
         },
+
 
         onCancel: function () {
             isShown = false;
+
+            // TODO[Xavi] delegar a Locktimer
             this.unlock();
             this.clearTimer();
         }
