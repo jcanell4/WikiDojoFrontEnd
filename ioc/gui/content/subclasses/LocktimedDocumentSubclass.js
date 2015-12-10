@@ -43,6 +43,10 @@ define([
 
         changesNotDiscarded: function() {
             this.locktimer.refreshed();
+        },
+
+        unlock: function() {
+            this.locktimer.unlock();
         }
 
     });
