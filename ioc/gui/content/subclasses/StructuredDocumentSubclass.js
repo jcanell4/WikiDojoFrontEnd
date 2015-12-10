@@ -131,7 +131,7 @@ define([
                     var aux_id = this.id.replace('container_', ''),
                         section_id = aux_id.replace(that.id + "_", ''),
                         editing_chunks,
-                        query = '&do=edit_partial'
+                        query = 'do=edit_partial'
                             + '&section_id=' + section_id
                             + '&editing_chunks=' + that.getEditingChunks().toString()// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
                             + '&target=section'
