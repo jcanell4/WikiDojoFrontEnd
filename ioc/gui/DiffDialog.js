@@ -100,7 +100,7 @@ define([
         },
 
         onOpenDocument: function () {
-            alert("obrir el document");
+
             isShown = false;
             this.clearTimer();
             this.loadDocument(false);
@@ -108,7 +108,7 @@ define([
         },
 
         onOpenDraft: function () {
-            alert("obrir el draft");
+
             isShown = false;
             this.clearTimer();
             this.loadDocument(true);
@@ -169,7 +169,7 @@ define([
                 + '&recover_draft=' + recoverDraft;
 
 
-            console.log("PASANDO EL QUERY: ", query);
+            console.log("Passant el query: ", query);
             this.requester.urlBase = this.base;
             this.requester.setStandbyId(this.requester.dispatcher.containerNodeId);
             this.requester.sendRequest(query);
