@@ -235,6 +235,7 @@ define([
             cancelEditing: function (keepDraft) {
                 this.contentTool.discardChanges(); // Així evitem que demani si volen guardar-se els canvis
                 this.clear();
+                console.log("Keep draft: ", keepDraft);
 
                 var requester;
 

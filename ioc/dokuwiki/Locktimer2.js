@@ -212,6 +212,8 @@ define([
             },
 
             cancelEditing: function (keepDraft) {
+
+                console.log("Keep draft: ", keepDraft);
                 this.contentTool.forceReset(); // Així evitem que demani si volen guardar-se els canvis
                 this.clear();
 
@@ -232,7 +234,6 @@ define([
                 }));
 
                 requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.contentTool.ns;
-
 
                 if (keepDraft) {
                     requester.urlBase += '&keep_draft=true';

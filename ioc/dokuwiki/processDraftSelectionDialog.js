@@ -31,7 +31,7 @@ define([
                     jQuery('#partial-edition-' + params.id).on('click', function () {
                         // Als params s'ha de passar suficient informació per retornar la mateixa petició + clear draft
 
-                        var query = '&do=edit_partial'
+                        var query = 'do=edit_partial'
                             + '&section_id=' + params.section_id
                             + '&editing_chunks=' + params.editing_chunks// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
                             + '&target=' + params.target
