@@ -38,7 +38,6 @@ define([
             require(["ioc/wiki30/Request"], function (Request) {
                 var requester = new Request();
 
-                console.log("requester:", requester);
                 requester.updateSectok = function (sectok) {
                     this.sectok = sectok;
                 };
@@ -47,8 +46,6 @@ define([
                 requester.dispatcher.toUpdateSectok.push(requester);
 
                 that.requester = requester;
-                console.log("that:", that);
-                console.log("that.requester:", requester);
             });
         },
 
@@ -79,9 +76,6 @@ define([
             // this.timerID = window.setTimeout(this.onTimeout, this.timeout * 10, this);
 
             this.timerID = window.setTimeout(this.onTimeout, this.timeout * 1000, this);
-
-            console.log("Document:", this.document);
-            console.log("Draft:", this.draft);
 
             var documentLabel = "Document (" + this.document.date + ")",
                 draftLabel = "Esborrany (" + this.draft.date + ")",

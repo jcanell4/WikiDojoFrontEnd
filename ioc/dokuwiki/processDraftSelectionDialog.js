@@ -79,7 +79,6 @@ define([
         };
 
     return function (params) {
-
         _createRequest();
         _showDraftSelectionDialog(params.original_call);
 
