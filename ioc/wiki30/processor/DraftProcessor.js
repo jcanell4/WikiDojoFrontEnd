@@ -20,7 +20,6 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("*******value:", value);
                 this._processDialog(value, dispatcher);
             },
 
@@ -38,8 +37,6 @@ define([
                 var dialog = new DiffDialog({
                     title: "S'ha trobat un esborrany",
                     style: "width: 700px",
-                    //document: {content: currentContent, date: value.lastmod},
-                    //draft:    {content: value.draft.content, date: value.draft.date},
                     document: data.document,
                     draft: data.draft,
                     docId: value.id,
@@ -47,16 +44,11 @@ define([
                     rev: value.rev,
                     timeout: value.timeout,
                     dispatcher: dispatcher,
-                    //query: 'id=' + value.ns + (value.rev ? '&rev=' + value.rev : ''),
                     query: data.query,
                     base: DOKU_BASE + value.params.base
-                    //base: DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=edit'
                 });
 
-
                 dialog.show();
-
-
             },
 
             _extractData: function (value) {
@@ -77,8 +69,6 @@ define([
                         return {content: currentContent, date: value.lastmod};
 
                     case 'partial_document':
-
-                        console.log("***** CONTENT **** ", value.content);
                         return {content: value.content.editing, date: value.lastmod};
 
                 }
@@ -98,12 +88,10 @@ define([
             _buildQuery: function (value) {
                 var query = '';
 
-                console.log("VALUE: ", value);
                 switch (value.params.type) {
                     case 'full_document':
                         query += 'id=' + value.ns + (value.rev ? '&rev=' + value.rev : '');
-                        console.log("Query: ", query);
-                        return query;
+                        break;
 
                     case 'partial_document':
                         query += 'id=' + value.params.original_call.ns
@@ -113,19 +101,9 @@ define([
                             + '&range=' + value.params.original_call.range //TODO[Xavi] això sembla que no es necessari
                             + '&summary=' + value.params.original_call.summary
                             + '&target=' + value.params.original_call.target;
-
-                        //$response['original_call']['section_id'] = $selected;
-                        //$response['original_call']['editing_chunks'] = implode(',', $editing_chunks); // TODO[Xavi] s'ha de convertir en string
-                        //$response['original_call']['rev'] = $prev;
-                        //$response['original_call']['range'] = '-'; // TODO[Xavi] Això sembla que no es necessari
-                        //$response['original_call']['target'] = 'section';
-                        //$response['original_call']['id'] = $this - > cleanIDForFiles($pid);
-                        //$response['original_call']['ns'] = $pid;
-                        //$response['original_call']['summary'] = $psum; // TODO[Xavi] Comprovar si es correcte, ha de ser un array
-
-                        console.log("Query: ", query);
-                        return query;
                 }
+
+                return query;
             }
         });
 });

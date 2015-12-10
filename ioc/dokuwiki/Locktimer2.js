@@ -213,7 +213,6 @@ define([
 
             cancelEditing: function (keepDraft) {
 
-                console.log("Keep draft: ", keepDraft);
                 this.contentTool.forceReset(); // Així evitem que demani si volen guardar-se els canvis
                 this.clear();
 

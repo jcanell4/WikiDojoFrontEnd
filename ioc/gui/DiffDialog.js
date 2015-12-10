@@ -162,8 +162,6 @@ define([
             var query = this.query
                 + '&recover_draft=' + recoverDraft;
 
-
-            console.log("Passant el query: ", query);
             this.requester.urlBase = this.base;
             this.requester.setStandbyId(this.requester.dispatcher.containerNodeId);
             this.requester.sendRequest(query);
