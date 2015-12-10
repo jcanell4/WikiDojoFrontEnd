@@ -1,10 +1,11 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-    "dojo/on"
-], function (declare, lang, on) {
+    "dojo/on",
+    "ioc/gui/content/subclasses/LocktimedDocumentSubclass",
+], function (declare, lang, on, LocktimedDocumentSubclass) {
 
-    return declare(null,
+    return declare([LocktimedDocumentSubclass],
 
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
@@ -31,6 +32,7 @@ define([
             constructor: function (args) {
                 this._setOriginalContent(args.originalContent);
             },
+
 
             /**
              * Retorna cert si el contingut actual i el contingut original son iguals o fals si no ho son.
@@ -71,11 +73,11 @@ define([
                 this.registerToChangesManager();
 
                 on(this.domNode, 'input', lang.hitch(this, this._checkChanges));
-                //on(this.domNode, 'keyup', lang.hitch(this, this._checkChanges));
-                //on(this.domNode, 'paste', lang.hitch(this, this._checkChanges));
-                //on(this.domNode, 'cut', lang.hitch(this, this._checkChanges));
-                //on(this.domNode, 'focusout', lang.hitch(this, this._checkChanges));
 
+
+                if (!this.locked) {
+                    this.lockDocument();
+                }
 
                 this.inherited(arguments);
             },
@@ -184,7 +186,15 @@ define([
                 // TODO: fer la substitució del contingut i comprovar que està sincronitzat amb el ACEEditor, i si no ho està comprovar si es necessari sincronitzar-lo.
 
                 this.inherited(arguments);
-            }
+            },
+
+            generateDraft: function () {
+                return {
+                    type: 'full',
+                    id: this.id,
+                    content: this.getCurrentContent()
+                };
+            },
 
 
         });

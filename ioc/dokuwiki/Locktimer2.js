@@ -74,7 +74,7 @@ define([
             AUTOSAVE_TIME: 1,
 
 
-            constructor: function (docId, dispatcher) {
+            constructor: function (docId, dispatcher, contentTool) {
                 this.docId = docId;
                 this.dispatcher = dispatcher;
                 this.timeout = 0;
@@ -84,7 +84,9 @@ define([
                     timeout: LANG.template['ioc-template'].lock_timeout
                 };
                 this.pageid = '';
-                this.contentTool = this.dispatcher.getContentCache(this.docId).getMainContentTool();
+
+                this.contentTool = contentTool;
+                //this.contentTool = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
                 this.changesDetected = false;
 
@@ -92,11 +94,6 @@ define([
             },
 
 
-            /**
-             * Initialize the lock timer
-             *
-             * @param {bool}   draft   Whether to save drafts
-             */
             init: function (draft) {
 
 
@@ -109,7 +106,6 @@ define([
 
                 this.lasttime = Date.now();
                 this.contentTool.registerObserverToEvent("document_changed", lang.hitch(this, this.refreshNeeded));
-                //this.contentTool.registerObserverToEvent("document_changes_reset", lang.hitch(this, this.refreshReset)); // TODO[Xavi] Això diria que està malament, si fem un reset del document el bloqueig s'ha de mantenir i l'esborrany s'ha d'actualitzar
                 this.contentTool.registerObserverToEvent("destroy", lang.hitch(this, this.destroy));
 
                 if (this.timeout) {
@@ -213,6 +209,7 @@ define([
 
             cancelEditing: function (keepDraft) {
 
+                // TODO[Xavi]
                 this.contentTool.forceReset(); // Així evitem que demani si volen guardar-se els canvis
                 this.clear();
 

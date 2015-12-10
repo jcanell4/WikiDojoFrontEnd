@@ -5,22 +5,25 @@ define([
     "dojo/ready",
     "ioc/gui/content/contentToolFactory",
     "ioc/dokuwiki/AceManager/toolbarManager",
-    "ioc/dokuwiki/Locktimer",
-    "dojo/dom",
-    "dojo/dom-style",
-], function (Editor, declare, ContentProcessor, ready, contentToolFactory, toolbarManager, locktimer, dom, domStyle) {
+    //"ioc/dokuwiki/Locktimer2",
+    //"dojo/dom",
+    //"dojo/dom-style",
+], function (Editor, declare, ContentProcessor, ready, contentToolFactory, toolbarManager, /*Locktimer,*/ dom, domStyle) {
 
-    var editing = function (params, docId, dispatcher) {
 
+    var editing = function (params, docId, dispatcher, draft) {
+
+        // TODO[Xavi] Això no anirà aquí
         toolbarManager.setToolbar(params.varName, params.toolbarId, params.wikiTextId);
 
+        // TODO[Xavi] Reubicara
         dw_editor.init();
 
 
-        if (!params.locked) {
-            // Només activem el temportizador si el document no està bloquejat
-            new locktimer(docId, dispatcher).init(params.timeout, params.draft);
-        }
+        //if (!params.locked) {
+        //    // Només activem el temportizador si el document no està bloquejat
+        //    new Locktimer(docId, dispatcher).init(draft);
+        //}
 
 
     };
@@ -72,7 +75,9 @@ define([
 
 
                 ready(function () {
-                    editing(value.editing, value.id, dispatcher);
+                    var content = value.draft? value.draft.content : '';
+
+                    editing(value.editing, value.id, dispatcher, content);
                 });
 
 

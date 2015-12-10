@@ -1,9 +1,10 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/DokuwikiContent",
-], function (declare, DokuwikiContent) {
+    "ioc/gui/content/subclasses/LocktimedDocumentSubclass"
+], function (declare, DokuwikiContent, LocktimedDocumentSubclass) {
 
-    return declare(null,
+    return declare([LocktimedDocumentSubclass],
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
          *

@@ -24,16 +24,16 @@
 define([
     "dojo/_base/declare",
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
-    "dojo/_base/lang",
-    "ioc/dokuwiki/Locktimer2",
-], function (declare, ChangesManagerCentralSubclass, lang, Locktimer) {
+    "ioc/gui/content/subclasses/LocktimedDocumentSubclass",
+    "dojo/_base/lang"
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, lang) {
 
-    return declare([ChangesManagerCentralSubclass], {
+    return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
         constructor: function (args) {
 
             this._generateEmptyChangedChunks(args.content.chunks);
-            this._createRequest();
+            //this._createRequest();
             this.savedDrafts = {}
         },
 
@@ -170,20 +170,20 @@ define([
             return editingChunks;
         },
 
-        // TODO[Xavi] copiat de MetaMediaDeatailsSubclass
-        _createRequest: function () {
-
-            require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
-                this.requester = new Request();
-
-                this.requester.updateSectok = function (sectok) {
-                    this.sectok = sectok;
-                };
-
-                this.requester.sectok = this.requester.dispatcher.getSectok();
-                this.requester.dispatcher.toUpdateSectok.push(this.requester);
-            }));
-        },
+        //// TODO[Xavi] copiat de MetaMediaDeatailsSubclass
+        //_createRequest: function () {
+        //
+        //    require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
+        //        this.requester = new Request();
+        //
+        //        this.requester.updateSectok = function (sectok) {
+        //            this.sectok = sectok;
+        //        };
+        //
+        //        this.requester.sectok = this.requester.dispatcher.getSectok();
+        //        this.requester.dispatcher.toUpdateSectok.push(this.requester);
+        //    }));
+        //},
 
         enableEdition: function (aux_id) {
             console.log("enabling edition for: ", aux_id);
@@ -363,15 +363,6 @@ define([
             this.onDocumentChangesReset();
         },
 
-        forceReset: function () {
-            this.discardChanges = true;
-
-            delete this.changesManager.contentsChanged[this.id];
-
-
-            this.onDocumentChangesReset();
-        },
-
         /**
          * Actualitza el document amb el nou contingut
          *
@@ -526,33 +517,6 @@ define([
 
         },
 
-        lockDocument: function () {
-            if (!this.locktimer) {
-                //this.locktimer = new locktimer(docId, dispatcher).init(params.timeout, params.draft);
-                this.locktimer = new Locktimer(this.id, this.dispatcher);
-                this.locktimer.init(true);
-            } else {
-                this.locktimer.stop = false;
-                this.locktimer.reset();
-            }
-
-
-            //console.log("StructuredDocumentSubclass#lockDocument");
-        },
-
-        unlockDocument: function () {
-            //console.log("StructuredDocumentSubclass#unlockDocument");
-            if (this.locktimer) {
-                this.locktimer.stop = true;
-                this.locktimer.reset();
-            }
-        },
-
-        refreshLock: function (timeout) {
-            //console.log("Refreshing lock", timeout);
-            this.locktimer.refreshed(timeout);
-        },
-
         lockEditors: function () {
             jQuery('textarea[name="wikitext"]').each(function () {
                 jQuery(this).attr('readonly', 'readonly');
@@ -606,9 +570,9 @@ define([
             return draft;
         },
 
-        changesNotDiscarded: function() {
-            this.locktimer.refreshed();
-        }
+        //changesNotDiscarded: function() {
+        //    this.locktimer.refreshed();
+        //}
 
     })
 });

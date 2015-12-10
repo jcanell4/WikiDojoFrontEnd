@@ -26,10 +26,11 @@ define([
         "ioc/gui/content/subclasses/EditorSubclass",
         "ioc/gui/content/subclasses/MediaDetailsSubclass",
         "ioc/gui/content/subclasses/MetaMediaDetailsSubclass",
-        "ioc/gui/content/subclasses/StructuredDocumentSubclass"
+        "ioc/gui/content/subclasses/StructuredDocumentSubclass",
+        "ioc/gui/content/subclasses/RequestSubclass"
     ], function (lang, ContentTool, requestReplacerFactory,
                  dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, ChangesManagerCentralSubclass, EditorSubclass,
-                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass) {
+                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass, RequestSubclass) {
 
         var patch = function (target, source) {
                 return function () {
@@ -400,6 +401,7 @@ define([
 
                     case this.generation.EDITOR:
                         GeneratedContentTool = base
+                            .createSubclass(RequestSubclass)
                             .createSubclass(DocumentSubclass)
                             .createSubclass(ChangesManagerCentralSubclass)
                             .createSubclass(EditorSubclass);
@@ -407,6 +409,7 @@ define([
 
                     case this.generation.STRUCTURED_DOCUMENT:
                         GeneratedContentTool = base
+                            .createSubclass(RequestSubclass)
                             .createSubclass(DocumentSubclass)
                             .createSubclass(StructuredDocumentSubclass);
 

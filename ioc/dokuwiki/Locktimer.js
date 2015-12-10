@@ -340,7 +340,6 @@ define([
 
                     startup: function () {
 
-                        console.log(self.docId);
                         var saveBtn = dom.byId("save-confirmation-" + self.docId),
                             cancelBtn = dom.byId("discard-confirmation-" + self.docId);
 

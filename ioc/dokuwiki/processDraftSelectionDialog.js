@@ -46,8 +46,6 @@ define([
                         requester.sendRequest(query);
 
                         dialog.destroyRecursive();
-
-                        console.log("Partial");
                     });
 
                     jQuery('#full-edition-' + params.id).on('click', function () {
@@ -59,7 +57,6 @@ define([
                         dialog.destroyRecursive();
 
 
-                        console.log("Full");
                     });
                 }
             });

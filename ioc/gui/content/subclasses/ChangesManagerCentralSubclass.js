@@ -58,6 +58,12 @@ define([
             }
         },
 
+        forceReset: function () {
+            this.discardChanges = true;
+            delete this.changesManager.contentsChanged[this.id];
+            this.onDocumentChangesReset();
+        },
+
         /**
          * Acció a realitzar quan es tanca el document. Si detecta canvis demana confirmació i en cas de que no hi hagin
          * o es descartin el canvis retorna cert i es procedeix al tancament del document.
