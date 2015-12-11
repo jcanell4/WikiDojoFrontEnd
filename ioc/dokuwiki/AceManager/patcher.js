@@ -57,15 +57,18 @@ define([], function () {
         },
 
         cacheFunction = function (id, name) {
+            //console.log("patcher#cacheFunction", id, name);
             var func = (dw_editor && dw_editor[name]) ? dw_editor[name] : window[name];
 
             if (!cachedFunctions[id]) {
                 cachedFunctions[id] = [];
             }
             cachedFunctions[id].push({name: name, func: func});
+
         },
 
         restoreCachedFunctions = function (id) {
+            //console.log("patcher#restoreCachedFunctions", id);
             if (!cachedFunctions[id]) {
                 return;
             }

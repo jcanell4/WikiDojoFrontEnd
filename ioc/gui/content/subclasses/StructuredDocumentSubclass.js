@@ -22,19 +22,19 @@
  */
 
 define([
-    "dojo/_base/declare",
-    "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
-    "ioc/gui/content/subclasses/LocktimedDocumentSubclass",
-    "dojo/_base/lang"
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, lang) {
+    'dojo/_base/declare',
+    'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
+    'ioc/gui/content/subclasses/LocktimedDocumentSubclass',
+    'ioc/dokuwiki/AceManager/AceFacade'
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
         constructor: function (args) {
 
             this._generateEmptyChangedChunks(args.content.chunks);
-            //this._createRequest();
-            this.savedDrafts = {}
+            this.savedDrafts = {},
+            this.editors = {}; // A aquest objecte es guardarà per cada header_id el seu editor
         },
 
 
@@ -51,10 +51,34 @@ define([
 
             // Afegeix una toolbar a cada contenidor
             for (var i = 0; i < this.content.chunks.length; i++) {
-                var aux_id = this.content.id + "_" + this.content.chunks[i].header_id;
+                var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
                 //console.log("Afegint la toolbar... a", aux_id);
-                initToolbar('toolbar_' + aux_id, 'textarea_' + aux_id, window['toolbar']);
+                initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
             }
+
+
+            // TODO[Xavi] Afegeix un editorAce per cada editor actiu
+            for (i = 0; i < this.data.chunks.length; i++) {
+                auxId = this.data.id + "_" + this.data.chunks[i].header_id;
+                if (this.data.chunks[i].text /*&& this.content.chunks[i].text.editing*/) {
+
+                    if (this.editors[this.data.chunks[i].header_id]) {
+                        this.updateEditor(this.data.chunks[i].header_id, {auxId: auxId});
+
+                    } else {
+                        this.addEditor(this.data.chunks[i].header_id, {auxId: auxId});
+                    }
+
+                } else {
+                    if (this.editors[this.data.chunks[i].header_id]) {
+                        this.disableEditor(this.data.chunks[i].header_id);
+                    }
+                }
+
+            }
+
+            //console.log("Chunks: ", this.data.chunks);
+
 
             // Afegeix un handler pel submit. TODO[Xavi] hi ha interferencies amb el submit així que fem servir el clik
             var that = this;
@@ -97,9 +121,13 @@ define([
 
                 for (i = editingIndex + 1; i < chunks.length; i++) {
                     if (chunks[i].text) {
-
                         suf += chunks[i].text.pre;
                         suf += chunks[i].text.editing;
+
+                        // TODO[Xavi] afegim l'editor
+                        // TODO[Xavi] al tornar a fer el render que passa amb l'editor anterior? Si continua a la classe només cal actualitzar el text, o potser no fe res pequè s'actualiza amb el textarea
+
+
                     }
                 }
                 suf += that.data.suf || '';
@@ -113,7 +141,6 @@ define([
                 // Actualitcem el contingut del editing
                 var $textarea = jQuery('#' + $form.attr('id') + " textarea"),
                     text = $textarea.val();
-                // TODO[xavi] només cal actualitzar l'editing o es necessari també el start i end? Si es així llavors car fer-ho a la resposta
 
                 $textarea.val(text);
                 that.updateChunk(header_id, {'editing': text});
@@ -124,9 +151,9 @@ define([
 
             // Al fer doble click s'activa la edició
             for (i = 0; i < this.content.chunks.length; i++) {
-                aux_id = this.content.id + "_" + this.content.chunks[i].header_id;
+                auxId = this.content.id + "_" + this.content.chunks[i].header_id;
                 // TODO[Xavi] Afegir listener per doble click als contenidors (al view)
-                jQuery('#container_' + aux_id).on('dblclick', function () {
+                jQuery('#container_' + auxId).on('dblclick', function () {
 
                     var aux_id = this.id.replace('container_', ''),
                         section_id = aux_id.replace(that.id + "_", ''),
@@ -169,21 +196,6 @@ define([
 
             return editingChunks;
         },
-
-        //// TODO[Xavi] copiat de MetaMediaDeatailsSubclass
-        //_createRequest: function () {
-        //
-        //    require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
-        //        this.requester = new Request();
-        //
-        //        this.requester.updateSectok = function (sectok) {
-        //            this.sectok = sectok;
-        //        };
-        //
-        //        this.requester.sectok = this.requester.dispatcher.getSectok();
-        //        this.requester.dispatcher.toUpdateSectok.push(this.requester);
-        //    }));
-        //},
 
         enableEdition: function (aux_id) {
             console.log("enabling edition for: ", aux_id);
@@ -255,6 +267,9 @@ define([
                     this.data.chunks[i].text.editing = text;
                 }
             }
+
+            // Eliminem els editors ACE
+            this.removeEditors();
         },
 
         /**
@@ -570,9 +585,55 @@ define([
             return draft;
         },
 
-        //changesNotDiscarded: function() {
-        //    this.locktimer.refreshed();
-        //}
+        // Nous mètodes per la gestió d'editors
+        updateEditor: function (header_id, data) {
+            // Com es per la referencia interna del ace al div del editor s'ha de refer, per axiò els eliminem al pre-render
+            this.addEditor(header_id, data);
+
+        },
+
+        addEditor: function (header_id, data) {
+
+            //TODO[Xavi] crear el div editor amb jQuery
+
+            var $textarea = jQuery('textarea_' + data.auxId);
+            //$textarea.before('<div id=' + 'editor_' + data.auxId + '></div>');
+
+
+            var editor = new AceFacade({
+                xmltags: JSINFO.plugin_aceeditor.xmltags,
+                containerId: 'editor_' + data.auxId,
+                textareaId: 'textarea_' + data.auxId,
+                theme: JSINFO.plugin_aceeditor.colortheme,
+                readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient
+                wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+                wrapMode: $textarea.attr('wrap') !== 'off',
+                mdpage: JSINFO.plugin_aceeditor.mdpage,
+                auxId: data.auxId
+            });
+
+            this.editors[header_id] = {
+                editor: editor
+            };
+
+
+        },
+
+        disableEditor: function (header_id) { // TODO[Xavi] No es fa servir
+            this.editors[header_id].editor.hide();
+        },
+
+        removeEditors: function () {
+            if (!this.editors || this.editors.count === 0) {
+                return;
+            }
+
+            for (var header_id in this.editors) {
+                this.editors[header_id].editor.destroy();
+            }
+
+            this.editors = {};
+        }
 
     })
 });

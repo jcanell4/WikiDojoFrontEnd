@@ -1,7 +1,8 @@
 define([
-    "dojo/Stateful",
-    "dojo/_base/declare",
-    "dojo/_base/lang",
+    'dojo/Stateful',
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'ioc/dokuwiki/underscore'
 
 ], function (Stateful, declare, lang) {
     return declare([Stateful],

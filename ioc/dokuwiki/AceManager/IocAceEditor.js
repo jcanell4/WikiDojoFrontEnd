@@ -200,6 +200,10 @@ define([
 
             getText: function () {
                 return this.get('session').getValue();
+            },
+
+            destroy: function () {
+                ace.edit(this.args.containerId).destroy()
             }
         });
 });

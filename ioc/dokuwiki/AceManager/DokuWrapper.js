@@ -60,10 +60,10 @@ define([
              * @param {AceWrapper} aceWrapper - Embolcall del editor ace enllaçat.
              * @param {string} textArea - Id del textarea que conté el text de la wiki
              */
-            constructor: function (aceWrapper, textArea) {
+            constructor: function (aceWrapper, textArea, id) {
                 this.setTextArea(textArea);
                 this.setAceWrapper(aceWrapper);
-                this._init();
+                this._init(id);
             },
 
             /**
@@ -95,10 +95,10 @@ define([
              *
              * @private
              */
-            _init: function () {
-                var self = this,
+            _init: function (id) {
+                id = id || GlobalState.getCurrentId();
 
-                    id = GlobalState.getCurrentId(),
+                var self = this,
 
                     /**
                      * @param {function} func - Funcio a cridar a continuació
@@ -357,6 +357,7 @@ define([
 
             // TODO d'on surt el summaryCheck()? de js.php? --> Surt de /lib/scripts/edit.js#summaryCheck()
             text_changed: function () { // TODO[Xavi] No es crida?
+                // TODO[Xavi] Afegit nou:
                 //dispatcher.getChangesManager().addDocumentChanged();
                 //dispatcher.setUnsavedChangesState(true);
                 return summaryCheck();
