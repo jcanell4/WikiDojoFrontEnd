@@ -35,8 +35,10 @@ define([
                     contentTool = cache.getMainContentTool();
                 }
 
+
+
                 // TODO[Xavi] Refactoritzar, massa condicionals
-                if (contentTool && contentTool.type === this.type) {
+                if (contentTool && contentTool.type === this.type ) {
                     // Es una actualització
                     contentTool.getContainer().selectChild(contentTool);
 
@@ -85,6 +87,17 @@ define([
                     return this.inherited(arguments);
                 }
 
+
+                // es guarda la revisió al caché? d'on la agafa el botó de desar?
+                var contentCache= dispatcher.getGlobalState().getContent(value.id);
+
+                if (contentCache && contentCache.rev != value.rev) {
+                    dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
+                    alert("TODO: Si s'intenca canviar de revisió s'ha de demanar confirmació");
+                    console.log("S'ha canviat? ", dispatcher.getGlobalState().getContent(value.id).rev);
+                }
+
+                console.log("Al final del processor tenim:", dispatcher.getGlobalState().getContent(value.id))
                 return confirmation ? 0 : 100;
             },
 
@@ -112,7 +125,9 @@ define([
              * @override
              */
             createContentTool: function (content, dispatcher) {
+                console.log("Rev?", content.rev, content);
                 var /*changedChunks = this._generateEmptyChangedChunks(content.chunks),*/
+
 
                     args = {
                         ns: content.ns,
@@ -131,20 +146,10 @@ define([
                         form: '.btn_secedit',
                         volatile: true,
                         continue: false
-                    },
-
-                    argsRequestForm2 = {
-                        form: '.form_save',
-                        volatile: true,
-                        continue: false
                     };
 
-                // TODO[Xavi] Pel botó de tornar no hi ha request, es automàtic pel attribut data-call-type. Això es pot veure al formRequestReplacer.js
-                // Això fa que s'envii el formulari en que es troba, amb la mateixa informació que quan es desa, però la reb el ajax command cancel_partial.
-
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm2);
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
 
             },
 

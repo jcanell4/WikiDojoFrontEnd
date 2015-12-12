@@ -47,21 +47,34 @@ define([
          */
         postRender: function () {
 
-
             this.inherited(arguments);
 
-            // Afegeix una toolbar a cada contenidor
-            for (var i = 0; i < this.content.chunks.length; i++) {
-                var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
-                //console.log("Afegint la toolbar... a", aux_id);
-                initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
+            this.addToolbars();
+            this.addEditors();
+            this.addSaveListener(this);
+            this.addCancelListener(this);
+            this.addEditionListener();
+
+            // El post render es crida sempre després d'haver tornat o carregat una nova edició
+            this.discardChanges = false;
+
+
+            if (this.data.locked) {
+                this.lockEditors();
+            } else {
+                this.unlockEditors();
+                this.isLockNeeded();
             }
 
+        },
 
-            // TODO[Xavi] Afegeix un editorAce per cada editor actiu
-            for (i = 0; i < this.data.chunks.length; i++) {
+        // Afegeix un editorAce per cada editor actiu
+        addEditors: function() {
+            var auxId;
+
+            for (var i = 0; i < this.data.chunks.length; i++) {
                 auxId = this.data.id + "_" + this.data.chunks[i].header_id;
-                if (this.data.chunks[i].text /*&& this.content.chunks[i].text.editing*/) {
+                if (this.data.chunks[i].text) {
 
                     if (this.editors[this.data.chunks[i].header_id]) {
                         this.updateEditor(this.data.chunks[i].header_id, {auxId: auxId});
@@ -75,16 +88,56 @@ define([
                         this.disableEditor(this.data.chunks[i].header_id);
                     }
                 }
+            }
+        },
 
+        // Afegeix una toolbar a cada contenidor
+        addToolbars: function () {
+
+            for (var i = 0; i < this.content.chunks.length; i++) {
+                var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
+                //console.log("Afegint la toolbar... a", aux_id);
+                initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
             }
 
-            // Afegeix un handler pel submit. TODO[Xavi] hi ha interferencies amb el submit així que fem servir el clik
-            var that = this;
+        },
 
-            jQuery('#' + this.content.id).find('input[data-call-type="save_partial"]').on('click', function (e) {
+        addEditionListener: function () {
+            var auxId,
+                context = this;
+
+            // Al fer doble click s'activa la edició
+            for (var i = 0; i < this.content.chunks.length; i++) {
+                auxId = this.content.id + "_" + this.content.chunks[i].header_id;
+
+                jQuery('#container_' + auxId).on('dblclick', function () {
+
+                    var aux_id = this.id.replace('container_', ''),
+                        section_id = aux_id.replace(context.id + "_", ''),
+                        editing_chunks,
+                        query = 'do=edit_partial'
+                            + '&section_id=' + section_id
+                            + '&editing_chunks=' + context.getEditingChunks().toString()// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
+                            + '&target=section'
+                            + '&id=' + context.ns
+                            + '&rev=' + (context.rev || '')
+                            + '&summary=[' + context.title + ']'
+                            + '&range=-';
+
+                    if (jQuery.inArray(section_id, context.getEditingChunks()) < 0) {
+                        // No està en edició
+                        context.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
+                        context.requester.setStandbyId(this.id);
+                        context.requester.sendRequest(query);
+                    }
+                });
+            }
+        },
+
+        addSaveListener: function (context) {
+            jQuery('#' + context.content.id).find('input[data-call-type="save_partial"]').on('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-
 
                 var $form = jQuery(this).closest('form');
 
@@ -97,7 +150,7 @@ define([
                 var pre = '';
 
                 // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
-                var chunks = that.data.chunks;
+                var chunks = context.data.chunks;
 
                 var editingIndex = -1;
 
@@ -113,7 +166,7 @@ define([
                     if (chunks[i].text) {
                         pre += chunks[i].text.pre;
                         //pre += chunks[i].text.editing;
-                        pre += that.changedChunks[chunks[i].header_id].content;
+                        pre += context.changedChunks[chunks[i].header_id].content;
                     }
                 }
 
@@ -130,7 +183,7 @@ define([
 
                     }
                 }
-                suf += that.data.suf || '';
+                suf += context.data.suf || '';
 
                 // Actualitzem el formulari
                 // Afegim un salt per assegurar que no es perdi cap caràcter
@@ -138,66 +191,103 @@ define([
                 jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
 
 
-                var text = that.editors[header_id].editor.getEditorValue();
-                that.updateChunk(header_id, {'editing': text});
+                var text = context.editors[header_id].editor.getEditorValue();
+                context.updateChunk(header_id, {'editing': text});
 
                 // Variant del que es trobava al formRequest
-                var originalUrlBase = that.requester.urlBase,
+                var originalUrlBase = context.requester.urlBase,
                     dataCall = jQuery(this).attr('data-call-type');
 
-                that.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
+                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
 
                 var query = $form.serialize();
 
-                that.requester.setStandbyId($form.attr('id'));
-                that.requester.sendRequest(query);
+                context.requester.setStandbyId($form.attr('id'));
+                context.requester.sendRequest(query);
 
-                that.requester.urlBase = originalUrlBase;
+                context.requester.urlBase = originalUrlBase;
                 // fi de la copia
 
 
             });
+        },
+
+        addCancelListener: function(context) {
+            jQuery('#' + context.content.id).find('input[data-call-type="cancel_partial"]').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var $form = jQuery(this).closest('form');
+
+                //var values = {};
+                //jQuery.each($form.serializeArray(), function (i, field) {
+                //    values[field.name] = field.value;
+                //});
+                //
+                //var header_id = values['section_id'];
+                //var pre = '';
+                //
+                //// IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
+                //var chunks = context.data.chunks;
+                //
+                //var editingIndex = -1;
+                //
+                //// TODO: Només fins al actual Fins al actual,
+                //for (var i = 0; i < chunks.length; i++) {
+                //
+                //    if (chunks[i].header_id === header_id) {
+                //        editingIndex = i;
+                //        pre += chunks[i].text.pre;
+                //        break;
+                //    }
+                //
+                //    if (chunks[i].text) {
+                //        pre += chunks[i].text.pre;
+                //        //pre += chunks[i].text.editing;
+                //        pre += context.changedChunks[chunks[i].header_id].content;
+                //    }
+                //}
+                //
+                //var suf = '';
+                //
+                //for (i = editingIndex + 1; i < chunks.length; i++) {
+                //    if (chunks[i].text) {
+                //        suf += chunks[i].text.pre;
+                //        suf += chunks[i].text.editing;
+                //
+                //        // TODO[Xavi] afegim l'editor
+                //        // TODO[Xavi] al tornar a fer el render que passa amb l'editor anterior? Si continua a la classe només cal actualitzar el text, o potser no fe res pequè s'actualiza amb el textarea
+                //
+                //
+                //    }
+                //}
+                //suf += context.data.suf || '';
+                //
+                //// Actualitzem el formulari
+                //// Afegim un salt per assegurar que no es perdi cap caràcter
+                //jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
+                //jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
+                //
+                //
+                //var text = context.editors[header_id].editor.getEditorValue();
+                //context.updateChunk(header_id, {'editing': text});
+
+                // Variant del que es trobava al formRequest
+                var originalUrlBase = context.requester.urlBase,
+                    dataCall = jQuery(this).attr('data-call-type');
+
+                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
+
+                var query = $form.serialize();
+
+                context.requester.setStandbyId($form.attr('id'));
+                context.requester.sendRequest(query);
+
+                context.requester.urlBase = originalUrlBase;
+                // fi de la copia
 
 
-            // Al fer doble click s'activa la edició
-            for (i = 0; i < this.content.chunks.length; i++) {
-                auxId = this.content.id + "_" + this.content.chunks[i].header_id;
-                // TODO[Xavi] Afegir listener per doble click als contenidors (al view)
-                jQuery('#container_' + auxId).on('dblclick', function () {
-
-
-                    var aux_id = this.id.replace('container_', ''),
-                        section_id = aux_id.replace(that.id + "_", ''),
-                        editing_chunks,
-                        query = 'do=edit_partial'
-                            + '&section_id=' + section_id
-                            + '&editing_chunks=' + that.getEditingChunks().toString()// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
-                            + '&target=section'
-                            + '&id=' + that.ns
-                            + '&rev=' + (that.rev || '')
-                            + '&summary=[' + that.title + ']'
-                            + '&range=-';
-
-
-                    if (jQuery.inArray(section_id, that.getEditingChunks()) < 0) {
-                        // No està en edició
-                        that.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
-                        that.requester.sendRequest(query);
-                    }
-                });
-            }
-
-            // El post render es crida sempre després d'haver tornat o carregat una nova edició
-            this.discardChanges = false;
-
-
-            if (this.data.locked) {
-                this.lockEditors();
-            } else {
-                this.unlockEditors();
-                this.isLockNeeded();
-            }
-
+            });
         },
 
         getEditingChunks: function () {
@@ -209,27 +299,6 @@ define([
             }
 
             return editingChunks;
-        },
-
-        enableEdition: function (aux_id) {
-            console.log("enabling edition for: ", aux_id);
-
-            var $viewContainer = jQuery('#view_' + aux_id);
-            var $editContainer = jQuery('#edit_' + aux_id);
-
-            $editContainer.css('display', '');
-            $viewContainer.css('display', 'none');
-        },
-
-        // TODO[Xavi] No es fa servir actualment
-        disableEdition: function (header_id) {
-            //console.log("StructuredDocumentSubclass#disableEditing", header_id);
-
-            var $viewContainer = jQuery('#view_' + aux_id);
-            var $editContainer = jQuery('#edit_' + aux_id);
-
-            $editContainer.css('display', 'none');
-            $viewContainer.css('display', '');
         },
 
         /**

@@ -111,6 +111,8 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
+                console.log("Rev?", content.rev, content);
+
                 var args = {
                     ns:              content.ns,
                     id:              content.id,

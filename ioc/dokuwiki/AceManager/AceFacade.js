@@ -130,7 +130,7 @@ define([
         },
 
         select: function () {
-            console.log("AceFacade#select", this.id);
+            //console.log("AceFacade#select", this.id);
             patcher.restoreCachedFunctions(this.id);
         }
 
