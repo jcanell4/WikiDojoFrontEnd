@@ -7,13 +7,10 @@ define([
     //    form[inputName].value = inputValue;
     //};
 
-    var _resetDateToAllForms = function (docId, date) {
-        jQuery('input[name="date"]').each(function () {
-            jQuery(this).val(date);
-        })
-    };
 
-    var _updateEditingChunks = function (data, doc_id) {
+    // TODO[Xavi] S'estan modificant tots els formularis! de totes les pestanyes?
+
+    var _updateEditingChunks = function (data, doc_id, date) {
         var i, $range, $inputs, aux_id;
 
         for (i = 0; i < data.chunks.length; i++) {
@@ -38,6 +35,9 @@ define([
                     case 'prefix':
                         jQuery(this).val(data.chunks[i].text.pre);
                         break;
+
+                    case 'date':
+                        jQuery(this).val(date);
                 }
 
             });
@@ -47,11 +47,7 @@ define([
     };
 
     return function (param) {
-
-        _resetDateToAllForms(param.docId, param.date);
-
-
-        _updateEditingChunks(param.structure, param.docId);
+        _updateEditingChunks(param.structure, param.docId, param.date);
 
 
     };

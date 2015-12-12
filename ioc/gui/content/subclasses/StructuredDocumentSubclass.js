@@ -25,15 +25,16 @@ define([
     'dojo/_base/declare',
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
     'ioc/gui/content/subclasses/LocktimedDocumentSubclass',
-    'ioc/dokuwiki/AceManager/AceFacade'
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade) {
+    'ioc/dokuwiki/AceManager/AceFacade',
+    'dojo/dom-form',
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, domForm) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
         constructor: function (args) {
 
             this._generateEmptyChangedChunks(args.content.chunks);
-            this.savedDrafts = {},
+            this.savedDrafts = {};
             this.editors = {}; // A aquest objecte es guardarà per cada header_id el seu editor
         },
 
@@ -77,13 +78,12 @@ define([
 
             }
 
-            //console.log("Chunks: ", this.data.chunks);
-
-
             // Afegeix un handler pel submit. TODO[Xavi] hi ha interferencies amb el submit així que fem servir el clik
             var that = this;
 
-            jQuery('input[data-call-type="save_partial"]').on('click', function () {
+            jQuery('#' + this.content.id).find('input[data-call-type="save_partial"]').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
 
 
                 var $form = jQuery(this).closest('form');
@@ -138,12 +138,22 @@ define([
                 jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
 
 
-                // Actualitcem el contingut del editing
-                var $textarea = jQuery('#' + $form.attr('id') + " textarea"),
-                    text = $textarea.val();
-
-                $textarea.val(text);
+                var text = that.editors[header_id].editor.getEditorValue();
                 that.updateChunk(header_id, {'editing': text});
+
+                // Variant del que es trobava al formRequest
+                var originalUrlBase = that.requester.urlBase,
+                    dataCall = jQuery(this).attr('data-call-type');
+
+                that.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
+
+                var query = $form.serialize();
+
+                that.requester.setStandbyId($form.attr('id'));
+                that.requester.sendRequest(query);
+
+                that.requester.urlBase = originalUrlBase;
+                // fi de la copia
 
 
             });
@@ -154,6 +164,7 @@ define([
                 auxId = this.content.id + "_" + this.content.chunks[i].header_id;
                 // TODO[Xavi] Afegir listener per doble click als contenidors (al view)
                 jQuery('#container_' + auxId).on('dblclick', function () {
+
 
                     var aux_id = this.id.replace('container_', ''),
                         section_id = aux_id.replace(that.id + "_", ''),
@@ -167,9 +178,12 @@ define([
                             + '&summary=[' + that.title + ']'
                             + '&range=-';
 
-                    that.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
 
-                    that.requester.sendRequest(query);
+                    if (jQuery.inArray(section_id, that.getEditingChunks()) < 0) {
+                        // No està en edició
+                        that.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
+                        that.requester.sendRequest(query);
+                    }
                 });
             }
 

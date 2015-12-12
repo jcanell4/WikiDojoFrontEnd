@@ -68,7 +68,13 @@ define([], function () {
         },
 
         restoreCachedFunctions = function (id) {
-            //console.log("patcher#restoreCachedFunctions", id);
+
+            if (id === this.lastPatchedId) {
+                return; // No cal restaurar
+            } else {
+                //console.log("patcher#restoreCachedFunctions", id);
+            }
+
             if (!cachedFunctions[id]) {
                 return;
             }
@@ -86,6 +92,8 @@ define([], function () {
                     window[name] = func;
                 }
             }
+
+            this.lastPatchedId = id;
 
         };
 

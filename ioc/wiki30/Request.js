@@ -262,9 +262,21 @@ define([
                 return resp;
             },
 
+            /**
+             * Si es passa false en lloc de la id es desactiva. Això permet reutilitzar el request sense forçar que es
+             * mostri el paramId
+             * @param {string|bool} id del contenidor o false si no es vol mostrar
+             */
             setStandbyId:     function (id) {
-                this.set("standbyId", id);
-                this._standby = null;
+                if (!id===false) {
+                    this.set("standbyId", id);
+                    this._standby = null;
+                    this._standbyDisabled = false;
+
+                } else {
+                    this._standbyDisabled = true;
+                }
+
             },
             _standbyIdSetter: function (id) {
                 this.standbyId = id;
@@ -272,6 +284,9 @@ define([
             },
 
             _startStandby: function () {
+                if (this._standbyDisabled) {
+                    return;
+                }
                 if (this._standby) {
                     this._standby.show();
                     if (this.hasTimer) {

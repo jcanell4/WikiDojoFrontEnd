@@ -121,7 +121,7 @@ define([
                         content: content,
                         closable: true,
                         dispatcher: dispatcher,
-                        rev: content.rev,
+                        rev: content.rev || '',
                         type: this.type,
                         //changedChunks: changedChunks
                     },

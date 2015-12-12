@@ -71,7 +71,7 @@ define(function () {
 
             //$form.append('<input name="do" value="save_partial" type="hidden">'); // TODO[Xavi] aquí es on s'ha d'establir el command pel desar parcial
             $form.append('<input name="do" value="save_partial" type="hidden">'); // TODO[Xavi] aquí es on s'ha d'establir el command pel desar parcial
-            $form.append('<input name="rev" value="' + data.rev + '" type="hidden">');
+            $form.append('<input name="rev" value="' + (data.rev || '') + '" type="hidden">');
             $form.append('<input name="date" value="' + data.date + '" type="hidden">');
             $form.append('<input name="summary" value="[' + data.chunks[i].title + ']" type="hidden">');
             $form.append('<input name="target" value="section" type="hidden">');

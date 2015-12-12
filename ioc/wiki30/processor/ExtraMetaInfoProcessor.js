@@ -41,6 +41,7 @@ define([
                     this._addMetainfo(content.id, content.meta, dispatcher, nodeMetaInfo, ret);
                 }
 
+                console.log(content);
                 selectedPane = contentCache.getCurrentId("metadataPane");
 
                 if (!selectedPane && ret.defaultSelected) {

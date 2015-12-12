@@ -60,10 +60,15 @@ define([
             this.setEditorValue(text);
 
             iocAceEditor.setDocumentChangeCallback(function () {
-                dokuWrapper.text_changed();
+                //console.log("AceFacade#setDocumentChangeCallback");
                 this.updateTextarea(this.getEditorValue());
+                dokuWrapper.text_changed();
                 commands.hide_menu();
             }.bind(this));
+
+            iocAceEditor.setChangeCursorCallback(function () {
+                commands.hide_menu();
+            });
 
 
             jQuery(this.$editor).find('textarea').on('focus', this.select.bind(this));
@@ -72,14 +77,17 @@ define([
         },
 
         updateTextarea: function (value) {
+            // Comprovar si el id del textarea seleccionat correspont amb el que te el focus?
             this.dokuWrapper.set_value(value);
         },
 
         updateEditor: function (value) {
+            //console.log("AceFacade#updateEditor", value);
             this.aceWrapper.set_value(value);
         },
 
         getEditorValue: function () {
+            //console.log("AceFacade#getEditor", this.aceWrapper.get_value());
             return this.aceWrapper.get_value();
         },
 
@@ -88,6 +96,7 @@ define([
         },
 
         setEditorValue: function (value) {
+            //console.log("AceFacade#setEditorValue", value);
             return this.aceWrapper.set_value(value);
         },
 
@@ -120,8 +129,8 @@ define([
 
         },
 
-        select: function(){
-            //console.log("AceFacade#select", this.id);
+        select: function () {
+            console.log("AceFacade#select", this.id);
             patcher.restoreCachedFunctions(this.id);
         }
 

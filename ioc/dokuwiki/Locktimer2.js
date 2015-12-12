@@ -187,7 +187,7 @@ define([
             lock: function (draft) {
 
                 this.contentTool.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=lock';
-                var query = '&do=lock'
+                var query = 'do=lock'
                     + '&id=' + this.contentTool.id;
 
                 if (draft) {
@@ -195,13 +195,14 @@ define([
                     query += '&draft=' + JSON.stringify(draftQuery);
                 }
 
+                this.contentTool.requester.setStandbyId(false);
                 this.contentTool.requester.sendRequest(query);
             },
 
             unlock: function () {
                 //console.log("Locktimer#unlock");
                 this.contentTool.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=unlock';
-                var query = '&do=unlock'
+                var query = 'do=unlock'
                     + '&id=' + this.contentTool.id;
 
                 this.contentTool.requester.sendRequest(query);
