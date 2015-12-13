@@ -161,9 +161,9 @@ define([
                 mode: mode,
                 containerId: "editor" + params.id,
                 theme: JSINFO.plugin_aceeditor.colortheme,
-                readOnly: jQuery(document.getElementById(params.textAreaId)).attr('readonly'),
+                readOnly: jQuery('#' + params.textAreaId).attr('readonly'),
                 wraplimit: JSINFO.plugin_aceeditor.wraplimit,
-                wrapMode: jQuery(document.getElementById(params.textAreaId)).attr('wrap') !== 'off',
+                wrapMode: jQuery('#' + params.textAreaId).attr('wrap') !== 'off',
                 mdpage: JSINFO.plugin_aceeditor.mdpage
             }),
 

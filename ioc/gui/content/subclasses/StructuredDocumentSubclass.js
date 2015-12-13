@@ -53,7 +53,10 @@ define([
             this.addEditors();
             this.addSaveListener(this);
             this.addCancelListener(this);
-            this.addEditionListener();
+
+            if (this.rev === null || this.rev === undefined || this.rev === '') {
+                this.addEditionListener();
+            }
 
             // El post render es crida sempre després d'haver tornat o carregat una nova edició
             this.discardChanges = false;
@@ -69,7 +72,7 @@ define([
         },
 
         // Afegeix un editorAce per cada editor actiu
-        addEditors: function() {
+        addEditors: function () {
             var auxId;
 
             for (var i = 0; i < this.data.chunks.length; i++) {
@@ -103,6 +106,13 @@ define([
         },
 
         addEditionListener: function () {
+            //console.log("StructuredDocumentSubclass#addEditionListener");
+            if (this.rev !== null && this.rev !== undefined && this.rev !== '') {
+                return;
+            }
+
+
+
             var auxId,
                 context = this;
 
@@ -212,65 +222,12 @@ define([
             });
         },
 
-        addCancelListener: function(context) {
+        addCancelListener: function (context) {
             jQuery('#' + context.content.id).find('input[data-call-type="cancel_partial"]').on('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
 
                 var $form = jQuery(this).closest('form');
-
-                //var values = {};
-                //jQuery.each($form.serializeArray(), function (i, field) {
-                //    values[field.name] = field.value;
-                //});
-                //
-                //var header_id = values['section_id'];
-                //var pre = '';
-                //
-                //// IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
-                //var chunks = context.data.chunks;
-                //
-                //var editingIndex = -1;
-                //
-                //// TODO: Només fins al actual Fins al actual,
-                //for (var i = 0; i < chunks.length; i++) {
-                //
-                //    if (chunks[i].header_id === header_id) {
-                //        editingIndex = i;
-                //        pre += chunks[i].text.pre;
-                //        break;
-                //    }
-                //
-                //    if (chunks[i].text) {
-                //        pre += chunks[i].text.pre;
-                //        //pre += chunks[i].text.editing;
-                //        pre += context.changedChunks[chunks[i].header_id].content;
-                //    }
-                //}
-                //
-                //var suf = '';
-                //
-                //for (i = editingIndex + 1; i < chunks.length; i++) {
-                //    if (chunks[i].text) {
-                //        suf += chunks[i].text.pre;
-                //        suf += chunks[i].text.editing;
-                //
-                //        // TODO[Xavi] afegim l'editor
-                //        // TODO[Xavi] al tornar a fer el render que passa amb l'editor anterior? Si continua a la classe només cal actualitzar el text, o potser no fe res pequè s'actualiza amb el textarea
-                //
-                //
-                //    }
-                //}
-                //suf += context.data.suf || '';
-                //
-                //// Actualitzem el formulari
-                //// Afegim un salt per assegurar que no es perdi cap caràcter
-                //jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
-                //jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
-                //
-                //
-                //var text = context.editors[header_id].editor.getEditorValue();
-                //context.updateChunk(header_id, {'editing': text});
 
                 // Variant del que es trobava al formRequest
                 var originalUrlBase = context.requester.urlBase,
@@ -467,6 +424,7 @@ define([
          * @param content
          */
         updateDocument: function (content) {
+            //console.log('StructuredDocumentSubclass#updateDocument', content);
             this._updateChunks(content);
             this._updateStructure(content);
             this.setData(content);

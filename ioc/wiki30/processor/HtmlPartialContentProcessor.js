@@ -39,6 +39,9 @@ define([
 
                 // TODO[Xavi] Refactoritzar, massa condicionals
                 if (contentTool && contentTool.type === this.type ) {
+
+
+
                     // Es una actualització
                     contentTool.getContainer().selectChild(contentTool);
 
@@ -65,7 +68,10 @@ define([
                         confirmation = true;
                     }
 
+                    contentTool.rev = value.rev;
+
                     if (confirmation) {
+
 
                         if (value.cancel) {
                             contentTool.resetChangesForChunks(value.cancel);
@@ -87,17 +93,12 @@ define([
                     return this.inherited(arguments);
                 }
 
-
-                // es guarda la revisió al caché? d'on la agafa el botó de desar?
                 var contentCache= dispatcher.getGlobalState().getContent(value.id);
 
                 if (contentCache && contentCache.rev != value.rev) {
                     dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
-                    alert("TODO: Si s'intenca canviar de revisió s'ha de demanar confirmació");
-                    console.log("S'ha canviat? ", dispatcher.getGlobalState().getContent(value.id).rev);
                 }
 
-                console.log("Al final del processor tenim:", dispatcher.getGlobalState().getContent(value.id))
                 return confirmation ? 0 : 100;
             },
 
@@ -125,11 +126,7 @@ define([
              * @override
              */
             createContentTool: function (content, dispatcher) {
-                console.log("Rev?", content.rev, content);
-                var /*changedChunks = this._generateEmptyChangedChunks(content.chunks),*/
-
-
-                    args = {
+                var args = {
                         ns: content.ns,
                         id: content.id,
                         title: content.title,
