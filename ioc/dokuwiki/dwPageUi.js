@@ -1,11 +1,11 @@
 define([
-     "dojo/dom-class"
-    ,"dojo/dom-form"
-    ,"dojo/dom"
-    ,"dojo/query"
-], function(domClass, domForm, dom, query){
+    "dojo/dom-class"
+    , "dojo/dom-form"
+    , "dojo/dom"
+    , "dojo/query"
+], function (domClass, domForm, dom, query) {
     var ret = {
-        getAllSectionNodes: function(node){
+        getAllSectionNodes: function (node) {
             /*
              * Retorna un array dels nodes de la secció, des del node "pare" H1 fins al darrer node
              */
@@ -15,9 +15,9 @@ define([
 
             var ps = this.getFirstSectionNode(node);
             var i = 0;
-            while (ps){
+            while (ps) {
                 if (ps.nodeType === ps.ELEMENT_NODE) {
-                    arrNodes[i++]=ps;
+                    arrNodes[i++] = ps;
                 }
                 if (ps.tagName && ps.tagName.toUpperCase() === tagName && domClass.contains(ps, className)) {
                     break;  //Hem arribat al node inicial de la secció
@@ -27,7 +27,7 @@ define([
             return arrNodes;
         }
 
-        ,getFirstSectionNode: function(node){
+        , getFirstSectionNode: function (node) {
             /*
              * Retorna el node "pare" H1 de la secció del node que inicia el procés
              */
@@ -42,33 +42,39 @@ define([
             }
             return ps;
         }
-       ,getIdSectionNode: function(node){
+        , getIdSectionNode: function (node) {
             return this.getFirstSectionNode(node).id;
-       }
-       ,getFormQueryToEditSection: function(/*String*/ id ){
-           var ret="";
-           var lastNode = this.getLastSectionNode(dom.byId(id));
-           if(lastNode){
-               ret = domForm.toQuery(query("form", lastNode)[0]);
-           }
-           return ret;
-       }
-       ,getLastSectionNode: function(node){
+        }
+
+        , getFormQueryToEditSection: function (/*String*/ id) {
+            jQuery('#'+id).trigger('dblclick');
+        }
+
+        // TODO[Xavi] Pendent d'eliminar, substituir pel mètode anterior
+        //,getFormQueryToEditSection: function(/*String*/ id ){
+        //    var ret="";
+        //    var lastNode = this.getLastSectionNode(dom.byId(id));
+        //    if(lastNode){
+        //        ret = domForm.toQuery(query("form", lastNode)[0]);
+        //    }
+        //    return ret;
+        //}
+        , getLastSectionNode: function (node) {
             /*
              * Retorna el darrer node de la secció del node que inicia el procés
              */
             var tagName = "DIV";
             var className = "secedit";
-            
+
             var ps = node;
-            while (ps){
+            while (ps) {
                 if (ps.tagName && ps.tagName.toUpperCase() === tagName && domClass.contains(ps, className)) {
                     break;  //Hem arribat al darrer node de la secció
                 }
                 ps = ps.nextSibling;
             }
             return ps;
-        },getElementWhithNodeId: function(node,typeId){
+        }, getElementWhithNodeId: function (node, typeId) {
             /*
              * Donat un node, retorna el node (tipus element) que coincideix amb typeId
              */
@@ -77,31 +83,31 @@ define([
              */
 
             var ps = node.firstChild;
-            while (ps){
-                if(ps.hasChildNodes()){
+            while (ps) {
+                if (ps.hasChildNodes()) {
                     ps = ps.firstChild;
-                }else{
+                } else {
                     var pt = ps.nextSibling;
-                    if(pt){
+                    if (pt) {
                         ps = pt;
-                    }else{
+                    } else {
                         ps = ps.parentNode;
                         ps = ps.nextSibling;
                     }
                 }
-                if(ps){
+                if (ps) {
                     if (ps.nodeType === ps.ELEMENT_NODE) {
-                        if (ps.tagName && ps.tagName.toUpperCase() === typeId){
+                        if (ps.tagName && ps.tagName.toUpperCase() === typeId) {
                             break;
-                        } 
-                        
+                        }
+
                     }
-                    
+
                 }
             }
             return ps;
         }
-       ,getElementParentNodeId: function(nodeId, typeId){
+        , getElementParentNodeId: function (nodeId, typeId) {
             /*
              * Donat un Id d'element, retorna l'element pare que coincideix amb typeId
              */
@@ -109,25 +115,25 @@ define([
              * TODO Si no el troba, no para
              */
             var ps = null;
-            if (typeof nodeId !== "string"){
+            if (typeof nodeId !== "string") {
                 nodeId = nodeId.id;
             }
-            if(dom.byId(nodeId)){
+            if (dom.byId(nodeId)) {
                 ps = dom.byId(nodeId);
-                if ((ps.nodeType === ps.ELEMENT_NODE) && (ps.tagName && ps.tagName.toUpperCase() === typeId)) {                    
-                                             
-                }else{
-                    while (ps){
+                if ((ps.nodeType === ps.ELEMENT_NODE) && (ps.tagName && ps.tagName.toUpperCase() === typeId)) {
+
+                } else {
+                    while (ps) {
                         ps = ps.parentElement;
-                        if(ps){
+                        if (ps) {
                             if (ps.nodeType === ps.ELEMENT_NODE) {
-                                if (ps.tagName && ps.tagName.toUpperCase() === typeId){
+                                if (ps.tagName && ps.tagName.toUpperCase() === typeId) {
                                     break;
-                                }                         
-                            }                    
+                                }
+                            }
                         }
-                    }                    
-                }                    
+                    }
+                }
             }
             return ps;
         }

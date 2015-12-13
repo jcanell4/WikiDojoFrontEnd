@@ -696,7 +696,7 @@ define([
 
         // Aquesta es la gestió del ressaltat que es trobava a processContentPaje.js
         addSelectionListener: function () {
-            console.log("StructuredDocumentSubclass#addSelectionListener");
+            //console.log("StructuredDocumentSubclass#addSelectionListener");
             if (this.rev !== null && this.rev !== undefined && this.rev !== '') {
                 return;
             }
@@ -726,7 +726,6 @@ define([
         },
 
         _setCurrentSection: function (section_id) {
-            //var oldSectionId = this.dispatcher.getGlobalState().getCurrentSectionId();
             this.dispatcher.getGlobalState().setCurrentSectionId(section_id);
             this._setHighlight(section_id);
         },
