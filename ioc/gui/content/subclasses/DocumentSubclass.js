@@ -24,8 +24,9 @@ define([
              * @override
              */
             onDestroy: function () {
-                //console.log("DocumentComponent#onDestroy");
+                console.log("DocumentSubclass#onDestroy");
                 this.removeState();
+                this.inherited(arguments);
             },
 
             /**

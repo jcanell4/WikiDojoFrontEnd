@@ -47,7 +47,15 @@ define([
 
         unlock: function() {
             this.locktimer.unlock();
-        }
+        },
+
+
+        onDestroy: function () {
+            console.log("LocktimedDocumentSubclass#onDestroy");
+            this.unlock();
+            this.inherited(arguments);
+
+        },
 
     });
 

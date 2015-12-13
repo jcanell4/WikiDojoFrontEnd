@@ -694,7 +694,8 @@ define([
             }
 
             this.editors = {};
-        }
+        },
+
 
     })
 });
