@@ -373,7 +373,7 @@ define([
             },
 
             destroy: function () {
-                console.log("Locktimer#destroy");
+                //console.log("Locktimer#destroy");
                 this.stop = true;
 
                 this.clear();
