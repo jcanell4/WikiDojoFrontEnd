@@ -46,7 +46,10 @@ define([
         },
 
         unlock: function() {
-            this.locktimer.unlock();
+            if (this.locktimer) {
+                this.locktimer.unlock();
+            }
+
         },
 
 

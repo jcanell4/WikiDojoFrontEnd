@@ -26,8 +26,9 @@ define([
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
     'ioc/gui/content/subclasses/LocktimedDocumentSubclass',
     'ioc/dokuwiki/AceManager/AceFacade',
-    'dojo/dom-form',
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, domForm) {
+    'dojo/dom-class',
+    'ioc/dokuwiki/dwPageUi'
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, domClass, dwPageUi) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
@@ -54,9 +55,8 @@ define([
             this.addSaveListener(this);
             this.addCancelListener(this);
 
-            if (this.rev === null || this.rev === undefined || this.rev === '') {
-                this.addEditionListener();
-            }
+            this.addEditionListener();
+            this.addSelectionListener();
 
             // El post render es crida sempre després d'haver tornat o carregat una nova edició
             this.discardChanges = false;
@@ -105,12 +105,12 @@ define([
 
         },
 
+
         addEditionListener: function () {
             //console.log("StructuredDocumentSubclass#addEditionListener");
             if (this.rev !== null && this.rev !== undefined && this.rev !== '') {
                 return;
             }
-
 
 
             var auxId,
@@ -586,7 +586,6 @@ define([
             }
 
 
-
             jQuery('textarea[name="wikitext"]').each(function () {
                 jQuery(this).attr('readonly', 'readonly');
             });
@@ -677,7 +676,6 @@ define([
                 editor: editor
             };
 
-
         },
 
         disableEditor: function (header_id) { // TODO[Xavi] No es fa servir
@@ -696,6 +694,50 @@ define([
             this.editors = {};
         },
 
+        // Aquesta es la gestió del ressaltat que es trobava a processContentPaje.js
+        addSelectionListener: function () {
+            console.log("StructuredDocumentSubclass#addSelectionListener");
+            if (this.rev !== null && this.rev !== undefined && this.rev !== '') {
+                return;
+            }
+
+            var auxId,
+                context,
+                $container;
+
+            context = this;
+            // Al fer click o passar el ratoli per sobre s'activa la selecció
+            for (var i = 0; i < this.data.chunks.length; i++) {
+                auxId = this.data.id + "_" + this.data.chunks[i].header_id;
+                $container = jQuery('#container_' + auxId);
+
+                $container.on('click', function () {
+                    context._setCurrentSection(this.id, context);
+                    return false;
+                });
+
+                $container.on('mouseover mouseout', function () {
+                    context._setHighlight(this.id);
+                    return false;
+                });
+
+            }
+
+        },
+
+        _setCurrentSection: function (section_id) {
+            //var oldSectionId = this.dispatcher.getGlobalState().getCurrentSectionId();
+            this.dispatcher.getGlobalState().setCurrentSectionId(section_id);
+            this._setHighlight(section_id);
+        },
+
+        _setHighlight: function (section_id) {
+            jQuery('.section_highlight').each( function(){
+                jQuery(this).removeClass('section_highlight')
+            });
+
+            jQuery('#' + section_id).addClass('section_highlight');
+        }
 
     })
 });
