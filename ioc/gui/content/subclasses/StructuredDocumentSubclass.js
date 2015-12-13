@@ -107,8 +107,8 @@ define([
                 context = this;
 
             // Al fer doble click s'activa la edició
-            for (var i = 0; i < this.content.chunks.length; i++) {
-                auxId = this.content.id + "_" + this.content.chunks[i].header_id;
+            for (var i = 0; i < this.data.chunks.length; i++) {
+                auxId = this.data.id + "_" + this.data.chunks[i].header_id;
 
                 jQuery('#container_' + auxId).on('dblclick', function () {
 
