@@ -1,7 +1,7 @@
 define([
     'dojo/_base/declare',
     'ioc/wiki30/processor/AbstractResponseProcessor',
-    'ioc/gui/DiffDialog',
+    'ioc/gui/DiffDialog'
 
 ], function (declare, AbstractResponseProcessor, DiffDialog) {
     return declare([AbstractResponseProcessor],
@@ -31,6 +31,7 @@ define([
             _processDialog: function (value, dispatcher) {
                 //console.log("DraftProcessor#_processDialog", value);
 
+
                 // TODO[Xavi] En lloc de fer-ho així cercar una manera de passar directament el valor des de la wiki
                 var data = this._extractData(value);
 
@@ -45,7 +46,9 @@ define([
                     timeout: value.timeout,
                     dispatcher: dispatcher,
                     query: data.query,
-                    base: DOKU_BASE + value.params.base
+                    base: DOKU_BASE + value.params.base,
+                    moreEditionsActive: (!(!value.params.originalcall || !value.params.original_call.editing_chunks
+                    || value.params.original_call.editing_chunks != ''))
                 });
 
                 dialog.show();

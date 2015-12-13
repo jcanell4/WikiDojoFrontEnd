@@ -132,6 +132,14 @@ define([
         select: function () {
             //console.log("AceFacade#select", this.id);
             patcher.restoreCachedFunctions(this.id);
+        },
+
+        lockEditor: function() {
+            this.iocAceEditor.setReadOnly(true);
+        },
+
+        unlockEditor: function() {
+            this.iocAceEditor.setReadOnly(false);
         }
 
     });

@@ -172,8 +172,12 @@ define([
             isShown = false;
 
             // TODO[Xavi] delegar a Locktimer
-            this.unlock();
+            //this.unlock();
             this.clearTimer();
+            if (this.moreEditionsActive === false) {
+                this.unlock();
+            }
+
         }
 
     });

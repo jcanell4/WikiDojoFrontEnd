@@ -427,6 +427,11 @@ define([
             //console.log('StructuredDocumentSubclass#updateDocument', content);
             this._updateChunks(content);
             this._updateStructure(content);
+
+            if (content.locked) {
+                this.lockEditors();
+            }
+
             this.setData(content);
             this.render();
         },
@@ -574,6 +579,14 @@ define([
         },
 
         lockEditors: function () {
+            var header_id;
+
+            for (header_id in this.editors) {
+                this.editors[header_id].editor.lockEditor();
+            }
+
+
+
             jQuery('textarea[name="wikitext"]').each(function () {
                 jQuery(this).attr('readonly', 'readonly');
             });
@@ -583,12 +596,19 @@ define([
             });
 
             for (var i = 0; i < this.data.chunks.length; i++) {
-                var header_id = this.data.chunks[i].header_id;
+                header_id = this.data.chunks[i].header_id;
                 jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
             }
         },
 
         unlockEditors: function () {
+            var header_id;
+
+            for (header_id in this.editors) {
+                this.editors[header_id].editor.unlockEditor();
+            }
+
+
             jQuery('textarea[name="wikitext"]').each(function () {
                 jQuery(this).removeAttr('readonly');
             });
@@ -599,7 +619,7 @@ define([
 
 
             for (var i = 0; i < this.data.chunks.length; i++) {
-                var header_id = this.data.chunks[i].header_id;
+                header_id = this.data.chunks[i].header_id;
                 jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'visible')
             }
         },
