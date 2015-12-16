@@ -1,12 +1,14 @@
 define([
     "dojo/_base/declare",
-    "dijit/form/Button",
-    "dijit/_TemplatedMixin",
+    /*"dijit/form/Button",
+    "dijit/_TemplatedMixin",*/
+    "ioc/gui/ButtonToListen",
     "dojo/text!./templates/Button.html",
-    "ioc/gui/IocResizableComponent",
-    "dojo/_base/lang"
-], function (declare, button, _TemplatedMixin, template, IocComponent, dojoBase) {
-    var ret = declare("ioc.gui.IocButton", [button, _TemplatedMixin, IocComponent],
+    "ioc/wiki30/Request",
+    /*"ioc/gui/IocResizableComponent",*/
+    /*"dojo/_base/lang"*/
+], function (declare, button/*, _TemplatedMixin*/, template, Request /*, IocComponent, dojoBase*/) {
+    var ret = declare("ioc.gui.IocButton", [button, Request /*, _TemplatedMixin, IocComponent*/],
 
         /**
          * Declara un Botó que realitza la funció indicada en un atribut
@@ -23,9 +25,15 @@ define([
          */
         {
             templateString: template,
+            
+            /** @override */
+            postListenOnClick: function(evt){
+                this.sendRequest();
+            }/*,
 
-            /** @type {Object.<function|ioc.wiki30.processor.AbstractResponseProcessor>} */
+            /** @type {Object.<function|ioc.wiki30.processor.AbstractResponseProcessor>} *//*
             clickListener: null,
+            */
 
             /**
              * Al clicar aquest botó es recorren tots els listeners afegits, si es una funció la executa i si es un
@@ -36,7 +44,7 @@ define([
              * @param {*} evt
              * @private
              * @override
-             */
+             *//*
              _onClick: function (evt) {
                 this.inherited(arguments);
                 if (this.clickListener) {
@@ -52,16 +60,16 @@ define([
                     this.sendRequest();
                 }
                 return !evt.defaultPrevented;
-            },
+            },*/
 
-            /** @override */
+            /** @override *//*
             startup: function () {
                 this.inherited(arguments);
                 this.nodeToResize = this.buttonNode;
                 this.topNodeToResize = this.buttonTopNode;
                 this.resize();
                 this.__setVisible();
-            },
+            },*/
 
 
             /**
@@ -69,7 +77,7 @@ define([
              *
              * @param {function|AbstractResponseProcessor} listener
              * @returns {*}
-             */
+             *//*
             addClickListener: function (listener) {
                 var key = 'autoKey';
                 if(!this.clickListener){
@@ -77,19 +85,19 @@ define([
                 }
                 key = key + Object.keys(this.clickListener).length;
                 return this.putClickListener(key, listener);
-            },
+            },*/
 
             /**
              * TODO[Xavi] Fer servir un diccionari?
              * @param {string} key
              * @param {function|AbstractResponseProcessor} listener
-             */
+             *//*
             putClickListener: function (key, listener) {
                 if (!this.clickListener) {
                     this.clickListener = {};
                 }
                 this.clickListener[key] = listener;
-            }
+            }*/
         });
     return ret;
 });
