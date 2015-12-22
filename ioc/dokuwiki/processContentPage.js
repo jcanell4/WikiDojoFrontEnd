@@ -6,10 +6,9 @@ define([
     ,"ioc/dokuwiki/runRender"
     ,"ioc/dokuwiki/runQuiz" 
     ,"ioc/wiki30/Request"
-    ,"ioc/wiki30/dispatcherSingleton"
     ,"dojo/dom-attr"
 ], function(on, dom, event, listHeadings, runRender, runQuiz,
-                Request, dispatcher, att){
+                Request, att){
 
     return function (id, params) {
 

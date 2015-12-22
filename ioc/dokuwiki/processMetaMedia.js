@@ -2,19 +2,20 @@ define([
     "dojo/on"
             , "dojo/dom"
             , "dojo/_base/event"
-            , "dojo/dom-form"
+            /*, "dojo/dom-form"
             , "dijit/registry"
             , "ioc/dokuwiki/listHeadings"
             , "ioc/dokuwiki/runRender"
-            , "ioc/dokuwiki/runQuiz"
+            , "ioc/dokuwiki/runQuiz"*/
             , "ioc/wiki30/Request"
-            , "ioc/dokuwiki/dwPageUi"
-            , "dojo/dom-class"
+            /*, "ioc/dokuwiki/dwPageUi"
+            , "dojo/dom-class"*/
             , "ioc/wiki30/dispatcherSingleton"
-            , "dojo/dom-attr"
-], function (on, dom, event, domform, registry, listHeadings, runRender, runQuiz,
-        Request, dwPageUi, domClass, dispatcher, att) {
+            /*, "dojo/dom-attr"*/
+], function (on, dom, event/*, domform, registry, listHeadings, runRender, runQuiz*/,
+        Request/*, dwPageUi, domClass*/, getDispatcher/*, att*/) {
 
+    var dispatcher = getDispatcher();
     var eventHandlers = new Array();
 
 

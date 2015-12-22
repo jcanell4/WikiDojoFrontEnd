@@ -3,16 +3,16 @@
  */
 define([
     "dojo/_base/declare",
+    "dojo/Stateful",
     "dojo/dom-style"
-], function (declare, style) {
-    var ret = declare("ioc.gui.ResizableComponent", [],
+], function (declare, Stateful, style) {
+    var ret = declare("ioc.gui.ResizableComponent", [Stateful],
 
         /**
          * Afegeix el mètode 'resize' que redimensiona l'objecte per igualar-lo a la mida del seu contenidor pare.
          * El mètode s'activa amb l'atribut autoSize.
          *
-         * @class IocResizableComponent
-         * @extends Request
+         * @class ResizableComponent
          * @author Rafael Claver <rclaver@xtec.cat>
          */
         {
@@ -27,6 +27,10 @@ define([
 
             /** @type {boolean} */
             autoSize: false,
+            
+            constructor: function(){
+                console.log("ResizableComponent");
+            },
 
             /** @override */
             set: function (propName) {
@@ -68,7 +72,7 @@ define([
                     var amplePare = nodePare.clientWidth - correccio_amplada;
                     style.set(node, "width", amplePare + "px");
                 }
-            }
+            },
         });
     return ret;
 });

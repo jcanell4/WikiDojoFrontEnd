@@ -11,7 +11,7 @@ define([
     "dojo/NodeList-dom" // NodeList.style
 ], function (declare, template, ContentPane, _LayoutWidget, _TemplatedMixin, 
                 JsonRest, Tree, ObjectStoreModel) {
-    var ret = declare([ContentPane, _TemplatedMixin, _LayoutWidget],
+    var ret = declare("ioc.gui.NsTreeContainer", [ContentPane, _TemplatedMixin, _LayoutWidget],
 
         /**
          * Aquest widget afegeix un panell amb un arbre.

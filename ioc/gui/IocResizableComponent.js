@@ -4,7 +4,7 @@
 define([
     "dojo/_base/declare",
     "ioc/gui/ResizableComponent",
-    "ioc/wiki30/Request",
+    "ioc/wiki30/Request"
 
 ], function (declare, Resizable, Request) {
     var ret = declare("ioc.gui.IocResizableComponent", [Resizable, Request],
@@ -17,6 +17,10 @@ define([
          * @extends ResizableComponent, Request
          * @author Rafael Claver <rclaver@xtec.cat>
          */
-        {});
+        {
+            constructor:function(){
+                console.log("IocResizableComponent");
+            }
+        });
     return ret;
 });

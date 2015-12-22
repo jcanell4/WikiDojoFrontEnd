@@ -7,6 +7,7 @@ define([
     "dojo/on",
     "dojo/query", // query
     "dijit/registry",	// registry.byId()
+    "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
     "dijit/layout/TabController",
     "dojo/text!./templates/ResizingTabController.html",
@@ -16,9 +17,12 @@ define([
     "dijit/Menu",
     "dijit/MenuItem",
     "dojo/NodeList-dom" // NodeList.style
-], function (declare, array, domClass, geometry, lang, on, query, registry, _WidgetsInTemplateMixin, TabController, tabControllerTemplate, buttonTemplate, Button, _HasDropDown, Menu, MenuItem) {
+], function (declare, array, domClass, geometry, lang, on, query, registry,
+            _TemplatedMixin, _WidgetsInTemplateMixin, TabController, 
+            tabControllerTemplate, buttonTemplate, Button, _HasDropDown, 
+            Menu, MenuItem) {
 
-    var ResizingTabController = declare("ioc.gui.ResizingTabController", [TabController, _WidgetsInTemplateMixin],
+    var ResizingTabController = declare("ioc.gui.ResizingTabController", [TabController, _TemplatedMixin, _WidgetsInTemplateMixin],
         /**
          * Set of tabs with a menu to switch between tabs. Tabs are resized according to the TabController size.
          * Works only for horizontal tabs (either above or below the content, not the left or right).
@@ -46,6 +50,10 @@ define([
 
             /** @override */
             widgetsInTemplate: true, // TODO[Xavi] No es necessari en aquesta versió de Dojo
+
+            constructor: function(){
+                console.log("ResizingTabController");
+            },
 
             /** @override */
             buildRendering: function () {

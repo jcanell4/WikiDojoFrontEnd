@@ -1,10 +1,6 @@
-define([           
-    "ioc/wiki30/dispatcherSingleton"
-], function(dispatcher){
+define(null, function(){
     var res = function(){
-
         dw_locktimer.clear();
-
     };
     return res;
 });

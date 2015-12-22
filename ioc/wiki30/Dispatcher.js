@@ -38,7 +38,8 @@ define([
     "ioc/wiki30/processor/MetaDiffProcessor",
     "ioc/wiki30/processor/DraftProcessor",
     "ioc/wiki30/processor/HtmlPartialContentProcessor",
-    "ioc/wiki30/processor/LockDataProcessor"
+    "ioc/wiki30/processor/LockDataProcessor",
+    "ioc/wiki30/manager/EventObserver"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -49,7 +50,7 @@ define([
              InfoManager, ChangesManager,
              RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
-             LockDataProcessor) {
+             LockDataProcessor, EventObserver) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -88,7 +89,7 @@ define([
 
             /** @type SectokManager */
             sectokManager: null,
-
+            
             /** @type {string} S'estableix al scriptsRef pel valor substituit al template */
             containerNodeId: null,
 
@@ -162,6 +163,8 @@ define([
                 this.processors["draft_dialog"] = new DraftProcessor();
                 this.processors["html_partial"] = new HtmlPartialContentProcessor();
                 this.processors["lock_data"] = new LockDataProcessor();
+                
+                this.eventManager = new EventObserver({"dispatcher":this});
             },
 
             /**
@@ -444,6 +447,11 @@ define([
 
             getChangesManager: function () {
                 return this.changesManager;
+            },
+
+
+            getEventManager: function () {
+                return this.eventManager;
             },
 
 

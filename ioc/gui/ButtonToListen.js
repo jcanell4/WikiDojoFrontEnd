@@ -2,26 +2,45 @@ define([
     "dojo/_base/declare",
     "dijit/form/Button",
     "dijit/_TemplatedMixin",
-    /*"dojo/text!./templates/Button.html",*/
+    "dojo/text!./templates/Button.html",
     "ioc/gui/ResizableComponent",
-    "dojo/_base/lang"
-], function (declare, button, _TemplatedMixin/*, template*/, Resizable, dojoBase) {
-    var ret = declare([button, _TemplatedMixin, Resizable],
+    "dojo/_base/lang",
+    "ioc/wiki30/dispatcherSingleton",
+], function (declare, button, _TemplatedMixin, template, Resizable, dojoBase, getDispatcher) {
+    var ret = declare("ioc.gui.ButtonToListen", [button, _TemplatedMixin, Resizable],
 
         /**
-         * Declara un Botó que realitza la funció indicada en un atribut
-         * també canvia el tamany de fixe a variable segons el contenidor
+         * Declara un Botó que executa la funció postListenOnClick, un cop ha 
+         * recorregut tots els listeners associats i els ha processat (si son objectes)
+         * o executat (si son funcions). 
+         * 
+         * Es pot prevenir l'execució de la funció postListenOnClick executant 
+         * el mètode preventDefault de l'esdeveniment o bé fent servir la utilitat 
+         * dojo/_base/event de dojo, executant dojo._base.event#stop(event);
+         * 
+         * Aquesta classe també dota al botó de la propietat d'adaptar-se a 
+         * la mida del contenidor per defecte.
+         * 
          *
-         * Aquest widget es un boto que Al clicarlo recorre tots els listeners associats i els processa si son objectes
-         * o els executa si son funcions.
-         *
-         * @class IocButton
+         * @class ButtonToListen
          * @extends dijit.form.Button
          * @extends dijit._TemplatedMixin
          * @extends ResizableComponent
          */
         {
-            /*templateString: template,*/
+            templateString: template,
+            
+
+            getDataEventObject: null, //funció que retorna un objecte hash amb el 
+                                  //valor dels paràmetres a passar a través de 
+                                  //l'objecte event.
+                                  
+            constructor:function(){
+                console.log("ButtonToListen");
+                if(!this.dispatcher){
+                    this.dispatcher = getDispatcher();
+                }
+            },
             
             postListenOnClick: function(evt){},
 
@@ -32,7 +51,7 @@ define([
              * Al clicar aquest botó es recorren tots els listeners afegits, si es una funció la executa i si es un
              * objecte crida al seu métode process() passant aquest event com argument.
              *
-             * TODO[Xavi] els métodes isFunction(), isXXX() de lang estan obsolets, s'has de substituir pel 2.0
+             *En acabar si no s'ha previngut l'esdeveniment per defecte, s'executa la funció postListenOnClick.
              *
              * @param {*} evt
              * @private
@@ -40,12 +59,18 @@ define([
              */
              _onClick: function (evt) {
                 this.inherited(arguments);
+                if(this.getDataEventObject){
+                    evt.data = this.getDataEventObject();
+                }
                 if (this.clickListener) {
                     for (var i in this.clickListener) {
-                        if (dojoBase.isFunction(this.clickListener[i])) {
+                        if (typeof this.clickListener[i] == "function") {
                             this.clickListener[i](evt);
                         } else if (dojoBase.isObject(this.clickListener[i])) {
                             this.clickListener[i].process(evt); // TODO[Xavi] Error, s'hauria de passar també el Dispatcher
+                                                                //[Josep] Dispatcher és un Singleton que es pot recollir a 
+                                                                // qualsevol lloc. No cal passar-lo per paràmetre.
+                                                                // Diria que no pot haver cap cas que faci servir un disatcher diferent
                         }
                     }
                 }
@@ -58,8 +83,8 @@ define([
             /** @override */
             startup: function () {
                 this.inherited(arguments);
-                this.nodeToResize = this.buttonNode;
-                this.topNodeToResize = this.buttonTopNode;
+                this.set("nodeToResize", this.buttonNode); //this.nodeToResize = this.buttonNode;
+                this.set("topNodeToResize", this.buttonTopNode); //this.topNodeToResize = this.buttonTopNode;
                 this.resize();
                 this.__setVisible();
             },
