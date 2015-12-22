@@ -3,15 +3,17 @@ define([
     "dojo/text!./templates/ActionHiddenDialogDokuwiki.html",
     "dijit/TooltipDialog",
     "dijit/_WidgetsInTemplateMixin",
+    "dijit/_TemplatedMixin",
+    "dijit/_Templated",
     "dijit/popup",
     "ioc/wiki30/Request",
     "dijit/registry",
     "dojo/dom-form",
     "dijit/form/Form", //cridat per ActionHiddenDialogDokuwiki.html
     "dijit/form/Button" //cridat per ActionHiddenDialogDokuwiki.html
-], function (declare, template, TooltipDialog, _WidgetsInTemplateMixin, popup, Request, registry, domForm) { 
+], function (declare, template, TooltipDialog, _WidgetsInTemplateMixin, _TemplatedMixin, _Templated, popup, Request, registry, domForm) { 
 
-    var ret = declare("ioc.gui.ActionHiddenDialogDokuwiki", [TooltipDialog, _WidgetsInTemplateMixin, Request],
+    var ret = declare("ioc.gui.ActionHiddenDialogDokuwiki", [TooltipDialog,  Request, _TemplatedMixin, _WidgetsInTemplateMixin],
         /**
          * Aquest widget afegeix un dialog ocult que inclou la validacio de les dades abans d'enviar-les,
          * i l'enviament via ajax al servidor. En cas de que la resposta sigui correcte amaga aquest dialog.
@@ -58,7 +60,7 @@ define([
              * @override
              */
             responseHandler: function (data) {
-                this.dispatcher.processResponse(data); // TODO[Xavi] substituir aquesta part per this.inherited(arguments)?
+                this.inherited(arguments); //this.dispatcher.processResponse(data); // TODO[Xavi] substituir aquesta part per this.inherited(arguments)?
                 if (this._standby) {
                     this._standby.hide();
                 }

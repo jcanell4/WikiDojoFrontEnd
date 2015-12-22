@@ -1,7 +1,6 @@
 define([
-    "dojo/_base/declare", // declare
-    "require" // TODO[Xavi] No es fa servir
-], function (declare, require) {
+    "dojo/_base/declare"
+], function (declare) {
     var ret = declare(null,
         /**
          * @class SectokManager

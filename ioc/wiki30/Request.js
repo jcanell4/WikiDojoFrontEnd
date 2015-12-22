@@ -10,7 +10,7 @@ define([
     "dojo/dom-geometry",
     "dojo/dom-style",
     "dojo/dom"
-], function (declare, Standby, request, iframe, dispatcherSingleton, Stateful
+], function (declare, Standby, request, iframe, getDispatcher, Stateful
     , timing, domConstruct, domGeom, style, dom) {
     var ret = declare([Stateful],
         /**
@@ -29,7 +29,7 @@ define([
 
             method: "post",
 
-            dispatcher: dispatcherSingleton,
+            /*dispatcher: null,*/
 
             _standby: null,
 
@@ -44,6 +44,8 @@ define([
             content: null,
 
             constructor: function () {
+                //console.log("Request");
+                this.dispatcher = getDispatcher();
                 this._initTimer();
             },
 
@@ -132,16 +134,21 @@ define([
                 this.dispatcher.processError(error);
             },
 
+            /**
+             * Realitzar una petició ajax de tipus post, passant com a dades 
+             * el contingut  d'un formulari (fromObject). A més se li pot 
+             * afegir a la petició un string en forma d query de la petició 
+             * (buttonQuery): "id=valor&do=valorDo&..."
+             *
+             * @param {string} formObject objecte de tipus formulari que es vol 
+             * enviar a la comanda.
+             * @param {string} buttonQuery petició que fem a la dokuwiki
+             *
+             * @returns {dojo.promise.Promise}
+             */
             sendForm: function (formObject, buttonQuery) {
                 //run standby resource while ajax response doesn't arribe
-                if (this.standbyId !== null && !this._standby) {
-                    this._standby = new Standby({target: this.standbyId});
-                    document.body.appendChild(this._standby.domNode);
-                    this._standby.startup();
-                }
-                /*It sets the Standby object in a variable to be accessible from any site.
-                 *The private attibute is used to control the construction of the object
-                 */
+                this._createStandbyObject();
 
                 if (this.urlBase === null || this.dispatcher === null) {
                     return;
@@ -188,25 +195,22 @@ define([
              *
              * @param {string} query petició que fem a la dokuwiki
              *
-             * @returns {?dojo.promise.Promise}
+             * @returns {dojo.promise.Promise}
              */
             sendRequest: function (query) {
 //                console.log("Request:sendRequest ("+query+")");
                 //run standby resource while ajax response doesn't arribe
-                if (this.standbyId !== null && !this._standby) {
-                    this._standby = new Standby({target: this.standbyId});
-                    document.body.appendChild(this._standby.domNode);
-                    this._standby.startup();
-                }
+                this._createStandbyObject();
 
-
-                /*It sets the Standby object in a variable to be accessible from any site.
-                 *The private attibute is used to control the construction of the object
-                 */
+                //Checking if sending can be run.
                 if (this.urlBase === null || this.dispatcher === null) {
                     return;
                 }
 
+                //Set the query value and set the linkChar value to build a 
+                //good query.
+                //if query param is null, query takes the value returned by 
+                //getQuery function. 
                 var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
                     (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
                 var vUrl = this.urlBase;
@@ -218,17 +222,23 @@ define([
                         this.content = q;
                     }
                 }
+                
+                //Setting the linkChar value.
                 if (query) {
                     vUrl += linkChar + query;
                     linkChar = "&";
                 }
+                
+                //Setting the sectok value to a correct checking in the server side.
                 var gSect = this.getSectok();
                 if (gSect) {
                     vUrl += linkChar + this.sectokParam + "=" + gSect;
                 }
 
+                //starting standby proces if exsit some stantBy object
                 this._startStandby();
 
+                //Build and send the request.
                 var resp;
                 var req = this;
                 var configPost = {handleAs: "json"};
@@ -262,16 +272,43 @@ define([
                 return resp;
             },
 
+            /**
+             * Si es passa false en lloc de la id es desactiva. Això permet reutilitzar el request sense forçar que es
+             * mostri el paramId
+             * @param {string|bool} id del contenidor o false si no es vol mostrar
+             */
             setStandbyId:     function (id) {
-                this.set("standbyId", id);
-                this._standby = null;
+                if (!id===false) {
+                    this.set("standbyId", id);
+                    this._standby = null;
+                    this._standbyDisabled = false;
+
+                } else {
+                    this._standbyDisabled = true;
+                }
+
             },
+            
+            _createStandbyObject:function () {
+                /*It sets the Standby object in a variable to be accessible from any site.
+                 *The private attibute is used to control the construction of the object
+                 */
+                if (this.standbyId !== null && !this._standby) {
+                    this._standby = new Standby({target: this.standbyId});
+                    document.body.appendChild(this._standby.domNode);
+                    this._standby.startup();
+                }
+            },
+            
             _standbyIdSetter: function (id) {
                 this.standbyId = id;
                 this._standby = null;
             },
 
             _startStandby: function () {
+                if (this._standbyDisabled) {
+                    return;
+                }
                 if (this._standby) {
                     this._standby.show();
                     if (this.hasTimer) {
