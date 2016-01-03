@@ -146,15 +146,12 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                var param = jQuery(this).attr('data-section-id');
-
-                var query = (context.getSaveQuery.bind(context, param))(),
-                    formId= jQuery(this).attr('data-form-id'),
+                var param = jQuery(this).attr('data-section-id'),
+                    query = (context.getQuerySave.bind(context, param))(),
+                    formId = jQuery(this).attr('data-form-id'),
                     originalUrlBase = context.requester.urlBase;
 
                 // TODO [Xavi] Aixó anirá en un altre mètode que s'activarà al disparar-se l'esdeveniment
-
-                // TODO`[Xavi] Canviar el datacall per save_partial
                 context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=save_partial";
                 context.requester.setStandbyId(formId);
                 context.requester.sendRequest(query);
@@ -164,21 +161,24 @@ define([
             });
         },
 
-        getSaveQuery: function(section_id) {
-            var $form = jQuery('#form_' + section_id);
+        getQuerySave: function (section_id) {
+            var $form = jQuery('#form_' + section_id),
+                values = {},
+                header_id,
+                pre = '',
+                suf = '',
+                text,
+                chunks = this.data.chunks,
+                editingIndex = -1;
 
-            var values = {};
+
             jQuery.each($form.serializeArray(), function (i, field) {
                 values[field.name] = field.value;
             });
 
-            var header_id = values['section_id'];
-            var pre = '';
+            header_id = values['section_id'];
 
             // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
-            var chunks = this.data.chunks;
-
-            var editingIndex = -1;
 
             // TODO: Només fins al actual Fins al actual,
             for (var i = 0; i < chunks.length; i++) {
@@ -196,7 +196,6 @@ define([
                 }
             }
 
-            var suf = '';
 
             for (i = editingIndex + 1; i < chunks.length; i++) {
                 if (chunks[i].text) {
@@ -217,7 +216,7 @@ define([
             jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
 
 
-            var text = this.editors[header_id].editor.getEditorValue();
+            text = this.editors[header_id].editor.getEditorValue();
             this.updateChunk(header_id, {'editing': text});
             return $form.serialize();
 
@@ -228,24 +227,24 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                var $form = jQuery(this).closest('form');
+                var param = jQuery(this).attr('data-section-id'),
+                    query = (context.getQueryCancel.bind(context, param))(),
+                    formId = jQuery(this).attr('data-form-id'),
+                    originalUrlBase = context.requester.urlBase;
 
-                // Variant del que es trobava al formRequest
-                var originalUrlBase = context.requester.urlBase,
-                    dataCall = jQuery(this).attr('data-call-type');
-
-                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
-
-                var query = $form.serialize();
-
-                context.requester.setStandbyId($form.attr('id'));
+                // TODO[Xavi] Extreure a métode que es dispararà via Event, aquí només anirà l'event amb el query afegit
+                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=cancel_partial";
+                context.requester.setStandbyId(formId);
                 context.requester.sendRequest(query);
-
-                context.requester.urlBase = originalUrlBase;
                 // fi de la copia
 
 
             });
+        },
+
+        getQueryCancel: function (section_id) {
+            var $form = jQuery('#form_' + section_id);
+            return $form.serialize();
         },
 
         getEditingChunks: function () {
@@ -732,7 +731,7 @@ define([
         },
 
         _setHighlight: function (section_id) {
-            jQuery('.section_highlight').each( function(){
+            jQuery('.section_highlight').each(function () {
                 jQuery(this).removeClass('section_highlight')
             });
 
