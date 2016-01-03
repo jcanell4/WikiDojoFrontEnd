@@ -35,10 +35,10 @@ define([
 
             constructor: function (params) {
 
-                if (!params.dispatcher) {
-                    console.error("El EventObserver no pot funcionar sense una referencia al dispatcher");
-                    throw new Error("S'ha depassar una referencia al dispatcher");
-                }
+                //if (!params.dispatcher) {
+                //    console.error("El EventObserver no pot funcionar sense una referencia al dispatcher");
+                //    throw new Error("S'ha depassar una referencia al dispatcher");
+                //}
 
                 declare.safeMixin(this, params);
 

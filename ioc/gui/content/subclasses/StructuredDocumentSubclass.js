@@ -96,15 +96,12 @@ define([
 
         // Afegeix una toolbar a cada contenidor
         addToolbars: function () {
-
             for (var i = 0; i < this.content.chunks.length; i++) {
                 var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
                 //console.log("Afegint la toolbar... a", aux_id);
                 initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
             }
-
         },
-
 
         addEditionListener: function () {
             //console.log("StructuredDocumentSubclass#addEditionListener");
@@ -149,77 +146,81 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                var $form = jQuery(this).closest('form');
+                var param = jQuery(this).attr('data-section-id');
 
-                var values = {};
-                jQuery.each($form.serializeArray(), function (i, field) {
-                    values[field.name] = field.value;
-                });
+                var query = (context.getSaveQuery.bind(context, param))(),
+                    formId= jQuery(this).attr('data-form-id'),
+                    originalUrlBase = context.requester.urlBase;
 
-                var header_id = values['section_id'];
-                var pre = '';
+                // TODO [Xavi] Aixó anirá en un altre mètode que s'activarà al disparar-se l'esdeveniment
 
-                // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
-                var chunks = context.data.chunks;
-
-                var editingIndex = -1;
-
-                // TODO: Només fins al actual Fins al actual,
-                for (var i = 0; i < chunks.length; i++) {
-
-                    if (chunks[i].header_id === header_id) {
-                        editingIndex = i;
-                        pre += chunks[i].text.pre;
-                        break;
-                    }
-
-                    if (chunks[i].text) {
-                        pre += chunks[i].text.pre;
-                        //pre += chunks[i].text.editing;
-                        pre += context.changedChunks[chunks[i].header_id].content;
-                    }
-                }
-
-                var suf = '';
-
-                for (i = editingIndex + 1; i < chunks.length; i++) {
-                    if (chunks[i].text) {
-                        suf += chunks[i].text.pre;
-                        suf += chunks[i].text.editing;
-
-                        // TODO[Xavi] afegim l'editor
-                        // TODO[Xavi] al tornar a fer el render que passa amb l'editor anterior? Si continua a la classe només cal actualitzar el text, o potser no fe res pequè s'actualiza amb el textarea
-
-
-                    }
-                }
-                suf += context.data.suf || '';
-
-                // Actualitzem el formulari
-                // Afegim un salt per assegurar que no es perdi cap caràcter
-                jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
-                jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
-
-
-                var text = context.editors[header_id].editor.getEditorValue();
-                context.updateChunk(header_id, {'editing': text});
-
-                // Variant del que es trobava al formRequest
-                var originalUrlBase = context.requester.urlBase,
-                    dataCall = jQuery(this).attr('data-call-type');
-
-                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
-
-                var query = $form.serialize();
-
-                context.requester.setStandbyId($form.attr('id'));
+                // TODO`[Xavi] Canviar el datacall per save_partial
+                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=save_partial";
+                context.requester.setStandbyId(formId);
                 context.requester.sendRequest(query);
-
                 context.requester.urlBase = originalUrlBase;
-                // fi de la copia
 
 
             });
+        },
+
+        getSaveQuery: function(section_id) {
+            var $form = jQuery('#form_' + section_id);
+
+            var values = {};
+            jQuery.each($form.serializeArray(), function (i, field) {
+                values[field.name] = field.value;
+            });
+
+            var header_id = values['section_id'];
+            var pre = '';
+
+            // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
+            var chunks = this.data.chunks;
+
+            var editingIndex = -1;
+
+            // TODO: Només fins al actual Fins al actual,
+            for (var i = 0; i < chunks.length; i++) {
+
+                if (chunks[i].header_id === header_id) {
+                    editingIndex = i;
+                    pre += chunks[i].text.pre;
+                    break;
+                }
+
+                if (chunks[i].text) {
+                    pre += chunks[i].text.pre;
+                    //pre += chunks[i].text.editing;
+                    pre += this.changedChunks[chunks[i].header_id].content;
+                }
+            }
+
+            var suf = '';
+
+            for (i = editingIndex + 1; i < chunks.length; i++) {
+                if (chunks[i].text) {
+                    suf += chunks[i].text.pre;
+                    suf += chunks[i].text.editing;
+
+                    // TODO[Xavi] afegim l'editor
+                    // TODO[Xavi] al tornar a fer el render que passa amb l'editor anterior? Si continua a la classe només cal actualitzar el text, o potser no fe res pequè s'actualiza amb el textarea
+
+
+                }
+            }
+            suf += this.data.suf || '';
+
+            // Actualitzem el formulari
+            // Afegim un salt per assegurar que no es perdi cap caràcter
+            jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
+            jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
+
+
+            var text = this.editors[header_id].editor.getEditorValue();
+            this.updateChunk(header_id, {'editing': text});
+            return $form.serialize();
+
         },
 
         addCancelListener: function (context) {

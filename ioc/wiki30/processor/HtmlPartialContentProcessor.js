@@ -35,11 +35,8 @@ define([
                     contentTool = cache.getMainContentTool();
                 }
 
-
-
                 // TODO[Xavi] Refactoritzar, massa condicionals
                 if (contentTool && contentTool.type === this.type ) {
-
 
 
                     // Es una actualització
@@ -71,7 +68,6 @@ define([
                     contentTool.rev = value.rev;
 
                     if (confirmation) {
-
 
                         if (value.cancel) {
                             contentTool.resetChangesForChunks(value.cancel);
