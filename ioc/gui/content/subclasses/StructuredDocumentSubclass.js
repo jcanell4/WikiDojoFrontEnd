@@ -121,16 +121,9 @@ define([
 
                     var aux_id = this.id.replace('container_', ''),
                         section_id = aux_id.replace(context.id + "_", ''),
-                        editing_chunks,
-                        query = 'do=edit_partial'
-                            + '&section_id=' + section_id
-                            + '&editing_chunks=' + context.getEditingChunks().toString()// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
-                            + '&target=section'
-                            + '&id=' + context.ns
-                            + '&rev=' + (context.rev || '')
-                            + '&summary=[' + context.title + ']'
-                            + '&range=-';
+                        query = query = (context.getQueryEdit.bind(context, section_id))();
 
+                    // TODO[Xavi] Aquí només es dispararà l'esdeveniment, el request es farà en un altre mètode
                     if (jQuery.inArray(section_id, context.getEditingChunks()) < 0) {
                         // No està en edició
                         context.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
@@ -141,13 +134,24 @@ define([
             }
         },
 
+        getQueryEdit: function (section_id) {
+            return 'do=edit_partial'
+                + '&section_id=' + section_id
+                + '&editing_chunks=' + this.getEditingChunks().toString()
+                + '&target=section'
+                + '&id=' + this.ns
+                + '&rev=' + (this.rev || '')
+                + '&summary=[' + this.title + ']'
+                + '&range=-';
+        },
+
         addSaveListener: function (context) {
             jQuery('#' + context.content.id).find('input[data-call-type="save_partial"]').on('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
 
-                var param = jQuery(this).attr('data-section-id'),
-                    query = (context.getQuerySave.bind(context, param))(),
+                var section_id = jQuery(this).attr('data-section-id'),
+                    query = (context.getQuerySave.bind(context, section_id))(),
                     formId = jQuery(this).attr('data-form-id'),
                     originalUrlBase = context.requester.urlBase;
 
@@ -201,11 +205,6 @@ define([
                 if (chunks[i].text) {
                     suf += chunks[i].text.pre;
                     suf += chunks[i].text.editing;
-
-                    // TODO[Xavi] afegim l'editor
-                    // TODO[Xavi] al tornar a fer el render que passa amb l'editor anterior? Si continua a la classe només cal actualitzar el text, o potser no fe res pequè s'actualiza amb el textarea
-
-
                 }
             }
             suf += this.data.suf || '';
@@ -227,8 +226,8 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                var param = jQuery(this).attr('data-section-id'),
-                    query = (context.getQueryCancel.bind(context, param))(),
+                var section_id = jQuery(this).attr('data-section-id'),
+                    query = (context.getQueryCancel.bind(context, section_id))(),
                     formId = jQuery(this).attr('data-form-id'),
                     originalUrlBase = context.requester.urlBase;
 
@@ -236,8 +235,7 @@ define([
                 context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=cancel_partial";
                 context.requester.setStandbyId(formId);
                 context.requester.sendRequest(query);
-                // fi de la copia
-
+                context.requester.urlBase = originalUrlBase;
 
             });
         },
