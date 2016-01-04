@@ -38,7 +38,7 @@ define([
          * @protected
          */
         onDocumentChanged: function () {
-            this.dispatchEvent("document_changed");
+            this.dispatchEvent("document_changed", {id: this.id});
 
             if (this.controlButton) {
                 this.controlButton.containerNode.style.color = 'red';
@@ -51,7 +51,7 @@ define([
          * @protected
          */
         onDocumentChangesReset: function () {
-            this.dispatchEvent("document_changes_reset");
+            this.dispatchEvent("document_changes_reset", {id: this.id});
 
             if (this.controlButton) {
                 this.controlButton.containerNode.style.color = 'black';

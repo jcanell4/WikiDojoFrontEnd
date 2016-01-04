@@ -120,19 +120,14 @@ define([
                 jQuery('#container_' + auxId).on('dblclick', function () {
 
                     var aux_id = this.id.replace('container_', ''),
-                        section_id = aux_id.replace(context.id + "_", ''),
-                        query = query = (context.getQueryEdit.bind(context, section_id))();
+                        section_id = aux_id.replace(context.id + "_", '');
 
-                    // TODO[Xavi] Aquí només es dispararà l'esdeveniment, el request es farà en un altre mètode
-                    if (jQuery.inArray(section_id, context.getEditingChunks()) < 0) {
-                        // No està en edició
-                        context.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
-                        context.requester.setStandbyId(this.id);
-                        context.requester.sendRequest(query);
-                    }
+                    context.dispatchEvent("edit_partial", {id: context.id, chunk: section_id});
+
                 });
             }
         },
+
 
         getQueryEdit: function (section_id) {
             return 'do=edit_partial'
@@ -150,17 +145,9 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                var section_id = jQuery(this).attr('data-section-id'),
-                    query = (context.getQuerySave.bind(context, section_id))(),
-                    formId = jQuery(this).attr('data-form-id'),
-                    originalUrlBase = context.requester.urlBase;
+                var section_id = jQuery(this).attr('data-section-id');
 
-                // TODO [Xavi] Aixó anirá en un altre mètode que s'activarà al disparar-se l'esdeveniment
-                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=save_partial";
-                context.requester.setStandbyId(formId);
-                context.requester.sendRequest(query);
-                context.requester.urlBase = originalUrlBase;
-
+                context.dispatchEvent("save_partial", {id: context.id, chunk: section_id});
 
             });
         },
@@ -226,16 +213,8 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                var section_id = jQuery(this).attr('data-section-id'),
-                    query = (context.getQueryCancel.bind(context, section_id))(),
-                    formId = jQuery(this).attr('data-form-id'),
-                    originalUrlBase = context.requester.urlBase;
-
-                // TODO[Xavi] Extreure a métode que es dispararà via Event, aquí només anirà l'event amb el query afegit
-                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=cancel_partial";
-                context.requester.setStandbyId(formId);
-                context.requester.sendRequest(query);
-                context.requester.urlBase = originalUrlBase;
+                var section_id = jQuery(this).attr('data-section-id');
+                context.dispatchEvent("cancel_partial", {id: context.id, chunk: section_id});
 
             });
         },
@@ -315,7 +294,30 @@ define([
          */
         postAttach: function () {
             this.registerToChangesManager();
+
             jQuery(this.domNode).on('input', this._checkChanges.bind(this));
+            this.inherited(arguments);
+
+            console.log("StructuredDocumentSubclass#postLoad");
+
+
+            var eventManager = this.dispatcher.getEventManager();
+
+            // Fem que el EventManager ens escolti
+            //eventManager.registerToEvent(this, "edit_partial", lang.hitch(this, this._doEditPartial));
+            //eventManager.registerToEvent(this, "save_partial", lang.hitch(this, this._doSavePartial));
+            //eventManager.registerToEvent(this, "cancel_partial", lang.hitch(this, this._doCancelPartial));
+            //
+            //
+            //
+            //this.registerToEvent(this.eventManager, "edit_partial_"+this.id, lang.hitch(this, this._doEditPartial));
+            //this.registerToEvent(this.eventManager, "save_partial_"+this.id, lang.hitch(this, this._doSavePartial));
+            //this.registerToEvent(this.eventManager, "cancel_partial_"+this.id, lang.hitch(this, this._doCancelPartial));
+
+            eventManager.registerEventForBroadcasting(this, "edit_partial", this._doEditPartial.bind(this));
+            eventManager.registerEventForBroadcasting(this, "save_partial", this._doSavePartial.bind(this));
+            eventManager.registerEventForBroadcasting(this, "cancel_partial", this._doCancelPartial.bind(this));
+
             this.inherited(arguments);
         },
 
@@ -729,14 +731,71 @@ define([
         },
 
         _setHighlight: function (section_id, className) {
-            jQuery('.'+className).each(function () {
+            jQuery('.' + className).each(function () {
                 //jQuery(this).removeClass('section_highlight');
                 jQuery(this).removeClass(className);
             });
 
             //jQuery('#' + section_id).addClass('section_highlight');
             jQuery('#' + section_id).addClass(className);
+        },
+
+
+        _doEditPartial: function (event) {
+            // TODO[Xavi] pendent de determinar si discriminem els documents al EventManager
+            if (this.id != event.id) {
+                return;
+            }
+
+            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+
+            var query = this.getQueryEdit(event.chunk),
+                containerId = "container_" + event.id + "_"+ event.chunk;
+
+            if (jQuery.inArray(event.chunk, this.getEditingChunks()) < 0) {
+                this._callAction('lib/plugins/ajaxcommand/ajax.php?call=edit_partial', query, containerId);  // TODO[Xavi] El urlBase ha d'arribar pel processor
+            }
+
+        },
+
+        _doSavePartial: function (event) {
+            // TODO[Xavi] pendent de determinar si discriminem els documents al EventManager
+            if (this.id != event.id) {
+                return;
+            }
+
+            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+
+            var query = this.getQuerySave(event.chunk),
+                containerId = "container_" + event.chunk;
+
+
+            this._callAction("lib/plugins/ajaxcommand/ajax.php?call=save_partial", query, containerId); // TODO[Xavi] El urlBase ha d'arribar pel processor
+        },
+
+        _doCancelPartial: function (event) {
+            // TODO[Xavi] pendent de determinar si discriminem els documents al EventManager
+            if (this.id != event.id) {
+                return;
+            }
+
+            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+
+            var query = this.getQueryCancel(event.chunk),
+                containerId = "container_" + event.chunk;
+
+            this._callAction("lib/plugins/ajaxcommand/ajax.php?call=cancel_partial", query, containerId);  // TODO[Xavi] El urlBase ha d'arribar pel processor
+        },
+
+        _callAction: function (urlBase, query, containerId) {
+            //console.log("StructuredDocumentSubclass#_callAction", urlBase, query, containerId);
+            var urlBaseOriginal = this.requester.urlBase;
+            this.requester.urlBase = urlBase;
+            this.requester.setStandbyId(containerId);
+            this.requester.sendRequest(query);
+            this.requester.urlBase = urlBaseOriginal;
         }
+
 
     })
 });

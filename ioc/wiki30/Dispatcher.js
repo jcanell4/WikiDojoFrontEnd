@@ -39,7 +39,8 @@ define([
     "ioc/wiki30/processor/DraftProcessor",
     "ioc/wiki30/processor/HtmlPartialContentProcessor",
     "ioc/wiki30/processor/LockDataProcessor",
-    "ioc/wiki30/manager/EventObserver"
+    "ioc/wiki30/manager/EventObserver",
+    "ioc/wiki30/manager/EventManager"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -50,7 +51,7 @@ define([
              InfoManager, ChangesManager,
              RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
-             LockDataProcessor, EventObserver) {
+             LockDataProcessor, EventObserver, EventManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -164,7 +165,8 @@ define([
                 this.processors["html_partial"] = new HtmlPartialContentProcessor();
                 this.processors["lock_data"] = new LockDataProcessor();
                 
-                this.eventManager = new EventObserver({"dispatcher":this});
+                //this.eventManager = new EventObserver({"dispatcher":this});
+                this.eventManager = new EventManager({"dispatcher":this});
             },
 
             /**
