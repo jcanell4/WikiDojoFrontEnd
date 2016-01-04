@@ -715,7 +715,7 @@ define([
                 });
 
                 $container.on('mouseover mouseout', function () {
-                    context._setHighlight(this.id);
+                    context._setHighlight(this.id, 'section_highlight');
                     return false;
                 });
 
@@ -725,15 +725,17 @@ define([
 
         _setCurrentSection: function (section_id) {
             this.dispatcher.getGlobalState().setCurrentSectionId(section_id);
-            this._setHighlight(section_id);
+            this._setHighlight(section_id, 'section_selected');
         },
 
-        _setHighlight: function (section_id) {
-            jQuery('.section_highlight').each(function () {
-                jQuery(this).removeClass('section_highlight')
+        _setHighlight: function (section_id, className) {
+            jQuery('.'+className).each(function () {
+                //jQuery(this).removeClass('section_highlight');
+                jQuery(this).removeClass(className);
             });
 
-            jQuery('#' + section_id).addClass('section_highlight');
+            //jQuery('#' + section_id).addClass('section_highlight');
+            jQuery('#' + section_id).addClass(className);
         }
 
     })
