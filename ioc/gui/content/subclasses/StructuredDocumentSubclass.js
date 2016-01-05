@@ -303,17 +303,6 @@ define([
 
             var eventManager = this.dispatcher.getEventManager();
 
-            // Fem que el EventManager ens escolti
-            //eventManager.registerToEvent(this, "edit_partial", lang.hitch(this, this._doEditPartial));
-            //eventManager.registerToEvent(this, "save_partial", lang.hitch(this, this._doSavePartial));
-            //eventManager.registerToEvent(this, "cancel_partial", lang.hitch(this, this._doCancelPartial));
-            //
-            //
-            //
-            //this.registerToEvent(this.eventManager, "edit_partial_"+this.id, lang.hitch(this, this._doEditPartial));
-            //this.registerToEvent(this.eventManager, "save_partial_"+this.id, lang.hitch(this, this._doSavePartial));
-            //this.registerToEvent(this.eventManager, "cancel_partial_"+this.id, lang.hitch(this, this._doCancelPartial));
-
             eventManager.registerEventForBroadcasting(this, "edit_partial", this._doEditPartial.bind(this));
             eventManager.registerEventForBroadcasting(this, "save_partial", this._doSavePartial.bind(this));
             eventManager.registerEventForBroadcasting(this, "cancel_partial", this._doCancelPartial.bind(this));
