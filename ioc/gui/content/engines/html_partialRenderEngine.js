@@ -32,8 +32,8 @@ define(function () {
 
             $header = $doc.find('#' + data.chunks[i].header_id);
 
-            if (i+1<data.chunks.length) {
-                $content = $header.nextUntil("#" +data.chunks[i+1].header_id);
+            if (i + 1 < data.chunks.length) {
+                $content = $header.nextUntil("#" + data.chunks[i + 1].header_id);
 
             } else {
                 $content = $header.nextUntil(".end-of-document");
@@ -94,7 +94,10 @@ define(function () {
             }
 
 
-            $form.append('<div><input value="Tornar" type="submit" data-call-type="cancel_partial" data-form-id="form_' + aux_id + '" data-section-id="'+aux_id+'"/><input value="Desar" type="submit" data-form-id="form_' + aux_id + '" data-section-id="'+aux_id+'" data-call-type="save_partial"/></div>');
+            $form.append('<div>' +
+                '<input value="Tornar" type="submit" data-call-type="cancel_partial" data-form-id="form_' + aux_id + '" data-section-id="' + data.chunks[i].header_id + '"/>' +
+                '<input value="Desar" type="submit" data-form-id="form_' + aux_id + '" data-section-id="' + data.chunks[i].header_id + '" data-call-type="save_partial"/>' +
+                '</div>');
 
             $container.append($viewContainer);
             $container.append($editContainer);

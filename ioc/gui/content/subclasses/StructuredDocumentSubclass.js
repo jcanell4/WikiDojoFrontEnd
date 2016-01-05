@@ -153,7 +153,7 @@ define([
         },
 
         getQuerySave: function (section_id) {
-            var $form = jQuery('#form_' + section_id),
+            var $form = jQuery('#form_' + this.id + "_" + section_id),
                 values = {},
                 header_id,
                 pre = '',
@@ -202,6 +202,9 @@ define([
             jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
 
 
+            console.log("Editors:", this.editors, " header: ", header_id);
+
+
             text = this.editors[header_id].editor.getEditorValue();
             this.updateChunk(header_id, {'editing': text});
             return $form.serialize();
@@ -220,7 +223,8 @@ define([
         },
 
         getQueryCancel: function (section_id) {
-            var $form = jQuery('#form_' + section_id);
+            var $form = jQuery('#form_' + this.id + "_" + section_id);
+
             return $form.serialize();
         },
 
@@ -756,7 +760,7 @@ define([
             console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
             var query = this.getQuerySave(event.chunk),
-                containerId = "container_" + event.chunk;
+                containerId = "container_" + event.id + "_"+ event.chunk;
 
 
             this._callAction("lib/plugins/ajaxcommand/ajax.php?call=save_partial", query, containerId); // TODO[Xavi] El urlBase ha d'arribar pel processor
@@ -771,7 +775,7 @@ define([
             console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
             var query = this.getQueryCancel(event.chunk),
-                containerId = "container_" + event.chunk;
+                containerId = "container_" + event.id + "_"+ event.chunk;
 
             this._callAction("lib/plugins/ajaxcommand/ajax.php?call=cancel_partial", query, containerId);  // TODO[Xavi] El urlBase ha d'arribar pel processor
         },
