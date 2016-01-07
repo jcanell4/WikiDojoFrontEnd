@@ -45,7 +45,7 @@ define([
             content: null,
 
             constructor: function () {
-                console.log("Request");
+                //console.log("Request");
                 this.dispatcher = getDispatcher();
                 this._initTimer();
             },

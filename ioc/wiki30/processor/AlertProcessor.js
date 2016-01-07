@@ -28,7 +28,7 @@ define([
              * @param {Dispatcher} dispatcher
              * @private
              */
-            _process: function (alert, dispatcher) {
+            _processAlert: function (alert, dispatcher) {
                 dispatcher.diag.set("title", "ALERTA");
                 dispatcher.diag.set("content", alert);
                 dispatcher.diag.show();

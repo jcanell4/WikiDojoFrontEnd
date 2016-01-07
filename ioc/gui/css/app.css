@@ -47,7 +47,7 @@ html,body {
 	position: relative;
 }
 
-#navigation. ul{
+#p-navigation ul{
 	display: block;
 	list-style-type: disc;
 	list-style-type: disc;
@@ -87,3 +87,15 @@ writing-mode: tb-rl;    */
 	display:block;
 }
 
+div.dokuwiki .section_highlight{
+    background-color: #eff8fd !important;
+}
+
+div.dokuwiki .section_selected {
+    background-color: #dee7ec !important;
+}
+
+#zonaMissatges td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
