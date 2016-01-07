@@ -35,10 +35,10 @@ define([
 
             constructor: function (params) {
 
-                if (!params.dispatcher) {
-                    console.error("El EventObserver no pot funcionar sense una referencia al dispatcher");
-                    throw new Error("S'ha depassar una referencia al dispatcher");
-                }
+                //if (!params.dispatcher) {
+                //    console.error("El EventObserver no pot funcionar sense una referencia al dispatcher");
+                //    throw new Error("S'ha depassar una referencia al dispatcher");
+                //}
 
                 declare.safeMixin(this, params);
 
@@ -91,6 +91,9 @@ define([
             dispatchEvent: function (event, data) {
                 var observers = this.events[event];
                 //console.log("EventOvserver#dispatchEvent: ", event);
+
+                data.name = event;
+
                 if (observers) {
                     dojoArray.forEach(observers, function (callback) {
                         if (callback) {

@@ -96,15 +96,12 @@ define([
 
         // Afegeix una toolbar a cada contenidor
         addToolbars: function () {
-
             for (var i = 0; i < this.content.chunks.length; i++) {
                 var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
                 //console.log("Afegint la toolbar... a", aux_id);
                 initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
             }
-
         },
-
 
         addEditionListener: function () {
             //console.log("StructuredDocumentSubclass#addEditionListener");
@@ -123,25 +120,24 @@ define([
                 jQuery('#container_' + auxId).on('dblclick', function () {
 
                     var aux_id = this.id.replace('container_', ''),
-                        section_id = aux_id.replace(context.id + "_", ''),
-                        editing_chunks,
-                        query = 'do=edit_partial'
-                            + '&section_id=' + section_id
-                            + '&editing_chunks=' + context.getEditingChunks().toString()// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
-                            + '&target=section'
-                            + '&id=' + context.ns
-                            + '&rev=' + (context.rev || '')
-                            + '&summary=[' + context.title + ']'
-                            + '&range=-';
+                        section_id = aux_id.replace(context.id + "_", '');
 
-                    if (jQuery.inArray(section_id, context.getEditingChunks()) < 0) {
-                        // No està en edició
-                        context.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
-                        context.requester.setStandbyId(this.id);
-                        context.requester.sendRequest(query);
-                    }
+                    context.dispatchEvent("edit_partial", {id: context.id, chunk: section_id});
+
                 });
             }
+        },
+
+
+        getQueryEdit: function (section_id) {
+            return 'do=edit_partial'
+                + '&section_id=' + section_id
+                + '&editing_chunks=' + this.getEditingChunks().toString()
+                + '&target=section'
+                + '&id=' + this.ns
+                + '&rev=' + (this.rev || '')
+                + '&summary=[' + this.title + ']'
+                + '&range=-';
         },
 
         addSaveListener: function (context) {
@@ -149,77 +145,70 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                var $form = jQuery(this).closest('form');
+                var section_id = jQuery(this).attr('data-section-id');
 
-                var values = {};
-                jQuery.each($form.serializeArray(), function (i, field) {
-                    values[field.name] = field.value;
-                });
-
-                var header_id = values['section_id'];
-                var pre = '';
-
-                // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
-                var chunks = context.data.chunks;
-
-                var editingIndex = -1;
-
-                // TODO: Només fins al actual Fins al actual,
-                for (var i = 0; i < chunks.length; i++) {
-
-                    if (chunks[i].header_id === header_id) {
-                        editingIndex = i;
-                        pre += chunks[i].text.pre;
-                        break;
-                    }
-
-                    if (chunks[i].text) {
-                        pre += chunks[i].text.pre;
-                        //pre += chunks[i].text.editing;
-                        pre += context.changedChunks[chunks[i].header_id].content;
-                    }
-                }
-
-                var suf = '';
-
-                for (i = editingIndex + 1; i < chunks.length; i++) {
-                    if (chunks[i].text) {
-                        suf += chunks[i].text.pre;
-                        suf += chunks[i].text.editing;
-
-                        // TODO[Xavi] afegim l'editor
-                        // TODO[Xavi] al tornar a fer el render que passa amb l'editor anterior? Si continua a la classe només cal actualitzar el text, o potser no fe res pequè s'actualiza amb el textarea
-
-
-                    }
-                }
-                suf += context.data.suf || '';
-
-                // Actualitzem el formulari
-                // Afegim un salt per assegurar que no es perdi cap caràcter
-                jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
-                jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
-
-
-                var text = context.editors[header_id].editor.getEditorValue();
-                context.updateChunk(header_id, {'editing': text});
-
-                // Variant del que es trobava al formRequest
-                var originalUrlBase = context.requester.urlBase,
-                    dataCall = jQuery(this).attr('data-call-type');
-
-                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
-
-                var query = $form.serialize();
-
-                context.requester.setStandbyId($form.attr('id'));
-                context.requester.sendRequest(query);
-
-                context.requester.urlBase = originalUrlBase;
-                // fi de la copia
-
+                context.dispatchEvent("save_partial", {id: context.id, chunk: section_id});
 
             });
+        },
+
+        getQuerySave: function (section_id) {
+            var $form = jQuery('#form_' + this.id + "_" + section_id),
+                values = {},
+                header_id,
+                pre = '',
+                suf = '',
+                text,
+                chunks = this.data.chunks,
+                editingIndex = -1;
+
+
+            jQuery.each($form.serializeArray(), function (i, field) {
+                values[field.name] = field.value;
+            });
+
+            header_id = values['section_id'];
+
+            // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
+
+            // TODO: Només fins al actual Fins al actual,
+            for (var i = 0; i < chunks.length; i++) {
+
+                if (chunks[i].header_id === header_id) {
+                    editingIndex = i;
+                    pre += chunks[i].text.pre;
+                    break;
+                }
+
+                if (chunks[i].text) {
+                    pre += chunks[i].text.pre;
+                    //pre += chunks[i].text.editing;
+                    pre += this.changedChunks[chunks[i].header_id].content;
+                }
+            }
+
+
+            for (i = editingIndex + 1; i < chunks.length; i++) {
+                if (chunks[i].text) {
+                    suf += chunks[i].text.pre;
+                    suf += chunks[i].text.editing;
+                }
+            }
+            suf += this.data.suf || '';
+
+            // Actualitzem el formulari
+            // Afegim un salt per assegurar que no es perdi cap caràcter
+            jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
+            jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
+
+
+            console.log("Editors:", this.editors, " header: ", header_id);
+
+
+            text = this.editors[header_id].editor.getEditorValue();
+            this.updateChunk(header_id, {'editing': text});
+            return $form.serialize();
+
         },
 
         addCancelListener: function (context) {
@@ -227,24 +216,16 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                var $form = jQuery(this).closest('form');
-
-                // Variant del que es trobava al formRequest
-                var originalUrlBase = context.requester.urlBase,
-                    dataCall = jQuery(this).attr('data-call-type');
-
-                context.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
-
-                var query = $form.serialize();
-
-                context.requester.setStandbyId($form.attr('id'));
-                context.requester.sendRequest(query);
-
-                context.requester.urlBase = originalUrlBase;
-                // fi de la copia
-
+                var section_id = jQuery(this).attr('data-section-id');
+                context.dispatchEvent("cancel_partial", {id: context.id, chunk: section_id});
 
             });
+        },
+
+        getQueryCancel: function (section_id) {
+            var $form = jQuery('#form_' + this.id + "_" + section_id);
+
+            return $form.serialize();
         },
 
         getEditingChunks: function () {
@@ -317,7 +298,19 @@ define([
          */
         postAttach: function () {
             this.registerToChangesManager();
+
             jQuery(this.domNode).on('input', this._checkChanges.bind(this));
+            this.inherited(arguments);
+
+            console.log("StructuredDocumentSubclass#postLoad");
+
+
+            var eventManager = this.dispatcher.getEventManager();
+
+            eventManager.registerEventForBroadcasting(this, "edit_partial", this._doEditPartial.bind(this));
+            eventManager.registerEventForBroadcasting(this, "save_partial", this._doSavePartial.bind(this));
+            eventManager.registerEventForBroadcasting(this, "cancel_partial", this._doCancelPartial.bind(this));
+
             this.inherited(arguments);
         },
 
@@ -717,7 +710,7 @@ define([
                 });
 
                 $container.on('mouseover mouseout', function () {
-                    context._setHighlight(this.id);
+                    context._setHighlight(this.id, 'section_highlight');
                     return false;
                 });
 
@@ -727,16 +720,75 @@ define([
 
         _setCurrentSection: function (section_id) {
             this.dispatcher.getGlobalState().setCurrentSectionId(section_id);
-            this._setHighlight(section_id);
+            this._setHighlight(section_id, 'section_selected');
         },
 
-        _setHighlight: function (section_id) {
-            jQuery('.section_highlight').each( function(){
-                jQuery(this).removeClass('section_highlight')
+        _setHighlight: function (section_id, className) {
+            jQuery('.' + className).each(function () {
+                //jQuery(this).removeClass('section_highlight');
+                jQuery(this).removeClass(className);
             });
 
-            jQuery('#' + section_id).addClass('section_highlight');
+            //jQuery('#' + section_id).addClass('section_highlight');
+            jQuery('#' + section_id).addClass(className);
+        },
+
+
+        _doEditPartial: function (event) {
+            // TODO[Xavi] pendent de determinar si discriminem els documents al EventManager
+            if (this.id != event.id) {
+                return;
+            }
+
+            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+
+            var query = this.getQueryEdit(event.chunk),
+                containerId = "container_" + event.id + "_"+ event.chunk;
+
+            if (jQuery.inArray(event.chunk, this.getEditingChunks()) < 0) {
+                this._callAction('lib/plugins/ajaxcommand/ajax.php?call=edit_partial', query, containerId);  // TODO[Xavi] El urlBase ha d'arribar pel processor
+            }
+
+        },
+
+        _doSavePartial: function (event) {
+            // TODO[Xavi] pendent de determinar si discriminem els documents al EventManager
+            if (this.id != event.id) {
+                return;
+            }
+
+            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+
+            var query = this.getQuerySave(event.chunk),
+                containerId = "container_" + event.id + "_"+ event.chunk;
+
+
+            this._callAction("lib/plugins/ajaxcommand/ajax.php?call=save_partial", query, containerId); // TODO[Xavi] El urlBase ha d'arribar pel processor
+        },
+
+        _doCancelPartial: function (event) {
+            // TODO[Xavi] pendent de determinar si discriminem els documents al EventManager
+            if (this.id != event.id) {
+                return;
+            }
+
+            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+
+            var query = this.getQueryCancel(event.chunk),
+                containerId = "container_" + event.id + "_"+ event.chunk;
+
+            this._callAction("lib/plugins/ajaxcommand/ajax.php?call=cancel_partial", query, containerId);  // TODO[Xavi] El urlBase ha d'arribar pel processor
+        },
+
+        _callAction: function (urlBase, query, containerId) {
+            //console.log("StructuredDocumentSubclass#_callAction", urlBase, query, containerId);
+            var urlBaseOriginal = this.requester.urlBase;
+            this.requester.urlBase = urlBase;
+            this.requester.setStandbyId(containerId);
+            this.requester.sendRequest(query);
+            this.requester.urlBase = urlBaseOriginal;
         }
+
 
     })
 });

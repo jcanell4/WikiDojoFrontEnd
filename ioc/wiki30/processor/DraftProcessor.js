@@ -83,9 +83,12 @@ define([
                 switch (value.type) {
                     case 'full_document': //falling-through intencionat
                     case 'partial_document':
-                        return {content: value.draft.content, date: value.draft.date};
+                        if (value.draft) {
+                            return {content: value.draft.content, date: value.draft.date};
+                        }
                 }
 
+                return {content: '', date: ''};
             },
 
             _buildQuery: function (value) {
