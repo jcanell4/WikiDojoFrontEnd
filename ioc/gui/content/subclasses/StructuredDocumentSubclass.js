@@ -463,7 +463,7 @@ define([
          * @private
          */
         _updateChunks: function (content) {
-            var i, chunk;
+            var i, chunk, counter= 0;
 
             for (i = 0; i < content.chunks.length; i++) {
                 chunk = content.chunks[i];
@@ -476,9 +476,12 @@ define([
                         }
 
                         this.changedChunks[chunk.header_id].content = chunk.text.editing;
+                        counter++;
                     }
                 }
             }
+
+            this.editingChunksCounter=counter; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
         },
 
         /**
@@ -721,12 +724,19 @@ define([
         _setCurrentSection: function (section_id) {
             this.dispatcher.getGlobalState().setCurrentSectionId(section_id);
             this._setHighlight(section_id, 'section_selected');
+            this.dispatcher.updateFromState();
         },
 
         _setHighlight: function (section_id, className) {
+            var that = this;
+
             jQuery('.' + className).each(function () {
                 //jQuery(this).removeClass('section_highlight');
-                jQuery(this).removeClass(className);
+                $this = jQuery(this);
+                if ($this.attr('id').indexOf('container_' + that.id) > -1) {
+                    jQuery(this).removeClass(className);
+                }
+
             });
 
             //jQuery('#' + section_id).addClass('section_highlight');
@@ -735,7 +745,7 @@ define([
 
 
         _doEditPartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+            //console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
             var query = this.getQueryEdit(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -748,7 +758,7 @@ define([
 
         // TODO[Xavi] Canviar: Ha de fer servir post
         _doSavePartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+            //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
             var query = this.getQuerySave(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -758,7 +768,7 @@ define([
         },
 
         _doCancelPartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+            //console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
             var query = this.getQueryCancel(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
