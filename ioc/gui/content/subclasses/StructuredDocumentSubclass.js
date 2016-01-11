@@ -196,14 +196,7 @@ define([
             }
             suf += this.data.suf || '';
 
-            // Actualitzem el formulari
-            // Afegim un salt per assegurar que no es perdi cap caràcter
-
-            // TODO[Xavi] Això es passa per Post, no cal afegir-lo
-            //jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
-            //jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
-
-
+            // Actualitzem les dades d'edició
 
 
             text = this.editors[header_id].editor.getEditorValue();
@@ -213,6 +206,7 @@ define([
                 query = {};
 
             query.post = {};
+            // Afegim un salt per assegurar que no es perdi cap caràcter
             query.post.prefix = pre + "\n";
             query.post.suffix = suf;
             query.post.wikitext = text;
@@ -224,12 +218,7 @@ define([
 
             query.get = data;
 
-            console.log("form:", $form);
-            console.log("Data: ", data);
-            console.log("Query: ", query);
-
             return query;
-
         },
 
         addCancelListener: function (context) {
@@ -407,6 +396,8 @@ define([
                     chunk = this.data.chunks[i];
 
                     if (chunk.text && chunk.header_id == header_id) {
+
+                        console.log("ChangedChunks:", this.changedChunks, "header_id", header_id);
                         this.changedChunks[header_id].content = chunk.text.editing;
                         return chunk.text.editing;
                     }
@@ -821,8 +812,6 @@ define([
 
             this.requester.urlBase = urlBaseOriginal;
             this.requester.getPostData = getPostDataOriginal;
-
-
         }
 
     })
