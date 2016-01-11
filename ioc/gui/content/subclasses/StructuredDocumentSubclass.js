@@ -122,7 +122,7 @@ define([
                     var aux_id = this.id.replace('container_', ''),
                         section_id = aux_id.replace(context.id + "_", '');
 
-                    context.dispatchEvent("edit_partial", {id: context.id, chunk: section_id});
+                    context.dispatchEvent("edit_partial_" + context.id, {id: context.id, chunk: section_id});
 
                 });
             }
@@ -147,7 +147,7 @@ define([
 
                 var section_id = jQuery(this).attr('data-section-id');
 
-                context.dispatchEvent("save_partial", {id: context.id, chunk: section_id});
+                context.dispatchEvent("save_partial_" + context.id, {id: context.id, chunk: section_id});
 
             });
         },
@@ -217,7 +217,7 @@ define([
                 e.stopPropagation();
 
                 var section_id = jQuery(this).attr('data-section-id');
-                context.dispatchEvent("cancel_partial", {id: context.id, chunk: section_id});
+                context.dispatchEvent("cancel_partial_" + context.id, {id: context.id, chunk: section_id});
 
             });
         },
@@ -307,9 +307,9 @@ define([
 
             var eventManager = this.dispatcher.getEventManager();
 
-            eventManager.registerEventForBroadcasting(this, "edit_partial", this._doEditPartial.bind(this));
-            eventManager.registerEventForBroadcasting(this, "save_partial", this._doSavePartial.bind(this));
-            eventManager.registerEventForBroadcasting(this, "cancel_partial", this._doCancelPartial.bind(this));
+            eventManager.registerEventForBroadcasting(this, "edit_partial_" + this.id, this._doEditPartial.bind(this));
+            eventManager.registerEventForBroadcasting(this, "save_partial_" + this.id, this._doSavePartial.bind(this));
+            eventManager.registerEventForBroadcasting(this, "cancel_partial_" + this.id, this._doCancelPartial.bind(this));
 
             this.inherited(arguments);
         },
@@ -735,15 +735,10 @@ define([
 
 
         _doEditPartial: function (event) {
-            // TODO[Xavi] pendent de determinar si discriminem els documents al EventManager
-            if (this.id != event.id) {
-                return;
-            }
-
             console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
             var query = this.getQueryEdit(event.chunk),
-                containerId = "container_" + event.id + "_"+ event.chunk;
+                containerId = "container_" + event.id + "_" + event.chunk;
 
             if (jQuery.inArray(event.chunk, this.getEditingChunks()) < 0) {
                 this._callAction('lib/plugins/ajaxcommand/ajax.php?call=edit_partial', query, containerId);  // TODO[Xavi] El urlBase ha d'arribar pel processor
@@ -751,31 +746,22 @@ define([
 
         },
 
+        // TODO[Xavi] Canviar: Ha de fer servir post
         _doSavePartial: function (event) {
-            // TODO[Xavi] pendent de determinar si discriminem els documents al EventManager
-            if (this.id != event.id) {
-                return;
-            }
-
             console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
             var query = this.getQuerySave(event.chunk),
-                containerId = "container_" + event.id + "_"+ event.chunk;
+                containerId = "container_" + event.id + "_" + event.chunk;
 
 
             this._callAction("lib/plugins/ajaxcommand/ajax.php?call=save_partial", query, containerId); // TODO[Xavi] El urlBase ha d'arribar pel processor
         },
 
         _doCancelPartial: function (event) {
-            // TODO[Xavi] pendent de determinar si discriminem els documents al EventManager
-            if (this.id != event.id) {
-                return;
-            }
-
             console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
             var query = this.getQueryCancel(event.chunk),
-                containerId = "container_" + event.id + "_"+ event.chunk;
+                containerId = "container_" + event.id + "_" + event.chunk;
 
             this._callAction("lib/plugins/ajaxcommand/ajax.php?call=cancel_partial", query, containerId);  // TODO[Xavi] El urlBase ha d'arribar pel processor
         },
