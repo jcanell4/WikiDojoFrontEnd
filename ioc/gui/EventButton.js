@@ -23,6 +23,8 @@ define([
             postListenOnClick: function(evt){
                 if(this.eventId){
                     this.dispatcher.getEventManager().dispatchEvent(this.eventId, evt.data);
+                } else if (evt.data && evt.data.name) {
+                    this.dispatcher.getEventManager().dispatchEvent(evt.data.name, evt.data);
                 }
             }            
         });

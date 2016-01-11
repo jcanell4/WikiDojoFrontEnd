@@ -36,7 +36,7 @@ define([
                 }
 
                 // TODO[Xavi] Refactoritzar, massa condicionals
-                if (contentTool && contentTool.type === this.type ) {
+                if (contentTool && contentTool.type === this.type) {
 
 
                     // Es una actualització
@@ -89,11 +89,14 @@ define([
                     return this.inherited(arguments);
                 }
 
-                var contentCache= dispatcher.getGlobalState().getContent(value.id);
+                var contentCache = dispatcher.getGlobalState().getContent(value.id);
 
                 if (contentCache && contentCache.rev != value.rev) {
                     dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
                 }
+
+                console.log("Confirmation: ", confirmation);
+
 
                 return confirmation ? 0 : 100;
             },
