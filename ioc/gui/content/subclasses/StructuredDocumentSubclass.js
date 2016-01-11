@@ -198,16 +198,37 @@ define([
 
             // Actualitzem el formulari
             // Afegim un salt per assegurar que no es perdi cap caràcter
-            jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
-            jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
+
+            // TODO[Xavi] Això es passa per Post, no cal afegir-lo
+            //jQuery('#' + $form.attr('id') + ' input[name="prefix"]').val(pre + "\n");
+            //jQuery('#' + $form.attr('id') + ' input[name="suffix"]').val(suf);
 
 
-            console.log("Editors:", this.editors, " header: ", header_id);
 
 
             text = this.editors[header_id].editor.getEditorValue();
             this.updateChunk(header_id, {'editing': text});
-            return $form.serialize();
+
+            var data = $form.serialize(),
+                query = {};
+
+            query.post = {};
+            query.post.prefix = pre + "\n";
+            query.post.suffix = suf;
+            query.post.wikitext = text;
+
+
+            data = data.replace(/^wikitext=.*?&/i, '');
+            data = data.replace (/prefix=.*?&/i, '');
+            data = data.replace (/&suffix=.*$/i, '');
+
+            query.get = data;
+
+            console.log("form:", $form);
+            console.log("Data: ", data);
+            console.log("Query: ", query);
+
+            return query;
 
         },
 
@@ -463,7 +484,7 @@ define([
          * @private
          */
         _updateChunks: function (content) {
-            var i, chunk, counter= 0;
+            var i, chunk, counter = 0;
 
             for (i = 0; i < content.chunks.length; i++) {
                 chunk = content.chunks[i];
@@ -481,7 +502,7 @@ define([
                 }
             }
 
-            this.editingChunksCounter=counter; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
+            this.editingChunksCounter = counter; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
         },
 
         /**
@@ -763,8 +784,7 @@ define([
             var query = this.getQuerySave(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-
-            this._callAction("lib/plugins/ajaxcommand/ajax.php?call=save_partial", query, containerId); // TODO[Xavi] El urlBase ha d'arribar pel processor
+            this._callActionPost("lib/plugins/ajaxcommand/ajax.php?call=save_partial", query, containerId); // TODO[Xavi] El urlBase ha d'arribar pel processor
         },
 
         _doCancelPartial: function (event) {
@@ -783,8 +803,27 @@ define([
             this.requester.setStandbyId(containerId);
             this.requester.sendRequest(query);
             this.requester.urlBase = urlBaseOriginal;
-        }
+        },
 
+        _callActionPost: function (urlBase, query, containerId) {
+            //console.log("StructuredDocumentSubclass#_callAction", urlBase, query, containerId);
+            var urlBaseOriginal = this.requester.urlBase,
+                getPostDataOriginal = this.requester.getPostData;
+
+            this.requester.urlBase = urlBase;
+            this.requester.setStandbyId(containerId);
+            this.requester.getPostData = function () {
+                return query.post;
+            };
+
+            this.requester.sendRequest(query.get);
+
+
+            this.requester.urlBase = urlBaseOriginal;
+            this.requester.getPostData = getPostDataOriginal;
+
+
+        }
 
     })
 });
