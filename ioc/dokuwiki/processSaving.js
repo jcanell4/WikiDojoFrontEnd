@@ -1,6 +1,7 @@
 define([
     "ioc/wiki30/dispatcherSingleton"
-], function (dispatcher) {
+], function (getDispatcher) {
+    var dispatcher = getDispatcher();
     return function () {
         var id = dispatcher.getGlobalState().getCurrentId();
 

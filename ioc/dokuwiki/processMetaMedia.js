@@ -2,21 +2,13 @@ define([
     "dojo/on"
             , "dojo/dom"
             , "dojo/_base/event"
-            , "dojo/dom-form"
-            , "dijit/registry"
-            , "ioc/dokuwiki/listHeadings"
-            , "ioc/dokuwiki/runRender"
-            , "ioc/dokuwiki/runQuiz"
             , "ioc/wiki30/Request"
-            , "ioc/dokuwiki/dwPageUi"
-            , "dojo/dom-class"
             , "ioc/wiki30/dispatcherSingleton"
-            , "dojo/dom-attr"
-], function (on, dom, event, domform, registry, listHeadings, runRender, runQuiz,
-        Request, dwPageUi, domClass, dispatcher, att) {
+            , "dojo/query"
+], function (on, dom, event, Request, getDispatcher, dojoQuery) {
 
     var eventHandlers = new Array();
-
+    var dispatcher = getDispatcher();
 
 
     var res = function (id, params) {
@@ -102,12 +94,12 @@ define([
         eventHandlers.push(on(domNode, '[name="fileoptions"]:change', function (checked) {
             if (checked) {
                 if (this.id === "thumbs") {
-                    dojo.query(".rows").addClass("thumbs");
-                    dojo.query(".rows").removeClass("rows");
+                    dojoQuery(".rows").addClass("thumbs");
+                    dojoQuery(".rows").removeClass("rows");
                 }
                 if (this.id === "rows") {
-                    dojo.query(".thumbs").addClass("rows");
-                    dojo.query(".thumbs").removeClass("thumbs");
+                    dojoQuery(".thumbs").addClass("rows");
+                    dojoQuery(".thumbs").removeClass("thumbs");
                 }
             }
         })
@@ -120,9 +112,9 @@ define([
             }
             if (checked) {
                 var elid = dispatcher.getGlobalState().pages["media"]["ns"];
-                var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
-                var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
-                query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort+"&preserveMetaData=true";
+                var list = dojoQuery('input[type=radio][name=fileoptions]:checked')[0].value;
+                var sort = dojoQuery('input[type=radio][name=filesort]:checked')[0].value;
+                var query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort+"&preserveMetaData=true";
                 requestMedia.sendRequest(query);
             }
         })
@@ -150,10 +142,10 @@ define([
                         mediaid = "&mediaid=" + mediaid;
                     }
                 }
-                var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
-                var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+                var list = dojoQuery('input[type=radio][name=fileoptions]:checked')[0].value;
+                var sort = dojoQuery('input[type=radio][name=filesort]:checked')[0].value;
                 //Al formulari hi ha un camp input amb l'ns, el canvio també per tal de que el post el faci bé
-                var myNs = dojo.query('input[name=ns]')[0];              
+                var myNs = dojoQuery('input[name=ns]')[0];              
                 myNs.value = elid;
                 var query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort+
                         '&qqfile=' + file.name + '&tab_details=view' + '&tab_files=files' + '&isupload=upload'
@@ -186,8 +178,8 @@ define([
             }
             
             var elid = dispatcher.getGlobalState().pages["media"]["ns"];
-            var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
-            var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+            var list = dojoQuery('input[type=radio][name=fileoptions]:checked')[0].value;
+            var sort = dojoQuery('input[type=radio][name=filesort]:checked')[0].value;
             var query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
             query = query + '&tab_files=search&mediado=searchlist&q='+q+"&preserveMetaData=true";
             requestMedia.sendRequest(query);
@@ -212,8 +204,8 @@ define([
             var q = "";
 
             var elid = dispatcher.getGlobalState().pages["media"]["ns"];
-            var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
-            var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
+            var list = dojoQuery('input[type=radio][name=fileoptions]:checked')[0].value;
+            var sort = dojoQuery('input[type=radio][name=filesort]:checked')[0].value;
             var query = 'id=' + elid + '&ns=' + elid + '&do=media&list='+list+'&sort='+sort;
             query = query + '&tab_files=search&mediado=searchlist&q='+q+"&preserveMetaData=true";
             requestMedia.sendRequest(query);

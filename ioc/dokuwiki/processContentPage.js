@@ -12,7 +12,8 @@ define([
     ,"ioc/wiki30/dispatcherSingleton"
     ,"dojo/dom-attr"
 ], function(on, dom, event, domform, listHeadings, runRender, runQuiz, 
-                Request, dwPageUi, domClass, dispatcher, att){
+                Request, dwPageUi, domClass, getDispatcher, att){
+    var dispatcher = getDispatcher();
     
     function setCurrentSection(node){
         var oldId = dispatcher.getGlobalState().getCurrentSectionId();

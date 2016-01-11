@@ -2,17 +2,13 @@ define([
      "dojo/on"
     ,"dojo/dom"
     ,"dojo/_base/event"
-    ,"dojo/dom-form"
-    ,"ioc/dokuwiki/listHeadings"
-    ,"ioc/dokuwiki/runRender"
-    ,"ioc/dokuwiki/runQuiz" 
-    ,"ioc/wiki30/Request"
     ,"ioc/dokuwiki/dwPageUi"
     ,"dojo/dom-class"
     ,"ioc/wiki30/dispatcherSingleton"
     ,"dojo/dom-attr"
-], function(on, dom, event, domform, listHeadings, runRender, runQuiz, 
-                Request, dwPageUi, domClass, dispatcher, att){
+], function(on, dom, event, dwPageUi, domClass, getDispatcher, att){
+    
+    var dispatcher = getDispatcher();
     
     function setCurrentElement(node){
         var oldId = dispatcher.getGlobalState().getCurrentElementId();

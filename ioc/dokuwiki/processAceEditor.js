@@ -17,10 +17,10 @@ define([
 
     'ioc/dokuwiki/underscore'
 ], function (registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container,
-             IocCommands, GlobalState, dispatcher, toolbarManager, geometry, style, on) {
-
+             IocCommands, GlobalState, getDispatcher, toolbarManager, geometry, style, on) {
 
     var
+        dispatcher = getDispatcher(),
         /**
          * Activa l'editor ACE a la pestanya actual o la pestanya pasada com argument per evitar problemas al recarregar.
          *
