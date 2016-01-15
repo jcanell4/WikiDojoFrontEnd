@@ -221,14 +221,14 @@ define([
                 // TODO[Xavi] Aquest bloc de codi està repetit al DiffDialog
                 require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
                     requester = new Request();
-
-                    requester.updateSectok = function (sectok) {
-                        this.sectok = sectok;
-                    };
-
-                    requester.sectok = requester.dispatcher.getSectok();
-                    requester.dispatcher.toUpdateSectok.push(requester);
                 }));
+
+                requester.updateSectok = function (sectok) {
+                    this.sectok = sectok;
+                };
+
+                requester.sectok = requester.dispatcher.getSectok();
+                requester.dispatcher.toUpdateSectok.push(requester);
 
                 requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.contentTool.ns;
 
@@ -238,6 +238,8 @@ define([
 
                 requester.setStandbyId(this.dispatcher.containerNodeId);
                 requester.sendRequest();
+
+                requester.dispatcher.toUpdateSectok.pop();
 
             },
 

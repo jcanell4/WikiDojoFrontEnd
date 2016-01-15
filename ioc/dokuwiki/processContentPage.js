@@ -10,6 +10,20 @@ define([
 ], function(on, dom, event, listHeadings, runRender, runQuiz,
                 Request, att){
 
+    var requestEdita = new Request();
+    requestEdita.updateSectok = function (sk) {
+        this.sectok = sk;
+    };
+    requestEdita.sectok = requestEdita.dispatcher.getSectok();
+    requestEdita.dispatcher.toUpdateSectok.push(requestEdita);
+
+    var requestImgDetail = new Request();
+    requestImgDetail.updateSectok = function (sk) {
+        this.sectok = sk;
+    };
+    requestImgDetail.sectok = requestImgDetail.dispatcher.getSectok();
+    requestImgDetail.dispatcher.toUpdateSectok.push(requestImgDetail);
+
     return function (id, params) {
 
         listHeadings(id);
@@ -17,21 +31,8 @@ define([
         runQuiz(id);
 
         var domNode = dom.byId(id);
-        var requestEdita = new Request();
-        requestEdita.updateSectok = function (sk) {
-            this.sectok = sk;
-        };
-        requestEdita.sectok = requestEdita.dispatcher.getSectok();
-        requestEdita.dispatcher.toUpdateSectok.push(requestEdita);
         requestEdita.urlBase = params.editCommand;
 
-
-        var requestImgDetail = new Request();
-        requestImgDetail.updateSectok = function (sk) {
-            this.sectok = sk;
-        };
-        requestImgDetail.sectok = requestImgDetail.dispatcher.getSectok();
-        requestImgDetail.dispatcher.toUpdateSectok.push(requestImgDetail);
         requestImgDetail.urlBase = params.detailCommand;
 
         on(domNode, 'div.imgb a.media:click, div.iocfigure a.media:click', function (e) {
