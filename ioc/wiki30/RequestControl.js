@@ -12,7 +12,6 @@ define([
             constructor: function (/*String*/ eventToControl, 
                                     /*String*/ urlBase,
                                     /*boolean*/ post) {
-               this.EventObserver = new EventObserver();
                this.request = new Request();
                this.request.set("urlBase", urlBase);
                this.post = post;
@@ -22,15 +21,19 @@ define([
                        return self.dataToSend;
                    };
                }
+               
+               var eventManager = this.request.dispatcher.getEventManager();
+               eventManager.registerEventForBroadcasting(this, eventToControl, this._sendRequest.bind(this));
             },
             
-            sendRequest: function(dataTosend, standbyId){
+            _sendRequest: function(dataTosend, standbyId){
                 this.dataToSend = dataTosend;
                 this.request.setStandbyId(standbyId);
                 if(this.post){
                     this.request.sendRequest();
-                }
-                
+                }else{
+                    this.request.sendRequest(this.dataToSend);
+                }                
             }
         });
     return ret;
