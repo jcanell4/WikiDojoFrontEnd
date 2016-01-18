@@ -12,12 +12,12 @@ define([
             require(["ioc/wiki30/Request"], function (Request) {
                 this.requester = new Request();
 
-                this.requester.updateSectok = function (sectok) {
-                    this.sectok = sectok;
-                };
-
-                this.requester.sectok = this.requester.dispatcher.getSectok();
-                this.requester.dispatcher.toUpdateSectok.push(this.requester);
+//                this.requester.updateSectok = function (sectok) {
+//                    this.sectok = sectok;
+//                };
+//
+//                this.requester.sectok = this.requester.dispatcher.getSectok();
+//                this.requester.dispatcher.toUpdateSectok.push(this.requester);
             }.bind(this));
         }
 

@@ -17,11 +17,11 @@ define([
     ,"ioc/wiki30/Request"
 ], function(on, dom, query,event, domform, Request){
     var requestUpdateAcl = new Request();
-    requestUpdateAcl.updateSectok=function(sk){
-            this.sectok=sk;
-    };
-    requestUpdateAcl.sectok = requestUpdateAcl.dispatcher.getSectok();
-    requestUpdateAcl.dispatcher.toUpdateSectok.push(requestUpdateAcl);
+//    requestUpdateAcl.updateSectok=function(sk){
+//            this.sectok=sk;
+//    };
+//    requestUpdateAcl.sectok = requestUpdateAcl.dispatcher.getSectok();
+//    requestUpdateAcl.dispatcher.toUpdateSectok.push(requestUpdateAcl);
 
     var res = function(id, params){
         // captura la manipulació de l'arbre

@@ -38,9 +38,9 @@ define([
          });*/
         var requestMedia = new Request();
         requestMedia.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media";
-        requestMedia.updateSectok = function (sk) {
-            this.sectok = sk;
-        };
+//        requestMedia.updateSectok = function (sk) {
+//            this.sectok = sk;
+//        };
 
 
         /*eventHandlers.push(on(domNode, 'img:click', function (e) {

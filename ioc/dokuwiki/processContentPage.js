@@ -11,18 +11,18 @@ define([
                 Request, att){
 
     var requestEdita = new Request();
-    requestEdita.updateSectok = function (sk) {
-        this.sectok = sk;
-    };
-    requestEdita.sectok = requestEdita.dispatcher.getSectok();
-    requestEdita.dispatcher.toUpdateSectok.push(requestEdita);
+//    requestEdita.updateSectok = function (sk) {
+//        this.sectok = sk;
+//    };
+//    requestEdita.sectok = requestEdita.dispatcher.getSectok();
+//    requestEdita.dispatcher.toUpdateSectok.push(requestEdita);
 
     var requestImgDetail = new Request();
-    requestImgDetail.updateSectok = function (sk) {
-        this.sectok = sk;
-    };
-    requestImgDetail.sectok = requestImgDetail.dispatcher.getSectok();
-    requestImgDetail.dispatcher.toUpdateSectok.push(requestImgDetail);
+//    requestImgDetail.updateSectok = function (sk) {
+//        this.sectok = sk;
+//    };
+//    requestImgDetail.sectok = requestImgDetail.dispatcher.getSectok();
+//    requestImgDetail.dispatcher.toUpdateSectok.push(requestImgDetail);
 
     return function (id, params) {
 

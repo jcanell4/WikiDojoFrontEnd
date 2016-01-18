@@ -15,11 +15,11 @@ define([
     ,"ioc/wiki30/Request"
 ], function(on, dom, query,event, domform, Request){
     var requestUpdate = new Request();
-    requestUpdate.updateSectok=function(sk){
-            this.sectok=sk;
-    };
-    requestUpdate.sectok = requestUpdate.dispatcher.getSectok();
-    requestUpdate.dispatcher.toUpdateSectok.push(requestUpdate);
+//    requestUpdate.updateSectok=function(sk){
+//            this.sectok=sk;
+//    };
+//    requestUpdate.sectok = requestUpdate.dispatcher.getSectok();
+//    requestUpdate.dispatcher.toUpdateSectok.push(requestUpdate);
 
 
     var res = function(id, params){

@@ -236,12 +236,12 @@ define([
                     require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) { // TODO[Xavi] comprovar si cal el hitch, no es fa servir el this per a res
                         requester = new Request();
 
-                        requester.updateSectok = function (sectok) {
-                            this.sectok = sectok;
-                        };
-
-                        requester.sectok = requester.dispatcher.getSectok();
-                        requester.dispatcher.toUpdateSectok.push(requester);
+//                        requester.updateSectok = function (sectok) {
+//                            this.sectok = sectok;
+//                        };
+//
+//                        requester.sectok = requester.dispatcher.getSectok();
+//                        requester.dispatcher.toUpdateSectok.push(requester);
                     }));
                 }
             })();

@@ -15,11 +15,11 @@ define([
     ,"ioc/wiki30/Request"
 ], function(on, dom, query, event, domform, Request){
     var requestUpdate = new Request();
-    requestUpdate.updateSectok=function(sk){
-            this.sectok=sk;
-    };
-    requestUpdate.sectok = requestUpdate.dispatcher.getSectok();
-    requestUpdate.dispatcher.toUpdateSectok.push(requestUpdate);
+//    requestUpdate.updateSectok=function(sk){
+//            this.sectok=sk;
+//    };
+//    requestUpdate.sectok = requestUpdate.dispatcher.getSectok();
+//    requestUpdate.dispatcher.toUpdateSectok.push(requestUpdate);
 
 
     var res = function(id, params){
@@ -45,13 +45,14 @@ define([
 
             // capturar el clic sobre els enllaços dels usuaris <a>
             var handle = on(forms[i], "tr.user_info a:click", function(e){
-            //enviar
-            var uri = this.href;
-            var queryString = uri.substring(uri.indexOf("?") + 1, uri.length);
-            queryString = "call=admin_task&" + queryString + "&sectok=" + requestUpdate.sectok;
-            
-            requestUpdate.sendRequest(queryString);
-            event.stop(e);
+                //enviar
+                var uri = this.href;
+                var queryString = uri.substring(uri.indexOf("?") + 1, uri.length);
+                queryString = "call=admin_task&" + queryString /*+ "&sectok=" + requestUpdate.sectok*/;
+
+                requestUpdate.sendRequest(queryString);
+                event.stop(e);
+                handle.remove();
         });
             
         };

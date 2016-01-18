@@ -67,12 +67,12 @@ define([
         _createRequest = function () {
             requester = new Request();
 
-            requester.updateSectok = function (sectok) {
-                this.sectok = sectok;
-            };
-
-            requester.sectok = requester.dispatcher.getSectok();
-            requester.dispatcher.toUpdateSectok.push(requester);
+//            requester.updateSectok = function (sectok) {
+//                this.sectok = sectok;
+//            };
+//
+//            requester.sectok = requester.dispatcher.getSectok();
+//            requester.dispatcher.toUpdateSectok.push(requester);
         };
 
     return function (params) {
