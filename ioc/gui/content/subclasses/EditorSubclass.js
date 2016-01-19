@@ -72,7 +72,8 @@ define([
                 //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
                 this.registerToChangesManager();
 
-                on(this.domNode, 'input', lang.hitch(this, this._checkChanges));
+
+                jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
 
 
                 if (!this.locked) {

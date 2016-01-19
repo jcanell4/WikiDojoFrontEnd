@@ -296,7 +296,7 @@ define([
         postAttach: function () {
             this.registerToChangesManager();
 
-            jQuery(this.domNode).on('input', this._checkChanges.bind(this));
+            jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
             this.inherited(arguments);
 
             console.log("StructuredDocumentSubclass#postLoad");
