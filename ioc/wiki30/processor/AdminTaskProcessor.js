@@ -11,7 +11,7 @@ define([
         {
 
             type: "admin",
-
+            
             /**
              * @param {*} value
              * @param {Dispatcher} dispatcher

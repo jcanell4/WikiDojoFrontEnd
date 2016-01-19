@@ -120,6 +120,7 @@ define([
              */
             updateDocument: function (content) {
                 this.setData(content.content);
+                this.render()
                 this.addDocument();
             },
             
