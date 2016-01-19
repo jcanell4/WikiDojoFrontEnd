@@ -77,6 +77,7 @@ define([
             constructor: function (docId, dispatcher, contentTool) {
                 this.docId = docId;
                 this.dispatcher = dispatcher;
+                this.eventManager = dispatcher.getEventManager();
                 this.timeout = 0;
                 this.draft = false;
                 this.msg = { // TODO[Xavi] Pendent de canviar, el missatge el passarem per paràmetre
@@ -122,6 +123,9 @@ define([
                 } else if (!timeout) {
                     this.reset();
                 } else {
+                    //this.timeout = timeout * 5; // Per fer tests
+                    //this.timeoutWarning = timeout*10; // Per fer tests
+
                     this.timeout = timeout * 1000;
                     this.timeoutWarning = (timeout - this.WARNING_TIMER) * 1000;
                     this.reset();
@@ -184,62 +188,51 @@ define([
                 this.lock(this.draft);
             },
 
-            lock: function (draft) {
 
-                this.contentTool.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=lock';
-                var query = 'do=lock'
-                    + '&id=' + this.contentTool.id;
+            lock: function (draft) {
+                var dataToSend = {
+                    id: this.contentTool.ns,
+                    do: 'lock'
+                };
 
                 if (draft) {
                     var draftQuery = this.contentTool.generateDraft();
-                    query += '&draft=' + JSON.stringify(draftQuery);
+                    dataToSend.draft = JSON.stringify(draftQuery);
+
                 }
 
-                this.contentTool.requester.setStandbyId(false);
-                this.contentTool.requester.sendRequest(query);
+                this.eventManager.dispatchEvent('lock_document', {
+                    id: this.contentTool.id,
+                    dataToSend: dataToSend
+                });
+
             },
 
             unlock: function () {
-                //console.log("Locktimer#unlock");
-                this.contentTool.requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=unlock';
-                var query = 'do=unlock'
-                    + '&id=' + this.contentTool.id;
+                this.eventManager.dispatchEvent('unlock_document', {
+                    id: this.contentTool.id,
+                    dataToSend: 'do=unlock&id=' + this.contentTool.ns
+                });
 
-                this.contentTool.requester.sendRequest(query);
             },
 
             cancelEditing: function (keepDraft) {
 
-                // TODO[Xavi]
                 this.contentTool.forceReset(); // Així evitem que demani si volen guardar-se els canvis
                 this.clear();
 
-                // TODO[Xavi] això s'ha de arreglar, funciona però no cal generar al request ja que l'obtenim del content tool i s'ha de modificar el tema del draft
 
-                var requester;
-
-                // TODO[Xavi] Aquest bloc de codi està repetit al DiffDialog
-                require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
-                    requester = new Request();
-                }));
-
-//                requester.updateSectok = function (sectok) {
-//                    this.sectok = sectok;
-//                };
-//
-//                requester.sectok = requester.dispatcher.getSectok();
-//                requester.dispatcher.toUpdateSectok.push(requester);
-
-                requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.contentTool.ns;
+                var dataToSend = 'do=cancel&id=' + this.contentTool.ns;
 
                 if (keepDraft) {
-                    requester.urlBase += '&keep_draft=true';
+                    dataToSend += "&keep_draft=true";
                 }
 
-                requester.setStandbyId(this.dispatcher.containerNodeId);
-                requester.sendRequest();
-
-//                requester.dispatcher.toUpdateSectok.pop();
+                this.eventManager.dispatchEvent("cancel_document", {
+                    id: this.contentTool.id,
+                    dataToSend: dataToSend,
+                    standbyId: this.dispatcher.containerNodeId
+                })
 
             },
 

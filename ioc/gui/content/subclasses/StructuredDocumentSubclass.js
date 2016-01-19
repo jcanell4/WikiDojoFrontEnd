@@ -119,10 +119,15 @@ define([
 
                 jQuery('#container_' + auxId).on('dblclick', function () {
 
+
                     var aux_id = this.id.replace('container_', ''),
                         section_id = aux_id.replace(context.id + "_", '');
 
-                    context.dispatchEvent("edit_partial_" + context.id, {id: context.id, chunk: section_id});
+                    if (jQuery.inArray(section_id, context.editingChunks) === -1) {
+                        context.dispatchEvent("edit_partial_" + context.id, {id: context.id, chunk: section_id});
+                    } else {
+                        console.log("Ja s'està editant ",section_id);
+                    }
 
                 });
             }
@@ -197,28 +202,18 @@ define([
             suf += this.data.suf || '';
 
             // Actualitzem les dades d'edició
-
-
             text = this.editors[header_id].editor.getEditorValue();
             this.updateChunk(header_id, {'editing': text});
 
-            var data = $form.serialize(),
-                query = {};
 
-            query.post = {};
             // Afegim un salt per assegurar que no es perdi cap caràcter
-            query.post.prefix = pre + "\n";
-            query.post.suffix = suf;
-            query.post.wikitext = text;
+            values.prefix = pre + "\n";
+            values.suffix = suf;
+            values.wikitext = text;
 
+            console.log("Data to save:", values);
 
-            data = data.replace(/^wikitext=.*?&/i, '');
-            data = data.replace (/prefix=.*?&/i, '');
-            data = data.replace (/&suffix=.*$/i, '');
-
-            query.get = data;
-
-            return query;
+            return values;
         },
 
         addCancelListener: function (context) {
@@ -233,20 +228,12 @@ define([
         },
 
         getQueryCancel: function (section_id) {
-            var $form = jQuery('#form_' + this.id + "_" + section_id);
-
-            return $form.serialize();
+            return 'do=cancel_partial&id=' + this.ns + '&section_id=' + section_id
+                + '&editing_chunks=' + this.getEditingChunks().join(',');
         },
 
         getEditingChunks: function () {
-            var editingChunks = [];
-            for (var i = 0; i < this.data.chunks.length; i++) {
-                if (this.data.chunks[i].text) {
-                    editingChunks.push(this.data.chunks[i].header_id);
-                }
-            }
-
-            return editingChunks;
+            return this.editingChunks || [];
         },
 
         /**
@@ -314,12 +301,11 @@ define([
 
             console.log("StructuredDocumentSubclass#postLoad");
 
+            this.eventManager = this.dispatcher.getEventManager();
 
-            var eventManager = this.dispatcher.getEventManager();
-
-            eventManager.registerEventForBroadcasting(this, "edit_partial_" + this.id, this._doEditPartial.bind(this));
-            eventManager.registerEventForBroadcasting(this, "save_partial_" + this.id, this._doSavePartial.bind(this));
-            eventManager.registerEventForBroadcasting(this, "cancel_partial_" + this.id, this._doCancelPartial.bind(this));
+            this.eventManager.registerEventForBroadcasting(this, "edit_partial_" + this.id, this._doEditPartial.bind(this));
+            this.eventManager.registerEventForBroadcasting(this, "save_partial_" + this.id, this._doSavePartial.bind(this));
+            this.eventManager.registerEventForBroadcasting(this, "cancel_partial_" + this.id, this._doCancelPartial.bind(this));
 
             this.inherited(arguments);
         },
@@ -475,7 +461,10 @@ define([
          * @private
          */
         _updateChunks: function (content) {
-            var i, chunk, counter = 0;
+            var i, chunk;
+
+            this.editingChunksCounter = 0;
+            this.editingChunks = [];
 
             for (i = 0; i < content.chunks.length; i++) {
                 chunk = content.chunks[i];
@@ -488,12 +477,14 @@ define([
                         }
 
                         this.changedChunks[chunk.header_id].content = chunk.text.editing;
-                        counter++;
+                        this.editingChunks.push(chunk.header_id);
+                        this.editingChunksCounter++; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
+
                     }
                 }
             }
 
-            this.editingChunksCounter = counter; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
+
         },
 
         /**
@@ -757,14 +748,16 @@ define([
 
 
         _doEditPartial: function (event) {
-            //console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
-            var query = this.getQueryEdit(event.chunk),
+            var dataToSend = this.getQueryEdit(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-            if (jQuery.inArray(event.chunk, this.getEditingChunks()) < 0) {
-                this._callAction('lib/plugins/ajaxcommand/ajax.php?call=edit_partial', query, containerId);  // TODO[Xavi] El urlBase ha d'arribar pel processor
-            }
+            this.eventManager.dispatchEvent("edit_partial", {
+                id: this.id,
+                dataToSend: dataToSend,
+                standbyId: containerId
+            })
 
         },
 
@@ -772,47 +765,30 @@ define([
         _doSavePartial: function (event) {
             //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
-            var query = this.getQuerySave(event.chunk),
+            var dataToSend = this.getQuerySave(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-            this._callActionPost("lib/plugins/ajaxcommand/ajax.php?call=save_partial", query, containerId); // TODO[Xavi] El urlBase ha d'arribar pel processor
+            this.eventManager.dispatchEvent("save_partial", {
+                id: this.id,
+                dataToSend: dataToSend,
+                standbyId: containerId
+            })
+
         },
 
         _doCancelPartial: function (event) {
             //console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
-            var query = this.getQueryCancel(event.chunk),
+            var dataToSend = this.getQueryCancel(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-            this._callAction("lib/plugins/ajaxcommand/ajax.php?call=cancel_partial", query, containerId);  // TODO[Xavi] El urlBase ha d'arribar pel processor
+            this.eventManager.dispatchEvent("cancel_partial", {
+                id: this.id,
+                dataToSend: dataToSend,
+                standbyId: containerId
+            })
+
         },
-
-        _callAction: function (urlBase, query, containerId) {
-            //console.log("StructuredDocumentSubclass#_callAction", urlBase, query, containerId);
-            var urlBaseOriginal = this.requester.urlBase;
-            this.requester.urlBase = urlBase;
-            this.requester.setStandbyId(containerId);
-            this.requester.sendRequest(query);
-            this.requester.urlBase = urlBaseOriginal;
-        },
-
-        _callActionPost: function (urlBase, query, containerId) {
-            //console.log("StructuredDocumentSubclass#_callAction", urlBase, query, containerId);
-            var urlBaseOriginal = this.requester.urlBase,
-                getPostDataOriginal = this.requester.getPostData;
-
-            this.requester.urlBase = urlBase;
-            this.requester.setStandbyId(containerId);
-            this.requester.getPostData = function () {
-                return query.post;
-            };
-
-            this.requester.sendRequest(query.get);
-
-
-            this.requester.urlBase = urlBaseOriginal;
-            this.requester.getPostData = getPostDataOriginal;
-        }
 
     })
 });
