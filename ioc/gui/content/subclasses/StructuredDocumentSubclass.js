@@ -37,6 +37,7 @@ define([
             this._generateEmptyChangedChunks(args.content.chunks);
             this.savedDrafts = {};
             this.editors = {}; // A aquest objecte es guardarà per cada header_id el seu editor
+            this.currentSectionId = null;
         },
 
 
@@ -296,7 +297,7 @@ define([
         postAttach: function () {
             this.registerToChangesManager();
 
-            jQuery(this.domNode).on('input', this._checkChanges.bind(this));
+            jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
             this.inherited(arguments);
 
             console.log("StructuredDocumentSubclass#postLoad");
@@ -425,6 +426,11 @@ define([
 
             this.setData(content);
             this.render();
+
+            // Si existeix una secció seleccionada, la reseleccionem
+            if (this._getCurrentSectionId()) {
+                this._setCurrentSection(this._getCurrentSectionId());
+            }
         },
 
         /**
@@ -711,7 +717,7 @@ define([
                 $container = jQuery('#container_' + auxId);
 
                 $container.on('click', function () {
-                    context._setCurrentSection(this.id, context);
+                    context._setCurrentSection(this.id);
                     return false;
                 });
 
@@ -725,9 +731,16 @@ define([
         },
 
         _setCurrentSection: function (section_id) {
-            this.dispatcher.getGlobalState().setCurrentSectionId(section_id);
+            var isEditing = jQuery.inArray(section_id.replace('container_'+this.id+'_', ''), this.getEditingChunks()) > -1;
+
+            this.dispatcher.getGlobalState().setCurrentSection(section_id, isEditing);
             this._setHighlight(section_id, 'section_selected');
-            this.dispatcher.updateFromState();
+            this.currentSectionId = section_id;
+            this.dispatcher.updateFromState(); // TODO[Xavi] Això es cridarà des del globalState.setCurrentSection()
+        },
+
+        _getCurrentSectionId: function() {
+            return this.currentSectionId;
         },
 
         _setHighlight: function (section_id, className) {
@@ -748,7 +761,7 @@ define([
 
 
         _doEditPartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+            //console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
             var dataToSend = this.getQueryEdit(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;

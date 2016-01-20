@@ -35,16 +35,16 @@ define([
 
         /** @type {InfoStorage} */
         infoStorage: {
-            timer:       {
-                global:   null,
+            timer: {
+                global: null,
                 document: {}
             },
             currentInfo: {
-                global:   null,
+                global: null,
                 document: {}
             },
-            storedInfo:  {
-                global:   null,
+            storedInfo: {
+                global: null,
                 document: {}
             }
         },
@@ -53,6 +53,7 @@ define([
          * Node es un node del DOM o una cadena amb el nom de la secció.
          *
          * @param {string|*} node on es troba la nova selecció, o nom de la secció
+         * @private TODO[Xavi] S'hauria de fer servir sempre setCurrentSection()
          */
         setCurrentSectionId: function (node) {
             if (typeof node === "string") {//recibe directamente el id
@@ -63,16 +64,54 @@ define([
         },
 
         /**
+         *
+         * @param {bool} state
+         * @private
+         */
+        setCurrentSectionState: function (state) {
+            if (state) {
+                this.getCurrentContent().currentSectionState = state;
+            } else {
+                this.getCurrentContent().currentSectionState = null;
+            }
+        },
+
+
+        // TODO[Xavi] Disparar aquí el UpdateView
+        setCurrentSection: function (section_id, state) {
+            this.setCurrentSectionId(section_id);
+            this.setCurrentSectionState(state);
+        },
+
+        /**
          * Aquest mètode es cridat quan es clica una secció i quan es carrega la página.
          *
          * TODO[Xavi] Es cridat dues vegades, abans de fer el canvi i després de fer el canvi a la secció
          * seleccionada. Comprovar que es correcte fer aquestes crides.
          *
          * @returns {null|string} nom de la secció seleccionada
+         * @private [TODO]Xavi s'hauria de crida sempre a getCurrentSection
          */
         getCurrentSectionId: function () {
             return this.getCurrentContent().currentSectionId;
         },
+
+        /**
+         *
+         * @private
+         * @returns {bool|null}
+         */
+        getCurrentSectionState: function () {
+            return this.getCurrentContent().currentSectionState;
+        },
+
+        getCurrentSection: function () {
+            return {
+                id: this.getCurrentSectionId(),
+                state: this.getCurrentSectionState()
+            }
+        },
+
 
         /**
          * Node es un node del DOM o una cadena amb el nom de l'element
