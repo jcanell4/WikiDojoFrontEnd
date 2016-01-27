@@ -724,7 +724,7 @@ define([
 
                 $container.on('click', function () {
                     context._setCurrentSection(this.id);
-                    return false;
+                    return true;
                 });
 
                 $container.on('mouseover mouseout', function () {
