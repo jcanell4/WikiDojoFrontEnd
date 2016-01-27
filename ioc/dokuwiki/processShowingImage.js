@@ -3,11 +3,8 @@ define([
             , "ioc/gui/IocButton"
             , "dijit/Dialog"
             , "dijit/form/Button"
-            , "dojo/dom"
-            , "dojo/_base/xhr"
-            , "dojo/query"
             , "dojo/domReady!"
-], function(domConstruct, iocButton, Dialog, Button, dom, xhr, query) {
+], function(domConstruct, iocButton, Dialog, Button) {
     var res = function(params) {
         var maxWidth = 800;
         var maxHeight = 600;

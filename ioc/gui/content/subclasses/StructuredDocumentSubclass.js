@@ -431,6 +431,12 @@ define([
             if (this._getCurrentSectionId()) {
                 this._setCurrentSection(this._getCurrentSectionId());
             }
+            
+            if(Object.keys(this.editors).length==0){
+                this._changeAction("view");
+            }else{
+                this._changeAction("sec_edit");
+            }
         },
 
         /**
@@ -688,7 +694,7 @@ define([
         },
 
         removeEditors: function () {
-            if (!this.editors || this.editors.count === 0) {
+            if (!this.editors || Object.keys(this.editors).length === 0) {
                 return;
             }
 
@@ -730,6 +736,9 @@ define([
 
         },
 
+        _changeAction: function(action){
+            this.dispatcher.getGlobalState().getContent(this.id)["action"]=action;
+        },
         _setCurrentSection: function (section_id) {
             var isEditing = jQuery.inArray(section_id.replace('container_'+this.id+'_', ''), this.getEditingChunks()) > -1;
 

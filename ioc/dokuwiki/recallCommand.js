@@ -3,13 +3,8 @@
 * @author Josep Cañellas & Eduard Latorre
 */
 define([
-     "dojo/on"
-    ,"dojo/dom"
-    ,"dojo/query"
-    ,"dojo/_base/event"
-    ,"dojo/dom-form"
-    ,"ioc/wiki30/Request"
-], function(on, dom, query,event, domform, Request){
+    "ioc/wiki30/Request"
+], function(Request){
     var requestUpdate = new Request();
 //    requestUpdate.updateSectok=function(sk){
 //            this.sectok=sk;

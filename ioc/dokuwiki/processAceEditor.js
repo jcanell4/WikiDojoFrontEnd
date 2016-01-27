@@ -21,6 +21,7 @@ define([
 
     var dispatcher = getDispatcher();
     var
+        dispatcher = getDispatcher(),
         /**
          * Activa l'editor ACE a la pestanya actual o la pestanya pasada com argument per evitar problemas al recarregar.
          *
