@@ -431,7 +431,8 @@ define([
             if (this._getCurrentSectionId()) {
                 this._setCurrentSection(this._getCurrentSectionId());
             }
-            
+
+            //TODO:canvia la edició de view a edit
             if(Object.keys(this.editors).length==0){
                 this._changeAction("view");
             }else{
@@ -671,6 +672,8 @@ define([
             //$textarea.before('<div id=' + 'editor_' + data.auxId + '></div>');
 
 
+            console.log("JSINFO:", JSINFO);
+
             var editor = new AceFacade({
                 xmltags: JSINFO.plugin_aceeditor.xmltags,
                 containerId: 'editor_' + data.auxId,
@@ -739,13 +742,15 @@ define([
         _changeAction: function(action){
             this.dispatcher.getGlobalState().getContent(this.id)["action"]=action;
         },
+
         _setCurrentSection: function (section_id) {
+
             var isEditing = jQuery.inArray(section_id.replace('container_'+this.id+'_', ''), this.getEditingChunks()) > -1;
 
-            this.dispatcher.getGlobalState().setCurrentSection(section_id, isEditing);
+            this.dispatcher.getGlobalState().setCurrentElement(section_id, isEditing);
             this._setHighlight(section_id, 'section_selected');
             this.currentSectionId = section_id;
-            this.dispatcher.updateFromState(); // TODO[Xavi] Això es cridarà des del globalState.setCurrentSection()
+            this.dispatcher.updateFromState(); // TODO[Xavi] Això es cridarà des del globalState.setCurrentElement()
         },
 
         _getCurrentSectionId: function() {

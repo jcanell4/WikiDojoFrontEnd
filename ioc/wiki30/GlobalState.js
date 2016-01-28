@@ -50,50 +50,22 @@ define([
         },
 
         /**
-         * Node es un node del DOM o una cadena amb el nom de la secció.
-         *
-         * @param {string|*} node on es troba la nova selecció, o nom de la secció
-         * @private TODO[Xavi] S'hauria de fer servir sempre setCurrentSection()
-         */
-        setCurrentSectionId: function (node) {
-            if (typeof node === "string") {//recibe directamente el id
-                this.getCurrentContent().currentSectionId = node;
-            } else {
-                this.getCurrentContent().currentSectionId = dwPageUi.getIdSectionNode(node);
-            }
-        },
-
-        /**
          *
          * @param {bool} state
          * @private
          */
-        setCurrentSectionState: function (state) {
+        setCurrentElementState: function (state) {
             if (state) {
-                this.getCurrentContent().currentSectionState = state;
+                this.getCurrentContent().currentElementState = state;
             } else {
-                this.getCurrentContent().currentSectionState = null;
+                this.getCurrentContent().currentElementState = null;
             }
         },
 
 
-        // TODO[Xavi] Disparar aquí el UpdateView
-        setCurrentSection: function (section_id, state) {
-            this.setCurrentSectionId(section_id);
-            this.setCurrentSectionState(state);
-        },
-
-        /**
-         * Aquest mètode es cridat quan es clica una secció i quan es carrega la página.
-         *
-         * TODO[Xavi] Es cridat dues vegades, abans de fer el canvi i després de fer el canvi a la secció
-         * seleccionada. Comprovar que es correcte fer aquestes crides.
-         *
-         * @returns {null|string} nom de la secció seleccionada
-         * @private [TODO]Xavi s'hauria de crida sempre a getCurrentSection
-         */
-        getCurrentSectionId: function () {
-            return this.getCurrentContent().currentSectionId;
+        setCurrentElement: function (elementId, state) {
+            this.setCurrentElementId(elementId);
+            this.setCurrentElementState(state);
         },
 
         /**
@@ -101,14 +73,14 @@ define([
          * @private
          * @returns {bool|null}
          */
-        getCurrentSectionState: function () {
-            return this.getCurrentContent().currentSectionState;
+        getCurrentElementState: function () {
+            return this.getCurrentContent().currentElementState;
         },
 
-        getCurrentSection: function () {
+        getCurrentElement: function () {
             return {
-                id: this.getCurrentSectionId(),
-                state: this.getCurrentSectionState()
+                id: this.getCurrentElementId(),
+                state: this.getCurrentElementState()
             }
         },
 
@@ -137,7 +109,6 @@ define([
 
         /**
          * Aquest mètode es cridat quan es clica un element i quan es carrega la página.
-         *
          *
          * @returns {null|string} nom de l'element seleccionat
          */
