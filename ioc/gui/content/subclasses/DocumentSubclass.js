@@ -1,8 +1,10 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/DokuwikiContent",
-    "ioc/gui/content/subclasses/LocktimedDocumentSubclass"
-], function (declare, DokuwikiContent, LocktimedDocumentSubclass) {
+    "ioc/gui/content/subclasses/LocktimedDocumentSubclass",
+    "dijit/registry",
+
+], function (declare, DokuwikiContent, LocktimedDocumentSubclass,registry) {
 
     return declare([LocktimedDocumentSubclass],
         /**
@@ -15,6 +17,13 @@ define([
          * @see contentToolFactory.generate()
          */
         {
+
+            postAttach: function() {
+                // TODO[Xavi] Això no funciona, el content no te dades si no html
+                this.inherited(arguments);
+                this.updateTitle(this);
+            },
+
             /**
              * Aquest mètode es cridat automàticament al descarregar-se el ContentTool, en aquest cas s'encarrega
              * de que es faci el tancament adequat.
@@ -103,7 +112,7 @@ define([
 
                 if (!contentCache[id]) {
                     contentCache[id] = new DokuwikiContent({
-                        "id":  id,
+                        "id": id,
                         "rev": rev
                     });
                 }
@@ -120,17 +129,30 @@ define([
              */
             updateDocument: function (content) {
                 this.setData(content.content);
-                this.render()
+                this.updateTitle(content.content);
+                this.render();
                 this.addDocument();
             },
-            
-            /*
-             *
-             */
 
-            getDocumentId: function(){
+            getDocumentId: function () {
                 return this.id;
-            }
+            },
+
+            /**
+             * TODO[Xavi] Generalitzar, compartit per tots els editors de documents que suportin control de versions (duplicat a StructuredDocumentSubclass)
+             *
+             * @param content
+             */
+            updateTitle: function (content) {
+                var title = content.title;
+
+                if (content.rev) {
+                    title += " - Revisió (" + content.rev + ")";
+                }
+
+                this.controlButton.set("label", title); // controlButton es una propietat heretada de Dijit.ContentPane
+            },
+
 
         });
 });

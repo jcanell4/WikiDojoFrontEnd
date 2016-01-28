@@ -27,8 +27,9 @@ define([
     'ioc/gui/content/subclasses/LocktimedDocumentSubclass',
     'ioc/dokuwiki/AceManager/AceFacade',
     'dojo/dom-class',
-    'ioc/dokuwiki/dwPageUi'
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, domClass, dwPageUi) {
+    'ioc/dokuwiki/dwPageUi',
+    "dijit/registry",
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, domClass, dwPageUi, registry) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
@@ -308,7 +309,7 @@ define([
             this.eventManager.registerEventForBroadcasting(this, "save_partial_" + this.id, this._doSavePartial.bind(this));
             this.eventManager.registerEventForBroadcasting(this, "cancel_partial_" + this.id, this._doCancelPartial.bind(this));
 
-            this.inherited(arguments);
+            this.updateTitle(this.data);
         },
 
 
@@ -419,6 +420,8 @@ define([
             //console.log('StructuredDocumentSubclass#updateDocument', content);
             this._updateChunks(content);
             this._updateStructure(content);
+            this.updateTitle(content);
+
 
             if (content.locked) {
                 this.lockEditors();
@@ -438,6 +441,21 @@ define([
             }else{
                 this._changeAction("sec_edit");
             }
+        },
+
+        /**
+         * TODO[Xavi] Generalitzar, compartit per tots els editors de documents que suportin control de versions (duplicat a DocumentSubclass)
+         *
+         * @param content
+         */
+        updateTitle: function (content) {
+            var title = content.title;
+
+            if (content.rev) {
+                title += " - Revisió (" + content.rev + ")";
+            }
+
+            this.controlButton.set("label", title); // controlButton es una propietat heretada de Dijit.ContentPane
         },
 
         /**

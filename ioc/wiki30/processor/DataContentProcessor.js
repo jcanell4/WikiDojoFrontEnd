@@ -51,7 +51,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //console.log("DataContentProcessor#process", value);
+                console.log("DataContentProcessor#process", value);
 
                 var $content = jQuery(value.content);
 
@@ -75,7 +75,7 @@ define([
 
 
                 ready(function () {
-                    var content = value.draft? value.draft.content : '';
+                    var content = value.draft ? value.draft.content : '';
 
                     editing(value.editing, value.id, dispatcher, content);
                 });
@@ -113,17 +113,21 @@ define([
             createContentTool: function (content, dispatcher) {
 
                 var args = {
-                    ns:              content.ns,
-                    id:              content.id,
-                    title:           content.title,
-                    content:         content.content,
-                    closable:        true,
-                    dispatcher:      dispatcher,
+                    ns: content.ns,
+                    id: content.id,
+                    title: content.title,
+                    content: content.content,
+                    closable: true,
+                    dispatcher: dispatcher,
                     originalContent: this._extractContentFromNode(content.editor.editorNode),
-                    type:            this.type,
-                    locked:          content.editing.locked
+                    type: this.type,
+                    locked: content.editing.locked,
+                    rev: content.rev
                 };
 
+
+                console.log("args:", args);
+                console.log("content:", content);
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             },
 
