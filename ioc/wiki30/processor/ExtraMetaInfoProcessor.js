@@ -32,6 +32,10 @@ define([
                     selectedPane,
                     contentCache = dispatcher.getContentCache(content.id),
                     ret={};
+                if(!contentCache){
+                    console.error("Error! no existeix la pestanya: " + content.id);
+                    return;
+                }
 
                 if(Array.isArray(content.meta) && Object.keys(content.meta).indexOf('0')>0 ){
                     for (m in content.meta) {
