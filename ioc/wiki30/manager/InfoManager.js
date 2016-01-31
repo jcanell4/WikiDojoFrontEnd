@@ -60,6 +60,10 @@ define([
                         case "info":
                             style = "color:#00529B;background-color:#BDE5F8";
                             break;
+                            
+                        case "notify":
+                            style = "color:#00529B;background-color:#BDE5F8";
+                            break;
                     }
                     return style;
                 },
