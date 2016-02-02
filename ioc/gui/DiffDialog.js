@@ -77,6 +77,9 @@ define([
 
             this.timerID = window.setTimeout(this.onTimeout, this.timeout * 1000, this);
 
+            console.log("Document:", this.document);
+            console.log("Draft:", this.draft);
+
             var documentLabel = "Document (" + this.document.date + ")",
                 draftLabel = "Esborrany (" + this.draft.date + ")",
                 diff = jsdifflib.getDiff(this.document.content, this.draft.content, documentLabel, draftLabel);

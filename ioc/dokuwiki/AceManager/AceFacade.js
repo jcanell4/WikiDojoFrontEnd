@@ -8,8 +8,9 @@ define([
     'ioc/dokuwiki/AceManager/Container2',
     'ioc/dokuwiki/AceManager/IocCommands',
     'ioc/dokuwiki/AceManager/patcher',
+    'dojo/dom-style'
 
-], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher) {
+], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style) {
     return declare([], {
 
         constructor: function (args) {
@@ -140,6 +141,10 @@ define([
 
         unlockEditor: function() {
             this.iocAceEditor.setReadOnly(false);
+        },
+
+        setHeight: function(h) {
+            style.set(this.iocAceEditor.containerId, "height", "" + h + "px"); // TODO [Xavi] això no pot queda així, afegir una mètode al editor per obternir la informació.
         }
 
     });

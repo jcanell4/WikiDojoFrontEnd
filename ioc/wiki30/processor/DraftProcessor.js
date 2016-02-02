@@ -29,7 +29,7 @@ define([
              * @private
              */
             _processDialog: function (value, dispatcher) {
-                //console.log("DraftProcessor#_processDialog", value);
+                console.log("DraftProcessor#_processDialog", value);
 
 
                 // TODO[Xavi] En lloc de fer-ho així cercar una manera de passar directament el valor des de la wiki

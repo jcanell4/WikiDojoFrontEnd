@@ -28,8 +28,13 @@ define([
     'ioc/dokuwiki/AceManager/AceFacade',
     'dojo/dom-class',
     'ioc/dokuwiki/dwPageUi',
-    "dijit/registry",
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, domClass, dwPageUi, registry) {
+    'dijit/registry',
+    'dojo/dom',
+    'dojo/dom-geometry',
+    'dojo/dom-style',
+
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, domClass, dwPageUi, registry,
+             dom, geometry, style) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
@@ -70,6 +75,8 @@ define([
                 this.unlockEditors();
                 this.isLockNeeded();
             }
+
+            this.fillEditorContainer();
 
         },
 
@@ -128,7 +135,7 @@ define([
                     if (jQuery.inArray(section_id, context.editingChunks) === -1) {
                         context.dispatchEvent("edit_partial_" + context.id, {id: context.id, chunk: section_id});
                     } else {
-                        console.log("Ja s'està editant ",section_id);
+                        console.log("Ja s'està editant ", section_id);
                     }
 
                 });
@@ -436,9 +443,9 @@ define([
             }
 
             //TODO:canvia la edició de view a edit
-            if(Object.keys(this.editors).length==0){
+            if (Object.keys(this.editors).length == 0) {
                 this._changeAction("view");
-            }else{
+            } else {
                 this._changeAction("sec_edit");
             }
         },
@@ -757,13 +764,13 @@ define([
 
         },
 
-        _changeAction: function(action){
-            this.dispatcher.getGlobalState().getContent(this.id)["action"]=action;
+        _changeAction: function (action) {
+            this.dispatcher.getGlobalState().getContent(this.id)["action"] = action;
         },
 
         _setCurrentSection: function (section_id) {
 
-            var isEditing = jQuery.inArray(section_id.replace('container_'+this.id+'_', ''), this.getEditingChunks()) > -1;
+            var isEditing = jQuery.inArray(section_id.replace('container_' + this.id + '_', ''), this.getEditingChunks()) > -1;
 
             this.dispatcher.getGlobalState().setCurrentElement(section_id, isEditing);
             this._setHighlight(section_id, 'section_selected');
@@ -771,7 +778,7 @@ define([
             this.dispatcher.updateFromState(); // TODO[Xavi] Això es cridarà des del globalState.setCurrentElement()
         },
 
-        _getCurrentSectionId: function() {
+        _getCurrentSectionId: function () {
             return this.currentSectionId;
         },
 
@@ -834,6 +841,34 @@ define([
             })
 
         },
+
+        //TODO[Xavi] Copiat de processAceEditor
+        //TODO: no es tracta d'un editor, si no del array d'editors, tenim la llista?
+
+        getEditors: function () {
+            return this.editors;
+        },
+
+        fillEditorContainer: function () {
+            var editorNode = dom.byId(this.id),
+                h = geometry.getContentBox(editorNode).h,
+                editors = this.getEditors();
+
+            for (var header_id in editors) {
+
+                console.log("header", header_id, "editors:", editors);
+                //console.log("Canviant mida del texarea a: " + h); // TODO: Conservarem la opció de treballar amb el textarea?
+                //style.set(params.textAreaId, "height", "" + h - 50 + "px");
+
+                console.log("Canviant mida del editor a: " + h);
+                // TODO[Xavi] Extreure la diferencia d'alçada a una 'constant'
+                //style.set(editors[header_id].editor.iocAceEditor.containerId, "height", "" + h - 50 + "px"); // TODO [Xavi] això no pot queda així, afegir una mètode al editor per obternir la informació.
+                editors[header_id].editor.setHeight(h-50);
+
+            }
+
+
+        }
 
     })
 });
