@@ -863,7 +863,7 @@ define([
                 console.log("Canviant mida del editor a: " + h);
                 // TODO[Xavi] Extreure la diferencia d'alçada a una 'constant'
                 //style.set(editors[header_id].editor.iocAceEditor.containerId, "height", "" + h - 50 + "px"); // TODO [Xavi] això no pot queda així, afegir una mètode al editor per obternir la informació.
-                editors[header_id].editor.setHeight(h-50);
+                editors[header_id].editor.setHeight(h-50); //
 
             }
 

@@ -13,7 +13,7 @@ define([
 ], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, lang, on, dom, jsdifflib, template) {
 
 
-    // TODO[Xavi] Solució temporal per evitar duplicacións a pantalla si es clica multiples vegades el botó d'editar. S'hauria de refactoritzar i convetir en un singleton.
+    // TODO[Xavi] Solució temporal per evitar duplicacions a pantalla si es clica multiples vegades el botó d'editar. S'hauria de refactoritzar i convetir en un singleton.
     var isShown = false;
 
     return declare("ioc.gui.DiffDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin], {
