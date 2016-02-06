@@ -850,25 +850,35 @@ define([
         },
 
         fillEditorContainer: function () {
+
+
             var editorNode = dom.byId(this.id),
+                viewNode, p,
                 h = geometry.getContentBox(editorNode).h,
                 editors = this.getEditors();
 
+            console.log("editorNode:", editorNode);
+
             for (var header_id in editors) {
+                jQuery('#view_' + this.id + '_' + header_id).css('display', 'block'); // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
 
-                console.log("header", header_id, "editors:", editors);
-                //console.log("Canviant mida del texarea a: " + h); // TODO: Conservarem la opció de treballar amb el textarea?
-                //style.set(params.textAreaId, "height", "" + h - 50 + "px");
+                viewNode = dom.byId('view_' + this.id + '_' + header_id);
+                p = geometry.getContentBox(viewNode).h;
 
-                console.log("Canviant mida del editor a: " + h);
-                // TODO[Xavi] Extreure la diferencia d'alçada a una 'constant'
-                //style.set(editors[header_id].editor.iocAceEditor.containerId, "height", "" + h - 50 + "px"); // TODO [Xavi] això no pot queda així, afegir una mètode al editor per obternir la informació.
-                editors[header_id].editor.setHeight(h-50); //
+                jQuery('#view_' + this.id + '_' + header_id).css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
+
+                var min = this.MIN_HEIGHT,
+                    max = h - this.VERTICAL_MARGIN;
+
+                editors[header_id].editor.setHeight(Math.max(min, Math.min(p, max))); //
 
             }
 
 
-        }
+        },
+
+        VERTICAL_MARGIN: 100, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+        MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
     })
 });

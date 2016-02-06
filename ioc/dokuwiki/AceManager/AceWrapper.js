@@ -53,7 +53,7 @@ define([
             },
 
             /**
-             * Retorna una posició a partir del offset passat com argument.
+             * Retorna una posició a partir del offsetset passat com argument.
              *
              * @param {int} offset - Offset a partir del cual es calcula la posició
              * @returns {ace.Range}

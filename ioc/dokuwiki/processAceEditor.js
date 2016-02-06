@@ -230,11 +230,17 @@ define([
                 editor = dispatcher.getContentCache(params.id).getEditor(),
                 h = geometry.getContentBox(contentNode).h;
 
+
+            console.log("Editor: ", editor);
+
             console.log("Canviant mida del texarea a: " + h);
             style.set(params.textAreaId, "height", "" + h - 20 + "px");
 
             console.log("Canviant mida del editor a: " + h);
             style.set(editor.containerId, "height", "" + h - 20 + "px");
+
+            console.log("editor", editor);
+            console.log("textArea", params.textAreaId);
 
         };
 

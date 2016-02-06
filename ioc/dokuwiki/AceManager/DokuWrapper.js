@@ -16,7 +16,7 @@ define([
             /** @type {boolean} @private */
             patching: false,
 
-            /** @type {Node} @private */
+            /** @type {DOMNode} @private */
             textArea: null,
 
             /**

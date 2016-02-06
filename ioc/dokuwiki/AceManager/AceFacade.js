@@ -143,9 +143,17 @@ define([
             this.iocAceEditor.setReadOnly(false);
         },
 
-        setHeight: function(h) {
-            style.set(this.iocAceEditor.containerId, "height", "" + h + "px"); // TODO [Xavi] això no pot queda així, afegir una mètode al editor per obternir la informació.
+        setHeight: function(height) {
+
+            //style.set(this.dokuWrapper.textArea.id, "height", "" + height  + "px");  TODO[Xavi] no cal ajustar-lo si no es permet el mode TextArea
+            style.set(this.iocAceEditor.containerId, "height", "" + height + "px");
+
+            this.container.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
+
+            console.log("Height is ", height,"?");
+
         }
+
 
     });
 
