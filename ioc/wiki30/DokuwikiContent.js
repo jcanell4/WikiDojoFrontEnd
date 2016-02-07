@@ -15,11 +15,11 @@ define([
             //		,documentWiki: null
 
 
-            editor: null,
+            editor: null, // TODO[Xavi] eliminar, ja no s'ha de controlar aqui
 
-            aceEditorOn: false,
+            aceEditorOn: false, // TODO[Xavi] eliminar, ja no s'ha de controlar aqui
 
-            wrapperOn: true,
+            wrapperOn: true, // TODO[Xavi] eliminar, ja no s'ha de controlar aqui
 
             /** @type  {Object.<string, string>} Hash de ids organitzadas per {tipus : valor} */
             currentIds: null,
@@ -38,7 +38,7 @@ define([
              * @param {Object.<string, string>|string} params - id o objecte de configuració
              * @constructor
              */
-                constructor: function(params) {
+            constructor: function (params) {
 
                 if (typeof params === "string") {
                     this.id = params;
@@ -60,29 +60,31 @@ define([
                 return this.id;
             },
 
+            // TODO[Xavi] eliminar, ja no s'ha de controlar aqui
             setEditor: function (editor) {
                 this.editor = editor;
             },
 
-            getEditor:       function () {
+            // TODO[Xavi] eliminar, ja no s'ha de controlar aqui
+            getEditor: function () {
                 return this.editor;
             },
 
 
-            // TODO[Xavi] No es crida enlloc?
+            // TODO[Xavi] No es crida enlloc? no ho he vist funcionar en més d'un any!
             setDocumentHTML: function (content) {
                 alert("setDocumentHTML");
                 this.documentHTML = content.content;
             },
 
-            // TODO[Xavi] No es crida enlloc?
+            // TODO[Xavi] No es crida enlloc? no ho he vist funcionar en més d'un any!
             setDocumentWiki: function (content) {
                 alert("setDocumentWiki");
                 this.documentWiki = content.content;
             },
 
             /**
-             *
+             * TODO[Xavi] eliminar, ja no s'ha de controlar aqui
              * @returns {boolean}
              */
             isAceEditorOn: function () {
@@ -90,7 +92,7 @@ define([
             },
 
             /**
-             *
+             * TODO[Xavi] eliminar, ja no s'ha de controlar aqui
              * @param {boolean} on
              */
             setAceEditorOn: function (on) {
@@ -98,7 +100,7 @@ define([
             },
 
             /**
-             *
+             * TODO[Xavi] eliminar, ja no s'ha de controlar aqui
              * @returns {boolean}
              */
             isWrapperOn: function () {
@@ -106,7 +108,7 @@ define([
             },
 
             /**
-             *
+             * TODO[Xavi] eliminar, ja no s'ha de controlar aqui
              * @param {boolean} on
              */
             setWrapperOn: function (on) {
@@ -149,9 +151,9 @@ define([
 
 
             /** @type EventObserver */
-            mainContentTool : null,
+            mainContentTool: null,
 
-            setMainContentTool:  function (observer) {
+            setMainContentTool: function (observer) {
                 this.mainContentTool = observer;
             },
 

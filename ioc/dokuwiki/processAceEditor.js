@@ -107,6 +107,8 @@ define([
                 content = dispatcher.getContentCache(id),
                 textArea = content.getEditor().$textArea.context;
 
+            console.log("Que hi ha al content?", content);
+
             if (content.isWrapperOn()) {
                 dw_editor.setWrap(textArea, 'off');
                 content.setWrapperOn(false);
@@ -137,7 +139,7 @@ define([
     return function (params) {
 
         if (!buttonsCreated) {
-            addButtons();
+            //addButtons();
         }
 
         // Comprovem la versió del explorador i que existeix l'entorn de la dokuwiki abans de fer res

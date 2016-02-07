@@ -39,6 +39,8 @@ define([
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
+        TOOLBAR_ID : 'partial',
+
         constructor: function (args) {
 
             this._generateEmptyChangedChunks(args.content.chunks);
@@ -106,56 +108,105 @@ define([
 
         // Afegeix una toolbar a cada contenidor
         addToolbars: function () {
-            // TODO[Xavi] afegir els botons en una altra funció, de manera que sigui més fàcil generalitzar
-            var toolbar= window['toolbar'],
 
-                argSave = {
-                    type: "SaveButton",
-                    title: "Desar",
-                    icon: "/iocjslib/ioc/gui/img/save.png"
-                },
-
-                funcSave = function () {
-                    var chunk = this.getGlobalState().getCurrentElementId(),
-                        id = this.getGlobalState().getCurrentId();
-                    chunk = chunk.replace(id + "_", "");
-                    chunk = chunk.replace("container_", "");
-                    console.log("Click");
-                    this.getEventManager().dispatchEvent("save_partial_" + id, {id: id, chunk: chunk});
-
-                }.bind(this.dispatcher),
-
-
-            argCancel = {
-                    type: "BackButton",
-                    title: "Tornar",
-                    icon: "/iocjslib/ioc/gui/img/back.png"
-                },
-
-
-                funcCancel = function () {
-                    var chunk = this.getGlobalState().getCurrentElementId(),
-                        id = this.getGlobalState().getCurrentId();
-                    chunk = chunk.replace(id + "_", "");
-                    chunk = chunk.replace("container_", "");
-                    console.log("Click");
-                    this.getEventManager().dispatchEvent("cancel_partial_" + id, {id: id, chunk: chunk});
-
-                }.bind(this.dispatcher);
-
-
-            toolbarManager.addButton(argSave, funcSave, toolbar);
-            toolbarManager.addButton(argCancel, funcCancel, toolbar);
+            this.addButtons();
 
 
             for (var i = 0; i < this.content.chunks.length; i++) {
                 var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
                 //console.log("Afegint la toolbar... a", aux_id);
-                toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
+                //toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
+                toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
             }
 
             // TODO[Xavi] Comprovar si els botons ja han estat afegits i si no, afegir-los
 
+        },
+
+        addButtons: function () {
+            // TODO[Xavi] afegir els botons en una altra funció, de manera que sigui més fàcil generalitzar
+            var argSave = {
+                    type: "SaveButton",
+                    title: "Desar",
+                    icon: "/iocjslib/ioc/gui/img/save.png"
+                },
+
+                argCancel = {
+                    type: "BackButton",
+                    title: "Tornar",
+                    icon: "/iocjslib/ioc/gui/img/back.png"
+                },
+
+                confEnableAce = {
+                    type: "EnableAce",
+                    title: "Activar/Desactivar ACE",
+                    icon: "/iocjslib/ioc/gui/img/toggle_on.png"
+                },
+
+                confEnableWrapper = {
+                    type: "EnableWrapper", // we havea new type that links to the function
+                    title: "Activar/Desactivar embolcall",
+                    icon: "/iocjslib/ioc/gui/img/wrap.png"
+                };
+
+            toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
+
+
+        },
+
+        _funcSave: function () {
+            var chunk = this.getGlobalState().getCurrentElementId(),
+                id = this.getGlobalState().getCurrentId();
+            chunk = chunk.replace(id + "_", "");
+            chunk = chunk.replace("container_", "");
+
+            this.getEventManager().dispatchEvent("save_partial_" + id, {id: id, chunk: chunk});
+        },
+
+
+        /**
+         * Activa o desactiva l'editor ACE segons l'estat actual
+         *
+         * @returns {boolean} - Sempre retorna fals.
+         */
+        // TODO[Xavi] Això intercanvia entre el textArea i l'editor ACE
+        _funcEnableAce: function () {
+            var chunk = this.getGlobalState().getCurrentElementId(),
+                id = this.getGlobalState().getCurrentId();
+            chunk = chunk.replace(id + "_", "");
+            chunk = chunk.replace("container_", "");
+            var editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
+
+            editor.toggleEditor();
+
+        },
+
+
+        _funcCancel: function () {
+            var chunk = this.getGlobalState().getCurrentElementId(),
+                id = this.getGlobalState().getCurrentId();
+            chunk = chunk.replace(id + "_", "");
+            chunk = chunk.replace("container_", "");
+            console.log("Click");
+            this.getEventManager().dispatchEvent("cancel_partial_" + id, {id: id, chunk: chunk});
+
+        },
+
+        /**
+         * Activa o desactiva l'embolcall del text.
+         * @returns {boolean} - Sempre retorna fals
+         */
+        _funcEnableWrapper: function () {
+            var chunk = this.getGlobalState().getCurrentElementId(),
+                id = this.getGlobalState().getCurrentId();
+            chunk = chunk.replace(id + "_", "");
+            chunk = chunk.replace("container_", "");
+            var editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
+
+            editor.toggleWrap();
 
         },
 
@@ -898,6 +949,10 @@ define([
 
         getEditors: function () {
             return this.editors;
+        },
+
+        getEditor: function (header_id) {
+            return this.editors[header_id].editor;
         },
 
         fillEditorContainer: function () {

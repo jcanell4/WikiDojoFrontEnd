@@ -5,28 +5,33 @@
  */
 define([], function () {
 
-    var buttons = {};
+    var buttons = {},
+        sourceToolbar = window['toolbar'], // Com a font fem servir sempre la barra d'eines exportada per la wiki
+        toolbars = {},
+
+        _createToolbar = function (name) {
+            toolbars[name] = sourceToolbar.slice(); // Clonem la font
+        };
+
 
     return {
 
-        setToolbar: function (toolbarName, toolbarId, wikiTextId) {
-            console.log("toolbarManager#setToolbar");
-            _toolbar = window[toolbarName];
-            _toolbarId = toolbarId;
-            _wikiTextId = wikiTextId;
+        getToolbar: function (name) {
+            if (!toolbars[name]) {
+                _createToolbar(name);
+            }
+
+            return toolbars[name];
         },
 
-        // TODO[Xavi] com que ara hi han múltiples toolbars, s'han de passar el pàrametres
-        initToolbar: function (_toolbarId, _wikiTextId, _toolbar) {
-            console.log("toolbarManager#initToolbar");
-            //
-            //if (_toolbar && _toolbarId && _wikiTextId) {
-                initToolbar(_toolbarId, _wikiTextId, _toolbar);
-                jQuery('#' + _toolbarId).attr('role', 'toolbar');
-            //} else {
-            //    alert("error al inicialitzar la barra d'eines");
-            //}
 
+        // TODO[Xavi] com que ara hi han múltiples toolbars, s'han de passar el pàrametres
+        initToolbar: function (_toolbarId, _wikiTextId, toolbarId) {
+            console.log("toolbarManager#initToolbar");
+            var _toolbar = this.getToolbar(toolbarId);
+
+            initToolbar(_toolbarId, _wikiTextId, _toolbar);
+            jQuery('#' + _toolbarId).attr('role', 'toolbar');
         },
 
         /**
@@ -37,60 +42,34 @@ define([], function () {
          * pot veure a : https://www.dokuwiki.org/devel:toolbar
          * @param {function} func - Funció a executar quan es clica el botó.
          */
-        addButton: function (conf, func, toolbar) {
-            var funcType = 'addBtnAction' + conf.type;
+        addButton: function (conf, func, toolbarId) {
+            var funcType = 'addBtnAction' + conf.type,
+                toolbar = this.getToolbar(toolbarId);
 
             console.log("funcType:", conf);
 
-            if (buttons[conf.title]) {
-                console.log("El botó ja s'ha afegit, retornem");
+            if (buttons[toolbarId] && buttons[toolbarId][conf.title]) {
+                console.log("El botó ja s'ha afegit anteriorment, retornem");
                 return false;
             }
 
             window[funcType] = function ($btn, props, edid) {
                 $btn.click(func);
-
             };
 
+            console.log("toolbar a la que afegim:", toolbars[toolbarId]);
+            console.log("lengt?:", toolbars[toolbarId].length);
 
-            if (typeof toolbar !== 'undefined') {
-                toolbar[toolbar.length] = conf;
-                buttons[conf.title] = {conf: conf, func: func};
-                console.log("Afegit botó: ", buttons);
-                return true;
-            } else {
-                console.error("No existeix la barra d'eines");
-                return false;
+            toolbars[toolbarId][toolbars[toolbarId].length] = conf;
+
+            if (!buttons[toolbarId]) {
+                buttons[toolbarId] = {};
             }
-
-        },
-
-        /**
-         * Elimina de la barra d'eines el botó especificat.
-         *
-         * @param {string} title - El títol del botó a esborrar
-         */
-        removeButton: function (title) {
-            var button;
-
-            if (typeof _toolbar === 'undefined') {
-                return;
-            }
-
-            //if (typeof title === 'number' && _toolbar.length >= title) {
-            //    _toolbar.splice(title, 1);
-            //
-            //} else {
-                for (var i = 0, len = _toolbar.length; i < len; i++) {
-                    button = _toolbar[i];
-                    if (button.title == title) {
-                        _toolbar.splice(i, 1);
-                        delete button[title];
-                        break;
-                    }
-                }
-            //}
+            buttons[toolbarId][conf.title] = {conf: conf, func: func};
+            console.log("Afegit botó: ", buttons);
+            return true;
 
         }
+
     }
 });

@@ -41,6 +41,8 @@ define([
 
                 commands;
 
+            this.wrap = args.wrapMode;
+
 
             this.$editor = jQuery('#' + args.containerId);
             this.$textarea = jQuery('#' + args.textareaId);
@@ -110,6 +112,7 @@ define([
         },
 
         enable: function () {
+
             var selection,
                 container = this.container,
                 ace = container.aceWrapper,
@@ -127,6 +130,25 @@ define([
             doku.set_cookie('aceeditor', 'on');
             //dispatcher.getContentCache(currentId).setAceEditorOn(true);
 
+            this.enabled = true;
+        },
+
+        disable: function() {
+            var selection,
+                container = this.container,
+                ace = container.aceWrapper,
+                doku = container.dokuWrapper;
+
+            selection = ace.get_selection();
+            doku.set_cookie('aceeditor', 'off');
+
+            container.hide();
+            doku.enable();
+            doku.set_value(ace.get_value());
+            doku.set_selection(selection.start, selection.end);
+            doku.focus();
+
+            this.enabled = false;
 
         },
 
@@ -135,27 +157,50 @@ define([
             patcher.restoreCachedFunctions(this.id);
         },
 
-        lockEditor: function() {
+        lockEditor: function () {
             this.iocAceEditor.setReadOnly(true);
         },
 
-        unlockEditor: function() {
+        unlockEditor: function () {
             this.iocAceEditor.setReadOnly(false);
         },
 
-        setHeight: function(height) {
+        setHeight: function (height) {
 
             //style.set(this.dokuWrapper.textArea.id, "height", "" + height  + "px");  TODO[Xavi] no cal ajustar-lo si no es permet el mode TextArea
             style.set(this.iocAceEditor.containerId, "height", "" + height + "px");
 
             this.container.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
 
-            console.log("Height is ", height,"?");
+            console.log("Height is ", height, "?");
+
+        },
+
+        setWrap: function (on) {
+            var textarea = this.$textarea.get(0);
+
+            if (on) {
+                dw_editor.setWrap(textarea, 'on');
+            } else {
+                dw_editor.setWrap(textarea, 'off');
+            }
+
+        },
+
+        toggleWrap: function () {
+            this.wrap = !this.wrap;
+            this.setWrap(this.wrap);
+        },
+
+        toggleEditor: function() {
+            console.log("Toggling!");
+            if (this.enabled) {
+                this.disable();
+            } else {
+                this.enable();
+            }
 
         }
-
-
     });
-
 });
 
