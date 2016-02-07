@@ -94,10 +94,10 @@ define(function () {
             }
 
 
-            $form.append('<div>' +
-                '<input value="Tornar" type="submit" data-call-type="cancel_partial" data-form-id="form_' + aux_id + '" data-section-id="' + data.chunks[i].header_id + '"/>' +
-                '<input value="Desar" type="submit" data-form-id="form_' + aux_id + '" data-section-id="' + data.chunks[i].header_id + '" data-call-type="save_partial"/>' +
-                '</div>');
+            //$form.append('<div>' +
+            //    '<input value="Tornar" type="submit" data-call-type="cancel_partial" data-form-id="form_' + aux_id + '" data-section-id="' + data.chunks[i].header_id + '"/>' +
+            //    '<input value="Desar" type="submit" data-form-id="form_' + aux_id + '" data-section-id="' + data.chunks[i].header_id + '" data-call-type="save_partial"/>' +
+            //    '</div>');
 
             $container.append($viewContainer);
             $container.append($editContainer);

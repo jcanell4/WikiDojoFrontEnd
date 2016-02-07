@@ -14,10 +14,11 @@ define([
     var editing = function (params, docId, dispatcher, draft) {
 
         // TODO[Xavi] Això no anirà aquí
+        console.log("per inicialitzar la toolbar:", params.varName, params.toolbarId, params.wikiTextId);
         toolbarManager.setToolbar(params.varName, params.toolbarId, params.wikiTextId);
 
-        // TODO[Xavi] Reubicara
-        dw_editor.init();
+        // TODO[Xavi] Reubicar? Sembla que no cal fer ers amb ell
+        //dw_editor.init();
 
 
         //if (!params.locked) {

@@ -32,9 +32,10 @@ define([
     'dojo/dom',
     'dojo/dom-geometry',
     'dojo/dom-style',
+    'ioc/dokuwiki/AceManager/toolbarManager2',
 
 ], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, domClass, dwPageUi, registry,
-             dom, geometry, style) {
+             dom, geometry, style, toolbarManager) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
@@ -59,8 +60,8 @@ define([
 
             this.addToolbars();
             this.addEditors();
-            this.addSaveListener(this);
-            this.addCancelListener(this);
+            //this.addSaveListener(this);
+            //this.addCancelListener(this);
 
             this.addEditionListener();
             this.addSelectionListener();
@@ -105,11 +106,57 @@ define([
 
         // Afegeix una toolbar a cada contenidor
         addToolbars: function () {
+            // TODO[Xavi] afegir els botons en una altra funció, de manera que sigui més fàcil generalitzar
+            var toolbar= window['toolbar'],
+
+                argSave = {
+                    type: "SaveButton",
+                    title: "Desar",
+                    icon: "/iocjslib/ioc/gui/img/save.png"
+                },
+
+                funcSave = function () {
+                    var chunk = this.getGlobalState().getCurrentElementId(),
+                        id = this.getGlobalState().getCurrentId();
+                    chunk = chunk.replace(id + "_", "");
+                    chunk = chunk.replace("container_", "");
+                    console.log("Click");
+                    this.getEventManager().dispatchEvent("save_partial_" + id, {id: id, chunk: chunk});
+
+                }.bind(this.dispatcher),
+
+
+            argCancel = {
+                    type: "BackButton",
+                    title: "Tornar",
+                    icon: "/iocjslib/ioc/gui/img/back.png"
+                },
+
+
+                funcCancel = function () {
+                    var chunk = this.getGlobalState().getCurrentElementId(),
+                        id = this.getGlobalState().getCurrentId();
+                    chunk = chunk.replace(id + "_", "");
+                    chunk = chunk.replace("container_", "");
+                    console.log("Click");
+                    this.getEventManager().dispatchEvent("cancel_partial_" + id, {id: id, chunk: chunk});
+
+                }.bind(this.dispatcher);
+
+
+            toolbarManager.addButton(argSave, funcSave, toolbar);
+            toolbarManager.addButton(argCancel, funcCancel, toolbar);
+
+
             for (var i = 0; i < this.content.chunks.length; i++) {
                 var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
                 //console.log("Afegint la toolbar... a", aux_id);
-                initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
+                toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
             }
+
+            // TODO[Xavi] Comprovar si els botons ja han estat afegits i si no, afegir-los
+
+
         },
 
         addEditionListener: function () {
@@ -154,17 +201,18 @@ define([
                 + '&range=-';
         },
 
-        addSaveListener: function (context) {
-            jQuery('#' + context.content.id).find('input[data-call-type="save_partial"]').on('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                var section_id = jQuery(this).attr('data-section-id');
-
-                context.dispatchEvent("save_partial_" + context.id, {id: context.id, chunk: section_id});
-
-            });
-        },
+        //// TODO[Xavi] Això ha d'anar com un botó
+        //addSaveListener: function (context) {
+        //    jQuery('#' + context.content.id).find('input[data-call-type="save_partial"]').on('click', function (e) {
+        //        e.preventDefault();
+        //        e.stopPropagation();
+        //
+        //        var section_id = jQuery(this).attr('data-section-id');
+        //
+        //        context.dispatchEvent("save_partial_" + context.id, {id: context.id, chunk: section_id});
+        //
+        //    });
+        //},
 
         getQuerySave: function (section_id) {
             var $form = jQuery('#form_' + this.id + "_" + section_id),
@@ -211,6 +259,9 @@ define([
             suf += this.data.suf || '';
 
             // Actualitzem les dades d'edició
+
+            console.log("This?", this, "section_id:", section_id);
+
             text = this.editors[header_id].editor.getEditorValue();
             this.updateChunk(header_id, {'editing': text});
 
@@ -225,16 +276,16 @@ define([
             return values;
         },
 
-        addCancelListener: function (context) {
-            jQuery('#' + context.content.id).find('input[data-call-type="cancel_partial"]').on('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                var section_id = jQuery(this).attr('data-section-id');
-                context.dispatchEvent("cancel_partial_" + context.id, {id: context.id, chunk: section_id});
-
-            });
-        },
+        //addCancelListener: function (context) {
+        //    jQuery('#' + context.content.id).find('input[data-call-type="cancel_partial"]').on('click', function (e) {
+        //        e.preventDefault();
+        //        e.stopPropagation();
+        //
+        //        var section_id = jQuery(this).attr('data-section-id');
+        //        context.dispatchEvent("cancel_partial_" + context.id, {id: context.id, chunk: section_id});
+        //
+        //    });
+        //},
 
         getQueryCancel: function (section_id) {
             return 'do=cancel_partial&id=' + this.ns + '&section_id=' + section_id
