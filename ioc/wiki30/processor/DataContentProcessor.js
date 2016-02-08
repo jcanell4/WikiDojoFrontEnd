@@ -11,11 +11,11 @@ define([
 ], function (Editor, declare, ContentProcessor, ready, contentToolFactory, toolbarManager, /*Locktimer,*/ dom, domStyle) {
 
 
-    var editing = function (params, docId, dispatcher, draft) {
+    //var editing = function (params, docId, dispatcher, draft) {
 
         // TODO[Xavi] Això no anirà aquí
-        console.log("per inicialitzar la toolbar:", params.varName, params.toolbarId, params.wikiTextId);
-        toolbarManager.setToolbar(params.varName, params.toolbarId, params.wikiTextId);
+        //console.log("per inicialitzar la toolbar:", params.varName, params.toolbarId, params.wikiTextId);
+        //toolbarManager.setToolbar(params.varName, params.toolbarId, params.wikiTextId);
 
         // TODO[Xavi] Reubicar? Sembla que no cal fer ers amb ell
         //dw_editor.init();
@@ -27,7 +27,7 @@ define([
         //}
 
 
-    };
+    //};
 
     return declare([ContentProcessor],
         /**
@@ -54,6 +54,10 @@ define([
             process: function (value, dispatcher) {
                 console.log("DataContentProcessor#process", value);
 
+                // TODO[Xavi] Refactoritzar tot això per funcionar de manera semblant al structured document
+                // moure del procesAceEditor la inicialització de la toolbar i els botons es farà al contentTool
+
+
                 var $content = jQuery(value.content);
 
                 // Reemplaçem el contingut del content amb el del draft
@@ -65,21 +69,21 @@ define([
                 var ret;
 
                 value.editor = new Editor(value.id, value.content);
-                value.content = "<p></p>";
+                //value.content = "<p></p>";
 
 
                 ret = this.inherited(arguments);
 
                 // En aquest punt ja ha d'estar el ContentTool creat
 
-                value.editor.select();
+                value.editor.select(); // TODO[Xavi] que fa això? es per seleccionar la pestanya que toqui?
 
 
-                ready(function () {
-                    var content = value.draft ? value.draft.content : '';
+                //ready(function () {
+                    //var content = value.draft ? value.draft.content : '';
 
-                    editing(value.editing, value.id, dispatcher, content);
-                });
+                    //editing(value.editing, value.id, dispatcher, content);
+                //});
 
 
                 return ret;
@@ -117,7 +121,7 @@ define([
                     ns: content.ns,
                     id: content.id,
                     title: content.title,
-                    content: content.content,
+                    content: content,
                     closable: true,
                     dispatcher: dispatcher,
                     originalContent: this._extractContentFromNode(content.editor.editorNode),

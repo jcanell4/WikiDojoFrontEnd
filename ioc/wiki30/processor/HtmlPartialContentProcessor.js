@@ -143,7 +143,6 @@ define([
                         volatile: true,
                         continue: false
                     };
-
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args)
                     .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
 

@@ -69,14 +69,13 @@ define(function () {
             $textArea = jQuery('<textarea id="textarea_' + aux_id + '" style="width:100%;height:200px" name="wikitext"></textarea>');
             $form.append($textArea);
 
-            //$form.append('<input name="do" value="save_partial" type="hidden">'); // TODO[Xavi] aquí es on s'ha d'establir el command pel desar parcial
-            $form.append('<input name="do" value="save_partial" type="hidden">'); // TODO[Xavi] aquí es on s'ha d'establir el command pel desar parcial
+            $form.append('<input name="do" value="save_partial" type="hidden">'); // TODO[Xavi] aquí es on s'ha d'establir el command pel desar parcial <-- crec que no cal per a res
             $form.append('<input name="rev" value="' + (data.rev || '') + '" type="hidden">');
             $form.append('<input name="date" value="' + data.date + '" type="hidden">');
             $form.append('<input name="summary" value="[' + data.chunks[i].title + ']" type="hidden">');
             $form.append('<input name="target" value="section" type="hidden">');
             $form.append('<input name="range" value="' + data.chunks[i].start + '-' + data.chunks[i].end + '" type="hidden">');
-            $form.append('<input name="id" value="' + data.ns + '" type="hidden">'); // TODO[Xavi] comprovar si es el id o el ns el que cal passar
+            $form.append('<input name="id" value="' + data.ns + '" type="hidden">');
             $form.append('<input name="section_id" value="' + data.chunks[i].header_id + '" type="hidden">');
             $form.append('<input name="editing_chunks" value="' + editing_chunks + '" type="hidden">');
 
@@ -93,17 +92,8 @@ define(function () {
                 $suf.val(data.chunks[i].text.suf || '');
             }
 
-
-            //$form.append('<div>' +
-            //    '<input value="Tornar" type="submit" data-call-type="cancel_partial" data-form-id="form_' + aux_id + '" data-section-id="' + data.chunks[i].header_id + '"/>' +
-            //    '<input value="Desar" type="submit" data-form-id="form_' + aux_id + '" data-section-id="' + data.chunks[i].header_id + '" data-call-type="save_partial"/>' +
-            //    '</div>');
-
             $container.append($viewContainer);
             $container.append($editContainer);
-
-            //console.log("afegit", chunk_id);
-
 
         }
 

@@ -39,7 +39,7 @@ define([
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
-        TOOLBAR_ID : 'partial',
+        TOOLBAR_ID : 'partial_edit',
 
         constructor: function (args) {
 
@@ -62,8 +62,6 @@ define([
 
             this.addToolbars();
             this.addEditors();
-            //this.addSaveListener(this);
-            //this.addCancelListener(this);
 
             this.addEditionListener();
             this.addSelectionListener();
@@ -106,25 +104,17 @@ define([
             }
         },
 
-        // Afegeix una toolbar a cada contenidor
         addToolbars: function () {
 
             this.addButtons();
 
-
             for (var i = 0; i < this.content.chunks.length; i++) {
                 var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
-                //console.log("Afegint la toolbar... a", aux_id);
-                //toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, window['toolbar']);
                 toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
             }
-
-            // TODO[Xavi] Comprovar si els botons ja han estat afegits i si no, afegir-los
-
         },
 
         addButtons: function () {
-            // TODO[Xavi] afegir els botons en una altra funció, de manera que sigui més fàcil generalitzar
             var argSave = {
                     type: "SaveButton",
                     title: "Desar",
@@ -153,8 +143,6 @@ define([
             toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
-
-
         },
 
         _funcSave: function () {
@@ -166,13 +154,11 @@ define([
             this.getEventManager().dispatchEvent("save_partial_" + id, {id: id, chunk: chunk});
         },
 
-
         /**
          * Activa o desactiva l'editor ACE segons l'estat actual
          *
          * @returns {boolean} - Sempre retorna fals.
          */
-        // TODO[Xavi] Això intercanvia entre el textArea i l'editor ACE
         _funcEnableAce: function () {
             var chunk = this.getGlobalState().getCurrentElementId(),
                 id = this.getGlobalState().getCurrentId();
@@ -183,7 +169,6 @@ define([
             editor.toggleEditor();
 
         },
-
 
         _funcCancel: function () {
             var chunk = this.getGlobalState().getCurrentElementId(),
@@ -207,7 +192,6 @@ define([
             var editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
 
             editor.toggleWrap();
-
         },
 
         addEditionListener: function () {
@@ -891,7 +875,6 @@ define([
 
         },
 
-        // TODO[Xavi] Canviar: Ha de fer servir post
         _doSavePartial: function (event) {
             //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 

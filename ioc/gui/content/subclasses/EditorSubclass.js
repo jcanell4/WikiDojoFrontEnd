@@ -67,21 +67,153 @@ define([
              *
              * @override
              */
-            postAttach: function () {
+            //postAttach: function () {
+            //
+            //    //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
+            //    this.registerToChangesManager();
+            //
+            //
+            //    jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
+            //
+            //
+            //    if (!this.locked) {
+            //        this.lockDocument();
+            //    }
+            //
+            //    this.inherited(arguments);
+            //},
+            //
 
-                //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
+
+            postAttach: function () {
                 this.registerToChangesManager();
 
-
                 jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
-
-
-                if (!this.locked) {
-                    this.lockDocument();
-                }
-
                 this.inherited(arguments);
+
+                console.log("StructuredDocumentSubclass#postLoad");
+
+                this.eventManager = this.dispatcher.getEventManager();
+
+                //this.eventManager.registerEventForBroadcasting(this, "edit_" + this.id, this._doEdit.bind(this));
+                this.eventManager.registerEventForBroadcasting(this, "save_" + this.id, this._doSave.bind(this));
+                this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancel.bind(this));
+
+                //this.updateTitle(this.data); // TODO[xavi] Comprovar si això cal o es crida el de documentSubclass
             },
+
+            //_doEdit: function (event) { // TODO[Xavi] esborrar? sempre està en edició
+            //    //console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+            //
+            //    var dataToSend = this.getQueryEdit(event.id),
+            //        containerId = "container_" + event.id;
+            //
+            //    this.eventManager.dispatchEvent("edit", {
+            //        id: this.id,
+            //        dataToSend: dataToSend,
+            //        standbyId: containerId
+            //    })
+            //
+            //},
+
+            _doSave: function (event) {
+                //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+
+                var dataToSend = this.getQuerySave(event.id),
+                    containerId = "container_" + event.id;
+
+                this.eventManager.dispatchEvent("save", {
+                    id: this.id,
+                    dataToSend: dataToSend,
+                    standbyId: containerId
+                })
+
+            },
+
+            _doCancel: function (event) {
+                //console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+
+                var dataToSend = this.getQueryCancel(event.id),
+                    containerId = "container_" + event.id;
+
+                this.eventManager.dispatchEvent("cancel", {
+                    id: this.id,
+                    dataToSend: dataToSend,
+                    standbyId: containerId
+                })
+
+            },
+
+
+            getQuerySave: function (id) {
+
+                var $form = jQuery('#form_' + this.id),
+                    values = {},
+                    //header_id,
+                    //pre = '',
+                    //suf = '',
+                    text;
+                    //chunks = this.data.chunks,
+                    //editingIndex = -1;
+
+
+
+                jQuery.each($form.serializeArray(), function (i, field) {
+                    values[field.name] = field.value;
+                });
+
+
+                //header_id = values['section_id'];
+
+                // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
+
+                //// TODO: Només fins al actual Fins al actual,
+                //for (var i = 0; i < chunks.length; i++) {
+                //
+                //    if (chunks[i].header_id === header_id) {
+                //        editingIndex = i;
+                //        pre += chunks[i].text.pre;
+                //        break;
+                //    }
+                //
+                //    if (chunks[i].text) {
+                //        pre += chunks[i].text.pre;
+                //        //pre += chunks[i].text.editing;
+                //        pre += this.changedChunks[chunks[i].header_id].content;
+                //    }
+                //}
+
+
+                //for (i = editingIndex + 1; i < chunks.length; i++) {
+                //    if (chunks[i].text) {
+                //        suf += chunks[i].text.pre;
+                //        suf += chunks[i].text.editing;
+                //    }
+                //}
+                //suf += this.data.suf || '';
+
+                // Actualitzem les dades d'edició
+
+                console.log("This?", this, "section_id:", id);
+
+                text = this.getCurrentContent();
+
+                // Afegim un salt per assegurar que no es perdi cap caràcter
+                //values.prefix = pre + "\n";
+                //values.suffix = suf;
+                values.wikitext = text;
+
+                console.log("Data to save:", values);
+
+                return values;
+            },
+
+            getQueryCancel: function (section_id) {
+                return 'do=cancel&id=' + this.ns + '&section_id=' + section_id
+                    + '&editing_chunks=' + this.getEditingChunks().join(',');
+            },
+
+
 
             /**
              * Comunica al ChangesManager que pot haver canvis.
@@ -196,6 +328,7 @@ define([
                     content: this.getCurrentContent()
                 };
             },
+
 
 
         });

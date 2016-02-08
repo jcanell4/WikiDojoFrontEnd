@@ -10,7 +10,7 @@ define([
     'ioc/dokuwiki/AceManager/IocCommands',
     'ioc/wiki30/GlobalState',
     'ioc/wiki30/dispatcherSingleton',
-    'ioc/dokuwiki/AceManager/toolbarManager',
+    'ioc/dokuwiki/AceManager/toolbarManager2',
     'dojo/dom-geometry',
     'dojo/dom-style',
     'dojo/on',
@@ -19,13 +19,16 @@ define([
 ], function (registry, dom, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container,
              IocCommands, GlobalState, getDispatcher, toolbarManager, geometry, style, on) {
 
-    var dispatcher = getDispatcher();
+    var TOOLBAR_ID = 'full_editor';
+
+
     var
         dispatcher = getDispatcher(),
         /**
          * Activa l'editor ACE a la pestanya actual o la pestanya pasada com argument per evitar problemas al recarregar.
          *
          * @param {string?} id - identificador de la pestanya corresponent al editor a activar.
+         * @deprecated
          */
         enable = function (id) {
             var currentId = id || GlobalState.getCurrentId(),
@@ -49,6 +52,7 @@ define([
 
         /**
          * Desactiva l'editor ACE a la pestanya actual
+         * @deprecated
          */
         disable = function () {
             var id = GlobalState.getCurrentId(),
@@ -70,11 +74,11 @@ define([
             doku.focus();
         },
 
-        confEnableAce = {
-            type: "EnableAce",
-            title: "Activar/Desactivar ACE",
-            icon: "/iocjslib/ioc/gui/img/toggle_on.png"
-        },
+    //confEnableAce = {
+    //    type: "EnableAce",
+    //    title: "Activar/Desactivar ACE",
+    //    icon: "/iocjslib/ioc/gui/img/toggle_on.png"
+    //},
 
         /**
          * Activa o desactiva l'editor ACE segons l'estat actual
@@ -85,18 +89,18 @@ define([
             var id = GlobalState.getCurrentId();
 
             if (dispatcher.getContentCache(id).isAceEditorOn()) {
-                disable();
+                disable(); // TODO[Xavi] Això es cridarà directament al AceFacade
             } else {
-                enable();
+                enable(); // TODO[Xavi] Això es cridarà directametn al AceFacade
             }
             return false;
         },
 
-        confEnableWrapper = {
-            type: "EnableWrapper", // we havea new type that links to the function
-            title: "Activar/Desactivar embolcall",
-            icon: "/iocjslib/ioc/gui/img/wrap.png"
-        },
+    //confEnableWrapper = {
+    //    type: "EnableWrapper", // we havea new type that links to the function
+    //    title: "Activar/Desactivar embolcall",
+    //    icon: "/iocjslib/ioc/gui/img/wrap.png"
+    //},
 
         /**
          * Activa o desactiva l'embolcall del text.
@@ -122,28 +126,59 @@ define([
 
         },
 
-        /**
-         * Afegeix els botons i canvia el valor de buttonsCreated a cert si es crean amb exit o fals si algun falla.
-         *
-         * @returns {boolean}
-         */
+    ///**
+    // * Afegeix els botons i canvia el valor de buttonsCreated a cert si es crean amb exit o fals si algun falla.
+    // *
+    // * @returns {boolean}
+    // */
+    //addButtons = function () {
+    //    buttonsCreated = true;
+    //
+    //    buttonsCreated &= toolbarManager.addButton(confEnableAce, funcEnableAce);
+    //    buttonsCreated &= toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
+    //},
+    //
+    //buttonsCreated = false;
+    //
+
         addButtons = function () {
-            buttonsCreated = true;
+            var argSave = {
+                    type: "SaveButton",
+                    title: "Desar",
+                    icon: "/iocjslib/ioc/gui/img/save.png"
+                },
 
-            buttonsCreated &= toolbarManager.addButton(confEnableAce, funcEnableAce);
-            buttonsCreated &= toolbarManager.addButton(confEnableWrapper, funcEnableWrapper);
-        },
+                argCancel = {
+                    type: "BackButton",
+                    title: "Tornar",
+                    icon: "/iocjslib/ioc/gui/img/back.png"
+                },
 
-        buttonsCreated = false;
+                confEnableAce = {
+                    type: "EnableAce",
+                    title: "Activar/Desactivar ACE",
+                    icon: "/iocjslib/ioc/gui/img/toggle_on.png"
+                },
 
-        _add
+                confEnableWrapper = {
+                    type: "EnableWrapper", // we havea new type that links to the function
+                    title: "Activar/Desactivar embolcall",
+                    icon: "/iocjslib/ioc/gui/img/wrap.png"
+                };
+
+
+            toolbarManager.addButton(confEnableWrapper, funcEnableWrapper, TOOLBAR_ID);
+            toolbarManager.addButton(confEnableAce, funcEnableAce, TOOLBAR_ID);
+            //toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID); // TODO[Xavi] Pendent de canviar el botó de save a Event
+            //toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);  // TODO[Xavi] Pendent de canviar el botó de save a Event
+        };
 
 
     return function (params) {
 
-        if (!buttonsCreated) {
-            //addButtons();
-        }
+        //if (!buttonsCreated) {
+        addButtons();
+        //}
 
         // Comprovem la versió del explorador i que existeix l'entorn de la dokuwiki abans de fer res
         if (/MSIE [0-8]\./.test(navigator.userAgent) || !(window.JSINFO && document.getElementById(params.textAreaId))) {
@@ -255,7 +290,9 @@ define([
 
         // Incialitzem la mida dels editors
 
-        toolbarManager.initToolbar();
+        toolbarManager.initToolbar('toolbar_' + params.id, 'wiki__text', TOOLBAR_ID); // TODO[Xavi] canviar per variables quan ho moguem al content tool
+
+
         fillEditorContainer();
         //funcEnableWrapper();
         enable();
