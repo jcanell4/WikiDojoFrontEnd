@@ -136,6 +136,9 @@ define([
 
         buttonsCreated = false;
 
+        _add
+
+
     return function (params) {
 
         if (!buttonsCreated) {

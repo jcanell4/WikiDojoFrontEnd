@@ -252,19 +252,6 @@ define([
                 + '&range=-';
         },
 
-        //// TODO[Xavi] Això ha d'anar com un botó
-        //addSaveListener: function (context) {
-        //    jQuery('#' + context.content.id).find('input[data-call-type="save_partial"]').on('click', function (e) {
-        //        e.preventDefault();
-        //        e.stopPropagation();
-        //
-        //        var section_id = jQuery(this).attr('data-section-id');
-        //
-        //        context.dispatchEvent("save_partial_" + context.id, {id: context.id, chunk: section_id});
-        //
-        //    });
-        //},
-
         getQuerySave: function (section_id) {
             var $form = jQuery('#form_' + this.id + "_" + section_id),
                 values = {},
@@ -326,17 +313,6 @@ define([
 
             return values;
         },
-
-        //addCancelListener: function (context) {
-        //    jQuery('#' + context.content.id).find('input[data-call-type="cancel_partial"]').on('click', function (e) {
-        //        e.preventDefault();
-        //        e.stopPropagation();
-        //
-        //        var section_id = jQuery(this).attr('data-section-id');
-        //        context.dispatchEvent("cancel_partial_" + context.id, {id: context.id, chunk: section_id});
-        //
-        //    });
-        //},
 
         getQueryCancel: function (section_id) {
             return 'do=cancel_partial&id=' + this.ns + '&section_id=' + section_id
