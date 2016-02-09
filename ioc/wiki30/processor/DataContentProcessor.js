@@ -4,30 +4,11 @@ define([
     "ioc/wiki30/processor/ContentProcessor",
     "dojo/ready",
     "ioc/gui/content/contentToolFactory",
-    "ioc/dokuwiki/AceManager/toolbarManager",
+
     //"ioc/dokuwiki/Locktimer2",
     //"dojo/dom",
     //"dojo/dom-style",
 ], function (Editor, declare, ContentProcessor, ready, contentToolFactory, toolbarManager, /*Locktimer,*/ dom, domStyle) {
-
-
-    //var editing = function (params, docId, dispatcher, draft) {
-
-        // TODO[Xavi] Això no anirà aquí
-        //console.log("per inicialitzar la toolbar:", params.varName, params.toolbarId, params.wikiTextId);
-        //toolbarManager.setToolbar(params.varName, params.toolbarId, params.wikiTextId);
-
-        // TODO[Xavi] Reubicar? Sembla que no cal fer ers amb ell
-        //dw_editor.init();
-
-
-        //if (!params.locked) {
-        //    // Només activem el temportizador si el document no està bloquejat
-        //    new Locktimer(docId, dispatcher).init(draft);
-        //}
-
-
-    //};
 
     return declare([ContentProcessor],
         /**
@@ -52,7 +33,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("DataContentProcessor#process", value);
+                //console.log("DataContentProcessor#process", value);
 
                 // TODO[Xavi] Refactoritzar tot això per funcionar de manera semblant al structured document
                 // moure del procesAceEditor la inicialització de la toolbar i els botons es farà al contentTool
@@ -68,22 +49,7 @@ define([
 
                 var ret;
 
-                value.editor = new Editor(value.id, value.content);
-                //value.content = "<p></p>";
-
-
                 ret = this.inherited(arguments);
-
-                // En aquest punt ja ha d'estar el ContentTool creat
-
-                value.editor.select(); // TODO[Xavi] que fa això? es per seleccionar la pestanya que toqui?
-
-
-                //ready(function () {
-                    //var content = value.draft ? value.draft.content : '';
-
-                    //editing(value.editing, value.id, dispatcher, content);
-                //});
 
 
                 return ret;
@@ -100,7 +66,7 @@ define([
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
-                dispatcher.getContentCache(value.id).setEditor(value.editor);
+                //dispatcher.getContentCache(value.id).setEditor(value.editor);
 
 
             },
@@ -124,26 +90,18 @@ define([
                     content: content,
                     closable: true,
                     dispatcher: dispatcher,
-                    originalContent: this._extractContentFromNode(content.editor.editorNode),
+                    originalContent: this._extractContentFromNode(content),
                     type: this.type,
                     locked: content.editing.locked,
                     rev: content.rev
                 };
 
 
-                console.log("args:", args);
-                console.log("content:", content);
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             },
 
-            _extractContentFromNode: function (parentNode) {
-                var nodes = parentNode.children;
-
-                for (var i = 0; i < nodes.length; i++) {
-                    if (nodes[i].className == "editBox") {
-                        return nodes[i].lastElementChild.textContent;
-                    }
-                }
+            _extractContentFromNode: function (content) {
+                return  jQuery(content.content).find('textarea').val();
             }
         });
 });

@@ -89,6 +89,15 @@ define([
             this.aceWrapper.set_value(value);
         },
 
+
+        getValue: function() {
+            if (this.enabled) {
+                return this.getEditorValue();
+            } else {
+                return this.getTextareaValue();
+            }
+        },
+
         getEditorValue: function () {
             //console.log("AceFacade#getEditor", this.aceWrapper.get_value());
             return this.aceWrapper.get_value();
@@ -167,12 +176,10 @@ define([
 
         setHeight: function (height) {
 
-            //style.set(this.dokuWrapper.textArea.id, "height", "" + height  + "px");  TODO[Xavi] no cal ajustar-lo si no es permet el mode TextArea
+            style.set(this.dokuWrapper.textArea.id, "height", "" + height  + "px");
             style.set(this.iocAceEditor.containerId, "height", "" + height + "px");
 
             this.container.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
-
-            console.log("Height is ", height, "?");
 
         },
 
@@ -193,7 +200,7 @@ define([
         },
 
         toggleEditor: function() {
-            console.log("Toggling!");
+
             if (this.enabled) {
                 this.disable();
             } else {

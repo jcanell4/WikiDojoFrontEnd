@@ -26,16 +26,11 @@ define([
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
     'ioc/gui/content/subclasses/LocktimedDocumentSubclass',
     'ioc/dokuwiki/AceManager/AceFacade',
-    'dojo/dom-class',
-    'ioc/dokuwiki/dwPageUi',
-    'dijit/registry',
     'dojo/dom',
     'dojo/dom-geometry',
-    'dojo/dom-style',
-    'ioc/dokuwiki/AceManager/toolbarManager2',
+    'ioc/dokuwiki/AceManager/toolbarManager'
 
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, domClass, dwPageUi, registry,
-             dom, geometry, style, toolbarManager) {
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, toolbarManager) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
@@ -175,7 +170,7 @@ define([
                 id = this.getGlobalState().getCurrentId();
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
-            console.log("Click");
+
             this.getEventManager().dispatchEvent("cancel_partial_" + id, {id: id, chunk: chunk});
 
         },
@@ -186,11 +181,12 @@ define([
          */
         _funcEnableWrapper: function () {
             var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId();
+                id = this.getGlobalState().getCurrentId(),
+                editor;
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
-            var editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
 
+            editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
             editor.toggleWrap();
         },
 
@@ -282,9 +278,7 @@ define([
 
             // Actualitzem les dades d'edició
 
-            console.log("This?", this, "section_id:", section_id);
-
-            text = this.editors[header_id].editor.getEditorValue();
+            text = this.editors[header_id].editor.getValue(); // TODO[Xavi] que passa amb el textarea? s'ha de comprovar quin es l'editor actiu o crear un nou métode que retorni el contingut sigui quin sigui l'estat
             this.updateChunk(header_id, {'editing': text});
 
 
@@ -292,8 +286,6 @@ define([
             values.prefix = pre + "\n";
             values.suffix = suf;
             values.wikitext = text;
-
-            console.log("Data to save:", values);
 
             return values;
         },
@@ -370,7 +362,7 @@ define([
             jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
             this.inherited(arguments);
 
-            console.log("StructuredDocumentSubclass#postLoad");
+            //console.log("StructuredDocumentSubclass#postLoad");
 
             this.eventManager = this.dispatcher.getEventManager();
 
@@ -428,7 +420,6 @@ define([
                 }
             }
 
-            //console.log("#isContentChanged", result, this.changedChunks);
             return result;
 
         },
@@ -454,7 +445,7 @@ define([
 
                     if (chunk.text && chunk.header_id == header_id) {
 
-                        console.log("ChangedChunks:", this.changedChunks, "header_id", header_id);
+                        //console.log("ChangedChunks:", this.changedChunks, "header_id", header_id);
                         this.changedChunks[header_id].content = chunk.text.editing;
                         return chunk.text.editing;
                     }
@@ -752,31 +743,27 @@ define([
         },
 
         addEditor: function (header_id, data) {
+            var editor = this.createEditor(data.auxId);
 
-            //TODO[Xavi] crear el div editor amb jQuery
+            this.editors[header_id] = {
+                editor: editor
+            };
+        },
 
-            var $textarea = jQuery('textarea_' + data.auxId);
-            //$textarea.before('<div id=' + 'editor_' + data.auxId + '></div>');
-
-
-            console.log("JSINFO:", JSINFO);
-
-            var editor = new AceFacade({
+        // TODO: Copiat a Editor subclass (per generalitzar)
+        createEditor: function (id) {
+            var $textarea = jQuery('textarea_' + id);
+            return new AceFacade({
                 xmltags: JSINFO.plugin_aceeditor.xmltags,
-                containerId: 'editor_' + data.auxId,
-                textareaId: 'textarea_' + data.auxId,
+                containerId: 'editor_' + id,
+                textareaId: 'textarea_' + id,
                 theme: JSINFO.plugin_aceeditor.colortheme,
                 readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient
                 wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                 wrapMode: $textarea.attr('wrap') !== 'off',
                 mdpage: JSINFO.plugin_aceeditor.mdpage,
-                auxId: data.auxId
+                auxId: id
             });
-
-            this.editors[header_id] = {
-                editor: editor
-            };
-
         },
 
         disableEditor: function (header_id) { // TODO[Xavi] No es fa servir
@@ -916,13 +903,11 @@ define([
 
         fillEditorContainer: function () {
 
-
             var editorNode = dom.byId(this.id),
                 viewNode, p,
                 h = geometry.getContentBox(editorNode).h,
                 editors = this.getEditors();
 
-            console.log("editorNode:", editorNode);
 
             for (var header_id in editors) {
                 jQuery('#view_' + this.id + '_' + header_id).css('display', 'block'); // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada

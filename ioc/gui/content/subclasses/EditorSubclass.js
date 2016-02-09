@@ -1,9 +1,12 @@
 define([
     "dojo/_base/declare",
-    "dojo/_base/lang",
     "dojo/on",
     "ioc/gui/content/subclasses/LocktimedDocumentSubclass",
-], function (declare, lang, on, LocktimedDocumentSubclass) {
+    'ioc/dokuwiki/AceManager/toolbarManager',
+    'ioc/dokuwiki/AceManager/AceFacade',
+    'dojo/dom-geometry',
+    'dojo/dom'
+], function (declare, on, LocktimedDocumentSubclass, toolbarManager, AceFacade, geometry, dom) {
 
     return declare([LocktimedDocumentSubclass],
 
@@ -23,6 +26,10 @@ define([
          * @see contentToolFactory.generate()
          */
         {
+
+            TOOLBAR_ID: 'full_editor',
+            VERTICAL_MARGIN: 0,
+
             /**
              * El contingut original inicial s'ha de passar a travès del constructor dins dels arguments com la
              * propietat originalContent.
@@ -67,54 +74,26 @@ define([
              *
              * @override
              */
-            //postAttach: function () {
-            //
-            //    //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
-            //    this.registerToChangesManager();
-            //
-            //
-            //    jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
-            //
-            //
-            //    if (!this.locked) {
-            //        this.lockDocument();
-            //    }
-            //
-            //    this.inherited(arguments);
-            //},
-            //
-
-
             postAttach: function () {
+                //console.log("EditorSubclass#postAttach");
                 this.registerToChangesManager();
 
                 jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
                 this.inherited(arguments);
 
-                console.log("StructuredDocumentSubclass#postLoad");
+                if (!this.locked) {
+                    this.lockDocument();
+                }
 
                 this.eventManager = this.dispatcher.getEventManager();
 
-                //this.eventManager.registerEventForBroadcasting(this, "edit_" + this.id, this._doEdit.bind(this));
                 this.eventManager.registerEventForBroadcasting(this, "save_" + this.id, this._doSave.bind(this));
                 this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancel.bind(this));
 
                 //this.updateTitle(this.data); // TODO[xavi] Comprovar si això cal o es crida el de documentSubclass
+                this.fillEditorContainer();
             },
 
-            //_doEdit: function (event) { // TODO[Xavi] esborrar? sempre està en edició
-            //    //console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
-            //
-            //    var dataToSend = this.getQueryEdit(event.id),
-            //        containerId = "container_" + event.id;
-            //
-            //    this.eventManager.dispatchEvent("edit", {
-            //        id: this.id,
-            //        dataToSend: dataToSend,
-            //        standbyId: containerId
-            //    })
-            //
-            //},
 
             _doSave: function (event) {
                 //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
@@ -131,7 +110,7 @@ define([
             },
 
             _doCancel: function (event) {
-                //console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+                //console.log("EditorSubclass#_doCancel", this.id, event);
 
                 var dataToSend = this.getQueryCancel(event.id),
                     containerId = "container_" + event.id;
@@ -149,70 +128,23 @@ define([
 
                 var $form = jQuery('#form_' + this.id),
                     values = {},
-                    //header_id,
-                    //pre = '',
-                    //suf = '',
                     text;
-                    //chunks = this.data.chunks,
-                    //editingIndex = -1;
-
 
 
                 jQuery.each($form.serializeArray(), function (i, field) {
                     values[field.name] = field.value;
                 });
 
-
-                //header_id = values['section_id'];
-
-                // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
-
-                //// TODO: Només fins al actual Fins al actual,
-                //for (var i = 0; i < chunks.length; i++) {
-                //
-                //    if (chunks[i].header_id === header_id) {
-                //        editingIndex = i;
-                //        pre += chunks[i].text.pre;
-                //        break;
-                //    }
-                //
-                //    if (chunks[i].text) {
-                //        pre += chunks[i].text.pre;
-                //        //pre += chunks[i].text.editing;
-                //        pre += this.changedChunks[chunks[i].header_id].content;
-                //    }
-                //}
-
-
-                //for (i = editingIndex + 1; i < chunks.length; i++) {
-                //    if (chunks[i].text) {
-                //        suf += chunks[i].text.pre;
-                //        suf += chunks[i].text.editing;
-                //    }
-                //}
-                //suf += this.data.suf || '';
-
-                // Actualitzem les dades d'edició
-
-                console.log("This?", this, "section_id:", id);
-
                 text = this.getCurrentContent();
 
-                // Afegim un salt per assegurar que no es perdi cap caràcter
-                //values.prefix = pre + "\n";
-                //values.suffix = suf;
                 values.wikitext = text;
-
-                console.log("Data to save:", values);
 
                 return values;
             },
 
             getQueryCancel: function (section_id) {
-                return 'do=cancel&id=' + this.ns + '&section_id=' + section_id
-                    + '&editing_chunks=' + this.getEditingChunks().join(',');
+                return 'do=cancel&id=' + this.ns;
             },
-
 
 
             /**
@@ -255,23 +187,8 @@ define([
              * o null si no existeix
              */
             getCurrentContent: function () {
-                var contentCache = this.dispatcher.getContentCache(this.id),
-                    content;
-
-                try {
-                    if (contentCache.isAceEditorOn()) {
-                        content = contentCache.getEditor().iocAceEditor.getText();
-
-                    } else {
-                        content = contentCache.getEditor().$textArea.context.value;
-                    }
-
-                    content = '\n' + content + '\n';
-
-                } catch (error) {
-                    console.error("Error detectat: ", error);
-                }
-
+                var content = this.getEditor().getValue();
+                //console.log('EditorSubclass#getCurrentContent', content);
                 return content;
             },
 
@@ -330,6 +247,156 @@ define([
             },
 
 
+            /**
+             * Al post render s'afegeix la funcionalitat de reconstruir els prefix i suffix necessaris per la wiki al
+             * fer click en el botó de desar i s'afegeix la toolbar a cada editor.
+             *
+             * @override
+             */
+            postRender: function () {
+
+                this.inherited(arguments);
+
+                this.addToolbars();
+                this.addEditors();
+
+                //this.addEditionListener();
+                //this.addSelectionListener();
+
+                // El post render es crida sempre després d'haver tornat o carregat una nova edició
+                //this.discardChanges = false;
+
+                // TODO[Xavi] això dubto que funcione tal qual està
+                //if (this.data.locked) {
+                //    this.lockEditors();
+                //} else {
+                //    this.unlockEditors();
+                //    this.isLockNeeded();
+                //}
+                //
+
+
+                on(window, 'resize', function () {
+                    this.fillEditorContainer();
+                }.bind(this));
+
+            },
+
+            // Afegeix un editorAce per cada editor actiu
+            addEditors: function () {
+                this.editor = this.createEditor(this.id);
+            },
+
+            createEditor: function (id) {
+                var $textarea = jQuery('textarea_' + id);
+                return new AceFacade({
+                    xmltags: JSINFO.plugin_aceeditor.xmltags,
+                    containerId: 'editor_' + id,
+                    textareaId: 'textarea_' + id,
+                    theme: JSINFO.plugin_aceeditor.colortheme,
+                    readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient
+                    wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+                    wrapMode: $textarea.attr('wrap') !== 'off',
+                    mdpage: JSINFO.plugin_aceeditor.mdpage,
+                    auxId: id
+                });
+            },
+
+            // TODO[Xavi] en aquest cas només cal una toolbar
+            addToolbars: function () {
+                this.addButtons();
+                toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
+            },
+
+            addButtons: function () {
+                var argSave = {
+                        type: 'SaveButton',
+                        title: 'Desar',
+                        icon: '/iocjslib/ioc/gui/img/save.png'
+                    },
+
+                    argCancel = {
+                        type: 'BackButton',
+                        title: 'Tornar',
+                        icon: '/iocjslib/ioc/gui/img/back.png'
+                    },
+
+                    confEnableAce = {
+                        type: 'EnableAce',
+                        title: 'Activar/Desactivar ACE',
+                        icon: '/iocjslib/ioc/gui/img/toggle_on.png'
+                    },
+
+                    confEnableWrapper = {
+                        type: 'EnableWrapper', // we havea new type that links to the function
+                        title: 'Activar/Desactivar embolcall',
+                        icon: '/iocjslib/ioc/gui/img/wrap.png'
+                    };
+
+
+                toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
+                toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
+                toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
+                toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
+            },
+
+            /**
+             * Activa o desactiva l'embolcall del text.
+             * @returns {boolean} - Sempre retorna fals
+             * @protected
+             */
+            _funcEnableWrapper: function () {
+                var id = this.getGlobalState().getCurrentId(),
+                    editor = this.getContentCache(id).getMainContentTool().getEditor();
+
+                editor.toggleWrap();
+            },
+
+            /**
+             *
+             * @protected
+             */
+            _funcSave: function () {
+                var id = this.getGlobalState().getCurrentId();
+
+                this.getEventManager().dispatchEvent("save_" + id, {id: id});
+            },
+
+            /**
+             * Activa o desactiva l'editor ACE segons l'estat actual
+             *
+             * @returns {boolean} - Sempre retorna fals.
+             * @protected
+             */
+            _funcEnableAce: function () {
+                var id = this.getGlobalState().getCurrentId(),
+                    editor = this.getContentCache(id).getMainContentTool().getEditor();
+                editor.toggleEditor();
+            },
+
+            /**
+             *
+             * @protected
+             */
+            _funcCancel: function () {
+                var id = this.getGlobalState().getCurrentId();
+                this.getEventManager().dispatchEvent("cancel_" + id, {id: id});
+
+            },
+
+            getEditor: function () {
+                return this.editor;
+
+            },
+
+            fillEditorContainer: function () {
+                var contentNode = dom.byId(this.id),
+                    h = geometry.getContentBox(contentNode).h,
+                    max = h - this.VERTICAL_MARGIN;
+
+                this.editor.setHeight(max);
+
+            },
 
         });
 });

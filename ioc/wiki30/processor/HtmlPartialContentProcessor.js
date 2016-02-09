@@ -95,7 +95,7 @@ define([
                     dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
                 }
 
-                console.log("Confirmation: ", confirmation);
+                //console.log("Confirmation: ", confirmation);
 
 
                 return confirmation ? 0 : 100;
@@ -135,16 +135,9 @@ define([
                         rev: content.rev || '',
                         type: this.type,
                         //changedChunks: changedChunks
-                    },
-
-                    argsRequestForm = {
-                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=edit_partial&do=edit_partial",
-                        form: '.btn_secedit',
-                        volatile: true,
-                        continue: false
                     };
-                return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
+
+                return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
 
             },
 
@@ -168,8 +161,6 @@ define([
 
                 return changedChunks;
             }
-
-
 
         })
 });

@@ -1,5 +1,5 @@
 /**
- * @module htmlEngineFactory
+ * @module DataEngineFactory
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
 define(function () {
@@ -17,7 +17,8 @@ define(function () {
             $form = jQuery(data.content).find('form').clone();
 
         $container.append('<div id="toolbar_' + data.id + '"></div>');
-        $form.attr("id", "form_" + data.id);
+        $form.attr('id', 'form_' + data.id);
+        $form.find('textarea').attr('id', 'textarea_'+data.id);
         $container.append($form);
 
         return $container;
