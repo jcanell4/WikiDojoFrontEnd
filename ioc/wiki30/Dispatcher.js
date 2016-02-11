@@ -411,7 +411,8 @@ define([
              */
             _processResponse: function (response, processors) {
 
-                //console.log("Processant:", response);
+                console.log("Processant:", response);
+                //alert("wait...");
                 var result;
 
                 if (processors && processors[response.type]) {

@@ -36,8 +36,7 @@ define([
             /** @type int */
             timerRefreshID: null,
 
-
-            /** @type Date @deprecated no es fa servir, em canviat el sistema*/
+            /** @type int temps en milisegond del últim update*/
             lasttime: null,
 
             /** @type string */
@@ -72,11 +71,13 @@ define([
             WARNING_TIMER: 60,
 
             /** @type int temps entre auto saves del esborrany, temps en segons */
-            AUTOSAVE_TIME: 5,
+            AUTOSAVE_TIME: 1,
 
-            constructor: function (docId, dispatcher) {
+
+            constructor: function (docId, dispatcher, contentTool) {
                 this.docId = docId;
                 this.dispatcher = dispatcher;
+                this.eventManager = dispatcher.getEventManager();
                 this.timeout = 0;
                 this.draft = false;
                 this.msg = { // TODO[Xavi] Pendent de canviar, el missatge el passarem per paràmetre
@@ -84,7 +85,9 @@ define([
                     timeout: LANG.template['ioc-template'].lock_timeout
                 };
                 this.pageid = '';
-                this.contentTool = this.dispatcher.getContentCache(this.docId).getMainContentTool();
+
+                this.contentTool = contentTool;
+                //this.contentTool = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
                 this.changesDetected = false;
 
@@ -92,68 +95,73 @@ define([
             },
 
 
-            /**
-             * Initialize the lock timer
-             *
-             * @param {int}    timeout Length of timeout in seconds
-             * @param {bool}   draft   Whether to save drafts
-             */
-            init: function (timeout, draft) {
-
-                // Init values
-                this.timeoutWarning = timeout * 1000;
-                this.timeout = (timeout + this.WARNING_TIMER) * 1000;
-
-                // TEST Values
-                //this.timeoutWarning = timeout * 10;
-                //this.timeout = (timeout + this.REAL_TIMEOUT_DIFF) * 20;
-
-
-                //console.log("Warning: ", this.timeoutWarning);
-                //console.log("Timeout: ", this.timeout);
+            init: function (draft) {
 
 
                 this.draft = draft;
 
-                // TODO[xavi] En lloc d'agafar la referencia pel jQuery que pot ser erronia establim la del docId
                 this.pageid = this.docId;
 
                 this.timersID = {};
                 this.dialogs = {};
 
-                this.reset();
-
+                this.lasttime = Date.now();
                 this.contentTool.registerObserverToEvent("document_changed", lang.hitch(this, this.refreshNeeded));
-                this.contentTool.registerObserverToEvent("document_changes_reset", lang.hitch(this, this.refreshReset));
                 this.contentTool.registerObserverToEvent("destroy", lang.hitch(this, this.destroy));
 
+                if (this.timeout) {
+                    this.reset();
+                } else {
+                    this.lock(false);
+                }
+
+            },
+
+            refreshed: function (timeout) {
+                if ((!timeout && !this.inTime()) || timeout < 0) {
+                    this._timeout(this);
+                } else if (!timeout) {
+                    this.reset();
+                } else {
+                    //this.timeout = timeout * 5; // Per fer tests
+                    //this.timeoutWarning = timeout*10; // Per fer tests
+
+                    this.timeout = timeout * 1000;
+                    this.timeoutWarning = (timeout - this.WARNING_TIMER) * 1000;
+                    this.reset();
+
+                }
+            },
+
+            inTime: function () {
+                return this.lasttime + this.timeout >= Date.now()
             },
 
             /**
              * (Re)start the warning timer
              */
             reset: function () {
+                //console.log("Locktimer#reset", this.stop);
+                this.lasttime = Date.now();
+
                 this.clear();
 
-                if (!this.stop) {
+                if (this.stop) {
+                    this.unlock();
+                } else {
                     this._initWarningTimer();
                     this._initTimeoutTimer();
                     this._initRefreshTimer();
                 }
-
             },
 
             /**
              * Display the warning about the expiring lock
              */
             warning: function (context) {
-
                 context.msg.continue = context.msg.continue.replace("\\n", "<br>");
-
                 context._generateDialogWarning();
-
             },
-
 
             refreshNeeded: function () {
                 this.refreshTimer = true;
@@ -169,9 +177,7 @@ define([
              * Called on keypresses in the edit area
              */
             refresh: function () {
-                var now = new Date(),
-                    params = 'call=lock&id=' + this.pageid + '&',
-                    that = this;
+                //console.log("Locktimer#refresh");
 
                 // Refresca només si hi han canvis
                 if (!this.refreshTimer) {
@@ -179,90 +185,54 @@ define([
                 }
 
                 this.refreshTimer = false;
-
-                var currentContent = this.contentTool.getCurrentContent();
-
-                if (this.draft && currentContent.length > 0) {
-                    params += "&wikitext=" + jQuery.param({wikitext: currentContent});
-
-                    params += jQuery('#dw__editform').find('input[name=prefix], ' +
-                        'input[name=suffix], ' +
-                        'input[name=date]').serialize();
-                }
-
-                jQuery.post(
-                        DOKU_BASE + 'lib/exe/ajax.php',
-                    params)
-                    .done(function (data) {
-                            that.refreshed(data, that);
-                        }
-                    );
+                this.lock(this.draft);
             },
 
-            /**
-             * Callback. Resets the warning timer
-             */
-            refreshed: function (data, context) {
-                var error = data.charAt(0),
-                    info;
-                data = data.substring(1);
 
-                jQuery('#draft__status').html(data);
+            lock: function (draft) {
+                var dataToSend = {
+                    id: this.contentTool.ns,
+                    do: 'lock'
+                };
 
-                // TODO[Xavi] Rehabilitar això amb la resposta? Si es un error s'ha de controlar aquí
-                if (error != '1') {
+                if (draft) {
+                    var draftQuery = this.contentTool.generateDraft();
+                    dataToSend.draft = JSON.stringify(draftQuery);
 
-                    info = {
-                        type: "info",
-                        value: {
-                            duration: -1,
-                            id: this.docId,
-                            message: "S'ha produit un error, el document no s'ha bloquejat.",
-                            timestamp: new Date(Date.now()).toLocaleFormat('%d/%m/%y %H:%M:%S'),
-                            type: "error"
-                        }
-                    };
-
-
-                    this.dispatcher.processResponse(info);
-                    return; // locking failed
                 }
 
-                lang.hitch(context, context.reset());
+                this.eventManager.dispatchEvent('lock_document', {
+                    id: this.contentTool.id,
+                    dataToSend: dataToSend
+                });
+
             },
 
+            unlock: function () {
+                this.eventManager.dispatchEvent('unlock_document', {
+                    id: this.contentTool.id,
+                    dataToSend: 'do=unlock&id=' + this.contentTool.ns
+                });
+
+            },
 
             cancelEditing: function (keepDraft) {
-                this.contentTool.discardChanges(); // Així evitem que demani si volen guardar-se els canvis
+
+                this.contentTool.forceReset(); // Així evitem que demani si volen guardar-se els canvis
                 this.clear();
-                console.log("Keep draft: ", keepDraft);
-
-                var requester;
-
-                // TODO[Xavi] Aquest bloc de codi està repetit al DiffDialog
-                require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
-                    requester = new Request();
-                }));
-
-//                requester.updateSectok = function (sectok) {
-//                    this.sectok = sectok;
-//                };
-//
-//                requester.sectok = requester.dispatcher.getSectok();
-//                requester.dispatcher.toUpdateSectok.push(requester);
 
 
-                requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.contentTool.ns;
-
+                var dataToSend = 'do=cancel&id=' + this.contentTool.ns;
 
                 if (keepDraft) {
-                    requester.urlBase += '&keep_draft=true';
+                    dataToSend += "&keep_draft=true";
                 }
 
-                requester.setStandbyId(this.dispatcher.containerNodeId);
-                requester.sendRequest();
-                
-//                requester.dispatcher.toUpdateSectok.pop();
+                this.eventManager.dispatchEvent("cancel_document", {
+                    id: this.contentTool.id,
+                    dataToSend: dataToSend,
+                    standbyId: this.dispatcher.containerNodeId
+                })
 
             },
 
@@ -270,43 +240,33 @@ define([
 
             _initRefreshTimer: function () {
                 //console.log("Refresh Timer iniciat:", this);
-                // Guardem la referencia del timer
+                // Guardem la referencia del timer i l'activem
                 this.timersID.refresh = window.setInterval(lang.hitch(this, this.refresh), 1000 * this.AUTOSAVE_TIME);
-                // L'activem
-
             },
 
             _initWarningTimer: function () {
                 //console.log("Warning Timer iniciat:", this);
-                // Guardem la referencia del timer
-                // L'activem
+                // Guardem la referencia del timer i l'activem
                 this.timersID.warning = window.setTimeout(this.warning, this.timeoutWarning, this);
             },
 
             _initTimeoutTimer: function () {
                 //console.log("Timeout Timer iniciat:", this);
-                // Guardem la referencia del timer
-                // L'activem
+                // Guardem la referencia del timer i l'activem
+                this.timersID.timeout = window.setTimeout(this._timeout, this.timeout, this);
+            },
 
-                var self = this;
-
-                this.timersID.timeout = window.setTimeout(function () {
-                    self.clear();
-                    //self._cancelDialog('warning');
-                    self._generateDialogTimeout();
-
-
-                }, this.timeout);
-
-
+            _timeout: function (context) {
+                context.clear();
+                context._generateDialogTimeout();
             },
 
             _generateDialogTimeout: function () {
-                var self = this;
+                var that = this;
 
                 this.dialogs.timeout = new Dialog({
                     title: "Temps d'espera esgotat",
-                    content: self.msg.timeout
+                    content: that.msg.timeout
                     + "<div class=\"dijitDialogPaneActionBar\">"
                     + "<button data-dojo-type=\"dijit/form/Button\" type=\"button\" id=\"ok-confirmation-" + this.docId + "\">Ok</button>"
                     + "</div>",
@@ -314,14 +274,13 @@ define([
                     closable: false,
 
                     startup: function () {
-                        var okBtn = dom.byId("ok-confirmation-" + self.docId);
+                        var okBtn = dom.byId("ok-confirmation-" + that.docId);
 
-                        self.cancelEditing(true);
+                        that.cancelEditing(true);
 
                         on(okBtn, 'click',
                             function (e) {
-                                self._cancelDialog('timeout');
-                                //this.destroyRecursive();
+                                that._cancelDialog('timeout');
                             });
                     }
                 });
@@ -330,6 +289,7 @@ define([
             },
 
             _generateDialogWarning: function () {
+                //console.log("Locktimer#_generateDialogWarning");
                 var self = this;
 
                 this.dialogs.warning = new Dialog({
@@ -348,16 +308,14 @@ define([
 
                         on(saveBtn, 'click',
                             function () {
-                                self.reset();
-                                self._cancelDialog('warning');
-
+                                self.refreshNeeded();
+                                self.refresh();
                             });
 
                         on(cancelBtn, 'click',
                             function () {
                                 self.clear();
                                 self.cancelEditing(false);
-                                self._cancelDialog('warning');
                             });
 
                     },
@@ -372,24 +330,21 @@ define([
 
             },
 
-
             _cancelDialog: function (dialog) {
+                //console.log("Locktimer#_cancelDialog", dialog);
                 if (this.dialogs[dialog]) {
                     if (this.dialogs[dialog] != null) {
                         this.dialogs[dialog].destroyRecursive();
                         this.dialogs[dialog] = null;
                     }
-                } else {
-                    // Normalment no hi ha dialog, així que no cal mostrar l'error
-                    // console.error("No es pot eliminar el dialog " + dialog + " perquè no es troba: ", this.dialogs);
                 }
             },
-
 
             /**
              * Remove the current warning timer
              */
             clear: function (timerName) {
+                //console.log("Locktimer#clear", timerName);
 
                 var clearTimersIDs;
 
@@ -401,27 +356,27 @@ define([
                 }
 
                 this._cancelDialog('warning');
+
                 for (var timerID in clearTimersIDs) {
+
                     if (this.timersID[timerID] != null) {
                         window.clearTimeout(this.timersID[timerID]); // Comprovar si per l'interval cal window.clearInterval();
                         this.timersID[timerID] = null;
                     }
+
                 }
             },
 
             destroy: function () {
+                //console.log("Locktimer#destroy");
                 this.stop = true;
 
                 this.clear();
                 if (this.dialogs.warning !== null) {
                     this._cancelDialog('warning');
                 }
-
             }
-
         });
-
-
 });
 
 

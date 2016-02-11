@@ -35,6 +35,8 @@ define([
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
         TOOLBAR_ID : 'partial_edit',
+        VERTICAL_MARGIN: 100, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+        MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
         constructor: function (args) {
 
@@ -927,8 +929,6 @@ define([
 
         },
 
-        VERTICAL_MARGIN: 100, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
-        MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
     })
 });

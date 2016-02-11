@@ -1,6 +1,6 @@
 define([
-    "dojo/_base/declare",
-    "ioc/dokuwiki/Locktimer2",
+    'dojo/_base/declare',
+    'ioc/dokuwiki/Locktimer',
 ], function (declare, Locktimer) {
 
     return declare([], {

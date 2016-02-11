@@ -29,6 +29,8 @@ define([
 
             TOOLBAR_ID: 'full_editor',
             VERTICAL_MARGIN: 0,
+            MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+
 
             /**
              * El contingut original inicial s'ha de passar a travès del constructor dins dels arguments com la
@@ -85,12 +87,15 @@ define([
                     this.lockDocument();
                 }
 
+                this.registerToEvent(this, 'document_selected', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                this.registerToEvent(this, 'data_replaced', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                this.registerToEvent(this, 'content_selected', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+
                 this.eventManager = this.dispatcher.getEventManager();
 
                 this.eventManager.registerEventForBroadcasting(this, "save_" + this.id, this._doSave.bind(this));
                 this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancel.bind(this));
 
-                //this.updateTitle(this.data); // TODO[xavi] Comprovar si això cal o es crida el de documentSubclass
                 this.fillEditorContainer();
             },
 
@@ -391,13 +396,16 @@ define([
             },
 
             fillEditorContainer: function () {
+                console.log('EditorSubclass#fillEditorContainer');
                 var contentNode = dom.byId(this.id),
                     h = geometry.getContentBox(contentNode).h,
                     max = h - this.VERTICAL_MARGIN;
 
-                this.editor.setHeight(max);
+                console.log("Alçada:", h);
+                this.editor.setHeight(Math.max(this.MIN_HEIGHT, max));
 
-            },
+            }
+
 
         });
 });
