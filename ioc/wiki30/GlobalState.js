@@ -92,11 +92,7 @@ define([
          * @param {string} typeId
          */
         setCurrentElementId: function (node, typeId) {
-
             var id = this.getCurrentId();
-
-            console.log("Pages:", this.pages);
-            console.log("id: ", id);
 
             if (typeof node === "string") {//recibe directamente el id
                 this.pages[id].currentElementId = node;

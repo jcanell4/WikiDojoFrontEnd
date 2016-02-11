@@ -150,7 +150,7 @@ define([
             }));
 
 
-            requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&id=' + this.ns
+            requester.urlBase = DOKU_BASE + 'lib/plugins/ajaxcommand/ajax.php?call=cancel&do=cancel&id=' + this.ns
                 + '&keep_draft=true';
 
             requester.setStandbyId(this.dispatcher.containerNodeId);

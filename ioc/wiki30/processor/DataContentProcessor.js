@@ -1,14 +1,9 @@
 define([
-    "ioc/dokuwiki/editorManager/Editor",
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
-    "dojo/ready",
     "ioc/gui/content/contentToolFactory",
 
-    //"ioc/dokuwiki/Locktimer2",
-    //"dojo/dom",
-    //"dojo/dom-style",
-], function (Editor, declare, ContentProcessor, ready, contentToolFactory, toolbarManager, /*Locktimer,*/ dom, domStyle) {
+], function (declare, ContentProcessor, contentToolFactory) {
 
     return declare([ContentProcessor],
         /**
@@ -33,13 +28,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("GlobalState:", dispatcher.getGlobalState());
                 //console.log("DataContentProcessor#process", value);
-
-                // TODO[Xavi] Refactoritzar tot això per funcionar de manera semblant al structured document
-                // moure del procesAceEditor la inicialització de la toolbar i els botons es farà al contentTool
-
-
                 var $content = jQuery(value.content);
 
                 // Reemplaçem el contingut del content amb el del draft
@@ -48,12 +37,7 @@ define([
                     value.content = jQuery('<div>').append($content.clone()).html();
                 }
 
-                var ret;
-
-                ret = this.inherited(arguments);
-
-
-                return ret;
+                return this.inherited(arguments);
             },
 
             /**
@@ -67,9 +51,6 @@ define([
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
-                //dispatcher.getContentCache(value.id).setEditor(value.editor);
-
-
             },
 
             /**
