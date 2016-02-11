@@ -33,6 +33,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                console.log("GlobalState:", dispatcher.getGlobalState());
                 //console.log("DataContentProcessor#process", value);
 
                 // TODO[Xavi] Refactoritzar tot això per funcionar de manera semblant al structured document

@@ -88,13 +88,20 @@ define([
         /**
          * Node es un node del DOM o una cadena amb el nom de l'element
          *
-         * @param {string|*} node on es troba la nova selecció, o nom de l'element
+         * @param {string|DOMNode} node on es troba la nova selecció, o nom de l'element
+         * @param {string} typeId
          */
         setCurrentElementId: function (node, typeId) {
+
+            var id = this.getCurrentId();
+
+            console.log("Pages:", this.pages);
+            console.log("id: ", id);
+
             if (typeof node === "string") {//recibe directamente el id
-                this.currentElementId = node;
+                this.pages[id].currentElementId = node;
             } else {
-                this.currentElementId = dwPageUi.getElementWhithNodeId(node, typeId);
+                this.pages[id].currentElementId = dwPageUi.getElementWhithNodeId(node, typeId);
             }
         },
 
@@ -113,7 +120,13 @@ define([
          * @returns {null|string} nom de l'element seleccionat
          */
         getCurrentElementId: function () {
-            return this.currentElementId;
+            var id = this.getCurrentId();
+
+            if (this.pages[id]) {
+                return this.pages[id].currentElementId;
+            } else {
+                return null;
+            }
         },
 
         /**

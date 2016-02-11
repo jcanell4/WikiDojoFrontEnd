@@ -266,7 +266,7 @@ define([
                 // El post render es crida sempre després d'haver tornat o carregat una nova edició
                 //this.discardChanges = false;
 
-                // TODO[Xavi] això dubto que funcione tal qual està
+                // TODO[Xavi] això no funciona encara, s'ha de fer canvi del lockantic al nou
                 //if (this.data.locked) {
                 //    this.lockEditors();
                 //} else {
@@ -280,6 +280,7 @@ define([
                     this.fillEditorContainer();
                 }.bind(this));
 
+                this.fillEditorContainer();
             },
 
             // Afegeix un editorAce per cada editor actiu
