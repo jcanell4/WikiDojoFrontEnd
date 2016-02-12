@@ -90,7 +90,7 @@ define([
              */
             dispatchEvent: function (event, data) {
                 var observers = this.events[event];
-                console.log("EventObserver#dispatchEvent: ", event, data);
+                //console.log("EventObserver#dispatchEvent: ", event, data);
 
                 data.name = event;
 

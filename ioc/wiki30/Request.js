@@ -196,9 +196,10 @@ define([
              *
              * @param {string} query petició que fem a la dokuwiki
              *
+             * @param {bool} synchronized
              * @returns {dojo.promise.Promise}
              */
-            sendRequest: function (query) {
+            sendRequest: function (query, synchronized) {
 //                console.log("Request:sendRequest ("+query+")");
                 //run standby resource while ajax response doesn't arribe
                 this._createStandbyObject();
@@ -245,6 +246,8 @@ define([
                 var configPost = {handleAs: "json"};
                 if (this.content) {
                     configPost.content = this.content;
+                    configPost.sync = synchronized || false;
+                    //sincronized <-- del dojo
                 }
                 if (this.method === "post") {
 

@@ -247,7 +247,7 @@ define([
                 return {
                     type: 'full',
                     id: this.id,
-                    content: this.getCurrentContent()
+                    content: jQuery.trim(this.getCurrentContent())
                 };
             },
 

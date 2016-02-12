@@ -410,9 +410,7 @@ define([
              * @private
              */
             _processResponse: function (response, processors) {
-
-                console.log("Processant:", response);
-                //alert("wait...");
+                //console.log("Dispatcher#_processResponse", response);
                 var result;
 
                 if (processors && processors[response.type]) {

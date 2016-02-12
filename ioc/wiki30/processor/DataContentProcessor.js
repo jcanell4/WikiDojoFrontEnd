@@ -83,7 +83,7 @@ define([
             },
 
             _extractContentFromNode: function (content) {
-                return  jQuery(content.content).find('textarea').val();
+                return  jQuery.trim(jQuery(content.content).find('textarea').val());
             }
         });
 });
