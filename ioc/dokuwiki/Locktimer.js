@@ -79,10 +79,17 @@ define([
                 this.dispatcher = dispatcher;
                 this.timeout = 0;
                 this.draft = false;
-                this.msg = { // TODO[Xavi] Pendent de canviar, el missatge el passarem per paràmetre
-                    continue: LANG.template['ioc-template'].willexpire1 + "<b>" + docId + "</b>" + LANG.template['ioc-template'].willexpire2,
-                    timeout: LANG.template['ioc-template'].lock_timeout
-                };
+                if(LANG.willexpire1){
+                    this.msg = { // TODO[Xavi] Pendent de canviar, el missatge el passarem per paràmetre
+                        continue: LANG.willexpire1 + "<b>" + docId + "</b>" + LANG.willexpire2,
+                        timeout: LANG.lock_timeout
+                    };
+                }else{
+                    this.msg = { // TODO[Xavi] Pendent de canviar, el missatge el passarem per paràmetre
+                        continue: LANG.template['ioc-template'].willexpire1 + "<b>" + docId + "</b>" + LANG.template['ioc-template'].willexpire2,
+                        timeout: LANG.template['ioc-template'].lock_timeout
+                    };
+                }
                 this.pageid = '';
                 this.contentTool = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
