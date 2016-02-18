@@ -43,6 +43,14 @@ define([
             },
 
 
+            setReadOnly: function(value){
+                this.set("readonly", value);
+            },
+            
+            getReadOnly: function(){
+                return this.get("readonly");
+            },
+            
             /**
              * Retorna cert si el contingut actual i el contingut original son iguals o fals si no ho son.
              *
@@ -294,7 +302,12 @@ define([
             },
 
             createEditor: function (id) {
-                var $textarea = jQuery('textarea_' + id);
+                var $textarea = jQuery('#textarea_' + id);
+                if(this.getReadOnly()){
+                    $textarea.attr('readonly', 'true');
+                }else{
+                    $textarea.removeAttr('readonly');
+                }
                 return new AceFacade({
                     xmltags: JSINFO.plugin_aceeditor.xmltags,
                     containerId: 'editor_' + id,

@@ -48,7 +48,7 @@ define([], function () {
          */
         _createButtonInToolbar = function (config, func, type) {
             //console.log('toolbarManager#_createButtonInToolbar', type);
-            var funcType = 'addBtnAction' + config.type;
+            var funcType = 'addBtnAction' + (config.type = config.type + '_' + type);
 
             window[funcType] = function ($btn) {
                 $btn.click(func);
