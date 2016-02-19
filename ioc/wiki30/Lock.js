@@ -6,7 +6,8 @@ define([
     'dojo/_base/declare',
     'ioc/wiki30/manager/EventObserver',
     'ioc/wiki30/Timer',
-], function (declare, EventObserver, Timer) {
+    'ioc/gui/CustomDialog'
+], function (declare, EventObserver, Timer, CustomDialog) {
 
     return declare([EventObserver], {
 
@@ -139,6 +140,7 @@ define([
 
         _initTimers: function () {
             //console.log('Lock#_initTimers');
+            console.log("Init timers, donde estamos?", this);
             this.timers = {
                 warning: new Timer({onExpire: this._showWarningDialog.bind(this)}), // TODO[Xavi] segurament cal afegir el bind
                 timeout: new Timer({onExpire: this._showTimeoutDialog.bind(this)}), // TODO[Xavi] segurament cal afegir el bind
@@ -161,7 +163,35 @@ define([
         },
 
         _showWarningDialog: function () {
-            alert("Warning!");
+            console.log("Donde estamos? (show warning)",this);
+            var dialog = new CustomDialog({
+                id: 'warning_' + this.id,
+                content: 'contingut de prova',
+                title: 'titol de prova',
+                buttons: [
+                    {
+                        id: 'refrescar-bloqueig',
+                        description: 'Refrescar bloqueig',
+                        callback: function () {
+                            this._doLock();
+                            console.log("Refrescar bloqueig");
+                        }.bind(this)
+                    },
+                    {
+                        id: 'lliberar-document',
+                        description: 'Lliberar el document',
+                        callback: function () {
+                            this._doUnlock();
+                            this._doCancel();
+                            console.log("Lliberar el document");
+                        }.bind(this)
+                    }
+
+                ]
+
+            });
+
+            dialog.show();
 
         },
 

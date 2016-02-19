@@ -3,10 +3,12 @@ define([
     'dijit/_WidgetsInTemplateMixin',
     'dojo/_base/declare',
     'dijit/Dialog',
-    "dojo/text!./templates/CustomDialog.html",
-    "dijit/form/Button",
+    'dojo/text!./templates/CustomDialog.html',
+    'dojo/dom-construct',
+    'dijit/form/Button',
 
-], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template) {
+
+], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct) {
 
 
     return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin], {
@@ -19,13 +21,19 @@ define([
 
         },
 
+        //postCreate: function () {
+        //    this.inherited(arugments);
+        //},
+
 
         //postMixInProperties: function () {
         //    this.inherited(arguments);
         //},
         //
+
         //buildRendering: function () {
         //    this.inherited(arguments);
+        //    this._addButtons();
         //},
         //
         //postCreate: function () {
@@ -49,23 +57,28 @@ define([
 
 
             this._addButtons();
-
-
+            this._addListerners();
         },
 
         _addButtons: function () {
             if (!this.buttons) {
                 return;
             }
+
             this.buttonsNode.appendChild(this._createButtons());
-            this._addListerners();
+
         },
 
         _createButtons: function () {
+            var content = '', buttonId;
             for (var i = 0; i < this.buttons.length; i++) {
+                buttonId = 'dialogButton_' + this.id + '_' + this.buttons[i].id;
                 content += '<button data-dojo-type="dijit/form/Button" type="button" id="'
-                    + this.id + '_' + this.buttons[i].id + "\">'+this.buttons[i].description+'</button>"
+                    + buttonId + '"'
+                    + '\>' + this.buttons[i].description + '</button>';
             }
+
+            return domConstruct.toDom(content);
         },
 
         /**
@@ -73,8 +86,14 @@ define([
          * @protected
          */
         _addListerners: function () {
+            var buttonId;
             for (var i = 0; i < this.buttons.length; i++) {
-                jQuery('#' + this.id + '_' + this.buttons[i].id).on('click', this.buttons[i].callback);
+                buttonId = 'dialogButton_' + this.id + '_' + this.buttons[i].id;
+                jQuery('#' + buttonId).on('click', this.buttons[i].callback);
+                jQuery('#' + buttonId).on('click', function () {
+                    this.destroyRecursive();
+                }.bind(this));
+
             }
         },
 

@@ -32,7 +32,7 @@ define([
             _process: function (data, dispatcher) {
                 console.log("LockDataProcessor#_process", data);
 
-                dispatcher.getLockManager().update(data.id, 15 * 1000); //arriba en segons TEST en lloc de fer servir el timer posem 15s
+                dispatcher.getLockManager().update(data.id, 10 * 1000); //arriba en segons TEST en lloc de fer servir el timer posem 15s
                 //dispatcher.getLockManager().refresh(data.id, data.timeout * 1000); //arriba en segons
 
                 //var contentTool = dispatcher.getContentCache(data.id).getMainContentTool();
