@@ -55,10 +55,9 @@ define([
 
         onDestroy: function () {
             //console.log("LocktimedDocumentSubclass#onDestroy");
-            this.unlock();
+            this.dispatcher.getLockManager().unlock(this.id);
             this.inherited(arguments);
-
-        },
+        }
 
     });
 

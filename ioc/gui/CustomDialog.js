@@ -30,7 +30,7 @@ define([
 
         templateString: template,
 
-        style: "width: 300px",
+        style: "width: 400px",
 
 
         constructor: function () {

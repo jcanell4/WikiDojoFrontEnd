@@ -1,9 +1,8 @@
 define([
     'dojo/_base/declare',
     'ioc/wiki30/manager/EventObserver',
-    'ioc/wiki30/Lock',
-    'ioc/wiki30/Timer',
-], function (declare, EventObserver, Lock, Timer) {
+    'ioc/wiki30/Lock'
+], function (declare, EventObserver, Lock) {
 
     var LockManagerException = function (message) {
         this.message = message;
@@ -33,17 +32,16 @@ define([
 
 
             unlock: function (id) {
-                console.log('LockManager#unlock', id, ns);
-                if (!this.locks[id]) {
-                    throw new LockManagerException("No existeix cap lock per desbloquejar amb id: " + id);
-                }
+                //console.log('LockManager#unlock', id);
 
-                this.locks[id].unlock();
-                this._removeLock(id);
+                if (this.locks[id]) {
+                    this.locks[id].unlock();
+                    this._removeLock(id);
+                }
             },
 
             refresh: function (id, timeout) {
-                console.log('LockManager#refresh', id, timeout);
+                //console.log('LockManager#refresh', id, timeout);
 
                 if (!this.locks[id]) {
                     throw new LockManagerException("No existeix cap lock per refrescar amb id: " + id);
@@ -53,24 +51,23 @@ define([
             },
 
             update: function (id, timeout) {
-                if (!this.locks[id]) {
-                    throw new LockManagerException("No existeix cap lock per actualitzar amb id: " + id);
-                }
+                //console.log("LockManager#update", id, timeout);
 
                 if (timeout > 0) {
+                    if (!this.locks[id]) {
+                        throw new LockManagerException("No existeix cap lock per actualitzar amb id: " + id);
+                    }
+
                     this.locks[id].update(timeout);
                 } else {
                     this._removeLock(id);
                 }
             },
 
-            _removeLock: function(id) {
+            _removeLock: function (id) {
                 //console.log("LockManager#_removeLock", id);
-                if (!this.locks[id]) {
-                    throw new LockManagerException("No existeix cap lock per eliminar amb id: " + id);
-                }
-
                 delete(this.locks[id]);
+
             }
 
         });

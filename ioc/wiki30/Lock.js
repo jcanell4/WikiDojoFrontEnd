@@ -9,6 +9,11 @@ define([
     'ioc/gui/CustomDialog'
 ], function (declare, EventObserver, Timer, CustomDialog) {
 
+    var LockException = function (message) {
+        this.message = message;
+        this.name = "LockException"
+    };
+
     return declare([EventObserver], {
 
 
@@ -36,6 +41,7 @@ define([
         },
 
         unlock: function () {
+            //console.log("Lock#unlock");
             this._doUnlock();
         },
 
@@ -53,11 +59,11 @@ define([
             this.eventManager = this.dispatcher.getEventManager();
 
             this.eventManager.registerEventForBroadcasting(this, "lock_" + this.id, this._doLock.bind(this));
-            this.eventManager.registerEventForBroadcasting(this, "unlock_" + this.id, this._doUnlock.bind(this));
+            this.eventManager.registerEventForBroadcasting(this, "unlock_" + this.id, this._doUnlockAndCancelDocument.bind(this));
 
-            // TODO[Xavi] aquest ha de ser un enregistrament normal, no de broadcasting
-            //this.eventManager.registerEventForBroadcasting(this, "refesh_lock_" + this.id, this._doRefresh.bind(this));
+            this.eventManager.registerToEvent(this.eventManager, "cancel_" + this.id, this._doUnlock.bind(this));
             this.eventManager.registerToEvent(this.eventManager, "documet_changed_" + this.id, this._doRefresh.bind(this));
+
         },
 
 
@@ -69,7 +75,7 @@ define([
             this.eventManager.dispatchEvent("lock_document", {
                 id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
                 dataToSend: dataToSend
-            })
+            });
         },
 
         /**
@@ -93,6 +99,18 @@ define([
             return dataToSend;
         },
 
+        _doUnlockAndCancelDocument: function () {
+            //console.log("Lock#_doUnlockAndCancelDocument");
+
+            this._doUnlock();
+            this._doCancelDocument();
+        },
+
+
+        /**
+         * S'ha de controlar si el document ja s'ha desbloquejat perquè pot ser que es demani fer un unlock per un document que no estigui bloquejat, per exemple en el cas de passar entre vistes d'un mateix document
+         * @private
+         */
         _doUnlock: function () {
             //console.log("Lock#_doUnlock");
 
@@ -100,9 +118,8 @@ define([
             this.eventManager.dispatchEvent('unlock_document', this._getQueryUnlock());
             this._cancelTimers();
             this._cancelDialogs();
-            this._doCancel();
-        },
 
+        },
 
         // Alerta[Xavi] data no es fa servir per a res, però podria utilitzar-se a les subclasses
         _getQueryUnlock: function () {
@@ -110,32 +127,30 @@ define([
                 id: this.id,
                 dataToSend: 'do=unlock&id=' + this.ns
             }
-
         },
 
-        _doRefresh: function (timeout) {
-            console.log('Lock#_doRefresh', timeout);
-            //d'aquest no cal fer el getQuery perquè en realitat es tracta d'un Lock
+        _doRefresh: function () {
+            //console.log('Lock#_doRefresh');
+
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
 
-            if (elapsedTime >= this.THROTTLE) { // En aquest punt el timer sempre ha de haver-se exahurit
-                //this._refreshTimers(timeout);
+            if (elapsedTime >= this.THROTTLE) {
                 this._doLock();
-                //this.timers.refresh.cancel(); // TODO[Xavi] això no ha de fer falta
             } else {
-                console.log('Throttle!)');
+                //console.log('Throttle!)');
                 this._setPendingRefresh(this.THROTTLE - elapsedTime);
             }
 
         },
 
         _setPendingRefresh: function (timeout) {
-            console.log('Lock#_setPendingRefresh', timeout);
+            //console.log('Lock#_setPendingRefresh', timeout);
+
             if (this.timers.refresh.expired) {
-                this.timers.refresh.start(timeout); //TODO[Xavi] fem serir el params en algun moment pels locks?
+                this.timers.refresh.start(timeout);
             } else {
-                console.log('No ha expirat, hi ha un refresc en funcionament');
+                //console.log('No ha expirat, hi ha un refresc en funcionament');
             }
         },
 
@@ -162,6 +177,7 @@ define([
             }
         },
 
+        // TODO[Xavi] Localitzar els textos
         _showWarningDialog: function () {
             this.dialogs.warning = new CustomDialog({
                 id: 'warning_' + this.id,
@@ -177,10 +193,10 @@ define([
                         }.bind(this)
                     },
                     {
-                        id: 'lliberar-document',
-                        description: 'Lliberar el document',
+                        id: 'alliberar-document',
+                        description: 'Alliberar el document',
                         callback: function () {
-                            this._doUnlock();
+                            this._doUnlockAndCancelDocument();
                         }.bind(this)
                     }
 
@@ -191,8 +207,9 @@ define([
             this.dialogs.warning.show();
         },
 
+        // TODO[Xavi] Localitzar els textos
         _showTimeoutDialog: function () {
-            this._doUnlock();
+            this._doUnlockAndCancelDocument();
             this.dialogs.timeout = new CustomDialog({
                 id: 'timeout_' + this.id,
                 content: 'El bloqueig ha expirat i ha sigut alliberat. Si havien canvis al document es conservan com a esborrany, i poden ser recuperats la proxima vegada que editis el document.',
@@ -214,18 +231,20 @@ define([
 
         _cancelDialogs: function () {
             for (var dialog in this.dialogs) {
+                //console.log("Cancelant ", dialog, this.dialogs[dialog]);
                 this.dialogs[dialog].remove();
             }
             this.dialogs = {};
         },
 
-        _doCancel: function () {
+        _doCancelDocument: function () {
             this.eventManager.dispatchEvent("cancel_" + this.id, {
                 id: this.id,
                 name: 'cancel_' + this.id,
                 discardChanges: true
             });
         }
+
 
     });
 

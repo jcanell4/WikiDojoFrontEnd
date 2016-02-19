@@ -39,7 +39,6 @@ define([
          */
         onDocumentChanged: function () {
             console.log("ChangesManagerCentralSubclass#onDocumentChanged", this.id);
-            console.log("This: ", this);
             this.eventManager.dispatchEvent("documet_changed_" + this.id, {id: this.id});
             this.dispatchEvent("document_changed", {id: this.id});
 

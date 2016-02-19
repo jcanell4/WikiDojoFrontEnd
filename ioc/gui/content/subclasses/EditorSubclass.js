@@ -101,7 +101,7 @@ define([
 
                 //Todo Xavi broadcast canvis
                 this.eventManager.registerEventForBroadcasting(this, "save_" + this.id, this._doSave.bind(this));
-                this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancel.bind(this));
+                this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancelDocument.bind(this));
 
                 this.fillEditorContainer();
 
@@ -123,7 +123,7 @@ define([
 
             },
 
-            _doCancel: function (event) {
+            _doCancelDocument: function (event) {
                 //console.log("EditorSubclass#_doCancel", this.id, event);
                 var dataToSend, containerId;
 
