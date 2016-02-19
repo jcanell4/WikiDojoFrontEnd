@@ -113,6 +113,7 @@ define([
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id).action = "view"; // TODO[xavi] això quan es fa servir?
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
+                dispatcher.getGlobalState().getContent(value.id).readonly = value.editing?value.editing.readonly:false;
             },
 
             /**
@@ -134,6 +135,7 @@ define([
                         dispatcher: dispatcher,
                         rev: content.rev || '',
                         type: this.type,
+                        readonly: content.editing?content.editing.readonly:true,
                         //changedChunks: changedChunks
                     };
 
