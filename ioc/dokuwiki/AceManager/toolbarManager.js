@@ -133,6 +133,7 @@ define([], function () {
          * @returns {boolean} Cert si s'ha afegit en botó o fals en cas contrari
          */
         addButton: function (config, func, type) {
+            config.type += '_' + type;
             //console.log(toolbarManager#addButton);
             if (_existsButtonInToolbar(config.title, type)) {
                 return false;

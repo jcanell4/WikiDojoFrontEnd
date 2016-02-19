@@ -5,10 +5,12 @@ define([
     'ioc/dokuwiki/AceManager/toolbarManager',
     'ioc/dokuwiki/AceManager/AceFacade',
     'dojo/dom-geometry',
-    'dojo/dom'
-], function (declare, on, LocktimedDocumentSubclass, toolbarManager, AceFacade, geometry, dom) {
+    'dojo/dom',
+    'ioc/wiki30/Lock',
+], function (declare, on, LocktimedDocumentSubclass, toolbarManager, AceFacade, geometry, dom, Lock) {
 
-    return declare([LocktimedDocumentSubclass],
+    //return declare([LocktimedDocumentSubclass],
+    return declare(null,
 
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
@@ -83,9 +85,13 @@ define([
                 jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
                 this.inherited(arguments);
 
-                if (!this.locked) {
-                    this.lockDocument();
-                }
+                // TEST nuevo lock
+                this.dispatcher.getLockManager().lock(this.id, this.ns);
+
+                //var lock = new Lock(this.dispatcher, this.id, this.ns);
+                //if (!this.locked) {
+                //    this.lockDocument();
+                //}
 
                 this.registerToEvent(this, 'document_selected', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
                 this.registerToEvent(this, 'data_replaced', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
@@ -93,10 +99,14 @@ define([
 
                 this.eventManager = this.dispatcher.getEventManager();
 
+                //Todo Xavi broadcast canvis
                 this.eventManager.registerEventForBroadcasting(this, "save_" + this.id, this._doSave.bind(this));
                 this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancel.bind(this));
 
                 this.fillEditorContainer();
+
+
+
             },
 
 
@@ -294,7 +304,8 @@ define([
             },
 
             createEditor: function (id) {
-                var $textarea = jQuery('textarea_' + id);
+                var $textarea = jQuery('#textarea_' + id);
+
                 return new AceFacade({
                     xmltags: JSINFO.plugin_aceeditor.xmltags,
                     containerId: 'editor_' + id,
@@ -392,7 +403,6 @@ define([
 
             getEditor: function () {
                 return this.editor;
-
             },
 
             fillEditorContainer: function () {
@@ -405,7 +415,6 @@ define([
                 this.editor.setHeight(Math.max(this.MIN_HEIGHT, max));
 
             }
-
 
         });
 });

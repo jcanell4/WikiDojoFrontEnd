@@ -10,7 +10,7 @@ define([
         //unlockEditors: function() {}
 
         /** @abstract */
-        generateDraft:function() {
+        generateDraft:function() { // TODO[Xavi] això anirà en el nou sistema pels drafts
             console.error("S'ha d'implementar la funció generateDraft en las subclasses per poder generar l'esborrany");
         },
 
