@@ -48,8 +48,11 @@ define([
                     contentTool._checkChanges();
                     //console.log("is changed?", changesManager.isChanged(value.id) );
 
+                    if (value.discard_changes) { // Alerta [Xavi] afegit nou per forçar els discards
 
-                    if (changesManager.isChanged(value.id) && value.cancel) {
+                        confirmation = true;
+
+                    } else if (changesManager.isChanged(value.id) && value.cancel) {
 
                         if (contentTool.isAnyChunkChanged(value.cancel)) {
                             confirmation = dispatcher.discardChanges();

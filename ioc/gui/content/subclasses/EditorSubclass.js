@@ -106,7 +106,6 @@ define([
                 this.fillEditorContainer();
 
 
-
             },
 
 
@@ -126,9 +125,15 @@ define([
 
             _doCancel: function (event) {
                 //console.log("EditorSubclass#_doCancel", this.id, event);
+                var dataToSend, containerId;
 
-                var dataToSend = this.getQueryCancel(event.id),
-                    containerId = "container_" + event.id;
+                if (event.discardChanges) {
+                    dataToSend = this.getQueryForceCancel(event.id);
+                } else {
+                    dataToSend = this.getQueryCancel(event.id);
+                }
+
+                containerId = "container_" + event.id;
 
                 this.eventManager.dispatchEvent("cancel", {
                     id: this.id,
@@ -159,6 +164,10 @@ define([
 
             getQueryCancel: function (section_id) {
                 return 'do=cancel&id=' + this.ns;
+            },
+
+            getQueryForceCancel: function (section_id) {
+                return 'do=cancel&discard_changes=true&id=' + this.ns;
             },
 
 

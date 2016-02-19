@@ -42,7 +42,7 @@ define([
         },
 
 
-        update: function(timeout) {
+        update: function (timeout) {
             console.log('Lock#update', timeout);
             this._refreshTimers(timeout);
         },
@@ -160,15 +160,24 @@ define([
             }
         },
 
-        _showWarningDialog: function() {
+        _showWarningDialog: function () {
             alert("Warning!");
 
         },
 
-        _showTimeoutDialog: function() {
+        _showTimeoutDialog: function () {
             this._doUnlock();
+            this._doCancel();
             alert("Timeout!");
 
+        },
+
+        _doCancel: function () {
+            this.eventManager.dispatchEvent("cancel_" + this.id, {
+                id: this.id,
+                name: 'cancel_' + this.id,
+                discardChanges: true
+            });
         }
 
     });
