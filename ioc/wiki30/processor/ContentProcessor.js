@@ -41,7 +41,9 @@ define([
                     confirmation = false,
                     id = value.id;
 
-                if (changesManager.isChanged(id)) {
+                if (value.discard_changes) {
+                    confirmation = true;
+                } else if (changesManager.isChanged(id)) {
                     confirmation = dispatcher.discardChanges();
 
                 } else {

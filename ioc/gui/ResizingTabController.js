@@ -52,7 +52,7 @@ define([
             widgetsInTemplate: true, // TODO[Xavi] No es necessari en aquesta versió de Dojo
 
             constructor: function(){
-                console.log("ResizingTabController");
+                //console.log("ResizingTabController");
             },
 
             /** @override */

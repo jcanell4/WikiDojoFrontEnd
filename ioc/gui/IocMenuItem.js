@@ -10,7 +10,7 @@ define([
             {
                 templateString: template,
                 constructor: function (){
-                    console.log("IocMenuItem");
+                    //console.log("IocMenuItem");
                 },
                 _onClick: function(evt) {
                     this.inherited(arguments);

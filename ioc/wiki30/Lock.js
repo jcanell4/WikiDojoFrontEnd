@@ -11,7 +11,6 @@ define([
 
     return declare([EventObserver], {
 
-        timers: {},
 
         THROTTLE: 1 * 1000, // Temps en ms mínim per fer un refresc
         WARNING_DIFF: 5 * 1000, // El warning es mostra aquest nombre de ms abans del timeout
@@ -21,6 +20,8 @@ define([
             this.id = id;
             this.ns = ns;
             this.lastRefresh = Date.now();
+            this.dialogs = {};
+            this.timers = {};
             this._init();
         },
 
@@ -44,7 +45,7 @@ define([
 
 
         update: function (timeout) {
-            console.log('Lock#update', timeout);
+            //console.log('Lock#update', timeout);
             this._refreshTimers(timeout);
         },
 
@@ -89,8 +90,6 @@ define([
             //    dataToSend.draft = JSON.stringify(data.draft);
             //}
 
-            console.log('Lock#_getQueryLock data to send:', dataToSend);
-
             return dataToSend;
         },
 
@@ -100,6 +99,8 @@ define([
             // Envia petició de desbloqueig al servidor
             this.eventManager.dispatchEvent('unlock_document', this._getQueryUnlock());
             this._cancelTimers();
+            this._cancelDialogs();
+            this._doCancel();
         },
 
 
@@ -140,7 +141,6 @@ define([
 
         _initTimers: function () {
             //console.log('Lock#_initTimers');
-            console.log("Init timers, donde estamos?", this);
             this.timers = {
                 warning: new Timer({onExpire: this._showWarningDialog.bind(this)}), // TODO[Xavi] segurament cal afegir el bind
                 timeout: new Timer({onExpire: this._showTimeoutDialog.bind(this)}), // TODO[Xavi] segurament cal afegir el bind
@@ -150,7 +150,7 @@ define([
         },
 
         _refreshTimers: function (timeout) {
-            console.log('Lock#_refresthTimers', timeout);
+            //console.log('Lock#_refreshTimers', timeout);
             this.timers.warning.refresh(timeout - this.WARNING_DIFF);
             this.timers.timeout.refresh(timeout);
         },
@@ -163,18 +163,17 @@ define([
         },
 
         _showWarningDialog: function () {
-            console.log("Donde estamos? (show warning)",this);
-            var dialog = new CustomDialog({
+            this.dialogs.warning = new CustomDialog({
                 id: 'warning_' + this.id,
-                content: 'contingut de prova',
-                title: 'titol de prova',
+                content: 'El temps de bloqueig del document es a punt d\'exhaurirse\nVolds mantenir el bloqueig o alliberar-lo (es conservarà l\'esborrany)?',
+                title: 'El temps de bloqueig es a punt d\'exhaurir-se',
+                closable: false,
                 buttons: [
                     {
                         id: 'refrescar-bloqueig',
                         description: 'Refrescar bloqueig',
                         callback: function () {
                             this._doLock();
-                            console.log("Refrescar bloqueig");
                         }.bind(this)
                     },
                     {
@@ -182,8 +181,6 @@ define([
                         description: 'Lliberar el document',
                         callback: function () {
                             this._doUnlock();
-                            this._doCancel();
-                            console.log("Lliberar el document");
                         }.bind(this)
                     }
 
@@ -191,15 +188,35 @@ define([
 
             });
 
-            dialog.show();
-
+            this.dialogs.warning.show();
         },
 
         _showTimeoutDialog: function () {
             this._doUnlock();
-            this._doCancel();
-            alert("Timeout!");
+            this.dialogs.timeout = new CustomDialog({
+                id: 'timeout_' + this.id,
+                content: 'El bloqueig ha expirat i ha sigut alliberat. Si havien canvis al document es conservan com a esborrany, i poden ser recuperats la proxima vegada que editis el document.',
+                title: 'El bloqueig ha expirat',
+                closable: true,
+                buttons: [
+                    {
+                        id: 'acceptar',
+                        description: 'Acceptar',
+                        callback: function () {
+                            this._cancelDialogs();
+                        }.bind(this),
+                    }
+                ]
+            });
 
+            this.dialogs.timeout.show();
+        },
+
+        _cancelDialogs: function () {
+            for (var dialog in this.dialogs) {
+                this.dialogs[dialog].remove();
+            }
+            this.dialogs = {};
         },
 
         _doCancel: function () {

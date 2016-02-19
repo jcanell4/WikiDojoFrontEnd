@@ -36,7 +36,7 @@ define([
                                   //l'objecte event.
                                   
             constructor:function(){
-                console.log("ButtonToListen");
+                //console.log("ButtonToListen");
                 if(!this.dispatcher){
                     this.dispatcher = getDispatcher();
                 }

@@ -415,12 +415,12 @@ define([
             },
 
             fillEditorContainer: function () {
-                console.log('EditorSubclass#fillEditorContainer');
+                //console.log('EditorSubclass#fillEditorContainer');
                 var contentNode = dom.byId(this.id),
                     h = geometry.getContentBox(contentNode).h,
                     max = h - this.VERTICAL_MARGIN;
 
-                console.log("Alçada:", h);
+                //console.log("Alçada:", h);
                 this.editor.setHeight(Math.max(this.MIN_HEIGHT, max));
 
             }

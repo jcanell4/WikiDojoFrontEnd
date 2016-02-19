@@ -9,7 +9,7 @@ define([
         // quan detecta que es despatxar l'esdeveniment el dispara en si mateix per avisar als interessats
         //
         registerEventForBroadcasting: function(observed, eventName, callback) {
-            console.log("registered for Broadcasting", observed.id, eventName);
+            //console.log("registered for Broadcasting", observed.id, eventName);
 
             // ens enregistrem al esdeveniment del observed
             this.registerToEvent(observed, eventName, this._broadcast.bind(this));

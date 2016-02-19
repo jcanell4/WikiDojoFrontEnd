@@ -10,15 +10,31 @@ define([
 
 ], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct) {
 
-
+    /**
+     * Propietats úniques dels CustomDialog
+     *
+     * Al constructor es passa un objecte que serà mesclat amb el dialog, a banda de les propietats estandar dels
+     * dialegs es poden passar les següents:
+     *
+     *
+     * buttons: array d'objectes amb configuració pels botons amb el següent format:
+     *
+     * buttons: {
+     *      id: {string}
+     *      description: {string}
+     *      callback: {function}[]
+     * }
+     *
+     */
     return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin], {
 
         templateString: template,
 
+        style: "width: 300px",
+
 
         constructor: function () {
             declare.safeMixin(this, arguments);
-
         },
 
         //postCreate: function () {
@@ -55,7 +71,6 @@ define([
             //    draftLabel = "Esborrany (" + this.draft.date + ")",
             //    diff = jsdifflib.getDiff(this.document.content, this.draft.content, documentLabel, draftLabel);
 
-
             this._addButtons();
             this._addListerners();
         },
@@ -91,21 +106,20 @@ define([
                 buttonId = 'dialogButton_' + this.id + '_' + this.buttons[i].id;
                 jQuery('#' + buttonId).on('click', this.buttons[i].callback);
                 jQuery('#' + buttonId).on('click', function () {
-                    this.destroyRecursive();
+                    this.remove();
                 }.bind(this));
 
             }
         },
 
-        // TODO[Xavi] determinar si això cal afegir-lo a qui o el control es fa al DialogManager
-        onTimeout: function () {
-            console.log("CustomDialog#onTimeout");
+        //// TODO[Xavi] Això només cal en la versió tancable
+        //onCancel: function () {
+        //    console.log("CustomDialog#onCancel");
+        //
+        //},
 
-        },
-
-        onCancel: function () {
-            console.log("CustomDialog#onCancel");
-
+        remove: function () {
+            this.destroyRecursive();
         }
 
     });

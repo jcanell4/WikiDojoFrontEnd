@@ -20,7 +20,7 @@ define([
         },
 
         start: function (timeout, params) {
-            console.log('Timer#start', timeout, params);
+            //console.log('Timer#start', timeout, params);
             this.expired = false;
             this.id = setTimeout(this._onExpire.bind(this), timeout, params);
         },
@@ -38,13 +38,13 @@ define([
         },
 
         cancel: function () {
-            console.log('Timer#cancel');
+            //console.log('Timer#cancel', this.id);
             this.expired = false;
             clearTimeout(this.id);
         },
 
         refresh: function (timeout, params) {
-            console.log('Timer#refresh', timeout, params);
+            //console.log('Timer#refresh', timeout, params);
             this.cancel();
             this.start(timeout, params);
         }
