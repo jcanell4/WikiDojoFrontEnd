@@ -42,6 +42,7 @@ define([
              */
             constructor: function (args) {
                 this._setOriginalContent(args.originalContent);
+                this.hasChanges = false;
             },
 
 
@@ -52,13 +53,23 @@ define([
              */
             isContentChanged: function () {
                 var content = this.getCurrentContent(),
-                    result = !(this._getOriginalContent() == content);
+                    diffFromOriginal = !(this._getOriginalContent() == content),
+                    diffFromLastCheck = this.isLastCheckedContentChanged();
 
-                if (result) {
-                    this.onDocumentChanged();
+
+                if (diffFromOriginal && diffFromLastCheck) { // No es fa el refresc si encara no s'ha produt cap canvi
+                    console.log("** DOCUMENT REFRESH **");
+                    this.onDocumentRefreshed();
                 }
 
-                return result;
+
+                if (diffFromOriginal && !this.hasChanges) {
+                    console.log("** DOCUMENT CHANGED **", this);
+                    this.onDocumentChanged();
+                    this.hasChanges = true;
+                }
+
+                return diffFromOriginal;
             },
 
             /**
@@ -66,6 +77,7 @@ define([
              * actual.
              */
             resetContentChangeState: function () {
+                this.hasChanges = false;
                 this._setOriginalContent(this.getCurrentContent());
                 this.onDocumentChangesReset();
             },
@@ -423,7 +435,28 @@ define([
                 //console.log("Alçada:", h);
                 this.editor.setHeight(Math.max(this.MIN_HEIGHT, max));
 
-            }
+            },
+
+            isLastCheckedContentChanged: function () {
+                var content = this.getCurrentContent(),
+                    result = !(this._getLastCheckedContent() == content);
+
+                if (result) {
+                    this._setLastCheckedContent(content);
+                }
+
+                return result;
+            },
+
+            _getLastCheckedContent: function () {
+                return this.lastCheckedContent;
+            },
+
+            _setLastCheckedContent: function (content) {
+                this.lastCheckedContent = content;
+            },
+
+
 
         });
 });

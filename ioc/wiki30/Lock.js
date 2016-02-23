@@ -51,7 +51,7 @@ define([
 
 
         update: function (timeout) {
-            //console.log('Lock#update', timeout);
+            console.log('Lock#update', timeout);
             this._refreshTimers(timeout);
         },
 
@@ -62,13 +62,13 @@ define([
             this.eventManager.registerEventForBroadcasting(this, "unlock_" + this.id, this._doUnlockAndCancelDocument.bind(this));
 
             this.eventManager.registerToEvent(this.eventManager, "cancel_" + this.id, this._doUnlock.bind(this));
-            this.eventManager.registerToEvent(this.eventManager, "documet_changed_" + this.id, this._doRefresh.bind(this));
+            this.eventManager.registerToEvent(this.eventManager, "documet_refreshed_" + this.id, this._doRefresh.bind(this));
 
         },
 
 
         _doLock: function () {
-            //console.error('Lock#_doLock');
+            console.log('Lock#_doLock');
             this.lastRefresh = Date.now();
             var dataToSend = this._getQueryLock();
 
@@ -100,7 +100,7 @@ define([
         },
 
         _doUnlockAndCancelDocument: function () {
-            //console.log("Lock#_doUnlockAndCancelDocument");
+            console.log("Lock#_doUnlockAndCancelDocument");
 
             this._doUnlock();
             this._doCancelDocument();
@@ -112,7 +112,7 @@ define([
          * @private
          */
         _doUnlock: function () {
-            //console.log("Lock#_doUnlock");
+            console.log("Lock#_doUnlock");
 
             // Envia petició de desbloqueig al servidor
             this.eventManager.dispatchEvent('unlock_document', this._getQueryUnlock());
@@ -130,7 +130,7 @@ define([
         },
 
         _doRefresh: function () {
-            //console.log('Lock#_doRefresh');
+            console.log('Lock#_doRefresh');
 
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
@@ -138,14 +138,14 @@ define([
             if (elapsedTime >= this.THROTTLE) {
                 this._doLock();
             } else {
-                //console.log('Throttle!)');
-                this._setPendingRefresh(this.THROTTLE - elapsedTime);
+                console.log('Throttle!)');
+                this._setPendingRefresh(this.THROTTLE - elapsedTime +1);
             }
 
         },
 
         _setPendingRefresh: function (timeout) {
-            //console.log('Lock#_setPendingRefresh', timeout);
+            console.log('Lock#_setPendingRefresh', timeout);
 
             if (this.timers.refresh.expired) {
                 this.timers.refresh.start(timeout);
@@ -155,7 +155,7 @@ define([
         },
 
         _initTimers: function () {
-            //console.log('Lock#_initTimers');
+            console.log('Lock#_initTimers');
             this.timers = {
                 warning: new Timer({onExpire: this._showWarningDialog.bind(this)}), // TODO[Xavi] segurament cal afegir el bind
                 timeout: new Timer({onExpire: this._showTimeoutDialog.bind(this)}), // TODO[Xavi] segurament cal afegir el bind
@@ -165,13 +165,13 @@ define([
         },
 
         _refreshTimers: function (timeout) {
-            //console.log('Lock#_refreshTimers', timeout);
+            console.log('Lock#_refreshTimers', timeout);
             this.timers.warning.refresh(timeout - this.WARNING_DIFF);
             this.timers.timeout.refresh(timeout);
         },
 
         _cancelTimers: function () {
-            //console.log('Lock#_cancelTimers', this.timers);
+            console.log('Lock#_cancelTimers', this.timers);
             for (var timer in this.timers) {
                 this.timers[timer].cancel();
             }

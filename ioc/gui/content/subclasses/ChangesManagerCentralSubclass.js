@@ -38,13 +38,20 @@ define([
          * @protected
          */
         onDocumentChanged: function () {
-            console.log("ChangesManagerCentralSubclass#onDocumentChanged", this.id);
-            this.eventManager.dispatchEvent("documet_changed_" + this.id, {id: this.id});
-            this.dispatchEvent("document_changed", {id: this.id});
+            console.log('ChangesManagerCentralSubclass#onDocumentChanged', this.id);
+            this.eventManager.dispatchEvent('documet_changed_' + this.id, {id: this.id});
+            this.dispatchEvent('document_changed', {id: this.id});
 
+            // TODO[Xavi] Això podria activar-se escoltant al event 'document_changed' en lloc de implementar-lo aquí
             if (this.controlButton) {
                 this.controlButton.containerNode.style.color = 'red';
             }
+        },
+
+        onDocumentRefreshed: function() {
+            console.log('ChangesManagerCentralSubclass#onDocumentRefreshed', this.id);
+            this.eventManager.dispatchEvent('documet_refreshed_' + this.id, {id: this.id});
+            this.dispatchEvent('document_refreshed', {id: this.id});
         },
 
         /**
@@ -53,7 +60,7 @@ define([
          * @protected
          */
         onDocumentChangesReset: function () {
-            this.dispatchEvent("document_changes_reset", {id: this.id});
+            this.dispatchEvent('document_changes_reset', {id: this.id});
 
             if (this.controlButton) {
                 this.controlButton.containerNode.style.color = 'black';

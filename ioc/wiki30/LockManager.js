@@ -51,7 +51,7 @@ define([
             },
 
             update: function (id, timeout) {
-                //console.log("LockManager#update", id, timeout);
+                console.log("LockManager#update", id, timeout);
 
                 if (timeout > 0) {
                     if (!this.locks[id]) {
