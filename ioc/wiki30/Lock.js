@@ -56,13 +56,14 @@ define([
         },
 
         _registerToEvents: function () {
+            console.log("Lock#_registerToEvents");
             this.eventManager = this.dispatcher.getEventManager();
 
-            this.eventManager.registerEventForBroadcasting(this, "lock_" + this.id, this._doLock.bind(this));
-            this.eventManager.registerEventForBroadcasting(this, "unlock_" + this.id, this._doUnlockAndCancelDocument.bind(this));
+            this.eventManager.registerToEvent(this, "lock_" + this.id, this._doLock.bind(this));
+            this.eventManager.registerToEvent(this, "unlock_" + this.id, this._doUnlockAndCancelDocument.bind(this));
 
             this.eventManager.registerToEvent(this.eventManager, "cancel_" + this.id, this._doUnlock.bind(this));
-            this.eventManager.registerToEvent(this.eventManager, "documet_refreshed_" + this.id, this._doRefresh.bind(this));
+            this.eventManager.registerToEvent(this.eventManager, "document_refreshed_" + this.id, this._doRefresh.bind(this));
 
         },
 
@@ -118,7 +119,7 @@ define([
             this.eventManager.dispatchEvent('unlock_document', this._getQueryUnlock());
             this._cancelTimers();
             this._cancelDialogs();
-
+            this.destroy();
         },
 
         // Alerta[Xavi] data no es fa servir per a res, però podria utilitzar-se a les subclasses
@@ -139,7 +140,7 @@ define([
                 this._doLock();
             } else {
                 console.log('Throttle!)');
-                this._setPendingRefresh(this.THROTTLE - elapsedTime +1);
+                this._setPendingRefresh(this.THROTTLE - elapsedTime + 1);
             }
 
         },
@@ -243,6 +244,19 @@ define([
                 name: 'cancel_' + this.id,
                 discardChanges: true
             });
+        },
+
+        destroy: function () {
+            this.onDestroy();
+
+        },
+
+        onDestroy: function () {
+            console.log("Lock#onDestroy");
+            this.eventManager.unregisterFromEvent("lock_" + this.id);
+            this.eventManager.unregisterFromEvent("unlock_" + this.id);
+            this.eventManager.unregisterFromEvent("cancel_" + this.id);
+            this.eventManager.unregisterFromEvent("document_refreshed_" + this.id);
         }
 
 

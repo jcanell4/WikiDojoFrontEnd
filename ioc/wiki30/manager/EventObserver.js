@@ -35,11 +35,6 @@ define([
 
             constructor: function (params) {
 
-                //if (!params.dispatcher) {
-                //    console.error("El EventObserver no pot funcionar sense una referencia al dispatcher");
-                //    throw new Error("S'ha depassar una referencia al dispatcher");
-                //}
-
                 declare.safeMixin(this, params);
 
                 this.registeredToEvents = [];
@@ -61,18 +56,23 @@ define([
             registerToEvent: function (observer, event, callback) {
                 var reference = {
                     "observed": observer,
-                    "id":       observer.registerObserverToEvent(event, callback)
+                    "id": observer.registerObserverToEvent(event, callback)
                 };
                 this.registeredToEvents.push(reference);
+
+                //console.log("EventObserver#registerToEvent", event, reference);
             },
 
             /**
-             * Recorre la lista de esdeveniments al que està subscrit i es desenregistra de tots.
+             * Recorre la lista de esdeveniments al que està subscrit i es desenregistra de tots. Això s'ha de cridar
+             * abans d'eliminar l'objecte.
              */
             unregisterFromEvents: function () {
+                //console.log("EventObserver#unregisterFromEvents", this.registeredToEvents);
                 var observed, id;
 
                 for (var i = 0, len = this.registeredToEvents.length; i < len; i++) {
+
                     observed = this.registeredToEvents[i]['observed'];
                     id = this.registeredToEvents[i]['id'];
                     observed.unregister(id);
@@ -89,8 +89,9 @@ define([
              * @param {*} data - Dades a passar a les funcions dels observadors
              */
             dispatchEvent: function (event, data) {
-                var observers = this.events[event];
                 //console.log("EventObserver#dispatchEvent: ", event, data);
+
+                var observers = this.events[event];
 
                 data.name = event;
 
@@ -134,8 +135,10 @@ define([
             unregister: function (observerId) {
                 var subscriber = this.observers[observerId];
 
-                this.events[subscriber.event][subscriber.index] = null;
-                this.observers[observerId] = null;
+                if (subscriber !== null) {
+                    this.events[subscriber.event][subscriber.index] = null;
+                    this.observers[observerId] = null;
+                }
             },
 
             /**
@@ -148,9 +151,15 @@ define([
                 this.onDestroy();
                 this.unregisterFromEvents();
             },
-            
-            onDestroy:function(){                
+
+            onDestroy: function () {
 //                console.log("EventObserver#_onDestroy");
+            },
+
+            // TODO[Xavi] Encara queda una referencia penjada al observer a la llista d'observers. Caldria afegir un sistema per comprovar si els observers associats a aquest event ja no escolten cap event, i en aquest cas eliminar-lo també
+            unregisterFromEvent: function (event) {
+                console.log("EventObserver#unregisterFromEvent", event);
+                this.events[event] = [];
             }
-        })
+        });
 });
