@@ -9,8 +9,8 @@ define([
     'ioc/wiki30/Lock',
 ], function (declare, on, LocktimedDocumentSubclass, toolbarManager, AceFacade, geometry, dom, Lock) {
 
-    //return declare([LocktimedDocumentSubclass],
-    return declare(null,
+    return declare([LocktimedDocumentSubclass],
+    //return declare(null,
 
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
@@ -98,7 +98,8 @@ define([
                 this.inherited(arguments);
 
                 // TEST nuevo lock
-                this.dispatcher.getLockManager().lock(this.id, this.ns);
+                this.lockDocument();
+                //this.dispatcher.getLockManager().lock(this.id, this.ns);
 
                 //var lock = new Lock(this.dispatcher, this.id, this.ns);
                 //if (!this.locked) {
