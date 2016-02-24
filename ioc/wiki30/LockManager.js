@@ -28,6 +28,7 @@ define([
                 }
 
                 this.locks[id] = new Lock(this.dispatcher, id, ns);
+                this.registerToEvent(this.locks[id], "destroyed", this._removeLock.bind(this));
             },
 
 

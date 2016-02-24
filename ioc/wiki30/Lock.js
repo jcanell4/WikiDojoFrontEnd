@@ -62,9 +62,7 @@ define([
             this.eventManager.registerToEvent(this, "lock_" + this.id, this._doLock.bind(this));
             this.eventManager.registerToEvent(this, "unlock_" + this.id, this._doUnlockAndCancelDocument.bind(this));
 
-            this.eventManager.registerToEvent(this.eventManager, "cancel_" + this.id, this._doUnlock.bind(this));
             this.eventManager.registerToEvent(this.eventManager, "document_refreshed_" + this.id, this._doRefresh.bind(this));
-
         },
 
 
@@ -117,8 +115,6 @@ define([
 
             // Envia petició de desbloqueig al servidor
             this.eventManager.dispatchEvent('unlock_document', this._getQueryUnlock());
-            this._cancelTimers();
-            this._cancelDialogs();
             this.destroy();
         },
 
@@ -253,10 +249,12 @@ define([
 
         onDestroy: function () {
             console.log("Lock#onDestroy");
+            this._cancelTimers();
+            this._cancelDialogs();
             this.eventManager.unregisterFromEvent("lock_" + this.id);
             this.eventManager.unregisterFromEvent("unlock_" + this.id);
-            this.eventManager.unregisterFromEvent("cancel_" + this.id);
             this.eventManager.unregisterFromEvent("document_refreshed_" + this.id);
+            this.dispatchEvent("destroyed", {id:this.id});
         }
 
 
