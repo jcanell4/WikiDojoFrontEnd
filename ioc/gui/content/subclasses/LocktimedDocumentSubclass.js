@@ -9,6 +9,7 @@ define([
         //lockEditors: function() {},
         //unlockEditors: function() {}
 
+
         /** @abstract */
         generateDraft:function() { // TODO[Xavi] això anirà en el nou sistema pels drafts
             console.error("S'ha d'implementar la funció generateDraft en las subclasses per poder generar l'esborrany");
@@ -16,6 +17,8 @@ define([
 
 
         lockDocument: function () {
+            this.dispatcher.getLockManager().lock(this.id, this.ns);
+
             //console.log("StructuredDocumentSubclass#lockDocument");
             //if (!this.locktimer) {
             //    this.locktimer = new Locktimer(this.id, this.dispatcher, this);
@@ -30,6 +33,7 @@ define([
         },
 
         unlockDocument: function () {
+            this.dispatcher.getLockManager().unlock(this.id);
             //console.log("StructuredDocumentSubclass#unlockDocument");
             //if (this.locktimer) {
             //    this.locktimer.stop = true;
@@ -37,6 +41,7 @@ define([
             //}
         },
 
+        // Alerta [Xavi] No es fa servir
         refreshLock: function (timeout) {
             //console.log("LocktimedDocumentSbuclass#refreshLock", timeout);
             //this.locktimer.refreshed(timeout);

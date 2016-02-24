@@ -53,7 +53,7 @@ define([
              */
             isContentChanged: function () {
                 var content = this.getCurrentContent(),
-                    diffFromOriginal = !(this._getOriginalContent() == content),
+                    diffFromOriginal = this._getOriginalContent() != content,
                     diffFromLastCheck = this.isLastCheckedContentChanged();
 
 
@@ -125,7 +125,8 @@ define([
                 //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
                 var dataToSend = this.getQuerySave(event.id),
-                    containerId = "container_" + event.id;
+                    //containerId = "container_" + event.id;
+                    containerId = event.id;
 
                 this.eventManager.dispatchEvent("save", {
                     id: this.id,
@@ -145,7 +146,7 @@ define([
                     dataToSend = this.getQueryCancel(event.id);
                 }
 
-                containerId = "container_" + event.id;
+                containerId = event.id;
 
                 this.eventManager.dispatchEvent("cancel", {
                     id: this.id,
@@ -174,11 +175,11 @@ define([
                 return values;
             },
 
-            getQueryCancel: function (section_id) {
+            getQueryCancel: function () {
                 return 'do=cancel&id=' + this.ns;
             },
 
-            getQueryForceCancel: function (section_id) {
+            getQueryForceCancel: function () {
                 return 'do=cancel&discard_changes=true&id=' + this.ns;
             },
 
@@ -439,7 +440,7 @@ define([
 
             isLastCheckedContentChanged: function () {
                 var content = this.getCurrentContent(),
-                    result = !(this._getLastCheckedContent() == content);
+                    result = this._getLastCheckedContent() != content;
 
                 if (result) {
                     this._setLastCheckedContent(content);
