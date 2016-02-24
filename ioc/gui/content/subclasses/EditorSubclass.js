@@ -10,7 +10,7 @@ define([
 ], function (declare, on, LocktimedDocumentSubclass, toolbarManager, AceFacade, geometry, dom, Lock) {
 
     return declare([LocktimedDocumentSubclass],
-    //return declare(null,
+        //return declare(null,
 
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
@@ -58,13 +58,25 @@ define([
 
 
                 if (diffFromOriginal && diffFromLastCheck) { // No es fa el refresc si encara no s'ha produt cap canvi
-                    //console.log("** DOCUMENT REFRESH **");
+                    console.log("** DOCUMENT REFRESH **");
                     this.onDocumentRefreshed();
+
+
+                    // TODO[Xavi] Això no serà disparat aquí, serà recollit pel Draft o DraftManager com a 'document_refreshed_' i llençat l'event que correspón
+                    this.eventManager.dispatchEvent('save_draft', {
+                        id: this.id, dataToSend: {
+                            id: this.ns,
+                            do: 'save_draft',
+                            draft: JSON.stringify(this.generateDraft())
+                        }
+                    });
+
+
                 }
 
 
                 if (diffFromOriginal && !this.hasChanges) {
-                    //console.log("** DOCUMENT CHANGED **");
+                    console.log("** DOCUMENT CHANGED **");
                     this.onDocumentChanged();
                     this.hasChanges = true;
                 }
@@ -126,7 +138,7 @@ define([
                 //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
                 var dataToSend = this.getQuerySave(event.id),
-                    //containerId = "container_" + event.id;
+                //containerId = "container_" + event.id;
                     containerId = event.id;
 
                 this.eventManager.dispatchEvent("save", {
@@ -137,14 +149,19 @@ define([
 
             },
 
+            // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
                 //console.log("EditorSubclass#_doCancel", this.id, event);
                 var dataToSend, containerId;
 
                 if (event.discardChanges) {
-                    dataToSend = this.getQueryForceCancel(event.id);
+                    dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
                 } else {
-                    dataToSend = this.getQueryCancel(event.id);
+                    dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
+                }
+
+                if (event.keep_draft) {
+                    dataToSend += '&keep_draft=' + event.keep_draft;
                 }
 
                 containerId = event.id;
@@ -163,7 +180,6 @@ define([
                 var $form = jQuery('#form_' + this.id),
                     values = {},
                     text;
-
 
                 jQuery.each($form.serializeArray(), function (i, field) {
                     values[field.name] = field.value;
@@ -457,7 +473,6 @@ define([
             _setLastCheckedContent: function (content) {
                 this.lastCheckedContent = content;
             },
-
 
 
         });

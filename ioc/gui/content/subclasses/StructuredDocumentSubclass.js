@@ -986,13 +986,14 @@ define([
             if (event.discardChanges) {
                 dataToSend = this.getQueryForceCancel(event.id);
             } else {
-                dataToSend = this.getQueryCancel(event.id);
+                dataToSend = this.getQueryCancel(event.id); // Alerta[Xavi] Aquest fa un cancel parcial al structuredDocumentSubclass, refactoritzar (crec que no es dona aquest cas) <--- substituir per _getQueryCancel o canviar el nom a _getQueryCancelDocument per diferenciar el cancelPartial
+            }
+
+            if (event.keep_draft) {
+                dataToSend += '&keep_draft=' + event.keep_draft;
             }
 
             containerId = event.id;
-
-            console.log("Data To Send: ", dataToSend);
-            console.log("Container:", containerId);
 
             this.eventManager.dispatchEvent("cancel", {
                 id: this.id,

@@ -17,6 +17,18 @@ define([
          * @author Xavier García <xaviergaro.dev@gmail.com>
          */
         {
+            // Constants/Enum TODO[Xavi] Substituir totes les cadenes per this.event.QUELCOM de manera que no hi hagi errors
+            event: {
+                DOCUMENT_CHANGED: 'document_changed'
+            },
+
+            // Constants/Enum TODO[Xavi] Substituir totes les cadenes per this.event.QUELCOM de manera que no hi hagi errors
+            compoundEvent: {
+                DOCUMENT_CHANGED: 'document_changed_'
+            },
+
+
+
             "-chains-": {
                 onUnload: "before"
             },

@@ -175,33 +175,37 @@ define([
         },
 
         // TODO[Xavi] Localitzar els textos
+        // Encara que es faci el destroyRecursive, el dialog anterior continua existint perquè es guarda una referencia en aquesta propietat. Si es visible llavors no farem res, i si no ho es crearem un de nou que elimina la referencia a l'antic al mateix temps
         _showWarningDialog: function () {
-            this.dialogs.warning = new CustomDialog({
-                id: 'warning_' + this.id,
-                content: 'El temps de bloqueig del document es a punt d\'exhaurirse\nVolds mantenir el bloqueig o alliberar-lo (es conservarà l\'esborrany)?',
-                title: 'El temps de bloqueig es a punt d\'exhaurir-se',
-                closable: false,
-                buttons: [
-                    {
-                        id: 'refrescar-bloqueig',
-                        description: 'Refrescar bloqueig',
-                        callback: function () {
-                            this._doLock();
-                        }.bind(this)
-                    },
-                    {
-                        id: 'alliberar-document',
-                        description: 'Alliberar el document',
-                        callback: function () {
-                            this._doUnlockAndCancelDocument();
-                        }.bind(this)
-                    }
+            if (!this.dialogs.warning || !this.dialogs.warning.isShowing) {
+                this.dialogs.warning = new CustomDialog({
+                    id: 'warning_' + this.id,
+                    content: 'El temps de bloqueig del document es a punt d\'exhaurirse\nVolds mantenir el bloqueig o alliberar-lo (es conservarà l\'esborrany)?',
+                    title: 'El temps de bloqueig es a punt d\'exhaurir-se',
+                    closable: false,
+                    buttons: [
+                        {
+                            id: 'refrescar-bloqueig',
+                            description: 'Refrescar bloqueig',
+                            callback: function () {
+                                this._doLock();
+                            }.bind(this)
+                        },
+                        {
+                            id: 'alliberar-document',
+                            description: 'Alliberar el document',
+                            callback: function () {
+                                this._doUnlockAndCancelDocument();
+                            }.bind(this)
+                        }
 
-                ]
+                    ]
+                });
 
-            });
+                this.dialogs.warning.show();
+            }
 
-            this.dialogs.warning.show();
+
         },
 
         // TODO[Xavi] Localitzar els textos
@@ -238,7 +242,8 @@ define([
             this.eventManager.dispatchEvent("cancel_" + this.id, {
                 id: this.id,
                 name: 'cancel_' + this.id,
-                discardChanges: true
+                discardChanges: true,
+                keep_draft: true
             });
         },
 
@@ -254,7 +259,7 @@ define([
             this.eventManager.unregisterFromEvent("lock_" + this.id);
             this.eventManager.unregisterFromEvent("unlock_" + this.id);
             this.eventManager.unregisterFromEvent("document_refreshed_" + this.id);
-            this.dispatchEvent("destroyed", {id:this.id});
+            this.dispatchEvent("destroyed", {id: this.id});
         }
 
 

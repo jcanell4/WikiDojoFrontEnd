@@ -32,9 +32,9 @@ define([
 
         style: "width: 400px",
 
-
         constructor: function () {
             declare.safeMixin(this, arguments);
+            this.isShowing = true;
         },
 
         //postCreate: function () {
@@ -119,7 +119,18 @@ define([
         //},
 
         remove: function () {
+            this.isShowing = false;
             this.destroyRecursive();
+        },
+
+        show: function() {
+            this.isShowing = true;
+            this.inherited(arguments);
+        },
+
+        hide: function() {
+            this.isShowing = false;
+            this.inherited(arguments);
         }
 
     });
