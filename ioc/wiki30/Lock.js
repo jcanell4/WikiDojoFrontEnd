@@ -51,12 +51,12 @@ define([
 
 
         update: function (timeout) {
-            console.log('Lock#update', timeout);
+            //console.log('Lock#update', timeout);
             this._refreshTimers(timeout);
         },
 
         _registerToEvents: function () {
-            console.log("Lock#_registerToEvents");
+            //console.log("Lock#_registerToEvents");
             this.eventManager = this.dispatcher.getEventManager();
 
             this.eventManager.registerToEvent(this, "lock_" + this.id, this._doLock.bind(this));
@@ -67,9 +67,9 @@ define([
 
 
         _doLock: function () {
-            console.log('Lock#_doLock');
+            //console.log('Lock#_doLock');
             this.lastRefresh = Date.now();
-            var dataToSend = this._getQueryLock();
+            var dataToSend = this._getQueryDraft();
 
             this.eventManager.dispatchEvent("lock_document", {
                 id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
@@ -82,7 +82,7 @@ define([
          * @returns {{id: string, do: string}}
          * @protected
          */
-        _getQueryLock: function () {
+        _getQueryDraft: function () {
             //console.log('Lock#_getQueryLock');
             var dataToSend = {
                 id: this.ns, //this.contentTool.ns,
@@ -99,7 +99,7 @@ define([
         },
 
         _doUnlockAndCancelDocument: function () {
-            console.log("Lock#_doUnlockAndCancelDocument");
+            //console.log("Lock#_doUnlockAndCancelDocument");
 
             this._doUnlock();
             this._doCancelDocument();
@@ -111,7 +111,7 @@ define([
          * @private
          */
         _doUnlock: function () {
-            console.log("Lock#_doUnlock");
+            //console.log("Lock#_doUnlock");
 
             // Envia petició de desbloqueig al servidor
             this.eventManager.dispatchEvent('unlock_document', this._getQueryUnlock());
@@ -127,7 +127,7 @@ define([
         },
 
         _doRefresh: function () {
-            console.log('Lock#_doRefresh');
+            //console.log('Lock#_doRefresh');
 
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
@@ -135,14 +135,14 @@ define([
             if (elapsedTime >= this.THROTTLE) {
                 this._doLock();
             } else {
-                console.log('Throttle!)');
+                //console.log('Throttle!)');
                 this._setPendingRefresh(this.THROTTLE - elapsedTime + 1);
             }
 
         },
 
         _setPendingRefresh: function (timeout) {
-            console.log('Lock#_setPendingRefresh', timeout);
+            //console.log('Lock#_setPendingRefresh', timeout);
 
             if (this.timers.refresh.expired) {
                 this.timers.refresh.start(timeout);
@@ -152,7 +152,7 @@ define([
         },
 
         _initTimers: function () {
-            console.log('Lock#_initTimers');
+            //console.log('Lock#_initTimers');
             this.timers = {
                 warning: new Timer({onExpire: this._showWarningDialog.bind(this)}), // TODO[Xavi] segurament cal afegir el bind
                 timeout: new Timer({onExpire: this._showTimeoutDialog.bind(this)}), // TODO[Xavi] segurament cal afegir el bind
@@ -162,19 +162,19 @@ define([
         },
 
         _refreshTimers: function (timeout) {
-            console.log('Lock#_refreshTimers', timeout);
+            //console.log('Lock#_refreshTimers', timeout);
             this.timers.warning.refresh(timeout - this.WARNING_DIFF);
             this.timers.timeout.refresh(timeout);
         },
 
         _cancelTimers: function () {
-            console.log('Lock#_cancelTimers', this.timers);
+            //console.log('Lock#_cancelTimers', this.timers);
             for (var timer in this.timers) {
                 this.timers[timer].cancel();
             }
         },
 
-        // TODO[Xavi] Localitzar els textos
+        // TODO[Xavi] Localitzar els texts
         // Encara que es faci el destroyRecursive, el dialog anterior continua existint perquè es guarda una referencia en aquesta propietat. Si es visible llavors no farem res, i si no ho es crearem un de nou que elimina la referencia a l'antic al mateix temps
         _showWarningDialog: function () {
             if (!this.dialogs.warning || !this.dialogs.warning.isShowing) {
@@ -253,7 +253,7 @@ define([
         },
 
         onDestroy: function () {
-            console.log("Lock#onDestroy");
+            //console.log("Lock#onDestroy");
             this._cancelTimers();
             this._cancelDialogs();
             this.eventManager.unregisterFromEvent("lock_" + this.id);

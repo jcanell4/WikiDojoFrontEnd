@@ -29,7 +29,6 @@ define([
     'dojo/dom',
     'dojo/dom-geometry',
     'ioc/dokuwiki/AceManager/toolbarManager'
-
 ], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, toolbarManager) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
@@ -708,9 +707,11 @@ define([
 
         isLockNeeded: function () {
 
+
             if (this.getEditingChunks().length > 0) {
                 //console.log("Cal activar el lock", this.getEditingChunks().length);
                 this.lockDocument();
+
 
             } else {
                 //console.log("No cal activar fer el lock");

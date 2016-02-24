@@ -1,7 +1,7 @@
 define([
     'dojo/_base/declare',
-    'ioc/dokuwiki/Locktimer',
-], function (declare, Locktimer) {
+    'ioc/wiki30/Draft',
+], function (declare, Draft) {
 
     return declare([], {
         /** @abstract TODO[Xavi] Potser no fan falta, això es especific del editor múltiple */
@@ -16,29 +16,25 @@ define([
         },
 
 
+
         lockDocument: function () {
             this.dispatcher.getLockManager().lock(this.id, this.ns);
 
-            //console.log("StructuredDocumentSubclass#lockDocument");
-            //if (!this.locktimer) {
-            //    this.locktimer = new Locktimer(this.id, this.dispatcher, this);
-            //    this.locktimer.init(true);
-            //} else {
-            //    this.locktimer.stop = false;
-            //    this.locktimer.reset();
-            //}
+            // TODO[Xavi] pendent de determinar si fem servir una subclasse diferent pels Draft
+            if (!this.draft) {
+                this.draft = new Draft(this.dispatcher, this);
+            }
 
-
-            //console.log("StructuredDocumentSubclass#lockDocument");
         },
 
         unlockDocument: function () {
             this.dispatcher.getLockManager().unlock(this.id);
-            //console.log("StructuredDocumentSubclass#unlockDocument");
-            //if (this.locktimer) {
-            //    this.locktimer.stop = true;
-            //    this.locktimer.reset();
-            //}
+
+            // TODO[Xavi] pendent de determinar si fem servir una subclasse diferent pels Draft
+            if (this.draft) {
+                this.draft.destroy();
+                this.draft = null;
+            }
         },
 
         // Alerta [Xavi] No es fa servir

@@ -6,8 +6,8 @@ define([
     'ioc/dokuwiki/AceManager/AceFacade',
     'dojo/dom-geometry',
     'dojo/dom',
-    'ioc/wiki30/Lock',
-], function (declare, on, LocktimedDocumentSubclass, toolbarManager, AceFacade, geometry, dom, Lock) {
+    'ioc/wiki30/Draft',
+], function (declare, on, LocktimedDocumentSubclass, toolbarManager, AceFacade, geometry, dom) {
 
     return declare([LocktimedDocumentSubclass],
         //return declare(null,
@@ -60,18 +60,6 @@ define([
                 if (diffFromOriginal && diffFromLastCheck) { // No es fa el refresc si encara no s'ha produt cap canvi
                     console.log("** DOCUMENT REFRESH **");
                     this.onDocumentRefreshed();
-
-
-                    // TODO[Xavi] Això no serà disparat aquí, serà recollit pel Draft o DraftManager com a 'document_refreshed_' i llençat l'event que correspón
-                    this.eventManager.dispatchEvent('save_draft', {
-                        id: this.id, dataToSend: {
-                            id: this.ns,
-                            do: 'save_draft',
-                            draft: JSON.stringify(this.generateDraft())
-                        }
-                    });
-
-
                 }
 
 
@@ -109,14 +97,8 @@ define([
                 jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
                 this.inherited(arguments);
 
-                // TEST nuevo lock
-                this.lockDocument();
-                //this.dispatcher.getLockManager().lock(this.id, this.ns);
+                this.lockDocument(); // Lock i Draft
 
-                //var lock = new Lock(this.dispatcher, this.id, this.ns);
-                //if (!this.locked) {
-                //    this.lockDocument();
-                //}
 
                 this.registerToEvent(this, 'document_selected', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
                 this.registerToEvent(this, 'data_replaced', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
@@ -124,12 +106,10 @@ define([
 
                 this.eventManager = this.dispatcher.getEventManager();
 
-                //Todo Xavi broadcast canvis
                 this.eventManager.registerEventForBroadcasting(this, "save_" + this.id, this._doSave.bind(this));
                 this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancelDocument.bind(this));
 
                 this.fillEditorContainer();
-
 
             },
 
