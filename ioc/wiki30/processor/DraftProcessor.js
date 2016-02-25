@@ -43,60 +43,62 @@ define([
 
 
                 //Si que cal el Lock, perquè s'ha de poder fer unlock si es prem la creu de tancar!
-                this.docId= value.id;
+                this.docId = value.id;
+                this.query = this._buildQuery(value);
 
+                this.eventManager = dispatcher.getEventManager();
                 this.lockManager = dispatcher.getLockManager();
                 this.lockManager.lock(value.id, value.ns);
 
 
                 this._showDiffDialog(value);
-                this._initTimers(value.timeout*1000);
+                this._initTimers(value.timeout * 1000);
             },
 
             _showDiffDialog: function (value) {
 
                 var data = this._extractData(value);
 
-                    this.dialogs.diff = new DiffDialog({
-                        // Canvis
-                        id: 'diff_dialog_' + this.id,
-                        content: "S'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o el esborrany trobat?",// TODO[Xavi] Localitzar, enviar des del servidor
-                        closable: true, // TODO[Xavi] Controlar el tancament per poder cancelar el timer del timeout
+                this.dialogs.diff = new DiffDialog({
+                    // Canvis
+                    id: 'diff_dialog_' + this.id,
+                    content: "S'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o el esborrany trobat?",// TODO[Xavi] Localitzar, enviar des del servidor
+                    closable: true, // TODO[Xavi] Controlar el tancament per poder cancelar el timer del timeout
 
-                        // Antic
-                        title: "S'ha trobat un esborrany",
-                        style: "width: 700px",
-                        document: data.document,
-                        draft: data.draft,
-                        docId: value.id,
-                        ns: value.ns,
-                        rev: value.rev,
-                        onHide: this.destroy.bind(this),
+                    // Antic
+                    title: "S'ha trobat un esborrany",
+                    style: "width: 700px",
+                    document: data.document,
+                    draft: data.draft,
+                    docId: value.id,
+                    ns: value.ns,
+                    rev: value.rev,
+                    onHide: this.destroy.bind(this),
 
-                        buttons: [
-                            {
-                                id: 'open_document',
-                                description: 'Obrir el document',
-                                callback: function () {
-                                    this._openDocument();
-                                }.bind(this)
-                            },
-                            {
-                                id: 'open_draft',
-                                description: "Obrir l'esborrany",
-                                callback: function () {
-                                    this._openDraft();
-                                }.bind(this)
-                            }
-                        ]
+                    buttons: [
+                        {
+                            id: 'open_document',
+                            description: 'Obrir el document',
+                            callback: function () {
+                                this._openDocument();
+                            }.bind(this)
+                        },
+                        {
+                            id: 'open_draft',
+                            description: "Obrir l'esborrany",
+                            callback: function () {
+                                this._openDraft();
+                            }.bind(this)
+                        }
+                    ]
 
-                        //timeout: value.timeout,
-                        //dispatcher: this.dispatcher,
-                        //query: data.query,
-                        //base: DOKU_BASE + value.params.base,
-                        //moreEditionsActive: (!(!value.params.originalcall || !value.params.original_call.editing_chunks
-                        //|| value.params.original_call.editing_chunks != ''))
-                    });
+                    //timeout: value.timeout,
+                    //dispatcher: this.dispatcher,
+                    //query: data.query,
+                    //base: DOKU_BASE + value.params.base,
+                    //moreEditionsActive: (!(!value.params.originalcall || !value.params.original_call.editing_chunks
+                    //|| value.params.original_call.editing_chunks != ''))
+                });
 
                 //TODO[Xavi] Pel nou dialog:
                 //
@@ -106,20 +108,30 @@ define([
                 this.dialogs.diff.show();
             },
 
-            destroy: function() {
+            destroy: function () {
                 this._cancelTimers();
                 this._cancelDialogs();
                 this.lockManager.unlock(this.docId);
             },
 
-            _openDraft: function() {
-                alert("TODO: _openDraft");
+            _openDraft: function () {
+
                 this._cancelTimers();
+
+                this.eventManager.dispatchEvent("edit", {
+                    id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
+                    dataToSend: this.query + '&recover_draft=true'
+                });
             },
 
-            _openDocument:function() {
-                alert("TODO: _openDocument");
+            _openDocument: function () {
                 this._cancelTimers();
+
+                this.eventManager.dispatchEvent("edit", {
+                    id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
+                    dataToSend: this.query + '&recover_draft=false'
+                });
+
             },
 
             _cancelTimers: function () {
@@ -160,9 +172,9 @@ define([
                 this.dialogs = {};
             },
 
-            _initTimers: function(timeout) {
+            _initTimers: function (timeout) {
                 this.timers = {
-                    timeout : new Timer({onExpire: this._showTimeoutDialog.bind(this)}) // TODO[Xavi] segurament cal afegir el bind
+                    timeout: new Timer({onExpire: this._showTimeoutDialog.bind(this)}) // TODO[Xavi] segurament cal afegir el bind
                 };
 
                 this.timers.timeout.start(timeout);
@@ -226,6 +238,7 @@ define([
 
                 return query;
             }
+
         });
 });
 

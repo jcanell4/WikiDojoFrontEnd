@@ -34,7 +34,8 @@ define([
 
 
                 //dispatcher.getLockManager().update(data.id, data.timeout === -1? -1 : 10 * 1000); //arriba en segons TEST en lloc de fer servir el timer posem 15s
-                dispatcher.getLockManager().update(data.id, data.timeout * 1000); //arriba en segons
+                //TODO[Xavi] Passar directament el data, només s'ha d'actualitzar el métode del getLockManager
+                dispatcher.getLockManager().update(data); //arriba en segons
 
                 //var contentTool = dispatcher.getContentCache(data.id).getMainContentTool();
 

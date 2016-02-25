@@ -29,6 +29,9 @@ define([
 
                 this.locks[id] = new Lock(this.dispatcher, id, ns);
                 this.registerToEvent(this.locks[id], "destroyed", this._removeLock.bind(this));
+
+                console.log("Afegit lock per id: ", id);
+                console.log("Locks: ", this.locks);
             },
 
 
@@ -37,12 +40,12 @@ define([
 
                 if (this.locks[id]) {
                     this.locks[id].unlock();
-                    this._removeLock(id);
+                    this._removeLock({id: id});
                 }
             },
 
             refresh: function (id, timeout) {
-                //console.log('LockManager#refresh', id, timeout);
+                console.log('LockManager#refresh', id, timeout);
 
                 if (!this.locks[id]) {
                     throw new LockManagerException("No existeix cap lock per refrescar amb id: " + id);
@@ -51,23 +54,37 @@ define([
                 this.locks[id].refresh(timeout);
             },
 
-            update: function (id, timeout) {
+            /**
+             *
+             * @param {{id: {string}, ns: {string}, timeout: {int}}} data
+             */
+            update: function (data) {
+
                 //console.log("LockManager#update", id, timeout);
 
-                if (timeout > 0) {
-                    if (!this.locks[id]) {
-                        throw new LockManagerException("No existeix cap lock per actualitzar amb id: " + id);
+                if (data.timeout > 0) {
+
+                    if (this.locks[data.id]) {
+
+                        this.locks[data.id].update(data.timeout * 1000);
+
+                    } else {
+
+                        this.lock(data.id, data.ns)
+
                     }
 
-                    this.locks[id].update(timeout);
                 } else {
-                    this._removeLock(id);
+
+                    this._removeLock({id: data.id});
+
                 }
             },
 
-            _removeLock: function (id) {
-                //console.log("LockManager#_removeLock", id);
-                delete(this.locks[id]);
+            // Alerta[Xavi] Pot ser cridat al disparar-se esdeveniments i per tant data contindrà un Event. Però també es cridat internament i llavors es passa un string
+            _removeLock: function (data) {
+                console.log("LockManager#_removeLock", data);
+                delete(this.locks[data.id]);
 
             }
 

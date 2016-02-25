@@ -67,7 +67,7 @@ define([
 
 
         _doLock: function () {
-            //console.log('Lock#_doLock');
+            console.log('Lock#_doLock', this.id);
             this.lastRefresh = Date.now();
             var dataToSend = this._getQueryDraft();
 
@@ -111,7 +111,7 @@ define([
          * @private
          */
         _doUnlock: function () {
-            //console.log("Lock#_doUnlock");
+            console.log("Lock#_doUnlock");
 
             // Envia petició de desbloqueig al servidor
             this.eventManager.dispatchEvent('unlock_document', this._getQueryUnlock());
@@ -127,7 +127,7 @@ define([
         },
 
         _doRefresh: function () {
-            //console.log('Lock#_doRefresh');
+            console.log('Lock#_doRefresh');
 
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
@@ -253,7 +253,7 @@ define([
         },
 
         onDestroy: function () {
-            //console.log("Lock#onDestroy");
+            console.log("Lock#onDestroy");
             this._cancelTimers();
             this._cancelDialogs();
             this.eventManager.unregisterFromEvent("lock_" + this.id);

@@ -167,7 +167,7 @@ define([
 
                 text = this.getCurrentContent();
 
-                values.wikitext = text;
+                values.wikitext = jQuery.trim(text);
 
                 return values;
             },
