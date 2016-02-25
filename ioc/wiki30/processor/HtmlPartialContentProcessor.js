@@ -37,6 +37,7 @@ define([
 
                 // TODO[Xavi] Refactoritzar, massa condicionals
                 if (contentTool && contentTool.type === this.type && !value.discard_changes) { // Alerta [Xavi] afegit nou per forçar els discards
+                    console.log("Comprovant....");
 
                     // Es una actualització
                     contentTool.getContainer().selectChild(contentTool);
@@ -49,6 +50,7 @@ define([
 
 
                     if (changesManager.isChanged(value.id) && value.cancel) {
+                        console.log("S'ha fet un cancel i s'han detectat canvis");
 
                         if (contentTool.isAnyChunkChanged(value.cancel)) {
                             confirmation = dispatcher.discardChanges();
@@ -57,10 +59,11 @@ define([
                         }
 
                     } else if (changesManager.isChanged(value.id) && !value.selected && !value.cancel) {
+                        console.log("No s'ha fet un cancel i s'han detectat canvis");
                         confirmation = dispatcher.discardChanges();
 
                     } else {
-
+                        console.log("No fa res, s'han detectat canvis?", changesManager.isChanged(value.id));
                         confirmation = true;
                     }
 
@@ -84,7 +87,7 @@ define([
                     }
 
                 } else {
-
+                    console.log("No s'ha comprovat res");
                     return this.inherited(arguments);
                 }
 

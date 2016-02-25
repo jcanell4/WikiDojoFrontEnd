@@ -56,6 +56,7 @@ define([
                  * @param {AbstractChangesManagerDecoration} contentTool
                  */
                 setContentTool: function (contentTool) {
+                    console.log("ChangesManager#setContentTool", contentTool.id);
                     this.contentsToCheck[contentTool.id] = contentTool;
                 },
 
@@ -65,6 +66,7 @@ define([
                  * @param {string} id - id del ContentTool a eliminar
                  */
                 removeContentTool: function (id) {
+                    console.log("ChangesManager#removeContentTool", id);
                     delete this.contentsToCheck[id];
                     delete this.contentsChanged[id];
                 },
@@ -76,6 +78,7 @@ define([
                  * @return {boolean} - Cert si el contingut ha canviat o Fals en cas contrari
                  */
                 updateContentChangeState: function (id) {
+                    console.log("ChangesManager#updateContentChangeState", id);
 
                     var result = this.isContentChanged(id); // Si existeix o hi han canvis retorna cert
 
@@ -94,6 +97,7 @@ define([
                  * @param {string} id - Id del contingut a reiniciatlizar
                  */
                 resetContentChangeState: function (id) {
+                    console.log("ChangesManager#resetContentChangeState", id);
                     var contentTool;
 
                     delete this.contentsChanged[id];

@@ -395,11 +395,11 @@ define([
          * @returns {boolean} Cert si s'ha produït algun canvi
          */
         isContentChanged: function () {
+            console.log("StructuredDocumentSubclass#isContentChanged");
 
             // * El editing dels chunks en edicio es diferent del $textarea corresponent
             var chunk,
                 $textarea,
-                result = false,
                 diffFromOriginal,
                 diffFromLastCheck,
                 content,
@@ -424,12 +424,7 @@ define([
 
 
 
-                    if (diffFromOriginal) {
-                        this.changedChunks[chunk.header_id].changed = true;
-                        //this.onDocumentChanged();
-                    } else {
-                        this.changedChunks[chunk.header_id].changed = false;
-                    }
+                    this.changedChunks[chunk.header_id].changed = diffFromOriginal;
 
                     // Només cal 1 modificat per que s'apliqui el canvi
                     documentChanged |= diffFromOriginal;
@@ -437,6 +432,10 @@ define([
 
                 }
             }
+
+
+            console.log("Ha canviat el document?", documentChanged);
+            console.log("Hi havien canvis previs?", this.hasChanges);
 
             if (documentChanged && !this.hasChanges) {
                 this.onDocumentChanged();
@@ -449,7 +448,7 @@ define([
                 this.onDocumentRefreshed();
             }
 
-            return result;
+            return documentChanged;
 
         },
 

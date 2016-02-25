@@ -294,22 +294,6 @@ define([
                 this.addToolbars();
                 this.addEditors();
 
-                //this.addEditionListener();
-                //this.addSelectionListener();
-
-                // El post render es crida sempre després d'haver tornat o carregat una nova edició
-                //this.discardChanges = false;
-
-                // TODO[Xavi] això no funciona encara, s'ha de fer canvi del lockantic al nou
-                //if (this.data.locked) {
-                //    this.lockEditors();
-                //} else {
-                //    this.unlockEditors();
-                //    this.isLockNeeded();
-                //}
-                //
-
-
                 on(window, 'resize', function () {
                     this.fillEditorContainer();
                 }.bind(this));
