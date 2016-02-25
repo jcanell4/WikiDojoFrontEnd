@@ -40,6 +40,7 @@ define([
         },
 
         _registerToEvents: function () {
+            // TODO[Xavi] no cal registrar-se al event manager, hauria de ser suficient registrar-se al contentTool
             console.log("Draft#_registerToEvents");
             this.eventManager = this.dispatcher.getEventManager();
             this.eventManager.registerToEvent(this.eventManager, "document_refreshed_" + this.contentTool.id, this._doRefresh.bind(this));

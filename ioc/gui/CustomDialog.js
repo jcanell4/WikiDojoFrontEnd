@@ -37,39 +37,8 @@ define([
             this.isShowing = true;
         },
 
-        //postCreate: function () {
-        //    this.inherited(arugments);
-        //},
-
-
-        //postMixInProperties: function () {
-        //    this.inherited(arguments);
-        //},
-        //
-
-        //buildRendering: function () {
-        //    this.inherited(arguments);
-        //    this._addButtons();
-        //},
-        //
-        //postCreate: function () {
-        //    this.inherited(arguments);
-        //},
-
         startup: function () {
             this.inherited(arguments);
-
-            // TEST value
-            // this.timerID = window.setTimeout(this.onTimeout, this.timeout * 10, this);
-
-            //this.timerID = window.setTimeout(this.onTimeout, this.timeout * 1000, this);
-            //
-            //console.log("Document:", this.document);
-            //console.log("Draft:", this.draft);
-            //
-            //var documentLabel = "Document (" + this.document.date + ")",
-            //    draftLabel = "Esborrany (" + this.draft.date + ")",
-            //    diff = jsdifflib.getDiff(this.document.content, this.draft.content, documentLabel, draftLabel);
 
             this._addButtons();
             this._addListerners();
@@ -81,7 +50,6 @@ define([
             }
 
             this.buttonsNode.appendChild(this._createButtons());
-
         },
 
         _createButtons: function () {
@@ -101,6 +69,9 @@ define([
          * @protected
          */
         _addListerners: function () {
+            if (!this.buttons) {
+                return;
+            }
             var buttonId;
             for (var i = 0; i < this.buttons.length; i++) {
                 buttonId = 'dialogButton_' + this.id + '_' + this.buttons[i].id;
@@ -111,12 +82,6 @@ define([
 
             }
         },
-
-        //// TODO[Xavi] Això només cal en la versió tancable
-        //onCancel: function () {
-        //    console.log("CustomDialog#onCancel");
-        //
-        //},
 
         remove: function () {
             this.isShowing = false;

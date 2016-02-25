@@ -208,9 +208,9 @@ define([
 
         },
 
-        // TODO[Xavi] Localitzar els textos
+        // TODO[Xavi] Localitzar els textos. Duplicat practicament igual al gestor del DiffDialog
         _showTimeoutDialog: function () {
-            this._doUnlockAndCancelDocument();
+            this._doUnlockAndCancelDocument(); // TODO[Xavi] Això no permet generalitzar
             this.dialogs.timeout = new CustomDialog({
                 id: 'timeout_' + this.id,
                 content: 'El bloqueig ha expirat i ha sigut alliberat. Si havien canvis al document es conservan com a esborrany, i poden ser recuperats la proxima vegada que editis el document.',

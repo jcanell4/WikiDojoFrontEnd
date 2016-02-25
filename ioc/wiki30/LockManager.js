@@ -22,7 +22,7 @@ define([
 
             // TODO[Xavi] afegir el tipus per poder discriminar, per exemple els diff només fan servir el timeout i no han de mostrar cap avis, només tancar-se el dialog
             lock: function (id, ns) {
-                //console.log('LockManager#lock', id, ns);
+                console.log('LockManager#lock', id, ns);
                 if (this.locks[id]) {
                     throw new LockManagerException("Ja existeix un lock pel document amb id: " + id);
                 }
@@ -33,7 +33,7 @@ define([
 
 
             unlock: function (id) {
-                //console.log('LockManager#unlock', id);
+                console.log('LockManager#unlock', id);
 
                 if (this.locks[id]) {
                     this.locks[id].unlock();
