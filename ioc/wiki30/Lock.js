@@ -20,7 +20,7 @@ define([
         THROTTLE: 1 * 1000, // Temps en ms mínim per fer un refresc
         WARNING_DIFF: 5 * 1000, // El warning es mostra aquest nombre de ms abans del timeout
 
-        constructor: function (dispatcher, id, ns) {
+        constructor: function (dispatcher, id, ns, dialogs) {
             this.dispatcher = dispatcher;
             this.id = id;
             this.ns = ns;
@@ -28,6 +28,7 @@ define([
             this.dialogs = {};
             this.timers = {};
             this._init();
+            this.showDialogs = (dialogs !== false);  // Per defecte es sempre true
         },
 
         _init: function () {
@@ -177,6 +178,11 @@ define([
         // TODO[Xavi] Localitzar els texts
         // Encara que es faci el destroyRecursive, el dialog anterior continua existint perquè es guarda una referencia en aquesta propietat. Si es visible llavors no farem res, i si no ho es crearem un de nou que elimina la referencia a l'antic al mateix temps
         _showWarningDialog: function () {
+
+            if (!this.showDialogs) { // TODO[Xavi] Mètode ràpid per afegir la opció de no mostrar els dialegs
+                return;
+            }
+
             if (!this.dialogs.warning || !this.dialogs.warning.isShowing) {
                 this.dialogs.warning = new CustomDialog({
                     id: 'warning_' + this.id,
@@ -210,7 +216,14 @@ define([
 
         // TODO[Xavi] Localitzar els textos. Duplicat practicament igual al gestor del DiffDialog
         _showTimeoutDialog: function () {
+
+
             this._doUnlockAndCancelDocument(); // TODO[Xavi] Això no permet generalitzar
+
+            if (!this.showDialogs) { // TODO[Xavi] Mètode ràpid per afegir la opció de no mostrar els dialegs
+                return;
+            }
+
             this.dialogs.timeout = new CustomDialog({
                 id: 'timeout_' + this.id,
                 content: 'El bloqueig ha expirat i ha sigut alliberat. Si havien canvis al document es conservan com a esborrany, i poden ser recuperats la proxima vegada que editis el document.',

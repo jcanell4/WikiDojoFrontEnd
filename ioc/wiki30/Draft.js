@@ -1,13 +1,8 @@
-/**
- * Una vegada es crea el lock s'enviarà una petició de bloqueig, els timers s'inicialitzaran quan es rebi
- * aquesta petició de bloqueig amb el valor de timeout corresponent enviat des del servidor.
- */
 define([
     'dojo/_base/declare',
     'ioc/wiki30/manager/EventObserver',
-    'ioc/wiki30/Timer',
-    'ioc/gui/CustomDialog'
-], function (declare, EventObserver, Timer, CustomDialog) {
+    'ioc/wiki30/Timer'
+], function (declare, EventObserver, Timer) {
 
     var DraftException = function (message) {
         this.message = message;
@@ -15,7 +10,6 @@ define([
     };
 
     return declare([EventObserver], {
-
 
         THROTTLE: 5 * 1000, // Temps en ms mínim per fer un refresc
 

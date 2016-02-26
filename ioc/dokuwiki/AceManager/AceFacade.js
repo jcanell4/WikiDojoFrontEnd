@@ -43,7 +43,6 @@ define([
 
             this.wrap = args.wrapMode;
 
-
             this.$editor = jQuery('#' + args.containerId);
             this.$textarea = jQuery('#' + args.textareaId);
             this.container = container;

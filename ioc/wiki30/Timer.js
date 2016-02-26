@@ -28,7 +28,6 @@ define([
         _onExpire: function (params) {
             console.log("Timer#_onExpire", params);
             this.expired = true;
-            this.expired = true;
             this.onExpire(params)
         },
 

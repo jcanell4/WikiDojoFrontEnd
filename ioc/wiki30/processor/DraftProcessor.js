@@ -48,7 +48,7 @@ define([
 
                 this.eventManager = dispatcher.getEventManager();
                 this.lockManager = dispatcher.getLockManager();
-                this.lockManager.lock(value.id, value.ns);
+                this.lockManager.lock(value.id, value.ns, false);
 
 
                 this._showDiffDialog(value);
@@ -70,9 +70,9 @@ define([
                     style: "width: 700px",
                     document: data.document,
                     draft: data.draft,
-                    docId: value.id,
-                    ns: value.ns,
-                    rev: value.rev,
+                    docId: value.id, // TODO[Xavi] això es necessari?
+                    ns: value.ns, // TODO[Xavi] això es necessari?
+                    rev: value.rev, // TODO[Xavi] això es necessari?
                     onHide: this.destroy.bind(this),
 
                     buttons: [
@@ -117,6 +117,7 @@ define([
             _openDraft: function () {
 
                 this._cancelTimers();
+                this.lockManager.cancel(this.docId);
 
                 this.eventManager.dispatchEvent("edit", {
                     id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
@@ -126,6 +127,7 @@ define([
 
             _openDocument: function () {
                 this._cancelTimers();
+                this.lockManager.cancel(this.docId);
 
                 this.eventManager.dispatchEvent("edit", {
                     id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
@@ -143,25 +145,28 @@ define([
 
             // TODO[Xavi] Duplicat practicament igual al Lock
             _showTimeoutDialog: function () {
-                //this._doUnlockAndCancelDocument();
-                this._cancelDialogs(); // Afegit, no es troba al Lock (però es cridat des de el _doUnlockAndCancelDocument()
-                this.dialogs.timeout = new CustomDialog({
-                    id: 'timeout_' + this.id,
-                    content: 'El bloqueig ha expirat i ha sigut alliberat. Si havien canvis al document es conservan com a esborrany, i poden ser recuperats la proxima vegada que editis el document.',
-                    title: 'El bloqueig ha expirat',
-                    closable: true,
-                    buttons: [
-                        {
-                            id: 'acceptar',
-                            description: 'Acceptar',
-                            callback: function () {
-                                this._cancelDialogs();
-                            }.bind(this)
-                        }
-                    ]
-                });
+                // TODO[Xavi] No es mostra res, es mostrarà el del lock.
 
-                this.dialogs.timeout.show();
+
+
+                this._cancelDialogs(); // Afegit, no es troba al Lock (però es cridat des de el _doUnlockAndCancelDocument()
+                //this.dialogs.timeout = new CustomDialog({
+                //    id: 'timeout_' + this.id,
+                //    content: 'El bloqueig ha expirat i ha sigut alliberat. Si havien canvis al document es conservan com a esborrany, i poden ser recuperats la proxima vegada que editis el document.',
+                //    title: 'El bloqueig ha expirat',
+                //    closable: true,
+                //    buttons: [
+                //        {
+                //            id: 'acceptar',
+                //            description: 'Acceptar',
+                //            callback: function () {
+                //                this._cancelDialogs();
+                //            }.bind(this)
+                //        }
+                //    ]
+                //});
+                //
+                //this.dialogs.timeout.show();
             },
 
             _cancelDialogs: function () {
@@ -174,7 +179,7 @@ define([
 
             _initTimers: function (timeout) {
                 this.timers = {
-                    timeout: new Timer({onExpire: this._showTimeoutDialog.bind(this)}) // TODO[Xavi] segurament cal afegir el bind
+                    timeout: new Timer({onExpire: this._showTimeoutDialog.bind(this)})
                 };
 
                 this.timers.timeout.start(timeout);

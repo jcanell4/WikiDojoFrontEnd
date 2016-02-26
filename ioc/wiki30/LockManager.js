@@ -16,22 +16,20 @@ define([
 
             constructor: function (args) {
                 declare.safeMixin(this, args);
-
                 this.locks = {};
             },
 
             // TODO[Xavi] afegir el tipus per poder discriminar, per exemple els diff només fan servir el timeout i no han de mostrar cap avis, només tancar-se el dialog
-            lock: function (id, ns) {
-                console.log('LockManager#lock', id, ns);
+            // TODO[Xavi] Afegir un métode lockWithoutDialogs en lloc de fer servir paràmetre? Si no hi ha dialogs normalment no es refrescable així que no cal guardar la opció
+            lock: function (id, ns, showDialogs) {
+                console.log('LockManager#lock', id, ns, showDialogs);
                 if (this.locks[id]) {
-                    throw new LockManagerException("Ja existeix un lock pel document amb id: " + id);
+                    console.warn('Ja existeix un lock pel document amb id: ' + id); // Alerta[Xavi] Pot passar, per exemple quan tenim el document bloquejat mentre selecionem una opció, per exemple: carregar un esborrany.
                 }
 
-                this.locks[id] = new Lock(this.dispatcher, id, ns);
+                this.locks[id] = new Lock(this.dispatcher, id, ns,showDialogs);
                 this.registerToEvent(this.locks[id], "destroyed", this._removeLock.bind(this));
 
-                console.log("Afegit lock per id: ", id);
-                console.log("Locks: ", this.locks);
             },
 
 
@@ -86,6 +84,10 @@ define([
                 console.log("LockManager#_removeLock", data);
                 delete(this.locks[data.id]);
 
+            },
+
+            cancel: function(id) {
+                this.locks[id].destroy();
             }
 
         });

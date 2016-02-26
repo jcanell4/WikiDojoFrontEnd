@@ -1,83 +1,152 @@
 define([
     'dijit/Dialog',
-    'ioc/wiki30/Request'
-], function (Dialog, Request) {
+    'ioc/wiki30/Timer',
+    'ioc/gui/CustomDialog',
+    'ioc/wiki30/dispatcherSingleton',
+], function (Dialog, Timer, CustomDialog, getDispatcher) {
+
+    var dispatcher = getDispatcher(),
+
+        dialogController = {
+
+            _processDialog: function (value) {
+                console.log("DialogController#_processDialog", value);
+
+                this.dialogs = {};
+                this.dispatcher = dispatcher;
+                //
+                //
+                ////Si que cal el Lock, perquè s'ha de poder fer unlock si es prem la creu de tancar!
+                this.docId = value.id;
+
+                this.eventManager = dispatcher.getEventManager();
+                this.lockManager = dispatcher.getLockManager();
+                this.lockManager.lock(value.id, value.ns, false);
 
 
-    // TODO[Xavi] Tot el tema de la selecció ha d'anar en un process diferent que serà cridat en lloc del HtmlPartialContentProcessor
-    var requester,
 
-        _showDraftSelectionDialog = function (params) {
+                this._showDialog(value);
+                this._initTimers(value.timeout * 1000);
+            },
 
-            // TODO[Xavi] Localitzar els missatges, es pot enviar des del servidor en lloc del valor cert
-            var dialog = new Dialog({
-                title: 'S\'ha trobat un esborrany complet',
-                content: 'S\'ha trobat un esborrany complet del document. Si continuas amb la edició parcial ' +
-                '<b>aquest esborrany serà eliminat</b>. Pots obrir el document en edicio completa per recuperar-lo.'
-                + '<div class="dijitDialogPaneActionBar">'
-                + '<button data-dojo-type="dijit/form/Button" type="button" id="cancel-edition-' + params.id + "\">Tornar</button>"
-                + '<button data-dojo-type="dijit/form/Button" type="button" id="partial-edition-' + params.id + "\">Edició parcial</button>"
-                + '<button data-dojo-type="dijit/form/Button" type="button" id="full-edition-' + params.id + "\">Edició completa</button>"
-                + '</div>',
-                style: 'width: 300px',
-                closable: false,
+            // Molt semblant al que hi ha al DraftProcessor, cerca la manera de generalitzar
+            _buildQuery: function (type, value) {
+                console.log('processDraftSelectionDialog#_buildQuery',type, value);
+                var query = '';
 
-                startup: function () {
-                    // TODO[Xavi] Afegir els listeners als botons
-                    jQuery('#cancel-edition-' + params.id).on('click', function () {
-                        dialog.destroyRecursive();
-                    });
+                switch (type) {
+                    case 'full_document':
+                        query += 'id=' + value.ns + (value.rev ? '&rev=' + value.rev : '');
+                        break;
 
-                    jQuery('#partial-edition-' + params.id).on('click', function () {
-                        // Als params s'ha de passar suficient informació per retornar la mateixa petició + clear draft
-
-                        var query = 'do=edit_partial'
-                            + '&section_id=' + params.section_id
-                            + '&editing_chunks=' + params.editing_chunks// TODO[Obtenir la llista de chunks en edició -> crear una funció per fer això
-                            + '&target=' + params.target
-                            + '&id=' + params.ns
-                            + '&rev=' + params.rev
-                            + '&summary=' + params.summary
-                            + '&range=-'
-                            + '&discard_draft=true'; // Descartem el draft complet
-
-
-                        requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit_partial';
-                        requester.sendRequest(query);
-
-                        dialog.destroyRecursive();
-                    });
-
-                    jQuery('#full-edition-' + params.id).on('click', function () {
-                        var query = '&id=' + params.ns;
-
-                        requester.urlBase = 'lib/plugins/ajaxcommand/ajax.php?call=edit';
-                        requester.sendRequest(query);
-
-                        dialog.destroyRecursive();
-
-
-                    });
+                    case 'partial_document':
+                        query += 'id=' + value.ns
+                            + (value.rev ? '&rev=' + value.rev : '')
+                            + '&section_id=' + value.section_id
+                            + '&editing_chunks=' + value.editing_chunks
+                            + '&range=' + value.range //TODO[Xavi] això sembla que no es necessari
+                            + '&summary=' + value.summary
+                            + '&target=' + value.target;
                 }
-            });
+
+                return query;
+            },
+
+            destroy: function () {
+                this._cancelTimers();
+                this._cancelDialogs();
+                this.lockManager.unlock(this.docId);
+            },
+
+            _openFullDocument: function (value) {
+
+                this._cancelTimers();
+                this.lockManager.cancel(this.docId);
+
+                this.eventManager.dispatchEvent("edit", {
+                    id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
+                    dataToSend: this._buildQuery('full_document',value) + '&discard_draft=true'
+                });
+            },
+
+            _openPartialDocument: function (value) {
+                this._cancelTimers();
+                this.lockManager.cancel(this.docId);
+
+                this.eventManager.dispatchEvent("edit_partial", {
+                    id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
+                    dataToSend: this._buildQuery('partial_document', value) + '&discard_draft=true'
+                });
+
+            },
+
+            _cancelTimers: function () {
+                console.log('¿?¿?¿#_cancelTimers', this.timers);
+                for (var timer in this.timers) {
+                    this.timers[timer].cancel();
+                }
+            },
+
+            _initTimers: function (timeout) {
+                this.timers = {
+                    timeout: new Timer({onExpire: this._showTimeoutDialog.bind(this)})
+                };
+
+                this.timers.timeout.start(timeout);
+            },
+
+            _showTimeoutDialog: function () {
+                // TODO[Xavi] No es mostra res, es mostrarà el del lock.
+                this._cancelDialogs();
+            },
+
+            _showDialog: function (value) {
+                console.log("Value:", value);
+
+                // TODO[Xavi] Localitzar els missatges, es pot enviar des del servidor en lloc del valor cert
+                this.dialogs.selectEditType = new CustomDialog({
+                    title: 'S\'ha trobat un esborrany complet',
+                    content: 'S\'ha trobat un esborrany complet del document. Si continuas amb la edició parcial ' +
+                    '<b>aquest esborrany serà eliminat</b>. Pots obrir el document en edicio completa per recuperar-lo.',
+                    style: 'width: 300px',
+                    closable: true,
+                    onHide: this.destroy.bind(this),
+
+                    buttons: [
+                        {
+                            id: 'open_full_edition',
+                            description: 'Editar document complet',
+                            callback: function () {
+                                this._openFullDocument(value);
+                            }.bind(this)
+                        },
+                        {
+                            id: 'open_partial_edition',
+                            description: 'Editar fragment (s\'esborrarà l\'esborrany)',
+                            callback: function () {
+                                this._openPartialDocument(value);
+                            }.bind(this)
+                        }
+                    ]
+
+                });
 
 
-            dialog.show();
-        },
-        _createRequest = function () {
-            requester = new Request();
+                this.dialogs.selectEditType.show();
+            },
 
-//            requester.updateSectok = function (sectok) {
-//                this.sectok = sectok;
-//            };
-//
-//            requester.sectok = requester.dispatcher.getSectok();
-//            requester.dispatcher.toUpdateSectok.push(requester);
+            _cancelDialogs: function () {
+                for (var dialog in this.dialogs) {
+                    //console.log("Cancelant ", dialog, this.dialogs[dialog]);
+                    this.dialogs[dialog].remove();
+                }
+                this.dialogs = {};
+            }
         };
 
     return function (params) {
-        _createRequest();
-        _showDraftSelectionDialog(params.original_call);
+        console.log("Crida a processDraftSelectionDialog (només es passa l'original_call", params);
+        dialogController._processDialog(params.original_call);
 
     };
 
