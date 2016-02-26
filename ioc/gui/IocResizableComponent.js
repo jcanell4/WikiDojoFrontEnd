@@ -19,7 +19,7 @@ define([
          */
         {
             constructor:function(){
-                console.log("IocResizableComponent");
+                //console.log("IocResizableComponent");
             }
         });
     return ret;

@@ -5,10 +5,12 @@ define([
     'ioc/dokuwiki/AceManager/toolbarManager',
     'ioc/dokuwiki/AceManager/AceFacade',
     'dojo/dom-geometry',
-    'dojo/dom'
+    'dojo/dom',
+    'ioc/wiki30/Draft',
 ], function (declare, on, LocktimedDocumentSubclass, toolbarManager, AceFacade, geometry, dom) {
 
     return declare([LocktimedDocumentSubclass],
+        //return declare(null,
 
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
@@ -40,6 +42,7 @@ define([
              */
             constructor: function (args) {
                 this._setOriginalContent(args.originalContent);
+                this.hasChanges = false;
             },
 
 
@@ -58,13 +61,23 @@ define([
              */
             isContentChanged: function () {
                 var content = this.getCurrentContent(),
-                    result = !(this._getOriginalContent() == content);
+                    diffFromOriginal = this._getOriginalContent() != content,
+                    diffFromLastCheck = this.isLastCheckedContentChanged();
 
-                if (result) {
-                    this.onDocumentChanged();
+
+                if (diffFromOriginal && diffFromLastCheck) { // No es fa el refresc si encara no s'ha produt cap canvi
+                    console.log("** DOCUMENT REFRESH **");
+                    this.onDocumentRefreshed();
                 }
 
-                return result;
+
+                if (diffFromOriginal && !this.hasChanges) {
+                    console.log("** DOCUMENT CHANGED **");
+                    this.onDocumentChanged();
+                    this.hasChanges = true;
+                }
+
+                return diffFromOriginal;
             },
 
             /**
@@ -72,6 +85,7 @@ define([
              * actual.
              */
             resetContentChangeState: function () {
+                this.hasChanges = false;
                 this._setOriginalContent(this.getCurrentContent());
                 this.onDocumentChangesReset();
             },
@@ -91,9 +105,8 @@ define([
                 jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
                 this.inherited(arguments);
 
-                if (!this.locked) {
-                    this.lockDocument();
-                }
+                this.lockDocument(); // Lock i Draft
+
 
                 this.registerToEvent(this, 'document_selected', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
                 this.registerToEvent(this, 'data_replaced', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
@@ -102,9 +115,10 @@ define([
                 this.eventManager = this.dispatcher.getEventManager();
 
                 this.eventManager.registerEventForBroadcasting(this, "save_" + this.id, this._doSave.bind(this));
-                this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancel.bind(this));
+                this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancelDocument.bind(this));
 
                 this.fillEditorContainer();
+
             },
 
 
@@ -112,7 +126,8 @@ define([
                 //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
                 var dataToSend = this.getQuerySave(event.id),
-                    containerId = "container_" + event.id;
+                //containerId = "container_" + event.id;
+                    containerId = event.id;
 
                 this.eventManager.dispatchEvent("save", {
                     id: this.id,
@@ -122,11 +137,22 @@ define([
 
             },
 
-            _doCancel: function (event) {
+            // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
+            _doCancelDocument: function (event) {
                 //console.log("EditorSubclass#_doCancel", this.id, event);
+                var dataToSend, containerId;
 
-                var dataToSend = this.getQueryCancel(event.id),
-                    containerId = "container_" + event.id;
+                if (event.discardChanges) {
+                    dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
+                } else {
+                    dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
+                }
+
+                if (event.keep_draft) {
+                    dataToSend += '&keep_draft=' + event.keep_draft;
+                }
+
+                containerId = event.id;
 
                 this.eventManager.dispatchEvent("cancel", {
                     id: this.id,
@@ -143,20 +169,23 @@ define([
                     values = {},
                     text;
 
-
                 jQuery.each($form.serializeArray(), function (i, field) {
                     values[field.name] = field.value;
                 });
 
                 text = this.getCurrentContent();
 
-                values.wikitext = text;
+                values.wikitext = jQuery.trim(text);
 
                 return values;
             },
 
-            getQueryCancel: function (section_id) {
+            getQueryCancel: function () {
                 return 'do=cancel&id=' + this.ns;
+            },
+
+            getQueryForceCancel: function () {
+                return 'do=cancel&discard_changes=true&id=' + this.ns;
             },
 
 
@@ -272,22 +301,6 @@ define([
 
                 this.addToolbars();
                 this.addEditors();
-
-                //this.addEditionListener();
-                //this.addSelectionListener();
-
-                // El post render es crida sempre després d'haver tornat o carregat una nova edició
-                //this.discardChanges = false;
-
-                // TODO[Xavi] això no funciona encara, s'ha de fer canvi del lockantic al nou
-                //if (this.data.locked) {
-                //    this.lockEditors();
-                //} else {
-                //    this.unlockEditors();
-                //    this.isLockNeeded();
-                //}
-                //
-
 
                 on(window, 'resize', function () {
                     this.fillEditorContainer();
@@ -405,19 +418,37 @@ define([
 
             getEditor: function () {
                 return this.editor;
-
             },
 
             fillEditorContainer: function () {
-                console.log('EditorSubclass#fillEditorContainer');
+                //console.log('EditorSubclass#fillEditorContainer');
                 var contentNode = dom.byId(this.id),
                     h = geometry.getContentBox(contentNode).h,
                     max = h - this.VERTICAL_MARGIN;
 
-                console.log("Alçada:", h);
+                //console.log("Alçada:", h);
                 this.editor.setHeight(Math.max(this.MIN_HEIGHT, max));
 
-            }
+            },
+
+            isLastCheckedContentChanged: function () {
+                var content = this.getCurrentContent(),
+                    result = this._getLastCheckedContent() != content;
+
+                if (result) {
+                    this._setLastCheckedContent(content);
+                }
+
+                return result;
+            },
+
+            _getLastCheckedContent: function () {
+                return this.lastCheckedContent;
+            },
+
+            _setLastCheckedContent: function (content) {
+                this.lastCheckedContent = content;
+            },
 
 
         });

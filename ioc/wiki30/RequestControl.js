@@ -27,7 +27,8 @@ define([
                 this.id = 'RequestControl#' + eventToControl;
 
                 var eventManager = this.request.dispatcher.getEventManager();
-                eventManager.registerEventForBroadcasting(this, eventToControl, this._sendRequest.bind(this));
+                //eventManager.registerEventForBroadcasting(this, eventToControl, this._sendRequest.bind(this)); // Alerta [Xavi] No cal fer broadcasting, aquest objecte només escolta
+                this.registerToEvent(eventManager, eventToControl, this._sendRequest.bind(this));
             },
 
             _sendRequest: function (data) {

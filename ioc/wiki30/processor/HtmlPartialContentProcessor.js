@@ -36,8 +36,7 @@ define([
                 }
 
                 // TODO[Xavi] Refactoritzar, massa condicionals
-                if (contentTool && contentTool.type === this.type) {
-
+                if (contentTool && contentTool.type === this.type && !value.discard_changes) { // Alerta [Xavi] afegit nou per forçar els discards
 
                     // Es una actualització
                     contentTool.getContainer().selectChild(contentTool);
@@ -50,7 +49,6 @@ define([
 
 
                     if (changesManager.isChanged(value.id) && value.cancel) {
-
                         if (contentTool.isAnyChunkChanged(value.cancel)) {
                             confirmation = dispatcher.discardChanges();
                         } else {
@@ -61,7 +59,6 @@ define([
                         confirmation = dispatcher.discardChanges();
 
                     } else {
-
                         confirmation = true;
                     }
 

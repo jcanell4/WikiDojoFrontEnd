@@ -29,14 +29,13 @@ define([
     'dojo/dom',
     'dojo/dom-geometry',
     'ioc/dokuwiki/AceManager/toolbarManager'
-
 ], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, toolbarManager) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
         TOOLBAR_ID : 'partial_edit',
-        VERTICAL_MARGIN: 100, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
-        MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+        VERTICAL_MARGIN: 100, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+        MIN_HEIGHT: 200, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
         constructor: function (args) {
 
@@ -44,6 +43,7 @@ define([
             this.savedDrafts = {};
             this.editors = {}; // A aquest objecte es guardarà per cada header_id el seu editor
             this.currentSectionId = null;
+            this.hasChanges = false;
         },
 
         setReadOnly: function(value){
@@ -379,6 +379,9 @@ define([
             this.eventManager.registerEventForBroadcasting(this, "save_partial_" + this.id, this._doSavePartial.bind(this));
             this.eventManager.registerEventForBroadcasting(this, "cancel_partial_" + this.id, this._doCancelPartial.bind(this));
 
+            // Impresncidible pel cas en que caduca el bloqueig
+            this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancelDocument.bind(this));
+
             this.updateTitle(this.data);
         },
 
@@ -399,11 +402,16 @@ define([
          * @returns {boolean} Cert si s'ha produït algun canvi
          */
         isContentChanged: function () {
+            console.log("StructuredDocumentSubclass#isContentChanged");
 
             // * El editing dels chunks en edicio es diferent del $textarea corresponent
             var chunk,
                 $textarea,
-                result = false;
+                diffFromOriginal,
+                diffFromLastCheck,
+                content,
+                documentChanged=false,
+                documentRefreshed=false;
 
             if (this.discardChanges) {
                 //this.discardChanges = false;
@@ -417,21 +425,60 @@ define([
                 if (chunk.text) {
                     $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
 
-                    if (this._getOriginalContent(chunk.header_id) != $textarea.val()) {
-                        result = true;
+                    content = $textarea.val();
+                    diffFromOriginal = this._getOriginalContent(chunk.header_id) != content;
+                    diffFromLastCheck = this.isLastCheckedContentChanged(chunk.header_id, content);
 
-                        this.changedChunks[chunk.header_id].changed = true;
-                        this.onDocumentChanged();
 
-                    } else {
-                        this.changedChunks[chunk.header_id].changed = false;
-                    }
+
+                    this.changedChunks[chunk.header_id].changed = diffFromOriginal;
+
+                    // Només cal 1 modificat per que s'apliqui el canvi
+                    documentChanged |= diffFromOriginal;
+                    documentRefreshed |= diffFromLastCheck;
+
                 }
             }
 
-            return result;
+
+            console.log("Ha canviat el document?", documentChanged);
+            console.log("Hi havien canvis previs?", this.hasChanges);
+
+            if (documentChanged && !this.hasChanges) {
+                this.onDocumentChanged();
+                this.hasChanges = true;
+            } else if (!documentChanged){
+                this.hasChanges = false;
+            }
+
+            if (documentRefreshed) {
+                this.onDocumentRefreshed();
+            }
+
+            return documentChanged;
 
         },
+
+        isLastCheckedContentChanged: function (header_id, content) {
+            //var result = !(this.changedChunks[header_id].lastChecked == content);
+
+            var result = this._getLastCheckedContent(header_id) != content;
+
+            if (result) {
+                this._setLastCheckedContent(header_id, content);
+            }
+
+            return result;
+        },
+
+        _getLastCheckedContent: function(header_id) {
+            return this.changedChunks[header_id].lastChecked;
+        },
+
+        _setLastCheckedContent: function(header_id, content) {
+            this.changedChunks[header_id].lastChecked = content;
+        },
+
 
         /**
          * Retorna el contingut original corresponent al chunk amb la caçalera passada com argument. La primera
@@ -669,9 +716,11 @@ define([
 
         isLockNeeded: function () {
 
+
             if (this.getEditingChunks().length > 0) {
                 //console.log("Cal activar el lock", this.getEditingChunks().length);
                 this.lockDocument();
+
 
             } else {
                 //console.log("No cal activar fer el lock");
@@ -945,6 +994,34 @@ define([
 
         },
 
+        // TODO[Xavi] Copiat fil per randa de Editor Subclass
+        _doCancelDocument: function (event) {
+            console.log("EditorSubclass#_doCancel", this.id, event);
+            var dataToSend, containerId;
 
+            if (event.discardChanges) {
+                dataToSend = this.getQueryForceCancel(event.id);
+            } else {
+                dataToSend = this.getQueryCancel(event.id); // Alerta[Xavi] Aquest fa un cancel parcial al structuredDocumentSubclass, refactoritzar (crec que no es dona aquest cas) <--- substituir per _getQueryCancel o canviar el nom a _getQueryCancelDocument per diferenciar el cancelPartial
+            }
+
+            if (event.keep_draft) {
+                dataToSend += '&keep_draft=' + event.keep_draft;
+            }
+
+            containerId = event.id;
+
+            this.eventManager.dispatchEvent("cancel", {
+                id: this.id,
+                dataToSend: dataToSend,
+                standbyId: containerId
+            })
+
+        },
+
+        // TODO[Xavi] Copiat fil per randa de Editor Subclass
+        getQueryForceCancel: function () {
+            return 'do=cancel&discard_changes=true&id=' + this.ns;
+        },
     })
 });

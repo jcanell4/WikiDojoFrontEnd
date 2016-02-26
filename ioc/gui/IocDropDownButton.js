@@ -22,7 +22,7 @@ define([
             templateString: template,
             
             constructor:function(){
-                console.log("IocDropDownButton");
+                //console.log("IocDropDownButton");
             },
 
             /** @override */

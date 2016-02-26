@@ -29,7 +29,7 @@ define([
             autoSize: false,
             
             constructor: function(){
-                console.log("ResizableComponent");
+                //console.log("ResizableComponent");
             },
 
             /** @override */
