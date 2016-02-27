@@ -66,8 +66,7 @@ define([
             // El post render es crida sempre després d'haver tornat o carregat una nova edició
             this.discardChanges = false;
 
-
-            if (this.data.locked) {
+            if (this.data.locked || (this.data.editing && this.data.editing.readonly)) { // TODO[Xavi] es dins de editing per concordancia amb l'editor complet
                 this.lockEditors();
             } else {
                 this.unlockEditors();
@@ -99,12 +98,10 @@ define([
                     }
                 }
             }
-
-            console.log("Total editors afegits: ", this.editors);
         },
 
         addToolbars: function () {
-            console.log("StructuredDocumentSubclass#addToolbars");
+            //console.log("StructuredDocumentSubclass#addToolbars");
             var auxId;
 
             this.addButtons();
@@ -261,9 +258,7 @@ define([
 
             header_id = values['section_id'];
 
-            // IMPORTANT! S'ha de fer servir el this.data perquè el this.content no es actualitzat
-
-            // TODO: Només fins al actual Fins al actual,
+            // ALERTA[Xavi]! S'ha de fer servir el this.data perquè el this.content no es actualitzat
             for (var i = 0; i < chunks.length; i++) {
 
                 if (chunks[i].header_id === header_id) {
@@ -290,7 +285,7 @@ define([
 
             // Actualitzem les dades d'edició
 
-            text = this.editors[header_id].editor.getValue(); // TODO[Xavi] que passa amb el textarea? s'ha de comprovar quin es l'editor actiu o crear un nou métode que retorni el contingut sigui quin sigui l'estat
+            text = this.editors[header_id].editor.getValue();
             this.updateChunk(header_id, {'editing': text});
 
 
@@ -405,7 +400,7 @@ define([
          * @returns {boolean} Cert si s'ha produït algun canvi
          */
         isContentChanged: function () {
-            console.log("StructuredDocumentSubclass#isContentChanged");
+            //console.log("StructuredDocumentSubclass#isContentChanged");
 
             // * El editing dels chunks en edicio es diferent del $textarea corresponent
             var chunk,
@@ -441,10 +436,6 @@ define([
 
                 }
             }
-
-
-            console.log("Ha canviat el document?", documentChanged);
-            console.log("Hi havien canvis previs?", this.hasChanges);
 
             if (documentChanged && !this.hasChanges) {
                 this.onDocumentChanged();
@@ -714,7 +705,6 @@ define([
         },
 
         isLockNeeded: function () {
-
 
             if (this.getEditingChunks().length > 0) {
                 //console.log("Cal activar el lock", this.getEditingChunks().length);

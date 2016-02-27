@@ -304,14 +304,14 @@ define([
             },
 
             createEditor: function (id) {
-                var $textarea = jQuery('#textarea_' + id);
+                var $textarea = jQuery('#textarea_' + id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
 
                 return new AceFacade({
                     xmltags: JSINFO.plugin_aceeditor.xmltags,
                     containerId: 'editor_' + id,
                     textareaId: 'textarea_' + id,
                     theme: JSINFO.plugin_aceeditor.colortheme,
-                    readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient
+                    readOnly: this.readonly,
                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                     wrapMode: $textarea.attr('wrap') !== 'off',
                     mdpage: JSINFO.plugin_aceeditor.mdpage,
@@ -321,6 +321,9 @@ define([
 
             // TODO[Xavi] en aquest cas només cal una toolbar
             addToolbars: function () {
+                if (this.readonly) {
+                    return;
+                }
                 this.addButtons();
                 toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
             },

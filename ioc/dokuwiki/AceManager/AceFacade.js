@@ -23,6 +23,7 @@ define([
 
                 mode = iocAceMode.getMode(),
 
+
                 iocAceEditor = new IocAceEditor({
                     mode: mode,
                     containerId: args.containerId,

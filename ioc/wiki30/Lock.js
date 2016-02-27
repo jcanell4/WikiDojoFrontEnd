@@ -262,7 +262,7 @@ define([
         },
 
         onDestroy: function () {
-            console.log("Lock#onDestroy");
+            //console.log("Lock#onDestroy");
             this._cancelTimers();
             this._cancelDialog('warning');
             this.eventManager.unregisterFromEvent(this.eventNameCompound.LOCK + this.id);

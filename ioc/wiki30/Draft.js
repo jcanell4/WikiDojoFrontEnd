@@ -34,64 +34,58 @@ define([
         },
 
         _registerToEvents: function () {
-            // TODO[Xavi] no cal registrar-se al event manager, hauria de ser suficient registrar-se al contentTool
-            console.log("Draft#_registerToEvents");
+            // TODO[Xavi] no cal registrar-se al event manager, hauria de ser suficient registrar-se al contentTool al event concret
+            //console.log("Draft#_registerToEvents");
             this.eventManager = this.dispatcher.getEventManager();
-            this.eventManager.registerToEvent(this.eventManager, "document_refreshed_" + this.contentTool.id, this._doRefresh.bind(this));
-            this.eventManager.registerToEvent(this.eventManager, "cancel_" + this.contentTool.id, this.destroy.bind(this));
+            this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id, this._doRefresh.bind(this));
+            this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.CANCEL + this.contentTool.id, this.destroy.bind(this));
         },
 
         _doSave: function () {
-            console.log('Draft#_doSave');
+            //console.log('Draft#_doSave');
             this.lastRefresh = Date.now();
 
             var dataToSend = this._getQueryDraft();
 
-            this.eventManager.dispatchEvent("save_draft", {
+            this.eventManager.dispatchEvent(this.eventName.SAVE_DRAFT, {
                 id: this.id,
                 dataToSend: dataToSend
             });
         },
 
         _getQueryDraft: function () {
-            console.log('Draft#_getQueryDraft');
+            //console.log('Draft#_getQueryDraft');
             var dataToSend = {
                 id: this.contentTool.ns,
                 do: 'save_draft',
                 draft: JSON.stringify(this.contentTool.generateDraft())
             };
 
-
             return dataToSend;
         },
 
         _doRefresh: function () {
-            console.log('Draft#_doRefresh');
-
+            //console.log('Draft#_doRefresh');
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
 
             if (elapsedTime >= this.THROTTLE) {
                 this._doSave();
             } else {
-                console.log('Throttle!)');
                 this._setPendingRefresh(this.THROTTLE - elapsedTime + 1);
             }
-
         },
 
         _setPendingRefresh: function (timeout) {
-            console.log('Draft#_setPendingRefresh', timeout);
+            //console.log('Draft#_setPendingRefresh', timeout);
 
             if (this.timers.refresh.expired) {
                 this.timers.refresh.start(timeout);
-            } else {
-                //console.log('No ha expirat, hi ha un refresc en funcionament');
             }
         },
 
         _initTimers: function () {
-            console.log('Draft#_initTimers');
+            //console.log('Draft#_initTimers');
             this.timers = {
                 refresh: new Timer({onExpire: this._doRefresh.bind(this)})
             };
@@ -99,7 +93,7 @@ define([
         },
 
         _cancelTimers: function () {
-            console.log('Draft#_cancelTimers', this.timers);
+            //console.log('Draft#_cancelTimers', this.timers);
             for (var timer in this.timers) {
                 this.timers[timer].cancel();
             }
@@ -113,9 +107,9 @@ define([
         onDestroy: function () {
             console.log("Draft#onDestroy");
             this._cancelTimers();
-            this.eventManager.unregisterFromEvent("document_refreshed_" + this.contentTool.id);
-            this.eventManager.unregisterFromEvent("cancel_" + this.contentTool.id);
-            this.dispatchEvent("destroyed", {id: this.id});
+            this.eventManager.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
+            this.eventManager.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
+            this.dispatchEvent(this.eventName.DESTROY, {id: this.id});
         }
 
     });

@@ -22,7 +22,7 @@ define([
             // TODO[Xavi] afegir el tipus per poder discriminar, per exemple els diff només fan servir el timeout i no han de mostrar cap avis, només tancar-se el dialog
             // TODO[Xavi] Afegir un métode lockWithoutDialogs en lloc de fer servir paràmetre? Si no hi ha dialogs normalment no es refrescable així que no cal guardar la opció
             lock: function (id, ns, showDialogs) {
-                console.log('LockManager#lock', id, ns, showDialogs);
+                //console.log('LockManager#lock', id, ns, showDialogs);
 
                 if (this.locks[id]) {
                     // Actualitzem la visivilitat dels dialogs
@@ -36,7 +36,7 @@ define([
 
 
             unlock: function (id) {
-                console.log('LockManager#unlock', id);
+                //console.log('LockManager#unlock', id);
 
                 if (this.locks[id]) {
                     this.locks[id].unlock();
@@ -45,7 +45,7 @@ define([
             },
 
             refresh: function (id, timeout) {
-                console.log('LockManager#refresh', id, timeout);
+                //console.log('LockManager#refresh', id, timeout);
 
                 if (!this.locks[id]) {
                     throw new LockManagerException("No existeix cap lock per refrescar amb id: " + id);
@@ -82,7 +82,7 @@ define([
             },
 
             _removeLock: function (data) {
-                console.log("LockManager#_removeLock", data);
+                //console.log("LockManager#_removeLock", data);
                 delete(this.locks[data.id]);
             },
 

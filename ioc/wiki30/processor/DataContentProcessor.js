@@ -64,7 +64,6 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
-
                 var args = {
                     ns: content.ns,
                     id: content.id,
@@ -75,6 +74,7 @@ define([
                     originalContent: this._extractContentFromNode(content),
                     type: this.type,
                     locked: content.editing.locked,
+                    readonly: content.editing.readonly,
                     rev: content.rev
                 };
 

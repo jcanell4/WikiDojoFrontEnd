@@ -3,21 +3,23 @@ define([
     'ioc/wiki30/Draft',
 ], function (declare, Draft) {
 
-    return declare([], {
-        /** @abstract TODO[Xavi] Potser no fan falta, això es especific del editor múltiple */
-        //isLockNeeded: function() {},
-        //lockEditors: function() {},
-        //unlockEditors: function() {}
+    var LocktimedDocumentSubclassException = function (message) {
+        this.message = message;
+        this.name = "LocktimedDocumentSubclassException"
+    };
 
+    return declare([], {
 
         /** @abstract */
-        generateDraft:function() { // TODO[Xavi] això anirà en el nou sistema pels drafts
-            console.error("S'ha d'implementar la funció generateDraft en las subclasses per poder generar l'esborrany");
+        generateDraft: function () { // TODO[Xavi] això anirà en el nou sistema pels drafts
+            throw new LocktimedDocumentSubclassException("El ContentTool ha d'implementar la funció generateDraft a " +
+                "les subclasses per poder generar l'esborrany");
         },
 
-
-
         lockDocument: function () {
+            if (this.readonly) { // Si el document es de només lectura no s'ha de bloquejar
+                return;
+            }
             this.dispatcher.getLockManager().lock(this.id, this.ns);
 
             // TODO[Xavi] pendent de determinar si fem servir una subclasse diferent pels Draft
@@ -28,6 +30,10 @@ define([
         },
 
         unlockDocument: function () {
+            if (this.readonly) { // Si el document es de només lectura no pot ser bloquejat
+                return;
+            }
+
             this.dispatcher.getLockManager().unlock(this.id);
 
             // TODO[Xavi] pendent de determinar si fem servir una subclasse diferent pels Draft
@@ -37,27 +43,8 @@ define([
             }
         },
 
-        // Alerta [Xavi] No es fa servir
-        refreshLock: function (timeout) {
-            //console.log("LocktimedDocumentSbuclass#refreshLock", timeout);
-            //this.locktimer.refreshed(timeout);
-        },
-
-        changesNotDiscarded: function() {
-            //this.locktimer.refreshed();
-        },
-
-        unlock: function() {
-            //if (this.locktimer) {
-            //    this.locktimer.unlock();
-            //}
-
-        },
-
-
         onDestroy: function () {
-            // TOOD[Xavi] Aquest métode fa servir el nou sistema
-            console.log("LocktimedDocumentSubclass#onDestroy");
+            //console.log("LocktimedDocumentSubclass#onDestroy");
             this.dispatcher.getLockManager().unlock(this.id);
             this.inherited(arguments);
         }

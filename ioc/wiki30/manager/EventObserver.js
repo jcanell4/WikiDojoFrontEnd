@@ -34,7 +34,8 @@ define([
                 SAVE: 'save',
                 SAVE_DRAFT: 'save_draft',
                 CONTENT_SELECTED: 'content_selected',
-                CONTENT_UNSELECTED: 'content_unselected'
+                CONTENT_UNSELECTED: 'content_unselected',
+                DOCUMENT_CHANGES_RESET: 'document_changes_reset'
 
             },
 
@@ -193,7 +194,7 @@ define([
 
             // TODO[Xavi] Encara queda una referencia penjada al observer a la llista d'observers. Caldria afegir un sistema per comprovar si els observers associats a aquest event ja no escolten cap event, i en aquest cas eliminar-lo també
             unregisterFromEvent: function (event) {
-                console.log("EventObserver#unregisterFromEvent", event);
+                //console.log("EventObserver#unregisterFromEvent", event);
                 this.events[event] = [];
             }
         });

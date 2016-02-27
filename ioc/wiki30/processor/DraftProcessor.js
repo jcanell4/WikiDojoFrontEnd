@@ -31,7 +31,7 @@ define([
              * @private
              */
             _processDialog: function (value, dispatcher) {
-                console.log("DraftProcessor#_processDialog", value);
+                //console.log("DraftProcessor#_processDialog", value);
 
 
                 //TODO[Xavi] s'ha de crear un nou objecte que s'encarregarà de gestionar això.

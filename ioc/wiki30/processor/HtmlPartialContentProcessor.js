@@ -131,6 +131,7 @@ define([
                         dispatcher: dispatcher,
                         rev: content.rev || '',
                         type: this.type,
+                        // Alerta[Xavi] El readonly no s'especifica aquí, es detectat al postrender del contenttool (en el cas dels parcials)
                         //changedChunks: changedChunks
                     };
 
