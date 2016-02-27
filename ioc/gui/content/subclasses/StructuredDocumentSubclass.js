@@ -46,7 +46,14 @@ define([
             this.hasChanges = false;
         },
 
+        setReadOnly: function(value){
+            this.set("readonly", value);
+        },
 
+        getReadOnly: function(){
+            return this.get("readonly");
+        },
+            
         /**
          * Al post render s'afegeix la funcionalitat de reconstruir els prefix i suffix necessaris per la wiki al
          * fer click en el botó de desar i s'afegeix la toolbar a cada editor.
@@ -535,6 +542,9 @@ define([
             if (content.locked) {
                 this.lockEditors();
             }
+            if(content.editing){
+                this.setReadOnly(content.editing.readonly)
+            }
 
             this.setData(content);
             this.render();
@@ -803,6 +813,12 @@ define([
         // TODO: Copiat a Editor subclass (per generalitzar)
         createEditor: function (id) {
             var $textarea = jQuery('textarea_' + id);
+            if(this.getReadOnly()){
+                $textarea.attr('readonly', 'true');
+            }else{
+                $textarea.removeAttr('readonly');
+            }
+
             return new AceFacade({
                 xmltags: JSINFO.plugin_aceeditor.xmltags,
                 containerId: 'editor_' + id,

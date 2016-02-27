@@ -46,6 +46,14 @@ define([
             },
 
 
+            setReadOnly: function(value){
+                this.set("readonly", value);
+            },
+
+            getReadOnly: function(){
+                return this.get("readonly");
+            },
+
             /**
              * Retorna cert si el contingut actual i el contingut original son iguals o fals si no ho son.
              *
@@ -311,7 +319,7 @@ define([
                     containerId: 'editor_' + id,
                     textareaId: 'textarea_' + id,
                     theme: JSINFO.plugin_aceeditor.colortheme,
-                    readOnly: this.readonly,
+                    readOnly: this.getReadOnly(),
                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                     wrapMode: $textarea.attr('wrap') !== 'off',
                     mdpage: JSINFO.plugin_aceeditor.mdpage,
@@ -321,7 +329,7 @@ define([
 
             // TODO[Xavi] en aquest cas només cal una toolbar
             addToolbars: function () {
-                if (this.readonly) {
+                if (this.getReadOnly()) {
                     return;
                 }
                 this.addButtons();

@@ -51,6 +51,7 @@ define([
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
+                dispatcher.getGlobalState().getContent(value.id).readonly = value.editing?value.editing.readonly:false;
             },
 
             /**
