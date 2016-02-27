@@ -35,12 +35,10 @@ define([
 
 
                 //TODO[Xavi] s'ha de crear un nou objecte que s'encarregarà de gestionar això.
-
-                // Aquest objecte hauria de ser diferent per edicions normal, parcialt, etc. segons el tipus. Fer servir factoria
+                // Aquest objecte hauria de ser diferent per edicions normal, parcial, etc. segons el tipus. Fer servir factoria de moment fem servir el _getActionType i _setActionType
+                this._setActionType(value);
 
                 this.dialogs = {};
-                //this.dispatcher = dispatcher;
-
 
                 //Si que cal el Lock, perquè s'ha de poder fer unlock si es prem la creu de tancar!
                 this.docId = value.id;
@@ -92,18 +90,7 @@ define([
                         }
                     ]
 
-                    //timeout: value.timeout,
-                    //dispatcher: this.dispatcher,
-                    //query: data.query,
-                    //base: DOKU_BASE + value.params.base,
-                    //moreEditionsActive: (!(!value.params.originalcall || !value.params.original_call.editing_chunks
-                    //|| value.params.original_call.editing_chunks != ''))
                 });
-
-                //TODO[Xavi] Pel nou dialog:
-                //
-                // s'ha de passa l'arri de botons
-
 
                 this.dialogs.diff.show();
             },
@@ -119,7 +106,7 @@ define([
                 this._cancelTimers();
                 this.lockManager.cancel(this.docId);
 
-                this.eventManager.dispatchEvent("edit", {
+                this.eventManager.dispatchEvent(this._getActionType(), {
                     id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
                     dataToSend: this.query + '&recover_draft=true'
                 });
@@ -129,7 +116,7 @@ define([
                 this._cancelTimers();
                 this.lockManager.cancel(this.docId);
 
-                this.eventManager.dispatchEvent("edit", {
+                this.eventManager.dispatchEvent(this._getActionType(), {
                     id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
                     dataToSend: this.query + '&recover_draft=false'
                 });
@@ -143,30 +130,9 @@ define([
                 }
             },
 
-            // TODO[Xavi] Duplicat practicament igual al Lock
             _showTimeoutDialog: function () {
                 // TODO[Xavi] No es mostra res, es mostrarà el del lock.
-
-
-
                 this._cancelDialogs(); // Afegit, no es troba al Lock (però es cridat des de el _doUnlockAndCancelDocument()
-                //this.dialogs.timeout = new CustomDialog({
-                //    id: 'timeout_' + this.id,
-                //    content: 'El bloqueig ha expirat i ha sigut alliberat. Si havien canvis al document es conservan com a esborrany, i poden ser recuperats la proxima vegada que editis el document.',
-                //    title: 'El bloqueig ha expirat',
-                //    closable: true,
-                //    buttons: [
-                //        {
-                //            id: 'acceptar',
-                //            description: 'Acceptar',
-                //            callback: function () {
-                //                this._cancelDialogs();
-                //            }.bind(this)
-                //        }
-                //    ]
-                //});
-                //
-                //this.dialogs.timeout.show();
             },
 
             _cancelDialogs: function () {
@@ -242,6 +208,21 @@ define([
                 }
 
                 return query;
+            },
+
+            _setActionType: function (value) {
+                switch (value.params.type) {
+                    case 'full_document':
+                        this.documentType = 'edit';
+                        break;
+                    case 'partial_document':
+                        this.documentType = 'edit_partial';
+                        break;
+                }
+            },
+
+            _getActionType: function () {
+                return this.documentType;
             }
 
         });

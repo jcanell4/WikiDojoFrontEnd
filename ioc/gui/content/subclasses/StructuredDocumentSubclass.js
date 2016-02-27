@@ -102,10 +102,17 @@ define([
         },
 
         addToolbars: function () {
-
+            console.log("StructuredDocumentSubclass#addToolbars");
             this.addButtons();
 
             for (var i = 0; i < this.content.chunks.length; i++) {
+
+                console.log("Afegint toolbar a Chunk: ", this.content.chunks[i]);
+                if (!this.content.chunks[i].text) {
+                    continue;
+                } else {
+
+                }
                 var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
                 toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
             }

@@ -18,15 +18,29 @@ define([
          */
         {
             // Constants/Enum TODO[Xavi] Substituir totes les cadenes per this.event.QUELCOM de manera que no hi hagi errors
-            event: {
-                DOCUMENT_CHANGED: 'document_changed'
+            eventName: {
+                DESTROYED: 'destroyed',
+                UNLOCK_DOCUMENT: 'unlock_document',
+                LOCK_DOCUMENT: 'lock_document',
+                DOCUMENT_CHANGED: 'document_changed',
+                CANCEL_DOCUMENT: 'cancel_document',
+                CANCEL_PARTIAL: 'cancel_partial',
+                EDIT_PARTIAL: 'edit_partial',
+                SAVE_PARTIAL: 'save_partial',
+                CANCEL: 'cancel',
+                EDIT: 'edit',
+                SAVE: 'save',
+                SAVE_DRAFT: 'save_draft'
             },
 
             // Constants/Enum TODO[Xavi] Substituir totes les cadenes per this.event.QUELCOM de manera que no hi hagi errors
-            compoundEvent: {
-                DOCUMENT_CHANGED: 'document_changed_'
+            eventNameCompound: {
+                CANCEL: 'cancel_',
+                LOCK: 'lock_',
+                UNLOCK: 'unlock_',
+                DOCUMENT_CHANGED: 'document_changed_',
+                DOCUMENT_REFRESHED: 'document_refreshed_'
             },
-
 
 
             "-chains-": {

@@ -23,12 +23,14 @@ define([
             // TODO[Xavi] Afegir un métode lockWithoutDialogs en lloc de fer servir paràmetre? Si no hi ha dialogs normalment no es refrescable així que no cal guardar la opció
             lock: function (id, ns, showDialogs) {
                 console.log('LockManager#lock', id, ns, showDialogs);
+
                 if (this.locks[id]) {
-                    console.warn('Ja existeix un lock pel document amb id: ' + id); // Alerta[Xavi] Pot passar, per exemple quan tenim el document bloquejat mentre selecionem una opció, per exemple: carregar un esborrany.
+                    // Actualitzem la visivilitat dels dialogs
+                    this.locks[id].setDialogVisibility(showDialogs);
                 }
 
-                this.locks[id] = new Lock(this.dispatcher, id, ns,showDialogs);
-                this.registerToEvent(this.locks[id], "destroyed", this._removeLock.bind(this));
+                this.locks[id] = new Lock(this.dispatcher, id, ns, showDialogs);
+                this.registerToEvent(this.locks[id], this.eventName.DESTROYED, this._removeLock.bind(this));
 
             },
 
@@ -79,14 +81,12 @@ define([
                 }
             },
 
-            // Alerta[Xavi] Pot ser cridat al disparar-se esdeveniments i per tant data contindrà un Event. Però també es cridat internament i llavors es passa un string
             _removeLock: function (data) {
                 console.log("LockManager#_removeLock", data);
                 delete(this.locks[data.id]);
-
             },
 
-            cancel: function(id) {
+            cancel: function (id) {
                 this.locks[id].destroy();
             }
 

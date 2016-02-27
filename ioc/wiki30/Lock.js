@@ -8,19 +8,14 @@ define([
     'ioc/wiki30/Timer',
     'ioc/gui/CustomDialog'
 ], function (declare, EventObserver, Timer, CustomDialog) {
-
-    var LockException = function (message) {
-        this.message = message;
-        this.name = "LockException"
-    };
-
+    
     return declare([EventObserver], {
 
 
         THROTTLE: 1 * 1000, // Temps en ms mínim per fer un refresc
         WARNING_DIFF: 5 * 1000, // El warning es mostra aquest nombre de ms abans del timeout
 
-        constructor: function (dispatcher, id, ns, dialogs) {
+        constructor: function (dispatcher, id, ns, showDialogs) {
             this.dispatcher = dispatcher;
             this.id = id;
             this.ns = ns;
@@ -28,7 +23,7 @@ define([
             this.dialogs = {};
             this.timers = {};
             this._init();
-            this.showDialogs = (dialogs !== false);  // Per defecte es sempre true
+            this.showDialogs = (showDialogs !== false);  // Per defecte es sempre true
         },
 
         _init: function () {
@@ -60,10 +55,10 @@ define([
             //console.log("Lock#_registerToEvents");
             this.eventManager = this.dispatcher.getEventManager();
 
-            this.eventManager.registerToEvent(this, "lock_" + this.id, this._doLock.bind(this));
-            this.eventManager.registerToEvent(this, "unlock_" + this.id, this._doUnlockAndCancelDocument.bind(this));
+            this.eventManager.registerToEvent(this, this.eventNameCompound.LOCK + this.id, this._doLock.bind(this));
+            this.eventManager.registerToEvent(this, this.eventNameCompound.UNLOCK + this.id, this._doUnlockAndCancelDocument.bind(this));
 
-            this.eventManager.registerToEvent(this.eventManager, "document_refreshed_" + this.id, this._doRefresh.bind(this));
+            this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.DOCUMENT_REFRESHED + this.id, this._doRefresh.bind(this));
         },
 
 
@@ -72,7 +67,7 @@ define([
             this.lastRefresh = Date.now();
             var dataToSend = this._getQueryDraft();
 
-            this.eventManager.dispatchEvent("lock_document", {
+            this.eventManager.dispatchEvent(this.eventName.LOCK_DOCUMENT, {
                 id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
                 dataToSend: dataToSend
             });
@@ -90,17 +85,11 @@ define([
                 do: 'lock'
             };
 
-            // TODO[Xavi] El draft s'ha d'enviar per una altre banda independent del lock
-            //if (data && data.draft) {
-            //    //var draftQuery = this.contentTool.generateDraft();
-            //    dataToSend.draft = JSON.stringify(data.draft);
-            //}
-
             return dataToSend;
         },
 
         _doUnlockAndCancelDocument: function () {
-            //console.log("Lock#_doUnlockAndCancelDocument");
+            console.log("Lock#_doUnlockAndCancelDocument");
 
             this._doUnlock();
             this._doCancelDocument();
@@ -115,7 +104,7 @@ define([
             console.log("Lock#_doUnlock");
 
             // Envia petició de desbloqueig al servidor
-            this.eventManager.dispatchEvent('unlock_document', this._getQueryUnlock());
+            this.eventManager.dispatchEvent(this.eventName.UNLOCK_DOCUMENT, this._getQueryUnlock());
             this.destroy();
         },
 
@@ -179,7 +168,8 @@ define([
         // Encara que es faci el destroyRecursive, el dialog anterior continua existint perquè es guarda una referencia en aquesta propietat. Si es visible llavors no farem res, i si no ho es crearem un de nou que elimina la referencia a l'antic al mateix temps
         _showWarningDialog: function () {
 
-            if (!this.showDialogs) { // TODO[Xavi] Mètode ràpid per afegir la opció de no mostrar els dialegs
+            // TODO[Xavi] Si el timeout a expirat aquest dialog no es mostrarà
+            if (!this.showDialogs || this.timers.timeout.expired) { // TODO[Xavi] Mètode ràpid per afegir la opció de no mostrar els dialegs
                 return;
             }
 
@@ -217,7 +207,6 @@ define([
         // TODO[Xavi] Localitzar els textos. Duplicat practicament igual al gestor del DiffDialog
         _showTimeoutDialog: function () {
 
-
             this._doUnlockAndCancelDocument(); // TODO[Xavi] Això no permet generalitzar
 
             if (!this.showDialogs) { // TODO[Xavi] Mètode ràpid per afegir la opció de no mostrar els dialegs
@@ -235,7 +224,7 @@ define([
                         description: 'Acceptar',
                         callback: function () {
                             this._cancelDialogs();
-                        }.bind(this),
+                        }.bind(this)
                     }
                 ]
             });
@@ -244,15 +233,22 @@ define([
         },
 
         _cancelDialogs: function () {
+
             for (var dialog in this.dialogs) {
-                //console.log("Cancelant ", dialog, this.dialogs[dialog]);
-                this.dialogs[dialog].remove();
+                this._cancelDialog(dialog);
             }
             this.dialogs = {};
         },
 
+        _cancelDialog: function (dialog) {
+            if (this.dialogs[dialog]) {
+                this.dialogs[dialog].remove();
+            }
+        },
+
         _doCancelDocument: function () {
-            this.eventManager.dispatchEvent("cancel_" + this.id, {
+            console.log("Lock#_doCancelDocument");
+            this.eventManager.dispatchEvent(this.eventNameCompound.CANCEL + this.id, {
                 id: this.id,
                 name: 'cancel_' + this.id,
                 discardChanges: true,
@@ -268,13 +264,16 @@ define([
         onDestroy: function () {
             console.log("Lock#onDestroy");
             this._cancelTimers();
-            this._cancelDialogs();
-            this.eventManager.unregisterFromEvent("lock_" + this.id);
-            this.eventManager.unregisterFromEvent("unlock_" + this.id);
-            this.eventManager.unregisterFromEvent("document_refreshed_" + this.id);
-            this.dispatchEvent("destroyed", {id: this.id});
-        }
+            this._cancelDialog('warning');
+            this.eventManager.unregisterFromEvent(this.eventNameCompound.LOCK + this.id);
+            this.eventManager.unregisterFromEvent(this.eventNameCompound.UNLOCK + this.id);
+            this.eventManager.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.id);
+            this.dispatchEvent(this.eventName.DESTROYED, {id: this.id});
+        },
 
+        setDialogVisibility: function (showDialogs) {
+            this.showDialogs = (showDialogs !== false);
+        }
 
     });
 

@@ -84,6 +84,7 @@ define([
         },
 
         remove: function () {
+            console.log("CustomDialog#remove", this.id);
             this.isShowing = false;
             this.destroyRecursive();
         },
