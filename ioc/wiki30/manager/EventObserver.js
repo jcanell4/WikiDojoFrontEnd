@@ -39,7 +39,11 @@ define([
                 LOCK: 'lock_',
                 UNLOCK: 'unlock_',
                 DOCUMENT_CHANGED: 'document_changed_',
-                DOCUMENT_REFRESHED: 'document_refreshed_'
+                DOCUMENT_REFRESHED: 'document_refreshed_',
+                SAVE_PARTIAL: 'save_partial_',
+                CANCEL_PARTIAL: 'cancel_partial_',
+                EDIT_PARTIAL: 'edit_partial_',
+
             },
 
 

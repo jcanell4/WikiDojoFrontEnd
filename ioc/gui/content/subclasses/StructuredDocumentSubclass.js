@@ -33,7 +33,7 @@ define([
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
-        TOOLBAR_ID : 'partial_edit',
+        TOOLBAR_ID: 'partial_edit',
         VERTICAL_MARGIN: 100, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
         MIN_HEIGHT: 200, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
@@ -99,22 +99,22 @@ define([
                     }
                 }
             }
+
+            console.log("Total editors afegits: ", this.editors);
         },
 
         addToolbars: function () {
             console.log("StructuredDocumentSubclass#addToolbars");
+            var auxId;
+
             this.addButtons();
 
-            for (var i = 0; i < this.content.chunks.length; i++) {
+            for (var i = 0; i < this.data.chunks.length; i++) {
 
-                console.log("Afegint toolbar a Chunk: ", this.content.chunks[i]);
-                if (!this.content.chunks[i].text) {
-                    continue;
-                } else {
-
+                if (this.data.chunks[i].text) {
+                    auxId = this.data.id + "_" + this.data.chunks[i].header_id;
+                    toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
                 }
-                var auxId = this.content.id + "_" + this.content.chunks[i].header_id;
-                toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
             }
         },
 
@@ -151,11 +151,13 @@ define([
 
         _funcSave: function () {
             var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId();
+                id = this.getGlobalState().getCurrentId(),
+                eventManager = this.getEventManager();
+
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
 
-            this.getEventManager().dispatchEvent("save_partial_" + id, {id: id, chunk: chunk});
+            this.getEventManager().dispatchEvent(eventManager.eventNameCompound.SAVE_PARTIAL + id, {id: id, chunk: chunk});
         },
 
         /**
@@ -176,12 +178,13 @@ define([
 
         _funcCancel: function () {
             var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId();
+                id = this.getGlobalState().getCurrentId(),
+                eventManager = this.getEventManager();
+
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
 
-            this.getEventManager().dispatchEvent("cancel_partial_" + id, {id: id, chunk: chunk});
-
+            this.getEventManager().dispatchEvent(eventManager.eventNameCompound.CANCEL_PARTIAL + id, {id: id, chunk: chunk});
         },
 
         /**
@@ -220,7 +223,7 @@ define([
                         section_id = aux_id.replace(context.id + "_", '');
 
                     if (jQuery.inArray(section_id, context.editingChunks) === -1) {
-                        context.dispatchEvent("edit_partial_" + context.id, {id: context.id, chunk: section_id});
+                        context.dispatchEvent(context.eventNameCompound.EDIT_PARTIAL+ context.id, {id: context.id, chunk: section_id});
                     } else {
                         console.log("Ja s'està editant ", section_id);
                     }
@@ -375,12 +378,12 @@ define([
 
             this.eventManager = this.dispatcher.getEventManager();
 
-            this.eventManager.registerEventForBroadcasting(this, "edit_partial_" + this.id, this._doEditPartial.bind(this));
-            this.eventManager.registerEventForBroadcasting(this, "save_partial_" + this.id, this._doSavePartial.bind(this));
-            this.eventManager.registerEventForBroadcasting(this, "cancel_partial_" + this.id, this._doCancelPartial.bind(this));
+            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.EDIT_PARTIAL + this.id, this._doEditPartial.bind(this));
+            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.SAVE_PARTIAL + this.id, this._doSavePartial.bind(this));
+            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL_PARTIAL + this.id, this._doCancelPartial.bind(this));
 
             // Impresncidible pel cas en que caduca el bloqueig
-            this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancelDocument.bind(this));
+            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL + this.id, this._doCancelDocument.bind(this));
 
             this.updateTitle(this.data);
         },
@@ -410,8 +413,8 @@ define([
                 diffFromOriginal,
                 diffFromLastCheck,
                 content,
-                documentChanged=false,
-                documentRefreshed=false;
+                documentChanged = false,
+                documentRefreshed = false;
 
             if (this.discardChanges) {
                 //this.discardChanges = false;
@@ -430,7 +433,6 @@ define([
                     diffFromLastCheck = this.isLastCheckedContentChanged(chunk.header_id, content);
 
 
-
                     this.changedChunks[chunk.header_id].changed = diffFromOriginal;
 
                     // Només cal 1 modificat per que s'apliqui el canvi
@@ -447,7 +449,7 @@ define([
             if (documentChanged && !this.hasChanges) {
                 this.onDocumentChanged();
                 this.hasChanges = true;
-            } else if (!documentChanged){
+            } else if (!documentChanged) {
                 this.hasChanges = false;
             }
 
@@ -471,11 +473,11 @@ define([
             return result;
         },
 
-        _getLastCheckedContent: function(header_id) {
+        _getLastCheckedContent: function (header_id) {
             return this.changedChunks[header_id].lastChecked;
         },
 
-        _setLastCheckedContent: function(header_id, content) {
+        _setLastCheckedContent: function (header_id, content) {
             this.changedChunks[header_id].lastChecked = content;
         },
 
@@ -912,7 +914,7 @@ define([
             var dataToSend = this.getQueryEdit(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-            this.eventManager.dispatchEvent("edit_partial", {
+            this.eventManager.dispatchEvent(this.eventName.EDIT_PARTIAL, {
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
@@ -926,7 +928,7 @@ define([
             var dataToSend = this.getQuerySave(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-            this.eventManager.dispatchEvent("save_partial", {
+            this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
@@ -940,7 +942,7 @@ define([
             var dataToSend = this.getQueryCancel(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-            this.eventManager.dispatchEvent("cancel_partial", {
+            this.eventManager.dispatchEvent(this.eventName.CANCEL_PARTIAL, {
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
@@ -1002,7 +1004,7 @@ define([
 
             containerId = event.id;
 
-            this.eventManager.dispatchEvent("cancel", {
+            this.eventManager.dispatchEvent(this.eventName.CANCEL, {
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
