@@ -30,7 +30,7 @@ define([
                 }
 
                 this.locks[id] = new Lock(this.dispatcher, id, ns, showDialogs);
-                this.registerToEvent(this.locks[id], this.eventName.DESTROYED, this._removeLock.bind(this));
+                this.registerToEvent(this.locks[id], this.eventName.DESTROY, this._removeLock.bind(this));
 
             },
 

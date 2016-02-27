@@ -34,7 +34,7 @@ define([
 
             /** @private*/
             updating: false,
-                    
+
             /** @private*/
             data: null,
 
@@ -102,7 +102,7 @@ define([
              */
             onSelect: function () {
                 //console.log("AbstractContentTool#onSelect");
-                this.dispatchEvent("content_selected", {id: this.id});
+                this.dispatchEvent(this.eventName.CONTENT_SELECTED, {id: this.id});
             },
 
             /**
@@ -110,7 +110,7 @@ define([
              */
             onUnselect: function () {
                 //console.log("AbstractContentTool#onUnselect");
-                this.dispatchEvent("content_unselected", {id: this.id});
+                this.dispatchEvent(this.eventName.CONTENT_SELECTED, {id: this.id});
             },
 
             /**
@@ -176,20 +176,12 @@ define([
                 // Establim els aspectes
 
                 aspect.after(this, "render", this.postRender);
-
                 aspect.before(this, "render", this.preRender);
-
-                //// TODO[Xavi] Això no funciona
-                //this.watch("data", function () {
-                //    alert("activado el watch");
-                //    this.render();
-                //});
 
                 if (this.data) {
                     this.setData(this.data);
                     this.render();
                 }
-
 
             },
 
@@ -213,11 +205,11 @@ define([
             setData: function (data) {
                 //console.log("AbstractContentTool#setData", data);
                 if (!data) {
-                    console.error("setData", data);
+                    console.error('setData', data);
                 }
 
                 this.set('data', data);
-                this.dispatchEvent("data_replaced", {id: this.id});
+                this.dispatchEvent(this.eventName.DATA_REPLACED, {id: this.id});
 
             },
 
@@ -347,17 +339,17 @@ define([
                 //console.log("AbstractContentTool#onAttach");
                 this.postAttach();
             },
-            
+
             onUnload: function () {
                 //console.log("AbstractContentTool#onUnload");
                 if (!this.updating) {
                     this._destroyContentTool();
                 }
             },
-            
-            _destroyContentTool: function(){
+
+            _destroyContentTool: function () {
                 //console.log("AbstractContentTool#destroyContentTool", this.id);
-                this.dispatchEvent('destroy', {id: this.id});
+                this.dispatchEvent(this.eventName.DESTROY, {id: this.id});
                 this.removeListenerHandlers();
                 this._onDestroy();
             },
@@ -399,7 +391,6 @@ define([
                 this.listenerHandlers = listenerHandlers;
                 //console.log("AbstractContentTool#_setListenerHandlers()", listenerHandlers);
             }
-
 
 
         });

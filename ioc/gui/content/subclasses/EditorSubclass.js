@@ -99,18 +99,16 @@ define([
 
                 this.lockDocument(); // Lock i Draft
 
-
-                this.registerToEvent(this, 'document_selected', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
-                this.registerToEvent(this, 'data_replaced', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
-                this.registerToEvent(this, 'content_selected', this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                this.registerToEvent(this, this.eventName.DOCUMENT_SELECTED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                this.registerToEvent(this, this.eventName.DATA_REPLACED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                this.registerToEvent(this, this.eventName.CONTENT_SELECTED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
 
                 this.eventManager = this.dispatcher.getEventManager();
 
-                this.eventManager.registerEventForBroadcasting(this, "save_" + this.id, this._doSave.bind(this));
-                this.eventManager.registerEventForBroadcasting(this, "cancel_" + this.id, this._doCancelDocument.bind(this));
+                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.SAVE + this.id, this._doSave.bind(this));
+                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL + this.id, this._doCancelDocument.bind(this));
 
                 this.fillEditorContainer();
-
             },
 
 
@@ -118,10 +116,9 @@ define([
                 //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
                 var dataToSend = this.getQuerySave(event.id),
-                //containerId = "container_" + event.id;
                     containerId = event.id;
 
-                this.eventManager.dispatchEvent("save", {
+                this.eventManager.dispatchEvent(this.eventName.SAVE, {
                     id: this.id,
                     dataToSend: dataToSend,
                     standbyId: containerId
@@ -146,7 +143,7 @@ define([
 
                 containerId = event.id;
 
-                this.eventManager.dispatchEvent("cancel", {
+                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
                     id: this.id,
                     dataToSend: dataToSend,
                     standbyId: containerId
@@ -379,7 +376,7 @@ define([
             _funcSave: function () {
                 var id = this.getGlobalState().getCurrentId();
 
-                this.getEventManager().dispatchEvent("save_" + id, {id: id});
+                this.getEventManager().dispatchEvent(this.eventNameCompound.SAVE + id, {id: id});
             },
 
             /**
@@ -400,7 +397,7 @@ define([
              */
             _funcCancel: function () {
                 var id = this.getGlobalState().getCurrentId();
-                this.getEventManager().dispatchEvent("cancel_" + id, {id: id});
+                this.getEventManager().dispatchEvent(this.eventNameCompound.CANCEL + id, {id: id});
 
             },
 

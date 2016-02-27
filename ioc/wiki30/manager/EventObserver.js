@@ -17,12 +17,14 @@ define([
          * @author Xavier García <xaviergaro.dev@gmail.com>
          */
         {
-            // Constants/Enum TODO[Xavi] Substituir totes les cadenes per this.event.QUELCOM de manera que no hi hagi errors
+            // TODO[Xavi] Ordenar-les i afegir-les alfabeticament
             eventName: {
-                DESTROYED: 'destroyed',
+                DESTROY: 'destroy',
                 UNLOCK_DOCUMENT: 'unlock_document',
                 LOCK_DOCUMENT: 'lock_document',
                 DOCUMENT_CHANGED: 'document_changed',
+                DOCUMENT_SELECTED: 'document_selected',
+                DATA_REPLACED: 'data_replaced',
                 CANCEL_DOCUMENT: 'cancel_document',
                 CANCEL_PARTIAL: 'cancel_partial',
                 EDIT_PARTIAL: 'edit_partial',
@@ -30,7 +32,10 @@ define([
                 CANCEL: 'cancel',
                 EDIT: 'edit',
                 SAVE: 'save',
-                SAVE_DRAFT: 'save_draft'
+                SAVE_DRAFT: 'save_draft',
+                CONTENT_SELECTED: 'content_selected',
+                CONTENT_UNSELECTED: 'content_unselected'
+
             },
 
             // Constants/Enum TODO[Xavi] Substituir totes les cadenes per this.event.QUELCOM de manera que no hi hagi errors
@@ -43,7 +48,7 @@ define([
                 SAVE_PARTIAL: 'save_partial_',
                 CANCEL_PARTIAL: 'cancel_partial_',
                 EDIT_PARTIAL: 'edit_partial_',
-
+                SAVE: 'save_'
             },
 
 

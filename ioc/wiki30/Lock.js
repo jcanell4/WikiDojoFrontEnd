@@ -268,7 +268,7 @@ define([
             this.eventManager.unregisterFromEvent(this.eventNameCompound.LOCK + this.id);
             this.eventManager.unregisterFromEvent(this.eventNameCompound.UNLOCK + this.id);
             this.eventManager.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.id);
-            this.dispatchEvent(this.eventName.DESTROYED, {id: this.id});
+            this.dispatchEvent(this.eventName.DESTROY, {id: this.id});
         },
 
         setDialogVisibility: function (showDialogs) {
