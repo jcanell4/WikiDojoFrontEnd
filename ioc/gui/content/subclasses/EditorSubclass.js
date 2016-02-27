@@ -66,13 +66,10 @@ define([
 
 
                 if (diffFromOriginal && diffFromLastCheck) { // No es fa el refresc si encara no s'ha produt cap canvi
-                    console.log("** DOCUMENT REFRESH **");
                     this.onDocumentRefreshed();
                 }
 
-
                 if (diffFromOriginal && !this.hasChanges) {
-                    console.log("** DOCUMENT CHANGED **");
                     this.onDocumentChanged();
                     this.hasChanges = true;
                 }

@@ -123,20 +123,18 @@ define([
              */
             createContentTool: function (content, dispatcher) {
                 var args = {
-                        ns: content.ns,
-                        id: content.id,
-                        title: content.title,
-                        content: content,
-                        closable: true,
-                        dispatcher: dispatcher,
-                        rev: content.rev || '',
-                        type: this.type,
-                        // Alerta[Xavi] El readonly no s'especifica aquí, es detectat al postrender del contenttool (en el cas dels parcials)
-                        //changedChunks: changedChunks
-                    };
+                    ns: content.ns,
+                    id: content.id,
+                    title: content.title,
+                    content: content,
+                    closable: true,
+                    dispatcher: dispatcher,
+                    rev: content.rev || '',
+                    type: this.type,
+                    readonly: content.editing ? content.editing.readonly : false
+                };
 
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
-
             },
 
             /**

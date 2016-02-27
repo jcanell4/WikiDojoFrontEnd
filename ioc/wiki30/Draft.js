@@ -23,13 +23,13 @@ define([
         },
 
         _init: function () {
-            console.log("Draft#_init");
+            //console.log("Draft#_init");
             this._registerToEvents();
             this._initTimers();
         },
 
         save: function () {
-            console.log("Draft#save");
+            //console.log("Draft#save");
             this._doSave();
         },
 
@@ -105,7 +105,7 @@ define([
         },
 
         onDestroy: function () {
-            console.log("Draft#onDestroy");
+            //console.log("Draft#onDestroy");
             this._cancelTimers();
             this.eventManager.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
             this.eventManager.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);

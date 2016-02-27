@@ -1,25 +1,24 @@
 define([
-    'dijit/Dialog',
     'ioc/wiki30/Timer',
     'ioc/gui/CustomDialog',
     'ioc/wiki30/dispatcherSingleton',
-], function (Dialog, Timer, CustomDialog, getDispatcher) {
+], function (Timer, CustomDialog, getDispatcher) {
 
     var dispatcher = getDispatcher(),
 
         dialogController = {
 
             _processDialog: function (value) {
-                console.log("DialogController#_processDialog", value);
+                //console.log("DialogController#_processDialog", value);
 
                 this.dialogs = {};
                 this.dispatcher = dispatcher;
-                //
-                //
-                ////Si que cal el Lock, perquè s'ha de poder fer unlock si es prem la creu de tancar!
                 this.docId = value.id;
 
+
                 this.eventManager = dispatcher.getEventManager();
+
+                // Cal el Lock, perquè s'ha de poder fer unlock si es prem la creu de tancar!
                 this.lockManager = dispatcher.getLockManager();
                 this.lockManager.lock(value.id, value.ns, false);
 
@@ -31,7 +30,7 @@ define([
 
             // Molt semblant al que hi ha al DraftProcessor, cerca la manera de generalitzar
             _buildQuery: function (type, value) {
-                console.log('processDraftSelectionDialog#_buildQuery',type, value);
+                //console.log('processDraftSelectionDialog#_buildQuery',type, value);
                 var query = '';
 
                 switch (type) {
@@ -81,7 +80,7 @@ define([
             },
 
             _cancelTimers: function () {
-                console.log('¿?¿?¿#_cancelTimers', this.timers);
+                //console.log('¿?¿?¿ #_cancelTimers', this.timers);
                 for (var timer in this.timers) {
                     this.timers[timer].cancel();
                 }
@@ -101,8 +100,6 @@ define([
             },
 
             _showDialog: function (value) {
-                console.log("Value:", value);
-
                 // TODO[Xavi] Localitzar els missatges, es pot enviar des del servidor en lloc del valor cert
                 this.dialogs.selectEditType = new CustomDialog({
                     title: 'S\'ha trobat un esborrany complet',
@@ -145,9 +142,6 @@ define([
         };
 
     return function (params) {
-        console.log("Crida a processDraftSelectionDialog (només es passa l'original_call", params);
         dialogController._processDialog(params.original_call);
-
     };
-
 });

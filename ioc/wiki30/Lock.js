@@ -13,7 +13,7 @@ define([
 
 
         THROTTLE: 1 * 1000, // Temps en ms mínim per fer un refresc
-        WARNING_DIFF: 5 * 1000, // El warning es mostra aquest nombre de ms abans del timeout
+        WARNING_DIFF: 85 * 1000, // El warning es mostra aquest nombre de ms abans del timeout
 
         constructor: function (dispatcher, id, ns, showDialogs) {
             this.dispatcher = dispatcher;
@@ -63,7 +63,7 @@ define([
 
 
         _doLock: function () {
-            console.log('Lock#_doLock', this.id);
+            //console.log('Lock#_doLock', this.id);
             this.lastRefresh = Date.now();
             var dataToSend = this._getQueryDraft();
 
@@ -89,7 +89,7 @@ define([
         },
 
         _doUnlockAndCancelDocument: function () {
-            console.log("Lock#_doUnlockAndCancelDocument");
+            //console.log("Lock#_doUnlockAndCancelDocument");
 
             this._doUnlock();
             this._doCancelDocument();
@@ -101,7 +101,7 @@ define([
          * @private
          */
         _doUnlock: function () {
-            console.log("Lock#_doUnlock");
+            //console.log("Lock#_doUnlock");
 
             // Envia petició de desbloqueig al servidor
             this.eventManager.dispatchEvent(this.eventName.UNLOCK_DOCUMENT, this._getQueryUnlock());
@@ -117,7 +117,7 @@ define([
         },
 
         _doRefresh: function () {
-            console.log('Lock#_doRefresh');
+            //console.log('Lock#_doRefresh');
 
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
@@ -247,7 +247,7 @@ define([
         },
 
         _doCancelDocument: function () {
-            console.log("Lock#_doCancelDocument");
+            //console.log("Lock#_doCancelDocument");
             this.eventManager.dispatchEvent(this.eventNameCompound.CANCEL + this.id, {
                 id: this.id,
                 name: 'cancel_' + this.id,

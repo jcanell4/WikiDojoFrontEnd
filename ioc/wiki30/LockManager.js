@@ -25,13 +25,13 @@ define([
                 //console.log('LockManager#lock', id, ns, showDialogs);
 
                 if (this.locks[id]) {
-                    // Actualitzem la visivilitat dels dialogs
+                    // Si ja existeix un loc per aquest document només actualitzem la visivilitat dels dialogs
                     this.locks[id].setDialogVisibility(showDialogs);
+
+                } else {
+                    this.locks[id] = new Lock(this.dispatcher, id, ns, showDialogs);
+                    this.registerToEvent(this.locks[id], this.eventName.DESTROY, this._removeLock.bind(this));
                 }
-
-                this.locks[id] = new Lock(this.dispatcher, id, ns, showDialogs);
-                this.registerToEvent(this.locks[id], this.eventName.DESTROY, this._removeLock.bind(this));
-
             },
 
 
