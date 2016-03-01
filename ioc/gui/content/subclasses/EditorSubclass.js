@@ -46,11 +46,11 @@ define([
             },
 
 
-            setReadOnly: function(value){
+            setReadOnly: function (value) {
                 this.set("readonly", value);
             },
 
-            getReadOnly: function(){
+            getReadOnly: function () {
                 return this.get("readonly");
             },
 
@@ -382,9 +382,9 @@ define([
              * @protected
              */
             _funcSave: function () {
-                var id = this.getGlobalState().getCurrentId();
-
-                this.getEventManager().dispatchEvent(this.eventNameCompound.SAVE + id, {id: id});
+                var id = this.getGlobalState().getCurrentId(),
+                    eventManager = this.getEventManager();
+                eventManager.dispatchEvent(eventManager.eventNameCompound.SAVE + id, {id: id});
             },
 
             /**
@@ -404,9 +404,9 @@ define([
              * @protected
              */
             _funcCancel: function () {
-                var id = this.getGlobalState().getCurrentId();
-                this.getEventManager().dispatchEvent(this.eventNameCompound.CANCEL + id, {id: id});
-
+                var id = this.getGlobalState().getCurrentId(),
+                    eventManager = this.getEventManager();
+                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id});
             },
 
             getEditor: function () {
