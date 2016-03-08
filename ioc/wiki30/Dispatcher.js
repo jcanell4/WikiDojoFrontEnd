@@ -274,7 +274,7 @@ define([
                 }
             },
 
-            removeWidgetChild: function (command, dispatcher) {
+            removeWidgetChild: function (command) {
                 var parent;
                 var child;
                 var parentId = command.id;

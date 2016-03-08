@@ -187,6 +187,10 @@ define([
                 this.tree._load();
             },
             
+            deleteItem: function(nsPath){
+                this.model.store.remove(nsPath);
+            },
+            
             _openOnClickGetter: function(){
                 return this.openOnClick;
             },

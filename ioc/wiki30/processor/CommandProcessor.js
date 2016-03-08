@@ -96,7 +96,7 @@ define([
              * @private
              */
             _processRemoveWidgetChild: function (command, dispatcher) {
-                dispatcher.removeWidgetChild(command, dispatcher);
+                dispatcher.removeWidgetChild(command);
             },
 
             /**
