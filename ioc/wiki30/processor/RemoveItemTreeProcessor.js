@@ -19,19 +19,9 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                var contentTool = registry.byId(value);
-                
-                if(contentTool){
-                    contentTool.removeContentTool();
-                }
-                
-                var parent = registry.byId(dispatcher.containerNodeId);
-                if(parent.hasChildren()){
-                    var toSelect = parent.getChildren()[0];
-                    parent.selectChild(toSelect);
-                }               
+               var tree = registry.byId(value.treeId);
+               tree.deleteItem(value.itemId);
             },
         });
     return ret;
 });
-
