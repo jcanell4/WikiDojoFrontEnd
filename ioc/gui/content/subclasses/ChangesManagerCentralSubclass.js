@@ -33,6 +33,15 @@ define([
     return declare([AbstractChangesManagerSubclass], {
 
         /**
+            * Elimina aquest ContentTool del ContainerContentTool en el que es trobi i es destrueix junt amb tots els
+            * elements que el composin.
+            */
+        removeContentTool: function(){
+            this.forceReset();
+            this.inherited(arguments);            
+        },
+        
+        /**
          * Accio a realitzar quan hi han canvis al document.
          *
          * @protected
