@@ -12,7 +12,7 @@ define([
     return declare([EventObserver], {
 
 
-        THROTTLE: 1 * 1000, // Temps en ms mínim per fer un refresc
+        AUTOSAVE_LOCAL: 1 * 1000, // Temps en ms mínim per fer un refresc
         WARNING_DIFF: 85 * 1000, // El warning es mostra aquest nombre de ms abans del timeout
 
         constructor: function (dispatcher, id, ns, showDialogs) {
@@ -122,11 +122,11 @@ define([
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
 
-            if (elapsedTime >= this.THROTTLE) {
+            if (elapsedTime >= this.AUTOSAVE_LOCAL) {
                 this._doLock();
             } else {
                 //console.log('Throttle!)');
-                this._setPendingRefresh(this.THROTTLE - elapsedTime + 1);
+                this._setPendingRefresh(this.AUTOSAVE_LOCAL - elapsedTime + 1);
             }
 
         },
