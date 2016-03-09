@@ -6,11 +6,12 @@ define([
     'dijit/layout/_LayoutWidget',
     'dijit/_TemplatedMixin',
     "dojo/store/JsonRest",
+    "dojo/store/Observable",
     "dijit/Tree",
     "dijit/tree/ObjectStoreModel",
     "dojo/NodeList-dom" // NodeList.style
 ], function (declare, template, ContentPane, _LayoutWidget, _TemplatedMixin, 
-                JsonRest, Tree, ObjectStoreModel) {
+                JsonRest, Observable, Tree, ObjectStoreModel) {
     var ret = declare("ioc.gui.NsTreeContainer", [ContentPane, _TemplatedMixin, _LayoutWidget],
 
         /**
@@ -45,7 +46,7 @@ define([
                     id: vid + "_nTree",
 
                     model: new ObjectStoreModel({
-                        store: new JsonRest({
+                        store: new Observable(new JsonRest({
                             target: tds,
 
                         getChildren: function (object) {
@@ -57,7 +58,7 @@ define([
                                 }
                             );
                         }
-                        }),
+                        })),
 
                         getRoot: function (onItem) {
                             this.store.get(root).then(onItem);
@@ -187,8 +188,27 @@ define([
                 this.tree._load();
             },
             
-            deleteItem: function(nsPath){
-                this.model.store.remove(nsPath);
+            deleteNode: function(nsPath){
+                if(this.tree._itemNodesMap && this.tree._itemNodesMap[nsPath]){
+                    this.tree.dndController.selectNone();
+                    this.tree._itemNodesMap[nsPath][0].destroyRecursive();
+                    delete this.tree._itemNodesMap[nsPath];
+                }                
+            },
+            
+            expandBranche: function(nsPath){
+                var stPath="";
+                var aPath = nsPath.split(':');
+                aPath.unshift("");
+                for (var i=0;i<aPath.length;i++) {
+                    if (i > 1) {
+                        stPath = stPath + ":";
+                    }
+                    stPath = stPath + aPath[i];
+                    aPath[i]=stPath;
+                }
+
+                this.tree.set("path", aPath);
             },
             
             _openOnClickGetter: function(){
