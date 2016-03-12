@@ -8,8 +8,8 @@ define([
 
         dialogController = {
 
-            _processDialog: function (value) {
-                //console.log("DialogController#_processDialog", value);
+            _processDialog: function (value, timeout) {
+                console.log("DialogController#_processDialog", value);
 
                 this.dialogs = {};
                 this.dispatcher = dispatcher;
@@ -25,7 +25,7 @@ define([
 
 
                 this._showDialog(value);
-                this._initTimers(value.timeout * 1000);
+                this._initTimers(timeout * 1000);
             },
 
             // Molt semblant al que hi ha al DraftProcessor, cerca la manera de generalitzar
@@ -100,6 +100,7 @@ define([
             },
 
             _showDialog: function (value) {
+                console.log('DialogController#_showDialog');
                 // TODO[Xavi] Localitzar els missatges, es pot enviar des del servidor en lloc del valor cert
                 this.dialogs.selectEditType = new CustomDialog({
                     title: 'S\'ha trobat un esborrany complet',
@@ -134,7 +135,7 @@ define([
 
             _cancelDialogs: function () {
                 for (var dialog in this.dialogs) {
-                    //console.log("Cancelant ", dialog, this.dialogs[dialog]);
+                    console.log("Cancelant ", dialog, this.dialogs[dialog]);
                     this.dialogs[dialog].remove();
                 }
                 this.dialogs = {};
@@ -142,6 +143,7 @@ define([
         };
 
     return function (params) {
-        dialogController._processDialog(params.original_call);
+        console.log("hola");
+        dialogController._processDialog(params.original_call, params.timeout);
     };
 });
