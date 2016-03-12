@@ -39,6 +39,7 @@ define([
     "ioc/wiki30/processor/DraftProcessor",
     "ioc/wiki30/processor/HtmlPartialContentProcessor",
     "ioc/wiki30/processor/LockDataProcessor",
+    "ioc/wiki30/processor/TreeProcessor",
     "ioc/wiki30/manager/EventManager",
     "ioc/wiki30/LockManager",
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
@@ -51,7 +52,7 @@ define([
              InfoManager, ChangesManager,
              RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
-             LockDataProcessor, EventManager, LockManager) {
+             LockDataProcessor, TreeProcessor, EventManager, LockManager) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -164,6 +165,7 @@ define([
                 this.processors["draft_dialog"] = new DraftProcessor();
                 this.processors["html_partial"] = new HtmlPartialContentProcessor();
                 this.processors["lock_data"] = new LockDataProcessor();
+                this.processors["tree"] = new TreeProcessor();
 
                 this.eventManager = new EventManager({dispatcher:this});
                 this.lockManager = new LockManager({dispatcher:this});
