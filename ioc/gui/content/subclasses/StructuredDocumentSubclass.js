@@ -37,6 +37,8 @@ define([
         VERTICAL_MARGIN: 100, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
         MIN_HEIGHT: 200, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
+        DRAFT_TYPE: 'structured',
+
         constructor: function (args) {
 
             this._generateEmptyChangedChunks(args.content.chunks);
@@ -248,19 +250,32 @@ define([
                     + '&id=' + this.ns
                     + '&rev=' + (this.rev || '')
                     + '&summary=[' + this.title + ']'
-                    + '&range=-',
-                localDraftTime;
+                    + '&range=-';
+
+            //query += this._generateLastLocalDraftTimesParam();
 
 
-            localDraftTime = this.getDraft().getLastLocalDraftTime();
 
-            console.log("StructuredDocumentSubclass#getQueryEdit", localDraftTime);
-
-            if (localDraftTime !== null) {
-                query += '&last_local_draft_time=' + localDraftTime
-            }
 
             return query;
+        },
+
+        _generateLastLocalDraftTimesParam: function() {
+            var localDraftTimes = this.getDraft().getLastLocalDraftTime(),
+                param = '';
+
+            console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", localDraftTimes);
+
+            if (localDraftTimes !== null) {
+                for (var type in localDraftTimes) {
+                    param +='&' + type + '_last_local_draft_time='+localDraftTimes[type];
+                }
+
+            }
+
+            console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", param);
+
+            return param;
         },
 
         getQuerySave: function (section_id) {
@@ -791,7 +806,7 @@ define([
 
         generateDraft: function () {
             var draft = {
-                type: 'structured',
+                type: this.DRAFT_TYPE,
                 id: this.id,
                 content: {}
             };

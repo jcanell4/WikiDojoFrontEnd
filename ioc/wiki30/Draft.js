@@ -4,12 +4,6 @@ define([
     'ioc/wiki30/Timer'
 ], function (declare, EventObserver, Timer) {
 
-    var DraftException = function (message) {
-        this.message = message;
-        this.name = "DraftException";
-        this.lastSavedDraft = null;
-    };
-
     return declare([EventObserver], {
 
         AUTOSAVE_LOCAL: 5 * 1000, // Temps en ms mínim per fer un refresc
@@ -23,6 +17,7 @@ define([
             this.lastRefresh = Date.now();
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
+            this.type;
             this._init();
         },
 
@@ -70,31 +65,25 @@ define([
             this.lastRefresh = Date.now();
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
-            var userId = this.dispatcher.getGlobalState().userId,
-                docNs = this.contentTool.ns, // guardat al page
+            var docNs = this.contentTool.ns, // guardat al page
                 draft = this.contentTool.generateDraft(),
-                date = Date.now(),
-
-            // Recuperem la pàgina actual
                 page = this._doGetPage();
 
             // Si existeix la actualitzem, si no, la creem
-            if (page) {
-                page.date = date;
-
-            } else {
+            if (!page) {
                 page = {
                     ns: docNs,
-                    drafts: {},
-                    date: date,
+                    drafts: {}
                 }
             }
 
-            page.drafts[userId] = draft; //sobrescriu el valor anterior si existeix
+            draft.date = Date.now();
+
+            page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
 
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
             this._doSetPage(page);
-            this.lastSavedDraft = page;
+
         },
 
         _doSaveRemoteServer: function () {
@@ -109,14 +98,32 @@ define([
                 dataToSend: dataToSend
             });
 
-            this._removeLocalDraft();
+            // S'elimina només el tipus corresponent al document
+            this._removeLocalDraft(this.contentTool.DRAFT_TYPE);
         },
 
-        _removeLocalDraft: function () {
+        // Elimina tots els drafts TODO[Xavi] cridar automàticament després de desar el document
+        _clearLocalDrafts: function () {
             console.log('Draft#_removeLocalDraft');
             var pages = this._doGetPages();
-            delete(pages[this.contentTool.id]);
-            this._doSetPages(pages);
+
+            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
+                delete(pages[this.contentTool.id].drafts);
+                this._doSetPages(pages);
+            }
+
+        },
+
+        // Només elimina el draft del tipus indicat
+        _removeLocalDraft: function (type) {
+            console.log('Draft#_removeLocalDraft');
+            var pages = this._doGetPages();
+
+            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
+                delete(pages[this.contentTool.id].drafts[type]);
+                this._doSetPages(pages);
+            }
+
         },
 
 
@@ -127,16 +134,22 @@ define([
             return user['pages'] ? user['pages'] : {};
         },
 
-        _doGetUser: function() {
+        _doGetUser: function () {
             console.log('Draft#_doGetUser');
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
-                user = localStorage.getItem(userId);
+                user = JSON.parse(localStorage.getItem(userId));
 
-            if (user) {
-                return JSON.parse(user);
+            console.log("UserId", userId);
+            console.log("User: ", user)
+
+
+            if (user && user.pages) {
+                console.log("Trobat user i conté:", user);
+                return user;
             } else {
+                console.log("No trobat user, es crea un objecte nou:");
                 return {
-                    pages:{}
+                    pages: {}
                 }
             }
         },
@@ -144,7 +157,7 @@ define([
         _doSetPages: function (pages) {
             console.log('Draft#_doSetPages', pages);
             var userId = 'user_' + this.dispatcher.getGlobalState().userId;
-            localStorage.setItem(userId, JSON.stringify(pages));
+            localStorage.setItem(userId, JSON.stringify({pages: pages}));
         },
 
         // TODO[Xavi] aquí podem afegir la descompresió de dades
@@ -152,7 +165,7 @@ define([
             console.log('Draft#_doGetPage');
             var pages = this._doGetPages();
 
-            return pages && pages[this.contentTool.id] ? JSON.parse(pages[this.contentTool.id]) : null;
+            return pages && pages[this.contentTool.id] ? pages[this.contentTool.id] : null;
         },
 
         // TODO[Xavi] aquí podem afegir la compresió de dades
@@ -219,7 +232,6 @@ define([
         },
 
         onDestroy: function () {
-            alert("Es cancela el draft, desenregistrament");
             console.log("Draft#onDestroy");
             this._cancelTimers();
             this.eventManager.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
@@ -228,17 +240,34 @@ define([
         },
 
         recoverLocalDraft: function () {
-            console.log("Draft#recoverLocalDraft",this._doGetPage() );
-            return this._doGetPage();
+            console.log("Draft#recoverLocalDraft", this._doGetPage());
+
+            var page = this._doGetPage();
+            if (page && page.drafts) {
+                return page.drafts
+            } else {
+                return {}
+            }
+
         },
 
         getLastLocalDraftTime: function () {
             console.log("Draft#getLastLocalDraftTime");
-            if (!this.lastSavedDraft) {
-                this.lastSavedDraft = this.recoverLocalDraft();
+            var drafts = this.recoverLocalDraft(),
+                time = {};
+
+
+            console.log("Drafts: ", drafts);
+
+            // s'ha de retornar tant el del local com el del full si existeixen
+            for (var type in drafts) {
+                time[type] = drafts[type].date;
             }
 
-            return this.lastSavedDraft ? this.lastSavedDraft.date : null;
+            console.log("Generat: ", time);
+
+
+            return time;
 
         }
 

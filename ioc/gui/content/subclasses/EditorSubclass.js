@@ -33,6 +33,7 @@ define([
             VERTICAL_MARGIN: 0,
             MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
+            DRAFT_TYPE: 'full',
 
             /**
              * El contingut original inicial s'ha de passar a travès del constructor dins dels arguments com la
@@ -276,7 +277,7 @@ define([
 
             generateDraft: function () {
                 return {
-                    type: 'full',
+                    type: this.DRAFT_TYPE,
                     id: this.id,
                     content: jQuery.trim(this.getCurrentContent())
                 };
