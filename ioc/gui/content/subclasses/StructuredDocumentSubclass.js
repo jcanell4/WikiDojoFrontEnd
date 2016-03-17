@@ -240,14 +240,27 @@ define([
 
 
         getQueryEdit: function (section_id) {
-            return 'do=edit_partial'
-                + '&section_id=' + section_id
-                + '&editing_chunks=' + this.getEditingChunks().toString()
-                + '&target=section'
-                + '&id=' + this.ns
-                + '&rev=' + (this.rev || '')
-                + '&summary=[' + this.title + ']'
-                + '&range=-';
+
+            var query = 'do=edit_partial'
+                    + '&section_id=' + section_id
+                    + '&editing_chunks=' + this.getEditingChunks().toString()
+                    + '&target=section'
+                    + '&id=' + this.ns
+                    + '&rev=' + (this.rev || '')
+                    + '&summary=[' + this.title + ']'
+                    + '&range=-',
+                localDraftTime;
+
+
+            localDraftTime = this.getDraft().getLastLocalDraftTime();
+
+            console.log("StructuredDocumentSubclass#getQueryEdit", localDraftTime);
+
+            if (localDraftTime !== null) {
+                query += '&last_local_draft_time=' + localDraftTime
+            }
+
+            return query;
         },
 
         getQuerySave: function (section_id) {

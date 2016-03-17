@@ -6,7 +6,8 @@ define([
 
     var DraftException = function (message) {
         this.message = message;
-        this.name = "DraftException"
+        this.name = "DraftException";
+        this.lastSavedDraft = null;
     };
 
     return declare([EventObserver], {
@@ -26,26 +27,29 @@ define([
         },
 
         _init: function () {
-            //console.log("Draft#_init");
+            console.log("Draft#_init");
             this._registerToEvents();
             this._initTimers();
         },
 
         save: function () {
-            //console.log("Draft#save");
+            console.log("Draft#save");
             this._doSave();
         },
 
         _registerToEvents: function () {
             // TODO[Xavi] no cal registrar-se al event manager, hauria de ser suficient registrar-se al contentTool al event concret
-            //console.log("Draft#_registerToEvents");
+            console.log("Draft#_registerToEvents");
+
+
             this.eventManager = this.dispatcher.getEventManager();
             this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id, this._doRefresh.bind(this));
             this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.CANCEL + this.contentTool.id, this.destroy.bind(this));
+
         },
 
         _doSave: function () {
-            //console.log('Draft#_doSave');
+            console.log('Draft#_doSave');
 
             var now = Date.now(),
                 elapsedTime = now - this.lastRemoteRefresh;
@@ -67,51 +71,31 @@ define([
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
             var userId = this.dispatcher.getGlobalState().userId,
-                docId = this.contentTool.id, // Id que identifica el document
                 docNs = this.contentTool.ns, // guardat al page
                 draft = this.contentTool.generateDraft(),
-                data = Date.now(),
+                date = Date.now(),
 
-            // 1 - Recuperem les pagines
-                pages = this._doGetItem('pages'),
-                page;
-
-
-            // 1.1 - Recuperem la pàgina actual si existeig
-            if (pages) {
-                pages = JSON.parse(pages);
-            } else {
-                pages = {}
-            }
-
-            page = pages[docId];
+            // Recuperem la pàgina actual
+                page = this._doGetPage();
 
             // Si existeix la actualitzem, si no, la creem
-
             if (page) {
-                page.data = data;
-
+                page.date = date;
 
             } else {
                 page = {
                     ns: docNs,
                     drafts: {},
-                    data: data,
+                    date: date,
                 }
             }
 
             page.drafts[userId] = draft; //sobrescriu el valor anterior si existeix
 
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
-            pages[docId] = page;
-
-
-            // 3- El desem
-            this._doSetItem('pages', pages);
-
-
+            this._doSetPage(page);
+            this.lastSavedDraft = page;
         },
-
 
         _doSaveRemoteServer: function () {
             console.log("Draft#_doSaveRemoteServer");
@@ -129,34 +113,62 @@ define([
         },
 
         _removeLocalDraft: function () {
-            var pages = this._doGetItem('pages');
-
-
-            if (pages) {
-                pages = JSON.parse(pages);
-            } else {
-                return;
-            }
-
+            console.log('Draft#_removeLocalDraft');
+            var pages = this._doGetPages();
             delete(pages[this.contentTool.id]);
+            this._doSetPages(pages);
+        },
 
 
-            this._doSetItem('pages', pages);
+        _doGetPages: function () {
+            console.log('Draft#_doGetPages');
+            var user = this._doGetUser();
+
+            return user['pages'] ? user['pages'] : {};
+        },
+
+        _doGetUser: function() {
+            console.log('Draft#_doGetUser');
+            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+                user = localStorage.getItem(userId);
+
+            if (user) {
+                return JSON.parse(user);
+            } else {
+                return {
+                    pages:{}
+                }
+            }
+        },
+
+        _doSetPages: function (pages) {
+            console.log('Draft#_doSetPages', pages);
+            var userId = 'user_' + this.dispatcher.getGlobalState().userId;
+            localStorage.setItem(userId, JSON.stringify(pages));
         },
 
         // TODO[Xavi] aquí podem afegir la descompresió de dades
-        _doGetItem: function (key) {
-            return localStorage.getItem(key);
+        _doGetPage: function () {
+            console.log('Draft#_doGetPage');
+            var pages = this._doGetPages();
+
+            return pages && pages[this.contentTool.id] ? JSON.parse(pages[this.contentTool.id]) : null;
         },
 
         // TODO[Xavi] aquí podem afegir la compresió de dades
-        _doSetItem: function (key, value) {
-            localStorage.setItem(key, JSON.stringify(value));
+        _doSetPage: function (page) {
+            console.log('Draft#_doSetPage');
+            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+                user = this._doGetUser(userId);
+
+            user.pages[this.contentTool.id] = page;
+
+            localStorage.setItem(userId, JSON.stringify(user));
         },
 
 
         _getQueryDraft: function () {
-            //console.log('Draft#_getQueryDraft');
+            console.log('Draft#_getQueryDraft');
             var dataToSend = {
                 id: this.contentTool.ns,
                 do: 'save_draft',
@@ -167,7 +179,7 @@ define([
         },
 
         _doRefresh: function () {
-            //console.log('Draft#_doRefresh');
+            console.log('Draft#_doRefresh');
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
 
@@ -179,7 +191,7 @@ define([
         },
 
         _setPendingRefresh: function (timeout) {
-            //console.log('Draft#_setPendingRefresh', timeout);
+            console.log('Draft#_setPendingRefresh', timeout);
 
             if (this.timers.refresh.expired) {
                 this.timers.refresh.start(timeout);
@@ -187,7 +199,7 @@ define([
         },
 
         _initTimers: function () {
-            //console.log('Draft#_initTimers');
+            console.log('Draft#_initTimers');
             this.timers = {
                 refresh: new Timer({onExpire: this._doRefresh.bind(this)})
             };
@@ -195,7 +207,7 @@ define([
         },
 
         _cancelTimers: function () {
-            //console.log('Draft#_cancelTimers', this.timers);
+            console.log('Draft#_cancelTimers', this.timers);
             for (var timer in this.timers) {
                 this.timers[timer].cancel();
             }
@@ -207,13 +219,28 @@ define([
         },
 
         onDestroy: function () {
-            //console.log("Draft#onDestroy");
+            alert("Es cancela el draft, desenregistrament");
+            console.log("Draft#onDestroy");
             this._cancelTimers();
             this.eventManager.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
             this.eventManager.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
             this.dispatchEvent(this.eventName.DESTROY, {id: this.id});
         },
 
+        recoverLocalDraft: function () {
+            console.log("Draft#recoverLocalDraft",this._doGetPage() );
+            return this._doGetPage();
+        },
+
+        getLastLocalDraftTime: function () {
+            console.log("Draft#getLastLocalDraftTime");
+            if (!this.lastSavedDraft) {
+                this.lastSavedDraft = this.recoverLocalDraft();
+            }
+
+            return this.lastSavedDraft ? this.lastSavedDraft.date : null;
+
+        }
 
     });
 

@@ -17,15 +17,13 @@ define([
         },
 
         lockDocument: function () {
-            if (this.readonly) { // Si el document es de només lectura no s'ha de bloquejar
+            if (this.readonly) { // Si el document es de només lectura no s'ha de bloqudrejar
                 return;
             }
             this.dispatcher.getLockManager().lock(this.id, this.ns);
 
             // TODO[Xavi] pendent de determinar si fem servir una subclasse diferent pels Draft
-            if (!this.draft) {
-                this.draft = new Draft(this.dispatcher, this);
-            }
+            this.getDraft();
 
         },
 
@@ -47,6 +45,14 @@ define([
             //console.log("LocktimedDocumentSubclass#onDestroy");
             this.dispatcher.getLockManager().unlock(this.id);
             this.inherited(arguments);
+        },
+
+        getDraft: function() {
+            if (!this.draft) {
+                this.draft = new Draft(this.dispatcher, this);
+            }
+
+            return this.draft;
         }
 
     });
