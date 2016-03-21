@@ -22,6 +22,8 @@ define([
                 this.lockManager = dispatcher.getLockManager();
                 this.lockManager.lock(value.id, value.ns, false);
 
+                this.draftManager = dispatcher.getDraftManager();
+
 
 
                 this._showDialog(value);
@@ -47,6 +49,10 @@ define([
                             + '&summary=' + value.summary
                             + '&target=' + value.target;
                 }
+
+                query += this.draftManager.generateLastLocalDraftTimesParam(this.docId);
+
+
 
                 return query;
             },
@@ -143,7 +149,6 @@ define([
         };
 
     return function (params) {
-        console.log("hola");
         dialogController._processDialog(params.original_call, params.timeout);
     };
 });

@@ -17,7 +17,7 @@ define([
             this.lastRefresh = Date.now();
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
-            this.type;
+            //this.type;
             this._init();
         },
 
@@ -251,25 +251,25 @@ define([
 
         },
 
-        getLastLocalDraftTime: function () {
-            console.log("Draft#getLastLocalDraftTime");
-            var drafts = this.recoverLocalDraft(),
-                time = {};
-
-
-            console.log("Drafts: ", drafts);
-
-            // s'ha de retornar tant el del local com el del full si existeixen
-            for (var type in drafts) {
-                time[type] = drafts[type].date;
-            }
-
-            console.log("Generat: ", time);
-
-
-            return time;
-
-        }
+        //getLastLocalDraftTime: function () {
+        //    console.log("Draft#getLastLocalDraftTime");
+        //    var drafts = this.recoverLocalDraft(),
+        //        time = {};
+        //
+        //
+        //    console.log("Drafts: ", drafts);
+        //
+        //    // s'ha de retornar tant el del local com el del full si existeixen
+        //    for (var type in drafts) {
+        //        time[type] = drafts[type].date;
+        //    }
+        //
+        //    console.log("Generat: ", time);
+        //
+        //
+        //    return time;
+        //
+        //}
 
     });
 

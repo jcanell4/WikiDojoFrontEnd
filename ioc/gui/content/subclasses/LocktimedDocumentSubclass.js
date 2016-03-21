@@ -10,6 +10,10 @@ define([
 
     return declare([], {
 
+        constructor: function (args) {
+            this.draftManager = args.dispatcher.getDraftManager();
+        },
+
         /** @abstract */
         generateDraft: function () { // TODO[Xavi] això anirà en el nou sistema pels drafts
             throw new LocktimedDocumentSubclassException("El ContentTool ha d'implementar la funció generateDraft a " +
@@ -47,12 +51,24 @@ define([
             this.inherited(arguments);
         },
 
-        getDraft: function() {
+        getDraft: function () {
+
+            console.log("LoctimedDocumentSubclass#getDraft", this.id);
             if (!this.draft) {
-                this.draft = new Draft(this.dispatcher, this);
+
+                this.draft = this.draftManager.getDraft(this.id, this);
             }
 
             return this.draft;
+            //
+            //console.log("Existeix el draft?", this.draft);
+            //
+            //if (!this.draft) {
+            //    console.log("Creat nou draft");
+            //    this.draft = new Draft(this.dispatcher, this);
+            //}
+            //
+            //return this.draft;
         }
 
     });

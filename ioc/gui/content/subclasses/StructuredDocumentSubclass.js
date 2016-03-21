@@ -252,7 +252,7 @@ define([
                     + '&summary=[' + this.title + ']'
                     + '&range=-';
 
-            //query += this._generateLastLocalDraftTimesParam();
+            query += this._generateLastLocalDraftTimesParam();
 
 
 
@@ -261,21 +261,25 @@ define([
         },
 
         _generateLastLocalDraftTimesParam: function() {
-            var localDraftTimes = this.getDraft().getLastLocalDraftTime(),
-                param = '';
+            //return '&structured_last_loca_draft_time=42';
+            return this.draftManager.generateLastLocalDraftTimesParam(this.id);
 
-            console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", localDraftTimes);
-
-            if (localDraftTimes !== null) {
-                for (var type in localDraftTimes) {
-                    param +='&' + type + '_last_local_draft_time='+localDraftTimes[type];
-                }
-
-            }
-
-            console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", param);
-
-            return param;
+            //
+            //var localDraftTimes = this.getDraft().getLastLocalDraftTime(),
+            //    param = '';
+            //
+            //console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", localDraftTimes);
+            //
+            //if (localDraftTimes !== null) {
+            //    for (var type in localDraftTimes) {
+            //        param +='&' + type + '_last_local_draft_time='+localDraftTimes[type];
+            //    }
+            //
+            //}
+            //
+            //console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", param);
+            //
+            //return param;
         },
 
         getQuerySave: function (section_id) {
