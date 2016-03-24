@@ -26,6 +26,7 @@ define([
              */
             process: function (value, dispatcher) {
 
+
                 var changesManager = dispatcher.getChangesManager(),
                     cache = dispatcher.getContentCache(value.id), // TODO[Xavi] de vegades torna null?
                     confirmation = false,

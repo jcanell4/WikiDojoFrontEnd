@@ -53,12 +53,8 @@ define([
 
         getDraft: function () {
             console.log("LocktimedDocumentSubclass#getDraft", this.id);
-            if (!this.draft) {
 
-                this.draft = this.draftManager.getDraft(this.id, this);
-            }
-
-            return this.draft;
+            return this.draftManager.getDraft(this.id, this);
 
             //
             //if (!this.draft) {
@@ -67,6 +63,14 @@ define([
             //}
             //
             //return this.draft;
+        },
+
+        getDraftChunk: function (chunkId) {
+            console.log("LocktimedDocumentSubclass#getDraftChunk", this.id, chunkId);
+
+
+            return this.getDraft().recoverLocalDraft().structured.content[chunkId];
+
         }
 
     });

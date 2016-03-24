@@ -568,6 +568,24 @@ define([
          */
         updateDocument: function (content) {
             //console.log('StructuredDocumentSubclass#updateDocument', content);
+
+            if (content.recover_local===true) {
+                console.log("Substituir el content pel draft: ", content);
+
+                //var draft = this.getDraft().recoverLocalDraft().structured.content[content.selected]; // TODO[Xavi] Afegir un getDraftChunk(id) al DraftManager
+                var draft = this.getDraftChunk(content.selected);
+
+                console.log("Draft:", draft);
+                var index = content.dictionary[content.selected];
+                console.log("Content:", content.chunks[index].text.editing);
+
+                content.chunks[index].text.editing = draft;
+
+                alert("Recuperar local i substituir el content abans de continuar processant");
+            }
+
+
+
             this._updateChunks(content);
             this._updateStructure(content);
             this.updateTitle(content);
