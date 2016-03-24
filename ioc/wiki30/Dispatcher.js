@@ -456,6 +456,7 @@ define([
 
 
             getEventManager: function () {
+                console.log("Retornant el EventManager");
                 return this.eventManager;
             },
 

@@ -52,16 +52,14 @@ define([
         },
 
         getDraft: function () {
-
-            console.log("LoctimedDocumentSubclass#getDraft", this.id);
+            console.log("LocktimedDocumentSubclass#getDraft", this.id);
             if (!this.draft) {
 
                 this.draft = this.draftManager.getDraft(this.id, this);
             }
 
             return this.draft;
-            //
-            //console.log("Existeix el draft?", this.draft);
+
             //
             //if (!this.draft) {
             //    console.log("Creat nou draft");

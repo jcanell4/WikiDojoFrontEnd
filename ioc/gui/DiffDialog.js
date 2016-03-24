@@ -14,8 +14,10 @@ define([
 
         startup: function () {
             this.inherited(arguments);
-            //console.log("Document:", this.document);
-            //console.log("Draft:", this.draft);
+            console.log("Document:", this.document);
+            console.log("Draft:", this.draft);
+
+
 
             var documentLabel = "Document (" + this.document.date + ")",
                 draftLabel = "Esborrany (" + this.draft.date + ")",

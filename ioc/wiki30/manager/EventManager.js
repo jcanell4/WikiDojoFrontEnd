@@ -23,6 +23,11 @@ define([
         _broadcast: function (data) {
             //console.log("EventManager#broadcast", data.name, data);
             this.dispatchEvent(data.name, data);
+        },
+
+        dispatchEvent: function() {
+            console.log("S'ha fet un dispatchEvent al EventManager");
+            return this.inherited(arguments);
         }
     });
 });

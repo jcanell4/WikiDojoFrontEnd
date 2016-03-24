@@ -14,6 +14,8 @@ define([
         {
             type: "draft",
 
+            DEFAULT_DRAFT: {content: "No s'ha trobat l'esborrany", date: ''}, // TODO[Xavi] Localitzar el missatge
+
             /**
              * Processa un missatge de tipus alert el que fa que es configuri un dialeg i es mostri.
              *
@@ -47,6 +49,9 @@ define([
                 this.eventManager = dispatcher.getEventManager();
                 this.lockManager = dispatcher.getLockManager();
                 this.lockManager.lock(value.id, value.ns, false);
+                this.draftManager = dispatcher.getDraftManager();
+
+                this.isLocalDraft = value.params.local;
 
 
                 this._showDiffDialog(value);
@@ -105,6 +110,10 @@ define([
 
                 this._cancelTimers();
                 this.lockManager.cancel(this.docId);
+
+                if (this.isLocalDraft) {
+                    this.query+='&recover_local=true';
+                }
 
                 this.eventManager.dispatchEvent(this._getActionType(), {
                     id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
@@ -178,16 +187,44 @@ define([
 
             // TODO[Xavi] En lloc de fer-ho així cercar una manera de passar directament el valor des de la wiki
             _getDraft: function (value) {
-                switch (value.type) {
-                    case 'full_document': //falling-through intencionat
-                    case 'partial_document':
-                        if (value.draft) {
-                            return {content: value.draft.content, date: value.draft.date};
-                        }
+                if (value.local) {
+                    return this._getDraftLocal(value);
+                } else {
+                    return this._getDraftRemote(value);
                 }
 
-                return {content: '', date: ''};
             },
+
+            _getDraftLocal: function(value) {
+                var draft = this.draftManager.getDraft(this.docId).recoverLocalDraft();
+
+                console.log("value: ", value);
+                console.log("draft: ", value);
+                switch (value.type) {
+                    case 'full_document': //falling-through intencionat
+                        console.log("Full draft:", draft.full);
+                        return {content: draft.full.content, date: draft.full.date};
+                    case 'partial_document':
+                        // TODO[Xavi] S'ha d canviar la estructura si volem poder recuperar la data de cada fragment individualment
+                        console.log("Structured draft:", draft.structured.content, draft.structured.date);
+                        return {content: draft.structured.content[value.selected], date: draft.structured.date}
+                }
+
+
+                return this.DEFAULT_DRAFT;
+
+
+            },
+
+            _getDraftRemote: function(value) {
+                if (value.draft) {
+                    return {content: value.draft.content, date: value.draft.date};
+                } else {
+                    return this.DEFAULT_DRAFT;
+                }
+
+            },
+
 
             _buildQuery: function (value) {
                 var query = '';
@@ -211,6 +248,8 @@ define([
             },
 
             _setActionType: function (value) {
+
+
                 switch (value.params.type) {
                     case 'full_document':
                         this.documentType = 'edit';

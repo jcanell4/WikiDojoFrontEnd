@@ -10,14 +10,14 @@ define([
         AUTOSAVE_REMOTE: 10 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
 
 
-        constructor: function (dispatcher, contentTool) {
-            this.dispatcher = dispatcher;
-            this.contentTool = contentTool;
-            this.id = contentTool.id;
+        constructor: function (args) {
+            this.dispatcher = args.dispatcher;
+            this.contentTool = args.contentTool;
+            this.id = args.contentTool.id;
             this.lastRefresh = Date.now();
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
-            //this.type;
+            this.type;
             this._init();
         },
 
@@ -33,13 +33,11 @@ define([
         },
 
         _registerToEvents: function () {
-            // TODO[Xavi] no cal registrar-se al event manager, hauria de ser suficient registrar-se al contentTool al event concret
             console.log("Draft#_registerToEvents");
 
-
             this.eventManager = this.dispatcher.getEventManager();
-            this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id, this._doRefresh.bind(this));
-            this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.CANCEL + this.contentTool.id, this.destroy.bind(this));
+            this.registerToEvent(this.contentTool, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
+            this.registerToEvent(this.contentTool, this.eventName.CANCEL, this.destroy.bind(this));
 
         },
 
@@ -246,6 +244,7 @@ define([
             if (page && page.drafts) {
                 return page.drafts
             } else {
+                console.log("Retornant objecte buit");
                 return {}
             }
 

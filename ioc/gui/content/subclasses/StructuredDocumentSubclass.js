@@ -970,6 +970,8 @@ define([
                 standbyId: containerId
             })
 
+            this.hasChanges = false;
+
         },
 
         _doCancelPartial: function (event) {
