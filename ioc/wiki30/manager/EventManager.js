@@ -7,7 +7,7 @@ define([
 
 
         // El manager ha d'escoltar al content tool
-        // quan detecta que es despatxar l'esdeveniment el dispara en si mateix per avisar als interessats
+        // quan detecta que es despatxa l'esdeveniment el dispara en si mateix per avisar als interessats
         registerEventForBroadcasting: function (observed, eventName, callback) {
             //console.log("registered for Broadcasting", observed.id, eventName);
 
@@ -25,9 +25,5 @@ define([
             this.dispatchEvent(data.name, data);
         },
 
-        dispatchEvent: function() {
-            console.log("S'ha fet un dispatchEvent al EventManager");
-            return this.inherited(arguments);
-        }
     });
 });

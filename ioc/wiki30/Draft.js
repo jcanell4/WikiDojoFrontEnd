@@ -100,18 +100,6 @@ define([
             this._removeLocalDraft(this.contentTool.DRAFT_TYPE);
         },
 
-        // Elimina tots els drafts TODO[Xavi] cridar automàticament després de desar el document
-        _clearLocalDrafts: function () {
-            console.log('Draft#_removeLocalDraft');
-            var pages = this._doGetPages();
-
-            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                delete(pages[this.contentTool.id].drafts);
-                this._doSetPages(pages);
-            }
-
-        },
-
         // Només elimina el draft del tipus indicat
         _removeLocalDraft: function (type) {
             console.log('Draft#_removeLocalDraft');
@@ -137,15 +125,9 @@ define([
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = JSON.parse(localStorage.getItem(userId));
 
-            console.log("UserId", userId);
-            console.log("User: ", user)
-
-
             if (user && user.pages) {
-                console.log("Trobat user i conté:", user);
                 return user;
             } else {
-                console.log("No trobat user, es crea un objecte nou:");
                 return {
                     pages: {}
                 }
@@ -244,31 +226,10 @@ define([
             if (page && page.drafts) {
                 return page.drafts
             } else {
-                console.log("Retornant objecte buit");
                 return {}
             }
 
-        },
-
-        //getLastLocalDraftTime: function () {
-        //    console.log("Draft#getLastLocalDraftTime");
-        //    var drafts = this.recoverLocalDraft(),
-        //        time = {};
-        //
-        //
-        //    console.log("Drafts: ", drafts);
-        //
-        //    // s'ha de retornar tant el del local com el del full si existeixen
-        //    for (var type in drafts) {
-        //        time[type] = drafts[type].date;
-        //    }
-        //
-        //    console.log("Generat: ", time);
-        //
-        //
-        //    return time;
-        //
-        //}
+        }
 
     });
 

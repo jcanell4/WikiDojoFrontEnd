@@ -18,7 +18,6 @@ define([
 
         getDraft: function (docId, contentTool) {
             console.log('DraftManager#getDraft', docId);
-            console.log('Drafts carregats:', this.drafts);
             var contentCache;
 
             if (!docId) {
@@ -26,11 +25,7 @@ define([
             }
 
             if (!this.drafts[docId] && contentTool) {
-
                 this.drafts[docId] = new Draft({dispatcher: this.dispatcher, contentTool: contentTool});
-                console.log("Creat un nou draft a partir del contentTool: ", docId, this.drafts[docId]);
-
-                alert("Draft creat pel contentTool");
             } else if (!this.drafts[docId]) {
 
                 contentCache = this.dispatcher.getContentCache(docId);
@@ -38,15 +33,11 @@ define([
 
                 if (contentCache) {
                     var draft = new Draft({dispatcher: this.dispatcher ,contentTool: contentCache.getMainContentTool()});
-
-                    console.log("Creat un nou draft a partir del content cache per", docId, draft);
                     this.drafts[docId] = draft;
                 } else {
                     throw new DraftManagerException('No existeix cap ContentTool pel document: ' + docId);
                 }
             }
-
-            console.log("Retornant el draft: ", this.drafts[docId]);
 
             return this.drafts[docId];
         },
@@ -57,15 +48,10 @@ define([
                 drafts = draft.recoverLocalDraft(),
                 time = {};
 
-            console.log("Drafts: ", drafts);
-
-            // s'ha de retornar tant el del local com el del full si existeixen
+            // S'ha de retornar tant el del local com el del full si existeixen
             for (var type in drafts) {
                 time[type] = drafts[type].date;
             }
-
-            console.log("Generat: ", time);
-
 
             return time;
         },
@@ -73,9 +59,7 @@ define([
         generateLastLocalDraftTimesParam: function(docId) {
             var localDraftTimes = this.getLastLocalDraftTime(docId),
                 param = '';
-
-            console.log("DraftManager#generateLastLocalDraftTimes", localDraftTimes);
-
+            
             if (localDraftTimes !== null) {
                 for (var type in localDraftTimes) {
                     param +='&' + type + '_last_local_draft_time='+localDraftTimes[type];

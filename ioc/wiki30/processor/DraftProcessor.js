@@ -2,10 +2,8 @@ define([
     'dojo/_base/declare',
     'ioc/wiki30/processor/AbstractResponseProcessor',
     'ioc/gui/DiffDialog',
-    'ioc/gui/CustomDialog',
-    'ioc/wiki30/Timer',
-
-], function (declare, AbstractResponseProcessor, DiffDialog, CustomDialog, Timer) {
+    'ioc/wiki30/Timer'
+], function (declare, AbstractResponseProcessor, DiffDialog, Timer) {
     return declare([AbstractResponseProcessor],
         /**
          * @class DraftProcessor
@@ -94,7 +92,6 @@ define([
                             }.bind(this)
                         }
                     ]
-
                 });
 
                 this.dialogs.diff.show();
@@ -198,22 +195,17 @@ define([
             _getDraftLocal: function(value) {
                 var draft = this.draftManager.getDraft(this.docId).recoverLocalDraft();
 
-                console.log("value: ", value);
-                console.log("draft: ", value);
+                //console.log("value: ", value);
+                //console.log("draft: ", value);
                 switch (value.type) {
                     case 'full_document': //falling-through intencionat
-                        console.log("Full draft:", draft.full);
                         return {content: draft.full.content, date: draft.full.date};
                     case 'partial_document':
                         // TODO[Xavi] S'ha d canviar la estructura si volem poder recuperar la data de cada fragment individualment
-                        console.log("Structured draft:", draft.structured.content, draft.structured.date);
                         return {content: draft.structured.content[value.selected], date: draft.structured.date}
                 }
 
-
                 return this.DEFAULT_DRAFT;
-
-
             },
 
             _getDraftRemote: function(value) {
