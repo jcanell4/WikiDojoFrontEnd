@@ -203,7 +203,7 @@ define([
                 };
 
                 if (draft) {
-                    var draftQuery = this.contentTool.generateDraft();
+                    var draftQuery = this.contentTool._generateDraft();
                     dataToSend.draft = JSON.stringify(draftQuery);
 
                 }

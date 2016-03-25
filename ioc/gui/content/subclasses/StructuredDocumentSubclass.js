@@ -820,7 +820,7 @@ define([
             }
         },
 
-        generateDraft: function () {
+        _generateDraft: function () {
             var draft = {
                 type: this.DRAFT_TYPE,
                 id: this.id,

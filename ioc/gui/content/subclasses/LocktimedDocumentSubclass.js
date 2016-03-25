@@ -15,7 +15,7 @@ define([
         },
 
         /** @abstract */
-        generateDraft: function () { // TODO[Xavi] això anirà en el nou sistema pels drafts
+        _generateDraft: function () { // TODO[Xavi] això anirà en el nou sistema pels drafts
             throw new LocktimedDocumentSubclassException("El ContentTool ha d'implementar la funció generateDraft a " +
                 "les subclasses per poder generar l'esborrany");
         },
@@ -53,16 +53,10 @@ define([
 
         getDraft: function () {
             console.log("LocktimedDocumentSubclass#getDraft", this.id);
+            var draft = this.draftManager.getDraft(this.id, this);
+            console.log("Draft:", draft);
+            return draft;
 
-            return this.draftManager.getDraft(this.id, this);
-
-            //
-            //if (!this.draft) {
-            //    console.log("Creat nou draft");
-            //    this.draft = new Draft(this.dispatcher, this);
-            //}
-            //
-            //return this.draft;
         },
 
         getDraftChunk: function (chunkId) {

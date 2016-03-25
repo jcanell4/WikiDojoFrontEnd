@@ -61,6 +61,7 @@ define([
              * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
              */
             isContentChanged: function () {
+                console.log("EditorSubclass#isContentChanged");
                 var content = this.getCurrentContent(),
                     diffFromOriginal = this._getOriginalContent() != content,
                     diffFromLastCheck = this.isLastCheckedContentChanged();
@@ -190,6 +191,7 @@ define([
              * @private
              */
             _checkChanges: function () {
+                console.log('EditorSubclass#_checkChanges');
                 // Si el document està bloquejat mai hi hauran canvis
                 if (!this.locked) {
                     this.changesManager.updateContentChangeState(this.id);
@@ -275,7 +277,7 @@ define([
                 this.inherited(arguments);
             },
 
-            generateDraft: function () {
+            _generateDraft: function () {
                 return {
                     type: this.DRAFT_TYPE,
                     id: this.id,

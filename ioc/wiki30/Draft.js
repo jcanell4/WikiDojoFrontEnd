@@ -38,6 +38,7 @@ define([
             this.eventManager = this.dispatcher.getEventManager();
             this.registerToEvent(this.contentTool, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
             this.registerToEvent(this.contentTool, this.eventName.CANCEL, this.destroy.bind(this));
+            this.registerToEvent(this.contentTool, this.eventName.DESTROY, this.destroy.bind(this));
 
         },
 
@@ -64,7 +65,7 @@ define([
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
             var docNs = this.contentTool.ns, // guardat al page
-                draft = this.contentTool.generateDraft(),
+                draft = this.contentTool._generateDraft(),
                 page = this._doGetPage();
 
             // Si existeix la actualitzem, si no, la creem
@@ -165,7 +166,7 @@ define([
             var dataToSend = {
                 id: this.contentTool.ns,
                 do: 'save_draft',
-                draft: JSON.stringify(this.contentTool.generateDraft())
+                draft: JSON.stringify(this.contentTool._generateDraft())
             };
 
             return dataToSend;
@@ -213,9 +214,12 @@ define([
 
         onDestroy: function () {
             console.log("Draft#onDestroy");
+            alert("Destruint draft:" + this.id);
             this._cancelTimers();
-            this.eventManager.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
-            this.eventManager.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
+            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
+            this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
+
+
             this.dispatchEvent(this.eventName.DESTROY, {id: this.id});
         },
 
