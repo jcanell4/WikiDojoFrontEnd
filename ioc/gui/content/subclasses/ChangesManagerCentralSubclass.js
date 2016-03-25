@@ -57,7 +57,7 @@ define([
         },
 
         onDocumentRefreshed: function () {
-            console.log('ChangesManagerCentralSubclass#onDocumentRefreshed', this.id);
+            //console.log('ChangesManagerCentralSubclass#onDocumentRefreshed', this.id);
             this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.id, {id: this.id});
             this.dispatchEvent(this.eventName.DOCUMENT_REFRESHED, {id: this.id});
 
