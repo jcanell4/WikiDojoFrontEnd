@@ -214,7 +214,7 @@ define([
 
         onDestroy: function () {
             console.log("Draft#onDestroy");
-            alert("Destruint draft:" + this.id);
+            //alert("Destruint draft:" + this.id);
             this._cancelTimers();
             this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
             this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
