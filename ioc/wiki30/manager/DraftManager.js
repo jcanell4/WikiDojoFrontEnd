@@ -7,7 +7,6 @@ define([
     var DraftManagerException = function (message) {
         this.message = message;
         this.name = "DraftManagerException";
-        console.error(this);
     };
 
     return declare([EventObserver], {
@@ -18,7 +17,7 @@ define([
         },
 
         getDraft: function (docId, contentTool) {
-            console.log('DraftManager#getDraft', docId);
+            //console.log('DraftManager#getDraft', docId);
             var contentCache;
 
             if (!docId) {
@@ -26,8 +25,7 @@ define([
             }
 
             if (!this.drafts[docId] && contentTool) {
-                console.log("Creant nou draft a partir del contenttool");
-                //this.drafts[docId] = new Draft({dispatcher: this.dispatcher, contentTool: contentTool});
+                //console.log("Creant nou draft a partir del contenttool");
                 this._generateDraft(contentTool);
 
             } else if (!this.drafts[docId]) {
@@ -36,12 +34,10 @@ define([
 
 
                 if (contentCache) {
-                    console.log("Creant nou draft a partir del contentCache");
+                    //console.log("Creant nou draft a partir del contentCache");
 
                     this._generateDraft(contentCache.getMainContentTool());
 
-                    //var draft = new Draft({dispatcher: this.dispatcher ,contentTool: contentCache.getMainContentTool()});
-                    //this.drafts[docId] = draft;
                 } else {
                     throw new DraftManagerException('No existeix cap ContentTool pel document: ' + docId);
                 }
@@ -50,22 +46,26 @@ define([
             return this.drafts[docId];
         },
 
-        getLastLocalDraftTime: function (docId) {
-            console.log("DraftManager#getLastLocalDraftTime", docId);
+        getLastLocalDraftTime: function (docId, chunkId) {
+            //console.log("DraftManager#getLastLocalDraftTime", docId, chunkId);
             var draft = this.getDraft(docId),
                 drafts = draft.recoverLocalDraft(),
                 time = {};
 
             // S'ha de retornar tant el del local com el del full si existeixen
             for (var type in drafts) {
-                time[type] = drafts[type].date;
+                if (type === "structured" && drafts.structured.content[chunkId] === undefined) { //Alerta[Xavi] Solució temporal fins que s'afegeixin les dates a cada chunk
+                    //console.log("No existeix el chunk, no afegim la data");
+                } else {
+                    time[type] = drafts[type].date;
+                }
             }
 
             return time;
         },
 
-        generateLastLocalDraftTimesParam: function (docId) {
-            var localDraftTimes = this.getLastLocalDraftTime(docId),
+        generateLastLocalDraftTimesParam: function (docId, chunkId) {
+            var localDraftTimes = this.getLastLocalDraftTime(docId, chunkId),
                 param = '';
 
             if (localDraftTimes !== null) {
@@ -75,7 +75,7 @@ define([
 
             }
 
-            console.log("DraftManager#generateLastLocalDraftTimes", param);
+            //console.log("DraftManager#generateLastLocalDraftTimes", param);
 
             return param;
         },
@@ -87,7 +87,7 @@ define([
         },
 
         _removeDraft: function (data) {
-            console.log("DraftManager#_removeDraft", data);
+            //console.log("DraftManager#_removeDraft", data);
             delete(this.drafts[data.id]);
         },
 

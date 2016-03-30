@@ -9,7 +9,7 @@ define([
         dialogController = {
 
             _processDialog: function (value, timeout) {
-                console.log("DialogController#_processDialog", value);
+                //console.log("DialogController#_processDialog", value);
 
                 this.dialogs = {};
                 this.dispatcher = dispatcher;
@@ -106,7 +106,7 @@ define([
             },
 
             _showDialog: function (value) {
-                console.log('DialogController#_showDialog');
+                //console.log('DialogController#_showDialog');
                 // TODO[Xavi] Localitzar els missatges, es pot enviar des del servidor en lloc del valor cert
                 this.dialogs.selectEditType = new CustomDialog({
                     title: 'S\'ha trobat un esborrany complet',
@@ -141,7 +141,7 @@ define([
 
             _cancelDialogs: function () {
                 for (var dialog in this.dialogs) {
-                    console.log("Cancelant ", dialog, this.dialogs[dialog]);
+                    //console.log("Cancelant ", dialog, this.dialogs[dialog]);
                     this.dialogs[dialog].remove();
                 }
                 this.dialogs = {};

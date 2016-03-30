@@ -52,21 +52,16 @@ define([
         },
 
         getDraft: function () {
-            console.log("LocktimedDocumentSubclass#getDraft", this.id);
+            //console.log("LocktimedDocumentSubclass#getDraft", this.id);
             var draft = this.draftManager.getDraft(this.id, this);
-            console.log("Draft:", draft);
+            //console.log("Draft:", draft);
             return draft;
 
         },
 
         getDraftChunk: function (chunkId) {
-            console.log("LocktimedDocumentSubclass#getDraftChunk", this.id, chunkId);
-
-
+            //console.log("LocktimedDocumentSubclass#getDraftChunk", this.id, chunkId);
             return this.getDraft().recoverLocalDraft().structured.content[chunkId];
-
         }
-
     });
-
 });

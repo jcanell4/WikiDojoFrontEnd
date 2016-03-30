@@ -22,18 +22,18 @@ define([
         },
 
         _init: function () {
-            console.log("Draft#_init");
+            //console.log("Draft#_init");
             this._registerToEvents();
             this._initTimers();
         },
 
         save: function () {
-            console.log("Draft#save");
+            //console.log("Draft#save");
             this._doSave();
         },
 
         _registerToEvents: function () {
-            console.log("Draft#_registerToEvents");
+            //console.log("Draft#_registerToEvents");
 
             this.eventManager = this.dispatcher.getEventManager();
             this.registerToEvent(this.contentTool, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
@@ -43,7 +43,7 @@ define([
         },
 
         _doSave: function () {
-            console.log('Draft#_doSave');
+            //console.log('Draft#_doSave');
 
             var now = Date.now(),
                 elapsedTime = now - this.lastRemoteRefresh;
@@ -60,7 +60,7 @@ define([
         },
 
         _doSaveLocal: function () {
-            console.log("Draft#_doSaveLocalStorage");
+            //console.log("Draft#_doSaveLocalStorage");
             this.lastRefresh = Date.now();
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
@@ -86,7 +86,7 @@ define([
         },
 
         _doSaveRemoteServer: function () {
-            console.log("Draft#_doSaveRemoteServer");
+            //console.log("Draft#_doSaveRemoteServer");
             this.lastRemoteRefresh = Date.now();
             this.lastRefresh = this.lastRemoteRefresh;
 
@@ -103,7 +103,7 @@ define([
 
         // Només elimina el draft del tipus indicat
         _removeLocalDraft: function (type) {
-            console.log('Draft#_removeLocalDraft');
+            //console.log('Draft#_removeLocalDraft');
             var pages = this._doGetPages();
 
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
@@ -115,14 +115,14 @@ define([
 
 
         _doGetPages: function () {
-            console.log('Draft#_doGetPages');
+            //console.log('Draft#_doGetPages');
             var user = this._doGetUser();
 
             return user['pages'] ? user['pages'] : {};
         },
 
         _doGetUser: function () {
-            console.log('Draft#_doGetUser');
+            //console.log('Draft#_doGetUser');
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = JSON.parse(localStorage.getItem(userId));
 
@@ -136,14 +136,14 @@ define([
         },
 
         _doSetPages: function (pages) {
-            console.log('Draft#_doSetPages', pages);
+            //console.log('Draft#_doSetPages', pages);
             var userId = 'user_' + this.dispatcher.getGlobalState().userId;
             localStorage.setItem(userId, JSON.stringify({pages: pages}));
         },
 
         // TODO[Xavi] aquí podem afegir la descompresió de dades
         _doGetPage: function () {
-            console.log('Draft#_doGetPage');
+            //console.log('Draft#_doGetPage');
             var pages = this._doGetPages();
 
             return pages && pages[this.contentTool.id] ? pages[this.contentTool.id] : null;
@@ -151,7 +151,7 @@ define([
 
         // TODO[Xavi] aquí podem afegir la compresió de dades
         _doSetPage: function (page) {
-            console.log('Draft#_doSetPage');
+            //console.log('Draft#_doSetPage');
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = this._doGetUser(userId);
 
@@ -162,7 +162,7 @@ define([
 
 
         _getQueryDraft: function () {
-            console.log('Draft#_getQueryDraft');
+            //console.log('Draft#_getQueryDraft');
             var dataToSend = {
                 id: this.contentTool.ns,
                 do: 'save_draft',
@@ -173,7 +173,7 @@ define([
         },
 
         _doRefresh: function () {
-            console.log('Draft#_doRefresh');
+            //console.log('Draft#_doRefresh');
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
 
@@ -185,7 +185,7 @@ define([
         },
 
         _setPendingRefresh: function (timeout) {
-            console.log('Draft#_setPendingRefresh', timeout);
+            //console.log('Draft#_setPendingRefresh', timeout);
 
             if (this.timers.refresh.expired) {
                 this.timers.refresh.start(timeout);
@@ -193,7 +193,7 @@ define([
         },
 
         _initTimers: function () {
-            console.log('Draft#_initTimers');
+            //console.log('Draft#_initTimers');
             this.timers = {
                 refresh: new Timer({onExpire: this._doRefresh.bind(this)})
             };
@@ -201,7 +201,7 @@ define([
         },
 
         _cancelTimers: function () {
-            console.log('Draft#_cancelTimers', this.timers);
+            //console.log('Draft#_cancelTimers', this.timers);
             for (var timer in this.timers) {
                 this.timers[timer].cancel();
             }
@@ -213,7 +213,7 @@ define([
         },
 
         onDestroy: function () {
-            console.log("Draft#onDestroy");
+            //console.log("Draft#onDestroy");
             //alert("Destruint draft:" + this.id);
             this._cancelTimers();
             this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
@@ -224,7 +224,7 @@ define([
         },
 
         recoverLocalDraft: function () {
-            console.log("Draft#recoverLocalDraft", this._doGetPage());
+            //console.log("Draft#recoverLocalDraft", this._doGetPage());
 
             var page = this._doGetPage();
             if (page && page.drafts) {

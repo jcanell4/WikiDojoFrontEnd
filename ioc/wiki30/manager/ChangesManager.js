@@ -78,7 +78,7 @@ define([
                  * @return {boolean} - Cert si el contingut ha canviat o Fals en cas contrari
                  */
                 updateContentChangeState: function (id) {
-                    console.log("ChangesManager#updateContentChangeState", id);
+                    //console.log("ChangesManager#updateContentChangeState", id);
 
                     var result = this.isContentChanged(id); // Si existeix o hi han canvis retorna cert
 

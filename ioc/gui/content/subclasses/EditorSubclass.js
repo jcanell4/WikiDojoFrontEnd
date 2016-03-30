@@ -98,7 +98,7 @@ define([
              * @override
              */
             postAttach: function () {
-                console.log("EditorSubclass#postAttach");
+                //console.log("EditorSubclass#postAttach");
                 this.registerToChangesManager();
 
                 jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));

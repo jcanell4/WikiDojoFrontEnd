@@ -13,7 +13,7 @@ define([
 
 
         AUTOSAVE_LOCAL: 1 * 1000, // Temps en ms mínim per fer un refresc
-        WARNING_DIFF: 85 * 1000, // El warning es mostra aquest nombre de ms abans del timeout
+        WARNING_DIFF: 60 * 1000, // El warning es mostra aquest nombre de ms abans del timeout
 
         constructor: function (dispatcher, id, ns, showDialogs) {
             this.dispatcher = dispatcher;

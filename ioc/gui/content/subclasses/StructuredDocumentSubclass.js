@@ -241,10 +241,10 @@ define([
         },
 
 
-        getQueryEdit: function (section_id) {
+        getQueryEdit: function (chunkId) {
 
             var query = 'do=edit_partial'
-                    + '&section_id=' + section_id
+                    + '&section_id=' + chunkId
                     + '&editing_chunks=' + this.getEditingChunks().toString()
                     + '&target=section'
                     + '&id=' + this.ns
@@ -252,7 +252,7 @@ define([
                     + '&summary=[' + this.title + ']'
                     + '&range=-';
 
-            query += this._generateLastLocalDraftTimesParam();
+            query += this._generateLastLocalDraftTimesParam(chunkId);
 
 
 
@@ -260,9 +260,9 @@ define([
             return query;
         },
 
-        _generateLastLocalDraftTimesParam: function() {
+        _generateLastLocalDraftTimesParam: function(chunkId) {
             //return '&structured_last_loca_draft_time=42';
-            return this.draftManager.generateLastLocalDraftTimesParam(this.id);
+            return this.draftManager.generateLastLocalDraftTimesParam(this.id, chunkId);
 
             //
             //var localDraftTimes = this.getDraft().getLastLocalDraftTime(),

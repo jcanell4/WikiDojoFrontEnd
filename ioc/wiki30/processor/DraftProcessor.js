@@ -130,7 +130,7 @@ define([
             },
 
             _cancelTimers: function () {
-                console.log('¿?¿?¿#_cancelTimers', this.timers);
+                //console.log('Object#_cancelTimers', this.timers);
                 for (var timer in this.timers) {
                     this.timers[timer].cancel();
                 }
