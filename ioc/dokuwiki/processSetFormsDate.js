@@ -25,8 +25,10 @@ define([
 
             $inputs = jQuery('#form_' + aux_id + ' :input');
 
+
             $inputs.each(function () {
                 var name = jQuery(this).attr('name');
+
                 switch (name) {
                     case 'suffix':
                         jQuery(this).val(data.chunks[i].text.suf);
