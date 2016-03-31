@@ -49,6 +49,8 @@ define([
                     //console.log("is changed?", changesManager.isChanged(value.id) );
 
 
+                    console.log("Comença la seqüencia de confirmacions");
+
                     if (changesManager.isChanged(value.id) && value.cancel) {
                         if (contentTool.isAnyChunkChanged(value.cancel)) {
                             confirmation = dispatcher.discardChanges();
@@ -75,13 +77,8 @@ define([
 
                         contentTool.updateDocument(value);
 
-                        dispatcher.getGlobalState().getContent(value.id).rev = content.rev;
-                    } else {
-
-                        contentTool.changesNotDiscarded();
-
+                        dispatcher.getGlobalState().getContent(value.id).rev = contentTool.rev; // ALERTA[Xavi] posava content.rev, això no pot ser, es referia contentTool.rev (que a la seva vegada es el mateix que value.rev)?
                     }
-
                 } else {
 
                     return this.inherited(arguments);
