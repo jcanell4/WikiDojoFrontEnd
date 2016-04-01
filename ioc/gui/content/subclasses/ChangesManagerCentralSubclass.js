@@ -89,6 +89,7 @@ define([
          * @returns {boolean}
          */
         onClose: function () {
+            console.log("ChangesManagerCentralSubclass#onClose");
             var confirmation = true;
 
             if (this.changesManager.isChanged(this.id)) {

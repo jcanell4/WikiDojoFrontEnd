@@ -209,7 +209,6 @@ define([
 
         destroy: function () {
             this.onDestroy();
-
         },
 
         onDestroy: function () {

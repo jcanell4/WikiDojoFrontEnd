@@ -407,9 +407,10 @@ define([
              * @protected
              */
             _funcCancel: function () {
+                //console.log("EditorSubclass#_funcCancel");
                 var id = this.getGlobalState().getCurrentId(),
                     eventManager = this.getEventManager();
-                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id});
+                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
             },
 
             getEditor: function () {

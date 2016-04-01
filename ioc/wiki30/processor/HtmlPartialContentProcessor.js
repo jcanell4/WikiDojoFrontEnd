@@ -25,7 +25,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-
+                //console.log("HtmlPartialContentProcessor#process", value);
 
                 var changesManager = dispatcher.getChangesManager(),
                     cache = dispatcher.getContentCache(value.id), // TODO[Xavi] de vegades torna null?
@@ -49,13 +49,19 @@ define([
                     //console.log("is changed?", changesManager.isChanged(value.id) );
 
 
-                    console.log("Comença la seqüencia de confirmacions");
+                    //console.log("Ja hi ha un contenttol del mateix tipus");
 
                     if (changesManager.isChanged(value.id) && value.cancel) {
                         if (contentTool.isAnyChunkChanged(value.cancel)) {
                             confirmation = dispatcher.discardChanges();
                         } else {
                             confirmation = true;
+                        }
+
+                        if (confirmation) {
+                            dispatcher.getDraftManager().clearDraftChunks(value.id, value.cancel);
+                            //console.log("Eliminats chunks dels esborranys locals:", value.cancel);
+                            // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
                         }
 
                     } else if (changesManager.isChanged(value.id) && !value.selected && !value.cancel) {
@@ -69,6 +75,7 @@ define([
 
                     if (confirmation) {
 
+
                         if (value.cancel) {
                             contentTool.resetChangesForChunks(value.cancel);
                         } else if (!value.selected) {
@@ -80,6 +87,7 @@ define([
                         dispatcher.getGlobalState().getContent(value.id).rev = contentTool.rev; // ALERTA[Xavi] posava content.rev, això no pot ser, es referia contentTool.rev (que a la seva vegada es el mateix que value.rev)?
                     }
                 } else {
+                    // No hi ha tipus previ de contenttool, o el tipus del contenttol era diferent
 
                     return this.inherited(arguments);
                 }
@@ -89,8 +97,6 @@ define([
                 if (contentCache && contentCache.rev != value.rev) {
                     dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
                 }
-
-                //console.log("Confirmation: ", confirmation);
 
 
                 return confirmation ? 0 : 100;

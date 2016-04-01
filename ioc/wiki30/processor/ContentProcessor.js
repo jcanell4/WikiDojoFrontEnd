@@ -42,9 +42,17 @@ define([
                     id = value.id;
 
                 if (value.discard_changes) {
+
                     confirmation = true;
+
                 } else if (changesManager.isChanged(id)) {
                     confirmation = dispatcher.discardChanges();
+
+                    if (confirmation) {
+                        dispatcher.getDraftManager().clearDraft(id);
+                        //console.log("Eliminat esborrany");
+                        // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
+                    }
 
                 } else {
                     confirmation = true;
@@ -54,6 +62,7 @@ define([
                     changesManager.removeContentTool(id);
                     changesManager.resetContentChangeState(id);
                     this._loadTab(value, dispatcher, arguments);
+
                 }
 
                 return confirmation ? 0 : 100;

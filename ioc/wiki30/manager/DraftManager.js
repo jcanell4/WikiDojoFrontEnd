@@ -54,6 +54,7 @@ define([
 
             // S'ha de retornar tant el del local com el del full si existeixen
             for (var type in drafts) {
+
                 if (type === "structured" && drafts.structured.content[chunkId] === undefined) { //Alerta[Xavi] Solució temporal fins que s'afegeixin les dates a cada chunk
                     //console.log("No existeix el chunk, no afegim la data");
                 } else {
@@ -65,6 +66,8 @@ define([
         },
 
         generateLastLocalDraftTimesParam: function (docId, chunkId) {
+            //console.log("DraftManager#generateLastLocalDraftTimesParam", docId, chunkId);
+
             var localDraftTimes = this.getLastLocalDraftTime(docId, chunkId),
                 param = '';
 
@@ -74,8 +77,6 @@ define([
                 }
 
             }
-
-            //console.log("DraftManager#generateLastLocalDraftTimes", param);
 
             return param;
         },
@@ -90,6 +91,69 @@ define([
             //console.log("DraftManager#_removeDraft", data);
             delete(this.drafts[data.id]);
         },
+
+        clearDraft: function(id) {
+            //console.log("DraftManager#clearDraft", id);
+
+            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+                user = JSON.parse(localStorage.getItem(userId)),
+                pages = user.pages;
+
+            if (pages && pages[id]) {
+                //console.log("Eliminant esborrany local per l'usuari", user);
+                pages[id].drafts={};
+                //delete(pages[id]);
+                localStorage.setItem(userId, JSON.stringify({pages: pages}));
+
+            } else {
+                //console.log("No hi ha esborranys locals per descartar per aquest usuari i document", user, id);
+            }
+
+            //console.log("DraftManager#clearDraft OK");
+
+        },
+
+        clearDraftChunks: function(id, chunks) {
+            //console.log("DraftManager#clearDraftChunks", id);
+
+            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+                user = JSON.parse(localStorage.getItem(userId)),
+                pages = user.pages;
+
+            if (pages && pages[id]) {
+                //console.log("Eliminant chunks locals per l'usuari", user, chunks);
+
+                pages[id].drafts=this._removeDraftChunk(pages[id].drafts, chunks);
+                //delete(pages[id]);
+                localStorage.setItem(userId, JSON.stringify({pages: pages}));
+
+            } else {
+                //console.log("No hi ha esborranys locals per descartar per aquest usuari i document", user, id);
+            }
+
+            //console.log("DraftManager#clearDraft OK");
+
+        },
+
+        _removeDraftChunk: function (drafts, chunks) {
+            if (!drafts) {
+                //console.log("No hi han pàgines, no cal eliminar res", drafts);
+                return;
+            }
+
+            for(var i=0; i<chunks.length; i++) {
+                if (drafts.structured) {
+                    //console.log("Eliminant draft chunk:", drafts.structured.content[chunks[i]]);
+                    delete(drafts.structured.content[chunks[i]]);
+                } else {
+                    //console.log("No hi ha draft per esborrar:", drafts);
+                }
+
+
+            }
+
+            return drafts;
+        }
 
     });
 

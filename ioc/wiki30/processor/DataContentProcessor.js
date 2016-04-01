@@ -29,11 +29,26 @@ define([
              */
             process: function (value, dispatcher) {
                 //console.log("DataContentProcessor#process", value);
-                var $content = jQuery(value.content);
+                var $content = jQuery(value.content),
+                    draftContent;
 
                 // Reemplaçem el contingut del content amb el del draft
-                if (value.draft != null && value.recover_draft === "true") {
-                    $content.find('textarea').html(value.draft.content);
+
+
+                if (value.recover_draft) {
+                    if (value.recover_draft.recover_local === true) {
+                        draftContent =this._getLocalDraftContent(value, dispatcher);
+
+                    } else if (value.recover_draft.recover_draft ===true && value.draft !=null) {
+                        draftContent = value.draft.content;
+
+
+
+                    } else {
+                        console.error("S'ha demanat un esborrany però no hi ha cap text per afegir")
+                    }
+
+                    $content.find('textarea').html(draftContent);
                     value.content = jQuery('<div>').append($content.clone()).html();
                 }
 
@@ -85,6 +100,13 @@ define([
 
             _extractContentFromNode: function (content) {
                 return  jQuery.trim(jQuery(content.content).find('textarea').val());
+            },
+
+            _getLocalDraftContent: function(value, dispatcher) {
+                var draft = dispatcher.getDraftManager().getDraft(value.id),
+                    draftContent = draft.recoverLocalDraft().full.content;
+
+                return draftContent;
             }
         });
 });
