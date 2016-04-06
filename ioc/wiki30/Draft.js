@@ -4,6 +4,11 @@ define([
     'ioc/wiki30/Timer'
 ], function (declare, EventObserver, Timer) {
 
+    var DraftException = function (message) {
+        this.message = message;
+        this.name = "DraftException";
+    };
+
     return declare([EventObserver], {
 
         AUTOSAVE_LOCAL: 5 * 1000, // Temps en ms mínim per fer un refresc
@@ -39,6 +44,7 @@ define([
             this.registerToEvent(this.contentTool, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
             this.registerToEvent(this.contentTool, this.eventName.CANCEL, this.destroy.bind(this));
             this.registerToEvent(this.contentTool, this.eventName.DESTROY, this.destroy.bind(this));
+            this.registerToEvent(this.eventManager, this.eventName.SAVE_PARTIAL, this._clearLocal.bind(this));
 
         },
 
@@ -66,9 +72,11 @@ define([
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
             var docNs = this.contentTool.ns, // guardat al page
                 draft = this.contentTool._generateDraft(),
-                page = this._doGetPage();
+                page = this._doGetPage(),
+                date = Date.now();
 
-            // Si existeix la actualitzem, si no, la creem
+
+            // Si existeix la actualitzarem, i si no, la creem
             if (!page) {
                 page = {
                     ns: docNs,
@@ -76,9 +84,31 @@ define([
                 }
             }
 
-            draft.date = Date.now();
+            if (!page.drafts[draft.type]) {
+                page.drafts[draft.type] = {};
+            }
 
-            page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
+            console.log("Abans: ", draft);
+            // Reestructurem la informació
+            // No cal afegir el tipus, perquè ja es troba a la estructura
+
+
+            // S'han de recorre tots els elements de content i copiar el contingut a content i afegir la data del element seleccionat, la
+
+            for (var chunk in draft.content) {
+                page.drafts[draft.type][chunk] = {
+                    content: draft.content[chunk],
+                    date: date
+                }
+            }
+
+
+            console.log("Pagina:", page);
+
+
+            // draft.date = Date.now(); // La data ara es troba dins de cada chunk
+
+            //page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix TODO[Xavi] Error, es descarten els esborranys de chunks anteriors
 
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
             this._doSetPage(page);
@@ -98,19 +128,68 @@ define([
             });
 
             // S'elimina només el tipus corresponent al document
+            console.log("Data enviada amb el save:", dataToSend);
+
+            // TODO[Xavi] això es pot lligar al sistema d'events: this.eventName.SAVE_DRAFT
             this._removeLocalDraft(this.contentTool.DRAFT_TYPE);
+        },
+
+        _clearLocal: function (data) {
+            var pages = this._doGetPages(),
+                chunkId = data.dataToSend.section_id;
+
+            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
+                console.log("Esbrrarant:", chunkId);
+                delete(pages[this.contentTool.id].drafts['structured'][chunkId]);
+            } else {
+                console.log("No existeix cap esborrany que eliminar");
+            }
+
+            this._doSetPages(pages);
+
+            console.log("Detectat un save: ", data);
         },
 
         // Només elimina el draft del tipus indicat
         _removeLocalDraft: function (type) {
-            //console.log('Draft#_removeLocalDraft');
+            switch (type) {
+                case 'structured':
+                    this._removeLocalStructuredDraft();
+                    break;
+
+                case 'full':
+                    this._removeLocalFullDraft();
+                    break;
+
+                default:
+                    throw new DraftException("No s'ha indicat un tipus de draft vàlid: ", type);
+            }
+
+        },
+
+        _removeLocalStructuredDraft: function () {
+            // En aquest cas només s'han d'esborrar el draft dels chunks actius al desar
+            var pages = this._doGetPages(),
+                draft = this._getLastGeneratedDraft();
+
+            console.log("draft:", draft);
+            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
+                for (var chunk in draft.content) {
+                    console.log("Esbrrarant:", chunk)
+                    delete(pages[this.contentTool.id].drafts['structured'][chunk]);
+                }
+            }
+
+            this._doSetPages(pages);
+        },
+
+        _removeLocalFullDraft: function () {
             var pages = this._doGetPages();
 
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                delete(pages[this.contentTool.id].drafts[type]);
+                delete(pages[this.contentTool.id].drafts['full']);
                 this._doSetPages(pages);
             }
-
         },
 
 
@@ -163,13 +242,23 @@ define([
 
         _getQueryDraft: function () {
             //console.log('Draft#_getQueryDraft');
+            this._setLastGeneratedDraft(this.contentTool._generateDraft());
+
             var dataToSend = {
                 id: this.contentTool.ns,
                 do: 'save_draft',
-                draft: JSON.stringify(this.contentTool._generateDraft())
+                draft: JSON.stringify(this._getLastGeneratedDraft())
             };
 
             return dataToSend;
+        },
+
+        _setLastGeneratedDraft: function (draft) {
+            this.lastGeneratedDraft = draft;
+        },
+
+        _getLastGeneratedDraft: function () {
+            return this.lastGeneratedDraft;
         },
 
         _doRefresh: function () {

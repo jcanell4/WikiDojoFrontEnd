@@ -976,6 +976,7 @@ define([
             var dataToSend = this.getQuerySave(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
+            console.log("S'ha despatchat el save partial");
             this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
                 id: this.id,
                 dataToSend: dataToSend,

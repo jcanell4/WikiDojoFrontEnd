@@ -55,10 +55,10 @@ define([
             // S'ha de retornar tant el del local com el del full si existeixen
             for (var type in drafts) {
 
-                if (type === "structured" && drafts.structured.content[chunkId] === undefined) { //Alerta[Xavi] Solució temporal fins que s'afegeixin les dates a cada chunk
+                if (type === "structured" && drafts.structured[chunkId] === undefined) {
                     //console.log("No existeix el chunk, no afegim la data");
                 } else {
-                    time[type] = drafts[type].date;
+                    time[type] = drafts[type][chunkId].date;
                 }
             }
 

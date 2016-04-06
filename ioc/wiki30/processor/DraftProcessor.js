@@ -202,7 +202,7 @@ define([
                         return {content: draft.full.content, date: draft.full.date};
                     case 'partial_document':
                         // TODO[Xavi] S'ha d canviar la estructura si volem poder recuperar la data de cada fragment individualment
-                        return {content: draft.structured.content[value.selected], date: draft.structured.date}
+                        return {content: draft.structured[value.selected].content, date: draft.structured[value.selected].date}
                 }
 
                 return this.DEFAULT_DRAFT;
