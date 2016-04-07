@@ -44,7 +44,8 @@ define([
             this.registerToEvent(this.contentTool, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
             this.registerToEvent(this.contentTool, this.eventName.CANCEL, this.destroy.bind(this));
             this.registerToEvent(this.contentTool, this.eventName.DESTROY, this.destroy.bind(this));
-            this.registerToEvent(this.eventManager, this.eventName.SAVE_PARTIAL, this._clearLocal.bind(this));
+            this.registerToEvent(this.eventManager, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
+            this.registerToEvent(this.eventManager, this.eventName.SAVE, this._clearLocalAll.bind(this));
 
         },
 
@@ -88,12 +89,23 @@ define([
                 page.drafts[draft.type] = {};
             }
 
-            console.log("Abans: ", draft);
+            switch(draft.type) {
+                case 'structured':
+                    page = this._formatLocalStructuredPage(page, draft, date);
+                    break;
+
+                case 'full':
+                    page = this._formatLocalFullPage(page, draft, date);
+            }
+
+            this._doSetPage(page);
+
+        },
+
+        _formatLocalStructuredPage: function(page, draft, date) {
             // Reestructurem la informació
             // No cal afegir el tipus, perquè ja es troba a la estructura
-
-
-            // S'han de recorre tots els elements de content i copiar el contingut a content i afegir la data del element seleccionat, la
+            // S'han de recorre tots els elements de content (del draft) i copiar el contingut a content (de page.drafts) i afegir la data del element seleccionat, la
 
             for (var chunk in draft.content) {
                 page.drafts[draft.type][chunk] = {
@@ -102,17 +114,17 @@ define([
                 }
             }
 
+            // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
+            return page;
+        },
 
-            console.log("Pagina:", page);
+        _formatLocalFullPage: function(page, draft, date) {
+            draft.date = date;
 
-
-            // draft.date = Date.now(); // La data ara es troba dins de cada chunk
-
-            //page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix TODO[Xavi] Error, es descarten els esborranys de chunks anteriors
+            page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
 
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
-            this._doSetPage(page);
-
+            return page;
         },
 
         _doSaveRemoteServer: function () {
@@ -128,26 +140,36 @@ define([
             });
 
             // S'elimina només el tipus corresponent al document
-            console.log("Data enviada amb el save:", dataToSend);
-
-            // TODO[Xavi] això es pot lligar al sistema d'events: this.eventName.SAVE_DRAFT
+            // TODO[Xavi] això es podria lligar al sistema d'events: this.eventName.SAVE_DRAFT
             this._removeLocalDraft(this.contentTool.DRAFT_TYPE);
         },
 
-        _clearLocal: function (data) {
+        _clearLocalStructured: function (data) {
             var pages = this._doGetPages(),
                 chunkId = data.dataToSend.section_id;
 
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                console.log("Esbrrarant:", chunkId);
                 delete(pages[this.contentTool.id].drafts['structured'][chunkId]);
             } else {
-                console.log("No existeix cap esborrany que eliminar");
+                //console.log("No existeix cap esborrany que eliminar");
             }
 
             this._doSetPages(pages);
 
-            console.log("Detectat un save: ", data);
+        },
+
+        _clearLocalAll: function (data) {
+            var pages = this._doGetPages();
+
+            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
+                delete(pages[this.contentTool.id].drafts['full']);
+                delete(pages[this.contentTool.id].drafts['structured']);
+            } else {
+                //console.log("No existeix cap esborrany que eliminar");
+            }
+
+            this._doSetPages(pages);
+
         },
 
         // Només elimina el draft del tipus indicat
@@ -172,10 +194,8 @@ define([
             var pages = this._doGetPages(),
                 draft = this._getLastGeneratedDraft();
 
-            console.log("draft:", draft);
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
                 for (var chunk in draft.content) {
-                    console.log("Esbrrarant:", chunk)
                     delete(pages[this.contentTool.id].drafts['structured'][chunk]);
                 }
             }

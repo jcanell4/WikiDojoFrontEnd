@@ -87,6 +87,7 @@ define([
             },
 
             cancel: function (id) {
+                //console.log("LockManager#cancel",id);
                 this.locks[id].destroy();
             }
 

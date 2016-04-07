@@ -69,7 +69,7 @@ define([
                 this.lockManager.cancel(this.docId);
 
                 this.eventManager.dispatchEvent("edit", {
-                    id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
+                    id: this.id,
                     dataToSend: this._buildQuery('full_document',value) + '&discard_draft=true'
                 });
             },
@@ -79,7 +79,7 @@ define([
                 this.lockManager.cancel(this.docId);
 
                 this.eventManager.dispatchEvent("edit_partial", {
-                    id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
+                    id: this.id,
                     dataToSend: this._buildQuery('partial_document', value) + '&discard_draft=true'
                 });
 

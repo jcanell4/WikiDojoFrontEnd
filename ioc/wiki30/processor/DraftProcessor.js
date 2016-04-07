@@ -104,7 +104,6 @@ define([
             },
 
             _openDraft: function () {
-
                 this._cancelTimers();
                 this.lockManager.cancel(this.docId);
 

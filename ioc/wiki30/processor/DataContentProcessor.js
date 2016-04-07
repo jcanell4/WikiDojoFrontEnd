@@ -34,7 +34,6 @@ define([
 
                 // Reemplaçem el contingut del content amb el del draft
 
-
                 if (value.recover_draft) {
                     if (value.recover_draft.recover_local === true) {
                         draftContent =this._getLocalDraftContent(value, dispatcher);
@@ -43,9 +42,8 @@ define([
                         draftContent = value.draft.content;
 
 
-
                     } else {
-                        console.error("S'ha demanat un esborrany però no hi ha cap text per afegir")
+                        console.error("S'ha demanat un esborrany però no hi ha cap text per afegir: ", value)
                     }
 
                     $content.find('textarea').html(draftContent);

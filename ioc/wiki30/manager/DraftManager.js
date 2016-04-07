@@ -57,6 +57,8 @@ define([
 
                 if (type === "structured" && drafts.structured[chunkId] === undefined) {
                     //console.log("No existeix el chunk, no afegim la data");
+                } else if (type === "full") {
+                    time[type] = drafts[type].date;
                 } else {
                     time[type] = drafts[type][chunkId].date;
                 }
@@ -143,8 +145,7 @@ define([
 
             for(var i=0; i<chunks.length; i++) {
                 if (drafts.structured) {
-                    //console.log("Eliminant draft chunk:", drafts.structured.content[chunks[i]]);
-                    delete(drafts.structured.content[chunks[i]]);
+                    delete(drafts.structured[chunks[i]]);
                 } else {
                     //console.log("No hi ha draft per esborrar:", drafts);
                 }
