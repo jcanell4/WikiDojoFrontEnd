@@ -41,9 +41,8 @@ define([
                     } else if (value.recover_draft.recover_draft ===true && value.draft !=null) {
                         draftContent = value.draft.content;
 
-
                     } else {
-                        console.error("S'ha demanat un esborrany però no hi ha cap text per afegir: ", value)
+                        // No s'ha demanat recuperar cap draft, o no s'ja enviat el draft per recuperar
                     }
 
                     $content.find('textarea').html(draftContent);

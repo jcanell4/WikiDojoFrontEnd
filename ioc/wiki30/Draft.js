@@ -12,8 +12,8 @@ define([
     return declare([EventObserver], {
 
         AUTOSAVE_LOCAL: 5 * 1000, // Temps en ms mínim per fer un refresc
-        AUTOSAVE_REMOTE: 10 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
-
+        AUTOSAVE_REMOTE: 15 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
+        MAX_LOCAL_STORAGE_USED: 2048, // En KBs, 2048KBs son 2 MBs
 
         constructor: function (args) {
             this.dispatcher = args.dispatcher;
@@ -22,7 +22,6 @@ define([
             this.lastRefresh = Date.now();
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
-            this.type;
             this._init();
         },
 
@@ -55,8 +54,12 @@ define([
             var now = Date.now(),
                 elapsedTime = now - this.lastRemoteRefresh;
 
-            if (elapsedTime >= this.AUTOSAVE_REMOTE) {
 
+            var spaceUsed = this._checkLocalStorageSpace();
+
+            // ALERTA[Xavi] Aqui comprovem si la mida ocupada es superior a 2MB ABANS de desar les dades, no tenim en
+            // compte la mida de les dades que seran desades
+            if (elapsedTime >= this.AUTOSAVE_REMOTE || spaceUsed > this.MAX_LOCAL_STORAGE_USED) {
                 this._doSaveRemoteServer();
             } else {
 
@@ -89,7 +92,7 @@ define([
                 page.drafts[draft.type] = {};
             }
 
-            switch(draft.type) {
+            switch (draft.type) {
                 case 'structured':
                     page = this._formatLocalStructuredPage(page, draft, date);
                     break;
@@ -102,7 +105,7 @@ define([
 
         },
 
-        _formatLocalStructuredPage: function(page, draft, date) {
+        _formatLocalStructuredPage: function (page, draft, date) {
             // Reestructurem la informació
             // No cal afegir el tipus, perquè ja es troba a la estructura
             // S'han de recorre tots els elements de content (del draft) i copiar el contingut a content (de page.drafts) i afegir la data del element seleccionat, la
@@ -118,7 +121,7 @@ define([
             return page;
         },
 
-        _formatLocalFullPage: function(page, draft, date) {
+        _formatLocalFullPage: function (page, draft, date) {
             draft.date = date;
 
             page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
@@ -257,6 +260,8 @@ define([
             user.pages[this.contentTool.id] = page;
 
             localStorage.setItem(userId, JSON.stringify(user));
+
+
         },
 
 
@@ -340,7 +345,18 @@ define([
             } else {
                 return {}
             }
+        },
 
+        _checkLocalStorageSpace: function () {
+            var spaceUsed = 0;
+
+            for (var i = 0; i < localStorage.length; i++) {
+                spaceUsed += (localStorage[localStorage.key(i)].length * 2) / 1024; // KB
+            }
+
+            console.log("LocalStorage usage: ", spaceUsed.toFixed(2) + " KB");
+
+            return spaceUsed;
         }
 
     });
