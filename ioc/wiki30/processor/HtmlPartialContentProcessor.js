@@ -27,17 +27,43 @@ define([
             process: function (value, dispatcher) {
                 //console.log("HtmlPartialContentProcessor#process", value);
 
-                //ALERTA[Xavi] Codi de prova pels notifiers
+                //
+                ////ALERTA[Xavi] Codi de prova pels notifiers -> INIT
+                //dispatcher.getEventManager().dispatchEvent('notify', {
+                //    id: value.id,
+                //    dataToSend: {
+                //        do: 'init'
+                //    }
+                //});
+
+
+                ////ALERTA[Xavi] Codi de prova pels notifiers -> ADD
+                //dispatcher.getEventManager().dispatchEvent('notify', {
+                //    id: value.id,
+                //    dataToSend: {
+                //        do: 'add',
+                //        message: 'hello world',
+                //        to: 'Admin', // ens l'enviem a nosaltres mateixos
+                //        'params': JSON.stringify({
+                //            paramA:'aaa',
+                //            paramB:'bbb'}
+                //        )}
+                //});
+                //
+                ////ALERTA[Xavi] Codi de prova pels notifiers -> GET
+                //dispatcher.getEventManager().dispatchEvent('notify', {
+                //    id: value.id,
+                //    dataToSend: {
+                //        do: 'get'
+                //    }
+                //});
+
+                //ALERTA[Xavi] Codi de prova pels notifiers -> CLOSE
                 dispatcher.getEventManager().dispatchEvent('notify', {
                     id: value.id,
                     dataToSend: {
-                        do: 'init',
-                        message: 'hello world',
-                        to: 'perico',
-                        'params': JSON.stringify({
-                            type:'info',
-                            subtype:'info'}
-                        )}
+                        do: 'close'
+                    }
                 });
 
 
