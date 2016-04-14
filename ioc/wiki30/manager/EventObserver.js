@@ -35,7 +35,8 @@ define([
                 SAVE_DRAFT: 'save_draft',
                 CONTENT_SELECTED: 'content_selected',
                 CONTENT_UNSELECTED: 'content_unselected',
-                DOCUMENT_CHANGES_RESET: 'document_changes_reset'
+                DOCUMENT_CHANGES_RESET: 'document_changes_reset',
+                NOTIFY: 'notify'
 
             },
 

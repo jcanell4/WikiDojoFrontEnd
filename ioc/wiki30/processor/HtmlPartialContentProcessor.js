@@ -27,6 +27,21 @@ define([
             process: function (value, dispatcher) {
                 //console.log("HtmlPartialContentProcessor#process", value);
 
+                //ALERTA[Xavi] Codi de prova pels notifiers
+                dispatcher.getEventManager().dispatchEvent('notify', {
+                    id: value.id,
+                    dataToSend: {
+                        do: 'init',
+                        message: 'hello world',
+                        to: 'perico',
+                        'params': JSON.stringify({
+                            type:'info',
+                            subtype:'info'}
+                        )}
+                });
+
+
+
                 var changesManager = dispatcher.getChangesManager(),
                     cache = dispatcher.getContentCache(value.id), // TODO[Xavi] de vegades torna null?
                     confirmation = false,
