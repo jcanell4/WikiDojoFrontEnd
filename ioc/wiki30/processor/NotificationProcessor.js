@@ -20,6 +20,7 @@ define([
              */
             process: function (value, dispatcher) {
                 this._process(value, dispatcher);
+
             },
 
             /**
@@ -30,9 +31,8 @@ define([
              * @private
              */
             _process: function (data, dispatcher) {
-                // TODO[Xavi] Només he afegit per comprovar que funciona la banda del servidor
                 console.log("NotificationProcessor#_process", data);
-
+                dispatcher.getNotifyManager().process(data.action, data.params);
 
 
             }
