@@ -28,13 +28,13 @@ define([
                 //console.log("HtmlPartialContentProcessor#process", value);
 
                 //
-                //ALERTA[Xavi] Codi de prova pels notifiers -> INIT
-                dispatcher.getEventManager().dispatchEvent('notify', {
-                    id: value.id,
-                    dataToSend: {
-                        do: 'init'
-                    }
-                });
+                ////ALERTA[Xavi] Codi de prova pels notifiers -> INIT
+                //dispatcher.getEventManager().dispatchEvent('notify', {
+                //    id: value.id,
+                //    dataToSend: {
+                //        do: 'init'
+                //    }
+                //});
 
 
                 //ALERTA[Xavi] Codi de prova pels notifiers -> ADD
