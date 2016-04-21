@@ -1,8 +1,8 @@
 define([
     'dojo/_base/declare',
-    'ioc/wiki30/Draft',
     'ioc/wiki30/manager/EventObserver',
-], function (declare, Draft, EventObserver) {
+    'ioc/wiki30/notify_engines/AjaxNotifyEngine',
+], function (declare, EventObserver, AjaxNotifyEngine) {
 
     var NotifyManagerException = function (message) {
         this.message = message;
@@ -18,7 +18,7 @@ define([
             console.log("Dispatcher: ", this.dispatcher);
         },
 
-        process: function(action, params) {
+        process: function (action, params) {
             switch (action) {
                 case 'init_notifier':
                     console.log(action, params);
@@ -31,8 +31,6 @@ define([
                     } else {
                         this._initNotifier(params);
                     }
-
-
                     break;
 
                 case 'notification_send':
@@ -55,7 +53,7 @@ define([
             }
         },
 
-        _closeNotifier: function(params) {
+        _closeNotifier: function (params) {
             console.log("NotifyManager#_updateNotifier", params);
             if (!this._notificationEngine) {
                 throw new NotifyManagerException("S'ha intentat tancar el motor de notificacions però no hi ha cap actiu");
@@ -64,82 +62,33 @@ define([
             this._notificationEngine.shutdown();
         },
 
-        _updateNotifier: function(params) {
-          console.log("NotifyManager#_updateNotifier", params)
+        _updateNotifier: function (params) {
+            console.log("NotifyManager#_updateNotifier", params)
             this._notificationEngine.update(params);
         },
 
-        _initNotifier: function(params) {
+        _initNotifier: function (params) {
 
+            params.dispatcher = this.dispatcher;
 
             switch (params.type) {
+
                 case 'ajax':
-                    this._initAjaxNotifier(params);
+                    this._notificationEngine = new AjaxNotifyEngine(params);
                     break;
+
                 case 'websocket':
-                    this._initWebsocketNotifier(params);
-                    break;
                 default:
-                    throw new NotifyManagerException("Tipus de motor de notificacions desconegut: ", params.type);
+                    throw new NotifyManagerException("Tipus de motor no implementat: ", params.type);
             }
+
+            this._notificationEngine.init(params);
         },
 
-        _initAjaxNotifier: function (params) {
-            // Crear un nou ajaxNotificactionEngine TODO: Pensar que ha de ser una interficie
-
-            //TODO[Xavi] Moure a una classe externa!
-            this._notificationEngine = {
-
-                // TODO[Xavi] passarà el dispatcher a través del constructor i s'iniciarà el engine
-                //constructor: function (args) {
-                //    this.dispatcher = args.dispatcher;
-                //    this.init(args)
-                //},
-
-                init: function(args) {
-                    console.log("AjaxEngine#init");
-
-                    this.timer = setInterval(this.refreshNotifications.bind(this), args.timer);
-                },
-
-                refreshNotifications: function() {
-                    console.log("AjaxEngine#refreshNotifications");
-                    // S'ha de fer un pop de les notificacions
-                    this.dispatcher.getEventManager().dispatchEvent('notify', {
-                        //id: value.id, // ALERTA[Xavi] crec que això, en el cas de les notificacions, no és necessari
-                        dataToSend: {
-                            do: 'get'
-                        }
-                    });
-                },
-
-                update: function(args) {
-                    console.log("AjaxEngine#update");
-                    this.shutdown();
-                    this.init(args);
-                },
-
-                shutdown: function() {
-                    console.log("AjaxEngine#shutdown");
-                    if (this.timer) {
-                        clearInterval(this.timer);
-                    }
-                }
-
-            },
-
-            this._notificationEngine.dispatcher = this.dispatcher; // ALERTA[Xavi] Això s'afegirà des del constructor
-            this._notificationEngine.init(params); // ALERTA[Xavi] Això es cridarà des del constructor
-
-
-        },
-
-        _initWebsocketNotifier: function (params) {
-            throw new NotifyManagerException("Pendent d'implemeentar");
-        },
-
-        _procesNotifications: function(notification) {
+        _procesNotifications: function (notification) {
+            // TODO[Xavi] Pendent d'afegir el sistema de processament
             console.log("NotifyManager#_processNotifications", notification);
         }
+
     });
 });
