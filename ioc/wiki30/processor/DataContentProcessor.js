@@ -29,23 +29,11 @@ define([
              */
             process: function (value, dispatcher) {
                 //console.log("DataContentProcessor#process", value);
-                var $content = jQuery(value.content),
-                    draftContent;
+                var $content = jQuery(value.content);
 
                 // Reemplaçem el contingut del content amb el del draft
-
-                if (value.recover_draft) {
-                    if (value.recover_draft.recover_local === true) {
-                        draftContent =this._getLocalDraftContent(value, dispatcher);
-
-                    } else if (value.recover_draft.recover_draft ===true && value.draft !=null) {
-                        draftContent = value.draft.content;
-
-                    } else {
-                        // No s'ha demanat recuperar cap draft, o no s'ja enviat el draft per recuperar
-                    }
-
-                    $content.find('textarea').html(draftContent);
+                if (value.draft != null && value.recover_draft === "true") {
+                    $content.find('textarea').html(value.draft.content);
                     value.content = jQuery('<div>').append($content.clone()).html();
                 }
 
@@ -97,13 +85,6 @@ define([
 
             _extractContentFromNode: function (content) {
                 return  jQuery.trim(jQuery(content.content).find('textarea').val());
-            },
-
-            _getLocalDraftContent: function(value, dispatcher) {
-                var draft = dispatcher.getDraftManager().getDraft(value.id),
-                    draftContent = draft.recoverLocalDraft().full.content;
-
-                return draftContent;
             }
         });
 });

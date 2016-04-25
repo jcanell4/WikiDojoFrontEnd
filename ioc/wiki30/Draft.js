@@ -4,16 +4,11 @@ define([
     'ioc/wiki30/Timer'
 ], function (declare, EventObserver, Timer) {
 
-    var DraftException = function (message) {
-        this.message = message;
-        this.name = "DraftException";
-    };
-
     return declare([EventObserver], {
 
         AUTOSAVE_LOCAL: 5 * 1000, // Temps en ms mínim per fer un refresc
-        AUTOSAVE_REMOTE: 15 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
-        MAX_LOCAL_STORAGE_USED: 2048, // En KBs, 2048KBs son 2 MBs
+        AUTOSAVE_REMOTE: 10 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
+
 
         constructor: function (args) {
             this.dispatcher = args.dispatcher;
@@ -22,6 +17,7 @@ define([
             this.lastRefresh = Date.now();
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
+            this.type;
             this._init();
         },
 
@@ -43,8 +39,6 @@ define([
             this.registerToEvent(this.contentTool, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
             this.registerToEvent(this.contentTool, this.eventName.CANCEL, this.destroy.bind(this));
             this.registerToEvent(this.contentTool, this.eventName.DESTROY, this.destroy.bind(this));
-            this.registerToEvent(this.eventManager, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
-            this.registerToEvent(this.eventManager, this.eventName.SAVE, this._clearLocalAll.bind(this));
 
         },
 
@@ -54,12 +48,8 @@ define([
             var now = Date.now(),
                 elapsedTime = now - this.lastRemoteRefresh;
 
+            if (elapsedTime >= this.AUTOSAVE_REMOTE) {
 
-            var spaceUsed = this._checkLocalStorageSpace();
-
-            // ALERTA[Xavi] Aqui comprovem si la mida ocupada es superior a 2MB ABANS de desar les dades, no tenim en
-            // compte la mida de les dades que seran desades
-            if (elapsedTime >= this.AUTOSAVE_REMOTE || spaceUsed > this.MAX_LOCAL_STORAGE_USED) {
                 this._doSaveRemoteServer();
             } else {
 
@@ -76,11 +66,9 @@ define([
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
             var docNs = this.contentTool.ns, // guardat al page
                 draft = this.contentTool._generateDraft(),
-                page = this._doGetPage(),
-                date = Date.now();
+                page = this._doGetPage();
 
-
-            // Si existeix la actualitzarem, i si no, la creem
+            // Si existeix la actualitzem, si no, la creem
             if (!page) {
                 page = {
                     ns: docNs,
@@ -88,46 +76,13 @@ define([
                 }
             }
 
-            if (!page.drafts[draft.type]) {
-                page.drafts[draft.type] = {};
-            }
-
-            switch (draft.type) {
-                case 'structured':
-                    page = this._formatLocalStructuredPage(page, draft, date);
-                    break;
-
-                case 'full':
-                    page = this._formatLocalFullPage(page, draft, date);
-            }
-
-            this._doSetPage(page);
-
-        },
-
-        _formatLocalStructuredPage: function (page, draft, date) {
-            // Reestructurem la informació
-            // No cal afegir el tipus, perquè ja es troba a la estructura
-            // S'han de recorre tots els elements de content (del draft) i copiar el contingut a content (de page.drafts) i afegir la data del element seleccionat, la
-
-            for (var chunk in draft.content) {
-                page.drafts[draft.type][chunk] = {
-                    content: draft.content[chunk],
-                    date: date
-                }
-            }
-
-            // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
-            return page;
-        },
-
-        _formatLocalFullPage: function (page, draft, date) {
-            draft.date = date;
+            draft.date = Date.now();
 
             page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
 
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
-            return page;
+            this._doSetPage(page);
+
         },
 
         _doSaveRemoteServer: function () {
@@ -143,76 +98,19 @@ define([
             });
 
             // S'elimina només el tipus corresponent al document
-            // TODO[Xavi] això es podria lligar al sistema d'events: this.eventName.SAVE_DRAFT
             this._removeLocalDraft(this.contentTool.DRAFT_TYPE);
-        },
-
-        _clearLocalStructured: function (data) {
-            var pages = this._doGetPages(),
-                chunkId = data.dataToSend.section_id;
-
-            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                delete(pages[this.contentTool.id].drafts['structured'][chunkId]);
-            } else {
-                //console.log("No existeix cap esborrany que eliminar");
-            }
-
-            this._doSetPages(pages);
-
-        },
-
-        _clearLocalAll: function (data) {
-            var pages = this._doGetPages();
-
-            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                delete(pages[this.contentTool.id].drafts['full']);
-                delete(pages[this.contentTool.id].drafts['structured']);
-            } else {
-                //console.log("No existeix cap esborrany que eliminar");
-            }
-
-            this._doSetPages(pages);
-
         },
 
         // Només elimina el draft del tipus indicat
         _removeLocalDraft: function (type) {
-            switch (type) {
-                case 'structured':
-                    this._removeLocalStructuredDraft();
-                    break;
-
-                case 'full':
-                    this._removeLocalFullDraft();
-                    break;
-
-                default:
-                    throw new DraftException("No s'ha indicat un tipus de draft vàlid: ", type);
-            }
-
-        },
-
-        _removeLocalStructuredDraft: function () {
-            // En aquest cas només s'han d'esborrar el draft dels chunks actius al desar
-            var pages = this._doGetPages(),
-                draft = this._getLastGeneratedDraft();
-
-            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                for (var chunk in draft.content) {
-                    delete(pages[this.contentTool.id].drafts['structured'][chunk]);
-                }
-            }
-
-            this._doSetPages(pages);
-        },
-
-        _removeLocalFullDraft: function () {
+            //console.log('Draft#_removeLocalDraft');
             var pages = this._doGetPages();
 
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                delete(pages[this.contentTool.id].drafts['full']);
+                delete(pages[this.contentTool.id].drafts[type]);
                 this._doSetPages(pages);
             }
+
         },
 
 
@@ -260,30 +158,18 @@ define([
             user.pages[this.contentTool.id] = page;
 
             localStorage.setItem(userId, JSON.stringify(user));
-
-
         },
 
 
         _getQueryDraft: function () {
             //console.log('Draft#_getQueryDraft');
-            this._setLastGeneratedDraft(this.contentTool._generateDraft());
-
             var dataToSend = {
                 id: this.contentTool.ns,
                 do: 'save_draft',
-                draft: JSON.stringify(this._getLastGeneratedDraft())
+                draft: JSON.stringify(this.contentTool._generateDraft())
             };
 
             return dataToSend;
-        },
-
-        _setLastGeneratedDraft: function (draft) {
-            this.lastGeneratedDraft = draft;
-        },
-
-        _getLastGeneratedDraft: function () {
-            return this.lastGeneratedDraft;
         },
 
         _doRefresh: function () {
@@ -323,6 +209,7 @@ define([
 
         destroy: function () {
             this.onDestroy();
+
         },
 
         onDestroy: function () {
@@ -345,18 +232,7 @@ define([
             } else {
                 return {}
             }
-        },
 
-        _checkLocalStorageSpace: function () {
-            var spaceUsed = 0;
-
-            for (var i = 0; i < localStorage.length; i++) {
-                spaceUsed += (localStorage[localStorage.key(i)].length * 2) / 1024; // KB
-            }
-
-            console.log("LocalStorage usage: ", spaceUsed.toFixed(2) + " KB");
-
-            return spaceUsed;
         }
 
     });
