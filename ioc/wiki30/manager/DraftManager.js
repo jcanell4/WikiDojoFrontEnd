@@ -94,16 +94,16 @@ define([
             delete(this.drafts[data.id]);
         },
 
-        clearDraft: function(id) {
+        clearDraft: function (id) {
             //console.log("DraftManager#clearDraft", id);
 
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
-                user = JSON.parse(localStorage.getItem(userId)),
+                user = JSON.parse(localStorage.getItem(userId)) || {pages: {}},
                 pages = user.pages;
 
             if (pages && pages[id]) {
                 //console.log("Eliminant esborrany local per l'usuari", user);
-                pages[id].drafts={};
+                pages[id].drafts = {};
                 //delete(pages[id]);
                 localStorage.setItem(userId, JSON.stringify({pages: pages}));
 
@@ -115,7 +115,7 @@ define([
 
         },
 
-        clearDraftChunks: function(id, chunks) {
+        clearDraftChunks: function (id, chunks) {
             //console.log("DraftManager#clearDraftChunks", id);
 
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
@@ -125,7 +125,7 @@ define([
             if (pages && pages[id]) {
                 //console.log("Eliminant chunks locals per l'usuari", user, chunks);
 
-                pages[id].drafts=this._removeDraftChunk(pages[id].drafts, chunks);
+                pages[id].drafts = this._removeDraftChunk(pages[id].drafts, chunks);
                 //delete(pages[id]);
                 localStorage.setItem(userId, JSON.stringify({pages: pages}));
 
@@ -143,7 +143,7 @@ define([
                 return;
             }
 
-            for(var i=0; i<chunks.length; i++) {
+            for (var i = 0; i < chunks.length; i++) {
                 if (drafts.structured) {
                     delete(drafts.structured[chunks[i]]);
                 } else {

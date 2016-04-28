@@ -51,9 +51,7 @@ define([
                 this.set("readonly", value);
             },
 
-            getReadOnly: function () {
-                return this.get("readonly");
-            },
+
 
             /**
              * Retorna cert si el contingut actual i el contingut original son iguals o fals si no ho son.

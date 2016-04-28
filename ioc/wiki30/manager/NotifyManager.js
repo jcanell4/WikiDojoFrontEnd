@@ -15,7 +15,6 @@ define([
 
         constructor: function (args) {
             this.dispatcher = args.dispatcher;
-            console.log("Dispatcher: ", this.dispatcher);
         },
 
         process: function (action, params) {

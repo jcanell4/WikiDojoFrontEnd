@@ -22,7 +22,7 @@ define([
             // TODO[Xavi] afegir el tipus per poder discriminar, per exemple els diff només fan servir el timeout i no han de mostrar cap avis, només tancar-se el dialog
             // TODO[Xavi] Afegir un métode lockWithoutDialogs en lloc de fer servir paràmetre? Si no hi ha dialogs normalment no es refrescable així que no cal guardar la opció
             lock: function (id, ns, showDialogs) {
-                //console.log('LockManager#lock', id, ns, showDialogs);
+                console.error('LockManager#lock', id, ns, showDialogs);
 
                 if (this.locks[id]) {
                     // Si ja existeix un loc per aquest document només actualitzem la visivilitat dels dialogs

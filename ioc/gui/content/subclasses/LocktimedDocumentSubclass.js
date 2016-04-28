@@ -21,7 +21,8 @@ define([
         },
 
         lockDocument: function () {
-            if (this.readonly) { // Si el document es de només lectura no s'ha de bloqudrejar
+
+            if (this.getReadOnly()) { // Si el document es de només lectura no s'ha de bloquejar
                 return;
             }
             this.dispatcher.getLockManager().lock(this.id, this.ns);
@@ -62,6 +63,10 @@ define([
         getDraftChunk: function (chunkId) {
             //console.log("LocktimedDocumentSubclass#getDraftChunk", this.id, chunkId);
             return this.getDraft().recoverLocalDraft().structured[chunkId].content;
+        },
+
+        getReadOnly: function () {
+            return this.get("readonly") || this.get("locked");
         }
     });
 });
