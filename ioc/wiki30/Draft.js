@@ -199,7 +199,9 @@ define([
 
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
                 for (var chunk in draft.content) {
-                    delete(pages[this.contentTool.id].drafts['structured'][chunk]);
+                    if (pages[this.contentTool.id].drafts['structured']) {
+                        delete(pages[this.contentTool.id].drafts['structured'][chunk]);
+                    }
                 }
             }
 
