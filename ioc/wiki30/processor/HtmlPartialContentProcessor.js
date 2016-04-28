@@ -38,17 +38,17 @@ define([
 
 
                 //ALERTA[Xavi] Codi de prova pels notifiers -> ADD
-                dispatcher.getEventManager().dispatchEvent('notify', {
-                    id: value.id,
-                    dataToSend: {
-                        do: 'add',
-                        message: 'hello world',
-                        to: 'Admin', // ens l'enviem a nosaltres mateixos
-                        'params': JSON.stringify({
-                            paramA:'aaa',
-                            paramB:'bbb'}
-                        )}
-                });
+                //dispatcher.getEventManager().dispatchEvent('notify', {
+                //    id: value.id,
+                //    dataToSend: {
+                //        do: 'add',
+                //        message: 'hello world',
+                //        to: 'Admin', // ens l'enviem a nosaltres mateixos
+                //        'params': JSON.stringify({
+                //            paramA:'aaa',
+                //            paramB:'bbb'}
+                //        )}
+                //});
                 //
                 ////ALERTA[Xavi] Codi de prova pels notifiers -> GET
                 //dispatcher.getEventManager().dispatchEvent('notify', {
