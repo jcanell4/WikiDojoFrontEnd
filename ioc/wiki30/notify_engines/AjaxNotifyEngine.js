@@ -16,7 +16,7 @@ define([
         },
 
         _refreshNotifications: function () {
-            console.log("AjaxEngine#refreshNotifications");
+            //console.log("AjaxEngine#refreshNotifications");
             // S'ha de fer un pop de les notificacions
             this.dispatcher.getEventManager().dispatchEvent('notify', {
                 //id: value.id, // ALERTA[Xavi] crec que això, en el cas de les notificacions, no és necessari
@@ -27,13 +27,13 @@ define([
         },
 
         update: function (args) {
-            console.log("AjaxEngine#update");
+            //console.log("AjaxEngine#update");
             this.shutdown();
             this.init(args);
         },
 
         shutdown: function () {
-            console.log("AjaxEngine#shutdown");
+            //console.log("AjaxEngine#shutdown");
             if (this.timer) {
                 clearInterval(this.timer);
             }

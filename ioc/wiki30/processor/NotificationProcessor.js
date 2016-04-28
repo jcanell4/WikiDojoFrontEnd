@@ -20,7 +20,6 @@ define([
              */
             process: function (value, dispatcher) {
                 this._process(value, dispatcher);
-
             },
 
             /**
@@ -31,10 +30,8 @@ define([
              * @private
              */
             _process: function (data, dispatcher) {
-                console.log("NotificationProcessor#_process", data);
+                //console.log("NotificationProcessor#_process", data);
                 dispatcher.getNotifyManager().process(data.action, data.params);
-
-
             }
         });
     return ret;

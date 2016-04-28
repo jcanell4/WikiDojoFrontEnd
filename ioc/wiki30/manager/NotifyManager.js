@@ -85,16 +85,14 @@ define([
         },
 
         _processNotifications: function (notifications) {
-            // TODO[Xavi] Pendent d'afegir el sistema de processament
-            console.log("NotifyManager#_processNotifications", notifications);
-            console.log("NotifyManager#_processNotifications count", notifications.length);
+            //console.log("NotifyManager#_processNotifications", notifications);
             for (var i=0; i<notifications.length; i++) {
                 this._processNotification(notifications[i]);
             }
         },
 
         _processNotification: function(notification) {
-            console.log("NotifyManager#_processNotification:", notification);
+            //console.log("NotifyManager#_processNotification:", notification);
             switch (notification.type) {
                 case 'alert':
                     this._processAlert(notification);
@@ -108,7 +106,7 @@ define([
 
         // TODO[Xavi] Copiat del AlertProcessor, substituir pel gestor de dialegs quan estigui implementat
         _processAlert: function (notification) {
-            console.log("NotifyManager#_processAlert", notification);
+            //console.log("NotifyManager#_processAlert", notification);
             this.dispatcher.diag.set("title", "ALERTA: " + notification.sender_id);
             this.dispatcher.diag.set("content", notification.text);
             this.dispatcher.diag.show();
