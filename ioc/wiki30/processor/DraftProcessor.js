@@ -26,7 +26,7 @@ define([
             },
 
             /**
-             * Configura el dialge amb el text passat com argument i el mostra.
+             * Configura el dialeg amb el text passat com argument i el mostra.
              *
              * @private
              */

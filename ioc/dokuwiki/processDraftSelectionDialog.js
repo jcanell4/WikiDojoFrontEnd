@@ -105,10 +105,9 @@ define([
                 this._cancelDialogs();
             },
 
-            _showDialog: function (value) {
-                //console.log('DialogController#_showDialog');
-                // TODO[Xavi] Localitzar els missatges, es pot enviar des del servidor en lloc del valor cert
-                this.dialogs.selectEditType = new CustomDialog({
+            _showDialogOld: function (value) {
+
+                var params = {
                     title: 'S\'ha trobat un esborrany complet',
                     content: 'S\'ha trobat un esborrany complet del document. Si continuas amb la edició parcial ' +
                     '<b>aquest esborrany serà eliminat</b>. Pots obrir el document en edicio completa per recuperar-lo.',
@@ -133,11 +132,59 @@ define([
                         }
                     ]
 
-                });
+                };
+
+                var dialogManager = dispatcher.getDialogManager();
+
+                this.dialogs.selectEditType = dialogManager.getDialog(dialogManager.type.CUSTOM, value.id, params); // TODO[Xavi] canviar per un tipus ajax
 
 
                 this.dialogs.selectEditType.show();
             },
+
+            _showDialog: function (value) {
+
+                var params = {
+                    title: 'S\'ha trobat un esborrany complet',
+                    message: 'S\'ha trobat un esborrany complet del document. Si continuas amb la edició parcial ' +
+                    '<b>aquest esborrany serà eliminat</b>. Pots obrir el document en edicio completa per recuperar-lo.',
+                    //onHide: this.destroy.bind(this), ALERTA[Xavi] Això ja no s'ha de gestionar des del dialog, tant els timers com el sistema de lock aniran per una altra banda
+
+                    buttons: [
+                        {
+                            //id: 'open_full_edition',
+                            description: 'Editar document complet',
+                            //callback: function () {
+                            //    this._openFullDocument(value);
+                            //}.bind(this)
+                            extra: {
+                                eventType: this.eventManager.eventName.EDIT,
+                                dataToSend: this._buildQuery('full_document', value)  + '&discard_draft=true',
+                            }
+
+
+                        },
+                        {
+                            //id: 'open_partial_edition',
+                            description: 'Editar fragment (s\'esborrarà l\'esborrany)',
+                            extra: {
+                                eventType: this.eventManager.eventName.EDIT_PARTIAL,
+                                dataToSend: this._buildQuery('partial_document', value) + '&discard_draft=true',
+                            }
+
+                        }
+                    ]
+
+                };
+
+                var dialogManager = dispatcher.getDialogManager();
+
+                this.dialogs.selectEditType = dialogManager.getDialog(dialogManager.type.REQUEST_CONTROL, value.id, params); // TODO[Xavi] canviar per un tipus ajax
+
+
+                this.dialogs.selectEditType.show();
+            },
+
 
             _cancelDialogs: function () {
                 for (var dialog in this.dialogs) {

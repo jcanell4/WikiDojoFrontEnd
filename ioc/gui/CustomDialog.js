@@ -57,8 +57,15 @@ define([
             for (var i = 0; i < this.buttons.length; i++) {
                 buttonId = 'dialogButton_' + this.id + '_' + this.buttons[i].id;
                 content += '<button data-dojo-type="dijit/form/Button" type="button" id="'
-                    + buttonId + '"'
-                    + '\>' + this.buttons[i].description + '</button>';
+                    + buttonId + '" ';
+
+                // Afegim els paràmetres extras necessaris segons el tipus de boto
+                //console.log("Extras per afegir:", this.buttons[i].extra);
+                //for (var attr in this.buttons[i].extra) {
+                //    console.log("afegits atributs: ", attr, this.buttons[i].extra[attr]);
+                //    content += attr + '="' + this.buttons[i].extra[attr] + '" ';
+                //}
+                content += '\>' + this.buttons[i].description + '</button>';
             }
 
             return domConstruct.toDom(content);
@@ -75,9 +82,9 @@ define([
             var buttonId;
             for (var i = 0; i < this.buttons.length; i++) {
                 buttonId = 'dialogButton_' + this.id + '_' + this.buttons[i].id;
-                jQuery('#' + buttonId).on('click', this.buttons[i].callback);
+                jQuery('#' + buttonId).on('click', this.buttons[i].callback.bind(this)); // ALERTA[Xavi] Al afegir el bind, la resta de dialegs pot haver deixat de funcionar (no importa perquè tots han de funcionar així ara)
                 jQuery('#' + buttonId).on('click', function () {
-                    this.remove();
+                    this.remove(); // Al fer click en un boto sempre es tanca el dialeg
                 }.bind(this));
 
             }
@@ -89,12 +96,12 @@ define([
             this.destroyRecursive();
         },
 
-        show: function() {
+        show: function () {
             this.isShowing = true;
             this.inherited(arguments);
         },
 
-        hide: function() {
+        hide: function () {
             this.isShowing = false;
             this.inherited(arguments);
         }
