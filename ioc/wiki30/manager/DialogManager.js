@@ -2,8 +2,9 @@ define([
     'dojo/_base/declare',
     'ioc/wiki30/manager/EventObserver',
     'ioc/gui/CustomDialog',
-    'ioc/gui/DiffDialog',
-], function (declare, EventObserver, CustomDialog, DiffDialog) {
+    //'ioc/gui/DiffDialog',
+    'ioc/gui/DialogBuilder',
+], function (declare, EventObserver, CustomDialog, DialogBuilder) {
 
     var DialogManagerException = function (message) {
         this.message = message;
@@ -40,29 +41,24 @@ define([
                 this.dialogs = {};
             },
 
-            // docId: el docId ens permetrà agrupar tots els dialogs d'un mateix document, la id del dialog estarà composta pel docId i ¿?¿?
+            // refId: el refId ens permetrà agrupar tots els dialogs d'un mateix document o concepte
             // type: el tipus de dialog pot ser Custom o Diff en aquests moments, si no es passen els argumetns necessaris es llença excepció
 
 
-            /**
-             * Els botons d'aquests dialogs disparen un event
-             * @param type
-             * @param params
-             */
-            getDialog: function (type, docId, params) {
+            getDialog: function (type, refId, params) {
 
                 switch (type) {
                     case this.type.REQUEST_CONTROL:
-                        return this._getRequestControlDialog(docId, params);
+                        return this._getRequestControlDialog(refId, params);
 
                     case this.type.EVENT:
-                        return this._getEventDialog(docId, params);
+                        return this._getEventDialog(refId, params);
 
                     case this.type.DIFF:
-                        return this._getDiffDialog(docId, params);
+                        return this._getDiffDialog(refId, params);
 
                     case this.type.CUSTOM:
-                        return this._getCustomDialog(docId, params);
+                        return this._getCustomDialog(refId, params);
 
                     default:
                         throw new DialogManagerException("El tipus de dialeg no existeix: ", type);
@@ -74,7 +70,7 @@ define([
              * Els botons d'aquests dialogs disparen un event
              * @param params
              */
-            _getEventDialog: function (docId, params) {
+            _getEventDialog: function (refId, params) {
                 throw new DialogManagerException("_getEventDialog no implementat");
             },
 
@@ -82,79 +78,68 @@ define([
              * Els botons d'aquests dialogs llencen una crida Ajax
              * @param params
              */
-            _getRequestControlDialog: function (docId, params) {
-
-                // Que necessitem?
-                //    title: 'S\'ha trobat un esborrany complet',
-                //        content: 'S\'ha trobat un esborrany complet del document. Si continuas amb la edició parcial ' +
-                //    '<b>aquest esborrany serà eliminat</b>. Pots obrir el document en edicio completa per recuperar-lo.',
-                //        style: 'width: 300px',
-                //        closable: true,
-                //        onHide: this.destroy.bind(this),
+            _getRequestControlDialog: function (refId, params) {
                 //
-                //        buttons: [
-                //        {
-                //            id: 'open_full_edition',
-                //            description: 'Editar document complet',
-                //            callback: function () {
-                //                this._openFullDocument(value);
-                //            }.bind(this)
-                //        },
-                //        {
-                //            id: 'open_partial_edition',
-                //            description: 'Editar fragment (s\'esborrarà l\'esborrany)',
-                //            callback: function () {
-                //                this._openPartialDocument(value);
-                //            }.bind(this)
-                //        }
-                //    ]
+                //    dialogParams = {
+                //        title: params.title,
+                //        content: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
+                //        closable: params.closable || true,// opcional amb default
+                //        buttons: [],
+                //        initFunctions: [],
+                //        eventManager: this.dispatcher.getEventManager()
+                //    }, newButton;
                 //
-                //};
+                //console.log(params);
                 //
-
-
-                var now = Date.now(),
-
-
-                    dialogParams = {
+                //for (var i = 0; i < params.buttons.length; i++) {
+                //    console.log(i);
+                //    newButton = params.buttons[i];
+                //    newButton.id = refId + now + i;
+                //
+                //    newButton.callback = this._generateRequestControlCallback(params.buttons[i].extra.eventType, params.buttons[i].extra.dataToSend);
+                //
+                //    dialogParams.buttons.push(newButton);
+                //    console.log("Afegit boto", newButton);
+                //}
+                //
+                //var dialog = new CustomDialog(dialogParams);
+                //this._addDialog(refId, dialog);
+                //return dialog;
+                //
+                //
+                //
+                    var dialogParams = {
                         title: params.title,
-                        content: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
+                        message: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
                         closable: params.closable || true,// opcional amb default
-                        style: 'width: 400px', // fixe
-                        buttons: [],
-                        eventManager: this.dispatcher.getEventManager()
-                    }, newButton;
+                        dispatcher: this.dispatcher
+                    },
+                    dialogBuilder = new DialogBuilder(dialogParams);
 
-                console.log(params);
 
-                for (var i = 0; i < params.buttons.length; i++) {
-                    console.log(i);
-                    newButton = params.buttons[i];
-                    newButton.id = docId + now + i;
+                this._addRequestButtonsToBuilder(params.buttons, dialogBuilder);
 
-                    newButton.callback = this._generateRequestControlCallback(params.buttons[i].extra.eventType, params.buttons[i].extra.dataToSend);
-                    //newButton.callback = this._generateRequestControlCallback();
 
-                    dialogParams.buttons.push(newButton);
-
-                    //description = params.button[i].description,
-                    //eventType = params.button[i].eventType,
-                    //queryParams = params.button[i].dataToSend
-                    console.log("Afegit boto", newButton);
-                }
-
-                var dialog = new CustomDialog(dialogParams);
-                this._addDialog(docId, dialog);
-                return dialog;
+                return dialogBuilder.build();
 
 
                 //throw new DialogManagerException("_getAjaxDialog no implementat");
             },
 
+            // TODO[Xavi] en el moment que tinguen més tipus de butons hem de refactoritzar per afegir el tipus concret de botó
+            _addRequestButtonsToBuilder: function(buttons, dialogBuilder, refId) {
+
+                for (var i = 0; i < buttons.length; i++) {
+                    console.log(i);
+                    newButton = buttons[i];
+                    dialogBuilder.addButton(dialogBuilder.type.REQUEST_CONTROL, newButton);
+                }
+            },
+
             _generateRequestControlCallback: function (eventType, dataToSend) {
 
-                return function() {
-                    console.log("que es això:" , this);
+                return function () {
+                    console.log("que es això:", this);
                     //var id = this.getAttribute('id'),
                     //    eventType= this.getAttribute('eventtype'),
                     //    dataToSend = this.getAttribute('datatosend');
@@ -172,8 +157,22 @@ define([
              * Aquest dialog mostra un diff entre dos textos, les crides dels botons son Ajax
              * @param params
              */
-            _getDiffDialog: function (docId, params) {
-                throw new DialogManagerException("_getDiffDialog no implementat");
+            _getDiffDialog: function (refId, params) {
+                var dialogParams = {
+                        title: params.title,
+                        message: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
+                        closable: true,
+                        dispatcher: this.dispatcher,
+                        style: "width: 700px"
+                    },
+                    dialogBuilder = new DialogBuilder(dialogParams);
+
+
+                dialogBuilder.addDiff(params.diff.text1, params.diff.text2, params.diff.text1Label, params.diff.text2Label);
+
+                this._addRequestButtonsToBuilder(params.buttons, dialogBuilder);
+
+                return dialogBuilder.build();
             },
 
             /**

@@ -33,6 +33,10 @@ define([
             _processDialog: function (value, dispatcher) {
                 //console.log("DraftProcessor#_processDialog", value);
 
+                this.eventManager = dispatcher.getEventManager();
+                this.dialogManager = dispatcher.getDialogManager();
+                this.lockManager = dispatcher.getLockManager();
+                this.draftManager = dispatcher.getDraftManager();
 
                 //TODO[Xavi] s'ha de crear un nou objecte que s'encarregarà de gestionar això.
                 // Aquest objecte hauria de ser diferent per edicions normal, parcial, etc. segons el tipus. Fer servir factoria de moment fem servir el _getActionType i _setActionType
@@ -44,10 +48,9 @@ define([
                 this.docId = value.id;
                 this.query = this._buildQuery(value);
 
-                this.eventManager = dispatcher.getEventManager();
-                this.lockManager = dispatcher.getLockManager();
+
                 this.lockManager.lock(value.id, value.ns, false);
-                this.draftManager = dispatcher.getDraftManager();
+
 
                 this.isLocalDraft = value.params.local;
 
@@ -56,46 +59,127 @@ define([
                 this._initTimers(value.timeout * 1000);
             },
 
+            //_showDiffDialogOld: function (value) {
+            //
+            //    var data = this._extractData(value);
+            //
+            //    this.dialogs.diff = new DiffDialog({
+            //        // Canvis
+            //        id: 'diff_dialog_' + this.id,
+            //        content: "S'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o el esborrany trobat?",// TODO[Xavi] Localitzar, enviar des del servidor
+            //        closable: true, // TODO[Xavi] Controlar el tancament per poder cancelar el timer del timeout
+            //
+            //        // Antic
+            //        title: "S'ha trobat un esborrany",
+            //        style: "width: 700px",
+            //        document: data.document,
+            //        draft: data.draft,
+            //        docId: value.id, // TODO[Xavi] això es necessari?
+            //        ns: value.ns, // TODO[Xavi] això es necessari?
+            //        rev: value.rev, // TODO[Xavi] això es necessari?
+            //        onHide: this.destroy.bind(this),
+            //
+            //        buttons: [
+            //            {
+            //                id: 'open_document',
+            //                description: 'Obrir el document',
+            //                callback: function () {
+            //                    this._openDocument();
+            //                }.bind(this)
+            //            },
+            //            {
+            //                id: 'open_draft',
+            //                description: "Obrir l'esborrany",
+            //                callback: function () {
+            //                    this._openDraft();
+            //                }.bind(this)
+            //            }
+            //        ]
+            //    });
+            //
+            //    this.dialogs.diff.show();
+            //},
+
             _showDiffDialog: function (value) {
 
-                var data = this._extractData(value);
+                //console.log("Es troba aqui la data del document i del draft?", value);
 
-                this.dialogs.diff = new DiffDialog({
-                    // Canvis
-                    id: 'diff_dialog_' + this.id,
-                    content: "S'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o el esborrany trobat?",// TODO[Xavi] Localitzar, enviar des del servidor
-                    closable: true, // TODO[Xavi] Controlar el tancament per poder cancelar el timer del timeout
+                var data = this._extractData(value),
+                    dialogParams = {
+                        title: "S'ha trobat un esborrany",
+                        message: "S'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o el esborrany trobat?",
+                        buttons: [
+                            {
+                                id: 'open_document',
+                                description: 'Obrir el document',
+                                extra: {
+                                    eventType: this._getActionType(),
+                                    dataToSend: this._getDocumentQuery(),
+                                }
 
-                    // Antic
-                    title: "S'ha trobat un esborrany",
-                    style: "width: 700px",
-                    document: data.document,
-                    draft: data.draft,
-                    docId: value.id, // TODO[Xavi] això es necessari?
-                    ns: value.ns, // TODO[Xavi] això es necessari?
-                    rev: value.rev, // TODO[Xavi] això es necessari?
-                    onHide: this.destroy.bind(this),
+                            },
+                            {
+                                id: 'open_draft',
+                                description: "Obrir l'esborrany",
+                                extra: {
+                                    eventType: this._getActionType(),
+                                    dataToSend: this._getDraftQuery()
+                                }
+                            }
+                        ],
+                        diff: {
+                            text1 :   data.document.content,
+                            text2: data.draft.content,
+                            text1Label: "Document (" + data.document.date + ")",
+                            text2Label: "Esborrany (" + data.draft.date + ")",
 
-                    buttons: [
-                        {
-                            id: 'open_document',
-                            description: 'Obrir el document',
-                            callback: function () {
-                                this._openDocument();
-                            }.bind(this)
-                        },
-                        {
-                            id: 'open_draft',
-                            description: "Obrir l'esborrany",
-                            callback: function () {
-                                this._openDraft();
-                            }.bind(this)
                         }
-                    ]
-                });
+                    };
+                //
+                //
+                //
+                //
+                //this.dialogs.diff = new DiffDialog({
+                //    // Canvis
+                //    id: 'diff_dialog_' + this.id,
+                //    content: "S'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o el esborrany trobat?",// TODO[Xavi] Localitzar, enviar des del servidor
+                //    closable: true,
+                //
+                //    // Antic
+                //    title: "S'ha trobat un esborrany",
+                //    style: "width: 700px",
+                //    document: data.document,
+                //    draft: data.draft,
+                //    docId: value.id, // TODO[Xavi] això es necessari?
+                //    ns: value.ns, // TODO[Xavi] això es necessari?
+                //    rev: value.rev, // TODO[Xavi] això es necessari?
+                //    onHide: this.destroy.bind(this),
+                //
+                //    buttons: [
+                //        {
+                //            id: 'open_document',
+                //            description: 'Obrir el document',
+                //            callback: function () {
+                //                this._openDocument();
+                //            }.bind(this)
+                //        },
+                //        {
+                //            id: 'open_draft',
+                //            description: "Obrir l'esborrany",
+                //            callback: function () {
+                //                this._openDraft();
+                //            }.bind(this)
+                //        }
+                //    ]
+                //});
+                //
+
+
+                    this.dialogs.diff = this.dialogManager.getDialog(this.dialogManager.type.DIFF, this.docId, dialogParams);
 
                 this.dialogs.diff.show();
             },
+
 
             destroy: function () {
                 this._cancelTimers();
@@ -116,6 +200,22 @@ define([
                     dataToSend: this.query + '&recover_draft=true'
                 });
             },
+
+
+            _getDraftQuery: function() {
+                var query = this.query;
+
+                if (this.isLocalDraft) {
+                    query+='&recover_local=true';
+                }
+
+                return this.query + '&recover_draft=true';
+            },
+
+            _getDocumentQuery: function() {
+                return this.query+ '&recover_draft=false';
+            },
+
 
             _openDocument: function () {
                 this._cancelTimers();
@@ -243,10 +343,10 @@ define([
 
                 switch (value.params.type) {
                     case 'full_document':
-                        this.documentType = 'edit';
+                        this.documentType = this.eventManager.eventName.EDIT;
                         break;
                     case 'partial_document':
-                        this.documentType = 'edit_partial';
+                        this.documentType = this.eventManager.eventName.EDIT_PARTIAL;
                         break;
                 }
             },

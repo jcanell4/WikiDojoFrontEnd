@@ -105,67 +105,26 @@ define([
                 this._cancelDialogs();
             },
 
-            _showDialogOld: function (value) {
-
-                var params = {
-                    title: 'S\'ha trobat un esborrany complet',
-                    content: 'S\'ha trobat un esborrany complet del document. Si continuas amb la edició parcial ' +
-                    '<b>aquest esborrany serà eliminat</b>. Pots obrir el document en edicio completa per recuperar-lo.',
-                    style: 'width: 300px',
-                    closable: true,
-                    onHide: this.destroy.bind(this),
-
-                    buttons: [
-                        {
-                            id: 'open_full_edition',
-                            description: 'Editar document complet',
-                            callback: function () {
-                                this._openFullDocument(value);
-                            }.bind(this)
-                        },
-                        {
-                            id: 'open_partial_edition',
-                            description: 'Editar fragment (s\'esborrarà l\'esborrany)',
-                            callback: function () {
-                                this._openPartialDocument(value);
-                            }.bind(this)
-                        }
-                    ]
-
-                };
-
-                var dialogManager = dispatcher.getDialogManager();
-
-                this.dialogs.selectEditType = dialogManager.getDialog(dialogManager.type.CUSTOM, value.id, params); // TODO[Xavi] canviar per un tipus ajax
-
-
-                this.dialogs.selectEditType.show();
-            },
-
             _showDialog: function (value) {
 
                 var params = {
                     title: 'S\'ha trobat un esborrany complet',
                     message: 'S\'ha trobat un esborrany complet del document. Si continuas amb la edició parcial ' +
-                    '<b>aquest esborrany serà eliminat</b>. Pots obrir el document en edicio completa per recuperar-lo.',
-                    //onHide: this.destroy.bind(this), ALERTA[Xavi] Això ja no s'ha de gestionar des del dialog, tant els timers com el sistema de lock aniran per una altra banda
+                    '<b>aquest esborrany serà eliminat</b>. Pots obrir el document en edició completa per recuperar-lo.',
+                    //onHide: this.destroy.bind(this), ALERTA[Xavi] el unlock ja no s'ha de gestionar des del dialog, tant els timers com el sistema de lock aniran per una altra banda
 
                     buttons: [
                         {
-                            //id: 'open_full_edition',
+                            id: 'edit_document',
                             description: 'Editar document complet',
-                            //callback: function () {
-                            //    this._openFullDocument(value);
-                            //}.bind(this)
                             extra: {
                                 eventType: this.eventManager.eventName.EDIT,
                                 dataToSend: this._buildQuery('full_document', value)  + '&discard_draft=true',
                             }
 
-
                         },
                         {
-                            //id: 'open_partial_edition',
+                            id: 'edit_draft',
                             description: 'Editar fragment (s\'esborrarà l\'esborrany)',
                             extra: {
                                 eventType: this.eventManager.eventName.EDIT_PARTIAL,
