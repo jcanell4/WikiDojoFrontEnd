@@ -140,7 +140,6 @@ define([
 
                 this.dialogs.selectEditType = dialogManager.getDialog(dialogManager.type.REQUEST_CONTROL, value.id, params); // TODO[Xavi] canviar per un tipus ajax
 
-
                 this.dialogs.selectEditType.show();
             },
 

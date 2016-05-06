@@ -25,12 +25,17 @@ define([
                 throw new DialogBuilderException("No es pot afegir una propietat 'content' a aquests dialegs");
             }
 
+            this.params.width = 400;
             this.params.sections = [];
             this.params.initFunctions = [];
             this.params.buttons = [];
             this.params.nextDialog = {};
-            this.params.nextCallback = {};
+            this.params.nextCallbacks = {};
 
+        },
+
+        getId: function () {
+            return this.params.id;
         },
 
         addButton: function (type, params) {
@@ -66,36 +71,35 @@ define([
             };
         },
 
-        _generateRequestControlCallback: function (eventType, dataToSend) {
-
+        _generateRequestControlCallback: function (event, dataToSend) {
             return function () {
-                console.log("que es això:", this);
-                //var id = this.getAttribute('id'),
-                //    eventType= this.getAttribute('eventtype'),
-                //    dataToSend = this.getAttribute('datatosend');
-
-                console.log("Callback de dialog:", eventType, dataToSend);
-
-                this.eventManager.dispatchEvent(eventType, { // Això fa referencia al eventManager del dialog
+                this.eventManager.dispatchEvent(event, { // Això fa referencia al eventManager del dialog
                     id: this.id,
                     dataToSend: dataToSend
                 });
             }
         },
 
-
         addDiff: function (text1, text2, text1Label, text2Label) {
             console.log('DialogBuilder#addDiff');
-            // Crear un node per contenir el getDiff, i afegir-li la classe class="diff-dialog-diff"
+
             var node = document.createElement('div'),
                 diffNode = jsdifflib.getDiff(text1, text2, text1Label, text2Label);
 
             node.className = 'diff-dialog-diff';
             node.appendChild(diffNode);
 
-            console.log("Node per afegir:", node, diffNode);
 
+            this.setWidth(700);
             this._addSection(node);
+
+            return this;
+        },
+
+        setWidth: function (value) {
+            if (this.params.width < value) {
+                this.params.width = value;
+            }
             return this;
         },
 
@@ -108,23 +112,22 @@ define([
             this.params.buttons.push(button);
         },
 
-        addTimeout: function (timeout) {
-            // En acabar el temps:
-            // - es dispara l'event 'TIMEOUT'
-            // - es tanca el dialog
-            this._addInitFunction(function () {
-                setTimeout(function () {
-                    // Trigger event
-                    this.dispatchEvent('TIMEOUT', {id: this.id});
-                    this.destroy();
-                }, timeout).bind(this) // El context del timer serà el propi dialog
-            });
+        addButtons: function (buttons) {
+            for (var i = 0; i < buttons.length; i++) {
+                newButton = buttons[i];
+                this.addButton(this.type.REQUEST_CONTROL, newButton);
+            }
 
             return this;
         },
 
+        addTimeout: function (timeout) {
+            this.params.timeout = timeout;
+            return this;
+        },
+
+
         _addInitFunction: function (func) {
-            // afegeix la funció a la seqüencia d'inicialització
             this.params.initFunctions.push(func);
         },
 
@@ -142,18 +145,37 @@ define([
 
         addNextCallback: function (event, callback) {
             // crida la funció passada com argument quan es dispara l'event
-            if (!this.params.nextCallback[event]) {
-                this.params.nextCallback[event] = [];
+            if (!this.params.nextCallbacks[event]) {
+                this.params.nextCallbacks[event] = [];
             }
 
-            this.params.nextCallback[event].push(callback);
+            this.params.nextCallbacks[event].push(callback);
+            return this;
+        },
+
+        // Helper per facilitar la adició de events que treballen amb el RequestControl
+        addNextRequestControl: function (eventListened, eventTriggered, dataToSend) {
+            var callback = function () {
+                this.eventManager.dispatchEvent(eventTriggered, { // Això fa referencia al eventManager del dialog
+                    id: this.id,
+                    dataToSend: dataToSend
+                });
+            };
+
+            this.addNextCallback(eventListened, callback);
 
             return this;
         },
 
 
+        setParam: function (key, value) {
+            this.params[key] = value;
+            return this;
+        },
+
+
         build: function () {
-            console.log("Params pel constructor del dialog:", this.params);
+            console.log('DialogBuilder#build', this.params);
             return new CustomDialog(this.params);
         }
 
