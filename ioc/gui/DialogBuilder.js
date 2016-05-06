@@ -13,7 +13,8 @@ define([
     return declare([], {
 
         type: {
-            REQUEST_CONTROL: 'request_control'
+            REQUEST_CONTROL: 'request_control',
+            CANCEL: 'cancel'
         },
 
         constructor: function (args) {
@@ -38,30 +39,6 @@ define([
             return this.params.id;
         },
 
-        addButton: function (type, params) {
-            var button;
-
-            switch (type) {
-                case this.type.REQUEST_CONTROL:
-                    // Params: {
-                    //      id: id del botó, ha de ser unic per cada dialeg
-                    //      description: text del boto, ** PER TOTS ELS BOTONS **
-                    //      extra: {
-                    //          eventType: tipus del event que rebrà un request control,
-                    //          dataToSend: dades que es passen al request control}
-                    button = this._createRequestButton(params);
-                    break;
-
-                default:
-                    throw new DialogBuilderException("No existeix el tipus de botó: " + type);
-            }
-
-
-            this._addButton(button);
-
-            return this;
-        },
-
         _createRequestButton: function (params) {
             return { // ALERTA[Xavi] el eventType i el dataToSend no cal passar-los al botò, queden fixats al callback
                 id: params.id,
@@ -71,12 +48,30 @@ define([
             };
         },
 
+        addCancelButton: function() {
+            return this.addButton(this.type.CANCEL)
+        },
+
+        _createCancelButton: function() {
+            return {
+                id: this.type.CANCEL,
+                description: 'Cancel·lar',
+                callback:this._generateCancelCallback()
+            }
+        },
+
         _generateRequestControlCallback: function (event, dataToSend) {
             return function () {
                 this.eventManager.dispatchEvent(event, { // Això fa referencia al eventManager del dialog
                     id: this.id,
                     dataToSend: dataToSend
                 });
+            }
+        },
+
+        _generateCancelCallback: function () {
+            return function () {
+                this.remove();
             }
         },
 
@@ -108,8 +103,39 @@ define([
             this.params.sections.push(node);
         },
 
+
+        addButton: function (type, params) {
+            var button;
+
+            switch (type) {
+                case this.type.REQUEST_CONTROL:
+                    // Params: {
+                    //      id: id del botó, ha de ser unic per cada dialeg
+                    //      description: text del boto, ** PER TOTS ELS BOTONS **
+                    //      extra: {
+                    //          eventType: tipus del event que rebrà un request control,
+                    //          dataToSend: dades que es passen al request control}
+                    button = this._createRequestButton(params);
+                    break;
+
+                case this.type.CANCEL:
+                    button = this._createCancelButton();
+                    break;
+
+                default:
+                    throw new DialogBuilderException("No existeix el tipus de botó: " + type);
+            }
+
+            this._addButton(button);
+
+            return this;
+        },
         _addButton: function (button) {
             this.params.buttons.push(button);
+        },
+
+        _addInitFunction: function (func) {
+            this.params.initFunctions.push(func);
         },
 
         addButtons: function (buttons) {
@@ -124,11 +150,6 @@ define([
         addTimeout: function (timeout) {
             this.params.timeout = timeout;
             return this;
-        },
-
-
-        _addInitFunction: function (func) {
-            this.params.initFunctions.push(func);
         },
 
         addNextDialog: function (event, dialog) {

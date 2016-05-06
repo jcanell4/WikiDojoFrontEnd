@@ -172,7 +172,8 @@ define([
                     //    alert("Test: It Works!")
                     //});
                     .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns)
-                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns);
+                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns)
+                    .addCancelButton();
 
                 return dialogBuilder;
             },

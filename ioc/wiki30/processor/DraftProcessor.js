@@ -35,23 +35,16 @@ define([
                 this.dialogManager = dispatcher.getDialogManager();
                 this.draftManager = dispatcher.getDraftManager();
 
-                //TODO[Xavi] s'ha de crear un nou objecte que s'encarregarà de gestionar això.
-                // Aquest objecte hauria de ser diferent per edicions normal, parcial, etc. segons el tipus. Fer servir factoria de moment fem servir el _getActionType i _setActionType
                 this._setActionType(value);
-
-                this.dialogs = {};
 
                 this.docId = value.id;
                 this.query = this._buildQuery(value);
-
                 this.isLocalDraft = value.params.local;
 
                 this._showDiffDialog(value);
             },
 
             _showDiffDialog: function (value) {
-
-                //console.log("Es troba aqui la data del document i del draft?", value);
 
                 var data = this._extractData(value),
                     dialogParams = {
@@ -87,29 +80,8 @@ define([
                         }
                     };
 
-                this.dialogs.diff = this.dialogManager.getDialog(this.dialogManager.type.LOCKED_DIFF, this.docId, dialogParams);
-                this.dialogs.diff.show();
-            },
-
-
-            destroy: function () {
-                this._cancelTimers();
-                this._cancelDialogs();
-                this.lockManager.unlock(this.docId);
-            },
-
-            _getDraftQuery: function () {
-                var query = this.query;
-
-                if (this.isLocalDraft) {
-                    query += '&recover_local=true';
-                }
-
-                return query + '&recover_draft=true';
-            },
-
-            _getDocumentQuery: function () {
-                return this.query + '&recover_draft=false';
+                var dialog = this.dialogManager.getDialog(this.dialogManager.type.LOCKED_DIFF, this.docId, dialogParams);
+                dialog.show();
             },
 
             _extractData: function (value) {
@@ -121,9 +93,7 @@ define([
                 };
             },
 
-            // TODO[Xavi] En lloc de fer-ho així cercar una manera de passar directament el valor des de la wiki
             _getDocument: function (value) {
-
                 switch (value.type) {
                     case 'full_document':
                         var currentContent = jQuery(value.content).find('textarea').val();
@@ -131,26 +101,21 @@ define([
 
                     case 'partial_document':
                         return {content: value.content.editing, date: value.lastmod};
-
                 }
 
             },
 
-            // TODO[Xavi] En lloc de fer-ho així cercar una manera de passar directament el valor des de la wiki
             _getDraft: function (value) {
                 if (value.local) {
                     return this._getDraftLocal(value);
                 } else {
                     return this._getDraftRemote(value);
                 }
-
             },
 
             _getDraftLocal: function (value) {
                 var draft = this.draftManager.getDraft(this.docId).recoverLocalDraft();
 
-                //console.log("value: ", value);
-                //console.log("draft: ", value);
                 switch (value.type) {
                     case 'full_document': //falling-through intencionat
                         return {content: draft.full.content, date: draft.full.date};
@@ -191,6 +156,20 @@ define([
                 }
 
                 return query;
+            },
+
+            _getDraftQuery: function () {
+                var query = this.query;
+
+                if (this.isLocalDraft) {
+                    query += '&recover_local=true';
+                }
+
+                return query + '&recover_draft=true';
+            },
+
+            _getDocumentQuery: function () {
+                return this.query + '&recover_draft=false';
             },
 
             _setActionType: function (value) {
