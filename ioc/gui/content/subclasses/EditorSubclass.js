@@ -133,7 +133,7 @@ define([
 
             // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
-                console.log("EditorSubclass#_doCancel", this.id, event);
+                //console.log("EditorSubclass#_doCancelDocument", this.id, event);
                 var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 

@@ -31,7 +31,7 @@ define([
             },
 
             _sendRequest: function (data) {
-                console.log('RequestControl#_sendRequest', data);
+                //console.log('RequestControl#_sendRequest', data);
                 this.dataToSend = data.dataToSend;
 
                 this.request.setStandbyId(data.standbyId);

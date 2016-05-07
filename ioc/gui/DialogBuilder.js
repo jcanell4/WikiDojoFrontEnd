@@ -110,8 +110,7 @@ define([
         },
 
         addNextDialog: function (event, dialog) {
-            console.log("DialogBuilder#addNextDialog", event);
-            // llença el dialog passat per argument quan es dispara l'event
+            //console.log("DialogBuilder#addNextDialog", event);
 
             if (!dialog) {
                 throw new DialogBuilderException('No s\'ha passat cap dialeg');
@@ -138,7 +137,7 @@ define([
 
         // Helper per facilitar la adició de events que treballen amb el RequestControl
         addNextRequestControl: function (eventListened, eventTriggered, dataToSend) {
-            console.log("DialogBuilder#_addNextRequestControl", eventTriggered, dataToSend);
+            //console.log("DialogBuilder#_addNextRequestControl", eventTriggered, dataToSend);
 
             var callback = function () {
                 this.eventManager.dispatchEvent(eventTriggered, { // Això fa referencia al eventManager del dialog
@@ -160,7 +159,7 @@ define([
 
 
         build: function () {
-            console.log('DialogBuilder#build', this.params);
+            //console.log('DialogBuilder#build', this.params);
             return new CustomDialog(this.params);
         },
 
@@ -197,7 +196,7 @@ define([
         },
 
         _generateRequestControlCallback: function (event, dataToSend) {
-            console.log("DialogBuilder#_generateRequestControllCallback", event, dataToSend);
+            //console.log("DialogBuilder#_generateRequestControllCallback", event, dataToSend);
 
                 return function () {
                     console.log("Click:", event, dataToSend);

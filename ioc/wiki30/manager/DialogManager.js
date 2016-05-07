@@ -34,7 +34,7 @@ define([
 
 
             getDialog: function (type, refId, params) {
-                console.log("DialogManager#getDialog", type, refId);
+                //console.log("DialogManager#getDialog", type, refId);
 
                 var dialogBuilder = null,
                     dialog;
@@ -263,7 +263,7 @@ define([
             },
 
             _removeDialog: function (data) {
-                console.log("DialogManager#_removeDialog", data);
+                //console.log("DialogManager#_removeDialog", data);
                 delete(this.dialogs[data.refId][data.id]);
             },
 

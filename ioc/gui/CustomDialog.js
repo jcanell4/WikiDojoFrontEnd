@@ -45,22 +45,20 @@ define([
             }
 
             var timerId = setTimeout(function () {
-                console.log("Expire!");
+                //console.log("Expire!");
                 this.dispatchEvent(this.eventName.TIMEOUT, {id: this.id});
             }.bind(this), this.timeout); // El context del timer serà el propi dialog
 
             this.registerToEvent(this, this.eventName.DESTROY, function () {
-                console.log("Clear!");
+                //console.log("Clear!");
                 clearInterval(timerId);
             })
         },
 
         _initFunctions: function () {
-            // llença tota la seqüencia de funcions d'inicialització afegides
+            //console.log('CustomDialog#_initFunctions'. this.initFunctions);
 
-            console.log(this.initFunctions);
             for (var i = 0; i < this.initFunctions.length; i++) {
-
                 this.initFunctions[i].bind(this)(); // es passa el contexte del dialog a cada funció que es crida
             }
 
@@ -69,19 +67,10 @@ define([
         },
 
         _initNextDialogs: function () {
-            console.log("CustomDialog#_initNextDialogs", this.nextDialogs);
-            // llença tota la seqüencia de funcions d'inicialització afegides
+            //console.log("CustomDialog#_initNextDialogs", this.nextDialogs);
 
             for (var event in this.nextDialogs) {
-                console.log("Inicialitzant nextDialog:", event, this.nextDialogs[event]);
-
                 this.registerToEvent(this, event, this._createDialogShowCallback(this.nextDialogs[event]).bind(this));
-
-                //this.registerToEvent(this, event, function () {
-                //    this.nextDialogs[event].show(); // ALERTA[Xavi] Si hi ha més d'un event això no funcionarà perquè el valor d'event serà diferent, ja que canvia al closure
-                //}.bind(this));
-                //this.registerToEvent(this, event, this.nextDialogs[event].show.bind(this));
-
             }
         },
 
@@ -92,7 +81,7 @@ define([
         },
 
         _initNextCallbacks: function () {
-            console.log("CustomDialog#_initNextCallbacks", this.nextCallbacks);
+            //console.log("CustomDialog#_initNextCallbacks", this.nextCallbacks);
             // llença tota la seqüencia de funcions d'inicialització afegides
 
             for (var event in this.nextCallbacks) {
@@ -164,7 +153,7 @@ define([
         },
 
         remove: function () {
-            console.log("CustomDialog#remove", this.id);
+            //console.log("CustomDialog#remove", this.id);
             this.destroyRecursive();
             this.dispatchEvent(this.eventName.DESTROY, {id: this.id, refId: this.refId});
         },
