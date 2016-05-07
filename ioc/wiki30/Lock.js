@@ -182,7 +182,8 @@ define([
             var dialogParams = {
                 id: 'warning',
                 ns: this.ns,
-                timeout: timeout, // = this.WARNING_DIFF,
+                //timeout: timeout,
+                timeout: this.WARNING_DIFF,
                 title: 'El temps de bloqueig es a punt d\'exhaurir-se',
                 message: 'El temps de bloqueig del document es a punt d\'exhaurirse\nVols mantenir el bloqueig o alliberar-lo (es conservarà l\'esborrany)?',
                 infoDialog: infoDialog,

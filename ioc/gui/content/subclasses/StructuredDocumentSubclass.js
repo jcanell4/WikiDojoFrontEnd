@@ -1040,7 +1040,7 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-            console.log("EditorSubclass#_doCancel", this.id, event);
+            //console.log("EditorSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 

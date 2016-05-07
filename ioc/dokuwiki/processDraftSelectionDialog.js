@@ -80,7 +80,7 @@ define([
 
                 var dialogManager = dispatcher.getDialogManager();
 
-                this.dialogs.selectEditType = dialogManager.getDialog(dialogManager.type.LOCKED_REQUEST_CONTROL, value.id, params); // TODO[Xavi] canviar per un tipus ajax
+                this.dialogs.selectEditType = dialogManager.getDialog(dialogManager.type.LOCKED_DEFAULT, value.id, params); // TODO[Xavi] canviar per un tipus ajax
 
                 this.dialogs.selectEditType.show();
             },

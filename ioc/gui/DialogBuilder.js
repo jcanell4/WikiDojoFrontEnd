@@ -1,9 +1,8 @@
 define([
     'dojo/_base/declare',
-    'ioc/wiki30/manager/EventObserver',
     'ioc/gui/CustomDialog',
-    'ioc/gui/jsdifflib/jsdifflib-amd',
-], function (declare, EventObserver, CustomDialog, jsdifflib) {
+    'ioc/gui/jsdifflib/jsdifflib-amd'
+], function (declare, CustomDialog, jsdifflib) {
 
     var DialogBuilderException = function (message) {
         this.message = message;
@@ -13,7 +12,7 @@ define([
 
     return declare([], {
 
-        type: {
+        buttonType: {
             REQUEST_CONTROL: 'request_control',
             CANCEL: 'cancel'
         },
@@ -42,7 +41,7 @@ define([
 
 
         addCancelDialogButton: function (text) {
-            return this.addButton(this.type.CANCEL, text)
+            return this.addButton(this.buttonType.CANCEL, text)
         },
 
         addDiff: function (text1, text2, text1Label, text2Label) {
@@ -68,11 +67,11 @@ define([
             return this;
         },
 
-        addButton: function (type, params) {
+        addButton: function (buttonType, params) {
             var button;
 
-            switch (type) {
-                case this.type.REQUEST_CONTROL:
+            switch (buttonType) {
+                case this.buttonType.REQUEST_CONTROL:
                     // Params: {
                     //      id: id del botó, ha de ser unic per cada dialeg
                     //      description: text del boto, ** PER TOTS ELS BOTONS **
@@ -82,12 +81,12 @@ define([
                     button = this._createRequestButton(params);
                     break;
 
-                case this.type.CANCEL:
+                case this.buttonType.CANCEL:
                     button = this._createCancelButton(params);
                     break;
 
                 default:
-                    throw new DialogBuilderException("No existeix el tipus de botó: " + type);
+                    throw new DialogBuilderException("No existeix el tipus de botó: " + buttonType);
             }
 
             this._addButton(button);
@@ -95,10 +94,10 @@ define([
             return this;
         },
 
-        addButtons: function (buttons) {
+        addRequestControlButtons: function (buttons) {
             for (var i = 0; i < buttons.length; i++) {
                 newButton = buttons[i];
-                this.addButton(this.type.REQUEST_CONTROL, newButton);
+                this.addButton(this.buttonType.REQUEST_CONTROL, newButton);
             }
 
             return this;
@@ -136,7 +135,7 @@ define([
         },
 
         // Helper per facilitar la adició de events que treballen amb el RequestControl
-        addNextRequestControl: function (eventListened, eventTriggered, dataToSend) {
+        addNextRequestControlCallback: function (eventListened, eventTriggered, dataToSend) {
             //console.log("DialogBuilder#_addNextRequestControl", eventTriggered, dataToSend);
 
             var callback = function () {
@@ -189,7 +188,7 @@ define([
 
         _createCancelButton: function (params) {
             return {
-                id: this.type.CANCEL,
+                id: this.buttonType.CANCEL,
                 description: params.text || 'Cancel·lar',
                 callback: this._generateCancelCallback()
             }
@@ -198,13 +197,13 @@ define([
         _generateRequestControlCallback: function (event, dataToSend) {
             //console.log("DialogBuilder#_generateRequestControllCallback", event, dataToSend);
 
-                return function () {
-                    console.log("Click:", event, dataToSend);
-                    this.eventManager.dispatchEvent(event, { // Això fa referencia al eventManager del dialog
-                        id: this.id,
-                        dataToSend: dataToSend
-                    });
-                }
+            return function () {
+                //console.log("Click:", event, dataToSend);
+                this.eventManager.dispatchEvent(event, { // Això fa referencia al eventManager del dialog
+                    id: this.id,
+                    dataToSend: dataToSend
+                });
+            }
 
 
         },

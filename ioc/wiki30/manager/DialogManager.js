@@ -14,9 +14,8 @@ define([
         {
 
             type: {
-                REQUEST_CONTROL: 'request_control',
-                LOCKED_REQUEST_CONTROL: 'locked_request_control',
-                EVENT: 'event',
+                DEFAULT: 'default',
+                LOCKED_DEFAULT: 'locked_default',
                 DIFF: 'diff',
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
@@ -40,12 +39,8 @@ define([
                     dialog;
 
                 switch (type) {
-                    case this.type.REQUEST_CONTROL:
-                        dialogBuilder = this._getRequestControlDialog(refId, params);
-                        break;
-
-                    case this.type.EVENT:
-                        dialogBuilder = this._getEventDialog(refId, params);
+                    case this.type.DEFAULT:
+                        dialogBuilder = this._getDefaultDialog(refId, params);
                         break;
 
                     case this.type.DIFF:
@@ -56,8 +51,8 @@ define([
                         dialogBuilder = this._getLockedDiffDialog(refId, params);
                         break;
 
-                    case this.type.LOCKED_REQUEST_CONTROL:
-                        dialogBuilder = this._getLockedRequestControlDialog(refId, params);
+                    case this.type.LOCKED_DEFAULT:
+                        dialogBuilder = this._getLockedDefaultDialog(refId, params);
                         break;
 
                     case this.type.INFO:
@@ -102,18 +97,10 @@ define([
             },
 
             /**
-             * Els botons d'aquests dialogs disparen un event
-             * @param params
-             */
-            _getEventDialog: function (refId, params) {
-                throw new DialogManagerException("_getEventDialog no implementat");
-            },
-
-            /**
              * Els botons d'aquests dialogs llencen una crida Ajax
              * @param params
              */
-            _getRequestControlDialog: function (refId, params) {
+            _getDefaultDialog: function (refId, params) {
                 var dialogParams = {
                         id: 'dialog_' + refId + '_' + params.id,
                         title: params.title + ": " + refId,
@@ -123,7 +110,7 @@ define([
                     },
                     dialogBuilder = new DialogBuilder(dialogParams);
 
-                dialogBuilder.addButtons(params.buttons);
+                dialogBuilder.addRequestControlButtons(params.buttons);
 
                 return dialogBuilder;
             },
@@ -158,7 +145,7 @@ define([
              * @param params
              */
             _getDiffDialog: function (refId, params) {
-                var dialogBuilder = this._getRequestControlDialog(refId, params);
+                var dialogBuilder = this._getDefaultDialog(refId, params);
 
                 dialogBuilder.addDiff(params.diff.text1, params.diff.text2, params.diff.text1Label, params.diff.text2Label);
 
@@ -172,31 +159,27 @@ define([
                 var dialogBuilder = this._getDiffDialog(refId, params);
 
                 dialogBuilder.addTimeout(params.timeout)
-                    //.addNextCallback(this.eventName.TIMEOUT, function () {
+                    //.addNextCallback(this.eventName.TIMEOUT, function () { // Codi d'exemple
                     //    console.log("Timeout!");
                     //    alert("Test: It Works!")
                     //});
                     .setParam('closable', false)
-                    .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns)
-                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns); // Com no es closable, no cal controlar el cancel
+                    .addNextRequestControlCallback(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns)
+                    .addNextRequestControlCallback(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns); // Com no es closable, no cal controlar el cancel
                 //.addCancelDialogButton({text: 'Cancel'});
 
                 return dialogBuilder;
             },
 
-            _getLockedRequestControlDialog: function (refId, params) {
+            _getLockedDefaultDialog: function (refId, params) {
                 this._checkLockedParams(params);
 
-                var dialogBuilder = this._getRequestControlDialog(refId, params),
+                var dialogBuilder = this._getDefaultDialog(refId, params),
                     dataToSend = 'do=unlock&id=' + params.ns;
 
                 dialogBuilder.addTimeout(params.timeout)
-                    //.addNextCallback(this.eventName.TIMEOUT, function () {
-                    //    console.log("Timeout!");
-                    //    alert("Test: It Works!")
-                    //});
-                    .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, dataToSend)
-                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, dataToSend);
+                    .addNextRequestControlCallback(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, dataToSend)
+                    .addNextRequestControlCallback(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, dataToSend);
 
                 return dialogBuilder;
             },
@@ -205,7 +188,7 @@ define([
 
                 this._checkLockedParams(params);
 
-                var dialogBuilder = this._getRequestControlDialog(refId, params),
+                var dialogBuilder = this._getDefaultDialog(refId, params),
                     dataToSendUnlock = 'do=unlock&id=' + params.ns,
                     dataToSendCancelPreserveDraft = {
                         discardChanges: true,
@@ -214,8 +197,8 @@ define([
 
                 dialogBuilder.addTimeout(params.timeout)
                     .setParam('closable', false)
-                    .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, dataToSendUnlock)
-                    .addNextRequestControl(this.eventName.TIMEOUT, this.eventNameCompound.CANCEL + refId, dataToSendCancelPreserveDraft) // Això no es un rquest control, això ha de passar pel manager i redirigit al document
+                    .addNextRequestControlCallback(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, dataToSendUnlock)
+                    .addNextRequestControlCallback(this.eventName.TIMEOUT, this.eventNameCompound.CANCEL + refId, dataToSendCancelPreserveDraft) // Això no es un rquest control, això ha de passar pel manager i redirigit al document
                     .addNextDialog(this.eventName.TIMEOUT, params.infoDialog); // TODO[Xavi] pendent d'implementar el següent dialog
 
                 return dialogBuilder;
