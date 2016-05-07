@@ -28,6 +28,7 @@ define([
 
             type: {
                 REQUEST_CONTROL: 'request_control',
+                LOCKED_REQUEST_CONTROL: 'locked_request_control',
                 EVENT: 'event',
                 DIFF: 'diff',
                 LOCKED_DIFF: 'locked_diff',
@@ -65,6 +66,10 @@ define([
 
                     case this.type.LOCKED_DIFF:
                         dialogBuilder = this._getLockedDiffDialog(refId, params);
+                        break;
+
+                    case this.type.LOCKED_REQUEST_CONTROL:
+                        dialogBuilder = this._getLockedRequestControlDialog(refId, params);
                         break;
 
                     case this.type.ALERT:
@@ -160,9 +165,7 @@ define([
             },
 
             _getLockedDiffDialog: function (refId, params) {
-                if (!params.ns) {
-                    throw new DialogManagerException("No s'ha passat el NS amb els paràmetres: ", params);
-                }
+                this._checkLockedParams(params);
 
                 var dialogBuilder = this._getDiffDialog(refId, params);
 
@@ -172,10 +175,49 @@ define([
                     //    alert("Test: It Works!")
                     //});
                     .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns)
-                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns)
-                    .addCancelButton();
+                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns);
+                //.addCancelButton();
 
                 return dialogBuilder;
+            },
+
+            _getLockedRequestControlDialog: function (refId, params) {
+                this._checkLockedParams(params);
+
+                var dialogBuilder = this._getRequestControlDialog(refId, params);
+
+                dialogBuilder.addTimeout(params.timeout)
+                    //.addNextCallback(this.eventName.TIMEOUT, function () {
+                    //    console.log("Timeout!");
+                    //    alert("Test: It Works!")
+                    //});
+                    .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns)
+                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns);
+
+                return dialogBuilder;
+            },
+
+            /**
+             *
+             * @param paramsNeeded array de cadenes amb els noms de les propietats a comprovar
+             * @param params objecte amb els paràmetres
+             * @private
+             */
+            _checkNeededParams: function (paramsNeeded, params) {
+                var param;
+
+                for (var i = 0; i < paramsNeeded.length; i++) {
+                    param = paramsNeeded[i];
+
+                    if (!params[param]) {
+                        throw new DialogManagerException('No s\'ha passat el paràmetre [' + param + '] amb els paràmetres: ', params);
+                    }
+                }
+
+            },
+
+            _checkLockedParams: function (params) {
+                this._checkNeededParams(['ns', 'timeout'], params);
             },
 
             /**

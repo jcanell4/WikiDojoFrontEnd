@@ -39,40 +39,10 @@ define([
             return this.params.id;
         },
 
-        _createRequestButton: function (params) {
-            return { // ALERTA[Xavi] el eventType i el dataToSend no cal passar-los al botò, queden fixats al callback
-                id: params.id,
-                description: params.description,
-                callback: this._generateRequestControlCallback(params.extra.eventType,
-                    params.extra.dataToSend)
-            };
-        },
+
 
         addCancelButton: function() {
             return this.addButton(this.type.CANCEL)
-        },
-
-        _createCancelButton: function() {
-            return {
-                id: this.type.CANCEL,
-                description: 'Cancel·lar',
-                callback:this._generateCancelCallback()
-            }
-        },
-
-        _generateRequestControlCallback: function (event, dataToSend) {
-            return function () {
-                this.eventManager.dispatchEvent(event, { // Això fa referencia al eventManager del dialog
-                    id: this.id,
-                    dataToSend: dataToSend
-                });
-            }
-        },
-
-        _generateCancelCallback: function () {
-            return function () {
-                this.remove();
-            }
         },
 
         addDiff: function (text1, text2, text1Label, text2Label) {
@@ -97,12 +67,6 @@ define([
             }
             return this;
         },
-
-        _addSection: function (node) {
-            // Afegeix el codi html que ha de correspondre a un node al array de seccions
-            this.params.sections.push(node);
-        },
-
 
         addButton: function (type, params) {
             var button;
@@ -129,13 +93,6 @@ define([
             this._addButton(button);
 
             return this;
-        },
-        _addButton: function (button) {
-            this.params.buttons.push(button);
-        },
-
-        _addInitFunction: function (func) {
-            this.params.initFunctions.push(func);
         },
 
         addButtons: function (buttons) {
@@ -198,8 +155,53 @@ define([
         build: function () {
             console.log('DialogBuilder#build', this.params);
             return new CustomDialog(this.params);
-        }
+        },
 
+
+        _createRequestButton: function (params) {
+            return { // ALERTA[Xavi] el eventType i el dataToSend no cal passar-los al botò, queden fixats al callback
+                id: params.id,
+                description: params.description,
+                callback: this._generateRequestControlCallback(params.extra.eventType,
+                    params.extra.dataToSend)
+            };
+        },
+
+        _createCancelButton: function() {
+            return {
+                id: this.type.CANCEL,
+                description: 'Cancel·lar',
+                callback:this._generateCancelCallback()
+            }
+        },
+
+        _generateRequestControlCallback: function (event, dataToSend) {
+            return function () {
+                this.eventManager.dispatchEvent(event, { // Això fa referencia al eventManager del dialog
+                    id: this.id,
+                    dataToSend: dataToSend
+                });
+            }
+        },
+
+        _generateCancelCallback: function () {
+            return function () {
+                this.remove();
+            }
+        },
+
+        _addSection: function (node) {
+            // Afegeix el codi html que ha de correspondre a un node al array de seccions
+            this.params.sections.push(node);
+        },
+
+        _addButton: function (button) {
+            this.params.buttons.push(button);
+        },
+
+        _addInitFunction: function (func) {
+            this.params.initFunctions.push(func);
+        },
 
     });
 

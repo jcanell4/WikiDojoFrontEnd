@@ -9,22 +9,6 @@ define([
     'dijit/form/Button',
 ], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObserver) {
 
-    /**
-     * Propietats úniques dels CustomDialog
-     *
-     * Al constructor es passa un objecte que serà mesclat amb el dialog, a banda de les propietats estandar dels
-     * dialegs es poden passar les següents:
-     *
-     *
-     * buttons: array d'objectes amb configuració pels botons amb el següent format:
-     *
-     * buttons: {
-     *      id: {string}
-     *      description: {string}
-     *      callback: {function}[]
-     * }
-     *
-     */
     return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin, EventObserver], {
 
         templateString: template,
@@ -34,8 +18,6 @@ define([
             this.sections = [];
             this.nextDialogs = {};
             this.nextCallbacks = {};
-
-            console.log(arguments);
 
             declare.safeMixin(this, arguments);
 
@@ -62,16 +44,13 @@ define([
                 return;
             }
 
-            this.timeout=5000;
-
-            console.log("timeout:", this.timeout);
             var timerId = setTimeout(function () {
-                console.log("Expire");
+                console.log("Expire!");
                 this.dispatchEvent(this.eventName.TIMEOUT, {id: this.id});
             }.bind(this), this.timeout); // El context del timer serà el propi dialog
 
             this.registerToEvent(this, this.eventName.DESTROY, function () {
-                console.log("Clear");
+                console.log("Clear!");
                 clearInterval(timerId);
             })
         },
@@ -145,10 +124,6 @@ define([
             return 'dialogButton_' + this.id + '_' + id;
         },
 
-        /**
-         *
-         * @protected
-         */
         _addListerners: function () {
             var $button;
 
@@ -164,7 +139,6 @@ define([
                 $button.on('click', function () {
                     this.remove(); // Al fer click en un boto sempre es tanca el dialeg
                 }.bind(this));
-
             }
         },
 
@@ -180,13 +154,7 @@ define([
             this.remove()
         },
 
-        //
-        //destroy: function () {
-        //    this.remove();
-        //    this.inherited(arguments);
-        //
-        //},
-
+        // Correspn al docId o algun altre tipus d'identificador únic amb el que volem agrupar dialegs
         setRefId: function (refId) {
             this.refId = refId;
         }

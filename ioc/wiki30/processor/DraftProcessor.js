@@ -3,6 +3,7 @@ define([
     'ioc/wiki30/processor/AbstractResponseProcessor',
 ], function (declare, AbstractResponseProcessor) {
     return declare([AbstractResponseProcessor],
+        // TODO[Xavi] Refactoritzar això i fer servir el mateix sistema pels DraftSelection i el draftProcessor <-- Fer servir el DraftProcessor DRAFT CONFLICT PROCESSOR com a base, perquè s'ha de fer servir el dispatcher
         /**
          * @class DraftProcessor
          * @extends AbstractResponseProcessor
