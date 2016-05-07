@@ -45,7 +45,7 @@ define([
         },
 
         refresh: function (timeout, params) {
-            //console.log('Timer#refresh', timeout, params);
+            console.log('Timer#refresh', timeout, params);
             this.cancel();
             this.start(timeout, params);
         }

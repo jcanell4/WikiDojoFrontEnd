@@ -8,6 +8,7 @@ define([
     var DialogBuilderException = function (message) {
         this.message = message;
         this.name = "DialogBuilderException";
+        console.error(this.name, this.message);
     };
 
     return declare([], {
@@ -30,7 +31,7 @@ define([
             this.params.sections = [];
             this.params.initFunctions = [];
             this.params.buttons = [];
-            this.params.nextDialog = {};
+            this.params.nextDialogs = {};
             this.params.nextCallbacks = {};
 
         },
@@ -40,9 +41,8 @@ define([
         },
 
 
-
-        addCancelButton: function() {
-            return this.addButton(this.type.CANCEL)
+        addCancelDialogButton: function (text) {
+            return this.addButton(this.type.CANCEL, text)
         },
 
         addDiff: function (text1, text2, text1Label, text2Label) {
@@ -83,7 +83,7 @@ define([
                     break;
 
                 case this.type.CANCEL:
-                    button = this._createCancelButton();
+                    button = this._createCancelButton(params);
                     break;
 
                 default:
@@ -110,13 +110,18 @@ define([
         },
 
         addNextDialog: function (event, dialog) {
+            console.log("DialogBuilder#addNextDialog", event);
             // llença el dialog passat per argument quan es dispara l'event
 
-            if (this.params.nextDialog[event]) {
-                throw new DialogBuilderException("Ja s'ha establert un dialog per l'event:" + event);
+            if (!dialog) {
+                throw new DialogBuilderException('No s\'ha passat cap dialeg');
             }
 
-            this.params.nextDialog[event] = dialog;
+            if (this.params.nextDialogs[event]) {
+                throw new DialogBuilderException('Ja s\'ha establert un dialog per l\'event:' + event);
+            }
+
+            this.params.nextDialogs[event] = dialog;
 
             return this;
         },
@@ -133,6 +138,8 @@ define([
 
         // Helper per facilitar la adició de events que treballen amb el RequestControl
         addNextRequestControl: function (eventListened, eventTriggered, dataToSend) {
+            console.log("DialogBuilder#_addNextRequestControl", eventTriggered, dataToSend);
+
             var callback = function () {
                 this.eventManager.dispatchEvent(eventTriggered, { // Això fa referencia al eventManager del dialog
                     id: this.id,
@@ -159,29 +166,48 @@ define([
 
 
         _createRequestButton: function (params) {
-            return { // ALERTA[Xavi] el eventType i el dataToSend no cal passar-los al botò, queden fixats al callback
+            var button = {
                 id: params.id,
                 description: params.description,
-                callback: this._generateRequestControlCallback(params.extra.eventType,
-                    params.extra.dataToSend)
-            };
+            }, callback;
+
+
+            if (Array.isArray(params.extra)) {
+                callback = [];
+                for (var i = 0; i < params.extra.length; i++) {
+                    callback.push(this._generateRequestControlCallback(params.extra[i].eventType, params.extra[i].dataToSend));
+                }
+
+
+            } else {
+                callback = this._generateRequestControlCallback(params.extra.eventType, params.extra.dataToSend);
+            }
+
+            button.callback = callback;
+
+            return button;
         },
 
-        _createCancelButton: function() {
+        _createCancelButton: function (params) {
             return {
                 id: this.type.CANCEL,
-                description: 'Cancel·lar',
-                callback:this._generateCancelCallback()
+                description: params.text || 'Cancel·lar',
+                callback: this._generateCancelCallback()
             }
         },
 
         _generateRequestControlCallback: function (event, dataToSend) {
-            return function () {
-                this.eventManager.dispatchEvent(event, { // Això fa referencia al eventManager del dialog
-                    id: this.id,
-                    dataToSend: dataToSend
-                });
-            }
+            console.log("DialogBuilder#_generateRequestControllCallback", event, dataToSend);
+
+                return function () {
+                    console.log("Click:", event, dataToSend);
+                    this.eventManager.dispatchEvent(event, { // Això fa referencia al eventManager del dialog
+                        id: this.id,
+                        dataToSend: dataToSend
+                    });
+                }
+
+
         },
 
         _generateCancelCallback: function () {

@@ -1,30 +1,17 @@
 define([
     'dojo/_base/declare',
     'ioc/wiki30/manager/EventObserver',
-    'ioc/gui/CustomDialog',
-    //'ioc/gui/DiffDialog',
     'ioc/gui/DialogBuilder',
-], function (declare, EventObserver, CustomDialog, DialogBuilder) {
+], function (declare, EventObserver, DialogBuilder) {
 
     var DialogManagerException = function (message) {
         this.message = message;
         this.name = "DialogManagerException";
+        console.error(this.name, this.message);
     };
 
     return declare([EventObserver],
         {
-
-            // TODO[Xavi] Refactoritzar com a Builder: createDialog(params).addDiff(text1, text2).addButton(params).addButton(params).addAutoClose(3000)...build()
-            /* El procés del builder comença amb el createDialog que retornarà un objecte amb els mètodes disponibles al builder:
-             - addDiff(text1, text2) per afegir una secció de diff
-             - addButton(type, params) // El type determina quina implementació fa servir el boto, per ara només Event (requestControl) i Custom (callback)
-             - addTimeout(temps, callback) // El dialog es tanca automàticament en acabar i crida al callback (això posibilita implementar el comportament: cancel document + mostrar alert) ALERTA[Xavi] disparar un event quan es fa un autoclose, de manera que es pugui llençar el dialeg d'alerta al tancar-se
-             - addTimeoutNextDialog(dialog) // Dialog que es llença quan es produeix un timeout del dialog
-             - addCloseCallback(callback) // Comprovar si es necessari, o ho afegim com un botó normal. Callbacks o events?
-             - build: genera el dialog i el retorna
-
-             Tots els mètodes excepte build retornen 'this'
-             */
 
             type: {
                 REQUEST_CONTROL: 'request_control',
@@ -32,7 +19,8 @@ define([
                 EVENT: 'event',
                 DIFF: 'diff',
                 LOCKED_DIFF: 'locked_diff',
-                ALERT: 'alerta'
+                INFO: 'info',
+                LOCK_WARNING: 'lock_warning'
             },
 
             constructor: function (args) {
@@ -72,9 +60,14 @@ define([
                         dialogBuilder = this._getLockedRequestControlDialog(refId, params);
                         break;
 
-                    case this.type.ALERT:
-                        dialogBuilder = this._getAlertDialog(refId, params);
+                    case this.type.INFO:
+                        dialogBuilder = this._getInfoDialog(refId, params);
                         break;
+
+                    case this.type.LOCK_WARNING:
+                        dialogBuilder = this._getLockWarningDialog(refId, params);
+                        break;
+
 
                     default:
                         throw new DialogManagerException("El tipus de dialeg no existeix: ", type);
@@ -122,8 +115,8 @@ define([
              */
             _getRequestControlDialog: function (refId, params) {
                 var dialogParams = {
-                        id: 'dialog_' + refId + params.id,
-                        title: params.title,
+                        id: 'dialog_' + refId + '_' + params.id,
+                        title: params.title + ": " + refId,
                         message: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
                         closable: params.closable || true,// opcional amb default
                         dispatcher: this.dispatcher
@@ -132,14 +125,23 @@ define([
 
                 dialogBuilder.addButtons(params.buttons);
 
-                //this._addRequestButtonsToBuilder(params.buttons, dialogBuilder);
-
                 return dialogBuilder;
-
-
-                //throw new DialogManagerException("_getAjaxDialog no implementat");
             },
 
+            _getInfoDialog: function (refId, params) {
+                var dialogParams = {
+                        id: 'dialog_' + refId + '_' + params.id,
+                        title: params.title + ": " + refId,
+                        message: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
+                        closable: true,
+                        dispatcher: this.dispatcher
+                    },
+                    dialogBuilder = new DialogBuilder(dialogParams);
+
+                dialogBuilder.addCancelDialogButton({text: 'Ok'});
+
+                return dialogBuilder;
+            },
 
             _generateRequestControlCallback: function (eventType, dataToSend) {
                 return function () {
@@ -174,9 +176,10 @@ define([
                     //    console.log("Timeout!");
                     //    alert("Test: It Works!")
                     //});
+                    .setParam('closable', false)
                     .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns)
-                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns);
-                //.addCancelButton();
+                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns); // Com no es closable, no cal controlar el cancel
+                //.addCancelDialogButton({text: 'Cancel'});
 
                 return dialogBuilder;
             },
@@ -184,18 +187,40 @@ define([
             _getLockedRequestControlDialog: function (refId, params) {
                 this._checkLockedParams(params);
 
-                var dialogBuilder = this._getRequestControlDialog(refId, params);
+                var dialogBuilder = this._getRequestControlDialog(refId, params),
+                    dataToSend = 'do=unlock&id=' + params.ns;
 
                 dialogBuilder.addTimeout(params.timeout)
                     //.addNextCallback(this.eventName.TIMEOUT, function () {
                     //    console.log("Timeout!");
                     //    alert("Test: It Works!")
                     //});
-                    .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns)
-                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, 'do=unlock&id=' + params.ns);
+                    .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, dataToSend)
+                    .addNextRequestControl(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, dataToSend);
 
                 return dialogBuilder;
             },
+
+            _getLockWarningDialog: function (refId, params) {
+
+                this._checkLockedParams(params);
+
+                var dialogBuilder = this._getRequestControlDialog(refId, params),
+                    dataToSendUnlock = 'do=unlock&id=' + params.ns,
+                    dataToSendCancelPreserveDraft = {
+                        discardChanges: true,
+                        keep_draft: true
+                    };
+
+                dialogBuilder.addTimeout(params.timeout)
+                    .setParam('closable', false)
+                    .addNextRequestControl(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, dataToSendUnlock)
+                    .addNextRequestControl(this.eventName.TIMEOUT, this.eventNameCompound.CANCEL + refId, dataToSendCancelPreserveDraft) // Això no es un rquest control, això ha de passar pel manager i redirigit al document
+                    .addNextDialog(this.eventName.TIMEOUT, params.infoDialog); // TODO[Xavi] pendent d'implementar el següent dialog
+
+                return dialogBuilder;
+            },
+
 
             /**
              *

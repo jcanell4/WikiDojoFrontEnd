@@ -21,7 +21,7 @@ define([
 
 
         _broadcast: function (data) {
-            //console.log("EventManager#broadcast", data.name, data);
+            console.log("EventManager#broadcast", data.name, data);
             this.dispatchEvent(data.name, data);
         },
 

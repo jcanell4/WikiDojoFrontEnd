@@ -69,11 +69,25 @@ define([
         },
 
         _initNextDialogs: function () {
+            console.log("CustomDialog#_initNextDialogs", this.nextDialogs);
             // llença tota la seqüencia de funcions d'inicialització afegides
 
             for (var event in this.nextDialogs) {
-                this.registerToEvent(this, event, this.nextDialogs[event].show);
-                this.destroy(); // Només pot haver un dialog actiu
+                console.log("Inicialitzant nextDialog:", event, this.nextDialogs[event]);
+
+                this.registerToEvent(this, event, this._createDialogShowCallback(this.nextDialogs[event]).bind(this));
+
+                //this.registerToEvent(this, event, function () {
+                //    this.nextDialogs[event].show(); // ALERTA[Xavi] Si hi ha més d'un event això no funcionarà perquè el valor d'event serà diferent, ja que canvia al closure
+                //}.bind(this));
+                //this.registerToEvent(this, event, this.nextDialogs[event].show.bind(this));
+
+            }
+        },
+
+        _createDialogShowCallback: function (dialog) {
+            return function () {
+                dialog.show();
             }
         },
 
@@ -135,7 +149,14 @@ define([
                 buttonId = this._getButtonId(this.buttons[i].id);
                 $button = jQuery('#' + buttonId);
 
-                $button.on('click', this.buttons[i].callback.bind(this));
+                if (Array.isArray(this.buttons[i].callback)) {
+                    for (var j = 0; j < this.buttons[i].callback.length; j++) {
+                        $button.on('click', this.buttons[i].callback[j].bind(this));
+                    }
+                } else {
+                    $button.on('click', this.buttons[i].callback.bind(this));
+                }
+
                 $button.on('click', function () {
                     this.remove(); // Al fer click en un boto sempre es tanca el dialeg
                 }.bind(this));

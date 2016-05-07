@@ -135,7 +135,7 @@ define([
             this.lastRemoteRefresh = Date.now();
             this.lastRefresh = this.lastRemoteRefresh;
 
-            var dataToSend = this._getQueryDraft();
+            var dataToSend = this._getQueryLock();
 
             this.eventManager.dispatchEvent(this.eventName.SAVE_DRAFT, {
                 id: this.id,
@@ -267,7 +267,7 @@ define([
         },
 
 
-        _getQueryDraft: function () {
+        _getQueryLock: function () {
             //console.log('Draft#_getQueryDraft');
             this._setLastGeneratedDraft(this.contentTool._generateDraft());
 
