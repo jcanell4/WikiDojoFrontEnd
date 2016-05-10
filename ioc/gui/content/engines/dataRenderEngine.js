@@ -14,14 +14,15 @@ define(function () {
     return function (data) {
 
         var $container = jQuery('<div id="container_' + data.id + '"></div>'),
-            $form = jQuery(data.content).find('form').clone(),
+            $form = jQuery(data.htmlForm).find('form').clone(),
             $textarea = $form.find('textarea');
 
         $container.append('<div id="toolbar_' + data.id + '"></div>');
         $form.attr('id', 'form_' + data.id);
 
         $textarea.attr('id', 'textarea_' + data.id);
-        $textarea.val(jQuery.trim($textarea.val()));
+        //$textarea.val(jQuery.trim($textarea.val()));
+        $textarea.val(jQuery.trim(data.content));
         $container.append($form);
 
         return $container;

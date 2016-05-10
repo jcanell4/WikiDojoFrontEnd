@@ -63,7 +63,7 @@ define([
                 this.dialogs.diff = new DiffDialog({
                     // Canvis
                     id: 'diff_dialog_' + this.id,
-                    content: "S'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o el esborrany trobat?",// TODO[Xavi] Localitzar, enviar des del servidor
+                    content: "S'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o l'esborrany trobat?",// TODO[Xavi] Localitzar, enviar des del servidor
                     closable: true, // TODO[Xavi] Controlar el tancament per poder cancelar el timer del timeout
 
                     // Antic
@@ -171,7 +171,8 @@ define([
 
                 switch (value.type) {
                     case 'full_document':
-                        var currentContent = jQuery(value.content).find('textarea').val();
+//                        var currentContent = jQuery(value.content).find('textarea').val();
+                        var currentContent = value.content;
                         return {content: currentContent, date: value.lastmod};
 
                     case 'partial_document':

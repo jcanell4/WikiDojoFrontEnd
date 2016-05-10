@@ -94,10 +94,15 @@ define([
         _processNotification: function(notification) {
             //console.log("NotifyManager#_processNotification:", notification);
             switch (notification.type) {
+                case 'cancel_notification':
+                case 'expiring':
+                    console.log("notification.type: " + notification.type);
+                    break;
+                case 'message':
+                    //afegir/sobrescriure per ID, al notificador (GUI)
                 case 'alert':
                     this._processAlert(notification);
                     break;
-                case 'message':
                 case 'dialog':
                 default:
                     console.warn("Notificació de tipus "+notification.type+" rebuda:", notification);
@@ -108,7 +113,7 @@ define([
         _processAlert: function (notification) {
             //console.log("NotifyManager#_processAlert", notification);
             this.dispatcher.diag.set("title", "ALERTA: " + notification.sender_id);
-            this.dispatcher.diag.set("content", notification.text);
+            this.dispatcher.diag.set("content", notification.data.text);
             this.dispatcher.diag.show();
         }
 

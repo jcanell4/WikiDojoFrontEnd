@@ -27,28 +27,28 @@ define([
         },
 
         _init: function () {
-            this._registerToEvents();
-            this._initTimers();
-            this.lock();
+//            this._registerToEvents();
+//            this._initTimers();
+//            this.lock();
         },
 
         lock: function () {
-            this._doLock();
+//            this._doLock();
         },
 
         unlock: function () {
             //console.log("Lock#unlock");
-            this._doUnlock();
+//            this._doUnlock();
         },
 
         refresh: function (timeout) {
-            this._doRefresh(timeout);
+//            this._doRefresh(timeout);
         },
 
 
         update: function (timeout) {
             //console.log('Lock#update', timeout);
-            this._refreshTimers(timeout);
+//            this._refreshTimers(timeout);
         },
 
         _registerToEvents: function () {

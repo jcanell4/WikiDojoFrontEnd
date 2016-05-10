@@ -29,11 +29,12 @@ define([
              */
             process: function (value, dispatcher) {
                 //console.log("DataContentProcessor#process", value);
-                var $content = jQuery(value.content),
-                    draftContent;
-
-                // Reemplaçem el contingut del content amb el del draft
-
+//                var $form = jQuery(value.htmlForm),
+//                    draftContent;
+//
+//                // Reemplaçem el contingut del content amb el del draft
+//
+                var  draftContent;
                 if (value.recover_draft) {
                     if (value.recover_draft.recover_local === true) {
                         draftContent =this._getLocalDraftContent(value, dispatcher);
@@ -44,9 +45,11 @@ define([
                     } else {
                         // No s'ha demanat recuperar cap draft, o no s'ja enviat el draft per recuperar
                     }
+//
+//                    $form.find('textarea').html(draftContent);
+//                    value.content = jQuery('<div>').append($form.clone()).html();
 
-                    $content.find('textarea').html(draftContent);
-                    value.content = jQuery('<div>').append($content.clone()).html();
+                    value.content = draftContent;
                 }
 
                 return this.inherited(arguments);
