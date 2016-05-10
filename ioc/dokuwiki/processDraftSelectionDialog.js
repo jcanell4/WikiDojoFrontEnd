@@ -44,7 +44,7 @@ define([
 
             _showDialog: function (value, timeout) {
 
-                timeout = 5000; // ALERTA[Xavi] modificat per les proves
+                //timeout = 5000; // ALERTA[Xavi] modificat per les proves
 
                 var params = {
                     id: 'draft_conflict',
