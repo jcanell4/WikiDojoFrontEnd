@@ -12,7 +12,7 @@ define([
     return declare([EventObserver], {
 
         AUTOSAVE_LOCAL: 5 * 1000, // Temps en ms mínim per fer un refresc
-        AUTOSAVE_REMOTE: 15 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
+        AUTOSAVE_REMOTE: 15 * 60 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
         MAX_LOCAL_STORAGE_USED: 2048, // En KBs, 2048KBs son 2 MBs
 
         constructor: function (args) {

@@ -175,6 +175,7 @@ define([
 
                 this.eventManager = new EventManager({dispatcher:this});
                 this.lockManager = new LockManager({dispatcher:this});
+                //ALERTA [JOSEP] TODO: Aquí cal configurar els temps dels drafts.
                 this.draftManager = new DraftManager({dispatcher:this});
                 this.notifyManager= new NotifyManager({dispatcher:this});
                 this.dialogManager= new DialogManager({dispatcher:this});
