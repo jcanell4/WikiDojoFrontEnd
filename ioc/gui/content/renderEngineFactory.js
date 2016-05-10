@@ -31,6 +31,10 @@ define([
          * @private
          */
         _getRenderEngine = function (type) {
+            // TODO[Xavi] afegir el canvi a les funcions
+            // after.content;
+            // before.content;
+
             return renderEngines[type] ? renderEngines[type] : defaultRenderEngine;
         },
 

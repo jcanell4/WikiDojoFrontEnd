@@ -13,6 +13,7 @@ define(function () {
 
     return function (data) {
 
+
         var $container = jQuery('<div id="container_' + data.id + '"></div>'),
             $form = jQuery(data.htmlForm).find('form').clone(),
             $textarea = $form.find('textarea');
@@ -24,6 +25,8 @@ define(function () {
         //$textarea.val(jQuery.trim($textarea.val()));
         $textarea.val(jQuery.trim(data.content));
         $container.append($form);
+        // TODO afegir el afterContent
+
 
         return $container;
     }

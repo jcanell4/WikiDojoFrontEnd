@@ -1,9 +1,8 @@
 define([
-    "dojo/_base/declare", // declare
-    'dojo/_base/lang',
+    "dojo/_base/declare",
     "ioc/wiki30/Request",
     "ioc/wiki30/manager/EventObserver"
-], function (declare, lang, Request, EventObserver) {
+], function (declare, Request, EventObserver) {
     var ret = declare([EventObserver],
         /**
          * @class RequestControl
@@ -34,6 +33,7 @@ define([
             _sendRequest: function (data) {
                 //console.log('RequestControl#_sendRequest', data);
                 this.dataToSend = data.dataToSend;
+
                 this.request.setStandbyId(data.standbyId);
 
                 if (this.post) {

@@ -43,7 +43,7 @@ define([
                         draftContent = value.draft.content;
 
                     } else {
-                        // No s'ha demanat recuperar cap draft, o no s'ja enviat el draft per recuperar
+                        // No s'ha demanat recuperar cap draft, o no s'ha enviat el draft per recuperar
                     }
 //
 //                    $form.find('textarea').html(draftContent);

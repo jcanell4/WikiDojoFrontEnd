@@ -1041,16 +1041,17 @@ define([
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
             //console.log("EditorSubclass#_doCancel", this.id, event);
-            var dataToSend, containerId;
+            var dataToSend, containerId, data = this._getDataFromEvent(event);
 
-            if (event.discardChanges) {
-                dataToSend = this.getQueryForceCancel(event.id);
+
+            if (data.discardChanges) {
+                dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
             } else {
-                dataToSend = this.getQueryCancel(event.id); // Alerta[Xavi] Aquest fa un cancel parcial al structuredDocumentSubclass, refactoritzar (crec que no es dona aquest cas) <--- substituir per _getQueryCancel o canviar el nom a _getQueryCancelDocument per diferenciar el cancelPartial
+                dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
             }
 
-            if (event.keep_draft) {
-                dataToSend += '&keep_draft=' + event.keep_draft;
+            if (data.keep_draft) {
+                dataToSend += '&keep_draft=' + data.keep_draft;
             }
 
             containerId = event.id;
@@ -1061,6 +1062,14 @@ define([
                 standbyId: containerId
             })
 
+        },
+
+        _getDataFromEvent: function (event) {
+            if (event.dataToSend) {
+                return event.dataToSend;
+            } else {
+                return event;
+            }
         },
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass

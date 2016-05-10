@@ -36,7 +36,8 @@ define([
                 CONTENT_SELECTED: 'content_selected',
                 CONTENT_UNSELECTED: 'content_unselected',
                 DOCUMENT_CHANGES_RESET: 'document_changes_reset',
-                NOTIFY: 'notify'
+                NOTIFY: 'notify',
+                TIMEOUT: 'timeout'
 
             },
 

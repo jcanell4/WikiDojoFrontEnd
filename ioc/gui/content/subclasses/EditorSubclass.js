@@ -133,17 +133,18 @@ define([
 
             // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
-                //console.log("EditorSubclass#_doCancel", this.id, event);
-                var dataToSend, containerId;
+                //console.log("EditorSubclass#_doCancelDocument", this.id, event);
+                var dataToSend, containerId, data = this._getDataFromEvent(event);
 
-                if (event.discardChanges) {
+
+                if (data.discardChanges) {
                     dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
                 } else {
                     dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
                 }
 
-                if (event.keep_draft) {
-                    dataToSend += '&keep_draft=' + event.keep_draft;
+                if (data.keep_draft) {
+                    dataToSend += '&keep_draft=' + data.keep_draft;
                 }
 
                 containerId = event.id;
@@ -156,6 +157,13 @@ define([
 
             },
 
+            _getDataFromEvent: function (event) {
+                if (event.dataToSend) {
+                    return event.dataToSend;
+                } else {
+                    return event;
+                }
+            },
 
             getQuerySave: function (id) {
 
