@@ -44,7 +44,7 @@ define([
 
             _showDialog: function (value, timeout) {
 
-                timeout = 5000; // ALERTA[Xavi] modificat per les proves
+                //timeout = 5000; // ALERTA[Xavi] modificat per les proves
 
                 var params = {
                     id: 'draft_conflict',
@@ -59,6 +59,7 @@ define([
                         {
                             id: 'edit_document',
                             description: 'Editar document complet',
+                            buttonType: 'request_control',
                             extra: {
                                 eventType: this.eventManager.eventName.EDIT,
                                 dataToSend: this._buildQuery('full_document', value)  + '&discard_draft=true',
@@ -68,6 +69,7 @@ define([
                         {
                             id: 'edit_draft',
                             description: 'Editar fragment (s\'esborrarà l\'esborrany)',
+                            buttonType: 'request_control',
                             extra: {
                                 eventType: this.eventManager.eventName.EDIT_PARTIAL,
                                 dataToSend: this._buildQuery('partial_document', value) + '&discard_draft=true',
