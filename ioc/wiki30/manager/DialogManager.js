@@ -68,6 +68,7 @@ define([
                         throw new DialogManagerException("El tipus de dialeg no existeix: ", type);
                 }
 
+
                 if (this._existsDialog(refId, dialogBuilder.getId())) {
                     console.log("Ja existeix el dialog, el retornem");
                     return this._getExistingDialog(refId, dialogBuilder.getId());
@@ -110,7 +111,7 @@ define([
                     },
                     dialogBuilder = new DialogBuilder(dialogParams);
 
-                dialogBuilder.addRequestControlButtons(params.buttons);
+                dialogBuilder.addButtons(params.buttons);
 
                 return dialogBuilder;
             },
@@ -125,7 +126,7 @@ define([
                     },
                     dialogBuilder = new DialogBuilder(dialogParams);
 
-                dialogBuilder.addCancelDialogButton({text: 'Ok'});
+                dialogBuilder.addCancelDialogButton({description: 'Ok'});
 
                 return dialogBuilder;
             },
