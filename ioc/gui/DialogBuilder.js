@@ -14,7 +14,9 @@ define([
 
         buttonType: {
             REQUEST_CONTROL: 'request_control',
-            CANCEL: 'cancel'
+            CANCEL: 'cancel',
+            DEFAULT: 'default',
+            AMD: 'amd'
         },
 
         constructor: function (args) {
@@ -40,8 +42,8 @@ define([
         },
 
 
-        addCancelDialogButton: function (text) {
-            return this.addButton(this.buttonType.CANCEL, text)
+        addCancelDialogButton: function (description) {
+            return this.addButton(this.buttonType.CANCEL, description)
         },
 
         addDiff: function (text1, text2, text1Label, text2Label) {
@@ -67,6 +69,12 @@ define([
             return this;
         },
 
+        addButtons: function(buttons) {
+            for (var i=0; i<buttons.length; i++) {
+                this.addButton(buttons[i].buttonType, buttons[i]);
+            }
+        },
+
         addButton: function (buttonType, params) {
             var button;
 
@@ -81,12 +89,17 @@ define([
                     button = this._createRequestButton(params);
                     break;
 
+                case this.buttonType.AMD:
+                    button = this._createAMDButton(params);
+                    break;
+
                 case this.buttonType.CANCEL:
                     button = this._createCancelButton(params);
                     break;
 
+                case this.buttonType.DEFAULT:
                 default:
-                    throw new DialogBuilderException("No existeix el tipus de botó: " + buttonType);
+                    button = this._createDefaultButton(params);
             }
 
             this._addButton(button);
@@ -188,9 +201,17 @@ define([
 
         _createCancelButton: function (params) {
             return {
-                id: this.buttonType.CANCEL,
-                description: params.text || 'Cancel·lar',
+                id:params.id,
+                description: params.description || 'Cancel·lar',
                 callback: this._generateCancelCallback()
+            }
+        },
+
+        _createDefaultButton: function (params) {
+            return {
+                id: params.id,
+                description: params.description,
+                callback: params.callback
             }
         },
 
@@ -205,7 +226,6 @@ define([
                 });
             }
 
-
         },
 
         _generateCancelCallback: function () {
@@ -214,7 +234,12 @@ define([
             }
         },
 
+        addSection: function (node) {
+            this._addSection(node);
+        },
+
         _addSection: function (node) {
+            // Alerta[Xavi] Ho he deixat com a privat per poder fer canvis sense afectar a la API
             // Afegeix el codi html que ha de correspondre a un node al array de seccions
             this.params.sections.push(node);
         },

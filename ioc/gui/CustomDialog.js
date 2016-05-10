@@ -138,6 +138,8 @@ define([
                 buttonId = this._getButtonId(this.buttons[i].id);
                 $button = jQuery('#' + buttonId);
 
+                console.log("boton:", this.buttons[i]);
+
                 if (Array.isArray(this.buttons[i].callback)) {
                     for (var j = 0; j < this.buttons[i].callback.length; j++) {
                         $button.on('click', this.buttons[i].callback[j].bind(this));
