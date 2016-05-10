@@ -191,6 +191,7 @@ define([
                     {
                         id: 'refrescar-bloqueig',
                         description: 'Refrescar bloqueig',
+                        buttonType: 'request_control',
 
                         extra: {
                             eventType: this.eventName.LOCK_DOCUMENT,
@@ -200,6 +201,8 @@ define([
                     {
                         id: 'alliberar-document',
                         description: 'Alliberar el document',
+                        buttonType: 'request_control',
+
                         extra: [
                             {
                                 eventType: this.eventName.UNLOCK_DOCUMENT,
