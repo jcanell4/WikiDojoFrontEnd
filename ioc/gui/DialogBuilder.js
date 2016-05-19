@@ -15,8 +15,7 @@ define([
         buttonType: {
             REQUEST_CONTROL: 'request_control',
             CANCEL: 'cancel',
-            DEFAULT: 'default',
-            AMD: 'amd'
+            DEFAULT: 'default'
         },
 
         constructor: function (args) {
@@ -87,10 +86,6 @@ define([
                     //          eventType: tipus del event que rebrà un request control,
                     //          dataToSend: dades que es passen al request control}
                     button = this._createRequestButton(params);
-                    break;
-
-                case this.buttonType.AMD:
-                    button = this._createAMDButton(params);
                     break;
 
                 case this.buttonType.CANCEL:
@@ -208,11 +203,14 @@ define([
         },
 
         _createDefaultButton: function (params) {
+            /*
             return {
                 id: params.id,
                 description: params.description,
                 callback: params.callback
             }
+            */
+           return params;
         },
 
         _generateRequestControlCallback: function (event, dataToSend) {

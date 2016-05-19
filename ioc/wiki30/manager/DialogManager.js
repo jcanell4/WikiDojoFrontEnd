@@ -31,8 +31,25 @@ define([
             // refId: el refId ens permetrà agrupar tots els dialogs d'un mateix document o concepte
             // type: el tipus de dialog pot ser Custom o Diff en aquests moments, si no es passen els argumetns necessaris es llença excepció
 
-
             getDialog: function (type, refId, params) {
+                var dlg=null;
+                if(!params){
+                    var id = refId;
+                    refId = type;
+                    if(this._existsDialog(refId, id)){
+                        dlg = this._getExistingDialog(refId, id);
+                    }
+                }else{
+                    dlg = this._getDialog(type, refId, params);
+                }
+                return dlg;
+            },
+            
+            addDialog: function(refId, dialog){
+                this._addDialog(refId, dialog);
+            },
+
+            _getDialog: function (type, refId, params) {
                 //console.log("DialogManager#getDialog", type, refId);
 
                 var dialogBuilder = null,

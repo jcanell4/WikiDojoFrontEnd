@@ -20,10 +20,10 @@ define([
          */
         {
             /*templateString: template,*/
-            
-            constructor:function(){
-                //console.log("IocButton");
-            },
+//            
+//            constructor:function(){
+//                //console.log("IocButton");
+//            },
             
             /** @override */
             postListenOnClick: function(evt){

@@ -22,15 +22,17 @@ define([
         "dojo/dom",
         "ioc/gui/content/subclasses/MetaInfoSubclass",
         "ioc/gui/content/subclasses/DocumentSubclass",
-        "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
+//        "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
         "ioc/gui/content/subclasses/EditorSubclass",
+        "ioc/gui/content/subclasses/BasicEditorSubclass",
         "ioc/gui/content/subclasses/MediaDetailsSubclass",
         "ioc/gui/content/subclasses/MetaMediaDetailsSubclass",
         "ioc/gui/content/subclasses/StructuredDocumentSubclass",
-        "ioc/gui/content/subclasses/RequestSubclass"
+        "ioc/gui/content/subclasses/RequestSubclass",
+        "ioc/gui/content/subclasses/TimedDocumentSubclass"
     ], function (lang, ContentTool, requestReplacerFactory,
-                 dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, ChangesManagerCentralSubclass, EditorSubclass,
-                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass, RequestSubclass) {
+                 dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, /*ChangesManagerCentralSubclass,*/ EditorSubclass, BasicEditorSubclass,
+                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass, RequestSubclass, TimedDocumentSubclass) {
 
         var patch = function (target, source) {
                 return function () {
@@ -277,6 +279,7 @@ define([
                 META: 'meta',
                 DOCUMENT: 'document',
                 EDITOR: 'editor',
+                REQUIRING: 'requiring',
                 MEDIADETAILS: 'mediadetails',
                 METAMEDIADETAILS: 'metamediadetails',
                 STRUCTURED_DOCUMENT: 'structured_document'
@@ -403,8 +406,16 @@ define([
                         GeneratedContentTool = base
                             .createSubclass(RequestSubclass)
                             .createSubclass(DocumentSubclass)
-                            .createSubclass(ChangesManagerCentralSubclass)
+                            //.createSubclass(ChangesManagerCentralSubclass)
                             .createSubclass(EditorSubclass);
+                        break;
+
+                    case this.generation.REQUIRING:
+                        GeneratedContentTool = base
+                            .createSubclass(TimedDocumentSubclass)
+                            .createSubclass(RequestSubclass)
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(BasicEditorSubclass);
                         break;
 
                     case this.generation.STRUCTURED_DOCUMENT:

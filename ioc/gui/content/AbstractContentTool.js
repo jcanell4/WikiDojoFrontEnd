@@ -160,7 +160,7 @@ define([
             render: function () {
                 //console.log("AbstractContentTool#render", this.id);
                 this.updating = true;
-                this.set('content', this.renderEngine(this.data));
+                this.set('content', this.renderEngine(this.data, this));
                 this.updating = false;
             },
 

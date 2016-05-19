@@ -99,7 +99,8 @@ define([
             },
 
             _extractContentFromNode: function (content) {
-                return  jQuery.trim(jQuery(content.content).find('textarea').val());
+                //return  jQuery.trim(jQuery(content.content).find('textarea').val());
+                return content.content;
             },
 
             _getLocalDraftContent: function(value, dispatcher) {

@@ -46,6 +46,7 @@ define([
     "ioc/wiki30/manager/DraftManager",
     "ioc/wiki30/manager/NotifyManager",
     "ioc/wiki30/manager/DialogManager",
+    "ioc/wiki30/processor/RequiringContentProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -57,7 +58,7 @@ define([
              RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
              LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
-             NotifyManager, DialogManager) {
+             NotifyManager, DialogManager, RequiringContentProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -172,6 +173,7 @@ define([
                 this.processors["lock_data"] = new LockDataProcessor();
                 this.processors["tree"] = new TreeProcessor();
                 this.processors["notification"] = new NotificationProcessor();
+                this.processors["requiring"] = new RequiringContentProcessor();
 
                 this.eventManager = new EventManager({dispatcher:this});
                 this.lockManager = new LockManager({dispatcher:this});
@@ -489,7 +491,7 @@ define([
              * @param content
              */
             addDocument: function (content) {
-                console.log("Dispatcher#addDocument", id);
+//                console.log("Dispatcher#addDocument", content.id);
 
                 if (!this.contentCache[content.id]) {
 

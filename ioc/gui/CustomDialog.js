@@ -7,7 +7,7 @@ define([
     'dojo/dom-construct',
     'ioc/wiki30/manager/EventObserver',
     'dijit/form/Button',
-], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObserver) {
+], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObserver, Button) {
 
     return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin, EventObserver], {
 
@@ -108,19 +108,35 @@ define([
                 return;
             }
 
-            this.buttonsNode.appendChild(this._createButtons());
+//            //this.buttonsNode.appendChild(this._createButtons());
+        this._createButtons();
+//            for(var i=0; i<bts.length; i++){
+//                this.addChild(bts[i]);
+//            }
         },
 
         _createButtons: function () {
-            var content = '', buttonId;
+            var buttonId, classButton, btn;
             for (var i = 0; i < this.buttons.length; i++) {
                 buttonId = this._getButtonId(this.buttons[i].id);
-                content += '<button data-dojo-type="dijit/form/Button" type="button" id="'
-                    + buttonId + '" ';
-                content += '\>' + this.buttons[i].description + '</button>';
+                if(this.buttons[i].classButton){
+                    classButton = this.buttons[i].classButton;
+                }else{
+                     classButton = Button;
+                }
+                if(!this.buttons[i].props){
+                    this.buttons[i].props = {
+                        label:this.buttons[i].description
+                    };
+                }else if(this.buttons[i].description){
+                    this.buttons[i].props.label = this.buttons[i].description;
+                }
+                this.buttons[i].props.id = buttonId;
+                btn = new classButton(this.buttons[i].props);
+                btn.placeAt(this.buttonsNode);
+                this.buttons[i].widget = btn;
             }
 
-            return domConstruct.toDom(content);
         },
 
         _getButtonId: function (id) {
@@ -136,21 +152,45 @@ define([
             var buttonId;
             for (var i = 0; i < this.buttons.length; i++) {
                 buttonId = this._getButtonId(this.buttons[i].id);
-                $button = jQuery('#' + buttonId);
+//                $button = jQuery('#' + buttonId);
 
-                console.log("botó:", this.buttons[i]);
+                console.log("botó:", buttonId);
 
                 if (Array.isArray(this.buttons[i].callback)) {
+                    this.buttons[i].widget._callbackDlg = [];
+                    this.buttons[i].widget._removeDlg = this.remove.bind(this);
                     for (var j = 0; j < this.buttons[i].callback.length; j++) {
-                        $button.on('click', this.buttons[i].callback[j].bind(this));
+                        this.buttons[i].widget._callbackDlg.push(this.buttons[i].callback.bind(this));
                     }
+                    this.buttons[i].widget.onClick = function(){
+                        for (var j = 0; j < this._callbackDlg.length; j++) {
+                            this._callbackDlg[j]();
+                        }
+                        this._removeDlg();
+//                        $button.on('click', this.buttons[i].callback[j].bind(this));
+                    };
+                } else if(this.buttons[i].callback){
+                    this.buttons[i].widget._callbackDlg = this.buttons[i].callback.bind(this);
+                    this.buttons[i].widget._removeDlg = this.remove.bind(this);
+                    this.buttons[i].widget.onClick = function(){
+                        this._callbackDlg();
+                        this._removeDlg();
+//                        $button.on('click', this.buttons[i].callback.bind(this));
+                    };                    
                 } else {
-                    $button.on('click', this.buttons[i].callback.bind(this));
+                    var oc = this.buttons[i].widget.onClick.bind(this.buttons[i].widget);
+                    this.buttons[i].widget._removeDlg = this.remove.bind(this);
+                    this.buttons[i].widget.onClick = function(){
+                        if(oc){
+                            oc();
+                        }
+                        this._removeDlg();
+                    };                    
                 }
-
-                $button.on('click', function () {
-                    this.remove(); // Al fer click en un boto sempre es tanca el dialeg
-                }.bind(this));
+//
+//                $button.on('click', function () {
+//                    this.remove(); // Al fer click en un boto sempre es tanca el dialeg
+//                }.bind(this));
             }
         },
 

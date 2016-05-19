@@ -15,13 +15,24 @@ define([
          * @param {{onExpire: function}} args
          */
         constructor: function (args) {
-            declare.safeMixin(this, args);
-            this.expired = false;
+            if(args){
+                this.init(args);
+            }
         },
-
+        
+        init: function(args){
+            this.expired = true;
+            declare.safeMixin(this, args);
+        },
+        
         start: function (timeout, params) {
             //console.log('Timer#start', timeout, params);
             this.expired = false;
+            if(params){
+                this.paramsOnExpire=params;
+            }else{
+                params = this.paramsOnExpire;
+            }            
             this.id = setTimeout(this._onExpire.bind(this), timeout, params);
         },
 
@@ -38,16 +49,32 @@ define([
             throw new TimerException("onExpire function not defined");
         },
 
-        cancel: function () {
+        cancel: function (params) {
             //console.log('Timer#cancel', this.id);
             this.expired = false;
             clearTimeout(this.id);
+            if(!params){
+                params = this.paramsOnCancel;
+            }
+            this.onCancel(params);
+        },
+
+        onCancel: function(){            
         },
 
         refresh: function (timeout, params) {
             //console.log('Timer#refresh', timeout, params);
-            this.cancel();
+            if(params){
+                this.paramsOnExpire=params;
+            }else{
+                params = this.paramsOnExpire;
+            }
+            clearTimeout(this.id);
             this.start(timeout, params);
+        },
+        
+        isExpired: function(){
+            return this.expired;
         }
 
     });

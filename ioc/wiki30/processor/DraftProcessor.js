@@ -58,6 +58,7 @@ define([
                             {
                                 id: 'open_document',
                                 description: 'Obrir el document',
+                                buttonType: 'request_control',
                                 extra: {
                                     eventType: this._getActionType(),
                                     dataToSend: this._getDocumentQuery(),
@@ -67,6 +68,7 @@ define([
                             {
                                 id: 'open_draft',
                                 description: "Obrir l'esborrany",
+                                buttonType: 'request_control',
                                 extra: {
                                     eventType: this._getActionType(),
                                     dataToSend: this._getDraftQuery()

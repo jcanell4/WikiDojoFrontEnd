@@ -35,11 +35,12 @@ define([
                                   //valor dels paràmetres a passar a través de 
                                   //l'objecte event.
                                   
-            constructor:function(){
+            constructor:function(args){
                 //console.log("ButtonToListen");
                 if(!this.dispatcher){
                     this.dispatcher = getDispatcher();
                 }
+                declare.safeMixin(this, args);
             },
             
             postListenOnClick: function(evt){},

@@ -103,6 +103,17 @@ define([
                             dispatcher.getDraftManager().clearDraftChunks(value.id, value.cancel);
                             //console.log("Eliminats chunks dels esborranys locals:", value.cancel);
                             // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
+                            dispatcher.getEventManager().dispatchEvent(
+                                dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
+                                    id: value.id,
+                                    dataToSend: {
+                                        id: value.ns,
+                                        type:'structured'
+                                    },
+                                    standbyId: dispatcher.containerNodeId
+                                }
+                            );
+
                         }
 
                     } else if (changesManager.isChanged(value.id) && !value.selected && !value.cancel) {
