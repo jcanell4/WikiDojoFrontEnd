@@ -129,7 +129,8 @@ define([
              */
             updateDocument: function (content) {
                 this.setData(content.content);
-                this.updateTitle(content.content);
+                //this.updateTitle(content.content);
+                this.updateTitle(content);
                 this.render();
                 this.addDocument();
             },

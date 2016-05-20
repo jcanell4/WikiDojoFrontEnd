@@ -46,7 +46,8 @@ define([
     "ioc/wiki30/manager/DraftManager",
     "ioc/wiki30/manager/NotifyManager",
     "ioc/wiki30/manager/DialogManager",
-    "ioc/wiki30/processor/RequiringContentProcessor"
+    "ioc/wiki30/processor/RequiringContentProcessor",
+    "ioc/wiki30/processor/CodeResponseProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -58,7 +59,7 @@ define([
              RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
              LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
-             NotifyManager, DialogManager, RequiringContentProcessor) {
+             NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -181,6 +182,8 @@ define([
                 this.draftManager = new DraftManager({dispatcher:this});
                 this.notifyManager= new NotifyManager({dispatcher:this});
                 this.dialogManager= new DialogManager({dispatcher:this});
+
+                this.processors["code"] = new CodeResponseProcessor();
             },
 
             /**

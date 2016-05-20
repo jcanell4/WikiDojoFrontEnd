@@ -41,7 +41,7 @@ define(function () {
             $textarea.val(jQuery.trim(data.text));
         }
         if(data.requiring){
-            $container.find("#toolbar_" + data.id).html("<div class='requiringMessage'>"
+            $container.find("#toolbar_" + contentTool.id).html("<div class='requiringMessage'>"
                 +_replace(data.requiring.message, data.requiring.messageReplacements) 
                 +"</div>");
         }
