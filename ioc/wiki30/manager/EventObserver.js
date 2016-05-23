@@ -127,13 +127,22 @@ define([
              * @param {string} event - Nom del esdeveniment
              * @param {*} data - Dades a passar a les funcions dels observadors
              */
-            dispatchEvent: function (event, data) {
+            dispatchEvent: function (event, p1, p2) {
                 //console.log("EventObserver#dispatchEvent: ", event, data);
+                var data, eventName, observers;
+                
+                if(typeof p1 === "string"){ //NameCompound
+                    eventName=event.concat("_",p1);
+                    data = p2;
+                }else{
+                    eventName=event;
+                    data = p1;
+                }
+                
 
-                var observers = this.events[event];
-
-                data.name = event;
-
+                data.name = eventName;
+                observers = this.events[data.name];
+                
                 if (observers) {
                     dojoArray.forEach(observers, function (callback) {
                         if (callback) {

@@ -404,6 +404,7 @@ define([
 
                     case this.generation.EDITOR:
                         GeneratedContentTool = base
+                            .createSubclass(TimedDocumentSubclass)
                             .createSubclass(RequestSubclass)
                             .createSubclass(DocumentSubclass)
                             //.createSubclass(ChangesManagerCentralSubclass)

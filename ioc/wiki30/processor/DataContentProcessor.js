@@ -2,8 +2,8 @@ define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
     "ioc/gui/content/contentToolFactory",
-
-], function (declare, ContentProcessor, contentToolFactory) {
+    "dijit/registry"
+], function (declare, ContentProcessor, contentToolFactory, registry) {
 
     return declare([ContentProcessor],
         /**
@@ -34,8 +34,10 @@ define([
 //
 //                // Reemplaçem el contingut del content amb el del draft
 //
-                var  draftContent;
+                var contentTool
+                var ret;
                 if (value.recover_draft) {
+                    var  draftContent;                
                     if (value.recover_draft.recover_local === true) {
                         draftContent =this._getLocalDraftContent(value, dispatcher);
 
@@ -52,7 +54,11 @@ define([
                     value.content = draftContent;
                 }
 
-                return this.inherited(arguments);
+                ret = this.inherited(arguments);
+               
+                this._initTimer(value);
+                
+                return ret;
             },
 
             /**
@@ -108,6 +114,44 @@ define([
                     draftContent = draft.recoverLocalDraft().full.content;
 
                 return draftContent;
+            },
+            
+            _initTimer: function(params){
+                var contentTool = registry.byId(params.id);
+                
+                contentTool.initTimer({
+                        onExpire: function(ptimer){
+                            // a) Si hi ha canvis:
+                            if(ptimer.contentTool.isContentChanged()){
+                            //          1) enviar demanda de bloqueig
+                            //          2) Mostrar diàleg no closable informant 
+                            //                  que s'ha sobrepassat el temps de bloqueig 
+                            //                  sense cap activitat i per tant es demana
+                            //                  si es guarden els canvis o bé es cancel·la
+                            //                  l'edició.
+                            //                  També s'avisa que si no es contesta el diàleg 
+                            //                  en X temps, es passarà a calcel·lar els canvis.
+                            //                  La cancel·lació s'envia forçant la cancel·lació 
+                            //                  dels canvis + un alerta informant del fet
+                            // b) Si no hi ha canvis, es cancel·la sense avís previ, però a mé 
+                            //                  de l'html s'envia també una alerta informant del fet
+                            }else{
+                                
+                                ptimer.contentTool.dispatchEvent(
+                                        ptimer.cancelContentEvent, 
+                                        ptimer.contentTool.id,
+                                        ptimer.cancelEventParams);
+                            }
+                        },
+                        paramsOnExpire: {
+                            "contentTool": contentTool,
+                            "cancelContentEvent":params.timer.dialogOnExpire.cancelContentEvent,
+                            "cancelEventParams":params.timer.dialogOnExpire.cancelEventParams,
+                            "okContentEvent":params.timer.dialogOnExpire.okContentEvent,
+                            "okEventParams":params.timer.dialogOnExpire.cancelEventParams,
+                        }
+                    });
+                contentTool.startTimer(params.timer.timeout);
             }
         });
 });

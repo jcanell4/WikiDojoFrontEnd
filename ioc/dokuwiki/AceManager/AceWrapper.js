@@ -466,7 +466,7 @@ define([
              * Dispara el ajustament de mida del editor.
              */
             resize: function () {
-                this.getEditor().resize();
+                this.getEditor().resize(true);
             },
 
             /**

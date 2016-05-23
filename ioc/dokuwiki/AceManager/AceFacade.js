@@ -8,9 +8,9 @@ define([
     'ioc/dokuwiki/AceManager/Container2',
     'ioc/dokuwiki/AceManager/IocCommands',
     'ioc/dokuwiki/AceManager/patcher',
-    'dojo/dom-style'
-
-], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style) {
+    'dojo/dom-style',
+    "dojo/dom"
+], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style, dom) {
     return declare([], {
 
         constructor: function (args) {
@@ -175,9 +175,14 @@ define([
         },
 
         setHeight: function (height) {
-
-            style.set(this.dokuWrapper.textArea.id, "height", "" + height  + "px");
-            style.set(this.iocAceEditor.containerId, "height", "" + height + "px");
+            var node = dom.byId(this.dokuWrapper.textArea.id);
+            if(node){
+                style.set(node, "height", "" + height  + "px");
+            }
+            node = dom.byId(this.iocAceEditor.containerId);
+            if(node){
+                style.set(node, "height", "" + height + "px");
+            }
 
             this.container.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
 

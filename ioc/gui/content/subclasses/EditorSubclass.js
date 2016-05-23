@@ -4,8 +4,9 @@ define([
     "ioc/gui/content/subclasses/LocktimedDocumentSubclass",  //Canviar per DraftTimedSubclass
     "ioc/gui/content/subclasses/BasicEditorSubclass",
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
+    "dojo/io-query",
     'ioc/wiki30/Draft',
-], function (declare, on, LocktimedDocumentSubclass, BasicEditorSubclass, ChangesManagerCentralSubclass) {
+], function (declare, on, LocktimedDocumentSubclass, BasicEditorSubclass, ChangesManagerCentralSubclass, ioQuery) {
 
     return declare([BasicEditorSubclass, LocktimedDocumentSubclass, ChangesManagerCentralSubclass],
         //return declare(null,
@@ -41,7 +42,7 @@ define([
             },
 
             /**
-             * Retorna cert si el contingut actual i el contingut original son iguals o fals si no ho son.
+             * Retorna cert si el contingut actual i el contingut original són diferents o fals si són iguals.
              *
              * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
              */
@@ -101,16 +102,24 @@ define([
 
 
                 if (data.discardChanges) {
-                    dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
+                    dataToSend = this.getQueryForceCancel(this.id); // el paràmetre no es fa servir
                 } else {
-                    dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
+                    dataToSend = this.getQueryCancel(this.id); // el paràmetre no es fa servir
                 }
 
                 if (data.keep_draft) {
                     dataToSend += '&keep_draft=' + data.keep_draft;
                 }
 
-                containerId = event.id;
+                containerId = this.id;
+
+                if(event.extraDataToSend){
+                    if(typeof event.extraDataToSend==="string"){
+                        dataToSend += "&" + event.extraDataToSend;
+                    }else{
+                        dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
+                    }
+                }
 
                 this.eventManager.dispatchEvent(this.eventName.CANCEL, {
                     id: this.id,

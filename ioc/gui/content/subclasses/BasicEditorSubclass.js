@@ -5,8 +5,10 @@ define([
     'ioc/dokuwiki/AceManager/AceFacade',
     'dojo/dom-geometry',
     'dojo/dom',
+    "dojo/io-query",
+    "dojo/_base/lang",
     'ioc/wiki30/Draft',
-], function (declare, on, toolbarManager, AceFacade, geometry, dom) {
+], function (declare, on, toolbarManager, AceFacade, geometry, dom, ioQuery, lang) {
 
     return declare([],
         //return declare(null,
@@ -29,7 +31,7 @@ define([
         {
 
             TOOLBAR_ID: 'full_editor',
-            VERTICAL_MARGIN: 0,
+            VERTICAL_MARGIN: 25,
             MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
             setReadOnly: function (value) {
@@ -64,9 +66,16 @@ define([
             _doSave: function (event) {
                 //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
-                var dataToSend = this.getQuerySave(event.id),
-                    containerId = event.id;
+                var dataToSend = this.getQuerySave(this.id),
+                    containerId = this.id;
 
+                if(event.extraDataToSend){
+                    if(typeof event.extraDataToSend==="string"){
+                        lang.mixin(dataToSend, ioQuery.queryToObject(event.extraDataToSend));
+                    }else{
+                        lang.mixin(dataToSend, event.extraDataToSend);
+                    }
+                }
                 this.eventManager.dispatchEvent(this.eventName.SAVE, {
                     id: this.id,
                     dataToSend: dataToSend,
@@ -77,9 +86,16 @@ define([
 
             // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
-                var containerId = event.id,
-                    dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
+                var containerId = this.id,
+                    dataToSend = this.getQueryCancel(this.id); // el paràmetre no es fa servir
 
+                if(event.extraDataToSend){
+                    if(typeof event.extraDataToSend==="string"){
+                        dataToSend += "&" + event.extraDataToSend;
+                    }else{
+                        dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
+                    }
+                }
                 this.eventManager.dispatchEvent(this.eventName.CANCEL, {
                     id: this.id,
                     dataToSend: dataToSend,

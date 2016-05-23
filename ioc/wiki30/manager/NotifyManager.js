@@ -95,7 +95,7 @@ define([
             //console.log("NotifyManager#_processNotification:", notification);
             switch (notification.type) {
                 case 'cancel_notification':
-                case 'expiring':
+                case 'lock_expiring':
                     console.log("notification.type: " + notification.type);
                     break;
                 case 'message':

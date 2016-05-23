@@ -23,7 +23,7 @@ define(function () {
 
         $textarea.attr('id', 'textarea_' + data.id);
         //$textarea.val(jQuery.trim($textarea.val()));
-        $textarea.val(jQuery.trim(data.content));
+        $textarea.val(data.content);
         $container.append($form);
         // TODO afegir el afterContent
 
