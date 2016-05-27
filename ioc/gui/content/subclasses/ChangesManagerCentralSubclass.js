@@ -48,8 +48,8 @@ define([
          */
         onDocumentChanged: function () {
             //console.log('ChangesManagerCentralSubclass#onDocumentChanged', this.id);
-            this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_CHANGED + this.id, {id: this.id});
-            this.dispatchEvent(this.eventName.DOCUMENT_CHANGED, {id: this.id});
+//            this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_CHANGED + this.id, {id: this.id});
+            this.dispatchEvent(this.eventName.DOCUMENT_CHANGED, {id: this.id}, true); //La línia de dalt equival ara, al true
 
             if (this.controlButton) {
                 this.controlButton.containerNode.style.color = 'red';
@@ -58,8 +58,8 @@ define([
 
         onDocumentRefreshed: function () {
             //console.log('ChangesManagerCentralSubclass#onDocumentRefreshed', this.id);
-            this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.id, {id: this.id});
-            this.dispatchEvent(this.eventName.DOCUMENT_REFRESHED, {id: this.id});
+//            this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.id, {id: this.id});
+            this.dispatchEvent(this.eventName.DOCUMENT_REFRESHED, {id: this.id}, true); //La línia de dalt equival ara, al true
 
         },
 

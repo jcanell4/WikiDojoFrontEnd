@@ -54,7 +54,7 @@ define([
                 this.registerObserverToEvent(this, this.eventName.DATA_REPLACED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
                 this.registerObserverToEvent(this, this.eventName.CONTENT_SELECTED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
 
-                this.eventManager = this.dispatcher.getEventManager();
+//                this.eventManager = this.dispatcher.getEventManager();
 
 //                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.SAVE + this.id, this._doSave.bind(this));
 //                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL + this.id, this._doCancelDocument.bind(this));
@@ -79,11 +79,16 @@ define([
                         lang.mixin(dataToSend, event.extraDataToSend);
                     }
                 }
-                this.eventManager.dispatchEvent(this.eventName.SAVE, {
+//                this.eventManager.dispatchEvent(this.eventName.SAVE, {
+//                    id: this.id,
+//                    dataToSend: dataToSend,
+//                    standbyId: containerId
+//                })
+                return {
                     id: this.id,
                     dataToSend: dataToSend,
                     standbyId: containerId
-                })
+                };
 
             },
 
@@ -99,11 +104,16 @@ define([
                         dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
                     }
                 }
-                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
+//                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
+//                    id: this.id,
+//                    dataToSend: dataToSend,
+//                    standbyId: containerId
+//                })
+                return {
                     id: this.id,
                     dataToSend: dataToSend,
                     standbyId: containerId
-                })
+                };
 
             },
 
@@ -279,7 +289,8 @@ define([
             _funcSave: function () {
                 var id = this.getGlobalState().getCurrentId(),
                     eventManager = this.getEventManager();
-                eventManager.dispatchEvent(eventManager.eventNameCompound.SAVE + id, {id: id});
+//                eventManager.dispatchEvent(eventManager.eventNameCompound.SAVE, {id: id}, id);
+                eventManager.fireEvent(eventManager.eventName.SAVE, {id: id}, id);
             },
 
             /**
@@ -303,7 +314,8 @@ define([
                 var id = this.getGlobalState().getCurrentId(),
                     eventManager = this.getEventManager();
 //                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
-                this.dispatchEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'});
+                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id, extra: 'trololo'}, id);
+//                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
             },
 
             getEditor: function () {

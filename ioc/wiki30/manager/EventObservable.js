@@ -36,8 +36,11 @@ define([
                 declare.safeMixin(this, params);
             },
             
-            setFireEventHandler: function(eventName, handler){
-                this.fireEvents[eventName] = handler.bind(this);
+            setFireEventHandler: function(eventName, handler, preventGlobalpropagation ){
+                this.fireEvents[eventName] = {
+                    handler:handler.bind(this),
+                    preventGlobalPropagation: preventGlobalpropagation
+                };
             },
 
             registerObserverToEvent: function (observer, event, callback) {
@@ -84,21 +87,21 @@ define([
                 }
             },
             
-            fireEvent: function(eventName, eventExtraData){
+            fireEvent: function(eventName, dataEventBase, preventGlobalProp){
                 var eventData,
                         fireEventFunc = this.fireEvents[eventName];
                 if(fireEventFunc){
-                    eventData = fireEventFunc();
+                    eventData=fireEventFunc.handler(dataEventBase);
+                    if(typeof preventGlobalProp === "undefined"){
+                        preventGlobalProp = fireEventFunc.preventGlobalPropagation;
+                    }
                 }else{
-                    eventData = {};
+                    eventData = dataEventBase;
                 }
-                lang.mixin(eventData, eventExtraData);
-                
-                this.dispatchEvent(eventName, eventData);
-                
+                this.dispatchEvent(eventName, eventData, !preventGlobalProp);
             },
             
-            dispatchEvent: function (event, eventData) {
+            dispatchEvent: function (event, eventData, globalPropagation) {
                 //console.log("EventObserver#dispatchEvent: ", event, data);
                 var callbacks;
                 
@@ -111,7 +114,8 @@ define([
                     }
                 }
                 
-                if(this.eventManager || this.dispatcher){
+                if(globalPropagation 
+                        && (this.eventManager || this.dispatcher)){
                     if(!this.eventManager){
                         this.eventManager=this.dispatcher.getEventManager();                        
                     }

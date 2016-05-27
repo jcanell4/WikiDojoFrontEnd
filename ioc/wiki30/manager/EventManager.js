@@ -100,25 +100,40 @@ define([
 ////            }
 //        },
 
-        fireEventFromObservable: function(eventName, eventExtraData, pObservable){
-            var ret=false;
+        _resolveObservable: function(pObservable){
             var observable;
             if(typeof pObservable === "string"){
-                observable = registry.byId(pObservable);
+                observable = this.observables[pObservable];
+                if(!observable){
+                    observable = registry.byId(pObservable);                
+                }
             }else{
                 observable = pObservable;
             }
-            if(observable){
+            return observable;
+        },
+
+        fireEventFromObservable: function(eventName, eventExtraData, pObservable){
+            var observable = this._resolveObservable(pObservable);
                 observable.fireEvent(eventName, eventExtraData);
-                ret = true;
-            }
-            return ret;
+        },
+        
+        _fireEventFromObservable: function(eventName, eventExtraData, observable){
+                observable.fireEvent(eventName, eventExtraData);
         },
         
         fireEvent: function(eventName, eventExtraData, pObservable){
-            if(!this.fireEventFromObservable(eventName, eventExtraData, pObservable)){
-                this.dispatchEvent(eventName, eventExtraData);
+            var observable = this._resolveObservable(pObservable);
+            if(observable){
+                this._fireEventFromObservable(eventName, eventExtraData, observable)
+            }else{
+                this._dispatchEvent(eventName, eventExtraData);
             }
+        },
+        
+        addObservable: function(id, observable){
+            this.inherited(arguments);
+            return this;
         },
  
         dispatchEvent: null,

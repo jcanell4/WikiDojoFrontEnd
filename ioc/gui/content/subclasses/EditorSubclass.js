@@ -121,11 +121,16 @@ define([
                     }
                 }
 
-                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
+//                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
+//                    id: this.id,
+//                    dataToSend: dataToSend,
+//                    standbyId: containerId
+//                })
+                return {
                     id: this.id,
                     dataToSend: dataToSend,
                     standbyId: containerId
-                })
+                };
 
             },
 

@@ -202,12 +202,12 @@ define([
             },
 
 
-            addObservable: function(observerId, observable){
-                this.observables[observerId] = observable;
+            addObservable: function(observableId, observable){
+                this.observables[observableId] = observable;
             },
             
-            removeObservable: function(observerId){
-                delete this.observables[observerId];
+            removeObservable: function(observableId){
+                delete this.observables[observableId];
             },
             
             /**
