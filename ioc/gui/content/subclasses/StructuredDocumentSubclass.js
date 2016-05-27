@@ -414,12 +414,22 @@ define([
 
             this.eventManager = this.dispatcher.getEventManager();
 
-            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.EDIT_PARTIAL + this.id, this._doEditPartial.bind(this));
-            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.SAVE_PARTIAL + this.id, this._doSavePartial.bind(this));
-            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL_PARTIAL + this.id, this._doCancelPartial.bind(this));
+//            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.EDIT_PARTIAL + this.id, this._doEditPartial.bind(this));
+//            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.SAVE_PARTIAL + this.id, this._doSavePartial.bind(this));
+//            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL_PARTIAL + this.id, this._doCancelPartial.bind(this));
+
+            this.setFireEventHandler(this.eventName.EDIT_PARTIAL, this._doEditPartial.bind(this));
+            this.setFireEventHandler(this.eventName.SAVE_PARTIAL, this._doSavePartial.bind(this));
+            this.setFireEventHandler(this.eventName.CANCEL_PARTIAL, this._doCancelPartial.bind(this));
+
+//            // Impresncidible pel cas en que caduca el bloqueig
+//            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL + this.id, this._doCancelDocument.bind(this));
 
             // Impresncidible pel cas en que caduca el bloqueig
-            this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL + this.id, this._doCancelDocument.bind(this));
+            //[JOSEP]: Mirar si és un fireHandler o un ObservableCallback
+            this.setFireEventHandler(this.eventName.CANCEL, this._doCancelDocument.bind(this)); 
+            //this.eventManager.registerObserverToLocalEvent(this, this.eventNameCompound.CANCEL, this._doCancelDocument.bind(this));
+            //this.registerObserverToEvent(this, this.eventNameCompound.CANCEL, this._doCancelDocument.bind(this));
 
             this.updateTitle(this.data);
         },

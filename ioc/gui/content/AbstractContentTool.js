@@ -2,13 +2,14 @@ define([
     "dojo/_base/declare",
     "dijit/layout/ContentPane",
     "ioc/wiki30/manager/EventObserver",
+    "ioc/wiki30/manager/EventObservable",
     "dojo/dom-style",
     "dojo/dom",
     "ioc/gui/content/renderEngineFactory",
     "dojo/aspect",
-], function (declare, ContentPane, EventObserver, domStyle, dom, renderEngineFactory, aspect) {
+], function (declare, ContentPane, EventObserver, EventObservable, domStyle, dom, renderEngineFactory, aspect) {
 
-    return declare([ContentPane, EventObserver],
+    return declare([ContentPane, EventObservable, EventObserver],
 
         /**
          * Aquesta classe no s'ha de instanciar, es fa servir com a base per afegir tota la funcionalitat bàsica del
@@ -69,7 +70,7 @@ define([
 
                 declare.safeMixin(this, args);
             },
-
+            
             /**
              * Acció portada a terme quan l'element es seleccionat. Aquest mètode es cridat automàticament, l'he afegit
              * per centralitzar tota la funcionalitat al mateix lloc.

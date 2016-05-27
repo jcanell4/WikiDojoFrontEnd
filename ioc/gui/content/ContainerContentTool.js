@@ -1,11 +1,12 @@
 define([
     'dojo/_base/declare',
+    'ioc/wiki30/manager/EventObservable',
     'ioc/wiki30/manager/EventObserver',
-], function (declare, EventObserver) {
+], function (declare, EventObservable, EventObserver) {
 
 
 
-    return declare([EventObserver],
+    return declare([EventObservable, EventObserver],
 
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del containerContentToolFactory.

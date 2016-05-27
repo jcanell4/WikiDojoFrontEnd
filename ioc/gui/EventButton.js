@@ -22,9 +22,11 @@ define([
             
             postListenOnClick: function(evt){
                 if(this.eventId){
-                    this.dispatcher.getEventManager().dispatchEvent(this.eventId, evt.data);
+//                    this.dispatcher.getEventManager().dispatchEvent(this.eventId, evt.data);
+                    this.dispatcher.getEventManager().fireEventFromObservable(this.eventId, evt.data, evt.data.id);
                 } else if (evt.data && evt.data.name) {
-                    this.dispatcher.getEventManager().dispatchEvent(evt.data.name, evt.data);
+//                    this.dispatcher.getEventManager().dispatchEvent(evt.data.name, evt.data);
+                    this.dispatcher.getEventManager().fireEventFromObservable(evt.data.name, evt.data, evt.data.id);
                 }
             }            
         });

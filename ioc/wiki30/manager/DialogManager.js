@@ -148,12 +148,12 @@ define([
                 return dialogBuilder;
             },
 
-            _generateRequestControlCallback: function (eventType, dataToSend) {
+            _generateRequestControlCallback: function (eventType, dataToSend, observable) {
                 return function () {
-                    this.eventManager.dispatchEvent(eventType, {
+                    this.eventManager.fireEvent(eventType, {
                         id: this.id,
                         dataToSend: dataToSend
-                    });
+                    }, observable);
                 }
             },
 
@@ -258,7 +258,7 @@ define([
                 }
 
                 dialog.setRefId(refId);
-                this.registerToEvent(dialog, this.eventName.DESTROY, this._removeDialog.bind(this));
+                this.registerMeToEventFromObservable(dialog, this.eventName.DESTROY, this._removeDialog.bind(this));
 
                 this.dialogs[refId][dialog.id] = dialog;
             },

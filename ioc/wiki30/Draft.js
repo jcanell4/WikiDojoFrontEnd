@@ -1,15 +1,16 @@
 define([
     'dojo/_base/declare',
+    'ioc/wiki30/manager/EventObservable',
     'ioc/wiki30/manager/EventObserver',
     'ioc/wiki30/Timer'
-], function (declare, EventObserver, Timer) {
+], function (declare, EventObservable, EventObserver, Timer) {
 
     var DraftException = function (message) {
         this.message = message;
         this.name = "DraftException";
     };
 
-    return declare([EventObserver], {
+    return declare([EventObservable, EventObserver], {
 
         AUTOSAVE_LOCAL: 5 * 1000, // Temps en ms mínim per fer un refresc
         AUTOSAVE_REMOTE: 2 * 60 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
@@ -18,7 +19,8 @@ define([
         constructor: function (args) {
             this.dispatcher = args.dispatcher;
             this.contentTool = args.contentTool;
-            this.id = args.contentTool.id;
+            this.contentToolId = args.contentTool.id;
+            this.id = args.contentTool.id+"_draft";
             this.lastRefresh = Date.now();
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
@@ -27,7 +29,7 @@ define([
 
         _init: function () {
             //console.log("Draft#_init");
-            this._registerToEvents();
+            this._registerObserverToEvents();
             this._initTimers();
         },
 
@@ -36,16 +38,20 @@ define([
             this._doSave();
         },
 
-        _registerToEvents: function () {
-            //console.log("Draft#_registerToEvents");
+        _registerObserverToEvents: function () {
+            //console.log("Draft#_registerObserverToEvents");
 
-            this.eventManager = this.dispatcher.getEventManager();
-            this.registerToEvent(this.contentTool, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
-            this.registerToEvent(this.contentTool, this.eventName.CANCEL, this.destroy.bind(this));
-            this.registerToEvent(this.contentTool, this.eventName.DESTROY, this.destroy.bind(this));
-            this.registerToEvent(this.eventManager, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
-            this.registerToEvent(this.eventManager, this.eventName.SAVE, this._clearLocalAll.bind(this));
-
+//            this.eventManager = this.dispatcher.getEventManager();
+            this.contentTool.registerObserverToEvent(this, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.CANCEL, this.destroy.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.DESTROY, this.destroy.bind(this));
+//            this.registerToEvent(this.eventManager, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
+//            this.registerToEvent(this.eventManager, this.eventName.SAVE, this._clearLocalAll.bind(this));
+            //[JOSEP] Valorar si no ha de ser un simple registerToEvent
+//            this.eventManager.registerToEventFromObservable(this, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
+//            this.eventManager.registerToEventFromObservable(this, this.eventName.SAVE, this._clearLocalAll.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.SAVE, this._clearLocalAll.bind(this));
         },
 
         _doSave: function () {
@@ -137,8 +143,8 @@ define([
 
             var dataToSend = this._getQueryLock();
 
-            this.eventManager.dispatchEvent(this.eventName.SAVE_DRAFT, {
-                id: this.id,
+            this.eventManager.fireEvent(this.eventName.SAVE_DRAFT, {
+                id: this.contentToolId,
                 dataToSend: dataToSend
             });
 
@@ -323,18 +329,17 @@ define([
         },
 
         destroy: function () {
-            this.onDestroy();
+            this._onDestroy();
         },
 
-        onDestroy: function () {
+        _onDestroy: function () {
             //console.log("Draft#onDestroy");
-            //alert("Destruint draft:" + this.id);
+            //alert("Destruint draft:" + this.contentToolId);
             this._cancelTimers();
-            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
-            this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
-
-
-            this.dispatchEvent(this.eventName.DESTROY, {id: this.id});
+//            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
+//            this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
+            this.dispatchEvent(this.eventName.DESTROY, {id: this.contentToolId});
+            this.inherited(arguments);
         },
 
         recoverLocalDraft: function () {

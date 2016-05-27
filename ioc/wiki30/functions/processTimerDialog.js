@@ -31,7 +31,7 @@ define([
                         buttonType: "request_control",
                         description: text,
                         callback: function(){
-                            eventManager.dispatchEvent(eventType, {
+                            eventManager.fireEvent(eventType, {
                                 id: params.id,
                                 dataToSend: dataToSend
                             });                            

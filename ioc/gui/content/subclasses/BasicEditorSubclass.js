@@ -50,14 +50,17 @@ define([
             postAttach: function () {
                 this.inherited(arguments);
 
-                this.registerToEvent(this, this.eventName.DOCUMENT_SELECTED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
-                this.registerToEvent(this, this.eventName.DATA_REPLACED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
-                this.registerToEvent(this, this.eventName.CONTENT_SELECTED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                this.registerObserverToEvent(this, this.eventName.DOCUMENT_SELECTED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                this.registerObserverToEvent(this, this.eventName.DATA_REPLACED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                this.registerObserverToEvent(this, this.eventName.CONTENT_SELECTED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
 
                 this.eventManager = this.dispatcher.getEventManager();
 
-                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.SAVE + this.id, this._doSave.bind(this));
-                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL + this.id, this._doCancelDocument.bind(this));
+//                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.SAVE + this.id, this._doSave.bind(this));
+//                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL + this.id, this._doCancelDocument.bind(this));
+                
+                this.setFireEventHandler(this.eventName.SAVE, this._doSave.bind(this));
+                this.setFireEventHandler(this.eventName.CANCEL, this._doCancelDocument.bind(this));
 
                 this.fillEditorContainer();
             },
@@ -299,7 +302,8 @@ define([
                 //console.log("EditorSubclass#_funcCancel");
                 var id = this.getGlobalState().getCurrentId(),
                     eventManager = this.getEventManager();
-                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
+//                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
+                this.dispatchEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'});
             },
 
             getEditor: function () {

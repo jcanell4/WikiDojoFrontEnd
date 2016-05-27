@@ -4,11 +4,12 @@
  */
 define([
     'dojo/_base/declare',
+    'ioc/wiki30/manager/EventObservable',
     'ioc/wiki30/manager/EventObserver',
     'ioc/wiki30/Timer'
-], function (declare, EventObserver, Timer) {
+], function (declare, EventObservable, EventObserver, Timer) {
 
-    return declare([EventObserver], {
+    return declare([EventObservable, EventObserver], {
 
 
         AUTOSAVE_LOCAL: 1 * 1000, // Temps en ms mínim per fer un refresc
@@ -20,7 +21,7 @@ define([
             this.dialogManager = this.dispatcher.getDialogManager();
 
 
-            this.id = id;
+            this.docId = id;
             this.ns = ns;
             this.lastRefresh = Date.now();
             this.dialogs = {};
@@ -56,21 +57,27 @@ define([
         _registerToEvents: function () {
             //console.log("Lock#_registerToEvents");
 
-            this.eventManager.registerToEvent(this, this.eventNameCompound.LOCK + this.id, this._doLock.bind(this));
-            this.eventManager.registerToEvent(this, this.eventNameCompound.UNLOCK + this.id, this._doUnlockAndCancelDocument.bind(this));
+//            this.eventManager.registerToEvent(this, this.eventNameCompound.LOCK + this.id, this._doLock.bind(this));
+//            this.eventManager.registerToEvent(this, this.eventNameCompound.UNLOCK + this.id, this._doUnlockAndCancelDocument.bind(this));
+//
+//            this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.DOCUMENT_REFRESHED + this.id, this._doRefresh.bind(this));
+//            this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.LOCK + this.id, this._doLock.bind(this));
 
-            this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.DOCUMENT_REFRESHED + this.id, this._doRefresh.bind(this));
-            this.eventManager.registerToEvent(this.eventManager, this.eventNameCompound.LOCK + this.id, this._doLock.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.LOCK, this._doLock.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.UNLOCK, this._doUnlockAndCancelDocument.bind(this));
+
+            this.contentTool.registerObserverToEvent(this, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.LOCK, this._doLock.bind(this));
         },
 
 
         _doLock: function () {
-            //console.log('Lock#_doLock', this.id);
+            //console.log('Lock#_doLock', this.docId);
             this.lastRefresh = Date.now(); // ALERTA[Xavi] Això no s'està controlat quan es fa click al dialog
             var dataToSend = this._getQueryLock();
 
-            this.eventManager.dispatchEvent(this.eventName.LOCK_DOCUMENT, {
-                id: this.id, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
+            this.eventManager.fireEvent(this.eventName.LOCK_DOCUMENT, {
+                id: this.docId, // TODO: determinar si aquesta id es correcta o s'ha d'afegir algun prefix, per exemple lock_
                 dataToSend: dataToSend
             });
         },
@@ -112,8 +119,9 @@ define([
 
         _getQueryCancel: function () {
             return {
-                id: this.id,
-                name: 'cancel_' + this.id,
+                id: this.docId,
+//                name: 'cancel_' + this.docId,
+                name: 'cancel',
                 discardChanges: true,
                 keep_draft: true
             }
@@ -172,12 +180,12 @@ define([
             //var timeout = 5000; // ALERTA[Xavi] Valor per fer proves
 
             var alertParams = {
-                id: 'timeout_' + this.id,
+                id: 'timeout_' + this.docId,
                 message: 'El bloqueig ha expirat i ha sigut alliberat. Si havien canvis al document es conservan com a esborrany, i poden ser recuperats la proxima vegada que editis el document.',
                 title: 'El bloqueig ha expirat'
             };
 
-            var infoDialog = this.dialogManager.getDialog(this.dialogManager.type.INFO, this.id, alertParams);
+            var infoDialog = this.dialogManager.getDialog(this.dialogManager.type.INFO, this.docId, alertParams);
 
             var dialogParams = {
                 id: 'warning',
@@ -209,7 +217,7 @@ define([
                                 dataToSend: this._getQueryUnlock()
                             },
                             {
-                                eventType: this.eventNameCompound.CANCEL + this.id,
+                                eventType: this.eventNameCompound.CANCEL + this.docId,
                                 dataToSend: this._getQueryCancel()
                             }
                         ]
@@ -218,15 +226,15 @@ define([
                 ]
             };
 
-            this.dialogs.warning = this.dialogManager.getDialog(this.dialogManager.type.LOCK_WARNING, this.id, dialogParams);
+            this.dialogs.warning = this.dialogManager.getDialog(this.dialogManager.type.LOCK_WARNING, this.docId, dialogParams);
             this.dialogs.warning.show();
         },
 
         _doCancelDocument: function () {
             //console.log("Lock#_doCancelDocument");
-            this.eventManager.dispatchEvent(this.eventNameCompound.CANCEL + this.id, {
-                id: this.id,
-                name: 'cancel_' + this.id,
+            this.eventManager.fireEvent(this.eventNameCompound.CANCEL + this.docId, {
+                id: this.docId,
+                name: 'cancel_' + this.docId,
                 discardChanges: true,
                 keep_draft: true
             });
@@ -240,10 +248,10 @@ define([
         onDestroy: function () {
             //console.log("Lock#onDestroy");
             this._cancelTimers();
-            this.eventManager.unregisterFromEvent(this.eventNameCompound.LOCK + this.id);
-            this.eventManager.unregisterFromEvent(this.eventNameCompound.UNLOCK + this.id);
-            this.eventManager.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.id);
-            this.dispatchEvent(this.eventName.DESTROY, {id: this.id});
+            this.eventManager.unregisterFromEvent(this.eventNameCompound.LOCK + this.docId);
+            this.eventManager.unregisterFromEvent(this.eventNameCompound.UNLOCK + this.docId);
+            this.eventManager.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.docId);
+            this.dispatchEvent(this.eventName.DESTROY, {id: this.docId});
         }
 
     });

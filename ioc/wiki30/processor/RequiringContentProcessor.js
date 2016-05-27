@@ -35,12 +35,12 @@ define([
                     var timer;
                     
                     value.timer.onExpire = function(params){
-                        dispatcher.getEventManager().dispatchEvent(
+                        dispatcher.getEventManager().fireEvent(
                                 value.timer.eventOnExpire, params);
                        };                        
 
                     value.timer.onCancel = function(params){
-                        dispatcher.getEventManager().dispatchEvent(
+                        dispatcher.getEventManager().fireEvent(
                                 value.timer.eventOnCancel, params);
                        };                        
                     

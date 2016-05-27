@@ -37,9 +37,9 @@ define([
 
                 var observed = this.dispatcher.getContentCache(this.docId).getMainContentTool();
 
-                this.registerToEvent(observed, "destroy", lang.hitch(this, this._onContentDestroyed));
-                this.registerToEvent(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
-                this.registerToEvent(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
+                this.registerMeToEventFromObservable(observed, "destroy", lang.hitch(this, this._onContentDestroyed));
+                this.registerMeToEventFromObservable(observed, "document_selected", lang.hitch(this, this._onDocumentSelected));
+                this.registerMeToEventFromObservable(observed, "document_unselected", lang.hitch(this, this._onDocumentUnselected));
 
                 this.inherited(arguments);
             },

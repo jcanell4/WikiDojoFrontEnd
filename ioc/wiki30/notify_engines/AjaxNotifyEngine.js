@@ -18,7 +18,7 @@ define([
         _refreshNotifications: function () {
             //console.log("AjaxEngine#refreshNotifications");
             // S'ha de fer un pop de les notificacions
-            this.dispatcher.getEventManager().dispatchEvent('notify', {
+            this.dispatcher.getEventManager().fireEvent('notify', {
                 //id: value.id, // ALERTA[Xavi] crec que això, en el cas de les notificacions, no és necessari
                 dataToSend: {
                     do: 'get'

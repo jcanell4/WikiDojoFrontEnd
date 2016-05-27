@@ -85,7 +85,7 @@ define([
 
         _generateDraft: function (contentTool) {
             var draft = new Draft({dispatcher: this.dispatcher, contentTool: contentTool});
-            this.registerToEvent(draft, this.eventName.DESTROY, this._removeDraft.bind(this));
+            this.registerMeToEventFromObservable(draft, this.eventName.DESTROY, this._removeDraft.bind(this));
             this.drafts[contentTool.id] = draft;
         },
 

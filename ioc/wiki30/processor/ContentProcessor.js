@@ -52,7 +52,7 @@ define([
                         dispatcher.getDraftManager().clearDraft(id);
                         //console.log("Eliminat esborrany");
                         // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
-                        dispatcher.getEventManager().dispatchEvent(
+                        dispatcher.getEventManager().fireEvent(
                                 dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
                                     id: value.id,
                                     dataToSend: {

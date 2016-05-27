@@ -5,11 +5,12 @@ define([
     'dijit/Dialog',
     'dojo/text!./templates/CustomDialog.html',
     'dojo/dom-construct',
+    'ioc/wiki30/manager/EventObservable',
     'ioc/wiki30/manager/EventObserver',
     'dijit/form/Button',
-], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObserver, Button) {
+], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable, EventObserver, Button) {
 
-    return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin, EventObserver], {
+    return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin, EventObservable, EventObserver], {
 
         templateString: template,
 
@@ -49,7 +50,7 @@ define([
                 this.dispatchEvent(this.eventName.TIMEOUT, {id: this.id});
             }.bind(this), this.timeout); // El context del timer serà el propi dialog
 
-            this.registerToEvent(this, this.eventName.DESTROY, function () {
+            this.registerObserverToEvent(this, this.eventName.DESTROY, function () {
                 //console.log("Clear!");
                 clearInterval(timerId);
             })
@@ -63,14 +64,14 @@ define([
             }
 
             // Afegim les suscripcions adicionals
-            this.registerToEvent(this, this.eventName.TIMEOUT, this.remove.bind(this));
+            this.registerObserverToEvent(this, this.eventName.TIMEOUT, this.remove.bind(this));
         },
 
         _initNextDialogs: function () {
             //console.log("CustomDialog#_initNextDialogs", this.nextDialogs);
 
             for (var event in this.nextDialogs) {
-                this.registerToEvent(this, event, this._createDialogShowCallback(this.nextDialogs[event]).bind(this));
+                this.registerObserverToEvent(this, event, this._createDialogShowCallback(this.nextDialogs[event]).bind(this));
             }
         },
 
@@ -87,7 +88,7 @@ define([
             for (var event in this.nextCallbacks) {
                 // Es tracta d'un array
                 for (var i = 0; i < this.nextCallbacks[event].length; i++) {
-                    this.registerToEvent(this, event, this.nextCallbacks[event][i].bind(this));
+                    this.registerObserverToEvent(this, event, this.nextCallbacks[event][i].bind(this));
                 }
             }
         },

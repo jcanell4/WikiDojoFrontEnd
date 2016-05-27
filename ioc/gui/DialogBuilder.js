@@ -104,7 +104,7 @@ define([
 
         addRequestControlButtons: function (buttons) {
             for (var i = 0; i < buttons.length; i++) {
-                newButton = buttons[i];
+                var newButton = buttons[i];
                 this.addButton(this.buttonType.REQUEST_CONTROL, newButton);
             }
 
@@ -143,14 +143,14 @@ define([
         },
 
         // Helper per facilitar la adició de events que treballen amb el RequestControl
-        addNextRequestControlCallback: function (eventListened, eventTriggered, dataToSend) {
+        addNextRequestControlCallback: function (eventListened, eventTriggered, dataToSend, observable) {
             //console.log("DialogBuilder#_addNextRequestControl", eventTriggered, dataToSend);
 
             var callback = function () {
-                this.eventManager.dispatchEvent(eventTriggered, { // Això fa referencia al eventManager del dialog
+                this.eventManager.fireEvent(eventTriggered, { // Això fa referencia al eventManager del dialog
                     id: this.id,
                     dataToSend: dataToSend
-                });
+                }, observable);
             };
 
             this.addNextCallback(eventListened, callback);
@@ -213,15 +213,15 @@ define([
            return params;
         },
 
-        _generateRequestControlCallback: function (event, dataToSend) {
+        _generateRequestControlCallback: function (event, dataToSend, observable) {
             //console.log("DialogBuilder#_generateRequestControllCallback", event, dataToSend);
 
             return function () {
                 //console.log("Click:", event, dataToSend);
-                this.eventManager.dispatchEvent(event, { // Això fa referencia al eventManager del dialog
+                this.eventManager.fireEvent(event, { // Això fa referencia al eventManager del dialog
                     id: this.id,
                     dataToSend: dataToSend
-                });
+                }, observable);
             }
 
         },
