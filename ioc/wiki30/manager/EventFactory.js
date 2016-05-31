@@ -8,6 +8,7 @@ define([
             LOCK_DOCUMENT: 'lock_document',
             DOCUMENT_CHANGED: 'document_changed',
             DOCUMENT_SELECTED: 'document_selected',
+            DOCUMENT_REFRESHED: 'document_refreshed',
             DATA_REPLACED: 'data_replaced',
             CANCEL_DOCUMENT: 'cancel_document',
             CANCEL_PARTIAL: 'cancel_partial',

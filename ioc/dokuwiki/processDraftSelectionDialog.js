@@ -7,7 +7,7 @@ define([
         dialogController = {
 
             _processDialog: function (value, timeout) {
-                //console.log("DialogController#_processDialog", value);
+                console.log("DialogController#_processDialog", value);
 
                 this.dialogs = {};
                 this.dispatcher = dispatcher;
@@ -16,7 +16,7 @@ define([
                 this.eventManager = dispatcher.getEventManager();
                 this.draftManager = dispatcher.getDraftManager();
 
-                this._showDialog(value, timeout);
+                this._showDialog(value, timeout * 1000);
                 //this._initTimers(timeout * 1000); // ALERTA[Xavi] Els timers depenen del dialog, no cal controlar-los aqui
             },
 
@@ -43,7 +43,7 @@ define([
             },
 
             _showDialog: function (value, timeout) {
-
+                console.log("processDraftSelectionDialog#_showDialog", timeout);
                 //timeout = 5000; // ALERTA[Xavi] modificat per les proves
 
                 var params = {

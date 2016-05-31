@@ -24,6 +24,7 @@ define([
             this.lastRefresh = Date.now();
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
+            this.eventManager = this.dispatcher.getEventManager();
             this._init();
         },
 
@@ -41,7 +42,7 @@ define([
         _registerObserverToEvents: function () {
             //console.log("Draft#_registerObserverToEvents");
 
-//            this.eventManager = this.dispatcher.getEventManager();
+
             this.contentTool.registerObserverToEvent(this, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.CANCEL, this.destroy.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.DESTROY, this.destroy.bind(this));
@@ -154,16 +155,23 @@ define([
         },
 
         _clearLocalStructured: function (data) {
+            //console.log("Draft#_clearLocalStructured", data);
             var pages = this._doGetPages(),
                 chunkId = data.dataToSend.section_id;
 
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
                 delete(pages[this.contentTool.id].drafts['structured'][chunkId]);
+
+
+
             } else {
                 //console.log("No existeix cap esborrany que eliminar");
             }
 
             this._doSetPages(pages);
+
+            // S'ha de cancelar el refresc de l'esborrany
+            this.timers.refresh.cancel();
 
         },
 
@@ -178,6 +186,9 @@ define([
             }
 
             this._doSetPages(pages);
+
+            // S'ha de cancelar el refresc de l'esborrany
+            this.timers.refresh.cancel();
 
         },
 

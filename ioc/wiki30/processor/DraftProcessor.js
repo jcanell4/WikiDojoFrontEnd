@@ -46,8 +46,16 @@ define([
             },
 
             _showDiffDialog: function (value) {
+                console.log("DraftProcessor#_showDiffDialog", value);
 
                 var data = this._extractData(value),
+                    dialogParams;
+
+                if (data.document.content ===  data.draft.content) {
+                    alert("El content i el draft son iguals");
+                }
+
+
                     dialogParams = {
                         id: 'diff',
                         ns: value.ns,
@@ -88,6 +96,7 @@ define([
             },
 
             _extractData: function (value) {
+                console.log("DraftProcessor#_extractData", value);
 
                 return {
                     document: this._getDocument(value.params),
@@ -118,6 +127,8 @@ define([
             },
 
             _getDraftLocal: function (value) {
+                console.log("DraftProcessor#_getDraftLocal", value);
+                console.log("docId:", this.docId);
                 var draft = this.draftManager.getDraft(this.docId).recoverLocalDraft();
 
                 switch (value.type) {

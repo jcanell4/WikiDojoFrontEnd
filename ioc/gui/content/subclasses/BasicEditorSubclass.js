@@ -67,7 +67,7 @@ define([
 
 
             _doSave: function (event) {
-                //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+                //console.log("BasicEditorSubclass#_doSave", this.id, event);
 
                 var dataToSend = this.getQuerySave(this.id),
                     containerId = this.id;
@@ -283,6 +283,7 @@ define([
             },
 
             /**
+             * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
              *
              * @protected
              */
@@ -306,7 +307,7 @@ define([
             },
 
             /**
-             *
+             * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
              * @protected
              */
             _funcCancel: function () {
@@ -314,7 +315,8 @@ define([
                 var id = this.getGlobalState().getCurrentId(),
                     eventManager = this.getEventManager();
 //                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
-                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id, extra: 'trololo'}, id);
+
+                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id}, id);
 //                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
             },
 

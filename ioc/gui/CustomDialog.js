@@ -41,6 +41,7 @@ define([
         },
 
         _initTimer: function () {
+            console.log("CustomDialog#_initTimer", this.timeout);
             if (!this.timeout) {
                 return;
             }
@@ -196,7 +197,7 @@ define([
         },
 
         remove: function () {
-            //console.log("CustomDialog#remove", this.id);
+            console.log("CustomDialog#remove", this.id);
             this.destroyRecursive();
             this.dispatchEvent(this.eventName.DESTROY, {id: this.id, refId: this.refId});
         },

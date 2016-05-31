@@ -148,7 +148,9 @@ define([
             toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
         },
 
+        // ALERTA[Xavi] this fa referencia al dispatcher
         _funcSave: function () {
+            //console.log("StructuredDocumentSubclass#_funcSave");
             var chunk = this.getGlobalState().getCurrentElementId(),
                 id = this.getGlobalState().getCurrentId(),
                 eventManager = this.getEventManager();
@@ -156,10 +158,13 @@ define([
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
 
-            this.getEventManager().dispatchEvent(eventManager.eventNameCompound.SAVE_PARTIAL + id, {
+
+            //console.log("StructuredDocumentSubclass#_funcSave", id, chunk);
+
+            eventManager.fireEvent(eventManager.eventName.SAVE_PARTIAL, {
                 id: id,
                 chunk: chunk
-            });
+            }, id);
         },
 
         /**
@@ -186,10 +191,14 @@ define([
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
 
-            this.getEventManager().dispatchEvent(eventManager.eventNameCompound.CANCEL_PARTIAL + id, {
+            //this.getEventManager().dispatchEvent(eventManager.eventNameCompound.CANCEL_PARTIAL + id, {
+            //    id: id,
+            //    chunk: chunk
+            //});
+            eventManager.fireEvent(eventManager.eventName.CANCEL_PARTIAL, {
                 id: id,
                 chunk: chunk
-            });
+            }, id);
         },
 
         /**
@@ -228,10 +237,17 @@ define([
                         section_id = aux_id.replace(context.id + "_", '');
 
                     if (jQuery.inArray(section_id, context.editingChunks) === -1) {
-                        context.dispatchEvent(context.eventNameCompound.EDIT_PARTIAL + context.id, {
+
+                        //console.log("contex id: ", context.id, "chunk:", section_id);
+
+                        context.fireEvent(context.eventName.EDIT_PARTIAL, {
                             id: context.id,
                             chunk: section_id
                         });
+                        //context.dispatchEvent(context.eventNameCompound.EDIT_PARTIAL + context.id, {
+                        //    id: context.id,
+                        //    chunk: section_id
+                        //});
                     } else {
                         console.log("Ja s'està editant ", section_id);
                     }
@@ -244,23 +260,21 @@ define([
         getQueryEdit: function (chunkId) {
 
             var query = 'do=edit_partial'
-                    + '&section_id=' + chunkId
-                    + '&editing_chunks=' + this.getEditingChunks().toString()
-                    + '&target=section'
-                    + '&id=' + this.ns
-                    + '&rev=' + (this.rev || '')
-                    + '&summary=[' + this.title + ']'
-                    + '&range=-';
+                + '&section_id=' + chunkId
+                + '&editing_chunks=' + this.getEditingChunks().toString()
+                + '&target=section'
+                + '&id=' + this.ns
+                + '&rev=' + (this.rev || '')
+                + '&summary=[' + this.title + ']'
+                + '&range=-';
 
             query += this._generateLastLocalDraftTimesParam(chunkId);
-
-
 
 
             return query;
         },
 
-        _generateLastLocalDraftTimesParam: function(chunkId) {
+        _generateLastLocalDraftTimesParam: function (chunkId) {
             //return '&structured_last_loca_draft_time=42';
             return this.draftManager.generateLastLocalDraftTimesParam(this.id, chunkId);
 
@@ -427,7 +441,7 @@ define([
 
             // Impresncidible pel cas en que caduca el bloqueig
             //[JOSEP]: Mirar si és un fireHandler o un ObservableCallback
-            this.setFireEventHandler(this.eventName.CANCEL, this._doCancelDocument.bind(this)); 
+            this.setFireEventHandler(this.eventName.CANCEL, this._doCancelDocument.bind(this));
             //this.eventManager.registerObserverToLocalEvent(this, this.eventNameCompound.CANCEL, this._doCancelDocument.bind(this));
             //this.registerObserverToEvent(this, this.eventNameCompound.CANCEL, this._doCancelDocument.bind(this));
 
@@ -500,7 +514,6 @@ define([
             }
 
             return documentChanged;
-
         },
 
         isLastCheckedContentChanged: function (header_id, content) {
@@ -553,6 +566,24 @@ define([
             }
         },
 
+        _setOriginalContent: function (header_id, content) {
+            console.log("StructuredDocumentSubclass#_setOriginalContent", header_id, content);
+
+
+            var index = this.data.dictionary[header_id],
+                chunk = this.data.chunks[index];
+
+            console.log("Contingut anterior:", chunk.text.editing );
+
+            chunk.text.editing = content;
+
+            console.log("Contingut actual:", chunk.text.editing );
+
+
+
+
+        },
+
         /**
          * Reinicialitza l'estat del document, eliminant-lo de la llista de modificats
          * @override
@@ -580,7 +611,7 @@ define([
             var draft, index;
             //console.log('StructuredDocumentSubclass#updateDocument', content);
 
-            if (content.recover_local===true) {
+            if (content.recover_local === true) {
                 draft = this.getDraftChunk(content.selected);
                 index = content.dictionary[content.selected];
 
@@ -973,11 +1004,17 @@ define([
             var dataToSend = this.getQueryEdit(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-            this.eventManager.dispatchEvent(this.eventName.EDIT_PARTIAL, {
+            return {
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
-            })
+            };
+
+            //this.eventManager.dispatchEvent(this.eventName.EDIT_PARTIAL, {
+            //    id: this.id,
+            //    dataToSend: dataToSend,
+            //    standbyId: containerId
+            //})
 
         },
 
@@ -987,14 +1024,19 @@ define([
             var dataToSend = this.getQuerySave(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-            console.log("S'ha despatchat el save partial");
-            this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
+            //this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
+            //    id: this.id,
+            //    dataToSend: dataToSend,
+            //    standbyId: containerId
+            //})
+
+            this.hasChanges = false;
+
+            return {
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
-            })
-
-            this.hasChanges = false;
+            };
 
         },
 
@@ -1004,11 +1046,18 @@ define([
             var dataToSend = this.getQueryCancel(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
-            this.eventManager.dispatchEvent(this.eventName.CANCEL_PARTIAL, {
+            return {
+
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
-            })
+            };
+
+            //this.eventManager.dispatchEvent(this.eventName.CANCEL_PARTIAL, {
+            //    id: this.id,
+            //    dataToSend: dataToSend,
+            //    standbyId: containerId
+            //})
 
         },
 
