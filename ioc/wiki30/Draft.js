@@ -13,7 +13,8 @@ define([
     return declare([EventObservable, EventObserver], {
 
         AUTOSAVE_LOCAL: 5 * 1000, // Temps en ms mínim per fer un refresc
-        AUTOSAVE_REMOTE: 2 * 60 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
+        AUTOSAVE_REMOTE: 10 * 1000, // TESTS
+        //AUTOSAVE_REMOTE: 2 * 60 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
         MAX_LOCAL_STORAGE_USED: 2048, // En KBs, 2048KBs son 2 MBs
 
         constructor: function (args) {
@@ -210,6 +211,7 @@ define([
         },
 
         _removeLocalStructuredDraft: function () {
+            console.log("Draft#_removeLocalStructureDraft");
             // En aquest cas només s'han d'esborrar el draft dels chunks actius al desar
             var pages = this._doGetPages(),
                 draft = this._getLastGeneratedDraft();
@@ -226,11 +228,16 @@ define([
         },
 
         _removeLocalFullDraft: function () {
+            console.log("Draft#_removeLocalFullDraft", this.contentTool.id);
             var pages = this._doGetPages();
 
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
                 delete(pages[this.contentTool.id].drafts['full']);
+                delete(pages[this.contentTool.id].drafts['structured']); // ALERTA[Xavi] Al esborrar el complet s'ha d'esborrar també el parcial, així es com funcionen els drafts remots
                 this._doSetPages(pages);
+                console.log("S'ha esborrat?", pages);
+            } else {
+                console.log("Fallat: ", this.contentTool.id, pages);
             }
         },
 

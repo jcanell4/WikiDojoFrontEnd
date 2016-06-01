@@ -26,7 +26,8 @@ define([
             if (this.getReadOnly()) { // Si el document es de només lectura no s'ha de bloquejar
                 return;
             }
-            this.dispatcher.getLockManager().lock(this.id, this.ns);
+
+            //this.dispatcher.getLockManager().lock(this.id, this.ns);
 
             // TODO[Xavi] pendent de determinar si fem servir una subclasse diferent pels Draft
             this.getDraft();
