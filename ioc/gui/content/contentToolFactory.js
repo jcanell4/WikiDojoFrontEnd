@@ -421,6 +421,7 @@ define([
 
                     case this.generation.STRUCTURED_DOCUMENT:
                         GeneratedContentTool = base
+                            .createSubclass(TimedDocumentSubclass)
                             .createSubclass(RequestSubclass)
                             .createSubclass(DocumentSubclass)
                             .createSubclass(StructuredDocumentSubclass);
