@@ -64,7 +64,7 @@ define([
             onSelect: function () {
                 this.setCurrentDocument();
                 this.dispatcher.getInfoManager().refreshInfo(this.id);
-                this.dispatchEvent("document_selected", {id: this.id});
+                this.dispatchEvent(this.eventName.DOCUMENT_SELECTED, {id: this.id});
 
                 this.dispatcher.updateFromState();
 
@@ -78,7 +78,7 @@ define([
              */
             onUnselect: function () {
                 //                console.log("DocumentComponent#onUnselect");
-                this.dispatchEvent("document_unselected", {id: this.id});
+                this.dispatchEvent(this.eventName.DOCUMENT_UNSELECTED, {id: this.id});
             },
 
             setCurrentDocument: function () {

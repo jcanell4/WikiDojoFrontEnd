@@ -33,7 +33,7 @@ define([
              */
             onSelect: function () {
                 //console.log("ContentTool#onSelect");
-                this.dispatchEvent("content_selected", {id: this.id});
+                this.dispatchEvent(this.eventName.CONTENT_SELECTED, {id: this.id});
             },
 
             /**
@@ -41,7 +41,7 @@ define([
              */
             onUnselect: function () {
                 //console.log("ContentTool#onUnselect");
-                this.dispatchEvent("content_unselected", {id: this.id});
+                this.dispatchEvent(this.eventName.CONTENT_UNSELECTED, {id: this.id});
             },
 
             /**
