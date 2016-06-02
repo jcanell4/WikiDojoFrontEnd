@@ -106,15 +106,17 @@ define([
             },
 
             _getDocument: function (value) {
-                switch (value.type) {
-                    case 'full_document':
-//                        var currentContent = jQuery(value.content).find('textarea').val();
-                        var currentContent = value.content;
-                        return {content: currentContent, date: value.lastmod};
+//                switch (value.type) {
+//                    case 'full_document':
+//////                        var currentContent = jQuery(value.content).find('textarea').val();
+////                        var currentContent = value.content;
+//                        return {content: value.content, date: value.lastmod};
+//
+//                    case 'partial_document':
+//                        return {content: value.content, date: value.lastmod};
+//                }
 
-                    case 'partial_document':
-                        return {content: value.content.editing, date: value.lastmod};
-                }
+                return {content: value.content, date: value.lastmod};
 
             },
 
@@ -157,6 +159,7 @@ define([
 
             _buildQuery: function (value) {
                 var query = '';
+                console.log("DraftProcessor#_buildQuery", value);
 
                 switch (value.params.type) {
                     case 'full_document':
@@ -164,16 +167,18 @@ define([
                         break;
 
                     case 'partial_document':
-                        query += 'id=' + value.params.original_call.ns
-                            + (value.params.original_call.rev ? '&rev=' + value.params.original_call.rev : '')
-                            + '&section_id=' + value.params.original_call.section_id
-                            + '&editing_chunks=' + value.params.original_call.editing_chunks
+                        query += 'id=' + value.ns
+                            + (value.rev ? '&rev=' + value.rev : '')
+                            + '&section_id=' + value.params.selected
+                            + '&editing_chunks=' + value.params.editing_chunks
                 }
 
+                console.log("QUERY BUILT", query);
                 return query;
             },
 
             _getDraftQuery: function () {
+                console.log("DraftProcessor#_getDraftQuery", this.query);
                 var query = this.query;
 
                 if (this.isLocalDraft) {

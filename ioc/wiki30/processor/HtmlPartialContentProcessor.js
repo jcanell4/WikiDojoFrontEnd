@@ -189,6 +189,7 @@ define([
              * @override
              */
             createContentTool: function (content, dispatcher) {
+                console.log("Content:", content);
                 var args = {
                     ns: content.ns,
                     id: content.id,
@@ -204,26 +205,26 @@ define([
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
             },
 
-            /**
-             * Crea el llistat pel control de canvis per chunks.
-             * @param chunks
-             * @returns {{}}
-             * @private
-             */
-            _generateEmptyChangedChunks: function (chunks) {
-                var chunk,
-                    changedChunks = {};
-
-                for (var i = 0; i < chunks.length; i++) {
-                    chunk = chunks[i];
-                    changedChunks[chunk.header_id] = {};
-                    changedChunks[chunk.header_id].changed = false;
-                    changedChunks[chunk.header_id].content = chunk.editing;
-
-                }
-
-                return changedChunks;
-            }
+            ///**
+            // * Crea el llistat pel control de canvis per chunks.
+            // * @param chunks
+            // * @returns {{}}
+            // * @private
+            // */
+            //_generateEmptyChangedChunks: function (chunks) {
+            //    var chunk,
+            //        changedChunks = {};
+            //
+            //    for (var i = 0; i < chunks.length; i++) {
+            //        chunk = chunks[i];
+            //        changedChunks[chunk.header_id] = {};
+            //        changedChunks[chunk.header_id].changed = false;
+            //        changedChunks[chunk.header_id].content = chunk.editing;
+            //
+            //    }
+            //
+            //    return changedChunks;
+            //}
 
         })
 });
