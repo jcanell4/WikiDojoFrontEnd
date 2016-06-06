@@ -354,6 +354,12 @@ define([
                 this.removeListenerHandlers();
                 this._onDestroy();
             },
+            
+            _onDestroy: function(){
+                if(this.onDestroy){
+                    this.onDestroy();
+                }
+            },
 
             preRender: function () {
                 //console.log("AbstractContentTool#preRender", this.id);

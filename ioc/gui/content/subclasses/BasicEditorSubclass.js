@@ -33,7 +33,9 @@ define([
             TOOLBAR_ID: 'full_editor',
             VERTICAL_MARGIN: 25,
             MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
-
+            
+            editorCreated:false,
+            
             setReadOnly: function (value) {
                 this.set("readonly", value);
             },
@@ -197,15 +199,18 @@ define([
             postRender: function () {
 
                 this.inherited(arguments);
+                
+                if(!this.editorCreated){
+                    this.addToolbars();
+                    this.addEditors();
 
-                this.addToolbars();
-                this.addEditors();
+                    on(window, 'resize', function () {
+                        this.fillEditorContainer();
+                    }.bind(this));
 
-                on(window, 'resize', function () {
                     this.fillEditorContainer();
-                }.bind(this));
-
-                this.fillEditorContainer();
+                    this.editorCreated=true;
+                }
             },
 
             // Afegeix un editorAce per cada editor actiu

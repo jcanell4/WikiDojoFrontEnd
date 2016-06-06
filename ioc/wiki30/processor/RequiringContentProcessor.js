@@ -33,7 +33,8 @@ define([
                 
                 if(value.action==="dialog"){
                     var timer;
-                    
+                    var contentTool = registry.byId(value.id);
+
                     value.timer.onExpire = function(params){
                         dispatcher.getEventManager().fireEvent(
                                 value.timer.eventOnExpire, params);
@@ -44,7 +45,6 @@ define([
                                 value.timer.eventOnCancel, params);
                        };                        
                     
-                    var contentTool = registry.byId(value.id);
                     this._initTimer(value, contentTool);
                     this._processTimerDialog(value, contentTool, dispatcher);
                 }else if(value.action==="refresh"){
