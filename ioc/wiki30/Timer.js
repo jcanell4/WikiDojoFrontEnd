@@ -63,7 +63,7 @@ define([
         },
 
         refresh: function (timeout, params) {
-            //console.log('Timer#refresh', timeout, params);
+            console.log('Timer#refresh', timeout, params);
             if(params){
                 this.paramsOnExpire=params;
             }else{

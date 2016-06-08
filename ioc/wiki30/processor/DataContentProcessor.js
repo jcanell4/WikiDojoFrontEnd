@@ -56,7 +56,7 @@ define([
 
                 ret = this.inherited(arguments);
                
-                this._initTimer(value);
+                this._initTimer(value, dispatcher);
                 
                 return ret;
             },
@@ -116,14 +116,18 @@ define([
                 return draftContent;
             },
             
-            _initTimer: function(params){
+            _initTimer: function(params, dispatcher){
                 var contentTool = registry.byId(params.id);
-                
+                var paramsOnExpire = params.timer.dialogOnExpire;
+                paramsOnExpire.contentTool = contentTool;
+                paramsOnExpire.closable = false;
+                paramsOnExpire.timeout = params.timer.timeout;
                 contentTool.initTimer({
                         onExpire: function(ptimer){
                             // a) Si hi ha canvis:
                             if(ptimer.contentTool.isContentChanged()){
                             //          1) enviar demanda de bloqueig
+                                ptimer.contentTool.fireEvent(ptimer.contentTool.eventName.REFRESH_EDITION);
                             //          2) Mostrar diàleg no closable informant 
                             //                  que s'ha sobrepassat el temps de bloqueig 
                             //                  sense cap activitat i per tant es demana
@@ -133,23 +137,20 @@ define([
                             //                  en X temps, es passarà a calcel·lar els canvis.
                             //                  La cancel·lació s'envia forçant la cancel·lació 
                             //                  dels canvis + un alerta informant del fet
+                                var dialog = dispatcher.getDialogManager().getDialog('lock_expiring'
+                                                                        , "lockExpiring_"+ptimer.contentTool.id
+                                                                        , ptimer);
+                                ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
+                                dialog.show();                                
                             // b) Si no hi ha canvis, es cancel·la sense avís previ, però a mé 
                             //                  de l'html s'envia també una alerta informant del fet
-                            }else{
-                                
-                                ptimer.contentTool.dispatchEvent(
+                            }else{                                
+                                ptimer.contentTool.fireEvent(
                                         ptimer.cancelContentEvent, 
-                                        ptimer.contentTool.id,
                                         ptimer.cancelEventParams);
                             }
                         },
-                        paramsOnExpire: {
-                            "contentTool": contentTool,
-                            "cancelContentEvent":params.timer.dialogOnExpire.cancelContentEvent,
-                            "cancelEventParams":params.timer.dialogOnExpire.cancelEventParams,
-                            "okContentEvent":params.timer.dialogOnExpire.okContentEvent,
-                            "okEventParams":params.timer.dialogOnExpire.cancelEventParams,
-                        }
+                        paramsOnExpire: paramsOnExpire
                     });
                 contentTool.startTimer(params.timer.timeout);
             }
