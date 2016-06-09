@@ -85,23 +85,13 @@ define([
              */
             postAttach: function () {
                 //console.log("EditorSubclass#postAttach");
-                this.registerObserverToEvent(this, this.eventName.REFRESH_EDITION, this._refreshEdition.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
-                
                 this.registerToChangesManager();
 
                 jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
                 
                 this.inherited(arguments);
                 
-                this.lockDocument(); // Lock i Draft  [JOSEP]:Ara no cal això, ja que es bloqueja des del servidor en fer la petició d'edició
-            },
-            
-            _refreshEdition: function(event){
-                this.eventManager.fireEvent(this.eventManager.eventName.EDIT, 
-                                            {
-                                                id: this.id,
-                                                dataToSend: "id=" + this.ns + "&refresh=true"                        
-                                            });                
+                this.lockDocument(); // Lock i Draft
             },
 
 
@@ -128,13 +118,6 @@ define([
                         dataToSend += "&" + event.extraDataToSend;
                     }else{
                         dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
-                    }
-                }
-                if(event.dataToSend){
-                    if(typeof event.dataToSend==="string"){
-                        dataToSend += "&" + event.dataToSend;
-                    }else{
-                        dataToSend += "&" + ioQuery.objectToQuery(event.dataToSend);
                     }
                 }
 

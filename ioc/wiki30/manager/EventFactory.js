@@ -17,7 +17,6 @@ define([
             SAVE_PARTIAL: 'save_partial',
             CANCEL: 'cancel',
             EDIT: 'edit',
-            REFRESH_EDITION: 'refresh',
             SAVE: 'save',
             SAVE_DRAFT: 'save_draft',
             REMOVE_DRAFT: 'remove_draft',

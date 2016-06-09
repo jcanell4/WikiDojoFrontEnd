@@ -53,13 +53,10 @@ define([
                 observer.addObservable(this.id, this);
                 
                 if(!this.callbacks[event]){
-                    this.callbacks[event]={}
-                }
-                if(!this.callbacks[event][observer.id]){
-                    this.callbacks[event][observer.id]={observer:observer, callbacks:[]}
+                    this.callbacks[event]=[]
                 }
 //                this.callbacks[event].push({observerId:observer.id, callback:callback, observer:observer});
-                this.callbacks[event][observer.id].callbacks.push(callback);
+                this.callbacks[event][observer.id]={callback:callback, observer:observer};
             },
 
             unregisterObserver: function (id) {
@@ -98,10 +95,8 @@ define([
                     if(typeof preventGlobalProp === "undefined"){
                         preventGlobalProp = fireEventFunc.preventGlobalPropagation;
                     }
-                }else if(dataEventBase){
-                    eventData = dataEventBase;
                 }else{
-                    eventData={};
+                    eventData = dataEventBase;
                 }
                 this.dispatchEvent(eventName, eventData, !preventGlobalProp);
             },
@@ -115,9 +110,7 @@ define([
                 
                 if (callbacks) {
                     for(var key in callbacks){
-                        for(var i=0; callbacks[key] && i<callbacks[key].callbacks.length; i++){
-                            callbacks[key].callbacks[i](eventData);
-                        }
+                        callbacks[key].callback(eventData);
                     }
                 }
                 

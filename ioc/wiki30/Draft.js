@@ -58,7 +58,7 @@ define([
 
         _doSave: function () {
             //console.log('Draft#_doSave');
-            var ret = 0;
+
             var now = Date.now(),
                 elapsedTime = now - this.lastRemoteRefresh;
 
@@ -69,12 +69,11 @@ define([
             // compte la mida de les dades que seran desades
             if (elapsedTime >= this.AUTOSAVE_REMOTE || spaceUsed > this.MAX_LOCAL_STORAGE_USED) {
                 this._doSaveRemoteServer();
-                ret = 1;
             } else {
 
                 this._doSaveLocal();
             }
-            return ret;
+
 
         },
 
@@ -318,11 +317,7 @@ define([
                 elapsedTime = now - this.lastRefresh;
 
             if (elapsedTime >= this.AUTOSAVE_LOCAL) {
-                var saveMode = this._doSave();
-                if(saveMode==0){
-                    this.waitingRemoteRefresh = true;
-                    this._setPendingRefresh(this.AUTOSAVE_REMOTE - elapsedTime + 1);
-                }
+                this._doSave();
             } else {
                 this._setPendingRefresh(this.AUTOSAVE_LOCAL - elapsedTime + 1);
             }
@@ -331,8 +326,7 @@ define([
         _setPendingRefresh: function (timeout) {
             //console.log('Draft#_setPendingRefresh', timeout);
 
-            if (this.waitingRemoteRefresh || this.timers.refresh.expired) {
-                this.waitingRemoteRefresh=false;
+            if (this.timers.refresh.expired) {
                 this.timers.refresh.start(timeout);
             }
         },
