@@ -40,7 +40,6 @@ define([
     "ioc/wiki30/processor/HtmlPartialContentProcessor",
     "ioc/wiki30/processor/LockDataProcessor",
     "ioc/wiki30/processor/TreeProcessor",
-    "ioc/wiki30/processor/NotificationProcessor",
     "ioc/wiki30/manager/EventManager",
     "ioc/wiki30/manager/LockManager",
     "ioc/wiki30/manager/DraftManager",

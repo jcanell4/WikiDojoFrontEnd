@@ -73,7 +73,7 @@ define([
                             extra: {
                                 eventType: this.eventManager.eventName.EDIT_PARTIAL,
                                 dataToSend: this._buildQuery('partial_document', value) + '&discard_draft=true',
-                            }
+                        }
 
                         }
                     ]

@@ -382,7 +382,7 @@ define([
 
             for (var i = 0; i < localStorage.length; i++) {
                 spaceUsed += (localStorage[localStorage.key(i)].length * 2) / 1024; // KB
-            }
+        }
 
             console.log("LocalStorage usage: ", spaceUsed.toFixed(2) + " KB");
 
