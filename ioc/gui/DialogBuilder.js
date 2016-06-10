@@ -147,10 +147,30 @@ define([
             //console.log("DialogBuilder#_addNextRequestControl", eventTriggered, dataToSend);
 
             var callback = function () {
-                this.eventManager.fireEvent(eventTriggered, { // Això fa referencia al eventManager del dialog
-                    id: this.id,
-                    dataToSend: dataToSend
-                }, observable);
+                var dts;
+//                this.eventManager.fireEvent(eventTriggered, { // Això fa referencia al eventManager del dialog
+//                    id: this.id,
+//                    dataToSend: dataToSend
+//                }, observable);
+                if(dataToSend){
+                    if(typeof dataToSend === "string"){
+                        dts = {
+                            id: this.id,
+                            dataToSend: dataToSend
+                        };
+                    }else if(dataToSend.extraDataToSend){
+                        dts = dataToSend;
+                    }else{
+                        if(!dataToSend.id){
+                            dataToSend.id = this.id;
+                        }
+                        dts = {
+                            id:dataToSend.id,
+                            dataToSend: dataToSend
+                        };
+                    }
+                }
+                this.eventManager.fireEvent(eventTriggered, dts, observable);
             };
 
             this.addNextCallback(eventListened, callback);

@@ -16,6 +16,7 @@ define([
             type: {
                 DEFAULT: 'default',
                 LOCKED_DEFAULT: 'locked_default',
+                LOCK_EXPIRING: 'lock_expiring',
                 DIFF: 'diff',
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
@@ -62,6 +63,10 @@ define([
 
                     case this.type.DIFF:
                         dialogBuilder = this._getDiffDialog(refId, params);
+                        break;
+
+                    case this.type.LOCK_EXPIRING:
+                        dialogBuilder = this._getLockExpiringDialog(refId, params);
                         break;
 
                     case this.type.LOCKED_DIFF:
@@ -198,6 +203,34 @@ define([
                 dialogBuilder.addTimeout(params.timeout)
                     .addNextRequestControlCallback(this.eventName.TIMEOUT, this.eventName.UNLOCK_DOCUMENT, dataToSend)
                     .addNextRequestControlCallback(this.eventName.CANCEL, this.eventName.UNLOCK_DOCUMENT, dataToSend);
+
+                return dialogBuilder;
+            },
+
+            _getLockExpiringDialog: function (refId, params) {
+                params. buttons =[
+                    {
+                        id: refId +'_ok',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text, 
+                        callback: function(){
+                            params.contentTool.fireEvent(params.okContentEvent, params.okEventParams);
+                        }
+                    },
+                    {                        
+                        id: refId +'_cancel',
+                        buttonType: this.type.DEFAULT,
+                        description: params.cancel.text,
+                        callback: function(){
+                            params.contentTool.fireEvent(params.cancelContentEvent, params.cancelEventParams);
+                        }
+                    }
+                ];                
+                var dialogBuilder = this._getDefaultDialog(refId, params);
+
+                dialogBuilder.addTimeout(params.timeout)
+                    .addNextRequestControlCallback(this.eventName.TIMEOUT, params.timeoutContentEvent, params.timeoutParams, params.contentTool);
+//                    .addNextRequestControlCallback(this.eventName.CANCEL, params.cancelContentEvent, params.cancelEventParams, params.contentTool);
 
                 return dialogBuilder;
             },

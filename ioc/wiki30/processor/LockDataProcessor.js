@@ -1,7 +1,8 @@
 define([
     "dojo/_base/declare",
+    "dijit/registry",
     "ioc/wiki30/processor/AbstractResponseProcessor"
-], function (declare, AbstractResponseProcessor) {
+], function (declare, registry, AbstractResponseProcessor) {
     var ret = declare([AbstractResponseProcessor],
         /**
          * @class LockDataProcessor
@@ -31,7 +32,15 @@ define([
              */
             _process: function (data, dispatcher) {
                 //console.log("LockDataProcessor#_process", data);
-                dispatcher.getLockManager().update(data); //arriba en segons
+                //[JOSEP]: AIXÒ ja no serveix per res! dispatcher.getLockManager().update(data); //arriba en segons
+                //[JOSEP]: Ara es treballa amb TimedDocumentSubclass
+                var cTool = registry.byId(data.id);
+                if(cTool && cTool.refreshTimer){
+                    cTool.refreshTimer(data.timeout);
+                }else{
+                    console.log("Error no esxisteix el contentTool o no és TimedDocumentSubclass");
+                }
+                
             }
         });
     return ret;
