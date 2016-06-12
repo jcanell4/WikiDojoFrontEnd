@@ -93,7 +93,8 @@ define([
                     content: content,
                     closable: true,
                     dispatcher: dispatcher,
-                    originalContent: this._extractContentFromNode(content),
+                    //originalContent: this._extractContentFromNode(content),
+                    originalContent: content.content,
                     type: this.type,
                     locked: content.editing.locked,
                     readonly: content.editing.readonly,
@@ -104,10 +105,10 @@ define([
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             },
 
-            _extractContentFromNode: function (content) {
-                //return  jQuery.trim(jQuery(content.content).find('textarea').val());
-                return content.content;
-            },
+            //_extractContentFromNode: function (content) {
+            //    //return  jQuery.trim(jQuery(content.content).find('textarea').val());
+            //    return content.content;
+            //},
 
             _getLocalDraftContent: function(value, dispatcher) {
                 var draft = dispatcher.getDraftManager().getDraft(value.id),

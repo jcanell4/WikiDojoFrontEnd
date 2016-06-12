@@ -36,6 +36,8 @@ define([
             // after.content;
             // before.content;
 
+            console.log("Demanat RenderEngine:", type);
+
             return renderEngines[type] ? renderEngines[type] : defaultRenderEngine;
         },
 
@@ -56,6 +58,7 @@ define([
             _addRenderEngine('html_partial', html_partialRenderEngine);
             _addRenderEngine('data', dataRenderEngine);
             _addRenderEngine('requiring', requiringRenderEngine);
+            _addRenderEngine('requiring_partial', html_partialRenderEngine);
             defaultRenderEngine = _getRenderEngine('standard');
         };
 

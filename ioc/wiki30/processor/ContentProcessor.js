@@ -139,7 +139,7 @@ define([
                 }
 
                 if (refreshContent) {
-                    oldContentTool.updateDocument(content);
+                    this._updateContentTool(oldContentTool, content);
                 } else {
                     if (oldContentTool) {
                         position = container.getChildIndex(oldContentTool.id);
@@ -154,11 +154,18 @@ define([
 
             },
 
-            isRefreshableContent: function (oldType) {
+            /** @protected */
+            _updateContentTool: function(contentTool, content) {
+                contentTool.updateDocument(content);
+            },
+
+            isRefreshableContent: function (oldType, newType) {
+                console.log("ContentProcessor#isRefreshableContent", oldType);
                 //return oldType === this.type && this.blackList.indexOf(this.type) === -1; TODO[Xavi] es pot reduir a això
 
-                if (oldType === this.type && this.blackList.indexOf(this.type) === -1) {
-                    //console.log('ContentProcessor#isRefreshableContent', true);
+                if ((oldType === this.type && this.blackList.indexOf(this.type) === -1) ||
+                    (newType && newType === oldType)) {
+                    console.log('ContentProcessor#isRefreshableContent', true);
                     return true;
                 }
                 //console.log('ContentProcessor#isRefreshableContent', false);

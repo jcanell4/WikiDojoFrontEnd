@@ -199,7 +199,7 @@ define([
                     dispatcher: dispatcher,
                     rev: content.rev || '',
                     type: this.type,
-                    readonly: content.editing ? content.editing.readonly : false
+                    readonly: content.readonly? content.readonly : false
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
