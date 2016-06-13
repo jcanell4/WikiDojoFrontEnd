@@ -258,7 +258,7 @@ define([
 
 
         getQueryEdit: function (chunkId) {
-
+            console.log("StructuredDocumentSubclass#getQueryEdit", chunkId);
             var query = 'do=edit_partial'
                 + '&section_id=' + chunkId
                 + '&editing_chunks=' + this.getEditingChunks().toString()
@@ -278,22 +278,6 @@ define([
             //return '&structured_last_loca_draft_time=42';
             return this.draftManager.generateLastLocalDraftTimesParam(this.id, chunkId);
 
-            //
-            //var localDraftTimes = this.getDraft().getLastLocalDraftTime(),
-            //    param = '';
-            //
-            //console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", localDraftTimes);
-            //
-            //if (localDraftTimes !== null) {
-            //    for (var type in localDraftTimes) {
-            //        param +='&' + type + '_last_local_draft_time='+localDraftTimes[type];
-            //    }
-            //
-            //}
-            //
-            //console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", param);
-            //
-            //return param;
         },
 
         getQuerySave: function (section_id) {
@@ -357,9 +341,24 @@ define([
                 + '&editing_chunks=' + this.getEditingChunks().join(',');
         },
 
-        getEditingChunks: function () {
+        getEditingChunks: function () { // TODO[Xavi] Aquest recompte es practicament idèntic al del updateChunks(content)
+
+            this.editingChunksCounter = 0;
+            this.editingChunks = [];
+
+            for (var i = 0; i < this.data.chunks.length; i++) {
+                chunk = this.data.chunks[i];
+
+                if (chunk.text) {
+                    this.editingChunks.push(chunk.header_id);
+                    this.editingChunksCounter++; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
+
+                }
+            }
+
             return this.editingChunks || [];
         },
+
 
         /**
          * Actualitza el chunk amb la capçalera passada com argument amb el text passat com argument.
@@ -434,6 +433,7 @@ define([
 
             this.setFireEventHandler(this.eventName.EDIT_PARTIAL, this._doEditPartial.bind(this));
             this.setFireEventHandler(this.eventName.SAVE_PARTIAL, this._doSavePartial.bind(this));
+            this.setFireEventHandler(this.eventName.SAVE_PARTIAL_ALL, this._doSavePartialAll.bind(this));
             this.setFireEventHandler(this.eventName.CANCEL_PARTIAL, this._doCancelPartial.bind(this));
 
 //            // Impresncidible pel cas en que caduca el bloqueig
@@ -573,13 +573,11 @@ define([
             var index = this.data.dictionary[header_id],
                 chunk = this.data.chunks[index];
 
-            console.log("Contingut anterior:", chunk.text.editing );
+            console.log("Contingut anterior:", chunk.text.editing);
 
             chunk.text.editing = content;
 
-            console.log("Contingut actual:", chunk.text.editing );
-
-
+            console.log("Contingut actual:", chunk.text.editing);
 
 
         },
@@ -699,6 +697,7 @@ define([
          * @private
          */
         _updateChunks: function (content) {
+            console.log("StructuredDocumentSubclass#_updateChunks", content);
             var i, chunk;
 
             this.editingChunksCounter = 0;
@@ -999,7 +998,7 @@ define([
 
 
         _doEditPartial: function (event) {
-            //console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
             var dataToSend = this.getQueryEdit(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -1019,7 +1018,9 @@ define([
         },
 
         _doSavePartial: function (event) {
-            //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+
+            console.log("Hi han editors?", this.editors);
 
             var dataToSend = this.getQuerySave(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -1040,8 +1041,46 @@ define([
 
         },
 
+        _doSavePartialAll: function (event) {
+            console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
+
+
+            var chunkParams = [],
+                containerId = this.id;
+
+            for (var header_id in this.editors) {
+                chunkParams.push(this.getQuerySave(header_id));
+
+
+            }
+
+            //this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
+            //    id: this.id,
+            //    dataToSend: dataToSend,
+            //    standbyId: containerId
+            //})
+
+            this.hasChanges = false;
+
+
+            console.log("Chunks per desar: ", {chunk_params: chunkParams});
+
+            var section_id = this.dispatcher.getGlobalState().getCurrentElementId();
+            section_id= section_id.replace(this.id + "_", "");
+            section_id = section_id.replace("container_", "");
+
+
+            return {
+                dataToSend: {chunk_params: JSON.stringify(chunkParams), id: event.id, section_id: section_id},
+                standbyId: containerId
+            };
+
+
+        },
+
+
         _doCancelPartial: function (event) {
-            //console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
             var dataToSend = this.getQueryCancel(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -1100,11 +1139,11 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-            //console.log("EditorSubclass#_doCancel", this.id, event);
+            console.log("EditorSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
-            if (data.discardChanges) {
+            if (data.discardChanges || data['discard_changes']) {
                 dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
             } else {
                 dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
@@ -1114,13 +1153,25 @@ define([
                 dataToSend += '&keep_draft=' + data.keep_draft;
             }
 
+            if (event.extraDataToSend) {
+                dataToSend += '&' + event.extraDataToSend;
+            }
+
             containerId = event.id;
 
-            this.eventManager.dispatchEvent(this.eventName.CANCEL, {
+            //this.eventManager.fireEvent(this.eventName.CANCEL, {
+            //    id: this.id,
+            //    dataToSend: dataToSend,
+            //    standbyId: containerId
+            //}, this.id)
+            //
+            //
+
+            return {
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
-            })
+            }
 
         },
 

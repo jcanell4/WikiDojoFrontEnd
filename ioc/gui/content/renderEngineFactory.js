@@ -10,8 +10,9 @@ define([
     "ioc/gui/content/engines/revisionRenderEngine",
     "ioc/gui/content/engines/html_partialRenderEngine",
     "ioc/gui/content/engines/dataRenderEngine",
-    "ioc/gui/content/engines/requiringRenderEngine"
-], function (standardRenderEngine, revisionRenderEngine, html_partialRenderEngine, dataRenderEngine, requiringRenderEngine) {
+    "ioc/gui/content/engines/requiringRenderEngine",
+    "ioc/gui/content/engines/requiring_partialRenderEngine",
+], function (standardRenderEngine, revisionRenderEngine, html_partialRenderEngine, dataRenderEngine, requiringRenderEngine, requiring_partialRenderEngine) {
 
 
     var /** @type function */
@@ -36,6 +37,8 @@ define([
             // after.content;
             // before.content;
 
+            console.log("Demanat RenderEngine:", type);
+
             return renderEngines[type] ? renderEngines[type] : defaultRenderEngine;
         },
 
@@ -56,6 +59,7 @@ define([
             _addRenderEngine('html_partial', html_partialRenderEngine);
             _addRenderEngine('data', dataRenderEngine);
             _addRenderEngine('requiring', requiringRenderEngine);
+            _addRenderEngine('requiring_partial', requiring_partialRenderEngine);
             defaultRenderEngine = _getRenderEngine('standard');
         };
 

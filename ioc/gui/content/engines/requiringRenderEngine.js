@@ -22,6 +22,7 @@ define(function () {
      * @returns {string} - document amb el camp section_id afegit
      */
     return function (data, contentTool) {
+        console.log("RequiringRenderEngine", data);
         var $container, $form, $textarea, $toolBar;
         
         $container = jQuery('#container_' + contentTool.id);

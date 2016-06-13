@@ -7,6 +7,18 @@
  */
 define([], function () {
     return function (data) {
-        return typeof data === 'string' ? data : 'Tipus de dada no reconegut.';
+        //console.log("StandardRenderEngine", data);
+
+        var render;
+
+        if (typeof data === 'string' ) {
+            render = data;
+        } else if (typeof data.content === 'string') {
+            render = data.content;
+        } else {
+            render = 'Tipus de dada no reconegut.'
+        }
+
+        return render;
     }
 });

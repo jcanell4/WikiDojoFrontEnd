@@ -159,7 +159,7 @@ define([
              * @protected
              */
             render: function () {
-                //console.log("AbstractContentTool#render", this.id);
+                //console.log("AbstractContentTool#render", this);
                 this.updating = true;
                 this.set('content', this.renderEngine(this.data, this));
                 this.updating = false;

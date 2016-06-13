@@ -30,7 +30,7 @@ define([
              */
             process: function (value, dispatcher) {
                 var ret = this.inherited(arguments);
-                
+
                 if(value.action==="dialog"){
                     var timer;
                     var contentTool = registry.byId(value.id);
@@ -80,6 +80,24 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
+                console.log(content);
+
+
+                switch (content.requiring_type) {
+                    case 'full':
+                        return this._createFullContentTool(content, dispatcher);
+
+                    case 'structured':
+                        return this._createStructuredContentTool(content, dispatcher);
+
+                }
+                console.log("Type?:", content.type);
+
+
+            },
+
+
+            _createFullContentTool: function (content, dispatcher) {
                 var args = {
                     ns: content.ns,
                     id: content.id,
@@ -88,18 +106,47 @@ define([
                     closable: true,
                     dispatcher: dispatcher,
                     originalContent: content.content.text,
-                    type: this.type,
+                    type: 'requiring',
                     locked: true,
                     readonly: true,
                     rev: content.rev
                 };
 
-                var contentTool = contentToolFactory.generate(contentToolFactory.generation.REQUIRING, args);
-
-                return contentTool;
+                return contentToolFactory.generate(contentToolFactory.generation.REQUIRING, args);
             },
 
+            _createStructuredContentTool: function (content, dispatcher) {
+                console.log("RequiringContentProcessor#_createStructuredContentTool", content);
+
+                var args = {
+                    ns: content.ns,
+                    id: content.id,
+                    title: content.title,
+                    content: content.content,
+                    closable: true,
+                    dispatcher: dispatcher,
+                    rev: content.rev || '',
+                    type: 'requiring_partial',
+                    locked: true,
+                    readonly: true,
+                };
+
+                return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
+            },
+
+
+            _updateContentTool: function(contentTool, content) { //
+                //if (content.type === "requiring_partial") {
+                    contentTool.updateDocument(content.content);
+                //} else {
+                //
+                //    contentTool.updateDocument(content);
+                //}
+            },
+
+
             _initTimer: function(params, contentTool){
+                //console.log("RequiringContentProcessor#_initTimer", params);
                 if(params.timer.onCancel){
                     contentTool.initTimer({
                             onExpire: params.timer.onExpire,
@@ -151,6 +198,20 @@ define([
                 generateDialog(function(){
                     contentTool.startTimer(params.timer.timeout);
                 });
-            }
+            },
+
+            // ALERTA[Xavi] Compte, a aquest processor es generen diferents tipus de ContentTool i llavors la implementació original no funciona, sempre es crea un de nou
+
+            isRefreshableContent: function (oldType) {
+                console.log("ContentProcessor#isRefreshableContent", oldType);
+
+                if ((oldType === 'requiring' || oldType === "requiring_partial")) {
+                    console.log('ContentProcessor#isRefreshableContent', true);
+                    return true;
+                }
+                //console.log('ContentProcessor#isRefreshableContent', false);
+
+                return false;
+            },
         });
 });

@@ -38,7 +38,7 @@ define([
                     break;
 
                 case 'notification_received':
-                    console.log(action, params);
+                    //console.log(action, params);
                     this._processNotifications(params.notifications);
                     break;
 

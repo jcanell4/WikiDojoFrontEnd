@@ -1,8 +1,9 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
-    "ioc/gui/content/contentToolFactory"
-], function (declare, ContentProcessor, contentToolFactory) {
+    "ioc/gui/content/contentToolFactory",
+    "dijit/registry"
+], function (declare, ContentProcessor, contentToolFactory, registry) {
 
     return declare([ContentProcessor],
         /**
@@ -162,6 +163,10 @@ define([
                 }
 
 
+                if (value.timer) {
+                    this._initTimer(value, dispatcher);
+                }
+
                 return confirmation ? 0 : 100;
             },
 
@@ -189,7 +194,7 @@ define([
              * @override
              */
             createContentTool: function (content, dispatcher) {
-                console.log("Content:", content);
+                //console.log("Content:", content);
                 var args = {
                     ns: content.ns,
                     id: content.id,
@@ -199,7 +204,7 @@ define([
                     dispatcher: dispatcher,
                     rev: content.rev || '',
                     type: this.type,
-                    readonly: content.editing ? content.editing.readonly : false
+                    readonly: content.readonly? content.readonly : false
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
@@ -226,5 +231,53 @@ define([
             //    return changedChunks;
             //}
 
+            // ALERTA[Xavi] Adaptat del DataContentProcessor
+            _initTimer: function(params, dispatcher){
+                var contentTool = registry.byId(params.id);
+                var paramsOnExpire = params.timer.dialogOnExpire;
+                paramsOnExpire.contentTool = contentTool;
+                paramsOnExpire.closable = false;
+                paramsOnExpire.timeout = params.timer.timeout;
+                contentTool.initTimer({
+                    onExpire: function(ptimer){
+
+                        // ALERTA[Xavi] Si no existeix el ptimer retornem sense fer res, sembla que no es cancel·la el timer si es torna manualment
+                        if (!ptimer) {
+                            return;
+                        }
+
+                        // a) Si hi ha canvis:
+                        if(ptimer.contentTool.isContentChanged()){
+                            //          1) enviar demanda de bloqueig
+                            ptimer.contentTool.fireEvent(ptimer.contentTool.eventName.REFRESH_EDITION);
+                            //          2) Mostrar diàleg no closable informant
+                            //                  que s'ha sobrepassat el temps de bloqueig
+                            //                  sense cap activitat i per tant es demana
+                            //                  si es guarden els canvis o bé es cancel·la
+                            //                  l'edició.
+                            //                  També s'avisa que si no es contesta el diàleg
+                            //                  en X temps, es passarà a calcel·lar els canvis.
+                            //                  La cancel·lació s'envia forçant la cancel·lació
+                            //                  dels canvis + un alerta informant del fet
+                            var dialog = dispatcher.getDialogManager().getDialog('lock_expiring'
+                                , "lockExpiring_"+ptimer.contentTool.id
+                                , ptimer);
+                            ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
+                            dialog.show();
+                            // b) Si no hi ha canvis, es cancel·la sense avís previ, però a mé
+                            //                  de l'html s'envia també una alerta informant del fet
+                        }else{
+                            ptimer.contentTool.fireEvent(
+                                ptimer.cancelContentEvent,
+                                ptimer.cancelEventParams);
+                        }
+                    },
+                    paramsOnExpire: paramsOnExpire
+                });
+                contentTool.startTimer(params.timer.timeout);
+            }
+
         })
+
+
 });
