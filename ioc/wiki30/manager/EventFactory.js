@@ -15,6 +15,7 @@ define([
             CANCEL_PARTIAL: 'cancel_partial',
             EDIT_PARTIAL: 'edit_partial',
             SAVE_PARTIAL: 'save_partial',
+            SAVE_PARTIAL_ALL: 'save_partial_all',
             CANCEL: 'cancel',
             EDIT: 'edit',
             REFRESH_EDITION: 'refresh',

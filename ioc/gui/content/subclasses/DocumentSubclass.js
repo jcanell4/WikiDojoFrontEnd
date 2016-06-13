@@ -128,9 +128,11 @@ define([
              * @param content
              */
             updateDocument: function (content) {
-                this.setData(content.content);
+                //this.setData(content.content);
+                this.setData(content);
                 //this.updateTitle(content.content);
-                this.updateTitle(content);
+                //this.updateTitle(content);
+                this.updateTitle();
                 this.render();
                 this.addDocument();
             },
@@ -144,11 +146,11 @@ define([
              *
              * @param content
              */
-            updateTitle: function (content) {
-                var title = content.title;
+            updateTitle: function () {
+                var title = this.title;
 
-                if (content.rev) {
-                    title += " - Revisió (" + content.rev + ")";
+                if (this.rev) {
+                    title += " - Revisió (" + this.rev + ")";
                 }
 
                 this.controlButton.set("label", title); // controlButton es una propietat heretada de Dijit.ContentPane

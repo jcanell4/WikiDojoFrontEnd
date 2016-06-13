@@ -4,6 +4,19 @@
  */
 define(function () {
 
+    var _replace = function(text, replacements){
+        if(!replacements){
+            return text;
+        }
+        text.replace(/"({%[a-zA-X]*%})"/g, function(match, variable){
+            return typeof replacements[variable] != 'undefined'
+                ? replacements[variable]
+                : match
+                ;
+        });
+        return text;
+    }
+
     /**
      * Afegeix el id de la secció al formulari per enviarlo al servidor com a camp ocult.
      *
@@ -14,7 +27,7 @@ define(function () {
     return function (data) {
         var $container, $viewContainer, $editContainer, $header, $content, $form, $doc, $textArea, text, aux_id, i;
 
-        //console.log("html_partialRenderEngine: ", data);
+        //console.log("requiring_partialRenderEngine: ", data);
 
         $doc = jQuery('<div>' + data.html + '</div><div class="end-of-document></div>"');
 
@@ -116,6 +129,13 @@ define(function () {
             $divInsideForm.append('<input type="hidden" value="' + id + '" name="section_id"/>');
             $divInsideForm.append('<input name="editing_chunks" value="' + editing_chunks + '" type="hidden">');
         });
+
+
+        if(data.requiring){
+            $doc.prepend("<div class='requiringMessage'>"
+                +_replace(data.requiring.message, data.requiring.messageReplacements)
+                +"</div>");
+        }
 
         return $doc;
     }

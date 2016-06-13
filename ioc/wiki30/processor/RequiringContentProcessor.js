@@ -146,6 +146,7 @@ define([
 
 
             _initTimer: function(params, contentTool){
+                //console.log("RequiringContentProcessor#_initTimer", params);
                 if(params.timer.onCancel){
                     contentTool.initTimer({
                             onExpire: params.timer.onExpire,

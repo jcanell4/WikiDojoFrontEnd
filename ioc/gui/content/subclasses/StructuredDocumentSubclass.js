@@ -258,7 +258,7 @@ define([
 
 
         getQueryEdit: function (chunkId) {
-
+            console.log("StructuredDocumentSubclass#getQueryEdit", chunkId);
             var query = 'do=edit_partial'
                 + '&section_id=' + chunkId
                 + '&editing_chunks=' + this.getEditingChunks().toString()
@@ -434,6 +434,7 @@ define([
 
             this.setFireEventHandler(this.eventName.EDIT_PARTIAL, this._doEditPartial.bind(this));
             this.setFireEventHandler(this.eventName.SAVE_PARTIAL, this._doSavePartial.bind(this));
+            this.setFireEventHandler(this.eventName.SAVE_PARTIAL_ALL, this._doSavePartialAll.bind(this));
             this.setFireEventHandler(this.eventName.CANCEL_PARTIAL, this._doCancelPartial.bind(this));
 
 //            // Impresncidible pel cas en que caduca el bloqueig
@@ -699,7 +700,7 @@ define([
          * @private
          */
         _updateChunks: function (content) {
-            console.log("StructuredDocumentSubclass#_updateChunks", content);
+            //console.log("StructuredDocumentSubclass#_updateChunks", content);
             var i, chunk;
 
             this.editingChunksCounter = 0;
@@ -1000,7 +1001,7 @@ define([
 
 
         _doEditPartial: function (event) {
-            //console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
             var dataToSend = this.getQueryEdit(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -1020,7 +1021,9 @@ define([
         },
 
         _doSavePartial: function (event) {
-            //console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+
+            console.log("Hi han editors?", this.editors);
 
             var dataToSend = this.getQuerySave(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -1040,6 +1043,19 @@ define([
             };
 
         },
+
+        _doSavePartialAll: function (event) {
+            console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
+            console.log("Hi han editors?", this.editors);
+
+            for (var header_id in this.editors) {
+                this.eventManager.fireEvent(this.eventName.SAVE_PARTIAL, {
+                    id: event.id,
+                    chunk: header_id
+                }, event.id);
+            }
+        },
+
 
         _doCancelPartial: function (event) {
             //console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
@@ -1101,11 +1117,11 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-            //console.log("EditorSubclass#_doCancel", this.id, event);
+            console.log("EditorSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
-            if (data.discardChanges) {
+            if (data.discardChanges || data['discard_changes']) {
                 dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
             } else {
                 dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
@@ -1115,13 +1131,25 @@ define([
                 dataToSend += '&keep_draft=' + data.keep_draft;
             }
 
+            if (event.extraDataToSend) {
+                dataToSend += '&'+event.extraDataToSend;
+            }
+
             containerId = event.id;
 
-            this.eventManager.dispatchEvent(this.eventName.CANCEL, {
+            //this.eventManager.fireEvent(this.eventName.CANCEL, {
+            //    id: this.id,
+            //    dataToSend: dataToSend,
+            //    standbyId: containerId
+            //}, this.id)
+            //
+            //
+
+            return {
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
-            })
+            }
 
         },
 

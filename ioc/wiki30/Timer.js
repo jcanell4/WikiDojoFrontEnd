@@ -5,6 +5,7 @@ define([
     var TimerException = function (message) {
         this.message = message;
         this.name = "TimerException"
+        console.error(this);
     };
 
     return declare(null, {
