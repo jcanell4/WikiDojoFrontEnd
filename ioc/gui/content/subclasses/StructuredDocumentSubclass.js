@@ -1043,14 +1043,39 @@ define([
 
         _doSavePartialAll: function (event) {
             console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
-            console.log("Hi han editors?", this.editors);
+
+
+            var chunkParams = [],
+                containerId = this.id;
 
             for (var header_id in this.editors) {
-                this.eventManager.fireEvent(this.eventName.SAVE_PARTIAL, {
-                    id: event.id,
-                    chunk: header_id
-                }, event.id);
+                chunkParams.push(this.getQuerySave(header_id));
+
+
             }
+
+            //this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
+            //    id: this.id,
+            //    dataToSend: dataToSend,
+            //    standbyId: containerId
+            //})
+
+            this.hasChanges = false;
+
+
+            console.log("Chunks per desar: ", {chunk_params: chunkParams});
+
+            var section_id = this.dispatcher.getGlobalState().getCurrentElementId();
+            section_id= section_id.replace(this.id + "_", "");
+            section_id = section_id.replace("container_", "");
+
+
+            return {
+                dataToSend: {chunk_params: JSON.stringify(chunkParams), id: event.id, section_id: section_id},
+                standbyId: containerId
+            };
+
+
         },
 
 

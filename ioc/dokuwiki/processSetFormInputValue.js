@@ -8,6 +8,7 @@ define([
     
     var res = function(param){
 
+        console.log("processSetFromInputValue", params)
         if(param.inputs){
             for(var i in param.inputs){         
                 _setValueFromFormId(param.formId, i,
