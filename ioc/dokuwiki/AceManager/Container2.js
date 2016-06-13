@@ -76,7 +76,7 @@ define([
             },
 
             element: function () { // TODO[Xavi] No se si això continua fent falta, no veig que es cridi
-                console.log("Container#element");
+//                console.log("Container#element");
                 return this.$elementContainer.get(0);
             },
 

@@ -189,7 +189,7 @@ define([
              * @override
              */
             createContentTool: function (content, dispatcher) {
-                console.log("Content:", content);
+//                console.log("Content:", content);
                 var args = {
                     ns: content.ns,
                     id: content.id,

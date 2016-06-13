@@ -46,7 +46,7 @@ define([
         },
 
         addDiff: function (text1, text2, text1Label, text2Label) {
-            console.log('DialogBuilder#addDiff');
+//            console.log('DialogBuilder#addDiff');
 
             var node = document.createElement('div'),
                 diffNode = jsdifflib.getDiff(text1, text2, text1Label, text2Label);

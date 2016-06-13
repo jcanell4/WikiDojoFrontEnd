@@ -21,7 +21,7 @@ define([
         },
 
         lockDocument: function () {
-            console.log("LocktimedDocumentSubclass#lockDocument", this.id);
+//            console.log("LocktimedDocumentSubclass#lockDocument", this.id);
 
             if (this.getReadOnly()) { // Si el document es de només lectura no s'ha de bloquejar
                 return;
