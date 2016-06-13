@@ -240,6 +240,12 @@ define([
                 paramsOnExpire.timeout = params.timer.timeout;
                 contentTool.initTimer({
                     onExpire: function(ptimer){
+
+                        // ALERTA[Xavi] Si no existeix el ptimer retornem sense fer res, sembla que no es cancel·la el timer si es torna manualment
+                        if (!ptimer) {
+                            return;
+                        }
+
                         // a) Si hi ha canvis:
                         if(ptimer.contentTool.isContentChanged()){
                             //          1) enviar demanda de bloqueig

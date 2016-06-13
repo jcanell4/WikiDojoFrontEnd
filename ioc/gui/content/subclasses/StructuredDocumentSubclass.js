@@ -278,22 +278,6 @@ define([
             //return '&structured_last_loca_draft_time=42';
             return this.draftManager.generateLastLocalDraftTimesParam(this.id, chunkId);
 
-            //
-            //var localDraftTimes = this.getDraft().getLastLocalDraftTime(),
-            //    param = '';
-            //
-            //console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", localDraftTimes);
-            //
-            //if (localDraftTimes !== null) {
-            //    for (var type in localDraftTimes) {
-            //        param +='&' + type + '_last_local_draft_time='+localDraftTimes[type];
-            //    }
-            //
-            //}
-            //
-            //console.log("StructuredDocumentSubclass#_generateLastLocalDraftTimes", param);
-            //
-            //return param;
         },
 
         getQuerySave: function (section_id) {
@@ -357,9 +341,24 @@ define([
                 + '&editing_chunks=' + this.getEditingChunks().join(',');
         },
 
-        getEditingChunks: function () {
+        getEditingChunks: function () { // TODO[Xavi] Aquest recompte es practicament idèntic al del updateChunks(content)
+
+            this.editingChunksCounter = 0;
+            this.editingChunks = [];
+
+            for (var i = 0; i < this.data.chunks.length; i++) {
+                chunk = this.data.chunks[i];
+
+                if (chunk.text) {
+                    this.editingChunks.push(chunk.header_id);
+                    this.editingChunksCounter++; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
+
+                }
+            }
+
             return this.editingChunks || [];
         },
+
 
         /**
          * Actualitza el chunk amb la capçalera passada com argument amb el text passat com argument.
@@ -574,13 +573,11 @@ define([
             var index = this.data.dictionary[header_id],
                 chunk = this.data.chunks[index];
 
-            console.log("Contingut anterior:", chunk.text.editing );
+            console.log("Contingut anterior:", chunk.text.editing);
 
             chunk.text.editing = content;
 
-            console.log("Contingut actual:", chunk.text.editing );
-
-
+            console.log("Contingut actual:", chunk.text.editing);
 
 
         },
@@ -700,7 +697,7 @@ define([
          * @private
          */
         _updateChunks: function (content) {
-            //console.log("StructuredDocumentSubclass#_updateChunks", content);
+            console.log("StructuredDocumentSubclass#_updateChunks", content);
             var i, chunk;
 
             this.editingChunksCounter = 0;
@@ -1058,7 +1055,7 @@ define([
 
 
         _doCancelPartial: function (event) {
-            //console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
             var dataToSend = this.getQueryCancel(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -1132,7 +1129,7 @@ define([
             }
 
             if (event.extraDataToSend) {
-                dataToSend += '&'+event.extraDataToSend;
+                dataToSend += '&' + event.extraDataToSend;
             }
 
             containerId = event.id;
