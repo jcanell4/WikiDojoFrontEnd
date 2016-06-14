@@ -567,17 +567,19 @@ define([
         },
 
         _setOriginalContent: function (header_id, content) {
-            console.log("StructuredDocumentSubclass#_setOriginalContent", header_id, content);
+//            console.log("StructuredDocumentSubclass#_setOriginalContent", header_id, content);
 
 
             var index = this.data.dictionary[header_id],
                 chunk = this.data.chunks[index];
 
-            console.log("Contingut anterior:", chunk.text.editing);
+//            console.log("Contingut anterior:", chunk.text.editing );
 
             chunk.text.editing = content;
 
-            console.log("Contingut actual:", chunk.text.editing);
+//            console.log("Contingut actual:", chunk.text.editing );
+
+
 
 
         },

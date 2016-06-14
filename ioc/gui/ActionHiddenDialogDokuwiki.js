@@ -28,7 +28,7 @@ define([
             widgetsInTemplate: true, // TODO[Xavi] No es necessari en la versió que fem servir de Dojo
 
             construct: function (){
-                console.log("ActionHiddenDialogDokuwiki");
+//                console.log("ActionHiddenDialogDokuwiki");
             },
             
             /** @override */

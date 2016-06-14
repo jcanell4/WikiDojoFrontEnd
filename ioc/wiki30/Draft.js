@@ -212,7 +212,7 @@ define([
         },
 
         _removeLocalStructuredDraft: function () {
-            console.log("Draft#_removeLocalStructureDraft");
+//            console.log("Draft#_removeLocalStructureDraft");
             // En aquest cas només s'han d'esborrar el draft dels chunks actius al desar
             var pages = this._doGetPages(),
                 draft = this._getLastGeneratedDraft();
@@ -229,14 +229,14 @@ define([
         },
 
         _removeLocalFullDraft: function () {
-            console.log("Draft#_removeLocalFullDraft", this.contentTool.id);
+//            console.log("Draft#_removeLocalFullDraft", this.contentTool.id);
             var pages = this._doGetPages();
 
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
                 delete(pages[this.contentTool.id].drafts['full']);
                 delete(pages[this.contentTool.id].drafts['structured']); // ALERTA[Xavi] Al esborrar el complet s'ha d'esborrar també el parcial, així es com funcionen els drafts remots
                 this._doSetPages(pages);
-                console.log("S'ha esborrat?", pages);
+//                console.log("S'ha esborrat?", pages);
             } else {
                 console.log("Fallat: ", this.contentTool.id, pages);
             }
@@ -382,9 +382,9 @@ define([
 
             for (var i = 0; i < localStorage.length; i++) {
                 spaceUsed += (localStorage[localStorage.key(i)].length * 2) / 1024; // KB
-            }
+        }
 
-            console.log("LocalStorage usage: ", spaceUsed.toFixed(2) + " KB");
+//            console.log("LocalStorage usage: ", spaceUsed.toFixed(2) + " KB");
 
             return spaceUsed;
         }

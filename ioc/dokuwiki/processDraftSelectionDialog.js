@@ -7,7 +7,7 @@ define([
         dialogController = {
 
             _processDialog: function (value, timeout) {
-                console.log("DialogController#_processDialog", value);
+//                console.log("DialogController#_processDialog", value);
 
                 this.dialogs = {};
                 this.dispatcher = dispatcher;
@@ -43,7 +43,7 @@ define([
             },
 
             _showDialog: function (value, timeout) {
-                console.log("processDraftSelectionDialog#_showDialog", timeout);
+//                console.log("processDraftSelectionDialog#_showDialog", timeout);
                 //timeout = 5000; // ALERTA[Xavi] modificat per les proves
 
                 var params = {
@@ -73,7 +73,7 @@ define([
                             extra: {
                                 eventType: this.eventManager.eventName.EDIT_PARTIAL,
                                 dataToSend: this._buildQuery('partial_document', value) + '&discard_draft=true',
-                            }
+                        }
 
                         }
                     ]
