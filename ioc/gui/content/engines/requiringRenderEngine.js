@@ -39,7 +39,8 @@ define(function () {
         }
 
         if(data.text){
-            $textarea.val(jQuery.trim(data.text));
+//            $textarea.val(jQuery.trim(data.text));
+            $textarea.val(data.text);
         }
         if(data.requiring){
             $container.find("#toolbar_" + contentTool.id).html("<div class='requiringMessage'>"

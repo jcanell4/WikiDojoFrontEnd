@@ -34,6 +34,10 @@ define([
                 this.timer.refresh(timeout, timerParams);
             }
         },
+        
+        stopTimer: function (){
+            this.timer.stop();
+        },
 
         cancelTimer: function () {
             if(this.timer){

@@ -131,7 +131,8 @@ define([
 
                 text = this.getCurrentContent();
 
-                values.wikitext = jQuery.trim(text);
+//                values.wikitext = jQuery.trim(text);
+                values.wikitext = text;
 
                 return values;
             },

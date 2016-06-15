@@ -65,7 +65,11 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                dispatcher.getGlobalState().getContent(value.id)["action"] = "edit"; //ALERTA. TODO [Josep] Cal posr requiring i canviar la funció d'updating
+                if(value.requiring_type==="full"){
+                    dispatcher.getGlobalState().getContent(value.id)["action"] = "edit"; //ALERTA. TODO [Josep] Cal posr requiring i canviar la funció d'updating
+                }else{
+                    dispatcher.getGlobalState().getContent(value.id)["action"] = "sec_edit"; 
+                }
                 dispatcher.getGlobalState().getContent(value.id).readonly = true;
             },
 

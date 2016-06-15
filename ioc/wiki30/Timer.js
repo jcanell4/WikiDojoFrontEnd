@@ -52,8 +52,7 @@ define([
 
         cancel: function (params) {
             //console.log('Timer#cancel', this.id);
-            this.expired = false;
-            clearTimeout(this.id);
+            this.stop();
             if(!params){
                 params = this.paramsOnCancel;
             }
@@ -76,6 +75,11 @@ define([
         
         isExpired: function(){
             return this.expired;
+        },
+        
+        stop: function(){
+            this.expired = false;
+            clearTimeout(this.id);            
         }
 
     });

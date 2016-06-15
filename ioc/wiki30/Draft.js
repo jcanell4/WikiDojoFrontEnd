@@ -312,7 +312,7 @@ define([
             return this.lastGeneratedDraft;
         },
 
-        _doRefresh: function () {
+        _doRefresh: function (event) {
             //console.log('Draft#_doRefresh');
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;

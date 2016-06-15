@@ -179,8 +179,16 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
+                var contentTool = registry.byId(value.id);
                 this.inherited(arguments);
-                dispatcher.getGlobalState().getContent(value.id).action = "view"; // ALERTA[xavi] això quan es fa servir?
+                if(contentTool.hasEditors()){
+                    dispatcher.getGlobalState().getContent(value.id).action = "sec_edit"; // ALERTA[xavi] això quan es fa servir?                          
+                    if(!dispatcher.getGlobalState().getCurrentElementState() && value.selected){
+                        contentTool.setCurrentSection(value.selected);
+                    }
+                }else{
+                    dispatcher.getGlobalState().getContent(value.id).action = "view"; // ALERTA[xavi] això quan es fa servir?
+                }
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
             },
 
@@ -275,6 +283,10 @@ define([
                     paramsOnExpire: paramsOnExpire
                 });
                 contentTool.startTimer(params.timer.timeout);
+                //SI hi ha cancel·lació parcial => finalitza el timer
+                contentTool.registerObserverToEvent(contentTool, contentTool.eventName.CANCEL_PARTIAL, function(event){
+                    this.stopTimer();
+                }.bind(contentTool));
             }
 
         })

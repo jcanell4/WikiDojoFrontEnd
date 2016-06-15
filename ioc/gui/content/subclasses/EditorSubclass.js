@@ -211,7 +211,8 @@ define([
                     type: this.DRAFT_TYPE,
 //                    id: this.id,
                     id: this.ns,
-                    content: jQuery.trim(this.getCurrentContent())
+//                    content: jQuery.trim(this.getCurrentContent())
+                    content: this.getCurrentContent()
                 };
             },
 

@@ -518,8 +518,14 @@ define([
 
         isLastCheckedContentChanged: function (header_id, content) {
             //var result = !(this.changedChunks[header_id].lastChecked == content);
-
-            var result = this._getLastCheckedContent(header_id) != content;
+            var lastCheckedContent = this._getLastCheckedContent(header_id);
+            var result = false;
+            
+            if(lastCheckedContent){
+                result = lastCheckedContent != content;
+            }else{
+                this._setLastCheckedContent(header_id, content);
+            }
 
             if (result) {
                 this._setLastCheckedContent(header_id, content);
@@ -648,6 +654,10 @@ define([
             } else {
                 this._changeAction("sec_edit");
             }
+        },
+        
+        hasEditors: function(){
+          return (Object.keys(this.editors).length > 0);  
         },
 
         /**
@@ -968,6 +978,16 @@ define([
             this.dispatcher.getGlobalState().getContent(this.id)["action"] = action;
         },
 
+        setCurrentSection: function (sid) {
+            var section_id;
+            if(sid.startsWith("container_")){
+                section_id = sid;
+            }else{
+                section_id = "container_" + this.id + "_" + sid;
+            }
+            this._setCurrentSection(section_id);
+        },
+        
         _setCurrentSection: function (section_id) {
 
             var isEditing = jQuery.inArray(section_id.replace('container_' + this.id + '_', ''), this.getEditingChunks()) > -1;
