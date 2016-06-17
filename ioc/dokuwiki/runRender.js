@@ -81,8 +81,10 @@ define([], function () {
                 jQuery('div.ioctable table, div.iocaccounting table').each(function (key, value) {
                     var table = jQuery(this);
                     var width = table.width();
-                    var info = table.parents('.iocaccounting,.ioctable').children().filter('.iocinfo');
-                    info.css('width', width);
+                    if(width>0){
+                        var info = table.parents('.iocaccounting,.ioctable').children().filter('.iocinfo');
+                        info.css('width', width);
+                    }
                 });
             };
 
