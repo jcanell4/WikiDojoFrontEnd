@@ -267,6 +267,10 @@ define([
                 + '&rev=' + (this.rev || '')
                 + '&summary=[' + this.title + ']'
                 + '&range=-';
+            if(this.type == "requiring_partial"){
+                query += "&to_require=true"
+            }
+
 
             query += this._generateLastLocalDraftTimesParam(chunkId);
 
@@ -337,8 +341,12 @@ define([
         },
 
         getQueryCancel: function (section_id) {
-            return 'do=cancel_partial&id=' + this.ns + '&section_id=' + section_id
+            var ret = 'do=cancel_partial&id=' + this.ns + '&section_id=' + section_id
                 + '&editing_chunks=' + this.getEditingChunks().join(',');
+            if(this.type == "requiring_partial"){
+                ret += "&to_require=true"
+            }
+            return ret;
         },
 
         getEditingChunks: function () { // TODO[Xavi] Aquest recompte es practicament idèntic al del updateChunks(content)
@@ -1135,9 +1143,13 @@ define([
 
         fillEditorContainer: function () {
 
-            var editorNode = dom.byId(this.id),
+//            var editorNode = dom.byId(this.id),
+//                viewNode, p,
+//                h = geometry.getContentBox(editorNode).h, //bodyContent
+//                editors = this.getEditors();
+            var editorNode = dom.byId(this.dispatcher.containerNodeId),
                 viewNode, p,
-                h = geometry.getContentBox(editorNode).h,
+                h = geometry.getContentBox(editorNode).h, //bodyContent
                 editors = this.getEditors();
 
 

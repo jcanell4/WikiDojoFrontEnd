@@ -72,7 +72,7 @@ define([
                 var changesManager = dispatcher.getChangesManager(),
                     cache = dispatcher.getContentCache(value.id), // TODO[Xavi] de vegades torna null?
                     confirmation = false,
-                    contentTool;
+                    contentTool, ret;
 
                 if (cache) {
                     contentTool = cache.getMainContentTool();
@@ -152,8 +152,18 @@ define([
                     }
                 } else {
                     // No hi ha tipus previ de contenttool, o el tipus del contenttol era diferent
-
-                    return this.inherited(arguments);
+                    
+                    if(contentTool && contentTool.type == "requiring_partial"){
+                        //Cal aturar la cancel·lació automàtica en tancar el contentTool!
+                        contentTool.stopTimer();
+                    }
+                    ret = this.inherited(arguments);
+                    
+                    if (value.timer) {
+                        this._initTimer(value, dispatcher);
+                    }
+                    
+                    return ret;
                 }
 
                 var contentCache = dispatcher.getGlobalState().getContent(value.id);

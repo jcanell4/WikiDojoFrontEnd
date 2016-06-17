@@ -39,6 +39,9 @@ define([
 
         _onExpire: function (params) {
             //console.log("Timer#_onExpire", params);
+            if(this.expired){
+                return;
+            }
             this.expired = true;
             this.onExpire(params)
         },
@@ -52,6 +55,9 @@ define([
 
         cancel: function (params) {
             //console.log('Timer#cancel', this.id);
+            if(this.expired){
+                return;
+            }
             this.stop();
             if(!params){
                 params = this.paramsOnCancel;
@@ -78,7 +84,7 @@ define([
         },
         
         stop: function(){
-            this.expired = false;
+            this.expired = true;
             clearTimeout(this.id);            
         }
 

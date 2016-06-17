@@ -231,7 +231,7 @@ define([
         },
 
         _doCancelDocument: function () {
-            //console.log("Lock#_doCancelDocument");
+            console.log("Lock#_doCancelDocument");
             this.eventManager.fireEvent(this.eventNameCompound.CANCEL + this.docId, {
                 id: this.docId,
                 name: 'cancel_' + this.docId,
