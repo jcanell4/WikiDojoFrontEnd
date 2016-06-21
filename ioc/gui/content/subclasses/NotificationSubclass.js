@@ -12,7 +12,7 @@ define([
         },
 
         _addCloseButtonListener: function () {
-            var $closeButton = jQuery('#' + this.id + '_close_button');
+            var $closeButton = jQuery('#' + this.data.id + '_close_button');
 
             $closeButton.on('click', function () {
                 this.removeContentTool();

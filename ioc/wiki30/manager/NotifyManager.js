@@ -102,6 +102,8 @@ define([
                     break;
                 case 'message':
                     //afegir/sobrescriure per ID, al notificador (GUI)
+                    this._processMessage(notification);
+                    break;
                 case 'alert':
                     this._processAlert(notification);
                     break;
@@ -128,7 +130,7 @@ define([
                         type: "ALERTA",
                         id: notification.notification_id,
                         title: notification.sender_id,
-                        text: notification.text
+                        text: notification.data.text
                     },
                     dispatcher: this.dispatcher,
                     type: 'notification'
