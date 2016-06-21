@@ -2,7 +2,8 @@ define([
     'dojo/_base/declare',
     'ioc/wiki30/manager/EventObserver',
     'ioc/wiki30/notify_engines/AjaxNotifyEngine',
-], function (declare, EventObserver, AjaxNotifyEngine) {
+    'ioc/gui/content/contentToolFactory'
+], function (declare, EventObserver, AjaxNotifyEngine, contentToolFactory) {
 
     var NotifyManagerException = function (message) {
         this.message = message;
@@ -15,6 +16,7 @@ define([
 
         constructor: function (args) {
             this.dispatcher = args.dispatcher;
+            this.unreadCounter = 0;
         },
 
         process: function (action, params) {
@@ -53,7 +55,7 @@ define([
         },
 
         _closeNotifier: function (params) {
-            console.log("NotifyManager#_updateNotifier", params);
+            //console.log("NotifyManager#_updateNotifier", params);
             if (!this._notificationEngine) {
                 throw new NotifyManagerException("S'ha intentat tancar el motor de notificacions però no hi ha cap actiu");
             }
@@ -62,7 +64,7 @@ define([
         },
 
         _updateNotifier: function (params) {
-            console.log("NotifyManager#_updateNotifier", params)
+            console.log("NotifyManager#_updateNotifier", params);
             this._notificationEngine.update(params);
         },
 
@@ -109,12 +111,71 @@ define([
             }
         },
 
-        // TODO[Xavi] Copiat del AlertProcessor, substituir pel gestor de dialegs quan estigui implementat
         _processAlert: function (notification) {
-            //console.log("NotifyManager#_processAlert", notification);
-            this.dispatcher.diag.set("title", "ALERTA: " + notification.sender_id);
-            this.dispatcher.diag.set("content", notification.data.text);
-            this.dispatcher.diag.show();
+            this._processMessage(notification)
+        },
+
+        _processMessage: function (notification) {
+            //console.log("NotifyManager#_processMessage", notification);
+
+            if (this.notifierContainer.isNotificationInContainer(notification.notification_id)) {
+                this.notifierContainer.removeNotification(notification.notification_id);
+            }
+
+            var args = {
+                    id: notification.notification_id, // ALERTA[Xavi] Aquesta id ha de ser la mateixa que la que es passi com a data
+                    data: {
+                        type: "ALERTA",
+                        id: notification.notification_id,
+                        title: notification.sender_id,
+                        text: notification.text
+                    },
+                    dispatcher: this.dispatcher,
+                    type: 'notification'
+
+                },
+                contentTool = contentToolFactory.generate(contentToolFactory.generation.NOTIFICATION, args);
+
+
+            this.addNotificationContentTool(contentTool);
+        },
+
+        setNotifierContainer: function (notifierContainer) {
+            this.notifierContainer = notifierContainer;
+        },
+
+        addNotificationContentTool: function (contentTool) {
+            if (this.notifierContainer) {
+                this.notifierContainer.addNotification(contentTool);
+            } else {
+                throw new NotifyManagerException("No s'ha establert el contenidor de notificacions");
+            }
+        },
+
+        removeNotification: function (id) {
+            this.notifierContainer.removeNotification(id);
+        },
+
+        markAsRead: function (id) {
+            this.notifierContainer.markAsRead(id);
+        },
+
+        markAllAsRead: function () {
+            this.notifierContainer.markAllAsRead();
+        },
+
+        resetUnreadCounter: function () {
+            this.set('unreadCounter', 0);
+        },
+
+        increaseNotificationCounter: function () {
+            //console.log("NotifyManager#increaseNotificationCounter");
+            this.set('unreadCounter', this.get('unreadCounter') + 1);
+        },
+
+        decreaseNotificationCounter: function () {
+            //console.log("NotifyManager#decreaseNotificationCounter");
+            this.set('unreadCounter', this.get('unreadCounter') - 1);
         }
 
     });

@@ -197,9 +197,12 @@ define([
         },
 
         remove: function () {
-//            console.log("CustomDialog#remove", this.id);
-            this.destroyRecursive();
-            this.dispatchEvent(this.eventName.DESTROY, {id: this.id, refId: this.refId});
+            if (!this.destroying) {
+                this.destroying = true;
+                //console.log("CustomDialog#remove", this.id);
+                this.destroyRecursive();
+                this.dispatchEvent(this.eventName.DESTROY, {id: this.id, refId: this.refId});
+            }
         },
 
         onHide: function () {

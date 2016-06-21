@@ -70,7 +70,7 @@ define([
                     contentTool.setContainer(this);
                 }
 
-                this.resize();
+                //this.resize(); // ALERTA[Xavi] Això es necessari? No hi ha una implementació per defecte als Containers de Dojo
 
             },
 

@@ -1,9 +1,10 @@
 define([
     'dojo/_base/declare',
-    "dojo/_base/array",
-    "ioc/wiki30/manager/EventFactory"
-], function (declare, dojoArray, EventFactory) {
-    return declare(null,
+    'dojo/_base/array',
+    "ioc/wiki30/manager/EventFactory",
+    'dojo/Stateful'
+], function (declare, dojoArray, EventFactory, Stateful) {
+    return declare([Stateful],
         /**
          * Aquesta classe permet enregistrar-se com observador o enregistrar-se a altres observadors per comunicar
          * quan es disparen determinats esdeveniments.

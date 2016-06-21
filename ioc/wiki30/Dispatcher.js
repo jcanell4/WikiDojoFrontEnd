@@ -535,6 +535,11 @@ define([
             getDialogManager: function() {
 
                 return this.dialogManager;
+            },
+
+            setNotifierContainer: function(notifierContainer) {
+                var notifyManager = this.getNotifyManager();
+                notifyManager.setNotifierContainer(notifierContainer);
             }
         });
     return ret;
