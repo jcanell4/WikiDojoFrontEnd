@@ -81,9 +81,9 @@ define([
 
                     persist: false,
 
-                    onClick: function(item /*{0:{id,name,type},1:{this},2:{mouseEvent click}}*/, node, event){
-                        if (self.processOnClickAndOpenOnClick && this.model.mayHaveChildren(item)) {
-                            this._onExpandoClick({node: node, item: item});
+                    onClick: function(params /*{0:{id,name,type},1:{this},2:{mouseEvent click}}*/){
+                        if (self.processOnClickAndOpenOnClick && this.model.mayHaveChildren(params[0])) {
+                            this._onExpandoClick({node: params[1], item: params[0]});
                         }
                     }
                 });
