@@ -120,8 +120,12 @@ define([
         _processMessage: function (notification) {
             //console.log("NotifyManager#_processMessage", notification);
 
+            notification.notification_id = notification.notification_id.replace(':', '_');
+
+
             if (this.notifierContainer.isNotificationInContainer(notification.notification_id)) {
                 this.notifierContainer.removeNotification(notification.notification_id);
+
             }
 
             var args = {
@@ -136,6 +140,7 @@ define([
                     type: 'notification'
 
                 },
+
                 contentTool = contentToolFactory.generate(contentToolFactory.generation.NOTIFICATION, args);
 
 
