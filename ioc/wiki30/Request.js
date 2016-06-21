@@ -200,7 +200,7 @@ define([
              * @returns {dojo.promise.Promise}
              */
             sendRequest: function (query, synchronized) {
-//                console.log("Request:sendRequest ("+query+")");
+//                console.log("Request:sendRequest ("+query+"). this.parameters: " + this.parameters);
                 //run standby resource while ajax response doesn't arribe
                 this._createStandbyObject();
 

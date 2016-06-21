@@ -26,22 +26,24 @@ define([
             // summary:
             templateString: template,
             treeDataSource: null,
-            parameters: undefined,
-            onlyDirs: undefined,
-            sortBy: undefined,
-            /*,pageDataSource: null*/
+            parameters:     undefined,
+            sortBy:         undefined,
+            onlyDirs:       undefined,
+            expandProject:  undefined,
             rootValue:      "_",
             tree:           null,
-            openOnClick: false,
-            processOnClickAndOpenOnClick:false,
+            openOnClick:    false,  //TRUE és el valor per defecte en el widget
+            processOnClickAndOpenOnClick: false,
+            urlBaseTyped:   undefined,
             
             /** @override */
             buildRendering: function () {
                 this.inherited(arguments);
-                var vid = this.id;
-                var tds = this.treeDataSource;
-                var root = this.rootValue;
-                var self = this;
+                var vid   = this.id;
+                var tds   = this.treeDataSource;
+                var root  = this.rootValue;
+                this.setUrlBaseTypedDefault();
+                var self  = this;
                 this.tree = new Tree({
                     id: vid + "_nTree",
 
@@ -49,15 +51,14 @@ define([
                         store: new Observable(new JsonRest({
                             target: tds,
 
-                        getChildren: function (object) {
-                            return this.get(object.id).then(
-                                function (fullObject) {
-                                    return fullObject.children;
-                                },
-                                function (error) {/*console.log(error);*/
-                                }
-                            );
-                        }
+                            getChildren: function (object) {
+                                return this.get(object.id).then(
+                                    function (fullObject) {
+                                        return fullObject.children;
+                                    },
+                                    function (error) {/*console.log(error);*/}
+                                );
+                            }
                         })),
 
                         getRoot: function (onItem) {
@@ -65,7 +66,12 @@ define([
                         },
 
                         mayHaveChildren: function (object) {
-                            return object.type === "d";
+                            //--inici prova--
+                            //if (object.name === "permisos") object.type = "p";
+                            //--fi prova--
+                            return object.type === "d" ||
+                                   (object.type === "p" && self.expandProject) ||
+                                   object.type === "dp";
                         },
 
                         getLabel: function (object) {
@@ -75,33 +81,26 @@ define([
 
                     persist: false,
 
-                    onClick: function(item, node, event){
-                        if(self.processOnClickAndOpenOnClick && this.model.mayHaveChildren(item)){
+                    onClick: function(item /*{0:{id,name,type},1:{this},2:{mouseEvent click}}*/, node, event){
+                        if (self.processOnClickAndOpenOnClick && this.model.mayHaveChildren(item)) {
                             this._onExpandoClick({node: node, item: item});
                         }
                     }
-                    
                 });
-//                var tree = this.tree;
-//                //           this.tree.model.store.query(this.getSectok());
-//                aspect.after(this.tree, "_adjustWidths", function () {
-//                    //               tree._adjustWidths();
-//                    var parentNode = tree.domNode.parentNode;
-//                    var node = query(".dijitTreeRow", tree.domNode)[0];
-//                    parentNode.style.width = "" + node.offsetWidth + "px";
-//                }, true);
 
-                this.tree.openOnClick= self.openOnClick && !this.processOnClickAndOpenOnClick;
-                    
-
+                this.tree.openOnClick = this.openOnClick && !this.processOnClickAndOpenOnClick;
+                
+                this.tree.getIconClassOrig = this.tree.getIconClass;
+                this.tree.getIconClass = function(item, opened) {
+                    var ret = this.getIconClassOrig(item, opened);
+                    if (item.type === "p") {
+                        ret = (opened) ? "dijitIconConnector" : "dijitIconPackage";
+                    }
+                    return ret;
+                };
+                
                 this.updateSectok();
             },
-
-//            /** @override */
-//            updateRendering: function () {
-//                this.inherited(arguments);
-//                this.tree._adjustWidths();
-//            },
 
             /** @override */
             startup: function () {
@@ -110,6 +109,12 @@ define([
                 this.tree.startup();
             },
 
+            setUrlBaseTypedDefault: function () {
+                if(!this.urlBaseTyped){
+                    this.urlBaseTyped = {};
+                }
+                this.urlBaseTyped['*'] = this.urlBase;
+            },
 
             /**
              * TODO[Xavi] no es crida enlloc, es modifica le valor a updateSectok
@@ -127,11 +132,7 @@ define([
              */
             updateSectok: function (sectok) {
                 if (!sectok) {
-                    if(this.getSectok){
-                        sectok = this.getSectok();
-                    }else{
-                        sectok='0';
-                    }
+                    sectok = this.getSectok ? this.getSectok() : '0';
                 }
                 this._updateParams();                             
                 this.tree.model.store.target = this.treeDataSource 
@@ -140,17 +141,10 @@ define([
                                                     + this.parameters;
             },
             
-            _updateParams: function(){
-                if(!this.parameters){
-                    this.parameters="";
-                    if(this.sortBy){
-                        this.parameters = this.onlyDirs?"t/":"f/";
-                        this.parameters += this.sortBy; 
-                        this.parameters += "/"; 
-                    }else if(this.onlyDirs){
-                        this.parameters = "t/";
-                    }
-                }                  
+            _updateParams: function() {
+                if (!this.parameters) {
+                    this.parameters = (this.sortBy ? "" + this.sortBy + "/" : "0/") + (this.onlyDirs ? "t/" : "f/") + (this.expandProject ? "t/" : "f/");
+                }
             },
 
 
@@ -167,20 +161,14 @@ define([
                 // Tree.selectedItems, Tree.selectedNode, and Tree.selectedNodes.
                 this.tree.dndController.selectNone();
 
-                //			this.tree.model.store.clearOnClose = true; //no és necessari
-                //			this.tree.model.store.close(); produeix error
-
                 // Completely delete every node from the dijit.Tree
                 this.tree._itemNodesMap = {};
                 this.tree.rootNode.state = "UNCHECKED";
-                //			this.tree.model.root.children = null; produeix error
 
                 // Destroy the widget
                 this.tree.rootNode.destroyRecursive();
 
                 // Recreate the model, (with the model again)registry.byId
-                //			this.tree.model.constructor(dijit.byId(this.tree.id).model);
-                //this.tree.model.constructor(registry.byId(this.tree.id).model);
                 this.tree.model.constructor(this.tree.model);
 
                 // Rebuild the tree

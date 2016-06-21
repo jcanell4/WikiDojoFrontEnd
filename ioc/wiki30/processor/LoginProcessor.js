@@ -23,7 +23,7 @@ define([
                 this._processLogin(value, dispatcher);
 
                 this.inherited(arguments);
-
+                this._updateGUI(dispatcher, value);
             },
 
             /**
@@ -56,9 +56,19 @@ define([
             updateState: function (dispatcher, value) {
                 dispatcher.getGlobalState().login = value.loginResult;
                 dispatcher.getGlobalState().userId = value.userId;
+            },
 
+            /**
+             * Recupera el contingut de 'localStorage.UserConfig' que conté els valors personalitzats
+             * del tamany dels ContentPane
+             */
+            _updateGUI: function (dispatcher, value) {
+                if (value.userId) {
+                    dispatcher.almacenLocal.loadUserConfig(dispatcher, value.userId);
+                }else {
+                    dispatcher.almacenLocal.setUserDefaultPanelsSize(dispatcher);
+                }
             }
-
         });
     return ret;
 });

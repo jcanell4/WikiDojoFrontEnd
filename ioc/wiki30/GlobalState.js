@@ -81,7 +81,7 @@ define([
             return {
                 id: this.getCurrentElementId(),
                 state: this.getCurrentElementState()
-            }
+            };
         },
 
 
@@ -180,7 +180,7 @@ define([
         },
 
         getCurrentId: function () {
-            return this.currentTabId
+            return this.currentTabId;
         },
 
 

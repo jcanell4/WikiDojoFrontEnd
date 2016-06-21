@@ -9,7 +9,7 @@ define([
     var ret = declare("ioc.gui.ContentTabDokuwikiNsTree", [NsTreeContainer, Request],
 
         /**
-         * Aquest widget afegeix l'onclick a l'arbre.
+         * Aquest widget sobreescriu l'onclick a l'arbre.
          *
          * @class ContentTabDokuwikiNsTree
          * @extends ioc.gui.NsTreeContainer
@@ -29,6 +29,11 @@ define([
                 this.tree.onClick = function(item, node){                    
                     oc(arguments);
                     nsTree.item = item;
+                    if (nsTree.urlBaseTyped[nsTree.item.type]) {
+                        nsTree.urlBase = nsTree.urlBaseTyped[nsTree.item.type];
+                    }else {
+                        nsTree.urlBase = nsTree.urlBaseTyped["*"];
+                    }
                     nsTree.query = "id="+item.id;
                     nsTree.sendRequest();
                 };
