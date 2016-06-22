@@ -119,8 +119,7 @@ define([
 
         _processMessage: function (notification) {
             //console.log("NotifyManager#_processMessage", notification);
-
-            notification.notification_id = notification.notification_id.replace(':', '_');
+//            notification.notification_id = notification.notification_id.replace(':', '_');
 
 
             if (this.notifierContainer.isNotificationInContainer(notification.notification_id)) {
@@ -161,6 +160,7 @@ define([
 
         removeNotification: function (id) {
             this.notifierContainer.removeNotification(id);
+             this.set('notificationsCounter', this.get('notificationsCounter') - 1);
         },
 
         markAsRead: function (id) {
@@ -178,11 +178,16 @@ define([
         increaseNotificationCounter: function () {
             //console.log("NotifyManager#increaseNotificationCounter");
             this.set('unreadCounter', this.get('unreadCounter') + 1);
+            this.set('notificationsCounter', this.get('notificationsCounter') + 1);
         },
 
         decreaseNotificationCounter: function () {
             //console.log("NotifyManager#decreaseNotificationCounter");
             this.set('unreadCounter', this.get('unreadCounter') - 1);
+        },
+        
+        hasNotifications: function(){
+            return Object.keys(this.notifierContainer.notifications).length > 0;
         }
 
     });

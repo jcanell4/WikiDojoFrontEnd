@@ -4,9 +4,10 @@ define([
     "dijit/_Templated",
     "dojo/text!./templates/DropDownButton.html",
     "ioc/gui/ResizableComponent",
+    "dojo/dom-class",
     "ioc/wiki30/dispatcherSingleton"
 
-], function (declare, DropDownButton, _Templated, template, IocComponent, getDispatcher) {
+], function (declare, DropDownButton, _Templated, template, IocComponent, domClass, getDispatcher) {
 
     var dispatcher = getDispatcher();
 
@@ -34,6 +35,11 @@ define([
                 this.watch('_opened', this._onToggleButton.bind(this));
 
                 this.notifyManager.watch('unreadCounter', this._updateLabel.bind(this));
+                this.notifyManager.watch('notificationsCounter', this._updateNotifyButton.bind(this));
+                this.inactiveIconClass = this.get("iconClass");
+                if(!this.activeIconClass){
+                    this.activeIconClass = this.get("iconClass");
+                }
 
             },
 
@@ -44,6 +50,9 @@ define([
                 } else {
                     // S'ha obert el panell, reiniticiem el comptador
                     this.notifyManager.resetUnreadCounter();
+                    if(!this.notifyManager.hasNotifications()){
+                        this.closeDropDown(false);
+                    }
                 }
             },
 
@@ -56,7 +65,22 @@ define([
             },
 
             updateLabel: function (value) {
-                this.set('label', "Notificacions (" + value + ")");
+                this.set('label', "(" + value + ")");
+                if(value==0){
+                    this.set("iconClass", this.inactiveIconClass);
+                    domClass.replace(this.domNode, "inactiveAlarm", "activeAlarm");
+                }else{
+                    this.set("iconClass", this.activeIconClass);
+                    domClass.replace(this.domNode, "activeAlarm", "inactiveAlarm");
+                }
+            },
+            
+            _updateNotifyButton: function(){
+                if(!this.notifyManager.hasNotifications()){
+                    this.closeDropDown(false);
+                }
             }
+            
+            
         });
 });

@@ -42,7 +42,6 @@ define([
                 var vid   = this.id;
                 var tds   = this.treeDataSource;
                 var root  = this.rootValue;
-                this.setUrlBaseTypedDefault();
                 var self  = this;
                 this.tree = new Tree({
                     id: vid + "_nTree",
@@ -107,13 +106,6 @@ define([
                 this.inherited(arguments);
                 this.tree.placeAt(this.id + "_tree");
                 this.tree.startup();
-            },
-
-            setUrlBaseTypedDefault: function () {
-                if(!this.urlBaseTyped){
-                    this.urlBaseTyped = {};
-                }
-                this.urlBaseTyped['*'] = this.urlBase;
             },
 
             /**

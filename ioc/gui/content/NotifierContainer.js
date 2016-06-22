@@ -26,7 +26,7 @@ define([
                 this.notifications = {};
                 this.notifyManager = dispatcher.getNotifyManager();
 
-                this.watch('notificationsCounter', this._updateNotifyButton);
+//                this.watch('notificationsCounter', this._updateNotifyButton);
             },
 
 
@@ -49,7 +49,7 @@ define([
                 // Afegir el content tool al contenidor
                 this.addChild(contentTool);
 
-                // Actualitzem el comptador
+                // Actualitzem el comptador si no existia o ja estava llegida
                 this.notifyManager.increaseNotificationCounter();
             },
 

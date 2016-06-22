@@ -43,12 +43,24 @@ define([
                     var node = query(".dijitTreeRow", tree.domNode)[0];
                     parentNode.style.width = "" + node.offsetWidth + "px";
                 }, true);
+
+                this.watch("urlBase", this.setUrlBaseTypedDefault.bind(this));
+                if(this.urlBase){
+                    this.setUrlBaseTypedDefault();
+                }                
             },
             /** @override */
             updateRendering: function () {
                 this.inherited(arguments);
                 this.tree._adjustWidths();
-            },                    
+            },             
+            
+            setUrlBaseTypedDefault: function () {
+                if(!this.urlBaseTyped){
+                    this.urlBaseTyped = {};
+                }
+                this.urlBaseTyped['*'] = this.urlBase;
+            },
         });
     return ret;
 });

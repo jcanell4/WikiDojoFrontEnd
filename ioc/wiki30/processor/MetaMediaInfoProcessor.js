@@ -238,8 +238,7 @@ define([
                         processOnClickAndOpenOnClick: true
                     }).placeAt(divNsTree);
 
-                    self.dialogTree.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media" +
-                    '&do=media';
+                    self.dialogTree.set("urlBase", "lib/plugins/ajaxcommand/ajax.php?call=media&do=media");
 
                     self.dialogTree.getQuery = function () {
                         var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
