@@ -48,7 +48,8 @@ define([
     "ioc/wiki30/manager/DialogManager",
     "ioc/wiki30/processor/RequiringContentProcessor",
     "ioc/wiki30/processor/CodeResponseProcessor",
-    "ioc/wiki30/processor/ControlManagerProcessor"
+    "ioc/wiki30/processor/ControlManagerProcessor",
+    "ioc/wiki30/processor/FormContentProcessor",
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -60,7 +61,8 @@ define([
              RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
              LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
-             NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor) {
+             NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
+             FormContentProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -99,7 +101,7 @@ define([
 
             /** @type SectokManager */
             sectokManager: null,
-            
+
             /** @type {string} S'estableix al scriptsRef pel valor substituit al template */
             containerNodeId: null,
 
@@ -176,16 +178,17 @@ define([
                 this.processors["tree"] = new TreeProcessor();
                 this.processors["notification"] = new NotificationProcessor();
                 this.processors["requiring"] = new RequiringContentProcessor();
+                this.processors["form"] = new FormContentProcessor();
 
-                this.eventManager = new EventManager({dispatcher:this});
-                this.lockManager = new LockManager({dispatcher:this});
+                this.eventManager = new EventManager({dispatcher: this});
+                this.lockManager = new LockManager({dispatcher: this});
                 //ALERTA [JOSEP] TODO: Aquí cal configurar els temps dels drafts.
-                this.draftManager = new DraftManager({dispatcher:this});
-                this.notifyManager= new NotifyManager({dispatcher:this});
-                this.dialogManager= new DialogManager({dispatcher:this});
+                this.draftManager = new DraftManager({dispatcher: this});
+                this.notifyManager = new NotifyManager({dispatcher: this});
+                this.dialogManager = new DialogManager({dispatcher: this});
 
                 this.processors["code"] = new CodeResponseProcessor();
-		this.processors["controlManager"] = new ControlManagerProcessor();
+                this.processors["controlManager"] = new ControlManagerProcessor();
             },
 
             /**
@@ -522,24 +525,24 @@ define([
                 }
             },
 
-            getLockManager: function() {
+            getLockManager: function () {
                 return this.lockManager;
             },
 
-            getDraftManager: function() {
+            getDraftManager: function () {
                 return this.draftManager;
             },
 
-            getNotifyManager: function() {
+            getNotifyManager: function () {
                 return this.notifyManager;
             },
 
-            getDialogManager: function() {
+            getDialogManager: function () {
 
                 return this.dialogManager;
             },
 
-            setNotifierContainer: function(notifierContainer) {
+            setNotifierContainer: function (notifierContainer) {
                 var notifyManager = this.getNotifyManager();
                 notifyManager.setNotifierContainer(notifierContainer);
             }
