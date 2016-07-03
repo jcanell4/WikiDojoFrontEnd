@@ -58,18 +58,23 @@ define([
              */
             createContentTool: function (content, dispatcher) {
                 var args = {
-                    ns: content.ns,
-                    id: content.id,
-                    title: content.title,
-                    content: content.content,
-                    closable: true,
-                    dispatcher: dispatcher,
-                    //originalContent: this._extractContentFromNode(content),
-                    originalContent: content.content,
-                    type: this.type,
-                };
+                        ns: content.ns,
+                        id: content.id,
+                        title: content.title,
+                        content: content.content,
+                        closable: true,
+                        dispatcher: dispatcher,
+                        //originalContent: this._extractContentFromNode(content),
+                        originalContent: content.content,
+                        type: this.type,
+                    },
+                    argsRequestForm = {
+                        urlBase: content.content.action,
+                        form: '#' + content.content.id
+                    };
 
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args);
+                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
+                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
             },
 
 

@@ -21,12 +21,16 @@ define([
      * @params {trigger: string, request: {Request}, form} params: el trigger te el format: 'click'.
      */
     return function (params) {
+        console.log("Params:", params);
+
         var form = query(params.form),
             targetId = params.standbyTarget || params.request.dispatcher.containerNodeId;
 
 
+        console.log("S'ha trobat el form?", form);
+
         return on(form, 'input[type="submit"]:' + params.trigger, function (e) {
-            //console.log("formRequestReplacer#onSubmit", e);
+            console.log("formRequestReplacer#onSubmit", e);
 
 
             var query = "",
