@@ -176,9 +176,7 @@ define([], function () {
                 $input = jQuery('<input>'),
                 $label = jQuery('<input>');
 
-
             $field.append($group);
-
 
             $label.attr('readonly', true)
                 .addClass('form-control')
@@ -191,7 +189,6 @@ define([], function () {
             $group.addClass('input-group')
                 .append($span)
                 .append($label);
-
 
             $input.attr('type', field.type)
                 .attr('name', field.name)
@@ -217,7 +214,6 @@ define([], function () {
                 $title;
 
             $row.addClass('row');
-
 
             if (row.title) {
                 $header = jQuery('<div>')
