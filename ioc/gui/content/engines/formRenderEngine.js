@@ -225,6 +225,7 @@ define([], function () {
 
                 $row.append($header.append($title));
             }
+            console.log("Row:", row);
 
             row.groups.sort(comparePriority);
 
