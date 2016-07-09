@@ -145,7 +145,7 @@ define([
                         } else if (!value.selected) {
                             contentTool.resetAllChangesForChunks();
                         }
-
+                        value.editing = {"readonly": value.readonly};
                         contentTool.updateDocument(value);
 
                         dispatcher.getGlobalState().getContent(value.id).rev = contentTool.rev; // ALERTA[Xavi] posava content.rev, això no pot ser, es referia contentTool.rev (que a la seva vegada es el mateix que value.rev)?
