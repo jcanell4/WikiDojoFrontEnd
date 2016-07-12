@@ -96,7 +96,8 @@ define([], function () {
             $input.attr('type', field.type)
                 .attr('name', field.name)
                 .val(field.value)
-                .addClass('form-control');
+                .addClass('form-control')
+                .attr('title', field.label);
 
             if (field.props) {
                 addPropsToInput(field.props, $input);
@@ -158,7 +159,8 @@ define([], function () {
 
             $textarea.attr('name', field.name)
                 .val(field.value)
-                .addClass('form-control');
+                .addClass('form-control')
+                .attr('title', field.label);
 
 
             if (field.props) {
@@ -180,8 +182,9 @@ define([], function () {
 
             $label.attr('readonly', true)
                 .addClass('form-control')
-                .val(field.type)
-                .attr('type', 'text');
+                .val(field.label)
+                .attr('type', 'text')
+                .attr('title', field.label);
 
             $span.addClass('input-group-addon')
                 .append($input);
