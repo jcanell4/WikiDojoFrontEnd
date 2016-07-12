@@ -50,6 +50,10 @@ define([], function () {
                 $group.append(renderField(fields[i]));
             }
 
+            if (group.id) {
+                $group.attr('id', group.id);
+            }
+
             $group.addClass('form-group col-xs-' + cols); // input-group o form-group?
 
             return $group;
@@ -87,17 +91,23 @@ define([], function () {
                 $label = jQuery('<label>'),
                 $input = jQuery('<input>');
 
+            if (field.type !== 'hidden') {
+                $label.html(field.label);
+                $field.append($label)
+            }
 
-            $label.html(field.label);
 
-            $field.append($label)
-                .append($input);
+            $field.append($input);
 
             $input.attr('type', field.type)
                 .attr('name', field.name)
                 .val(field.value)
                 .addClass('form-control')
                 .attr('title', field.label);
+
+            if (field.id) {
+                $input.attr('id', field.id);
+            }
 
             if (field.props) {
                 addPropsToInput(field.props, $input);
@@ -120,6 +130,10 @@ define([], function () {
                 .attr('name', field.name)
                 .val(field.value)
                 .addClass('form-control');
+
+            if (field.id) {
+                $select.attr('id', field.id);
+            }
 
             addOptionsToSelect(field.options, $select);
 
@@ -162,6 +176,9 @@ define([], function () {
                 .addClass('form-control')
                 .attr('title', field.label);
 
+            if (field.id) {
+                $textarea.attr('id', field.id);
+            }
 
             if (field.props) {
                 addPropsToInput(field.props, $textarea);
@@ -197,6 +214,10 @@ define([], function () {
                 .attr('name', field.name)
                 .val(field.value);
 
+            if (field.id) {
+                $input.attr('id', field.id);
+            }
+
             if (field.props) {
                 addPropsToInput(field.props, $input);
             }
@@ -231,6 +252,10 @@ define([], function () {
             console.log("Row:", row);
 
             row.groups.sort(comparePriority);
+
+            if (row.id) {
+                $row.attr('id', row.id);
+            }
 
 
             for (var i = 0; i < row.groups.length; i++) {
