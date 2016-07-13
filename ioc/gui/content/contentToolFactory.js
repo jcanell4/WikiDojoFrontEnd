@@ -30,10 +30,11 @@ define([
         "ioc/gui/content/subclasses/StructuredDocumentSubclass",
         "ioc/gui/content/subclasses/RequestSubclass",
         "ioc/gui/content/subclasses/TimedDocumentSubclass",
-        "ioc/gui/content/subclasses/NotificationSubclass"
+        "ioc/gui/content/subclasses/NotificationSubclass",
+        "ioc/gui/content/subclasses/FormSubclass"
     ], function (lang, ContentTool, requestReplacerFactory,
                  dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, /*ChangesManagerCentralSubclass,*/ EditorSubclass, BasicEditorSubclass,
-                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass, RequestSubclass, TimedDocumentSubclass, NotificationSubclass) {
+                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass, RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass) {
 
         var patch = function (target, source) {
                 return function () {
@@ -280,6 +281,7 @@ define([
                 META: 'meta',
                 DOCUMENT: 'document',
                 EDITOR: 'editor',
+                FORM: 'form',
                 REQUIRING: 'requiring',
                 MEDIADETAILS: 'mediadetails',
                 METAMEDIADETAILS: 'metamediadetails',
@@ -411,6 +413,13 @@ define([
                             .createSubclass(DocumentSubclass)
                             //.createSubclass(ChangesManagerCentralSubclass)
                             .createSubclass(EditorSubclass);
+                        break;
+
+                    case this.generation.FORM:
+                        GeneratedContentTool = base
+                            .createSubclass(RequestSubclass)
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(FormSubclass);
                         break;
 
                     case this.generation.REQUIRING:

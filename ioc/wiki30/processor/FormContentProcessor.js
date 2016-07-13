@@ -28,7 +28,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("FormContentProcessor#form", value);
+                //console.log("FormContentProcessor#process", value);
                 return this.inherited(arguments);
             },
 
@@ -42,8 +42,10 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                //dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
-                //dispatcher.getGlobalState().getContent(value.id).readonly = value.editing?value.editing.readonly:false;
+
+                dispatcher.getGlobalState().getContent(value.id)["action"] = "form";
+                dispatcher.getGlobalState().getContent(value.id)["ns"] = value.ns;
+                dispatcher.getGlobalState().getContent(value.id)["projectType"] = value.extra.projectType;
             },
 
             /**
@@ -57,6 +59,8 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
+                //console.log("FormContentProcessor#createContentTool", content);
+
                 var args = {
                         ns: content.ns,
                         id: content.id,
@@ -65,7 +69,7 @@ define([
                         closable: true,
                         dispatcher: dispatcher,
                         //originalContent: this._extractContentFromNode(content),
-                        originalContent: content.content,
+                        originalContent: content.originalContent,
                         type: this.type,
                     },
                     argsRequestForm = {
@@ -73,10 +77,15 @@ define([
                         form: '#' + content.content.id
                     };
 
-                return contentToolFactory.generate(contentToolFactory.generation.BASE, args)
-                    .decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm);
+                return contentToolFactory.generate(contentToolFactory.generation.FORM, args)
+                    //.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm); // Això ja no s'ha de fer servir, ha de funcionar a travésd els botons
             },
 
+            isRefreshableContent: function (oldType, newType) {
+                console.log("ContentProcessor#isRefreshableContent", oldType);
+
+                return false;
+            }
 
         });
 });

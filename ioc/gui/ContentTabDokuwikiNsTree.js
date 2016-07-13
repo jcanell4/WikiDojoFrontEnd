@@ -17,7 +17,7 @@ define([
          */
         {
             constructor: function (args) {
-                console.log("TREE Constructor:", args);
+                //console.log("TREE Constructor:", args);
                 var openOnClick = args.openOnClick? args.openOnClick: true;
                 this.set("openOnClick", openOnClick);
             },
@@ -68,7 +68,7 @@ define([
             },             
             
             setUrlBaseTypedDefault: function () {
-                console.log('#ContentTabDokuwikiNsTree#setUrlBaseTypedDefault', this.urlBaseTyped);
+                //console.log('#ContentTabDokuwikiNsTree#setUrlBaseTypedDefault', this.urlBaseTyped);
                 if(!this.urlBaseTyped){
                     this.urlBaseTyped = {};
                 }

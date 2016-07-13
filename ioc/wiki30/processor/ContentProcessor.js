@@ -38,6 +38,7 @@ define([
             process: function (value, dispatcher) {
 
                 var changesManager = dispatcher.getChangesManager(),
+                    draftManager,
                     confirmation = false,
                     id = value.id;
 
@@ -45,9 +46,11 @@ define([
                     confirmation = true;
                 } else if (changesManager.isChanged(id)) {
                     confirmation = dispatcher.discardChanges();
+                    draftManager = dispatcher.getDraftManager();
 
-                    if (confirmation) {
-                        dispatcher.getDraftManager().clearDraft(id);
+                    if (confirmation && draftManager.hasDraft(id)) {
+
+                        draftManager.clearDraft(id);
                         //console.log("Eliminat esborrany");
                         // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
                         dispatcher.getEventManager().fireEvent(
@@ -124,6 +127,7 @@ define([
              * @protected
              */
             addContent: function (content, dispatcher, container) {
+                //console.log("ContentProcessor#addContent", content);
                 var oldContentTool = registry.byId(content.id),
                     contentTool,
                     position = 0,

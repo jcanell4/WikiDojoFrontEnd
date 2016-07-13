@@ -36,11 +36,11 @@ define([
          * @private
          */
         _getRenderEngine = function (type) {
-            // TODO[Xavi] afegir el canvi a les funcions
+            // TODO[Xavi] afegir el canvi a les funcions:
             // after.content;
             // before.content;
 
-            console.log("Demanat RenderEngine:", type);
+            //console.log("Demanat RenderEngine:", type);
 
             return renderEngines[type] ? renderEngines[type] : defaultRenderEngine;
         },

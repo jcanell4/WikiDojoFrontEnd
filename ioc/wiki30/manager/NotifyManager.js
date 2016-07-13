@@ -22,7 +22,7 @@ define([
         process: function (action, params) {
             switch (action) {
                 case 'init_notifier':
-                    console.log(action, params);
+                    //console.log(action, params);
 
                     // 1. Comprovar si ja hi ha un notificador iniciat
                     if (this._notificationEngine) {
@@ -36,7 +36,7 @@ define([
 
                 case 'notification_send':
                     // TODO[Xavi] això només ens indica que hem enviat una notificació
-                    console.log(action, params);
+                    //console.log(action, params);
                     break;
 
                 case 'notification_received':
@@ -45,7 +45,7 @@ define([
                     break;
 
                 case 'close_notifier':
-                    console.log(action, params);
+                    //console.log(action, params);
                     this._closeNotifier(params);
                     break;
 
@@ -64,7 +64,7 @@ define([
         },
 
         _updateNotifier: function (params) {
-            console.log("NotifyManager#_updateNotifier", params);
+            //console.log("NotifyManager#_updateNotifier", params);
             this._notificationEngine.update(params);
         },
 
@@ -98,7 +98,7 @@ define([
             switch (notification.type) {
                 case 'cancel_notification':
                 case 'lock_expiring':
-                    console.log("notification.type: " + notification.type);
+                    //console.log("notification.type: " + notification.type);
                     break;
                 case 'message':
                     //afegir/sobrescriure per ID, al notificador (GUI)

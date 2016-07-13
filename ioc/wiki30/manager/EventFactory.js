@@ -26,7 +26,8 @@ define([
             CONTENT_UNSELECTED: 'content_unselected',
             DOCUMENT_CHANGES_RESET: 'document_changes_reset',
             NOTIFY: 'notify',
-            TIMEOUT: 'timeout'
+            TIMEOUT: 'timeout',
+            SAVE_FORM: 'save_form'
         },
         
         getEventNameList:function(){

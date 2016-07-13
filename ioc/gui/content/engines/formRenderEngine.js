@@ -249,7 +249,7 @@ define([], function () {
 
                 $row.append($header.append($title));
             }
-            console.log("Row:", row);
+            //console.log("Row:", row);
 
             row.groups.sort(comparePriority);
 
@@ -272,10 +272,11 @@ define([], function () {
             $button.addClass('col-sm-offset-5 col-xs-2') // Offset 5 i amplada del botó del botó 2
                 .append($submit);
 
-            $submit.attr('type', 'submit')
-                .val('Enviar')
-                .attr('name', 'submit')
-                .addClass('form-control btn btn-default');
+            // Alerta[Xavi] Eliminem el botó d'enviar, s'ha d'enviar via el botó de guardar
+            //$submit.attr('type', 'submit')
+            //    .val('Enviar')
+            //    .attr('name', 'submit')
+            //    .addClass('form-control btn btn-default');
 
             return $button;
         };
@@ -287,7 +288,7 @@ define([], function () {
         var $doc = jQuery('<div>'),
             $form = jQuery('<form>');
 
-        $form.attr('id', data.id);
+        $form.attr('id', 'form_' + data.id);
 
         $doc.addClass('container-fluid ioc-bootstrap') // Si fem servir 'container' la amplada màxima es ~1200px
             .append($form);
