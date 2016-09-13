@@ -48,7 +48,8 @@ define([
     "ioc/wiki30/manager/DialogManager",
     "ioc/wiki30/processor/RequiringContentProcessor",
     "ioc/wiki30/processor/CodeResponseProcessor",
-    "ioc/wiki30/processor/ControlManagerProcessor"
+    "ioc/wiki30/processor/ControlManagerProcessor",
+    "ioc/wiki30/processor/FormContentProcessor",
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -60,7 +61,8 @@ define([
              RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
              LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
-             NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor) {
+             NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
+             FormContentProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -176,6 +178,7 @@ define([
                 this.processors["tree"] = new TreeProcessor();
                 this.processors["notification"] = new NotificationProcessor();
                 this.processors["requiring"] = new RequiringContentProcessor();
+                this.processors["form"] = new FormContentProcessor();
 
                 this.eventManager = new EventManager({dispatcher:this});
                 this.lockManager = new LockManager({dispatcher:this});

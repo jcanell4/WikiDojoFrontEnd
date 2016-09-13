@@ -154,6 +154,10 @@ define([
             }
 
             return drafts;
+        },
+
+        hasDraft: function (id) {
+            return this.drafts[id] ? true : false;
         }
 
     });

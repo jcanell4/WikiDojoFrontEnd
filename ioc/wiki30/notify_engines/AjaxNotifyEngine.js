@@ -11,7 +11,7 @@ define([
     return declare([AbstractNotifyEngine], {
 
         init: function (args) {
-            console.log("AjaxEngine#init");
+            //console.log("AjaxEngine#init");
             this.timer = setInterval(this._refreshNotifications.bind(this), args.timer);
         },
 

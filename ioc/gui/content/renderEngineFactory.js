@@ -13,9 +13,10 @@ define([
     "ioc/gui/content/engines/requiringRenderEngine",
     "ioc/gui/content/engines/requiring_partialRenderEngine",
     "ioc/gui/content/engines/notificationRenderEngine",
+    "ioc/gui/content/engines/formRenderEngine",
 ], function (standardRenderEngine, revisionRenderEngine, html_partialRenderEngine, 
                 dataRenderEngine, requiringRenderEngine, requiring_partialRenderEngine, 
-                notificationRenderEngine) {
+                notificationRenderEngine, formRenderEngine) {
 
     var /** @type function */
         defaultRenderEngine = null,
@@ -35,11 +36,11 @@ define([
          * @private
          */
         _getRenderEngine = function (type) {
-            // TODO[Xavi] afegir el canvi a les funcions
+            // TODO[Xavi] afegir el canvi a les funcions:
             // after.content;
             // before.content;
 
-            console.log("Demanat RenderEngine:", type);
+            //console.log("Demanat RenderEngine:", type);
 
             return renderEngines[type] ? renderEngines[type] : defaultRenderEngine;
         },
@@ -63,6 +64,7 @@ define([
             _addRenderEngine('data', dataRenderEngine);
             _addRenderEngine('requiring', requiringRenderEngine);
             _addRenderEngine('requiring_partial', requiring_partialRenderEngine);
+            _addRenderEngine('form', formRenderEngine);
             defaultRenderEngine = _getRenderEngine('standard');
         };
 
