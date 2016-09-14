@@ -139,13 +139,11 @@ define([
 
                     if (confirmation) {
 
-
                         if (value.cancel) {
                             contentTool.resetChangesForChunks(value.cancel);
                         } else if (!value.selected) {
                             contentTool.resetAllChangesForChunks();
                         }
-
                         //HardCODED RAFA
                         value.editing = {readonly:value.readonly};  //HardCODED RAFA
 

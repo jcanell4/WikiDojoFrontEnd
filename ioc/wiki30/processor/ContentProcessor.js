@@ -124,6 +124,7 @@ define([
              * @protected
              */
             addContent: function (content, dispatcher, container) {
+                //console.log("ContentProcessor#addContent", content);
                 var oldContentTool = registry.byId(content.id),
                     contentTool,
                     position = 0,

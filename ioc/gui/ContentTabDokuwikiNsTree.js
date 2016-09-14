@@ -17,6 +17,7 @@ define([
          */
         {
             constructor: function (args) {
+                //console.log("TREE Constructor:", args);
                 var openOnClick = args.openOnClick? args.openOnClick: true;
                 this.set("openOnClick", openOnClick);
             },
@@ -29,12 +30,23 @@ define([
                 this.tree.onClick = function(item, node){                    
                     oc(arguments);
                     nsTree.item = item;
-                    if (nsTree.urlBaseTyped[nsTree.item.type]) {
+                    nsTree.query = "id="+item.id;
+
+                    /* Inici fragment nou */
+                    if (nsTree.typeDictionary[item.type]) {
+                        var type = nsTree.typeDictionary[item.type];
+                        nsTree.urlBase = type.urlBase;
+
+                        for (var i=0; i<type.params.length; i++) {
+                            nsTree.query += '&' + type.params[i] + '=' + item[type.params[i]];
+                        }
+                    /* Fi fragment nou */
+                    } else if (nsTree.urlBaseTyped[nsTree.item.type]) {
                         nsTree.urlBase = nsTree.urlBaseTyped[nsTree.item.type];
                     }else {
                         nsTree.urlBase = nsTree.urlBaseTyped["*"];
                     }
-                    nsTree.query = "id="+item.id;
+
                     nsTree.sendRequest();
                 };
                 var tree = this.tree;
@@ -56,6 +68,7 @@ define([
             },             
             
             setUrlBaseTypedDefault: function () {
+                //console.log('#ContentTabDokuwikiNsTree#setUrlBaseTypedDefault', this.urlBaseTyped);
                 if(!this.urlBaseTyped){
                     this.urlBaseTyped = {};
                 }
