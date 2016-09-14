@@ -146,6 +146,9 @@ define([
                             contentTool.resetAllChangesForChunks();
                         }
 
+                        //HardCODED RAFA
+                        value.editing = {readonly:value.readonly};  //HardCODED RAFA
+
                         contentTool.updateDocument(value);
 
                         dispatcher.getGlobalState().getContent(value.id).rev = contentTool.rev; // ALERTA[Xavi] posava content.rev, això no pot ser, es referia contentTool.rev (que a la seva vegada es el mateix que value.rev)?
