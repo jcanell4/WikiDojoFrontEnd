@@ -1,9 +1,10 @@
 define([
     'dojo/_base/declare',
     'ioc/wiki30/manager/EventObserver',
+    'ioc/gui/content/contentToolFactory',
     'ioc/wiki30/notify_engines/AjaxNotifyEngine',
-    'ioc/gui/content/contentToolFactory'
-], function (declare, EventObserver, AjaxNotifyEngine, contentToolFactory) {
+    'ioc/wiki30/notify_engines/WebSocketNotifyEngine'
+], function (declare, EventObserver, contentToolFactory, AjaxNotifyEngine, WebSocketNotifyEngine) {
 
     var NotifyManagerException = function (message) {
         this.message = message;
@@ -79,6 +80,9 @@ define([
                     break;
 
                 case 'websocket':
+                    this._notificationEngine = new WebSocketNotifyEngine(params);
+                    break;
+
                 default:
                     throw new NotifyManagerException("Tipus de motor no implementat: ", params.type);
             }
