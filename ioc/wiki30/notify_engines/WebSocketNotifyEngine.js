@@ -40,7 +40,7 @@ define([
         };
 
         return {
-            init: function (user, token, session, dokuCookie) {
+            init: function (args) {
                 console.log("Iniciant connexió");
                 var that = this;
 
@@ -48,7 +48,7 @@ define([
                     socket = new WebSocket(host);
                     log('WebSocket - status ' + socket.readyState);
                     socket.onopen = function (msg) {
-                        authUser(user, token, session, dokuCookie);
+                        authUser(args.user, args.token, args.session, args.doku_cookie);
 
                         log("Welcome - status " + this.readyState);
                     };
@@ -59,7 +59,10 @@ define([
                         log("Disconnected - status " + this.readyState);
 
                         // Intentem reconnectar
-                        window.setTimeout(that.init.bind(that), RECONNECT*1000, user, token, session);
+                        if (!that.closed) {
+                            window.setTimeout(that.init.bind(that), RECONNECT*1000, args);
+                        }
+
                     };
                 }
                 catch (ex) {
@@ -95,6 +98,7 @@ define([
                     log("Goodbye!");
                     socket.close();
                     socket = null;
+                    this.closed = true;
                 }
             },
 
@@ -112,9 +116,9 @@ define([
                     log(ex);
                 }
             },
-            reconnect: function () {
-                quit();
-                init();
+            reconnect: function (args) {
+                this.quit();
+                this.init(args);
             },
 
 
@@ -124,53 +128,64 @@ define([
     return declare([AbstractNotifyEngine], {
 
         PROTOCOL: 'ws',
+        socket: null,
 
         init: function (args) {
             console.log("WebScoketEngine#init", args);
 
             // Conectar al servidor
-            var socket = new WebSocketController(args.ip, args.port, this.PROTOCOL);
-            var user = this.dispatcher.getGlobalState().userId;
-            // var token = this.dispatcher.getGlobalState().sectok;
-            var token = args.token;
-            var session = args.session;
-            var dokuCookie = args.doku_cookie;
+            this.socket = new WebSocketController(args.ip, args.port, this.PROTOCOL);
+            // var user = this.dispatcher.getGlobalState().userId;
+            //
+            // // var token = this.dispatcher.getGlobalState().sectok; // Aquest no es correspon
+            // var token = args.token;
+            // var session = args.session;
+            // var dokuCookie = args.doku_cookie;
+
+
 
             // TODO: canviar el sectok de l'aplicació: En el moment d'iniciar el server durant les proves no existia el sectok i cal crear un
 
+            args.user = this.dispatcher.getGlobalState().userId;
 
-            socket.init(user, token, session, dokuCookie);
+            console.log("Inicialitzant connexió per user: ", args.user);
+
+            this.socket.init(args);
 
             // TODO: lligar els events onconnect, etc i esperar el retorn d'una resposta amb l'autenticació correcta
 
 
             console.log(this.dispatcher.getGlobalState());
 
-            this.timer = setInterval(this._refreshNotifications.bind(this), args.timer);
+            // this.timer = setInterval(this._refreshNotifications.bind(this), args.timer);
         },
 
-        _refreshNotifications: function () {
-            //console.log("AjaxEngine#refreshNotifications");
-            // S'ha de fer un pop de les notificacions
-            this.dispatcher.getEventManager().fireEvent('notify', {
-                //id: value.id, // ALERTA[Xavi] crec que això, en el cas de les notificacions, no és necessari
-                dataToSend: {
-                    do: 'get'
-                }
-            });
-        },
+        // _refreshNotifications: function () {
+        //     //console.log("AjaxEngine#refreshNotifications");
+        //     // S'ha de fer un pop de les notificacions
+        //     this.dispatcher.getEventManager().fireEvent('notify', {
+        //         //id: value.id, // ALERTA[Xavi] crec que això, en el cas de les notificacions, no és necessari
+        //         dataToSend: {
+        //             do: 'get'
+        //         }
+        //     });
+        // },
 
         update: function (args) {
-            //console.log("AjaxEngine#update");
-            this.shutdown();
-            this.init(args);
+            console.log("WebSocketEngine#update", this.socket);
+
+            args.user = this.dispatcher.getGlobalState().userId;
+            this.socket.reconnect(args);
+            // this.shutdown();
+            // this.init(args);
         },
 
         shutdown: function () {
-            //console.log("AjaxEngine#shutdown");
-            if (this.timer) {
-                clearInterval(this.timer);
-            }
+            console.log("WebSocketEngine#shutdown", this.socket);
+            // if (this.timer) {
+            //     clearInterval(this.timer);
+            // }
+            this.socket.quit();
         }
     });
 
