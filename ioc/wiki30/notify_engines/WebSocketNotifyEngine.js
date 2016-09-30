@@ -8,11 +8,12 @@ define([
         this.name = "NotifyEngineException";
     };
 
-    var WebSocketController = function (addr, port, protocol) {
-        var RECONNECT = 10; // temps en segons per intentar reconnectar
+    var WebSocketController = function (addr, port, protocol, listener) {
+        var RECONNECT = 5; // temps en segons per intentar reconnectar
 
         var host = protocol + '://' + addr + ':' + port;
         var socket;
+
 
         var log = function (msg) {
             console.log('LOG: ' + msg);
@@ -39,6 +40,7 @@ define([
             }
         };
 
+
         return {
             init: function (args) {
                 console.log("Iniciant connexió");
@@ -53,14 +55,18 @@ define([
                         log("Welcome - status " + this.readyState);
                     };
                     socket.onmessage = function (msg) {
-                        log("Received: " + msg.data);
+                        // log("Received: " + msg);
+                        // ALERTA[Xavi] Es rep més informació (es tracta d'un event), però l'engine només requereix les dades
+                        listener(msg.data);
+
                     };
                     socket.onclose = function (msg) {
-                        log("Disconnected - status " + this.readyState);
+                        log("Disconnected - status " + this.readyState, that.closed);
 
                         // Intentem reconnectar
                         if (!that.closed) {
-                            window.setTimeout(that.init.bind(that), RECONNECT*1000, args);
+                            console.log("Reconnecting in " + RECONNECT + "s ...");
+                            window.setTimeout(that.init.bind(that), RECONNECT * 1000, args);
                         }
 
                     };
@@ -133,15 +139,17 @@ define([
         init: function (args) {
             console.log("WebScoketEngine#init", args);
 
+
+            // this.dispatcher.putSectok(args.token);
+
             // Conectar al servidor
-            this.socket = new WebSocketController(args.ip, args.port, this.PROTOCOL);
+            this.socket = new WebSocketController(args.ip, args.port, this.PROTOCOL, this.onNotification.bind(this));
             // var user = this.dispatcher.getGlobalState().userId;
             //
             // // var token = this.dispatcher.getGlobalState().sectok; // Aquest no es correspon
             // var token = args.token;
             // var session = args.session;
             // var dokuCookie = args.doku_cookie;
-
 
 
             // TODO: canviar el sectok de l'aplicació: En el moment d'iniciar el server durant les proves no existia el sectok i cal crear un
@@ -174,6 +182,8 @@ define([
         update: function (args) {
             console.log("WebSocketEngine#update", this.socket);
 
+            // this.dispatcher.putSectok(args.token); //ALERTA[Xavi] Aquest token no te res a veure amb el sectok, es només per l'autenticació
+
             args.user = this.dispatcher.getGlobalState().userId;
             this.socket.reconnect(args);
             // this.shutdown();
@@ -186,6 +196,23 @@ define([
             //     clearInterval(this.timer);
             // }
             this.socket.quit();
+        },
+
+
+        onNotification: function (data) {
+            console.log("Received:", data);
+
+
+            try {
+                this.dispatcher.getNotifyManager().process('notification_received', {notifications: JSON.parse(data)});
+            } catch (e) {
+                console.log("Received string:", data);
+            }
+
+
+
+
+
         }
     });
 

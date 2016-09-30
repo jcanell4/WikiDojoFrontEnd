@@ -263,6 +263,7 @@ define([
              * @param {?string} sectok TODO[Xavi] sempre es undefined, així que no es fa servir per a res
              */
             putSectok: function (strUrl, sectok) {
+                console.log("Dispatcher#putSectok", strUrl);
                 if (!sectok) {
                     sectok = strUrl;
                     strUrl = undefined;

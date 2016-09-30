@@ -91,7 +91,7 @@ define([
         },
 
         _processNotifications: function (notifications) {
-            //console.log("NotifyManager#_processNotifications", notifications);
+            console.log("NotifyManager#_processNotifications", notifications);
             for (var i=0; i<notifications.length; i++) {
                 this._processNotification(notifications[i]);
             }
