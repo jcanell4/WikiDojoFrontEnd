@@ -1,6 +1,5 @@
-
 define([
-    "dojo/_base/declare", // declare
+    "dojo/_base/declare",
     "dojo/text!./templates/ContentTabDokuwikiNsTree.html",
     "dijit/layout/ContentPane",
     'dijit/layout/_LayoutWidget',
@@ -29,6 +28,7 @@ define([
             parameters:     undefined,
             sortBy:         undefined,
             onlyDirs:       undefined,
+            hiddenProjects: undefined,
             expandProject:  undefined,
             rootValue:      "_",
             tree:           null,
@@ -65,9 +65,6 @@ define([
                         },
 
                         mayHaveChildren: function (object) {
-                            //--inici prova--
-                            //if (object.name === "permisos") object.type = "p";
-                            //--fi prova--
                             return object.type === "d" ||
                                    (object.type === "p" && self.expandProject) ||
                                    object.type === "dp";
@@ -135,7 +132,10 @@ define([
             
             _updateParams: function() {
                 if (!this.parameters) {
-                    this.parameters = (this.sortBy ? "" + this.sortBy + "/" : "0/") + (this.onlyDirs ? "t/" : "f/") + (this.expandProject ? "t/" : "f/");
+                    this.parameters = (this.sortBy ? "" + this.sortBy + "/" : "0/") +
+                                      (this.onlyDirs ? "t/" : "f/") + 
+                                      (this.expandProject ? "t/" : "f/") + 
+                                      (this.hiddenProjects ? "t/" : "f/");
                 }
             },
 
