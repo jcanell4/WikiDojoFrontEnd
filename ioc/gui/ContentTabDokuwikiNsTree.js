@@ -33,7 +33,7 @@ define([
                     nsTree.query = "id="+item.id;
 
                     /* Inici fragment nou */
-                    if (nsTree.typeDictionary[item.type]) {
+                    if (nsTree.typeDictionary && nsTree.typeDictionary[item.type]) {
                         var type = nsTree.typeDictionary[item.type];
                         nsTree.urlBase = type.urlBase;
 
@@ -41,9 +41,9 @@ define([
                             nsTree.query += '&' + type.params[i] + '=' + item[type.params[i]];
                         }
                     /* Fi fragment nou */
-                    } else if (nsTree.urlBaseTyped[nsTree.item.type]) {
+                    } else if (nsTree.urlBaseTyped && nsTree.urlBaseTyped[nsTree.item.type]) {
                         nsTree.urlBase = nsTree.urlBaseTyped[nsTree.item.type];
-                    }else {
+                    }else if(nsTree.urlBaseTyped){
                         nsTree.urlBase = nsTree.urlBaseTyped["*"];
                     }
 

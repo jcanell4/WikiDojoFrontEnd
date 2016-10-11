@@ -10,6 +10,7 @@ define([
 ], function(on, dom, event, listHeadings, runRender, runQuiz,
                 Request, att){
 
+    var requestPage = new Request();
     var requestEdita = new Request();
 //    requestEdita.updateSectok = function (sk) {
 //        this.sectok = sk;
@@ -43,6 +44,20 @@ define([
             }
             requestImgDetail.sendRequest(query);
             event.stop(e);
+        });
+        
+        on(domNode, 'li div a[class=wikilink1]:click', function(e){
+            var query = "";
+            var idtag = "";
+            var arr = att.get(this, "href").split("?");
+            if (arr.length > 1) {
+                query = arr[1];
+                idtag= query.substr(0, query.indexOf("#")).replace(":", "_");
+            }
+            if(idtag!==domNode.id){
+                requestPage.sendRequest(query);
+                event.stop(e);            
+            }
         });
 
     };
