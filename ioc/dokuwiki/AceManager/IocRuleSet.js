@@ -17,10 +17,10 @@ define([
          */
         {
             baseHighlighters: {
-                php:  ace.require("ace/mode/php_highlight_rules").PhpHighlightRules,
+                php: ace.require("ace/mode/php_highlight_rules").PhpHighlightRules,
                 html: ace.require("ace/mode/html_highlight_rules").HtmlHighlightRules,
-                latex:      ace.require("ace/mode/latex_highlight_rules").LatexHighlightRules,
-                markdown:   ace.require("ace/mode/markdown_highlight_rules").MarkdownHighlightRules
+                latex: ace.require("ace/mode/latex_highlight_rules").LatexHighlightRules,
+                markdown: ace.require("ace/mode/markdown_highlight_rules").MarkdownHighlightRules
             },
 
             _extraRules: [
@@ -85,7 +85,7 @@ define([
                 ['box', ["table", ["id", "title", "footer", "large", "small", "vertical"]]],
                 ['box', ["accounting", ["id", "title", "footer", "widths"]]],
                 ['box', ["figure", ["id", "title", "copyright", "license", "footer", "large"]]],
-                ['box', ["text", ["offset", "title", "large"]]],
+                ['box', ["text", ["offset", "onset", "title", "large"]]],
                 ['box', ["note", ["offset"]]],
                 ['box', ["reference", ["offset"]]],
                 ['box', ["quote"]],
@@ -96,6 +96,11 @@ define([
                 ['inline', ["(:)(table|figure)(:)(.+?)(:)", ["keyword.operator", "keyword", "keyword.operator", "text", "keyword.operator"]]],
                 ['inline', ["<newcontent>", "keyword"]],
                 ['inline', ["</newcontent>", "keyword"]],
+                ['inline', ["<iocstl .*>", "keyword"]],
+                ['inline', ["</iocstl>", "keyword"]],
+                ['inline', ["<quiz .*>", "keyword"]],
+                ['inline', ["</quiz>", "keyword"]],
+                ['inline', ["!!!!", "keyword.operator"]],
             ],
 
             /**

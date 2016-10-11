@@ -715,26 +715,30 @@ define([
                 this.defRule(i, "\\s*$|^", "text", o);
 
 
-                // TODO[Xavi] No trobo la declaració de la funció t, suposo que el que fa es buscar a n la coincidencia
-                // "id" i "offset" en cada cas.
-                var t = function(llista, paraula) {
-                    for (var i=0, len = llista.length; i<len; i++) {
-                        if (llista[i]==paraula) {
-                            return i;
-                        }
-                    }
-                    return -1
-                };
 
-                if (t.call(n, "id")<0) {
+                // console.log("Comprovant si s'ha demanat l'id");
+                // console.log("e:", e);
+                // console.log("n:", n);
+                if (n.indexOf("id")<0) {
+                    // console.log("no s'ha trobat l'id, es posarà qualsevol text en vermell");
                     this.defRule(i, ".+", "keyword.invalid");
+
                 }
 
-                if (t.call(n, "offset")>=0) {
+                // console.log("Comprovant si s'ha demanat l'offset", e, n);
+                if (n.indexOf("offset")>=0) {
+
+                    // console.log("Offset igual o major que 0 --> afegint rule per offset");
+
                     this.defRule(o, "^(  :)(offset)(:)", a, s);
                     this.defRule(s, "\\s*-?\\d+\\s*$", "constant.numeric", o);
                     this.defRule(s, ".+$", "keyword.invalid", o);
+                } else {
+                    // console.log("no s'ha trobat l'offset");
                 }
+
+
+
                 c = _(n).without("id", "offset");
 
                 for (f = 0, l = c.length; f < l; f++) {
