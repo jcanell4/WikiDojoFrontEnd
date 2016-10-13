@@ -69,7 +69,7 @@ define(function () {
 
         var id = data.docId,
             html = '',
-        //first = true,
+            //first = true,
             linkRev,
             linkTime,
             sortable = [],
@@ -127,6 +127,7 @@ define(function () {
             html += '</a></td>';
 
             html += '<td>' + sortable[i]['user'] + '</td>';
+
             html += _generateHtmlForDiff(sortable[i]);
             //}
 
