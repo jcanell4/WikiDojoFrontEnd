@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'ioc/dokuwiki/AceManager/AbstractRuleSet',
+    'ace-builds/mode-java',
     'ace-builds/mode-php',
     'ace-builds/mode-html',
     'ace-builds/mode-markdown',
@@ -17,6 +18,8 @@ define([
          */
         {
             baseHighlighters: {
+                java: ace.require("ace/mode/java_highlight_rules").JavaHighlightRules,
+
                 php: ace.require("ace/mode/php_highlight_rules").PhpHighlightRules,
                 html: ace.require("ace/mode/html_highlight_rules").HtmlHighlightRules,
                 latex: ace.require("ace/mode/latex_highlight_rules").LatexHighlightRules,
@@ -49,10 +52,13 @@ define([
                 ['base', ["^[ 	]*-{4,}[ 	]*$", "keyword.operator"]],
                 ['format', ["unformatted", "<nowiki>", "</nowiki>", "comment", "comment"]],
                 ['format', ["unformattedalt", "%%", "%%", "comment", "comment"]],
+
                 ['embed', ["php", "<php>", "</php>", "keyword", "php"]],
                 ['embed', ["phpblock", "<PHP>", "</PHP>", "keyword", "php"]],
                 ['embed', ["html", "<html>", "</html>", "keyword", "html"]],
                 ['embed', ["htmlblock", "<HTML>", "</HTML>", "keyword", "html"]],
+
+
                 ['container', ["note", "<note>", "keyword"]],
                 ['rule', ["note-start", "</note>", "keyword", "start"]],
                 ['base', ["^>{1,2}", "keyword.operator"]],
@@ -101,6 +107,7 @@ define([
                 ['inline', ["<quiz .*>", "keyword"]],
                 ['inline', ["</quiz>", "keyword"]],
                 ['inline', ["!!!!", "keyword.operator"]],
+
             ],
 
             /**
@@ -123,7 +130,7 @@ define([
              * @private
              */
             _addLatexExtras: function () {
-                // 100 latex
+                // // 100 latex
                 this.mode.defEmbed('latex-latex', '<latex>', '</latex>', 'keyword', 'latex');
 
                 // 300 latex
@@ -136,6 +143,22 @@ define([
                 this.mode.defEmbed('latex-equationstar', '\\\\begin\\{equation\\*\\}', '\\\\end\\{equation\\*\\}', 'keyword', 'latex');
                 this.mode.defEmbed('latex-eqnarray', '\\\\begin\\{eqnarray\\}', '\\\\end\\{eqnarray\\}', 'keyword', 'latex');
                 this.mode.defEmbed('latex-eqnarraystar', '\\\\begin\\{eqnarray\\*\\}', '\\\\end\\{eqnarray\\*\\}', 'keyword', 'latex');
+
+
+                // ALERTA[Xavi]Codi de proves
+                // // 100 latex
+                // this.mode.defEmbed('latex-latex', '<latex>', '</latex>', 'invalid', 'latex');
+                //
+                // // 300 latex
+                // this.mode.defEmbed('latex-ddollar', '\\$\\$', '\\$\\$', 'invalid', 'latex');
+                //
+                // // 405 latex
+                // this.mode.defEmbed('latex-dollar', '\\$', '\\$', 'invalid', 'latex');
+                // this.mode.defEmbed('latex-displaymath', '\\\\begin\\{displaymath\\}', '\\\\end\\{displaymath\\}', 'keyword', 'latex');
+                // this.mode.defEmbed('latex-equation', '\\\\begin\\{equation\\}', '\\\\end\\{equation\\}', 'keyword', 'latex');
+                // this.mode.defEmbed('latex-equationstar', '\\\\begin\\{equation\\*\\}', '\\\\end\\{equation\\*\\}', 'keyword', 'latex');
+                // this.mode.defEmbed('latex-eqnarray', '\\\\begin\\{eqnarray\\}', '\\\\end\\{eqnarray\\}', 'keyword', 'latex');
+                // this.mode.defEmbed('latex-eqnarraystar', '\\\\begin\\{eqnarray\\*\\}', '\\\\end\\{eqnarray\\*\\}', 'keyword', 'latex');
             },
 
             /**
