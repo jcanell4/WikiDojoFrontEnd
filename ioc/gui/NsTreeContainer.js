@@ -79,8 +79,8 @@ define([
                     persist: false,
 
                     onClick: function(params /*{0:{id,name,type},1:{this},2:{mouseEvent click}}*/){
-                        clickOpenAndProcess = self.getProcessOnClickAndOpenOnClick(params[0].type);
-                        clickOpen = this.model.mayHaveChildren(params[0]) || clickOpenAndProcess;
+                        var clickOpenAndProcess = self.getProcessOnClickAndOpenOnClick(params[0].type);
+                        var clickOpen = this.model.mayHaveChildren(params[0]) || clickOpenAndProcess;
                         if (clickOpen) {
                             this._onExpandoClick({node: params[1], item: params[0]});
                         }
@@ -110,6 +110,7 @@ define([
             },
             
             getProcessOnClickAndOpenOnClick: function(parm) {
+                var ret;
                 if (typeof this.processOnClickAndOpenOnClick === "function" && parm) 
                     ret = this.processOnClickAndOpenOnClick(parm);
                 else
