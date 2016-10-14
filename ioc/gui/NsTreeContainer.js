@@ -11,8 +11,8 @@ define([
     "dojo/NodeList-dom" // NodeList.style
 ], function (declare, template, ContentPane, _LayoutWidget, _TemplatedMixin, 
                 JsonRest, Observable, Tree, ObjectStoreModel) {
+            
     var ret = declare("ioc.gui.NsTreeContainer", [ContentPane, _TemplatedMixin, _LayoutWidget],
-
         /**
          * Aquest widget afegeix un panell amb un arbre.
          *
@@ -32,9 +32,10 @@ define([
             expandProject:  undefined,
             rootValue:      "_",
             tree:           null,
-            openOnClick:    false,  //TRUE és el valor per defecte en el widget
-            processOnClickAndOpenOnClick: false,
             urlBaseTyped:   undefined,
+            openOnClick:                  false,  //TRUE és el valor per defecte en el widget
+            processOnClickAndOpenOnClick: false,
+            preventProcessClick:          true,
             
             /** @override */
             buildRendering: function () {
@@ -78,13 +79,16 @@ define([
                     persist: false,
 
                     onClick: function(params /*{0:{id,name,type},1:{this},2:{mouseEvent click}}*/){
-                        if (self.processOnClickAndOpenOnClick && this.model.mayHaveChildren(params[0])) {
+                        clickOpenAndProcess = self.getProcessOnClickAndOpenOnClick(params[0].type);
+                        clickOpen = this.model.mayHaveChildren(params[0]) || clickOpenAndProcess;
+                        if (clickOpen) {
                             this._onExpandoClick({node: params[1], item: params[0]});
                         }
+                        self.preventProcessClick = clickOpen && !clickOpenAndProcess;
                     }
                 });
 
-                this.tree.openOnClick = this.openOnClick && !this.processOnClickAndOpenOnClick;
+                this.tree.openOnClick = this.openOnClick && !this.getProcessOnClickAndOpenOnClick();
                 
                 this.tree.getIconClassOrig = this.tree.getIconClass;
                 this.tree.getIconClass = function(item, opened) {
@@ -103,6 +107,14 @@ define([
                 this.inherited(arguments);
                 this.tree.placeAt(this.id + "_tree");
                 this.tree.startup();
+            },
+            
+            getProcessOnClickAndOpenOnClick: function(parm) {
+                if (typeof this.processOnClickAndOpenOnClick === "function" && parm) 
+                    ret = this.processOnClickAndOpenOnClick(parm);
+                else
+                    ret = this.processOnClickAndOpenOnClick;
+                return ret;
             },
 
             /**
