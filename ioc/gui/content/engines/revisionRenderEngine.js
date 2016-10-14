@@ -69,7 +69,7 @@ define(function () {
 
         var id = data.docId,
             html = '',
-        //first = true,
+            //first = true,
             linkRev,
             linkTime,
             sortable = [],
@@ -79,7 +79,7 @@ define(function () {
         html += '<form id="' + _generateFormId(id) + '" action="" method="post">';
         html += '<input name="id" value="' + id + '" type="hidden">';
         html += '<table class="meta-revisions">';
-        html += '<tr><th colspan="4" style="text-align: center"><input type="submit" name="submit" value="comparar revisions"/></th></tr>'; // TODO[Xavi]no funciona, surt fora de la taula, perquè?
+        html += '<tr><th colspan="5" style="text-align: center"><input type="submit" name="submit" value="comparar revisions"/></th></tr>'; // TODO[Xavi]no funciona, surt fora de la taula, perquè?
 
 
         // Comprovem si existeix el actual i si es així l'eliminem de la llista de revisions
@@ -110,7 +110,7 @@ define(function () {
 
         // Afegim el actual
         html += "<td></td>";
-        html += '<td colspan="3" class="current-revision"><a href="' + linkCurrent + '" title="' + 'Obrir la revisió actual">';
+        html += '<td colspan="4" class="current-revision"><a href="' + linkCurrent + '" title="' + 'Obrir la revisió actual">';
         html += 'Versió actual';
         html += '</a></td>';
 
@@ -125,6 +125,9 @@ define(function () {
             html += '<td><a href="' + linkRev + '" title="' + 'Obrir la revisió del ' + sortable[i]['date'] + '">';
             html += linkTime;
             html += '</a></td>';
+
+            html += '<td>' + sortable[i]['user'] + '</td>';
+
             html += _generateHtmlForDiff(sortable[i]);
             //}
 

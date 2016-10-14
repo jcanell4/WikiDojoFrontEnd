@@ -154,7 +154,7 @@ define([
             /**
              * Defineix una regla a partir dels paràmetres passats com argument.
              *
-             * @param {string} state - state al que s'aplica aquesta regle
+             * @param {string} state - state al que s'aplica aquesta regla
              * @param {string} regex - expresió regular que l'activa
              * @param {string|string[]|function} token - estil a aplicar a la coincidència
              * @param {string?} next - state al que passa l'editor al trobar la coincidència
@@ -289,6 +289,8 @@ define([
              * @protected
              */
             defEmbed: function (name, openRegex, closeRegex, token, language) {
+                //return this.defEmbedNew(name, openRegex, closeRegex, token, language); // ALERTA[Xavi] això no funciona, són les proves per la nova funció
+
                 // Afegim el ressaltador al state start
                 var rules = {
                     highlighter: this.getHighlighters()[language],
@@ -322,6 +324,57 @@ define([
                 }
             },
 
+
+            defEmbedRules: function (rules, name, closeArgs) {
+
+            },
+
+            defEmbedNew: function (name, openRegex, closeRegex, token, language) {
+                this._checkProcessing();
+
+                // def_embed = (name, open_regex, close_regex, token, lang) ->                  // ALERTA OK
+                //     def_inline "(?=#{open_regex})", token, name                              // ALERTA OK
+                // def_rule name, open_regex, token, "#{name}-start"                            // ALERTA OK
+                // rules = new lang_rules[lang]().getRules()                                    // ALERTA OK
+                // embed_rules rules, "#{name}-", [{regex: close_regex, token, next: 'start'}]
+
+
+                this.defInline("(?=" + openRegex + ")", token, name);
+
+                this.defRule(name, openRegex, token, name + "-start");
+
+                console.log(name + "-start");
+
+                var lang = this.getHighlighters()[language];
+                console.log(language);
+
+                console.log(lang);
+                var rules = new lang().getRules();
+
+
+                console.log(rules);
+
+
+
+                //embed_rules
+                this.defEmbedRules(rules, name + "-", [{regex: closeRegex, token: token, next: 'start'}], null, true);
+
+            },
+
+            defEmbedRules: function (rules, prefix, escape_rules) {
+
+
+
+                this._highlighter.embedRules(rules, prefix, escape_rules);
+            },
+
+
+    //         embed_rules = (rules, prefix, escape_rules) ->
+    //         for name, state of rules
+    // state = (_.clone rule for rule in state)
+    //     rule.next = prefix + rule.next for rule in state when rule.next
+    // escape_rules = (_.clone rule for rule in escape_rules)
+    //     tokenizer_rules[prefix + name] = escape_rules.concat state
             /**
              * Recorre totes les regles de resaltat enregistrades en aquest mode i les incrusta al resaltador base.
              *
@@ -333,6 +386,9 @@ define([
 
                 for (var i = 0, len = this._embededHighlighters.length; i < len; i++) {
                     rules = this._embededHighlighters[i];
+
+                    // console.log("Afegint regles al ressaltador: ", this._embededHighlighters[i])
+
                     this._highlighter.embedRules(rules.highlighter, rules.prefix + "-", rules.closeRules);
                 }
             },
@@ -379,6 +435,7 @@ define([
 
                 this._highlighter.addRules(this._tokenizerRules, "");
                 this._embedHighlighter(); // Passem el highlighter al que s'incrustaran les regles
+
                 this._processContainers();
 
                 doku_mode.$tokenizer = new this.Tokenizer(this._highlighter.getRules());
@@ -629,7 +686,11 @@ define([
              * @private
              */
             _processContainers: function () {
+                console.log("Les regles que s'afegeixen a tots els containers son:", this._inlineRules)
+
                 for (var i = 0, len = this._containerStates.length; i < len; i++) {
+
+
                     this._copyRules('start', this._containerStates[i], this._inlineRules);
                 }
             },
@@ -646,7 +707,9 @@ define([
              * @private
              */
             _copyRules: function (state, prefix, rules) {
+                // console.error("** Copiant regles **", state, typeof state, prefix, rules);
                 var rule, newNext, newRule, newRules, oldRules, processedRules;
+
 
                 processedRules = this._highlighter.getRules();
 
@@ -749,6 +812,10 @@ define([
                 this.defRule(o, "^(  :)(.+?)(:)", u);
                 this.defRule(o, "^", "text", "start");
 
+            },
+
+            defInjectRules : function (languageFunction, prefix, rules) {
+                this.embedRules(languageFunction, prefix, rules);
             }
 
 
