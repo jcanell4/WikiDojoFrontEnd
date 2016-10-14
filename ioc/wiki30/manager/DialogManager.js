@@ -126,7 +126,7 @@ define([
             _getDefaultDialog: function (refId, params) {
                 var dialogParams = {
                         id: 'dialog_' + refId + '_' + params.id,
-                        title: params.title + ": " + refId,
+                        title: params.title + ": " + params.id,  //refId,
                         message: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
                         closable: params.closable || true,// opcional amb default
                         dispatcher: this.dispatcher

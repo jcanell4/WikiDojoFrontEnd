@@ -181,9 +181,13 @@ define([
             var pages = this._doGetPages();
 
             if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                delete(pages[this.contentTool.id].drafts['full']);
-                delete(pages[this.contentTool.id].drafts['structured']);
-            } else {
+                if(pages[this.contentTool.id].drafts['full']){
+                    delete(pages[this.contentTool.id].drafts['full']);
+                }
+                if(pages[this.contentTool.id].drafts['structured']){
+                    delete(pages[this.contentTool.id].drafts['structured']);
+                }
+            //} else {
                 //console.log("No existeix cap esborrany que eliminar");
             }
 

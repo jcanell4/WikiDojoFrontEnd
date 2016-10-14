@@ -72,6 +72,7 @@ define([
                 var changesManager = dispatcher.getChangesManager(),
                     cache = dispatcher.getContentCache(value.id), // TODO[Xavi] de vegades torna null?
                     confirmation = false,
+                    clearDraft = 0,             //0 = no eliminar, 1 = eliminar parcial, 2 = eliminar tot
                     contentTool, ret;
 
                 if (cache) {
@@ -90,55 +91,85 @@ define([
                     contentTool._checkChanges();
                     //console.log("is changed?", changesManager.isChanged(value.id) );
 
-
+                    
                     //console.log("Ja hi ha un contenttol del mateix tipus");
-
-                    if (changesManager.isChanged(value.id) && value.cancel) {
-                        if (contentTool.isAnyChunkChanged(value.cancel)) {
+                    
+                    //S'ha cancel·lat
+                    if(value.cancel){
+                         if (contentTool.isAnyChunkChanged(value.cancel)) {
                             confirmation = dispatcher.discardChanges();
                         } else {
                             confirmation = true;
                         }
-
-                        if (confirmation) {
-                            dispatcher.getDraftManager().clearDraftChunks(value.id, value.cancel);
-                            //console.log("Eliminats chunks dels esborranys locals:", value.cancel);
-                            // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
-                            //dispatcher.getEventManager().dispatchEvent(
-                            //    dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
-                            //        id: value.id,
-                            //        dataToSend: {
-                            //            id: value.ns,
-                            //            type:'structured'
-                            //        },
-                            //        standbyId: dispatcher.containerNodeId
-                            //    }
-                            //);
-                            dispatcher.getEventManager().fireEvent(
-                                dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
-                                    id: value.id,
-                                    dataToSend: {
-                                        id: value.ns,
-                                        type:'structured'
-                                    },
-                                    standbyId: dispatcher.containerNodeId
-                                },
-                                value.id
-                            );
-
+                        clearDraft=1;
+                    }else if(!value.selected && !value.cancel){
+                        if (changesManager.isChanged(value.id)){
+                            confirmation = dispatcher.discardChanges();
+                        } else {
+                            confirmation = true;
                         }
-
-                    } else if (changesManager.isChanged(value.id) && !value.selected && !value.cancel) {
-                        confirmation = dispatcher.discardChanges();
-
-                    } else {
+                        clearDraft=2;
+                    }else{
                         confirmation = true;
                     }
+
+//                    if (changesManager.isChanged(value.id) && value.cancel) {
+//                        if (contentTool.isAnyChunkChanged(value.cancel)) {
+//                            confirmation = dispatcher.discardChanges();
+//                        } else {
+//                            confirmation = true;
+//                        }
+//
+//                        if (confirmation) {
+//                            dispatcher.getDraftManager().clearDraftChunks(value.id, value.cancel);
+//                            //console.log("Eliminats chunks dels esborranys locals:", value.cancel);
+//                            // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
+//                            //dispatcher.getEventManager().dispatchEvent(
+//                            //    dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
+//                            //        id: value.id,
+//                            //        dataToSend: {
+//                            //            id: value.ns,
+//                            //            type:'structured'
+//                            //        },
+//                            //        standbyId: dispatcher.containerNodeId
+//                            //    }
+//                            //);
+//                            dispatcher.getEventManager().fireEvent(
+//                                dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
+//                                    id: value.id,
+//                                    dataToSend: {
+//                                        id: value.ns,
+//                                        type:'structured',
+//                                        section_id:value.cancel
+//                                    },
+//                                    standbyId: dispatcher.containerNodeId
+//                                },
+//                                value.id
+//                            );
+//
+//                        }
+//
+//                    } else if (changesManager.isChanged(value.id) && !value.selected && !value.cancel) {
+//                        confirmation = dispatcher.discardChanges();
+//
+//                    } else {
+//                        confirmation = true;
+//                    }
 
                     contentTool.rev = value.rev;
 
                     if (confirmation) {
-
+                        if(clearDraft===1){
+                            dispatcher.getDraftManager().clearDraftChunks(value.id, value.cancel);
+                            if(value.hasDraft){
+                                this._clearRemoteDraftChunks(value, dispatcher);
+                            }
+                        }else if(clearDraft===2){
+                            dispatcher.getDraftManager().clearDraft(value.id);
+                            if(value.hasDraft){
+                                this._clearRemoteDraft(value, dispatcher);
+                            }                            
+                        }
                         if (value.cancel) {
                             contentTool.resetChangesForChunks(value.cancel);
                         } else if (!value.selected) {
@@ -169,7 +200,7 @@ define([
 
                 var contentCache = dispatcher.getGlobalState().getContent(value.id);
 
-                if (contentCache && contentCache.rev != value.rev) {
+                if (contentCache && contentCache.rev !== value.rev) {
                     dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
                 }
 
@@ -179,6 +210,36 @@ define([
                 }
 
                 return confirmation ? 0 : 100;
+            },
+            
+            _clearRemoteDraft: function(value, dispatcher){
+                dispatcher.getEventManager().fireEvent(
+                    dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
+                        id: value.id,
+                        dataToSend: {
+                            id: value.ns,
+                            type:'structured'
+                        },
+                        standbyId: dispatcher.containerNodeId
+                    },
+                    value.id
+                );  
+            },
+            _clearRemoteDraftChunks: function(value, dispatcher){
+                for(var i=0; i<value.cancel.length; i++){
+                    dispatcher.getEventManager().fireEvent(
+                        dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
+                            id: value.id,
+                            dataToSend: {
+                                id: value.ns,
+                                type:'structured',
+                                section_id:value.cancel[i]
+                            },
+                            standbyId: dispatcher.containerNodeId
+                        },
+                        value.id
+                    );  
+                }
             },
 
             /**
@@ -278,6 +339,7 @@ define([
                             //                  en X temps, es passarà a calcel·lar els canvis.
                             //                  La cancel·lació s'envia forçant la cancel·lació
                             //                  dels canvis + un alerta informant del fet
+                            ptimer.id = ptimer.contentTool.id;
                             var dialog = dispatcher.getDialogManager().getDialog('lock_expiring'
                                 , "lockExpiring_"+ptimer.contentTool.id
                                 , ptimer);

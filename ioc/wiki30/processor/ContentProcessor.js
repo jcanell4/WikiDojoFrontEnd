@@ -39,34 +39,37 @@ define([
 
                 var changesManager = dispatcher.getChangesManager(),
                     confirmation = false,
+                    clearDraft = false,
                     id = value.id;
 
                 if (value.discard_changes) {
                     confirmation = true;
                 } else if (changesManager.isChanged(id)) {
                     confirmation = dispatcher.discardChanges();
-
-                    if (confirmation) {
-                        dispatcher.getDraftManager().clearDraft(id);
-                        //console.log("Eliminat esborrany");
-                        // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
-                        dispatcher.getEventManager().fireEvent(
-                                dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
-                                    id: value.id,
-                                    dataToSend: {
-                                        id: value.ns,
-                                        type:'full'
-                                    },
-                                    standbyId: dispatcher.containerNodeId
-                                }
-                        );
-                    }
-
+                    clearDraft=true;
                 } else {
                     confirmation = true;
+                    clearDraft=true;
                 }
 
                 if (confirmation) {
+                    if(clearDraft){
+                        dispatcher.getDraftManager().clearDraft(id);
+                        if(value.hasDraft){
+                            //console.log("Eliminat esborrany");
+                            // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
+                            dispatcher.getEventManager().fireEvent(
+                                   dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
+                                       id: value.id,
+                                       dataToSend: {
+                                           id: value.ns,
+                                           type:'full'
+                                       },
+                                       standbyId: dispatcher.containerNodeId
+                                   }
+                           );
+                        }
+                    }
                     changesManager.removeContentTool(id);
                     changesManager.resetContentChangeState(id);
                     this._loadTab(value, dispatcher, arguments);
