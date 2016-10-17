@@ -21,7 +21,7 @@ var LatexHighlightRules = function() {
             regex : "(\\\\(?:begin|end))({)(\\w*)(})"
         }, {
             token : "storage.type",
-            regex : "\\\\[a-zA-Z%{}!]+"
+            regex : "\\\\[a-zA-Z%{}!:]+" // ALERTA: Afegits nous tipus %{}!:
         }, {
             token : "lparen",
             regex : "[[({]"
@@ -31,7 +31,7 @@ var LatexHighlightRules = function() {
         }, {
             token : "constant.character.escape",
             regex : "\\\\[^a-zA-Z]?"
-        // }, {
+        // }, { // ALERTA: eliminats, això provoca el mal funcionament de $$ (es fan servir altres etiquetes per les equacions)
         //     token : "string",
         //     regex : "\\${1,2}",
         //     next  : "equation"

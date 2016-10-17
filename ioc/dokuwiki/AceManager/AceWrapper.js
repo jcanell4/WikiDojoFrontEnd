@@ -124,14 +124,9 @@ define([
                 state = tokenizer.states[currentState];
                 mapping = tokenizer.matchMappings[currentState];
 
-                console.log("tokenizer:", tokenizer);
-                console.log("CurrentState:", currentState);
                 re = tokenizer.regExps[currentState];
 
 
-
-
-                console.log("Regexs per l'estat actual: ", re);
                 re = tokenizer.regExps[currentState];
                 re.lastIndex = lastIndex = 0;
                 states = [
