@@ -120,9 +120,13 @@ define([
              */
             getLineStates: function (line, startState, tokenizer) {
                 var currentState, lastIndex, mapping, match, re, rule, state, states;
-                currentState = startState;
+                currentState = startState[0]; // ALERTA: El startState es un array
                 state = tokenizer.states[currentState];
                 mapping = tokenizer.matchMappings[currentState];
+
+                re = tokenizer.regExps[currentState];
+
+
                 re = tokenizer.regExps[currentState];
                 re.lastIndex = lastIndex = 0;
                 states = [
@@ -158,6 +162,8 @@ define([
                     lastIndex = re.lastIndex;
                 }
                 _.last(states).end = lastIndex;
+
+
                 return states;
             },
 

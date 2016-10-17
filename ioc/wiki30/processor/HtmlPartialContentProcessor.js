@@ -186,7 +186,7 @@ define([
                     // No hi ha tipus previ de contenttool, o el tipus del contenttol era diferent
                     
                     if(contentTool && contentTool.type == "requiring_partial"){
-                        //Cal aturar la cancel·lació automàtica en tancar el contentTool!
+                        //Cal aturar la cancelació automàtica en tancar el contentTool!
                         contentTool.stopTimer();
                     }
                     ret = this.inherited(arguments);
