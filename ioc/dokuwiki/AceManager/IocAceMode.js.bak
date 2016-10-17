@@ -5,6 +5,13 @@ define([
     'ioc/dokuwiki/underscore'
 
 ], function (Stateful, declare, lang) {
+
+    var IocAceModeException= function (message) {
+        this.message = message;
+        this.name = "IocAceModeException";
+    };
+
+
     return declare([Stateful],
         /**
          * Aquesta classe actua com a factoría de modes que poden ser aplicats a un editor Ace. El mode pot ser
@@ -126,6 +133,9 @@ define([
              */
             _highlighter: null,
 
+            _rulesToEmbedIntoLanguages: {},
+
+
             /**
              * Admet un objecte amb els paràmetres de configuració següents:
              *  - baseHighlighters amb un objecte de tipus {llenguatge : ressaltador}
@@ -154,7 +164,7 @@ define([
             /**
              * Defineix una regla a partir dels paràmetres passats com argument.
              *
-             * @param {string} state - state al que s'aplica aquesta regle
+             * @param {string} state - state al que s'aplica aquesta regla
              * @param {string} regex - expresió regular que l'activa
              * @param {string|string[]|function} token - estil a aplicar a la coincidència
              * @param {string?} next - state al que passa l'editor al trobar la coincidència
@@ -170,7 +180,7 @@ define([
                 this._tokenizerRules[state].push({
                     regex: regex,
                     token: token,
-                    next:  next,
+                    next: next,
                     merge: true
                 });
 
@@ -289,16 +299,22 @@ define([
              * @protected
              */
             defEmbed: function (name, openRegex, closeRegex, token, language) {
+                // return this.defEmbedNew(name, openRegex, closeRegex, token, language); // ALERTA[Xavi] això no funciona, són les proves per la nova funció
+
                 // Afegim el ressaltador al state start
                 var rules = {
                     highlighter: this.getHighlighters()[language],
-                    prefix:      name,
-                    closeRules:  [{
+                    prefix: name,
+                    closeRules: [{
                         token: token,
                         regex: closeRegex,
-                        next:  'start'
+                        next: 'start'
                     }]
                 };
+
+
+
+
                 this._checkProcessing();
                 this.defBase(openRegex, token, name + "-start");
                 this.defInline("(?=" + openRegex + ")", token, name);
@@ -311,16 +327,20 @@ define([
 
                     rules = {
                         highlighter: this.getHighlighters()[language],
-                        prefix:      container + '-' + name,
-                        closeRules:  [{
+                        prefix: container + '-' + name,
+                        closeRules: [{
                             token: token,
                             regex: closeRegex,
-                            next:  container + '-start'
+                            next: container + '-start'
                         }]
                     };
                     this._embededHighlighters.push(rules);
                 }
             },
+
+
+
+
 
             /**
              * Recorre totes les regles de resaltat enregistrades en aquest mode i les incrusta al resaltador base.
@@ -333,6 +353,9 @@ define([
 
                 for (var i = 0, len = this._embededHighlighters.length; i < len; i++) {
                     rules = this._embededHighlighters[i];
+
+                    console.log("Afegint regles al ressaltador: ", rules.highlighter, rules.prefix, rules.closeRules);
+
                     this._highlighter.embedRules(rules.highlighter, rules.prefix + "-", rules.closeRules);
                 }
             },
@@ -367,8 +390,8 @@ define([
             _generateMode: function () {
                 var
                     doku_mode = new this.Mode(),
-                    self = this,
-                    total = inici = new Date().getTime();
+                    self = this;
+
 
                 this._highlighter = new doku_mode.HighlightRules();
 
@@ -378,7 +401,11 @@ define([
                 this._init();
 
                 this._highlighter.addRules(this._tokenizerRules, "");
+
+                this._processEmbededLanguages();
+
                 this._embedHighlighter(); // Passem el highlighter al que s'incrustaran les regles
+
                 this._processContainers();
 
                 doku_mode.$tokenizer = new this.Tokenizer(this._highlighter.getRules());
@@ -390,6 +417,12 @@ define([
 
                 this._changed = false;
                 this._processing = false;
+
+
+                var rules = this._highlighter.getRules(); // Les d'aquest mode
+                console.log(rules);
+
+
                 return doku_mode;
             },
 
@@ -408,6 +441,8 @@ define([
                 // Processem primer les regles estàtiques
                 this._processExtraRules();
 
+
+
                 // Recorrem tots els sets de regles i les processem
                 for (var i = 0, len = this.ruleSets.length; i < len; i++) {
                     this.ruleSets[i].process();
@@ -421,6 +456,8 @@ define([
                 // Processar la resta
                 this._processCode();
                 this._processFiles();
+
+
             },
 
             /**
@@ -629,8 +666,89 @@ define([
              * @private
              */
             _processContainers: function () {
+                // console.log("Les regles que s'afegeixen a tots els containers son:", this._inlineRules)
+
                 for (var i = 0, len = this._containerStates.length; i < len; i++) {
+
+
                     this._copyRules('start', this._containerStates[i], this._inlineRules);
+                }
+            },
+
+            defEmbedIntoLanguage: function (name, openRegex, closeRegex, token, language) {
+                console.log("IocAceMode#defEmbedIntoLanguage", arguments);
+                // TODO Si no funciona, afegir tots els items en un array y processar-los abans o després que la resta del mode.
+
+                if (!this.getHighlighters()[language]) {
+                    throw new IocAceModeException("No s'ha trobat cap ressaltador pel llenguatge '" + language + "'.");
+                }
+
+
+                var prefix = language + '-' + name + '-';
+
+
+                if (!this._rulesToEmbedIntoLanguages[language]) {
+                    this._rulesToEmbedIntoLanguages[language] = [];
+                }
+
+                this._rulesToEmbedIntoLanguages[language].push(
+                    {
+
+                    init: {
+                        "latex-start": {
+                            token: token,
+                            regex: openRegex,
+                            next: "latex-ddollar-start"
+                            // next: language + "-" +language + '-start'
+                        }
+                    },
+
+                    embed: {
+                        highlighter: this.getHighlighters()[language],
+                        prefix: "latex-ddollar-",
+                        // prefix: prefix,
+                        rules : [{
+                            token: token,
+                            regex: closeRegex,
+                            next: "latex-start",
+                            // next: language + "-start"
+                        }]
+
+                    }
+                })
+            },
+
+            _processEmbededLanguages: function () {
+                console.log("IocAceMode#_processEmbededLanguages", this._rulesToEmbedIntoLanguages);
+
+
+
+                for (var language in this._rulesToEmbedIntoLanguages) {
+
+
+                    var items = this._rulesToEmbedIntoLanguages[language];
+
+
+                    for (var i=0, len = items.length; i<len; i++) {
+
+                        console.log("Processant regles pel llenguatge: ", language, items[i]);
+
+                        // Afegir el mètode start
+                        this._highlighter.addRules(items[i].init.start);
+                        console.log("Regles actuals: ", this._highlighter.getRules());
+
+
+
+
+                        // Incrustem el llenguatge
+                        this._highlighter.embedRules(items[i].embed.highlighter, items[i].embed.prefix, items[i].embed.rules);
+
+                        // exit();
+
+                    }
+
+
+
                 }
             },
 
@@ -646,7 +764,10 @@ define([
              * @private
              */
             _copyRules: function (state, prefix, rules) {
+                console.log("Copiant regles per l'estat" , state, " amb prefix " , prefix);
+                // console.error("** Copiant regles **", state, typeof state, prefix, rules);
                 var rule, newNext, newRule, newRules, oldRules, processedRules;
+
 
                 processedRules = this._highlighter.getRules();
 
@@ -669,7 +790,7 @@ define([
                         newRule = {
                             'regex': rule.regex,
                             'token': rule.token,
-                            'next':  newNext
+                            'next': newNext
                         };
 
                         if (newRules[state]) {

@@ -34,10 +34,10 @@ define([
                 tabSize:             2,
                 horizontalScrollBar: false,
                 undoManager:         new ace.UndoManager(),
-                onDocumentChange:    function () {
+                onDocumentChange:    function (e) {
                     //console.log("callback: document change");
                 },
-                onCursorChange:      function () {
+                onCursorChange:      function (e) {
                     //console.log("callback: cursor change");
                 }
             },
@@ -70,6 +70,16 @@ define([
                 this.setHorizontalScrollBarVisible(args.horizontalScrollBar);
                 this.setDocumentChangeCallback(args.onDocumentChange);
                 this.setChangeCursorCallback(args.onCursorChange);
+
+
+                var editor = this.editor;
+                this.editor.on("changeSelection", function() {
+                    var position = editor.getCursorPosition();
+                    var token = editor.session.getTokenAt(position.row, position.column);
+                    var state = editor.session.getState(position.row);
+                    console.log("Token: " , token, "State" , state);
+                });
+
             },
 
             /**
@@ -82,6 +92,9 @@ define([
                 var value = container || this._default.containerId;
                 this.set('editor', ace.edit(value));
                 this.set('session', this.editor.getSession());
+
+
+
             },
 
             /**
@@ -178,9 +191,9 @@ define([
              */
             setDocumentChangeCallback: function (args) {
                 var callback = args || this._default.onDocumentChange;
-                this.session.on('change', lang.hitch(this, function () {
+                this.session.on('change', lang.hitch(this, function (e) {
                         if (!this._readOnly) {
-                            return callback();
+                            return callback(e);
                         }
                     })
                 );
@@ -193,8 +206,8 @@ define([
              */
             setChangeCursorCallback: function (args) {
                 var callback = args || this._default.onCursorChange;
-                this.editor.getSelection().on('changeCursor', function () {
-                    return callback();
+                this.editor.getSelection().on('changeCursor', function (e) {
+                    return callback(e);
                 });
             },
 
