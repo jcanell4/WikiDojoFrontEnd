@@ -37,6 +37,8 @@ define([
             this.lsucDefault.right = style.get(node, "width");
             node = registry.byId(dispatcher.bottomPanelNodeId).domNode;
             this.lsucDefault.bottom = style.get(node, "height");
+            node = registry.byId(dispatcher.leftBottomPanelNodeId).domNode;
+            this.lsucDefault.leftBottom = style.get(node, "height");
         },
         
         /*
@@ -74,7 +76,8 @@ define([
                 if (panel[user]) {
                     ret = {"left":   panel[user].panelPosition.left,
                            "right":  panel[user].panelPosition.right,
-                           "bottom": panel[user].panelPosition.bottom
+                           "bottom": panel[user].panelPosition.bottom,
+                           "leftBottom": panel[user].panelPosition.leftBottom
                           };
                     this.lsuc.panelPosition = ret;
                     return ret;
@@ -103,6 +106,13 @@ define([
                 estil = style.set(node, "height", ""+panel.bottom+"px");
             }
             bcId.resize();
+            if (panel.leftBottom) {
+                bcId = registry.byId(dispatcher.leftBCNodeId); 
+                node = registry.byId(dispatcher.leftBottomPanelNodeId).domNode;
+                estil = style.set(node, "height", ""+panel.leftBottom+"px");
+                bcId.resize();
+            }
+            
         },
         
         /**
@@ -129,6 +139,17 @@ define([
         
         /**
          * Guarda el valor del tamaño del contenedor BOTTOM en la variable lsuc y
+         * envía una petición para su almacenamiento permanente en localStorage
+         */
+        setUserLeftBottomPanelSize: function(user, bottom) {
+            if (user && bottom) {
+                this.lsuc.panelPosition.leftBottom = bottom;
+                this._saveLocalStorage(this.lsuc, user);
+            }
+        },
+            
+        /**
+         * Guarda el valor del tamaño del contenedor LEFT_BOTTOM en la variable lsuc y
          * envía una petición para su almacenamiento permanente en localStorage
          */
         setUserBottomPanelSize: function(user, bottom) {

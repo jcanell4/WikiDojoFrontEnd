@@ -32,6 +32,8 @@ define([
          * @extends dijit.layout.TabController
          */
         {
+            minSizeUpdated: false,
+            
             // Attachpoints
             tablistWrapper: null,
 
@@ -143,7 +145,7 @@ define([
                     textNode = query("> .tabLabel", tabButtonNode)[0];
                     textNode.innerHTML = tabButton.label;
                     posLabel = tabButton.label.length;
-                    while (textNode.offsetWidth >= maxTextWidth + 5) {
+                    while (maxTextWidth>8 && textNode.offsetWidth >= maxTextWidth + 5) {
                         posLabel--;
                         textNode.innerHTML = tabButton.label.substr(0, posLabel) + "...";
                     }
@@ -172,9 +174,21 @@ define([
              * @override
              */
             resize: function (dim) {
+                var asc = this.getParent();
                 this.inherited(arguments);
                 this.domNode.style.width = "" + dim.w + "px";
-                this._calculateButtonSize();
+                while(!this.minSizeUpdated && this.minSize==0 && asc){
+                    if(!asc || asc.minSize!=0){
+                        this.minSize=asc.minSize;
+                        this.minSizeUpdated = true;
+                    }else{
+                        asc = asc.getParent();
+                    }
+                }
+                //console.log("dimensió:"+ dim.w);
+                if(dim.w>=this.minSize){
+                    this._calculateButtonSize();
+                }
             }/*,*/
         });
 
