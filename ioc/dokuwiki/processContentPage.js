@@ -10,21 +10,7 @@ define([
 ], function(on, dom, event, listHeadings, runRender, runQuiz,
                 Request, att){
 
-    var requestPage = new Request();
-    var requestEdita = new Request();
-//    requestEdita.updateSectok = function (sk) {
-//        this.sectok = sk;
-//    };
-//    requestEdita.sectok = requestEdita.dispatcher.getSectok();
-//    requestEdita.dispatcher.toUpdateSectok.push(requestEdita);
-
-    var requestImgDetail = new Request();
-//    requestImgDetail.updateSectok = function (sk) {
-//        this.sectok = sk;
-//    };
-//    requestImgDetail.sectok = requestImgDetail.dispatcher.getSectok();
-//    requestImgDetail.dispatcher.toUpdateSectok.push(requestImgDetail);
-
+    var request = new Request();
     return function (id, params) {
 
         listHeadings(id);
@@ -32,34 +18,39 @@ define([
         runQuiz(id);
 
         var domNode = dom.byId(id);
-        requestEdita.urlBase = params.editCommand;
-
-        requestImgDetail.urlBase = params.detailCommand;
-
         on(domNode, 'div.imgb a.media:click, div.iocfigure a.media:click', function (e) {
             var query = "";
             var arr = att.get(this, "href").split("?");
             if (arr.length > 1) {
                 query = arr[1];
             }
-            requestImgDetail.sendRequest(query);
+            request.set('standbyId', domNode.id);
+            request.urlBase = params.detailCommand;
+            request.sendRequest(query);
             event.stop(e);
         });
         
-        on(domNode, 'li div a[class=wikilink1]:click', function(e){
+        on(domNode, 'a[class=wikilink1]:click', function(e){
             var query = "";
+            var hash = "";
             var idtag = "";
             var arr = att.get(this, "href").split("?");
             if (arr.length > 1) {
                 query = arr[1];
-                idtag= query.substr(0, query.indexOf("#")).replace(":", "_");
+                arr = query.split("#");
+                query = arr[0];
+                hash = arr[1];
+                idtag= query.substring(query.indexOf("=")+1, query.length).replace(/:/g, "_");
             }
-            if(idtag!==domNode.id){
-                requestPage.sendRequest(query);
-                event.stop(e);            
+            if(hash && idtag===domNode.id){
+                window.location.href = "#" + hash;
+            }else{
+                request.set('standbyId', domNode.id);
+                request.urlBase = params.pageCommand;
+                request.sendRequest(query);
             }
+            event.stop(e);            
         });
-
     };
 });
 

@@ -59,7 +59,7 @@ define(function () {
         },
 
         _generateFormId = function (id) {
-            return 'revisions_selector_' + id.replace(':', '_');
+            return 'revisions_selector_' + id.replace(/:/g, '_');
         };
 
 

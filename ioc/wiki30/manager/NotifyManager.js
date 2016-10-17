@@ -119,7 +119,7 @@ define([
 
         _processMessage: function (notification) {
             //console.log("NotifyManager#_processMessage", notification);
-//            notification.notification_id = notification.notification_id.replace(':', '_');
+//            notification.notification_id = notification.notification_id.replace(/:/g, '_');
 
 
             if (this.notifierContainer.isNotificationInContainer(notification.notification_id)) {

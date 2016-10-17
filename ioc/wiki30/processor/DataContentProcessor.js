@@ -138,6 +138,7 @@ define([
                             //                  en X temps, es passarà a calcel·lar els canvis.
                             //                  La cancel·lació s'envia forçant la cancel·lació 
                             //                  dels canvis + un alerta informant del fet
+                                ptimer.id = ptimer.contentTool.id;
                                 var dialog = dispatcher.getDialogManager().getDialog('lock_expiring'
                                                                         , "lockExpiring_"+ptimer.contentTool.id
                                                                         , ptimer);
