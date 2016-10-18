@@ -33,7 +33,7 @@ define([
              * @override
              */
             onDestroy: function () {
-                //console.log("DocumentSubclass#onDestroy");
+                console.log("DocumentSubclass#onDestroy");
                 this.removeState();
                 this.inherited(arguments);
             },
@@ -54,6 +54,13 @@ define([
                 this.dispatcher.removeDocumentState(this.id);
                 //this.dispatchEvent('document_closed', {id: this.id});
                 this.dispatcher.updateFromState();
+
+
+                var infoManager = this.dispatcher.getInfoManager();
+                infoManager.refreshInfo();
+                // var globalInfo = infoManager.getInfo();
+                // infoManager.setInfo(globalInfo);
+
             },
 
             /**
@@ -86,6 +93,7 @@ define([
                 this.dispatcher.getGlobalState().currentTabId = id;
                 if (this.dispatcher.getContentCache(id)) {
                     this.dispatcher.getContentCache(id).setMainContentTool(this);
+                    this.dispatcher.getInfoManager().refreshInfo(id);
                 }
             },
 

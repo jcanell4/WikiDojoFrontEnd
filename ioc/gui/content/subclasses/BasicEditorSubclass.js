@@ -111,6 +111,10 @@ define([
 //                    dataToSend: dataToSend,
 //                    standbyId: containerId
 //                })
+
+                console.log("DATA Enviada amb l'event: ", event);
+                console.log("DATA Enviada al servidor: ", dataToSend);
+                
                 return {
                     id: this.id,
                     dataToSend: dataToSend,
@@ -357,7 +361,7 @@ define([
 
             onDestroy: function() {
                 var eventManager = this.dispatcher.getEventManager();
-                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id}, this.id);
+                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: {no_response: true}}, this.id);
                 this.inherited(arguments);
             }
 

@@ -46,25 +46,32 @@ define([
 
                     switch (info.type) {
                         case "error":
-                            style = "color:#D8000C;background-color:#FFBABA";
+                            style = "color:#D8000C;background-color:#FFBABA;";
                             break;
 
                         case "success":
-                            style = "color:#4f8A10;background-color:#DFF2BF";
+                            style = "color:#4f8A10;background-color:#DFF2BF;";
                             break;
 
                         case "warning":
-                            style = "color:#9F6000;background-color:#FEEFB3";
+                            style = "color:#9F6000;background-color:#FEEFB3;";
                             break;
 
                         case "info":
-                            style = "color:#00529B;background-color:#BDE5F8";
+                            style = "color:#00529B;background-color:#BDE5F8;";
                             break;
                             
                         case "notify":
-                            style = "color:#00529B;background-color:#BDE5F8";
+                            style = "color:#00529B;background-color:#BDE5F8;";
+                            break;
+
+                        default:
+                            style = "border:none";
                             break;
                     }
+
+
+
                     return style;
                 },
 
@@ -297,9 +304,13 @@ define([
 
                     if (id && id.length > 0 && id === currentId) {
                         info = this.getInfo(id);
+                        console.log("Estructura de l'info:", info);
 
                     } else if (id === null || typeof id === 'undefined' || id.length === 0) {
-                        info = this.getInfo();
+
+
+                        info = this.getInfo() || this.getClearInfo();
+                        console.log("Recuperat el info global:", info);
 
                     } else {
                         //alert("El id ["+id+"] no coincideix amb el document actual ["+ currentId +"], i no es tracta d'un missatge global. No cal refrescar res");
@@ -325,8 +336,14 @@ define([
                     infoStorage.currentInfo.document = lang.clone(infoStorage.storedInfo.document);
 
                     this.dispatcher.getGlobalState().setInfoStorage(infoStorage);
+                },
+
+                getClearInfo: function() {
+                    return {type: "", message: "", duration: -1, timestamp: ""};
                 }
             }
+
+
         )
     }
 );
