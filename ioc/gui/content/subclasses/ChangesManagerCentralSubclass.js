@@ -89,9 +89,9 @@ define([
          * @returns {boolean}
          */
         onClose: function () {
-            var confirmation = true;
+            var confirmation = this.inherited(arguments);
 
-            if (this.changesManager.isChanged(this.id)) {
+            if (confirmation && this.changesManager.isChanged(this.id)) {
                 confirmation = this.dispatcher.discardChanges();
             }
 

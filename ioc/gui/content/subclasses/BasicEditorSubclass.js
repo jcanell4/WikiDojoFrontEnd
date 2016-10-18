@@ -359,10 +359,10 @@ define([
                 }
             },
 
-            onDestroy: function() {
+            onClose: function() {
                 var eventManager = this.dispatcher.getEventManager();
                 eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: {no_response: true}}, this.id);
-                this.inherited(arguments);
+                return this.inherited(arguments);
             }
 
 
