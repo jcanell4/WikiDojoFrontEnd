@@ -120,7 +120,12 @@ define([
              */
             getLineStates: function (line, startState, tokenizer) {
                 var currentState, lastIndex, mapping, match, re, rule, state, states;
-                currentState = startState[0]; // ALERTA: El startState es un array
+
+                if (Array.isArray(startState)) {
+                    currentState = startState[0];
+                } else {
+                    currentState = startState
+                }
                 state = tokenizer.states[currentState];
                 mapping = tokenizer.matchMappings[currentState];
 
