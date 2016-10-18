@@ -353,7 +353,18 @@ define([
                 if($form.length>0){
                     $form.height(args.changeSize.h);
                 }
+            },
+
+            onDestroy: function() {
+                // alert("Dispatch cancel");
+                console.log("Hi ha dispatcher?", this.dispatcher);
+
+
+                var eventManager = this.dispatcher.getEventManager();
+                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id}, this.id);
+                this.inherited(arguments);
+
             }
 
-        });
+        })
 });

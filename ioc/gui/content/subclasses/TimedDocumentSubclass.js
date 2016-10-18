@@ -46,7 +46,7 @@ define([
         },
 
         onDestroy: function () {
-            console.log("LocktimedDocumentSubclass#onDestroy");
+            console.log("TimedDocumentSubclass#onDestroy");
             this.cancelTimer();
             this.inherited(arguments);
         },

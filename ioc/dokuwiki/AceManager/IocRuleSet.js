@@ -19,7 +19,7 @@ define([
          */
         {
             baseHighlighters: {
-                php:  ace.require("ace/mode/java_highlight_rules").JavaHighlightRules,
+                java:  ace.require("ace/mode/java_highlight_rules").JavaHighlightRules,
 
                 php:  ace.require("ace/mode/php_highlight_rules").PhpHighlightRules,
                 html: ace.require("ace/mode/html_highlight_rules").HtmlHighlightRules,
