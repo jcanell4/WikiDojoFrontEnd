@@ -1191,6 +1191,10 @@ define([
                 dataToSend += '&' + event.extraDataToSend;
             }
 
+            if (typeof event.dataToSend === "string") {
+                dataToSend += "&" + event.dataToSend;
+            }
+
             containerId = event.id;
 
             //this.eventManager.fireEvent(this.eventName.CANCEL, {
@@ -1228,6 +1232,12 @@ define([
 
         getReadOnly: function () {
             return this.get('readonly');
+        },
+
+        onDestroy: function() {
+            var eventManager = this.dispatcher.getEventManager();
+            eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: "no_response=true"}, this.id);
+            this.inherited(arguments);
         }
     })
 });
