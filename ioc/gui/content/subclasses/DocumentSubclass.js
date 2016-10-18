@@ -69,6 +69,7 @@ define([
              * @override
              */
             onSelect: function () {
+                console.log("Seleccionat", this.id);
                 this.setCurrentDocument();
                 this.dispatcher.getInfoManager().refreshInfo(this.id);
                 this.dispatchEvent(this.eventName.DOCUMENT_SELECTED, {id: this.id});

@@ -26,6 +26,8 @@ define([
                 /** @type: {Dispatcher} */
                 dispatcher: null,
 
+                EMPTY_INFO: {type: "", message: "", duration: -1, timestamp: ""},
+
                 constructor: function (dispatcher) {
                     this.dispatcher = dispatcher;
                 },
@@ -339,7 +341,14 @@ define([
                 },
 
                 getClearInfo: function() {
-                    return {type: "", message: "", duration: -1, timestamp: ""};
+                    var currentDocumentId = this.dispatcher.getGlobalState().getCurrentId();
+
+                    if (currentDocumentId) {
+                        return this.getInfo(currentDocumentId);
+                    } else {
+                        return this.EMPTY_INFO;
+                    }
+
                 }
             }
 
