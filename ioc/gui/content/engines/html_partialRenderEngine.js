@@ -28,7 +28,7 @@ define(function () {
 
         for (i = 0; i < data.chunks.length; i++) {
             aux_id = data.id + "_" + data.chunks[i].header_id;
-            $container = jQuery('<div id="container_' + aux_id + '"></div>');
+            $container = jQuery('<div id="container_' + aux_id + '" data-editor-container=""></div>');
 
             $header = $doc.find('#' + data.chunks[i].header_id);
 

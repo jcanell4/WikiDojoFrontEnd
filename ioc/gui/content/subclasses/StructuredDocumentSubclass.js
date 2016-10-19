@@ -46,6 +46,8 @@ define([
             this.editors = {}; // A aquest objecte es guardarà per cada header_id el seu editor
             this.currentSectionId = null;
             this.hasChanges = false;
+
+            toolbarManager.setDispatcher(args.dispatcher);
         },
 
 

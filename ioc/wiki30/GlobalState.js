@@ -64,6 +64,7 @@ define([
 
 
         setCurrentElement: function (elementId, state) {
+            console.log("CurrentElement: ", elementId, state);
             this.setCurrentElementId(elementId);
             this.setCurrentElementState(state);
         },
