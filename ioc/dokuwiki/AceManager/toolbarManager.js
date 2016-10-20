@@ -14,6 +14,28 @@ define([], function () {
         this.name = "ToolbarManagerException";
     };
 
+    // ALERTA[Xavi] Substituim la funció global corresponent al picker
+
+    window['addBtnActionPicker'] = function ($btn, props, edid) {
+        var pickerid = 'picker' + (pickercounter++);
+        createPicker(pickerid, props, edid);
+
+        $btn.click(
+            function () {
+                var $container = $btn.closest('[data-editor-container]'),
+                    idContainer = $container.attr('id');
+
+                _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
+                jQuery('#' + idContainer).find('textarea').focus();
+
+                pickerToggle(pickerid, $btn);
+                return false;
+            }
+        );
+
+        return true;
+    };
+
 
     var buttons = {},
         baseToolbar = window['toolbar'], // Com a font fem servir sempre la barra d'eines exportada per la wiki
@@ -61,14 +83,12 @@ define([], function () {
                 throw new ToolbarManagerException("No s'ha establert el dispatcher. Crida a toolbarManager.setDispatcher(dispatcher) abans.");
             }
 
-
             var funcType = 'addBtnAction' + (config.type = config.type + '_' + type); // TODO[Xavi] comprovar si es correcta l'assignació, sembla un error
 
             window[funcType] = function ($btn) {
 
                 $btn.click(function (event) {
-                    console.log("Click a un botó");
-                    var idContainer = jQuery(event.currentTarget).closest('[data-editor-container]').attr(id);
+                    var idContainer = jQuery(event.currentTarget).closest('[data-editor-container]').attr('id');
 
                     _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
                     jQuery('#' + idContainer).find('textarea').focus();
@@ -126,24 +146,33 @@ define([], function () {
 
             var originalFunction = window[funcType];
 
-            if (!originalFunction) {
-                console.log(button.type + " no correspon a cap funció, ho saltem");
-                alerta("Segurament s'ha detectat un picker. S'ha de trobar una manera de guardar la referència d'aquest")
+            if (originalFunction) {
 
-            } else {
-                window[funcType] = function ($btn, props,edid) {
-                    console.log("Click a un botó PARXEJAT", button.type, arguments);
-                    var idContainer = $btn.closest('[data-editor-container]').attr('id');
+                window[funcType] = function ($btn, props, edid) {
+                    // console.log("Click a un botó PARXEJAT", button.type, arguments);
 
 
-                    console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
+                    if (!$btn.parent().hasClass('picker')) {
+                        var $container = $btn.closest('[data-editor-container]');
+                    }
 
-                    _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
-                    jQuery('#' + idContainer).find('textarea').focus();
 
-                    console.log("Canviat el focus a ", jQuery('#' + idContainer).find('textarea'));
+                    if ($container) {
 
-                    console.log("que es original function??", originalFunction);
+                        var idContainer = $container.attr('id');
+                        console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
+
+                        _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
+                        jQuery('#' + idContainer).find('textarea').focus();
+
+                        console.log("Canviat el focus a ", jQuery('#' + idContainer).find('textarea'));
+
+                        console.log("que es original function??", originalFunction);
+
+                    } else {
+                        throw new ToolbarManagerException("No s'ha trobat el contenidor");
+                    }
+
                     originalFunction($btn, props, edid);
 
                 };
@@ -156,9 +185,7 @@ define([], function () {
 
         _checkAsPatched = function (type) {
             patchedButtons[type] = true;
-            console.log("Afegit a parxejats:", type);
         };
-
 
     return {
 
