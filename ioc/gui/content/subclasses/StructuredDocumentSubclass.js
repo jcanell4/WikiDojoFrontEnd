@@ -971,7 +971,15 @@ define([
                 $container = jQuery('#container_' + auxId);
 
                 $container.on('click', function () {
-                    context._setCurrentSection(this.id);
+                    // Comprovar si es la secció seleccionada i si el seu state es false (no està en edició)
+                    var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
+
+                    if (currentSelection.id === this.id && !currentSelection.state) {
+                        context._setCurrentSection(null);
+                    } else {
+                        context._setCurrentSection(this.id);
+                    }
+
                     return true;
                 });
 
@@ -1000,31 +1008,34 @@ define([
         
         _setCurrentSection: function (section_id) {
 
-            var isEditing = jQuery.inArray(section_id.replace('container_' + this.id + '_', ''), this.getEditingChunks()) > -1;
+            if (section_id) {
+                var isEditing = jQuery.inArray(section_id.replace('container_' + this.id + '_', ''), this.getEditingChunks()) > -1;
 
-            this.dispatcher.getGlobalState().setCurrentElement(section_id, isEditing);
-            this._setHighlight(section_id, 'section_selected');
-            this.currentSectionId = section_id;
-            this.dispatcher.updateFromState(); // TODO[Xavi] Això es cridarà des del globalState.setCurrentElement()
+                this.dispatcher.getGlobalState().setCurrentElement(section_id, isEditing);
+                this._setHighlight(section_id, 'section_selected');
+                this.currentSectionId = section_id;
+
+            } else {
+                this._removeHighlight('section_selected');
+                this.dispatcher.getGlobalState().setCurrentElement(null, false);
+                this.currentSectionId = null;
+            }
+
+            this.dispatcher.updateFromState();
+
+
         },
 
         _getCurrentSectionId: function () {
             return this.currentSectionId;
         },
 
+        _removeHighlight: function(className) {
+            jQuery('.' + className).removeClass(className);
+        },
+
         _setHighlight: function (section_id, className) {
-            var that = this;
-
-            jQuery('.' + className).each(function () {
-                //jQuery(this).removeClass('section_highlight');
-                $this = jQuery(this);
-                if ($this.attr('id').indexOf('container_' + that.id) > -1) {
-                    jQuery(this).removeClass(className);
-                }
-
-            });
-
-            //jQuery('#' + section_id).addClass('section_highlight');
+            this._removeHighlight(className);
             jQuery('#' + section_id).addClass(className);
         },
 

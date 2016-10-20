@@ -12,11 +12,11 @@ define([], function () {
     var ToolbarManagerException = function (message) {
         this.message = message;
         this.name = "ToolbarManagerException";
+        console.error(message);
     };
 
     // ALERTA[Xavi] Substituim la funció global corresponent al picker
 
-    console.log("** Sobreescrit el picker **");
     window['addBtnActionPicker'] = function ($btn, props, edid) {
         var pickerid = 'picker' + (pickercounter++);
         createPicker(pickerid, props, edid);
@@ -27,7 +27,7 @@ define([], function () {
                     idContainer = $container.attr('id');
 
                 _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
-                jQuery('#' + idContainer).find('textarea').focus();
+                jQuery('#' + idContainer).find('textarea').first().first().focus();
 
                 pickerToggle(pickerid, $btn);
                 return false;
@@ -154,23 +154,19 @@ define([], function () {
 
                     if (!$btn.parent().hasClass('picker')) {
                         var $container = $btn.closest('[data-editor-container]');
-                    }
 
+                        if ($container) {
 
-                    if ($container) {
+                            var idContainer = $container.attr('id');
+                            console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
 
-                        var idContainer = $container.attr('id');
-                        console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
+                            _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
+                            jQuery('#' + idContainer).find('textarea').focus();
 
-                        _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
-                        jQuery('#' + idContainer).find('textarea').focus();
+                        } else {
 
-                        console.log("Canviat el focus a ", jQuery('#' + idContainer).find('textarea'));
-
-                        console.log("que es original function??", originalFunction);
-
-                    } else {
-                        throw new ToolbarManagerException("No s'ha trobat el contenidor");
+                            throw new ToolbarManagerException("No s'ha trobat el contenidor");
+                        }
                     }
 
                     originalFunction($btn, props, edid);
@@ -213,12 +209,6 @@ define([], function () {
 
             var $toolbar = jQuery('#' + toolbarId);
             $toolbar.attr('role', 'toolbar');
-
-
-            console.log("Toolbar:", this.getToolbar(type));
-
-            console.log("Quin es el contingut de buttons?", buttons);
-
 
             // Recorrem tots els botons
             var _buttons = this.getToolbar(type);
