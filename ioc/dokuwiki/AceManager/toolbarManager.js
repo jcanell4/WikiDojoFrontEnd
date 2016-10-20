@@ -27,7 +27,7 @@ define([], function () {
                     idContainer = $container.attr('id');
 
                 _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
-                jQuery('#' + idContainer).find('textarea').first().first().focus();
+                jQuery('#' + idContainer).find('textarea').focus();
 
                 pickerToggle(pickerid, $btn);
                 return false;
