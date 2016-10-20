@@ -40,7 +40,8 @@ define([
                 var changesManager = dispatcher.getChangesManager(),
                     confirmation = false,
                     clearDraft = false,
-                    id = value.id;
+                    id = value.id,
+                    existContentTool = dispatcher.getContentCache(id)!==undefined;
 
                 if (value.discard_changes) {
                     confirmation = true;
@@ -49,7 +50,9 @@ define([
                     clearDraft=true;
                 } else {
                     confirmation = true;
-                    clearDraft=true;
+                    if(existContentTool){
+                        clearDraft=true;
+                    }
                 }
 
                 if (confirmation) {
