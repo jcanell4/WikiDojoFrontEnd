@@ -16,6 +16,7 @@ define([], function () {
 
     // ALERTA[Xavi] Substituim la funció global corresponent al picker
 
+    console.log("** Sobreescrit el picker **");
     window['addBtnActionPicker'] = function ($btn, props, edid) {
         var pickerid = 'picker' + (pickercounter++);
         createPicker(pickerid, props, edid);
@@ -134,9 +135,8 @@ define([], function () {
             return toolbars[type] ? true : false;
         },
 
-        // El nom de la funció definit a la wiki(toolbar.js) està format per 'tb_' + button.type
         _patchButton = function (button) {
-            console.log("Aplicant patch a ", button);
+            // console.log("Aplicant patch a ", button);
             // El nom de la funció definit a la wiki(toolbar.js) està format per 'tb_' + button.type
             var funcType = 'tb_' + button.type;
 
