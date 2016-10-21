@@ -286,7 +286,10 @@ define([
                     type: this.type,
                     readonly: content.readonly? content.readonly : false
                 };
-
+                if(content.autosaveTimer){
+                    args["autosaveTimer"] = content.autosaveTimer;
+                }
+                
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
             },
 

@@ -13,8 +13,8 @@ define([
     return declare([EventObservable, EventObserver], {
 
         AUTOSAVE_LOCAL: 5 * 1000, // Temps en ms mínim per fer un refresc
-        AUTOSAVE_REMOTE: 10 * 1000, // TESTS
-        //AUTOSAVE_REMOTE: 2 * 60 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
+        //AUTOSAVE_REMOTE: 10 * 1000, // TESTS
+        AUTOSAVE_REMOTE: 10 * 60 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
         MAX_LOCAL_STORAGE_USED: 2048, // En KBs, 2048KBs son 2 MBs
 
         constructor: function (args) {
@@ -26,6 +26,9 @@ define([
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
             this.eventManager = this.dispatcher.getEventManager();
+            if(this.contentTool.autosaveTimer){
+                this.AUTOSAVE_REMOTE = this.contentTool.autosaveTimer;
+            }
             this._init();
         },
 

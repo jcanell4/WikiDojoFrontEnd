@@ -100,7 +100,9 @@ define([
                     readonly: content.editing.readonly,
                     rev: content.rev
                 };
-
+                if(content.autosaveTimer){
+                    args["autosaveTimer"] = content.autosaveTimer;
+                }
 
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             },
