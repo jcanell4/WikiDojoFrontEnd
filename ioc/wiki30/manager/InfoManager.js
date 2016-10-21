@@ -306,13 +306,13 @@ define([
 
                     if (id && id.length > 0 && id === currentId) {
                         info = this.getInfo(id);
-                        console.log("Estructura de l'info:", info);
+                        // console.log("Estructura de l'info:", info);
 
                     } else if (id === null || typeof id === 'undefined' || id.length === 0) {
 
 
                         info = this.getInfo() || this.getClearInfo();
-                        console.log("Recuperat el info global:", info);
+                        // console.log("Recuperat el info global:", info);
 
                     } else {
                         //alert("El id ["+id+"] no coincideix amb el document actual ["+ currentId +"], i no es tracta d'un missatge global. No cal refrescar res");

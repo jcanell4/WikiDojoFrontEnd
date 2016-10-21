@@ -64,6 +64,7 @@ define([
 
 
         setCurrentElement: function (elementId, state) {
+            // console.log("GlobalState#setCurrentElement", elementId, state);
             this.setCurrentElementId(elementId);
             this.setCurrentElementState(state);
         },
@@ -96,8 +97,11 @@ define([
 
             if (typeof node === "string") {//recibe directamente el id
                 this.pages[id].currentElementId = node;
-            } else {
+            } else if (node) {
                 this.pages[id].currentElementId = dwPageUi.getElementWhithNodeId(node, typeId);
+            } else {
+                // S'ha deseleccionat l'element
+                this.pages[id].currentElementId = null;
             }
         },
 

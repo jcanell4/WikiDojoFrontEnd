@@ -14,7 +14,7 @@ define(function () {
     return function (data) {
 
 
-        var $container = jQuery('<div id="container_' + data.id + '"></div>'),
+        var $container = jQuery('<div id="container_' + data.id + '" data-editor-container></div>'),
             $form = jQuery(data.htmlForm).find('form').clone(),
             $textarea = $form.find('textarea');
 
@@ -22,7 +22,6 @@ define(function () {
         $form.attr('id', 'form_' + data.id);
 
         $textarea.attr('id', 'textarea_' + data.id);
-        //$textarea.val(jQuery.trim($textarea.val()));
         $textarea.val(data.content);
         $container.append($form);
         // TODO afegir el afterContent

@@ -8,9 +8,41 @@
  */
 define([], function () {
 
+
+    var ToolbarManagerException = function (message) {
+        this.message = message;
+        this.name = "ToolbarManagerException";
+        console.error(message);
+    };
+
+    // ALERTA[Xavi] Substituim la funció global corresponent al picker
+
+    window['addBtnActionPicker'] = function ($btn, props, edid) {
+        var pickerid = 'picker' + (pickercounter++);
+        createPicker(pickerid, props, edid);
+
+        $btn.click(
+            function () {
+                var $container = $btn.closest('[data-editor-container]'),
+                    idContainer = $container.attr('id');
+
+                _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
+                jQuery('#' + idContainer).find('textarea').focus();
+
+                pickerToggle(pickerid, $btn);
+                return false;
+            }
+        );
+
+        return true;
+    };
+
+
     var buttons = {},
         baseToolbar = window['toolbar'], // Com a font fem servir sempre la barra d'eines exportada per la wiki
         toolbars = {},
+        _dispatcher = null,
+        patchedButtons = {},
 
         /**
          * Crea una nova toolbar afegint els botons basics de la wiki.
@@ -48,11 +80,24 @@ define([], function () {
          */
         _createButtonInToolbar = function (config, func, type) {
             //console.log('toolbarManager#_createButtonInToolbar', type);
-            var funcType = 'addBtnAction' + (config.type = config.type + '_' + type);
+            if (!_dispatcher) {
+                throw new ToolbarManagerException("No s'ha establert el dispatcher. Crida a toolbarManager.setDispatcher(dispatcher) abans.");
+            }
+
+            var funcType = 'addBtnAction' + (config.type = config.type + '_' + type); // TODO[Xavi] comprovar si es correcta l'assignació, sembla un error
 
             window[funcType] = function ($btn) {
-                $btn.click(func);
+
+                $btn.click(function (event) {
+                    var idContainer = jQuery(event.currentTarget).closest('[data-editor-container]').attr('id');
+
+                    _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
+                    jQuery('#' + idContainer).find('textarea').focus();
+                    func(arguments);
+                });
             };
+
+            _checkAsPatched(config.type);
 
             _getToolbar(type)[toolbars[type].length] = config;
 
@@ -88,6 +133,54 @@ define([], function () {
          */
         _existsToolbar = function (type) {
             return toolbars[type] ? true : false;
+        },
+
+        _patchButton = function (button) {
+            // console.log("Aplicant patch a ", button);
+            // El nom de la funció definit a la wiki(toolbar.js) està format per 'tb_' + button.type
+            var funcType = 'tb_' + button.type;
+
+            if (!_dispatcher) {
+                throw new ToolbarManagerException("No s'ha establert el dispatcher. Crida a toolbarManager.setDispatcher(dispatcher) abans.");
+            }
+
+            var originalFunction = window[funcType];
+
+            if (originalFunction) {
+
+                window[funcType] = function ($btn, props, edid) {
+                    // console.log("Click a un botó PARXEJAT", button.type, arguments);
+
+
+                    if (!$btn.parent().hasClass('picker')) {
+                        var $container = $btn.closest('[data-editor-container]');
+
+                        if ($container) {
+
+                            var idContainer = $container.attr('id');
+                            console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
+
+                            _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
+                            jQuery('#' + idContainer).find('textarea').focus();
+
+                        } else {
+
+                            throw new ToolbarManagerException("No s'ha trobat el contenidor");
+                        }
+                    }
+
+                    originalFunction($btn, props, edid);
+
+                };
+
+                _checkAsPatched(button.type);
+            }
+
+        },
+
+
+        _checkAsPatched = function (type) {
+            patchedButtons[type] = true;
         };
 
     return {
@@ -113,7 +206,24 @@ define([], function () {
         initToolbar: function (toolbarId, wikiTextId, type) {
             //console.log('toolbarManager#initToolbar', type);
             initToolbar(toolbarId, wikiTextId, this.getToolbar(type));
-            jQuery('#' + toolbarId).attr('role', 'toolbar');
+
+            var $toolbar = jQuery('#' + toolbarId);
+            $toolbar.attr('role', 'toolbar');
+
+            // Recorrem tots els botons
+            var _buttons = this.getToolbar(type);
+
+            for (var i = 0; i < _buttons.length; i++) {
+                var key = _buttons[i].type;
+
+                if (!patchedButtons[key]) {
+                    // Encara no s'ha parxejat el botó, cerquem la funció
+
+                    _patchButton(_buttons[i])
+                }
+            }
+
+
         },
 
         /**
@@ -141,6 +251,15 @@ define([], function () {
                 _createButtonInToolbar(config, func, type);
                 return true;
             }
+        },
+
+        /**
+         * Estableix el dispatcher que serà utilitzat per establir la secció al fer un click sobre un botó
+         *
+         * @param dispatcher
+         */
+        setDispatcher: function (dispatcher) {
+            _dispatcher = dispatcher;
         }
     }
 });
