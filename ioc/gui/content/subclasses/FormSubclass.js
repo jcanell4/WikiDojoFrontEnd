@@ -126,7 +126,7 @@ define([
             _doSave: function (event) {
                 //console.log("FormSubclass#_doSave", this.id, event);
 
-                var dataToSend = this.getQuerySave(this.id),
+                var dataToSend = this.getQuerySave(),
                     containerId = this.id;
 
                 if (event.extraDataToSend) {
@@ -174,8 +174,8 @@ define([
             },
 
             getQuerySave: function () {
-                var $form = jQuery('#form_' + this.id),
-                    values = {};
+                var $form = jQuery('#form_' + this.id);
+                var values = {"ns": this.ns};
 
                 jQuery.each($form.serializeArray(), function (i, field) {
                     values[field.name] = field.value;
