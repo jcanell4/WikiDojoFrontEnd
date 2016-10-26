@@ -82,7 +82,8 @@ define([
              * TODO Si no el troba, no para
              */
 
-            var ps = node.firstChild;
+//            var ps = node.firstChild;
+            var ps = node;
             while (ps) {
                 if (ps.hasChildNodes()) {
                     ps = ps.firstChild;

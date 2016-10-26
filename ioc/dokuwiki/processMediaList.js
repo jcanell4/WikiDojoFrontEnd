@@ -42,8 +42,20 @@ define([
     var res = function(id, params){
         //JSINFO.id=params.ns;
 
+        var getANode = function(e){
+            
+        };
         
         var domNode = dom.byId(id);        
+        
+        on(domNode, 'li:dblclick', function(e){
+            var eventManager = dispatcher.getEventManager();
+            var elid = dwPageUi.getElementWhithNodeId(this,"DL").title;
+            var q ={ 
+                dataToSend:'id=' + elid + '&image=' + elid + '&img=' + elid + '&do=media'
+            };
+            eventManager.fireEvent(eventManager.eventName.MEDIA_DETAIL, q);
+        });
         
         on(domNode, 'li:click', function(e){
             var myAnchor = dwPageUi.getElementWhithNodeId(this,"A");            

@@ -27,7 +27,8 @@ define([
             DOCUMENT_CHANGES_RESET: 'document_changes_reset',
             NOTIFY: 'notify',
             TIMEOUT: 'timeout',
-            SAVE_FORM: 'save_form'
+            SAVE_FORM: 'save_form',
+            MEDIA_DETAIL: 'media_detail'
         },
         
         getEventNameList:function(){

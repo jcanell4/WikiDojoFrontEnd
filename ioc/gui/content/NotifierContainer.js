@@ -36,6 +36,8 @@ define([
                 if (!this.isNotificationInContainer(contentTool.id)) {
                     throw new NotifierContainerException("No es pot cridar a addChild directament en aquest contenidor. Utilitza addNotification() o removeNotification()");
                 }
+                
+                this.registerMeToEventFromObservable(contentTool, this.eventName.DESTROY, this._destroyNotification.bind(this));
 
                 this.inherited(arguments);
             },
@@ -66,9 +68,7 @@ define([
 
             _destroyNotification: function (data) { //ALERTA[Xavi] la crida a aquest mètode només elimina la notificació de la llista
                 //console.log("NotifierContainer#_destroyNotification", data);
-                delete(this.notifications[data.id]);
-
-                this.registerToEvent(contentTool, this.eventName.DESTROY, this._destroyNotification.bind(this));
+                delete(this.notifications[data.id]);                
             },
 
 

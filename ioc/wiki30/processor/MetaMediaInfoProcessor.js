@@ -3,10 +3,11 @@ define([
     "dijit/registry",
     "dojo/dom-construct",
     "ioc/gui/content/contentToolFactory",
-    "ioc/wiki30/processor/AbstractResponseProcessor"
+    "ioc/wiki30/processor/AbstractResponseProcessor",
+    "dojo/dom-style"
 
 
-], function (declare, registry, domConstruct, contentToolFactory, AbstractResponseProcessor) {
+], function (declare, registry, domConstruct, contentToolFactory, AbstractResponseProcessor, style) {
     var ret = declare([AbstractResponseProcessor],
         /**
          * @class MetaInfoProcessor
@@ -73,7 +74,8 @@ define([
                                  * Queda pendent construir l'arbre com a decorator
                                  */
                                 this._createNsTree(currentMetaContent, dispatcher, 'metaMedia');
-                                cp = this._createContentTool(newContent, dispatcher, 'metaMedia');
+                                cp = this._createContentTool(this.newContent, dispatcher, 'metaMedia');
+                                style.set(cp.domNode, "overflow", "auto");
                                 //dialogTree.startup();
 
                             } else {
@@ -94,20 +96,23 @@ define([
                 
                 var nameUpload = document.getElementById("upload__name");
                 var ovwUpload = document.getElementById("dw__ow");
-                nameUpload.placeholder = "Per defecte és el nom del fitxer";
+                if(nameUpload && ovwUpload){
+                    nameUpload.placeholder = "Per defecte és el nom del fitxer";
+                }
                 currentPaneId = dispatcher.getContentCache(content.docId).getCurrentId("metadataPane");
                 if(versioupload!=null){
                     defaultSelected = "metaMediafileupload";
                     selectedPane = "metaMediafileupload";
                     var versiouploadArray = versioupload.split(":");
                     var versiouploadIndex = versiouploadArray.length;
-                    nameUpload.value = versiouploadArray[versiouploadIndex -1];
-                    ovwUpload.checked = true;
+                    if(nameUpload && ovwUpload){
+                        nameUpload.value = versiouploadArray[versiouploadIndex -1];
+                        ovwUpload.checked = true;
+                    }
                 }else{
                     defaultSelected = "metaMedia";
                     selectedPane = this._setSelectedPane(content.meta, [currentPaneId, defaultSelected]);
                 }
-                
                 if (selectedPane) {
                     nodeMetaInfo.selectChild(selectedPane);
                     dispatcher.getContentCache(content.docId).setCurrentId("metadataPane", selectedPane);
@@ -247,10 +252,10 @@ define([
                             '&list=' + list + '&sort=' + sort;
                     };
 
-                    this.newContent = [];
-                    this.newContent["id"] = docId;
-                    this.newContent["title"] = "Índex";
-                    this.newContent["content"] = divNsTree.innerHTML;
+                    self.newContent = [];
+                    self.newContent["id"] = docId;
+                    self.newContent["title"] = "Índex";
+                    self.newContent["content"] = divNsTree.innerHTML;
                 });
 
             }
