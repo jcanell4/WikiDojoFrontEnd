@@ -13,7 +13,7 @@ define([
          * @author Josep Cañellas <jcanell4@ioc.cat>
          */
         {
-            type: "extra_metainfo",
+            type: "metainfo",
 
             /**
              * Elimina tots els widgets del contenidor de metadades i crea un de nou amb la informació del contingut

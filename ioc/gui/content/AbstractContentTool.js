@@ -397,7 +397,12 @@ define([
             _setListenerHandlers: function (listenerHandlers) {
                 this.listenerHandlers = listenerHandlers;
                 //console.log("AbstractContentTool#_setListenerHandlers()", listenerHandlers);
-            }
+            },
+            
+            updateDocument: function (content) {
+                this.setData(content);
+                this.render();
+            },
 
 
         });

@@ -94,7 +94,7 @@ define([
                         }
 
                     } else {
-                        currentMetaItem.setData(meta.content);
+                        currentMetaItem.updateDocument(meta.content);
                         cp = currentMetaItem;
                     }
                     if (meta.defaultSelected) { //Des del servidor ens marquen aquesta opció com a defaultSelected
