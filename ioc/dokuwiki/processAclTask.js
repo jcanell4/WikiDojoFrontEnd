@@ -50,12 +50,14 @@ define([
         var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
             var queryString = "";
-            var data = domform.toQuery(this.form);
-            data += "&" + this.name + "="+ domform.fieldToObject(this);
-            if (data){
-              queryString = data;
-            }
-            requestUpdateAcl.sendRequest(queryString);
+//            var data = domform.toQuery(this.form);
+//            data += "&" + this.name + "="+ domform.fieldToObject(this);
+//            if (data){
+//              queryString = data;
+//            }
+//            requestUpdateAcl.sendRequest(queryString);
+            var data = this.name + "="+ domform.fieldToObject(this);
+            requestUpdateAcl.sendForm(this.form, data);
             event.stop(e);
             handle.remove();
         });
