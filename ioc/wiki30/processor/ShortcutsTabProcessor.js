@@ -34,32 +34,40 @@ define([
         * @private
         */
         _processAddShortcutsTab: function (result, dispatcher) {
-            require([
-                "ioc/gui/ContentTabDokuwikiPage"], function(ContentTabDokuwikiPage){
 
-                console.log("Dins del add shortcuts", result);
+            if (result.content) {
+
+
+                require([
+                    "ioc/gui/ContentTabDokuwikiPage"], function (ContentTabDokuwikiPage) {
+
+                    console.log("Dins del add shortcuts", result);
 
                     var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
                     if (admin_tab !== undefined) {
                         //  Si existeix la pestanya només caldrà substituir el contingut actual pel nou
                         registry.byId(result.tabId).innerHTML = result.content;
                     } else {
-                            // Crear una pestanya nova a la zona de navegació si no existeix
-                            // fill d'un objecte de tipus ContentTabDokuwikiPage
-                            //al qual se li passi la urlBase que hagi arribat amb la resposta
-                            //i el contingut html amb la llista de tasques.
-                            var cp1 = new ContentTabDokuwikiPage(
+                        // Crear una pestanya nova a la zona de navegació si no existeix
+                        // fill d'un objecte de tipus ContentTabDokuwikiPage
+                        //al qual se li passi la urlBase que hagi arribat amb la resposta
+                        //i el contingut html amb la llista de tasques.
+                        var cp1 = new ContentTabDokuwikiPage(
                             {
                                 id: result.tabId,
                                 title: result.title,
                                 content: result.content,
                                 urlBase: result.urlBase
                             });
-                            var tc = registry.byId(result.containerId);
-                        console.log("Afegint Content Tab");
-                            tc.addChild(cp1);
+                        var tc = registry.byId(result.containerId);
+
+                        tc.addChild(cp1, 0);
+                        tc.selectChild(cp1);
                     }
-            });
+                });
+            } else {
+                console.warn("No s'ha trobat el document dreceres per aquest usuari.");
+            }
         },
 
         /**
