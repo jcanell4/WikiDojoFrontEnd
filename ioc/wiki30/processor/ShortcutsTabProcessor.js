@@ -78,14 +78,20 @@ define([
         * @private
         */
         _processRemoveShortcutsTab: function (result, dispatcher) {
-            var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
-            if (admin_tab !== undefined) {
+            console.log("ShortcutsTabProcessor#_processRemoveShortcutsTab", result);
+            var shortcutsTab = registry.byId(result.containerId + "_tablist_" + result.tabId);
+            if (shortcutsTab !== undefined) {
                 //  Si existeix la pestanya la eliminem
                 var tc = registry.byId(result.containerId);
                 var tab = registry.byId(result.tabId);
+                console.log("tc:", tc, " tab:", tab);
                 tc.removeChild(tab);
+                console.log("Eliminat el fill");
                 tab.destroy();
+                console.log("Destruit");
+
             }
+
         }
 
     });

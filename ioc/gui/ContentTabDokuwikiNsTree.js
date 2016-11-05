@@ -53,7 +53,12 @@ define([
                 aspect.after(this.tree, "_adjustWidths", function () {
                     var parentNode = tree.domNode.parentNode;
                     var node = query(".dijitTreeRow", tree.domNode)[0];
-                    parentNode.style.width = "" + node.offsetWidth + "px";
+
+                    //ALERTA[Xavi] En el cas de la pestanya de dreceres la llista de nodes retornada es buida però no detecto cap error amb aquesta modificació
+                    if (node) {
+                        parentNode.style.width = "" + node.offsetWidth + "px";
+                    }
+
                 }, true);
 
                 this.watch("urlBase", this.setUrlBaseTypedDefault.bind(this));
