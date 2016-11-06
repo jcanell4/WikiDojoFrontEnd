@@ -14,9 +14,12 @@ define([
 
         _notificationEngine: null,
 
+        _receivedWarningIds: null,
+
         constructor: function (args) {
             this.dispatcher = args.dispatcher;
             this.unreadCounter = 0;
+            this._receivedWarningIds = [];
         },
 
         process: function (action, params) {
@@ -102,11 +105,18 @@ define([
                     break;
                 case 'message':
                     //afegir/sobrescriure per ID, al notificador (GUI)
-                    this._processMessage(notification);
+                    this._processMessage(notification); // ALERTA[Xavi] Substituit per fer proves pel processWarning
                     break;
+
+
                 case 'alert':
                     this._processAlert(notification);
                     break;
+
+                case 'warning':
+                    this._processWarning(notification);
+                    break;
+
                 case 'dialog':
                 default:
                     console.warn("Notificació de tipus "+notification.type+" rebuda:", notification);
@@ -124,27 +134,45 @@ define([
 
             if (this.notifierContainer.isNotificationInContainer(notification.notification_id)) {
                 this.notifierContainer.removeNotification(notification.notification_id);
-
             }
 
+            var contentTool = this._createNotificationContentTool(notification, "ALERTA");
+
+            this.addNotificationContentTool(contentTool);
+        },
+
+        _createNotificationContentTool: function (notification, type) {
             var args = {
                     id: notification.notification_id, // ALERTA[Xavi] Aquesta id ha de ser la mateixa que la que es passi com a data
                     data: {
-                        type: "ALERTA",
+                        type: type,
                         id: notification.notification_id,
                         title: notification.sender_id,
-                        text: notification.data.text
+                        text: notification.data.text,
                     },
                     dispatcher: this.dispatcher,
-                    type: 'notification'
-
+                    type: 'notification',
+                    readed: notification.readed
                 },
 
                 contentTool = contentToolFactory.generate(contentToolFactory.generation.NOTIFICATION, args);
 
+            return contentTool;
 
-            this.addNotificationContentTool(contentTool);
         },
+
+        _processWarning: function (notification) {
+            // TODO: Mostrar l'alerta
+
+            if (!this._receivedWarningIds[notification.data.id]) {
+                alert(notification.data.text);
+                notification.readed = true;
+                this._processMessage(notification);
+                this._receivedWarningIds[notification.data.id] = true;
+            }
+
+        },
+
 
         setNotifierContainer: function (notifierContainer) {
             this.notifierContainer = notifierContainer;

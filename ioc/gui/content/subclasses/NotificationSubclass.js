@@ -8,7 +8,10 @@ define([
         postAttach: function () {
             this._addCloseButtonListener();
             this.inherited(arguments);
-            this.markAsUnread();
+            if (!this.readed) {
+                this.markAsUnread();
+            }
+
         },
 
         _addCloseButtonListener: function () {

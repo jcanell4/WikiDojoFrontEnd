@@ -31,7 +31,7 @@ define([
 
 
             addChild: function (contentTool) {
-                //console.log("NotifierContainer#addChild");
+                console.log("NotifierContainer#addChild", contentTool);
 
                 if (!this.isNotificationInContainer(contentTool.id)) {
                     throw new NotifierContainerException("No es pot cridar a addChild directament en aquest contenidor. Utilitza addNotification() o removeNotification()");
@@ -52,7 +52,12 @@ define([
                 this.addChild(contentTool);
 
                 // Actualitzem el comptador si no existia o ja estava llegida
-                this.notifyManager.increaseNotificationCounter();
+
+
+                if (!contentTool.readed) {
+                    this.notifyManager.increaseNotificationCounter();
+                }
+
             },
 
 
