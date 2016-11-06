@@ -41,7 +41,6 @@ define([
                 require([
                     "ioc/gui/ContentTabDokuwikiPage"], function (ContentTabDokuwikiPage) {
 
-                    console.log("Dins del add shortcuts", result);
 
                     var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
                     if (admin_tab !== undefined) {
