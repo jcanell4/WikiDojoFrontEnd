@@ -120,7 +120,7 @@ define([
 
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = JSON.parse(localStorage.getItem(userId)),
-                pages = user.pages;
+                pages = user?user.pages:null;
 
             if (pages && pages[id]) {
                 //console.log("Eliminant chunks locals per l'usuari", user, chunks);

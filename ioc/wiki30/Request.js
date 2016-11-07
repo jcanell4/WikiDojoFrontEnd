@@ -24,6 +24,8 @@ define([
 
             disableOnSend: false,
 
+            _disabled: false,
+
             _timer: null,
 
             urlBase: null,
@@ -148,6 +150,9 @@ define([
              * @returns {dojo.promise.Promise}
              */
             sendForm: function (formObject, buttonQuery) {
+                if(this._disabled){
+                    return;
+                }
                 //run standby resource while ajax response doesn't arribe
                 this._createStandbyObject();
 
@@ -200,6 +205,9 @@ define([
              * @returns {dojo.promise.Promise}
              */
             sendRequest: function (query, synchronized) {
+                if(this._disabled){
+                    return;
+                }
 //                console.log("Request:sendRequest ("+query+"). this.parameters: " + this.parameters);
                 //run standby resource while ajax response doesn't arribe
                 this._createStandbyObject();
@@ -321,6 +329,7 @@ define([
                 }
                 if (this.disableOnSend) {
                     this.set("disabled", true);
+                    this._disabled=true;
                 }
             },
 
@@ -333,6 +342,7 @@ define([
                 }
                 if (this.disableOnSend) {
                     this.set("disabled", false);
+                    this._disabled=false;
                 }
             },
 
