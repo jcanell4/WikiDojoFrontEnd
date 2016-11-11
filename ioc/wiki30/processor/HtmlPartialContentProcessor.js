@@ -284,11 +284,15 @@ define([
                     dispatcher: dispatcher,
                     rev: content.rev || '',
                     type: this.type,
-                    readonly: content.readonly? content.readonly : false
+                    readonly: content.readonly? content.readonly : false,
+                    ignoreLastNSSections : content.ignoreLastNSSections
                 };
+
                 if(content.autosaveTimer){
-                    args["autosaveTimer"] = content.autosaveTimer;
+                    args.autosaveTimer = content.autosaveTimer;
                 }
+
+
                 
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
             },

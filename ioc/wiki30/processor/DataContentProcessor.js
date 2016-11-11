@@ -98,7 +98,8 @@ define([
                     type: this.type,
                     locked: content.editing.locked,
                     readonly: content.editing.readonly,
-                    rev: content.rev
+                    rev: content.rev,
+                    ignoreLastNSSections : content.ignoreLastNSSections
                 };
                 if(content.autosaveTimer){
                     args["autosaveTimer"] = content.autosaveTimer;

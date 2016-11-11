@@ -69,6 +69,8 @@ define([
                 this.data = args.data ? args.data : args.content;
 
                 declare.safeMixin(this, args);
+
+                console.log("Constructor:", this);
             },
             
             /**
@@ -102,7 +104,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
              */
             onSelect: function () {
-                //console.log("AbstractContentTool#onSelect");
+                console.log("AbstractContentTool#onSelect");
                 this.dispatchEvent(this.eventName.CONTENT_SELECTED, {id: this.id});
             },
 
