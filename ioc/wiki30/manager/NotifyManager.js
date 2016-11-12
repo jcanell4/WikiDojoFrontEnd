@@ -163,6 +163,7 @@ define([
 
         _processWarning: function (notification) {
             // TODO: Mostrar l'alerta
+            console.log("NotifyManager#_processWarning", notification);
 
             if (!this._receivedWarningIds[notification.data.id]) {
                 alert(notification.data.text);
