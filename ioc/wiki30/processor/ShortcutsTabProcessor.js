@@ -45,7 +45,7 @@ define([
                     var admin_tab = registry.byId(result.containerId + "_tablist_" + result.tabId);
                     if (admin_tab !== undefined) {
                         //  Si existeix la pestanya només caldrà substituir el contingut actual pel nou
-                        registry.byId(result.tabId).innerHTML = result.content;
+                        registry.byId(result.tabId).domNode.innerHTML = result.content;
                     } else {
                         // Crear una pestanya nova a la zona de navegació si no existeix
                         // fill d'un objecte de tipus ContentTabDokuwikiPage
@@ -56,7 +56,8 @@ define([
                                 id: result.tabId,
                                 title: result.title,
                                 content: result.content,
-                                urlBase: result.urlBase
+                                urlBase: result.urlBase,
+                                standbyId: dispatcher.containerNodeId
                             });
                         var tc = registry.byId(result.containerId);
 
