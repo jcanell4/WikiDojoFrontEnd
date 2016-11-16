@@ -30,7 +30,7 @@ define([
             event.stop(e);
         });
         
-        on(domNode, 'a[class=wikilink1]:click', function(e){
+        var onClickWikiLink = function(e){
             var query = "";
             var hash = "";
             var idtag = "";
@@ -50,7 +50,9 @@ define([
                 request.sendRequest(query);
             }
             event.stop(e);            
-        });
+        };
+        on(domNode, 'a[class=wikilink1]:click', onClickWikiLink);
+        on(domNode, 'a[class=wikilink2]:click', onClickWikiLink);
     };
 });
 

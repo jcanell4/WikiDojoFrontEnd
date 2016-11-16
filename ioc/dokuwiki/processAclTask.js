@@ -17,17 +17,11 @@ define([
     ,"ioc/wiki30/Request"
 ], function(on, dom, query,event, domform, Request){
     var requestUpdateAcl = new Request();
-//    requestUpdateAcl.updateSectok=function(sk){
-//            this.sectok=sk;
-//    };
-//    requestUpdateAcl.sectok = requestUpdateAcl.dispatcher.getSectok();
-//    requestUpdateAcl.dispatcher.toUpdateSectok.push(requestUpdateAcl);
 
     var res = function(id, params){
         // captura la manipulació de l'arbre
         dw_acl.init();
 
-        var domNode = dom.byId(id);
         requestUpdateAcl.urlBase=params.urlBase;
 
         // capturar el clic sobre el botó Desa/Actualitza/Suprimeix
@@ -49,13 +43,8 @@ define([
         var form = query(params.updateSelector);
         var handle = on(form, "input[type=submit]:click", function(e){
             //enviar
-            var queryString = "";
-            var data = domform.toQuery(this.form);
-            data += "&" + this.name + "="+ domform.fieldToObject(this);
-            if (data){
-              queryString = data;
-            }
-            requestUpdateAcl.sendRequest(queryString);
+            var data = this.name + "="+ domform.fieldToObject(this);
+            requestUpdateAcl.sendForm(this.form, data);
             event.stop(e);
             handle.remove();
         });

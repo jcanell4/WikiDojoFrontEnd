@@ -10,9 +10,13 @@ define([
         {
             constructor: function (/*String*/ eventToControl,
                                    /*String*/ urlBase,
-                                   /*boolean*/ post) {
+                                   /*boolean*/ post,
+                                   /*boolean*/ disableOnSend) {
                 this.request = new Request();
                 this.request.set("urlBase", urlBase);
+                if(disableOnSend){
+                    this.request.set("disableOnSend", disableOnSend);
+                }
                 this.post = post;
 
                 if (post) {

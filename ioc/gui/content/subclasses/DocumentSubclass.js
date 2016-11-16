@@ -33,7 +33,7 @@ define([
              * @override
              */
             onDestroy: function () {
-                console.log("DocumentSubclass#onDestroy");
+//                console.log("DocumentSubclass#onDestroy");
                 this.removeState();
                 this.inherited(arguments);
             },
@@ -74,7 +74,31 @@ define([
                 this.dispatcher.getInfoManager().refreshInfo(this.id);
                 this.dispatchEvent(this.eventName.DOCUMENT_SELECTED, {id: this.id});
 
+                //ALERTA[Xavi] NS és una variable global utilitzada per la wiki per determinar l'espai de nom a utilitzar quan es puja un fitxer
+                NS = this.getFileStorageNS();
+
                 this.dispatcher.updateFromState();
+            },
+
+            getFileStorageNS: function () {
+                var ns;
+
+                // ALERTA[Xavi] Codi de proves, això s'ha d'afegir al constructor i ha de provenir del servidor
+
+
+                if (this.ignoreLastNSSections) {
+                    var tokens = this.ns.split(':');
+                    tokens = tokens.slice(0, tokens.length-this.ignoreLastNSSections);
+                    ns = tokens.join(':');
+
+                } else {
+                    ns = this.ns;
+                }
+
+
+
+
+                return ns;
 
 
             },

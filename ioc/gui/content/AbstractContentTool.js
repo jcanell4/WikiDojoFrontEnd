@@ -69,6 +69,8 @@ define([
                 this.data = args.data ? args.data : args.content;
 
                 declare.safeMixin(this, args);
+
+//                console.log("Constructor:", this);
             },
             
             /**
@@ -397,7 +399,12 @@ define([
             _setListenerHandlers: function (listenerHandlers) {
                 this.listenerHandlers = listenerHandlers;
                 //console.log("AbstractContentTool#_setListenerHandlers()", listenerHandlers);
-            }
+            },
+            
+            updateDocument: function (content) {
+                this.setData(content);
+                this.render();
+            },
 
 
         });

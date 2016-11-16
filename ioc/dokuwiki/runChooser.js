@@ -14,13 +14,15 @@ define([], function () {
             var patt=/htmlindex/g;
             //Check whether file action has done before 
             var html = patt.test(location.href);
-            jQuery('#' + idNode).find('ul > li > div > a[class=wikilink1]').each(function(key, value) {
+            var fChoose = function(key, value) {
                     var id = jQuery(this).attr('title').replace(/:/g,'_');
                     var disabled = (!html && count < 2)?'disabled="disabled"':'';
                     var tag = jQuery('<input type="checkbox" id="'+id+'" name="toexport" checked="checked" value="'+this.title+'" '+disabled+'" form="export__form_'+idNode+'"/>');
                     tag.prependTo(jQuery(this).parent());
                     count += 1;
-            });
+            };
+            
+            jQuery('#' + idNode).find('ul > li > div > a[class=wikilink1]').each(fChoose);
         });
     };
     return  ret;
