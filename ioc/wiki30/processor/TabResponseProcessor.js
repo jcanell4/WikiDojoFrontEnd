@@ -19,23 +19,23 @@ define([
             type: "tabmanager",
 
             /**
-             * @param {*} value
+             * @param {*} response
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @override
              */
-            process: function (value, dispatcher) {
+            process: function (response, dispatcher) {
 
-                switch (value.type) {
+                switch (response.type) {
                     case 'add_tab':
-                        this._processAddTab(value, dispatcher);
+                        this._processAddTab(response);
                         break;
 
                     case 'remove_tab':
-                        this._processRemoveTab(value, dispatcher);
+                        this._processRemoveTab(response);
                         break;
 
                     default:
-                        throw new TabResponseProcessorException("Tipus d'acció sobre les pestanyes no reconeguda: " + value.type);
+                        throw new TabResponseProcessorException("Tipus d'acció sobre les pestanyes no reconeguda: " + response.type);
                 }
 
             },
@@ -45,36 +45,32 @@ define([
                     ,tabId: string
                     ,title: string
                     ,content: string
-                    ,urlBase: string}} result
+                    ,urlBase: string
+                    ,position: string
+                    ,selected: boolean}} response
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @private
              */
-            _processAddTab: function (result) {
-                if (result.content) {
-                    var oldTab = registry.byId(this._generateTabId(result.containerId, result.tabId));
+            _processAddTab: function (response) {
+                if (response.content) {
+                    var oldTab = registry.byId(this._generateTabId(response.containerId, response.tabId));
 
                     if (oldTab) {
-                        this._updateTab(oldTab, result.content);
+                        this._updateTab(oldTab, response.content);
                     } else {
-                        this._generateTab(result);
+                        this._generateTab(response);
                     }
 
                 } else {
-                    console.warn("La pestanya amb identificador " + result.tabId + " no s'ha afegit atès que no te contingut");
+                    console.warn("La pestanya amb identificador " + response.tabId + " no s'ha afegit atès que no te contingut");
                 }
 
             },
 
-            _updateTab: function (oldTab, content) {
+            _updateTab: function (oldTab, newContent) {
 
-                console.log("Existeix la pestanya");
-
-                if (oldTab.setData) { // TODO[Xavi] Si es troba definida es tracta d'un ContentTool, ALERTA[Xavi]però actualment no ho son!
-                    console.log("ContentTool detectat");
-                    oldTab.setData(content);
-                } else {
-                    oldTab.set('content', content);
-                }
+                // oldTab.setData(newContent); // TODO[Xavi]Substituir per aquest quan les pestenyes s'actualitzin a ContentTools
+                oldTab.set('content', newContent);
 
             },
 
@@ -82,68 +78,74 @@ define([
                 return containerId + "_" + tabId;
             },
 
-            _generateTab: function (data) {
+            _generateTab: function (response) {
                 var tab = null,
-                    tabId = this._generateTabId(data.containerId, data.tabId); // Afegit el id del contenidor per evitar posibles conflictes futurs
+                    tabId = this._generateTabId(response.containerId, response.tabId); // Afegit el id del contenidor per evitar posibles conflictes futurs
 
                 // ALERTA[Xavi] No es pot carregar a la capçalera perquè es crea una referència circular entre el Request i el Dispatcher
                 require(["ioc/gui/ContentTabDokuwikiPage"], function (ContentTabDokuwikiPage) {
                     tab = new ContentTabDokuwikiPage(
                         {
                             id: tabId,
-                            title: data.title,
-                            content: data.content,
-                            urlBase: data.urlBase,
-                            standbyId: data.containerNodeId
+                            title: response.title,
+                            content: response.content,
+                            urlBase: response.urlBase,
+                            standbyId: response.containerId
                         });
                 });
 
-                this._addTabToContainer(tab, data.containerId, data.position);
+                var tabContainer = this._getTabContainer(response.containerId);
+
+                this._addTabToContainer(tab, tabContainer, response.position);
+
+                if (response.selected) {
+                    tabContainer.selectChild(tab);
+                }
 
             },
 
-            _addTabToContainer: function (tab, containerId, position) {
+            _getTabContainer: function (containerId) {
                 var tabContainer = registry.byId(containerId);
 
                 if (!tabContainer) {
-                    throw new TabResponseProcessorException("No existeix cap contenidor de pestanyes amb id: " + containerId);
+                    throw new TabResponseProcessorException("No existeix cap contenidor de pestanyes amb id: " + tabC);
                 }
+
+                return tabContainer;
+            },
+
+            _addTabToContainer: function (tab, tabContainer, position) {
 
                 switch (position) {
                     case 'first':
                         tabContainer.addChild(tab, 0);
                         break;
 
-                    case 'last': // fallthrough intencionat
                     default:
                         tabContainer.addChild(tab);
                 }
 
-                tabContainer.selectChild(tab);
             },
 
 
             /**
              * @param {{containerId: string
                     ,tabId: string
-                    ,urlBase: string}} result
-             * @param {ioc.wiki30.Dispatcher} dispatcher
+                    ,urlBase: string}} response
              * @private
              */
-            _processRemoveTab: function (result, dispatcher) {
-                console.log("TabResponseProcessor#_processRemoveTab", result);
+            _processRemoveTab: function (response) {
 
-                var tabId = this._generateTabId(result.containerId, result.tabId),
+                var tabId = this._generateTabId(response.containerId, response.tabId),
                     tab = registry.byId(tabId);
 
                 if (tab) {
-                    var tabContainer = registry.byId(result.containerId);
+                    var tabContainer = registry.byId(response.containerId);
                     tabContainer.removeChild(tab);
                     tab.destroy();
                 }
 
             }
-
         });
 
 });
