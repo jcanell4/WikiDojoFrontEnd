@@ -10,7 +10,6 @@ define([
     "ioc/wiki30/GlobalState",
     "ioc/wiki30/SectokManager",
     "ioc/wiki30/processor/AlertProcessor",
-    //"ioc/wiki30/processor/HtmlContentProcessor",
     "ioc/wiki30/processor/MediaProcessor",
     "ioc/wiki30/processor/MetaInfoProcessor",
     "ioc/wiki30/processor/MetaMediaInfoProcessor",
@@ -25,7 +24,6 @@ define([
     "ioc/wiki30/processor/RemoveAllContentTabProcessor",
     "ioc/wiki30/processor/RemoveContentTabProcessor",
     "ioc/wiki30/processor/CommandProcessor",
-    "ioc/wiki30/processor/AdminTabProcessor",
     "ioc/wiki30/processor/AdminTaskProcessor",
     "ioc/wiki30/processor/JsInfoProcessor",
     "ioc/wiki30/manager/InfoManager",
@@ -50,20 +48,20 @@ define([
     "ioc/wiki30/processor/CodeResponseProcessor",
     "ioc/wiki30/processor/ControlManagerProcessor",
     "ioc/wiki30/processor/FormContentProcessor",
-    "ioc/wiki30/processor/ShortcutsTabProcessor",
+    "ioc/wiki30/processor/TabResponseProcessor",
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-             AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
+             AlertProcessor, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
              DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
              LoginProcessor, SectokProcessor, TitleProcessor,
              RemoveAllContentTabProcessor, RemoveContentTabProcessor,
-             CommandProcessor, AdminTabProcessor, AdminTaskProcessor, JsInfoProcessor,
+             CommandProcessor, AdminTaskProcessor, JsInfoProcessor,
              InfoManager, ChangesManager,
              RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
              LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
              NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
-             FormContentProcessor, ShortcutsTabProcessor) {
+             FormContentProcessor, TabResponseProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -155,7 +153,7 @@ define([
                 this.processors["removeall"] = new RemoveAllContentTabProcessor();
                 this.processors["remove"] = new RemoveContentTabProcessor();
                 this.processors["command"] = new CommandProcessor();
-                this.processors["admin_tab"] = new AdminTabProcessor();
+                // this.processors["admin_tab"] = new AdminTabProcessor();
                 this.processors["admin_task"] = new AdminTaskProcessor();
                 this.processors["jsinfo"] = new JsInfoProcessor();
                 this.toUpdateSectok = new Array();
@@ -191,7 +189,8 @@ define([
                 this.processors["code"] = new CodeResponseProcessor();
 		        this.processors["controlManager"] = new ControlManagerProcessor();
 
-                this.processors["shortcuts_tab"] = new ShortcutsTabProcessor();
+                // this.processors["shortcuts_tab"] = new ShortcutsTabProcessor();
+                this.processors["tab"] = new TabResponseProcessor();
 
             },
 
