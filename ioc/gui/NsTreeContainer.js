@@ -146,7 +146,6 @@ define([
              * @override
              */
             refresh: function () {
-                console.log("Refreshing tree");
                 // Destruct the references to any selected nodes so that
                 // the refreshed tree will not attempt to unselect destructed nodes
                 // when a new selection is made.
