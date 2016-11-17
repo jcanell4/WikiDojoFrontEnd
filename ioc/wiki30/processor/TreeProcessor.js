@@ -33,8 +33,9 @@ define([
             },
             
             _addItem: function(treeId, nsPath){
-               var tree = registry.byId(treeId);
-               tree.expandBranche(nsPath);                
+                var tree = registry.byId(treeId);
+                tree.refresh();
+                tree.expandBranche(nsPath);
             }
         });
     return ret;
