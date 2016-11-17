@@ -49,7 +49,7 @@ define([
     "ioc/wiki30/processor/RequiringContentProcessor",
     "ioc/wiki30/processor/CodeResponseProcessor",
     "ioc/wiki30/processor/ControlManagerProcessor",
-    "ioc/wiki30/processor/FormContentProcessor",
+    "ioc/wiki30/processor/FormContentProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor/*, HtmlContentProcessor*/, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
