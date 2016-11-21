@@ -34,7 +34,7 @@ define([
             
             _addItem: function(treeId, nsPath){
                 var tree = registry.byId(treeId);
-                tree.refresh();
+                tree.refresh();  //TODO [JOSEP] De moment ho dieixem aixi, pero caldria refrescar nomes la branca, no pas tot l'arbre!
                 tree.expandBranche(nsPath);
             }
         });
