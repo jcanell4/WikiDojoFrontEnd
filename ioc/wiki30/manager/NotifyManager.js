@@ -143,9 +143,9 @@ define([
 
         _createNotificationContentTool: function (notification, type) {
             var args = {
-                    id: notification.notification_id, // ALERTA[Xavi] Aquesta id ha de ser la mateixa que la que es passi com a data
+                    id: notification.notification_id,
                     data: {
-                        type: type,
+                        type: notification.type || type,
                         id: notification.notification_id,
                         title: notification.sender_id,
                         text: notification.data.text,
@@ -166,9 +166,22 @@ define([
             console.log("NotifyManager#_processWarning", notification);
 
             if (!this._receivedWarningIds[notification.data.id]) {
-                alert(notification.data.text);
+                // alert(notification.data.text);
                 notification.readed = true;
-                this._processMessage(notification);
+                // this._processMessage(notification);
+
+
+
+                if (this.warningContainer.isNotificationInContainer(notification.notification_id)) {
+                    this.warningContainer.removeNotification(notification.notification_id);
+                }
+
+                console.log("***********", notification);
+                var contentTool = this._createNotificationContentTool(notification, 'warning');
+
+                this.addWarningContentTool(contentTool);
+
+
                 this._receivedWarningIds[notification.data.id] = true;
             }
 
@@ -179,12 +192,28 @@ define([
             this.notifierContainer = notifierContainer;
         },
 
+        setWarningContainer: function(warningContainer) {
+            this.warningContainer = warningContainer;
+        },
+
         addNotificationContentTool: function (contentTool) {
             if (this.notifierContainer) {
                 this.notifierContainer.addNotification(contentTool);
             } else {
                 throw new NotifyManagerException("No s'ha establert el contenidor de notificacions");
             }
+        },
+
+        addWarningContentTool: function (contentTool) {
+            if (this.warningContainer) {
+                this.warningContainer.addNotification(contentTool);
+            } else {
+                throw new NotifyManagerException("No s'ha establert el contenidor de avisos");
+            }
+        },
+
+        removeWarning: function (id) {
+            this.warningContainer.removeNotification(id);
         },
 
         removeNotification: function (id) {
