@@ -188,6 +188,7 @@ define([
 
         setNotifierContainer: function (notifierContainer) {
             this.notifierContainer = notifierContainer;
+            notifierContainer.set('title',  'Notificacions');
         },
 
         setWarningContainer: function(warningContainer) {
