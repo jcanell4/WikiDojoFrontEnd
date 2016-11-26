@@ -176,11 +176,9 @@ define([
                     this.warningContainer.removeNotification(notification.notification_id);
                 }
 
-                console.log("***********", notification);
                 var contentTool = this._createNotificationContentTool(notification, 'warning');
 
                 this.addWarningContentTool(contentTool);
-
 
                 this._receivedWarningIds[notification.data.id] = true;
             }
