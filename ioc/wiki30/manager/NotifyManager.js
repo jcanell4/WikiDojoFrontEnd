@@ -136,18 +136,18 @@ define([
                 this.notifierContainer.removeNotification(notification.notification_id);
             }
 
-            var contentTool = this._createNotificationContentTool(notification, "ALERTA");
+            var contentTool = this._createNotificationContentTool(notification);
 
             this.addNotificationContentTool(contentTool);
         },
 
-        _createNotificationContentTool: function (notification, type) {
+        _createNotificationContentTool: function (notification) {
             var args = {
                     id: notification.notification_id,
                     data: {
-                        type: notification.type || type,
+                        type: notification.data.type || notification.type || "info",
                         id: notification.notification_id,
-                        title: notification.sender_id,
+                        title: notification.data.title || notification.sender_id,
                         text: notification.data.text,
                     },
                     dispatcher: this.dispatcher,
@@ -176,7 +176,7 @@ define([
                     this.warningContainer.removeNotification(notification.notification_id);
                 }
 
-                var contentTool = this._createNotificationContentTool(notification, 'warning');
+                var contentTool = this._createNotificationContentTool(notification);
 
                 this.addWarningContentTool(contentTool);
 
