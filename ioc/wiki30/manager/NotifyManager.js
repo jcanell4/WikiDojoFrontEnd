@@ -53,6 +53,7 @@ define([
                     break;
 
                 default:
+                    console.log("action no trobada:",action);
                     throw new NotifyManagerException("Acció desconeguda: ", action);
             }
         },
@@ -207,8 +208,17 @@ define([
             if (this.warningContainer) {
                 this.warningContainer.addNotification(contentTool);
             } else {
-                throw new NotifyManagerException("No s'ha establert el contenidor de avisos");
+                throw new NotifyManagerException("No s'ha establert el contenidor d'avisos");
             }
+        },
+
+        removeAllWarnings: function() {
+            this._receivedWarningIds = [];
+            this.warningContainer.removeAllNotifications();
+        },
+
+        removeAllNotifications: function() {
+            this.notifierContainer.removeAllNotifications(true);
         },
 
         removeWarning: function (id) {
@@ -242,9 +252,19 @@ define([
             //console.log("NotifyManager#decreaseNotificationCounter");
             this.set('unreadCounter', this.get('unreadCounter') - 1);
         },
+
+        resetNotificationsCounter: function() {
+            this.set('unreadcounter', 0);
+        },
         
         hasNotifications: function(){
             return Object.keys(this.notifierContainer.notifications).length > 0;
+        },
+
+        clearAll: function() {
+            this.removeAllWarnings();
+            this.removeAllNotifications();
+            this.resetUnreadCounter();
         }
 
     });

@@ -31,6 +31,11 @@ define([
              */
             _process: function (data, dispatcher) {
                 //console.log("NotificationProcessor#_process", data);
+                // var notifyManager = dispatcher.getNotifyManager();
+                // for (var i=0; i<data.notifications.length; i++) {
+                //     notifyManager.process(data.notifications[i].action, data.notifications[i].params)
+                // }
+
                 dispatcher.getNotifyManager().process(data.action, data.params);
             }
         });
