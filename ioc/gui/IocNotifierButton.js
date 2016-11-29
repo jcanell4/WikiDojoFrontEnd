@@ -80,7 +80,7 @@ define([
                     this.closeDropDown(false);
                 }
             }
-            
+
             
         });
 });

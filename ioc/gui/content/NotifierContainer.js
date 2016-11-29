@@ -26,6 +26,10 @@ define([
                 this.notifications = {};
                 this.notifyManager = dispatcher.getNotifyManager();
 
+                if (this.position) {
+                    console.log("S'ha trobat posició:", this.position);
+                }
+
 //                this.watch('notificationsCounter', this._updateNotifyButton);
             },
 

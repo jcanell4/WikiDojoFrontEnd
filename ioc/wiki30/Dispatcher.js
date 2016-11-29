@@ -548,6 +548,11 @@ define([
             setNotifierContainer: function(notifierContainer) {
                 var notifyManager = this.getNotifyManager();
                 notifyManager.setNotifierContainer(notifierContainer);
+            },
+
+            setWarningContainer: function(warningContainer) {
+                var notifyManager = this.getNotifyManager();
+                notifyManager.setWarningContainer(warningContainer);
             }
         });
     return ret;
