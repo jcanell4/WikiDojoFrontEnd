@@ -33,6 +33,7 @@ define([
                 if (Object.keys(value).length>0) {
                    permission.isadmin = value['isadmin'];
                    permission.ismanager = value['ismanager'];
+                   permission.isprojectmanager = value['isprojectmanager'];
                 }
             },
 
