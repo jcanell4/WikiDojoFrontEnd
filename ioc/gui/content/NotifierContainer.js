@@ -75,6 +75,18 @@ define([
                 this.notifications[id].removeContentTool();
             },
 
+            removeAllNotifications: function (resetCounter) {
+                console.log("NotifierContainer#removeAllNotifications", this.notifications);
+                for (var notification in this.notifications) {
+                    this.notifications[notification].removeContentTool();
+
+                    if (resetCounter) {
+                        this.notifyManager.resetNotificationsCounter();
+                    }
+                }
+            },
+
+
             _destroyNotification: function (data) { //ALERTA[Xavi] la crida a aquest mètode només elimina la notificació de la llista
                 //console.log("NotifierContainer#_destroyNotification", data);
                 delete(this.notifications[data.id]);                

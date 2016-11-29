@@ -41,6 +41,10 @@ define([
                     // TODO[Xavi] el missatge d'error es mostra cridant a un mètode privat.
                     dispatcher._processError("Usuari o contrasenya incorrectes");
 
+                } else if (!result.loginRequest && !result.loginResult) {
+                    var notifyManager = dispatcher.getNotifyManager();
+                    notifyManager.clearAll();
+
                 }
 
             },

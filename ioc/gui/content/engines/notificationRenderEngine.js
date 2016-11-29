@@ -17,7 +17,7 @@ define([], function () {
             $closeButton = jQuery('<span class="dijitInline dijitTabCloseButton dijitTabCloseIcon" id="' + closeId + '"></span>'),
             $content = jQuery('<div></div>');
 
-
+        console.log("data title?", data, data.title);
         $title.text(data.title);
         $titleGroup.append($title);
         $titleGroup.append($closeButton);

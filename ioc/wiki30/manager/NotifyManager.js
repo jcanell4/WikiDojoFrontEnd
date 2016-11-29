@@ -53,6 +53,7 @@ define([
                     break;
 
                 default:
+                    console.log("action no trobada:",action);
                     throw new NotifyManagerException("Acció desconeguda: ", action);
             }
         },
@@ -136,18 +137,18 @@ define([
                 this.notifierContainer.removeNotification(notification.notification_id);
             }
 
-            var contentTool = this._createNotificationContentTool(notification, "ALERTA");
+            var contentTool = this._createNotificationContentTool(notification);
 
             this.addNotificationContentTool(contentTool);
         },
 
-        _createNotificationContentTool: function (notification, type) {
+        _createNotificationContentTool: function (notification) {
             var args = {
                     id: notification.notification_id,
                     data: {
-                        type: notification.type || type,
+                        type: notification.data.type || notification.type || "info",
                         id: notification.notification_id,
-                        title: notification.sender_id,
+                        title: notification.data.title || notification.sender_id,
                         text: notification.data.text,
                     },
                     dispatcher: this.dispatcher,
@@ -176,7 +177,7 @@ define([
                     this.warningContainer.removeNotification(notification.notification_id);
                 }
 
-                var contentTool = this._createNotificationContentTool(notification, 'warning');
+                var contentTool = this._createNotificationContentTool(notification);
 
                 this.addWarningContentTool(contentTool);
 
@@ -207,8 +208,17 @@ define([
             if (this.warningContainer) {
                 this.warningContainer.addNotification(contentTool);
             } else {
-                throw new NotifyManagerException("No s'ha establert el contenidor de avisos");
+                throw new NotifyManagerException("No s'ha establert el contenidor d'avisos");
             }
+        },
+
+        removeAllWarnings: function() {
+            this._receivedWarningIds = [];
+            this.warningContainer.removeAllNotifications();
+        },
+
+        removeAllNotifications: function() {
+            this.notifierContainer.removeAllNotifications(true);
         },
 
         removeWarning: function (id) {
@@ -242,9 +252,19 @@ define([
             //console.log("NotifyManager#decreaseNotificationCounter");
             this.set('unreadCounter', this.get('unreadCounter') - 1);
         },
+
+        resetNotificationsCounter: function() {
+            this.set('unreadcounter', 0);
+        },
         
         hasNotifications: function(){
             return Object.keys(this.notifierContainer.notifications).length > 0;
+        },
+
+        clearAll: function() {
+            this.removeAllWarnings();
+            this.removeAllNotifications();
+            this.resetUnreadCounter();
         }
 
     });
