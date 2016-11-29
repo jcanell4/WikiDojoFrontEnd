@@ -174,12 +174,11 @@ define([
 
             getQuerySave: function () {
                 var $form = jQuery('#form_' + this.id);
-                var values = {"ns": this.ns};
+                var values = {"id": this.ns};
 
                 jQuery.each($form.serializeArray(), function (i, field) {
                     values[field.name] = field.value;
                 });
-
                 return values;
             },
 
