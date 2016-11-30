@@ -150,10 +150,11 @@ define([
                         id: notification.notification_id,
                         title: notification.data.title || notification.sender_id,
                         text: notification.data.text,
+                        closable: notification.closable !== undefined ? notification.closable : true
                     },
                     dispatcher: this.dispatcher,
                     type: 'notification',
-                    readed: notification.readed
+                    readed: notification.readed,
                 },
 
                 contentTool = contentToolFactory.generate(contentToolFactory.generation.NOTIFICATION, args);
@@ -176,6 +177,8 @@ define([
                 if (this.warningContainer.isNotificationInContainer(notification.notification_id)) {
                     this.warningContainer.removeNotification(notification.notification_id);
                 }
+
+                notification.closable = false;
 
                 var contentTool = this._createNotificationContentTool(notification);
 

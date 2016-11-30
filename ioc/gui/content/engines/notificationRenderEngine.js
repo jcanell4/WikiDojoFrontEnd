@@ -20,7 +20,10 @@ define([], function () {
         console.log("data title?", data, data.title);
         $title.text(data.title);
         $titleGroup.append($title);
-        $titleGroup.append($closeButton);
+
+        if (data.closable) {
+            $titleGroup.append($closeButton);
+        }
 
         $content.text(data.text);
 

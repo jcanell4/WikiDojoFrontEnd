@@ -26,10 +26,6 @@ define([
                 this.notifications = {};
                 this.notifyManager = dispatcher.getNotifyManager();
 
-                if (this.position) {
-                    console.log("S'ha trobat posició:", this.position);
-                }
-
 //                this.watch('notificationsCounter', this._updateNotifyButton);
             },
 
@@ -53,7 +49,7 @@ define([
                 this.notifications[contentTool.id] = contentTool;
 
                 // Afegir el content tool al contenidor
-                this.addChild(contentTool);
+                this.addChild(contentTool, 0);
 
                 // Actualitzem el comptador si no existia o ja estava llegida
 
