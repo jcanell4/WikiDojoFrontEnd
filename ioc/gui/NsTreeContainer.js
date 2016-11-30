@@ -29,14 +29,21 @@ define([
             parameters:     undefined,
             sortBy:         undefined,
             onlyDirs:       undefined,
+            hiddenProjects: undefined,
             expandProject:  undefined,
             rootValue:      "_",
             tree:           null,
-            openOnClick:    false,  //TRUE és el valor per defecte en el widget
-            processOnClickAndOpenOnClick: false,
             urlBaseTyped:   undefined,
+            openOnClick:                  false,  //TRUE és el valor per defecte en el widget
+            processOnClickAndOpenOnClick: false,
+            preventProcessClick:          true,
+            fromRoot:   undefined,
             
             /** @override */
+//            model.store.target = this.treeDataSource 
+//                                                    + sectok 
+//                                                    + "/"
+//                                                    + this.parameters;
             buildRendering: function () {
                 this.inherited(arguments);
                 var vid   = this.id;
@@ -48,7 +55,7 @@ define([
 
                     model: new ObjectStoreModel({
                         store: new Observable(new JsonRest({
-                            target: tds,
+                            target: tds + (self.getSectok ? self.getSectok() : '0')+"/"+self._updateParams(),
 
                             getChildren: function (object) {
                                 return this.get(object.id).then(
@@ -61,13 +68,11 @@ define([
                         })),
 
                         getRoot: function (onItem) {
+                            console.log(vid +": "+ this.store.target);
                             this.store.get(root).then(onItem);
                         },
 
                         mayHaveChildren: function (object) {
-                            //--inici prova--
-                            //if (object.name === "permisos") object.type = "p";
-                            //--fi prova--
                             return object.type === "d" ||
                                    (object.type === "p" && self.expandProject) ||
                                    object.type === "dp";
@@ -81,13 +86,16 @@ define([
                     persist: false,
 
                     onClick: function(params /*{0:{id,name,type},1:{this},2:{mouseEvent click}}*/){
-                        if (self.processOnClickAndOpenOnClick && this.model.mayHaveChildren(params[0])) {
+                        var clickOpenAndProcess = self.getProcessOnClickAndOpenOnClick(params[0].type);
+                        var clickOpen = this.model.mayHaveChildren(params[0]) || clickOpenAndProcess;
+                        if (clickOpen) {
                             this._onExpandoClick({node: params[1], item: params[0]});
                         }
+                        self.preventProcessClick = clickOpen && !clickOpenAndProcess;
                     }
                 });
 
-                this.tree.openOnClick = this.openOnClick && !this.processOnClickAndOpenOnClick;
+                this.tree.openOnClick = this.openOnClick && !this.getProcessOnClickAndOpenOnClick();
                 
                 this.tree.getIconClassOrig = this.tree.getIconClass;
                 this.tree.getIconClass = function(item, opened) {
@@ -106,6 +114,15 @@ define([
                 this.inherited(arguments);
                 this.tree.placeAt(this.id + "_tree");
                 this.tree.startup();
+            },
+            
+            getProcessOnClickAndOpenOnClick: function(parm) {
+                var ret;
+                if (typeof this.processOnClickAndOpenOnClick === "function" && parm) 
+                    ret = this.processOnClickAndOpenOnClick(parm);
+                else
+                    ret = this.processOnClickAndOpenOnClick;
+                return ret;
             },
 
             /**
@@ -135,8 +152,13 @@ define([
             
             _updateParams: function() {
                 if (!this.parameters) {
-                    this.parameters = (this.sortBy ? "" + this.sortBy + "/" : "0/") + (this.onlyDirs ? "t/" : "f/") + (this.expandProject ? "t/" : "f/");
+                    this.parameters = (this.sortBy ? "" + this.sortBy + "/" : "0/") 
+                                            + (this.onlyDirs ? "t/" : "f/") 
+                                            + (this.expandProject ? "t/" : "f/")
+					    + (this.hiddenProjects ? "t/" : "f/")
+                                            + (this.fromRoot ? this.fromRoot + "/" : "");
                 }
+                return this.parameters;
             },
 
 

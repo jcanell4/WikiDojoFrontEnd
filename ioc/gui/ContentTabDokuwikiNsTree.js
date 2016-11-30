@@ -29,8 +29,13 @@ define([
                 var oc = lang.hitch(this.tree, this.tree.onClick) ;
                 this.tree.onClick = function(item, node){                    
                     oc(arguments);
+                    if (!nsTree.preventProcessClick){
                     nsTree.item = item;
-                    nsTree.query = "id="+item.id;
+                    if(nsTree.updateQuery){
+                        nsTree.query = nsTree.updateQuery(item);
+                    }else{
+                        nsTree.query = "id="+item.id;
+                    }
 
                     /* Inici fragment nou */
                     if (nsTree.typeDictionary && nsTree.typeDictionary[item.type]) {
@@ -48,6 +53,7 @@ define([
                     }
 
                     nsTree.sendRequest();
+                    }
                 };
                 var tree = this.tree;
                 aspect.after(this.tree, "_adjustWidths", function () {

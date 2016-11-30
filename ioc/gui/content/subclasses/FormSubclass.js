@@ -1,9 +1,10 @@
 define([
     "dojo/_base/declare",
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
+    "dojo/dom",
     "dojo/io-query",
     "dojo/_base/lang",
-], function (declare, ChangesManagerCentralSubclass) {
+], function (declare, ChangesManagerCentralSubclass, dom) {
 
     return declare([ChangesManagerCentralSubclass],
         //return declare(null,
@@ -11,20 +12,19 @@ define([
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
          *
-         * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
-         * en el futur.
+         * S'ha deixat com un fitxer independent per facilitar la seva edició
+         * i no es garanteix que sigui accesible en el futur.
          *
          * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
          * amb un ACE-Editor.
          *
-         * @class EditorSubclass
+         * @class FormSubclass
          * @extends DocumentSubclass, AbstractChangesManagerCentral
          * @author Xavier García <xaviergaro.dev@gmail.com>
          * @private
          * @see contentToolFactory.generate()
          */
         {
-
 
             /**
              * El contingut original inicial s'ha de passar a travès del constructor dins dels arguments com la
@@ -126,7 +126,7 @@ define([
             _doSave: function (event) {
                 //console.log("FormSubclass#_doSave", this.id, event);
 
-                var dataToSend = this.getQuerySave(this.id),
+                var dataToSend = this.getQuerySave(),
                     containerId = this.id;
 
                 if (event.extraDataToSend) {
@@ -288,18 +288,17 @@ define([
                 var currentContent = {};
 
                 jQuery('form[id="form_' + this.id + '"] input').each(function () {
-                    //console.log("Item:", this);
                     if (this.type !== "hidden" & this.type !== "button" && this.type !== "submit" && this.value) { // Alerta[Xavi] Els tipus hidden, submit i button no formen part del les dades
                         currentContent[this.id] = this.value;
                     }
                 });
 
-
-                //console.log("CurrentContent:", currentContent);
-                //console.log("OriginalContent:", this._getOriginalContent());
-
-
                 return currentContent;
+            },
+            
+            getProjectType: function() {
+                var node = dom.byId("projectType");
+                return node.value;
             }
         });
 });
