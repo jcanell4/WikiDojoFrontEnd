@@ -29,8 +29,7 @@ define([
                         q = arr[1];
                     }
                     tab.sendRequest(q);
-                    e.stopPropagation();
-//                    event.stop(e); // TODO[Xavi] fer servir e.stopPropagation()?
+                    event.stop(e);
                 });
             }
         });
