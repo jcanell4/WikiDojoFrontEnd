@@ -42,35 +42,40 @@ define([
 
             /**
              * @param {{containerId: string
-                    ,tabId: string
-                    ,title: string
-                    ,content: string
-                    ,urlBase: string
-                    ,position: string
-                    ,selected: boolean}} response
+                        contentParams:{
+                            tabId: string,
+                            title: string,
+                            content: string,
+                            ...},
+                        position: string
+                        selected: boolean}} response
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @private
              */
             _processAddTab: function (response) {
-                if (response.content) {
-                    var oldTab = registry.byId(this._generateTabId(response.containerId, response.tabId));
+                if (response.contentParams) {
+                    var oldTab = registry.byId(this._generateTabId(response.containerId, response.contentParams.id));
 
                     if (oldTab) {
-                        this._updateTab(oldTab, response.content);
+                        this._updateTab(oldTab, response);
                     } else {
                         this._generateTab(response);
                     }
 
                 } else {
-                    console.warn("La pestanya amb identificador " + response.tabId + " no s'ha afegit atès que no te contingut");
+                    console.warn("La pestanya amb identificador " + response.contentParams.id + " no s'ha afegit atès que no te contingut");
                 }
 
             },
 
-            _updateTab: function (oldTab, newContent) {
+            _updateTab: function (oldTab, response) {
 
                 // oldTab.setData(newContent); // TODO[Xavi]Substituir per aquest quan les pestenyes s'actualitzin a ContentTools
-                oldTab.set('content', newContent);
+                if(oldTab.setData){
+                    oldTab.setData(response.contentParams);
+                }else{
+                    oldTab.set('content', response.contentParams.content);
+                }
 
             },
 
@@ -79,36 +84,31 @@ define([
             },
 
             _generateTab: function (response) {
-                var tab = null,
-                    tabId = this._generateTabId(response.containerId, response.tabId); // Afegit el id del contenidor per evitar posibles conflictes futurs
+                var containerClass = "ioc/gui/ContentTabDokuwikiPage";
+                var tab = null/*,
+                    tabId = this._generateTabId(response.containerId, response.contentParams.id)*/; // Afegit el id del contenidor per evitar posibles conflictes futurs
 
-                // ALERTA[Xavi] No es pot carregar a la capçalera perquè es crea una referència circular entre el Request i el Dispatcher
-                require(["ioc/gui/ContentTabDokuwikiPage"], function (ContentTabDokuwikiPage) {
-                    tab = new ContentTabDokuwikiPage(
-                        {
-                            id: tabId,
-                            title: response.title,
-                            content: response.content,
-                            urlBase: response.urlBase,
-                            standbyId: response.containerId
-                        });
-                });
-
-                var tabContainer = this._getTabContainer(response.containerId);
-
-                this._addTabToContainer(tab, tabContainer, response.position);
-
-                if (response.selected) {
-                    tabContainer.selectChild(tab);
+                if(response.containerClass){
+                    containerClass = response.containerClass;
                 }
+                // ALERTA[Xavi] No es pot carregar a la capçalera perquè es crea una referència circular entre el Request i el Dispatcher               
+                require([containerClass], function (ContentTab) {
+                    tab = new ContentTab(response.contentParams);
+                    var tabContainer = this._getTabContainer(response.containerId);
 
+                    this._addTabToContainer(tab, tabContainer, response.position);
+
+                    if (response.selected) {
+                        tabContainer.selectChild(tab);
+                    }
+                }.bind(this));
             },
 
             _getTabContainer: function (containerId) {
                 var tabContainer = registry.byId(containerId);
 
                 if (!tabContainer) {
-                    throw new TabResponseProcessorException("No existeix cap contenidor de pestanyes amb id: " + tabC);
+                    throw new TabResponseProcessorException("No existeix cap contenidor de pestanyes amb id: " + containerId);
                 }
 
                 return tabContainer;
@@ -136,7 +136,7 @@ define([
              */
             _processRemoveTab: function (response) {
 
-                var tabId = this._generateTabId(response.containerId, response.tabId),
+                var tabId = /*this._generateTabId(response.containerId, */response.tabId/*)*/,
                     tab = registry.byId(tabId);
 
                 if (tab) {
