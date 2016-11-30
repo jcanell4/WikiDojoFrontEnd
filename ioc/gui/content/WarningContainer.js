@@ -3,8 +3,9 @@ define([
     'ioc/gui/content/NotifierContainer',
     "dojo/text!./templates/WarningContainer.html",
     "ioc/wiki30/dispatcherSingleton",
+    "dojo/dom-class"
 
-], function (declare, NotifierContainer, template, getDispatcher) {
+], function (declare, NotifierContainer, template, getDispatcher, domClass) {
 
     var WarningContainerException = function (message) {
             this.message = message;
@@ -29,6 +30,8 @@ define([
                     error: 0,
                 };
 
+                this.notificationsVisible = false;
+
 //                this.watch('notificationsCounter', this._updateNotifyButton);
             },
 
@@ -36,8 +39,10 @@ define([
             addChild: function (contentTool, position) {
                 this.inherited(arguments);
 
-                console.log("Contenttool, es veu el tipus?", contentTool.data.type);
-                console.log("Counter: ", this.counter[contentTool.data.type]);
+                if (!this.notificationsVisible) {
+                    this.toggleNotifications();
+                }
+
                 // this.set(this.counter[contentTool.data.type], this.counter[contentTool.data.type]+1);
                 // this.set(this.counter.warning, 66);
                 // Alerta[Xavi] No es poden utilitzar variables (valors que canvian) en el template perqué peta en actualitzar-los.
@@ -45,18 +50,22 @@ define([
                 switch (contentTool.data.type) {
                     case 'warning':
                         this.counterWarning.innerHTML = ++this.counter.warning;
+                        this.counterWarning.setAttribute('style', "display: inline-block");
                         break;
 
-                    case 'sucess':
+                    case 'success':
                         this.counterSuccess.innerHTML = ++this.counter.success;
+                        this.counterSuccess.setAttribute('style', "display: inline-block");
                         break;
 
                     case 'error':
-                        this.errorWarning.innerHTML = ++this.counter.error;
+                        this.counterError.innerHTML = ++this.counter.error;
+                        this.counterError.setAttribute('style', "display: inline-block");
                         break;
 
                     default: // 'info' i qualsevol altre tipus desconegut
                         this.counterInfo.innerHTML = ++this.counter.info;
+                        this.counterInfo.setAttribute('style', "display: inline-block");
                 }
 
             },
@@ -74,6 +83,50 @@ define([
 
             },
 
+            startup: function() {
+                this.inherited(arguments);
+                var that = this;
+
+                this.domNode.addEventListener('click', function() {
+                    that.toggleNotifications();
+                })
+            },
+
+            toggleNotifications: function() {
+                this.notificationsVisible = !this.notificationsVisible;
+                console.log("Toggle:", this.notificationsVisible);
+
+                // TODO[Xavi] Afegir o eliminar la classe ''toggle'' dels botons de warning
+
+
+                if (this.notificationsVisible) {
+                    domClass.add(this.domNode, "toggle");
+                    this.showAllNotifications();
+                } else {
+                    domClass.remove(this.domNode, "toggle");
+                    this.hideAllNotifications();
+                }
+            },
+
+            hideAllNotifications:function() {
+                for (var notificationId in this.notifications) {
+                    this.hideNotification(notificationId);
+                }
+            },
+
+            showAllNotifications:function() {
+                for (var notificationId in this.notifications) {
+                    this.showNotification(notificationId);
+                }
+            },
+
+            hideNotification: function(id) {
+              this.notifications[id].hide();
+            },
+
+            showNotification: function(id) {
+                this.notifications[id].show();
+            }
 
             // removeNotification: function (id) { //ALERTA[Xavi] la crida a aquest mètode destrueix la notificació
             //     //console.log("NotifierContainer#removeNotification", id, this.notifications);

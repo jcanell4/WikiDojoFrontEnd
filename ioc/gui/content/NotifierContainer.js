@@ -49,7 +49,7 @@ define([
                 this.notifications[contentTool.id] = contentTool;
 
                 // Afegir el content tool al contenidor
-                this.addChild(contentTool, 0);
+                this.addChild(contentTool);
 
                 // Actualitzem el comptador si no existia o ja estava llegida
 

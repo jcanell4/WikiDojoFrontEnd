@@ -38,6 +38,14 @@ define([
         isReaded: function () {
             console.log("NotificationSubclass#isReaded", this.readed);
             return this.readed;
+        },
+
+        show: function() {
+            this.domNode.setAttribute('style', 'display:inherit');
+        },
+
+        hide: function() {
+            this.domNode.setAttribute('style', 'display:none');
         }
 
     });

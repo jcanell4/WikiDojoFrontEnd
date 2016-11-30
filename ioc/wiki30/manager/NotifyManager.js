@@ -150,7 +150,7 @@ define([
                         id: notification.notification_id,
                         title: notification.data.title || notification.sender_id,
                         text: notification.data.text,
-                        closable: notification.closable !== undefined ? notification.closable : true
+                        closable: notification.data.closable !== undefined ? notification.closable : true
                     },
                     dispatcher: this.dispatcher,
                     type: 'notification',
@@ -164,14 +164,13 @@ define([
         },
 
         _processWarning: function (notification) {
-            // TODO: Mostrar l'alerta
             console.log("NotifyManager#_processWarning", notification);
 
             if (!this._receivedWarningIds[notification.data.id]) {
                 // alert(notification.data.text);
                 notification.readed = true;
+                notification.data.closable = false;
                 // this._processMessage(notification);
-
 
 
                 if (this.warningContainer.isNotificationInContainer(notification.notification_id)) {
