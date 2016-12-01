@@ -1,15 +1,15 @@
 define([
     "dojo/_base/declare",
-    "ioc/wiki30/processor/AbstractResponseProcessor",
+    "ioc/wiki30/processor/StateUpdaterProcessor",
     "dijit/registry"
-], function (declare, AbstractResponseProcessor, registry) {
+], function (declare, StateUpdaterProcessor, registry) {
 
     var TabResponseProcessorException = function (message) {
         this.message = message;
         this.name = "TabResponseProcessorException";
     };
 
-    return declare([AbstractResponseProcessor],
+    return declare([StateUpdaterProcessor],
         /**
          * @class TabProcessor
          * @extends AbstractResponseProcessor
@@ -37,7 +37,18 @@ define([
                     default:
                         throw new TabResponseProcessorException("Tipus d'acció sobre les pestanyes no reconeguda: " + response.type);
                 }
+                this.inherited(arguments);
+            },
+            updateState: function(dispatcher, response){
+                switch (response.type) {
+                    case 'add_tab':
+                        dispatcher.getGlobalState().addExtraTab(response.contentParams.id)
+                        break;
 
+                    case 'remove_tab':
+                        dispatcher.getGlobalState().removeExtraTab(response.tabId);
+                        break;
+                }
             },
 
             /**
@@ -91,7 +102,6 @@ define([
                 if(response.containerClass){
                     containerClass = response.containerClass;
                 }
-                // ALERTA[Xavi] No es pot carregar a la capçalera perquè es crea una referència circular entre el Request i el Dispatcher               
                 require([containerClass], function (ContentTab) {
                     tab = new ContentTab(response.contentParams);
                     var tabContainer = this._getTabContainer(response.containerId);
