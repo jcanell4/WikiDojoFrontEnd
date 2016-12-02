@@ -18,8 +18,8 @@ define([
             templateString: template,
 
 
-            constructor: function (args) {
-                //console.log("NotifierContainer#constructor: ", args);
+            constructor: function () {
+                //console.log("WarningContainer#constructor: ", args);
                 this.notifications = {};
                 this.notifyManager = dispatcher.getNotifyManager();
 
@@ -27,12 +27,11 @@ define([
                     info: 0,
                     success: 0,
                     warning: 0,
-                    error: 0,
+                    error: 0
                 };
 
                 this.notificationsVisible = false;
 
-//                this.watch('notificationsCounter', this._updateNotifyButton);
             },
 
 
@@ -43,8 +42,6 @@ define([
                     this.toggleNotifications();
                 }
 
-                // this.set(this.counter[contentTool.data.type], this.counter[contentTool.data.type]+1);
-                // this.set(this.counter.warning, 66);
                 // Alerta[Xavi] No es poden utilitzar variables (valors que canvian) en el template perqué peta en actualitzar-los.
 
                 switch (contentTool.data.type) {
@@ -128,67 +125,5 @@ define([
                 this.notifications[id].show();
             }
 
-            // removeNotification: function (id) { //ALERTA[Xavi] la crida a aquest mètode destrueix la notificació
-            //     //console.log("NotifierContainer#removeNotification", id, this.notifications);
-            //
-            //     if (!this.isNotificationReaded(id)) {
-            //         this.notifyManager.decreaseNotificationCounter();
-            //     }
-            //
-            //     this.notifications[id].removeContentTool();
-            // },
-            //
-            // removeAllNotifications: function (resetCounter) {
-            //     console.log("NotifierContainer#removeAllNotifications", this.notifications);
-            //     for (var notification in this.notifications) {
-            //         this.notifications[notification].removeContentTool();
-            //
-            //         if (resetCounter) {
-            //             this.notifyManager.resetNotificationsCounter();
-            //         }
-            //     }
-            // },
-            //
-            //
-            // _destroyNotification: function (data) { //ALERTA[Xavi] la crida a aquest mètode només elimina la notificació de la llista
-            //     //console.log("NotifierContainer#_destroyNotification", data);
-            //     delete(this.notifications[data.id]);
-            // },
-            //
-            //
-            // isNotificationInContainer: function (id) {
-            //     //console.log("NotifierContainer#checkNotificationInContainer");
-            //     return !(this.notifications[id] === undefined || this.notifications[id] === null);
-            //
-            // },
-            //
-            //removeChild: function (contentTool) {
-            //    this.inherited(arguments);
-            //},
-
-            // clearContainer: function () { // Per ser cridat, per exemple, quan es faci logout
-            //     for (var id in this.notifications) {
-            //         this.notifications[id].removeContentTool();
-            //     }
-            // },
-            //
-            // markAsRead: function (id) {
-            //     this.notifications[id].markAsRead();
-            // },
-            //
-            // markAsUnread: function (id) {
-            //     this.notifications[id].markAsUnread();
-            // },
-            //
-            // markAllAsRead: function () {
-            //     for (var id in this.notifications) {
-            //         this.markAsRead(id);
-            //     }
-            // },
-            //
-            // isNotificationReaded: function (id) {
-            //     //console.log("NotifierContainer#isNotificationReaded", this.notifications[id].isReaded());
-            //     return this.notifications[id].isReaded();
-            // }
         });
 });
