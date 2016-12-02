@@ -17,6 +17,8 @@ define([
 
         permissions: {},
 
+        extratabs:{},
+        
         login: false,
 
         info: "",
@@ -227,6 +229,18 @@ define([
             if (this.pages[id]) {
                 delete this.pages[id];
             }
+        },
+        
+        getExtraTab:function(id){
+            return this.extratabs[id];
+        },
+        
+        addExtraTab:function(id){
+            this.extratabs[id]=true;
+        },
+        
+        removeExtraTab:function(id){
+            delete this.extratabs[id];
         }
     };
 

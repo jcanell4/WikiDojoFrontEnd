@@ -60,9 +60,10 @@ define([
                     var parentNode = tree.domNode.parentNode;
                     var node = query(".dijitTreeRow", tree.domNode)[0];
 
-                    //ALERTA[Xavi] En el cas de la pestanya de dreceres la llista de nodes retornada es buida però no detecto cap error amb aquesta modificació
-                    if (node) {
+                    if (node && parentNode.offsetWidth<node.offsetWidth) {
                         parentNode.style.width = "" + node.offsetWidth + "px";
+                    }else{
+                        parentNode.style.width = node.scrollWidth > node.offsetWidth ? "auto" : "100%";
                     }
 
                 }, true);
