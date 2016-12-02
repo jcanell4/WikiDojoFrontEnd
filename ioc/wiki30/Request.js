@@ -132,7 +132,7 @@ define([
              * @param {Error} error
              */
             errorHandler: function (error) {
-                console.error(error);
+//                console.error(error);
                 this._stopStandby();
                 this.dispatcher.processError(error);
             },
