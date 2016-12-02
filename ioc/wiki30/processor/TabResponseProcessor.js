@@ -27,7 +27,7 @@ define([
 
                 switch (response.type) {
                     case 'add_tab':
-                        this._processAddTab(response);
+                        this._processAddTab(response, dispatcher);
                         break;
 
                     case 'remove_tab':
@@ -63,14 +63,14 @@ define([
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @private
              */
-            _processAddTab: function (response) {
+            _processAddTab: function (response, dispatcher) {
                 if (response.contentParams) {
                     var oldTab = registry.byId(this._generateTabId(response.containerId, response.contentParams.id));
 
                     if (oldTab) {
                         this._updateTab(oldTab, response);
                     } else {
-                        this._generateTab(response);
+                        this._generateTab(response, dispatcher);
                     }
 
                 } else {
@@ -94,7 +94,7 @@ define([
                 return containerId + "_" + tabId;
             },
 
-            _generateTab: function (response) {
+            _generateTab: function (response, dispatcher) {
                 var containerClass = "ioc/gui/ContentTabDokuwikiPage";
                 var tab = null/*,
                     tabId = this._generateTabId(response.containerId, response.contentParams.id)*/; // Afegit el id del contenidor per evitar posibles conflictes futurs
@@ -110,6 +110,11 @@ define([
 
                     if (response.selected) {
                         tabContainer.selectChild(tab);
+                    }else{
+                        var nId = dispatcher.getGlobalState().getCurrentNavigationId();
+                        if(nId == tab.id){
+                            tabContainer.selectChild(tab);
+                        }
                     }
                 }.bind(this));
             },
