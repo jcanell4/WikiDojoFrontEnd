@@ -3,12 +3,10 @@ define([
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
     "dojo/dom",
     "dojo/io-query",
-    "dojo/_base/lang",
+    "dojo/_base/lang"
 ], function (declare, ChangesManagerCentralSubclass, dom) {
 
     return declare([ChangesManagerCentralSubclass],
-        //return declare(null,
-
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
          *
@@ -174,13 +172,12 @@ define([
             },
 
             getQuerySave: function () {
-                var $form = jQuery('#form_' + this.id),
-                    values = {};
+                var $form = jQuery('#form_' + this.id);
+                var values = {"id": this.ns};
 
                 jQuery.each($form.serializeArray(), function (i, field) {
                     values[field.name] = field.value;
                 });
-
                 return values;
             },
 
