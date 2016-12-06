@@ -52,7 +52,8 @@ define([
                             treeParams.urlBaseTyped = this.urlBaseTyped;                    
                         }
                         treeParams.updateQuery = function(item){
-                            this.query = "id="+this.fromRoot+(item.id?":"+item.id:"");
+                            //this.query = "id="+this.fromRoot+(item.id?":"+item.id:"");
+                            this.query = "id="+item.id;
                             return this.query;
                         };
                     }

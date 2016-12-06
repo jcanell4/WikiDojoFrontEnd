@@ -1,9 +1,7 @@
 define([
     "dojo/_base/declare",
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
-    "dojo/dom",
-    "dojo/io-query",
-    "dojo/_base/lang"
+    "dojo/dom"
 ], function (declare, ChangesManagerCentralSubclass, dom) {
 
     return declare([ChangesManagerCentralSubclass],

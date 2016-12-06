@@ -16,8 +16,8 @@ define([
          * @extends Request
          */
         {
+            
             constructor: function (args) {
-                //console.log("TREE Constructor:", args);
                 var openOnClick = args.openOnClick? args.openOnClick: true;
                 this.set("openOnClick", openOnClick);
             },
@@ -42,17 +42,17 @@ define([
                         var type = nsTree.typeDictionary[item.type];
                         nsTree.urlBase = type.urlBase;
 
-                        for (var i=0; i<type.params.length; i++) {
-                            nsTree.query += '&' + type.params[i] + '=' + item[type.params[i]];
+                            for (var i=0; i<type.params.length; i++) {
+                                nsTree.query += '&' + type.params[i] + '=' + item[type.params[i]];
+                            }
+                        /* Fi fragment nou */
+                        } else if (nsTree.urlBaseTyped[nsTree.item.type]) {
+                            nsTree.urlBase = nsTree.urlBaseTyped[nsTree.item.type];
+                        }else {
+                            nsTree.urlBase = nsTree.urlBaseTyped["*"];
                         }
-                    /* Fi fragment nou */
-                    } else if (nsTree.urlBaseTyped && nsTree.urlBaseTyped[nsTree.item.type]) {
-                        nsTree.urlBase = nsTree.urlBaseTyped[nsTree.item.type];
-                    }else if(nsTree.urlBaseTyped){
-                        nsTree.urlBase = nsTree.urlBaseTyped["*"];
-                    }
 
-                    nsTree.sendRequest();
+                        nsTree.sendRequest();
                     }
                 };
                 var tree = this.tree;
@@ -62,8 +62,10 @@ define([
 
                     if (node && parentNode.offsetWidth<node.offsetWidth) {
                         parentNode.style.width = "" + node.offsetWidth + "px";
-                    }else{
+                    }else if(node){
                         parentNode.style.width = node.scrollWidth > node.offsetWidth ? "auto" : "100%";
+                    }else{
+                        parentNode.style.width="100%";
                     }
 
                 }, true);

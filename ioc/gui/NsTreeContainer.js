@@ -1,6 +1,5 @@
-
 define([
-    "dojo/_base/declare", // declare
+    "dojo/_base/declare",
     "dojo/text!./templates/ContentTabDokuwikiNsTree.html",
     "dijit/layout/ContentPane",
     'dijit/layout/_LayoutWidget',
@@ -12,8 +11,8 @@ define([
     "dojo/NodeList-dom" // NodeList.style
 ], function (declare, template, ContentPane, _LayoutWidget, _TemplatedMixin, 
                 JsonRest, Observable, Tree, ObjectStoreModel) {
+            
     var ret = declare("ioc.gui.NsTreeContainer", [ContentPane, _TemplatedMixin, _LayoutWidget],
-
         /**
          * Aquest widget afegeix un panell amb un arbre.
          *
