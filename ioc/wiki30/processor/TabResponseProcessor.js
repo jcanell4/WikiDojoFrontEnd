@@ -65,7 +65,7 @@ define([
              */
             _processAddTab: function (response, dispatcher) {
                 if (response.contentParams) {
-                    var oldTab = registry.byId(this._generateTabId(response.containerId, response.contentParams.id));
+                    var oldTab = registry.byId(/*this._generateTabId(response.containerId, */response.contentParams.id)/*)*/;
 
                     if (oldTab) {
                         this._updateTab(oldTab, response);

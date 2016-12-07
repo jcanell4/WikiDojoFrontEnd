@@ -23,8 +23,9 @@ define([
                 /*TO DO: */
                 this._render(this.data);
             },            
-            setData: function(data){
-                this._render(data)
+            setData: function(params){
+                this.destroyDescendants();
+                this._render(params.data);
             },
             _render: function(data){
 //                var trees = [];
@@ -52,8 +53,11 @@ define([
                             treeParams.urlBaseTyped = this.urlBaseTyped;                    
                         }
                         treeParams.updateQuery = function(item){
-                            //this.query = "id="+this.fromRoot+(item.id?":"+item.id:"");
-                            this.query = "id="+item.id;
+                            if(item.id.length===0){
+                                this.query = "id="+this.fromRoot;
+                            }else{
+                                this.query = "id="+item.id;
+                            }
                             return this.query;
                         };
                     }
