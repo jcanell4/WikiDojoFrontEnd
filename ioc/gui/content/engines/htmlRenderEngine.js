@@ -14,7 +14,7 @@ define(["dojo/dom-construct"], function (domConstruct) {
 
         if (typeof data === 'string' ) {
             html = data;
-        } else if (typeof data.content === 'string') {
+        } else if (data && typeof data.content === 'string') {
             html = data.content;
         } else {
             render = 'Tipus de dada no reconegut.'
