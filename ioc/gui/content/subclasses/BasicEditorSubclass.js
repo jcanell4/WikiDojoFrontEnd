@@ -71,6 +71,8 @@ define([
             _doSave: function (event) {
                 //console.log("BasicEditorSubclass#_doSave", this.id, event);
 
+
+
                 var dataToSend = this.getQuerySave(this.id),
                     containerId = this.id;
 

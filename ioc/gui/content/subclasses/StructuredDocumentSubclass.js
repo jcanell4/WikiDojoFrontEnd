@@ -152,7 +152,8 @@ define([
 
         // ALERTA[Xavi] this fa referencia al dispatcher
         _funcSave: function () {
-            //console.log("StructuredDocumentSubclass#_funcSave");
+            console.log("StructuredDocumentSubclass#_funcSave");
+
             var chunk = this.getGlobalState().getCurrentElementId(),
                 id = this.getGlobalState().getCurrentId(),
                 eventManager = this.getEventManager();
@@ -1063,24 +1064,32 @@ define([
         _doSavePartial: function (event) {
             console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
-            console.log("Hi han editors?", this.editors);
 
-            var dataToSend = this.getQuerySave(event.chunk),
-                containerId = "container_" + event.id + "_" + event.chunk;
 
-            //this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
-            //    id: this.id,
-            //    dataToSend: dataToSend,
-            //    standbyId: containerId
-            //})
 
-            this.hasChanges = false;
+            if (this.hasChanges) {
+                var dataToSend = this.getQuerySave(event.chunk),
+                    containerId = "container_" + event.id + "_" + event.chunk;
 
-            return {
-                id: this.id,
-                dataToSend: dataToSend,
-                standbyId: containerId
-            };
+                //this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
+                //    id: this.id,
+                //    dataToSend: dataToSend,
+                //    standbyId: containerId
+                //})
+
+                this.hasChanges = false;
+
+                return {
+                    id: this.id,
+                    dataToSend: dataToSend,
+                    standbyId: containerId
+                };
+            } else {
+                console.log("*** NO HI HAN CANVIS ***");
+                return {
+                    _cancel: true
+                };
+            }
 
         },
 
