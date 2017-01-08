@@ -673,8 +673,9 @@ define([
             this.setData(content);
             this.render();
 
-            // Si existeix una secció seleccionada, la reseleccionem
-            if (this._getCurrentSectionId()) {
+            // Si existeix una secció seleccionada i no es tracta d'una revisió, la reseleccionem
+            console.log("És una revisió? ", this.rev);
+            if (this._getCurrentSectionId() && !this.rev) {
                 this._setCurrentSection(this._getCurrentSectionId());
             }
 
