@@ -476,6 +476,7 @@ define([
          * @returns {boolean} Cert si s'ha produït algun canvi
          */
         isContentChanged: function () {
+
             //console.log("StructuredDocumentSubclass#isContentChanged");
 
             // * El editing dels chunks en edicio es diferent del $textarea corresponent
@@ -525,6 +526,24 @@ define([
             }
 
             return documentChanged;
+        },
+
+        isContentChangedForChunk: function (chunkId) {
+            console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.data);
+            var index = this.data.dictionary[chunkId],
+                chunk = this.data.chunks[index],
+                $textarea,
+                content;
+
+
+                if (chunk.text) {
+                    $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
+                    content = $textarea.val();
+                    return this._getOriginalContent(chunk.header_id) != content
+                } else {
+                    return false;
+                }
+
         },
 
         isLastCheckedContentChanged: function (header_id, content) {
@@ -1067,7 +1086,7 @@ define([
 
 
 
-            if (this.hasChanges) {
+            if (this.isContentChangedForChunk(event.chunk)) {
                 var dataToSend = this.getQuerySave(event.chunk),
                     containerId = "container_" + event.id + "_" + event.chunk;
 

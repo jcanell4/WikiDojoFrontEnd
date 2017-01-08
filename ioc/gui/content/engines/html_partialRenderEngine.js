@@ -40,6 +40,7 @@ define(function () {
             }
 
             $header.before($container);
+            $header.attr('id', 'header_' + data.chunks[i].header_id);
 
             $viewContainer = jQuery('<div id="view_' + aux_id + '"></div>');
 
@@ -94,6 +95,11 @@ define(function () {
 
             $container.append($viewContainer);
             $container.append($editContainer);
+
+            // ALERTA[Xavi] Embolcallat per ser referenciat correctament pel TOC
+
+            var $outerContainer = jQuery('<div id="' + data.chunks[i].header_id + '"></div>');
+            $container.before($outerContainer);
 
         }
 
