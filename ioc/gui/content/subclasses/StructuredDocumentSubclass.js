@@ -152,7 +152,8 @@ define([
 
         // ALERTA[Xavi] this fa referencia al dispatcher
         _funcSave: function () {
-            //console.log("StructuredDocumentSubclass#_funcSave");
+            console.log("StructuredDocumentSubclass#_funcSave");
+
             var chunk = this.getGlobalState().getCurrentElementId(),
                 id = this.getGlobalState().getCurrentId(),
                 eventManager = this.getEventManager();
@@ -475,6 +476,7 @@ define([
          * @returns {boolean} Cert si s'ha produït algun canvi
          */
         isContentChanged: function () {
+
             //console.log("StructuredDocumentSubclass#isContentChanged");
 
             // * El editing dels chunks en edicio es diferent del $textarea corresponent
@@ -524,6 +526,24 @@ define([
             }
 
             return documentChanged;
+        },
+
+        isContentChangedForChunk: function (chunkId) {
+            console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.data);
+            var index = this.data.dictionary[chunkId],
+                chunk = this.data.chunks[index],
+                $textarea,
+                content;
+
+
+                if (chunk.text) {
+                    $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
+                    content = $textarea.val();
+                    return this._getOriginalContent(chunk.header_id) != content
+                } else {
+                    return false;
+                }
+
         },
 
         isLastCheckedContentChanged: function (header_id, content) {
@@ -653,8 +673,9 @@ define([
             this.setData(content);
             this.render();
 
-            // Si existeix una secció seleccionada, la reseleccionem
-            if (this._getCurrentSectionId()) {
+            // Si existeix una secció seleccionada i no es tracta d'una revisió, la reseleccionem
+            console.log("És una revisió? ", this.rev);
+            if (this._getCurrentSectionId() && !this.rev) {
                 this._setCurrentSection(this._getCurrentSectionId());
             }
 
@@ -1063,24 +1084,32 @@ define([
         _doSavePartial: function (event) {
             console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
-            console.log("Hi han editors?", this.editors);
 
-            var dataToSend = this.getQuerySave(event.chunk),
-                containerId = "container_" + event.id + "_" + event.chunk;
 
-            //this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
-            //    id: this.id,
-            //    dataToSend: dataToSend,
-            //    standbyId: containerId
-            //})
 
-            this.hasChanges = false;
+            if (this.isContentChangedForChunk(event.chunk)) {
+                var dataToSend = this.getQuerySave(event.chunk),
+                    containerId = "container_" + event.id + "_" + event.chunk;
 
-            return {
-                id: this.id,
-                dataToSend: dataToSend,
-                standbyId: containerId
-            };
+                //this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
+                //    id: this.id,
+                //    dataToSend: dataToSend,
+                //    standbyId: containerId
+                //})
+
+                this.hasChanges = false;
+
+                return {
+                    id: this.id,
+                    dataToSend: dataToSend,
+                    standbyId: containerId
+                };
+            } else {
+                console.log("*** NO HI HAN CANVIS ***");
+                return {
+                    _cancel: true
+                };
+            }
 
         },
 

@@ -24,6 +24,7 @@ define([
              * @private
              */
             _processInfo: function (info, dispatcher) {
+                console.log("InfoStatusProcessor#_processInfo (no fa res)", info);
             },
 
             /**
@@ -35,6 +36,7 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
+                console.log("InfoStatusProcessor#updateState", value);
                 if (!value || !value.message) {
                     console.error("Error detectact, la info que ha arribat no es vàlida", value)
                     return;

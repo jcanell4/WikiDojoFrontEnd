@@ -234,6 +234,14 @@ define([
 
             _setLastCheckedContent: function (content) {
                 this.lastCheckedContent = content;
-            }           
+            },
+
+            _doSave: function (event) {
+                if (this.hasChanges) {
+                    return this.inherited(arguments);
+                } else {
+                    return {_cancel:true}
+                }
+            }
         });
 });

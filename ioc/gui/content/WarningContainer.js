@@ -23,15 +23,7 @@ define([
                 this.notifications = {};
                 this.notifyManager = dispatcher.getNotifyManager();
 
-                this.counter = {
-                    info: 0,
-                    success: 0,
-                    warning: 0,
-                    error: 0
-                };
-
-                this.notificationsVisible = false;
-
+                this.resetCounters();
             },
 
 
@@ -84,6 +76,8 @@ define([
                 this.inherited(arguments);
                 var that = this;
 
+
+
                 this.domNode.addEventListener('click', function() {
                     that.toggleNotifications();
                 })
@@ -123,7 +117,37 @@ define([
 
             showNotification: function(id) {
                 this.notifications[id].show();
-            }
+            },
 
+            resetCounters: function() {
+                this.counter = {
+                    info: 0,
+                    success: 0,
+                    warning: 0,
+                    error: 0
+                };
+
+                this.notificationsVisible = false;
+            },
+
+            clearCounters: function () {
+                this.counterWarning.innerHTML = '0';
+                this.counterWarning.setAttribute('style', '');
+
+                this.counterSuccess.innerHTML = '0';
+                this.counterSuccess.setAttribute('style', '');
+
+                this.counterError.innerHTML = '0';
+                this.counterError.setAttribute('style', '');
+
+                this.counterInfo.innerHTML = '0';
+                this.counterInfo.setAttribute('style', '');
+            },
+
+            reset: function() {
+                this.removeAllNotifications();
+                this.resetCounters();
+                this.clearCounters();
+            }
         });
 });

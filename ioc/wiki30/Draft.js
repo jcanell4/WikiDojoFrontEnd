@@ -13,8 +13,7 @@ define([
     return declare([EventObservable, EventObserver], {
 
         AUTOSAVE_LOCAL: 5 * 1000, // Temps en ms mínim per fer un refresc
-        //AUTOSAVE_REMOTE: 10 * 1000, // TESTS
-        AUTOSAVE_REMOTE: 10 * 60 * 1000, // Quan es fa un autosave si ha passat aquesta quantitat de ms es fa remot en lloc de local
+        AUTOSAVE_REMOTE: 10 * 60 * 1000, // Temps per defecte, modificat al constructor si es passa el paràmetre
         MAX_LOCAL_STORAGE_USED: 2048, // En KBs, 2048KBs son 2 MBs
 
         constructor: function (args) {
@@ -27,6 +26,7 @@ define([
             this.timers = {};
             this.eventManager = this.dispatcher.getEventManager();
             if(this.contentTool.autosaveTimer){
+                // this.AUTOSAVE_REMOTE = 10000; ALERTA[Xavi] per fer proves, canvia el save remot a 10s
                 this.AUTOSAVE_REMOTE = this.contentTool.autosaveTimer;
             }
             this._init();
@@ -82,7 +82,7 @@ define([
         },
 
         _doSaveLocal: function () {
-            //console.log("Draft#_doSaveLocalStorage");
+            console.log("Draft#_doSaveLocalStorage");
             this.lastRefresh = Date.now();
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
@@ -143,7 +143,7 @@ define([
         },
 
         _doSaveRemoteServer: function () {
-            //console.log("Draft#_doSaveRemoteServer");
+            console.log("Draft#_doSaveRemoteServer");
             this.lastRemoteRefresh = Date.now();
             this.lastRefresh = this.lastRemoteRefresh;
 
@@ -164,7 +164,9 @@ define([
             var pages = this._doGetPages(),
                 chunkId = data.dataToSend.section_id;
 
-            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
+            if (pages[this.contentTool.id]
+                && pages[this.contentTool.id].drafts
+                && pages[this.contentTool.id].drafts['structured']) {
                 delete(pages[this.contentTool.id].drafts['structured'][chunkId]);
 
 

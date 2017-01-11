@@ -216,7 +216,7 @@ define([
 
         removeAllWarnings: function() {
             this._receivedWarningIds = [];
-            this.warningContainer.removeAllNotifications();
+            this.warningContainer.reset();
         },
 
         removeAllNotifications: function() {

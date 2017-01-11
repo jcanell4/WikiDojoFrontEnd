@@ -110,24 +110,32 @@ define([
                 //console.log("EventObserver#dispatchEvent: ", event, data);
                 var callbacks;
                 
-                eventData.name = event;
-                callbacks = this.callbacks[eventData.name];
-                
-                if (callbacks) {
-                    for(var key in callbacks){
-                        for(var i=0; callbacks[key] && i<callbacks[key].callbacks.length; i++){
-                            callbacks[key].callbacks[i](eventData);
+
+                if (eventData._cancel) {
+                    console.warn("S'ha cancel·lat l'event");
+                } else {
+                    eventData.name = event;
+                    callbacks = this.callbacks[eventData.name];
+
+
+                    if (callbacks) {
+                        for(var key in callbacks){
+                            for(var i=0; callbacks[key] && i<callbacks[key].callbacks.length; i++){
+                                callbacks[key].callbacks[i](eventData);
+                            }
                         }
                     }
-                }
-                
-                if(globalPropagation 
+
+                    if(globalPropagation
                         && (this.eventManager || this.dispatcher)){
-                    if(!this.eventManager){
-                        this.eventManager=this.dispatcher.getEventManager();                        
+                        if(!this.eventManager){
+                            this.eventManager=this.dispatcher.getEventManager();
+                        }
+                        this.eventManager._dispatchEvent(event, eventData);
                     }
-                    this.eventManager._dispatchEvent(event, eventData);
                 }
+
+
             },
             
              _onDestroy: function () {
