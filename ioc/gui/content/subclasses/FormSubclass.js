@@ -292,8 +292,7 @@ define([
             },
             
             getProjectType: function() {
-                var node = dom.byId("projectType");
-                return node.value;
+                return this.projectType;
             }
         });
 });
