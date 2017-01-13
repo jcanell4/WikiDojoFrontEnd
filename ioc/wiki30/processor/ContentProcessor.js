@@ -44,14 +44,17 @@ define([
                     existContentTool = dispatcher.getContentCache(id)!==undefined;
 
                 if (value.discard_changes) {
+
                     confirmation = true;
                 } else if (changesManager.isChanged(id)) {
                     confirmation = dispatcher.discardChanges();
+
                     clearDraft=true;
                 } else {
                     confirmation = true;
                     if(existContentTool){
-                        clearDraft=true;
+
+                        // clearDraft=true;
                     }
                 }
 
