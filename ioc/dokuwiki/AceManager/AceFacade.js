@@ -9,9 +9,10 @@ define([
     'ioc/dokuwiki/AceManager/IocCommands',
     'ioc/dokuwiki/AceManager/patcher',
     'dojo/dom-style',
-    "dojo/dom"
-], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style, dom) {
-    return declare([], {
+    "dojo/dom",
+    'dojo/Evented',
+], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style, dom, Evented) {
+    return declare([Evented], {
 
         constructor: function (args) {
             var lang_rules = {},
@@ -76,6 +77,11 @@ define([
 
             jQuery(this.$editor).find('textarea').on('focus', this.select.bind(this));
 
+
+            jQuery(this.$editor).on('input paste cut keyup', function () {
+                this.emit('change', {newContent: this.getValue()});
+            }.bind(this));
+
             this.enable();
         },
 
@@ -138,6 +144,8 @@ define([
 
             doku.set_cookie('aceeditor', 'on');
             //dispatcher.getContentCache(currentId).setAceEditorOn(true);
+
+            this.resetOriginalContentState();
 
             this.enabled = true;
         },
@@ -212,6 +220,14 @@ define([
                 this.enable();
             }
 
+        },
+
+        resetOriginalContentState: function() {
+            this.originalContent = this.getValue();
+        },
+
+        isChanged: function() {
+            return this.originalContent != this.getValue();
         }
     });
 });

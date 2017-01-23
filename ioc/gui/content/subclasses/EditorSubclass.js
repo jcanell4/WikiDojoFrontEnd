@@ -38,7 +38,7 @@ define([
              * @param args
              */
             constructor: function (args) {
-                this._setOriginalContent(args.originalContent);
+                // this._setOriginalContent(args.originalContent);
                 this.hasChanges = false;
             },
 
@@ -48,13 +48,16 @@ define([
              * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
              */
             isContentChanged: function () {
-                //console.log("EditorSubclass#isContentChanged");
-                var content = this.getCurrentContent(),
-                    diffFromOriginal = this._getOriginalContent() != content,
-                    diffFromLastCheck = this.isLastCheckedContentChanged();
+                console.log("EditorSubclass#isContentChanged");
+
+                // var content = this.getCurrentContent(),
+                    // diffFromOriginal = this._getOriginalContent() != content,
+                    // diffFromLastCheck = this.isLastCheckedContentChanged();
+
+                var diffFromOriginal = this.getEditor().isChanged();
 
 
-                if (diffFromOriginal && diffFromLastCheck) { // No es fa el refresc si encara no s'ha produt cap canvi
+                if (diffFromOriginal /*&& diffFromLastCheck*/) { // No es fa el refresc si encara no s'ha produt cap canvi
                     this.onDocumentRefreshed();
                 }
 
@@ -62,7 +65,6 @@ define([
                     this.onDocumentChanged();
                     this.hasChanges = true;
                 }
-
                 return diffFromOriginal;
             },
 
@@ -72,7 +74,8 @@ define([
              */
             resetContentChangeState: function () {
                 this.hasChanges = false;
-                this._setOriginalContent(this.getCurrentContent());
+                this.getEditor().resetOriginalContentState();
+                // this._setOriginalContent(this.getCurrentContent());
                 this.onDocumentChangesReset();
             },
 
@@ -91,7 +94,9 @@ define([
                 this.registerToChangesManager();
 
                 // TODO[Xavi] Això ha de venir de l'editor
-                jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
+
+                this.getEditor().on('change', this._checkChanges.bind(this));
+                // jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
                 
                 this.inherited(arguments);
                 
@@ -171,8 +176,8 @@ define([
              *
              * @private
              */
-            _checkChanges: function () {
-                //console.log('EditorSubclass#_checkChanges');
+            _checkChanges: function (e) {
+                console.log('EditorSubclass#_checkChanges');
                 // Si el document està bloquejat mai hi hauran canvis
                 if (!this.locked) {
                     this.changesManager.updateContentChangeState(this.id);
@@ -185,9 +190,9 @@ define([
              * @returns {string} - Contingut original
              * @private
              */
-            _getOriginalContent: function () {
-                return this.originalContent;
-            },
+            // _getOriginalContent: function () {
+            //     return this.originalContent;
+            // },
 
             /**
              * Estableix el contingut passat com paràmetre com a contingut original.
@@ -195,14 +200,15 @@ define([
              * @param {string} content - Contingut a establir com original
              * @private
              */
-            _setOriginalContent: function (content) {
-                this.originalContent = content;
-            },
+            // _setOriginalContent: function (content) {
+            //     this.originalContent = content;
+            // },
 
             /**
              * Descarta els canvis al document actual i restaura els originals
              */
             discardChanges: function () {
+                alert("cridat disctardChanges");
                 // TODO: fer la substitució del contingut i comprovar que està sincronitzat amb el ACEEditor, i si no ho està comprovar si es necessari sincronitzar-lo.
 
                 this.inherited(arguments);
@@ -218,24 +224,24 @@ define([
                 };
             },
 
-            isLastCheckedContentChanged: function () {
-                var content = this.getCurrentContent(),
-                    result = this._getLastCheckedContent() != content;
+            // isLastCheckedContentChanged: function () {
+            //     var content = this.getCurrentContent(),
+            //         result = this._getLastCheckedContent() != content;
+            //
+            //     if (result) {
+            //         this._setLastCheckedContent(content);
+            //     }
+            //
+            //     return result;
+            // },
 
-                if (result) {
-                    this._setLastCheckedContent(content);
-                }
-
-                return result;
-            },
-
-            _getLastCheckedContent: function () {
-                return this.lastCheckedContent;
-            },
-
-            _setLastCheckedContent: function (content) {
-                this.lastCheckedContent = content;
-            },
+            // _getLastCheckedContent: function () {
+            //     return this.lastCheckedContent;
+            // },
+            //
+            // _setLastCheckedContent: function (content) {
+            //     this.lastCheckedContent = content;
+            // },
 
             _doSave: function (event) {
                 if (this.hasChanges) {

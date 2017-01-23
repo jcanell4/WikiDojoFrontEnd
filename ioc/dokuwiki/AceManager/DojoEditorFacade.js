@@ -2,9 +2,10 @@ define([
     'dojo/_base/declare',
     'ioc/dokuwiki/AceManager/IocDojoEditor',
     'dijit/_editor/plugins/AlwaysShowToolbar',
-    'dojo/dom'
-], function (declare, Editor, AlwaysShowToolbar, dom) {
-    return declare([], {
+    'dojo/dom',
+    'dojo/Evented',
+], function (declare, Editor, AlwaysShowToolbar, dom, Evented) {
+    return declare([Evented], {
 
         editor: null,
 
@@ -29,23 +30,21 @@ define([
             }, dom.byId(args.containerId));
 
 
-            this.editor.on('change', function () {
-                console.log('editor333 onChange handler: ' );
-            });
-
             var text = this.$textarea.val();
             this.setValue(text);
 
+            this.editor.on('change', function (newContent) {
+                this.emit('change', {newContent: newContent});
+            }.bind(this));
 
             this.editor.startup();
-
-
-
         },
+
 
         setHeight: function (height) {
             console.log("DojoEditorFacade#setHeight", height);
-            this.editor.resize(200);
+            console.log("TODO: No funciona canviar la alçada ni el resize");
+            this.editor.set('height', 2000);
         },
 
         getValue: function () {
@@ -55,6 +54,14 @@ define([
 
         setValue: function (value) {
             this.editor.set('value', value);
+        },
+
+        resetOriginalContentState: function() {
+            this.editor.resetOriginalContentState();
+        },
+
+        isChanged: function() {
+            return this.editor.isChanged();
         }
-    })
+    });
 });
