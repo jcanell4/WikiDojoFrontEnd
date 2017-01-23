@@ -3,12 +3,13 @@ define([
     "dojo/on",
     'ioc/dokuwiki/AceManager/toolbarManager',
     'ioc/dokuwiki/AceManager/AceFacade',
+    'ioc/dokuwiki/AceManager/DojoEditorFacade',
     'dojo/dom-geometry',
     'dojo/dom',
     "dojo/io-query",
     "dojo/_base/lang",
     'ioc/wiki30/Draft',
-], function (declare, on, toolbarManager, AceFacade, geometry, dom, ioQuery, lang) {
+], function (declare, on, toolbarManager, AceFacade, DojoEditorFacade, geometry, dom, ioQuery, lang) {
 
     return declare([],
         //return declare(null,
@@ -222,10 +223,29 @@ define([
 
             // Afegeix un editorAce per cada editor actiu
             addEditors: function () {
-                this.editor = this.createEditor(this.id);
+                this.editor = this.createEditor(this.id, "DojoEditor"); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves
             },
 
-            createEditor: function (id) {
+            createEditor: function(id, type) {
+                switch (type) {
+                    case "DojoEditor":
+                        return this.createDojoEditor(id);
+
+                    default:
+                        return this.createAceEditor(id);
+                }
+            },
+
+            createDojoEditor: function(id) {
+                return new DojoEditorFacade(
+                    {
+                        containerId:'editor_' + id,
+                        textareaId:'textarea_' + id,
+                    }
+                );
+            },
+
+            createAceEditor: function (id) {
                 var $textarea = jQuery('#textarea_' + id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
 
                 return new AceFacade({

@@ -90,6 +90,7 @@ define([
                 
                 this.registerToChangesManager();
 
+                // TODO[Xavi] Això ha de venir de l'editor
                 jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
                 
                 this.inherited(arguments);
