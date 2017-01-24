@@ -18,6 +18,8 @@ define(function () {
             $form = jQuery(data.htmlForm).find('form').clone(),
             $textarea = $form.find('textarea');
 
+        $container.css('height', '100%');
+
         $container.append('<div id="toolbar_' + data.id + '"></div>');
         $form.attr('id', 'form_' + data.id);
 

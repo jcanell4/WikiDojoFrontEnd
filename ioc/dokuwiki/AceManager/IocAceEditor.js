@@ -21,7 +21,7 @@ define([
             session: null,
 
             /** @type {boolean} @private - Determina si el editor es de només lectura */
-            _readOnly: false,
+            _readOnly: null,
 
             /** @type {object} @private - Valors per defecte per inicialitzar l'editor */
             _default: {
@@ -218,6 +218,10 @@ define([
 
             destroy: function () {
                 ace.edit(this.args.containerId).destroy()
+            },
+
+            getReadOnly:function() {
+                return this._readOnly ? this._readOnly : false;
             }
         });
 });

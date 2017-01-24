@@ -11,8 +11,15 @@ define([
     'dojo/dom-style',
     "dojo/dom",
     'dojo/Evented',
-], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style, dom, Evented) {
+    'ioc/dokuwiki/AceManager/toolbarManager',
+    'dojo/dom-geometry',
+
+], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher,
+             style, dom, Evented, toolbarManager, geometry) {
     return declare([Evented], {
+
+        VERTICAL_MARGIN: 25,
+        MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
         constructor: function (args) {
             var lang_rules = {},
@@ -42,6 +49,8 @@ define([
                 container = new Container(aceWrapper, dokuWrapper),// Comprovar que es el que ha de fer currentEditor!
 
                 commands;
+
+            this.dispatcher = args.dispatcher;
 
             this.wrap = args.wrapMode;
 
@@ -83,6 +92,9 @@ define([
             }.bind(this));
 
             this.enable();
+
+            this.addToolbars();
+
         },
 
         updateTextarea: function (value) {
@@ -96,7 +108,7 @@ define([
         },
 
 
-        getValue: function() {
+        getValue: function () {
             if (this.enabled) {
                 return this.getEditorValue();
             } else {
@@ -150,7 +162,7 @@ define([
             this.enabled = true;
         },
 
-        disable: function() {
+        disable: function () {
             var selection,
                 container = this.container,
                 ace = container.aceWrapper,
@@ -184,11 +196,11 @@ define([
 
         setHeight: function (height) {
             var node = dom.byId(this.dokuWrapper.textArea.id);
-            if(node){
-                style.set(node, "height", "" + height  + "px");
+            if (node) {
+                style.set(node, "height", "" + height + "px");
             }
             node = dom.byId(this.iocAceEditor.containerId);
-            if(node){
+            if (node) {
                 style.set(node, "height", "" + height + "px");
             }
 
@@ -212,7 +224,7 @@ define([
             this.setWrap(this.wrap);
         },
 
-        toggleEditor: function() {
+        toggleEditor: function () {
 
             if (this.enabled) {
                 this.disable();
@@ -222,13 +234,114 @@ define([
 
         },
 
-        resetOriginalContentState: function() {
+        resetOriginalContentState: function () {
             this.originalContent = this.getValue();
         },
 
-        isChanged: function() {
+        isChanged: function () {
             return this.originalContent != this.getValue();
-        }
+        },
+
+        fillEditorContainer: function () {
+            var contentNode = dom.byId(this.id),
+                h = geometry.getContentBox(contentNode).h,
+                max = h - this.VERTICAL_MARGIN;
+
+            console.log("AceFacade#fillEditorContainer", this.id, h);
+            this.setHeight(Math.max(this.MIN_HEIGHT, max));
+        },
+
+
+        // TODO[Xavi] en aquest cas només cal una toolbar
+        addToolbars: function () {
+            if (this.iocAceEditor.getReadOnly()) {
+                return;
+            }
+            this.addButtons();
+            toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
+        },
+
+        addButtons: function () {
+            var argSave = {
+                    type: 'SaveButton',
+                    title: 'Desar',
+                    icon: '/iocjslib/ioc/gui/img/save.png'
+                },
+
+                argCancel = {
+                    type: 'BackButton',
+                    title: 'Tornar',
+                    icon: '/iocjslib/ioc/gui/img/back.png'
+                },
+
+                confEnableAce = {
+                    type: 'EnableAce',
+                    title: 'Activar/Desactivar ACE',
+                    icon: '/iocjslib/ioc/gui/img/toggle_on.png'
+                },
+
+                confEnableWrapper = {
+                    type: 'EnableWrapper', // we havea new type that links to the function
+                    title: 'Activar/Desactivar embolcall',
+                    icon: '/iocjslib/ioc/gui/img/wrap.png'
+                };
+
+
+            toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
+        },
+
+        /**
+         * Activa o desactiva l'embolcall del text.
+         * @returns {boolean} - Sempre retorna fals
+         * @protected
+         */
+        _funcEnableWrapper: function () {
+            var id = this.getGlobalState().getCurrentId(),
+                editor = this.getContentCache(id).getMainContentTool().getEditor();
+
+            editor.toggleWrap();
+        },
+
+        /**
+         * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
+         *
+         * @protected
+         */
+        _funcSave: function () {
+            var id = this.getGlobalState().getCurrentId(),
+                eventManager = this.getEventManager();
+//                eventManager.dispatchEvent(eventManager.eventNameCompound.SAVE, {id: id}, id);
+            eventManager.fireEvent(eventManager.eventName.SAVE, {id: id}, id);
+        },
+
+        /**
+         * Activa o desactiva l'editor ACE segons l'estat actual
+         *
+         * @returns {boolean} - Sempre retorna fals.
+         * @protected
+         */
+        _funcEnableAce: function () {
+            var id = this.getGlobalState().getCurrentId(),
+                editor = this.getContentCache(id).getMainContentTool().getEditor();
+            editor.toggleEditor();
+        },
+
+        /**
+         * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
+         * @protected
+         */
+        _funcCancel: function () {
+            //console.log("EditorSubclass#_funcCancel");
+            var id = this.getGlobalState().getCurrentId(),
+                eventManager = this.getEventManager();
+//                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
+
+            eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id}, id);
+//                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
+        },
     });
 });
 

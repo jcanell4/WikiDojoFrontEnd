@@ -5,9 +5,8 @@ define([
     "ioc/gui/content/subclasses/BasicEditorSubclass",
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
     "dojo/io-query",
-    'ioc/wiki30/Draft',
-    'ioc/dokuwiki/AceManager/toolbarManager'
-], function (declare, on, LocktimedDocumentSubclass, BasicEditorSubclass, ChangesManagerCentralSubclass, ioQuery, toolbarManager) {
+    'ioc/wiki30/Draft'
+], function (declare, on, LocktimedDocumentSubclass, BasicEditorSubclass, ChangesManagerCentralSubclass, ioQuery) {
 
     return declare([BasicEditorSubclass, LocktimedDocumentSubclass, ChangesManagerCentralSubclass],
         //return declare(null,

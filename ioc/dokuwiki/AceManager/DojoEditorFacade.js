@@ -4,10 +4,15 @@ define([
     'dijit/_editor/plugins/AlwaysShowToolbar',
     'dojo/dom',
     'dojo/Evented',
-], function (declare, Editor, AlwaysShowToolbar, dom, Evented) {
+    'dojo/dom-geometry',
+], function (declare, Editor, AlwaysShowToolbar, dom, Evented, geometry) {
     return declare([Evented], {
 
         editor: null,
+
+        VERTICAL_MARGIN: 25,
+        MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+
 
         constructor: function (args) {
             console.log("DojoEditorFacade#constructor", args);
@@ -16,6 +21,7 @@ define([
 
 
             this.$editor = jQuery('<div>');
+            this.$editor.css('height', '99%');
             this.$editor.attr('id', args.containerId);
             this.$textarea.after(this.$editor);
 
@@ -23,10 +29,10 @@ define([
             this.$textarea.hide();
 
 
+
             this.editor = new Editor({
                 extraPlugins: [AlwaysShowToolbar],
-                updateInterval: 1,
-
+                // height: "100%"
             }, dom.byId(args.containerId));
 
 
@@ -43,8 +49,14 @@ define([
 
         setHeight: function (height) {
             console.log("DojoEditorFacade#setHeight", height);
-            console.log("TODO: No funciona canviar la alçada ni el resize");
-            this.editor.set('height', 2000);
+            // this.editor.set('height', '1000px');
+            this.editor.resize({height: height+ 'px'});
+            // this.editor.set('height', "50px");
+            // setTimeout(function() {
+            //     this.editor.resize(height + 'px');
+            // }.bind(this), 1000);
+            // this.$editor.css('height', height + 'px');
+
         },
 
         getValue: function () {
@@ -62,6 +74,15 @@ define([
 
         isChanged: function() {
             return this.editor.isChanged();
+        },
+
+        fillEditorContainer: function () {
+            var contentNode = this.editor.domNode,
+                h = geometry.getContentBox(contentNode).h,
+                max = h - this.VERTICAL_MARGIN;
+
+            console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
+            this.setHeight(Math.max(this.MIN_HEIGHT, max));
         }
     });
 });
