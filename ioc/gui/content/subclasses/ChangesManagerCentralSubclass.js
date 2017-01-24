@@ -89,6 +89,7 @@ define([
          * @returns {boolean}
          */
         onClose: function () {
+            console.log("OnClose");
             var confirmation = this.inherited(arguments);
 
             if (confirmation && this.changesManager.isChanged(this.id)) {

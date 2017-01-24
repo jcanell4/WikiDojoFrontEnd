@@ -56,7 +56,7 @@ define([
                 var diffFromOriginal = this.getEditor().isChanged();
 
 
-                if (diffFromOriginal /*&& diffFromLastCheck*/) { // No es fa el refresc si encara no s'ha produt cap canvi
+                if (diffFromOriginal /*&& diffFromLastCheck*/) { // No es fa el refresc si encara no s'ha produt cap canvi // ALERTA[Xavi] No estic segur de si aquest canvi és correcte
                     this.onDocumentRefreshed();
                 }
 
@@ -76,6 +76,7 @@ define([
                 this.getEditor().resetOriginalContentState();
                 // this._setOriginalContent(this.getCurrentContent());
                 this.onDocumentChangesReset();
+                return true;
             },
 
             /**
@@ -207,7 +208,7 @@ define([
              * Descarta els canvis al document actual i restaura els originals
              */
             discardChanges: function () {
-                alert("cridat disctardChanges");
+                alert("cridat discardChanges");
                 // TODO: fer la substitució del contingut i comprovar que està sincronitzat amb el ACEEditor, i si no ho està comprovar si es necessari sincronitzar-lo.
 
                 this.inherited(arguments);
