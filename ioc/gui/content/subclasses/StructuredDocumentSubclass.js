@@ -25,17 +25,13 @@ define([
     'dojo/_base/declare',
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
     'ioc/gui/content/subclasses/LocktimedDocumentSubclass',
-    'ioc/dokuwiki/AceManager/AceFacade',
+    'ioc/dokuwiki/AceManager/AceEditorPartialFacade',
     'dojo/dom',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/AceManager/toolbarManager'
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, toolbarManager) {
+    'ioc/dokuwiki/AceManager/DojoEditorFacade',
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry/*, toolbarManager*/, DojoEditorFacade) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
-
-        TOOLBAR_ID: 'partial_edit',
-        VERTICAL_MARGIN: 100, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
-        MIN_HEIGHT: 200, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
         DRAFT_TYPE: 'structured',
 
@@ -47,7 +43,6 @@ define([
             this.currentSectionId = null;
             this.hasChanges = false;
 
-            toolbarManager.setDispatcher(args.dispatcher);
         },
 
 
@@ -61,7 +56,7 @@ define([
 
             this.inherited(arguments);
 
-            this.addToolbars();
+            // this.addToolbars();
             this.addEditors();
 
             this.addEditionListener();
@@ -104,120 +99,6 @@ define([
             }
         },
 
-        addToolbars: function () {
-            //console.log("StructuredDocumentSubclass#addToolbars");
-            var auxId;
-
-            this.addButtons();
-
-            for (var i = 0; i < this.data.chunks.length; i++) {
-
-                if (this.data.chunks[i].text) {
-                    auxId = this.data.id + "_" + this.data.chunks[i].header_id;
-                    toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
-                }
-            }
-        },
-
-        addButtons: function () {
-            var argSave = {
-                    type: "SaveButton",
-                    title: "Desar",
-                    icon: "/iocjslib/ioc/gui/img/save.png"
-                },
-
-                argCancel = {
-                    type: "BackButton",
-                    title: "Tornar",
-                    icon: "/iocjslib/ioc/gui/img/back.png"
-                },
-
-                confEnableAce = {
-                    type: "EnableAce",
-                    title: "Activar/Desactivar ACE",
-                    icon: "/iocjslib/ioc/gui/img/toggle_on.png"
-                },
-
-                confEnableWrapper = {
-                    type: "EnableWrapper", // we havea new type that links to the function
-                    title: "Activar/Desactivar embolcall",
-                    icon: "/iocjslib/ioc/gui/img/wrap.png"
-                };
-
-            toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
-        },
-
-        // ALERTA[Xavi] this fa referencia al dispatcher
-        _funcSave: function () {
-            console.log("StructuredDocumentSubclass#_funcSave");
-
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId(),
-                eventManager = this.getEventManager();
-
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-
-
-            //console.log("StructuredDocumentSubclass#_funcSave", id, chunk);
-
-            eventManager.fireEvent(eventManager.eventName.SAVE_PARTIAL, {
-                id: id,
-                chunk: chunk
-            }, id);
-        },
-
-        /**
-         * Activa o desactiva l'editor ACE segons l'estat actual
-         *
-         * @returns {boolean} - Sempre retorna fals.
-         */
-        _funcEnableAce: function () {
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId();
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-            var editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
-
-            editor.toggleEditor();
-
-        },
-
-        _funcCancel: function () {
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId(),
-                eventManager = this.getEventManager();
-
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-
-            //this.getEventManager().dispatchEvent(eventManager.eventNameCompound.CANCEL_PARTIAL + id, {
-            //    id: id,
-            //    chunk: chunk
-            //});
-            eventManager.fireEvent(eventManager.eventName.CANCEL_PARTIAL, {
-                id: id,
-                chunk: chunk
-            }, id);
-        },
-
-        /**
-         * Activa o desactiva l'embolcall del text.
-         * @returns {boolean} - Sempre retorna fals
-         */
-        _funcEnableWrapper: function () {
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId(),
-                editor;
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-
-            editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
-            editor.toggleWrap();
-        },
 
         addEditionListener: function () {
             //console.log("StructuredDocumentSubclass#addEditionListener");
@@ -941,8 +822,30 @@ define([
             };
         },
 
-        // TODO: Copiat a Editor subclass (per generalitzar)
-        createEditor: function (id) {
+        // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
+        createEditor: function(id, type) {
+            switch (type) {
+                case "DojoEditor":
+                    return this.createDojoEditor(id);
+
+                default:
+                    return this.createAceEditor(id);
+            }
+        },
+
+        // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
+        createDojoEditor: function(id) {
+            return new DojoEditorFacade(
+                {
+                    containerId:'editor_' + id,
+                    textareaId:'textarea_' + id,
+                    dispatcher: this.dispatcher
+                }
+            );
+        },
+
+        // TODO: Copiat a BasicEditorSubclass (per generalitzar)
+        createAceEditor: function (id) {
             var $textarea = jQuery('textarea_' + id);
 
             return new AceFacade({
@@ -950,13 +853,20 @@ define([
                 containerId: 'editor_' + id,
                 textareaId: 'textarea_' + id,
                 theme: JSINFO.plugin_aceeditor.colortheme,
-                readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient
+                readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient <-- només canvia això respecte al BasicEditorSubclass#createAceEditor
                 wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                 wrapMode: $textarea.attr('wrap') !== 'off',
                 mdpage: JSINFO.plugin_aceeditor.mdpage,
-                auxId: id
+                auxId: id,
+                dispatcher: this.dispatcher,
+                data: this.data // ALERTA[Xavi] Això no es troba en el basic
             });
         },
+
+
+
+
+
 
         disableEditor: function (header_id) { // TODO[Xavi] No es fa servir
             this.editors[header_id].editor.hide();
@@ -1180,6 +1090,7 @@ define([
         },
 
         getEditor: function (header_id) {
+            console.log("StructuredDocumentSubclass#getEditor", header_id, this.editors);
             return this.editors[header_id].editor;
         },
 

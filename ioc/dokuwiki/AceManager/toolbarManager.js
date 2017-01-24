@@ -259,7 +259,9 @@ define([], function () {
          * @param dispatcher
          */
         setDispatcher: function (dispatcher) {
-            _dispatcher = dispatcher;
+            if (!_dispatcher) {
+                _dispatcher = dispatcher;
+            }
         }
     }
 });

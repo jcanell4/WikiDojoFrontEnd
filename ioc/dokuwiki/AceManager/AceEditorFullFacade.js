@@ -16,17 +16,22 @@ define([
 
 ], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher,
              style, dom, Evented, toolbarManager, geometry) {
+
+
     return declare([Evented], {
 
+        TOOLBAR_ID: "full-editor",
         VERTICAL_MARGIN: 25,
-        MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+        MIN_HEIGHT: 200,
 
         constructor: function (args) {
+            console.log("AceEditorFullFacade#constructor");
+
             var lang_rules = {},
                 iocAceMode = new IocAceMode({
                     baseHighlighters: lang_rules,
                     ruleSets: [new IocRuleSet()],
-                    xmlTags: args.xmltags // TODO[Xavi] Passar la info que harà prové del JSINFO per paràmetre, així no depenem d'ella si volem fer canvis
+                    xmlTags: args.xmltags
                 }),
 
                 mode = iocAceMode.getMode(),
@@ -39,7 +44,7 @@ define([
                     readOnly: args.readOnly,
                     wraplimit: args.wraplimit,
                     wrapMode: args.wrapMode,
-                    mdpage: args.mdpage // TODO[Xavi] Passar la info que harà prové del JSINFO per paràmetre, així no depenem d'ella si volem fer canvis
+                    mdpage: args.mdpage
                 }),
 
                 aceWrapper = new AceWrapper(iocAceEditor),
@@ -51,6 +56,7 @@ define([
                 commands;
 
             this.dispatcher = args.dispatcher;
+            this.data = args.data;
 
             this.wrap = args.wrapMode;
 
@@ -92,7 +98,7 @@ define([
             }.bind(this));
 
             this.enable();
-
+            toolbarManager.setDispatcher(this.dispatcher);
             this.addToolbars();
 
         },
@@ -252,8 +258,9 @@ define([
         },
 
 
-        // TODO[Xavi] en aquest cas només cal una toolbar
         addToolbars: function () {
+            toolbarManager.setDispatcher(this.dispatcher);
+
             if (this.iocAceEditor.getReadOnly()) {
                 return;
             }

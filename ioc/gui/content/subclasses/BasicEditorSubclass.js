@@ -2,7 +2,7 @@ define([
     "dojo/_base/declare",
     "dojo/on",
     // 'ioc/dokuwiki/AceManager/toolbarManager',
-    'ioc/dokuwiki/AceManager/AceFacade',
+    'ioc/dokuwiki/AceManager/AceEditorFullFacade',
     'ioc/dokuwiki/AceManager/DojoEditorFacade',
     'dojo/dom-geometry',
     'dojo/dom',
@@ -30,8 +30,6 @@ define([
          * @see contentToolFactory.generate()
          */
         {
-
-            TOOLBAR_ID: 'full_editor',
 
             editorCreated:false,
             
@@ -258,7 +256,8 @@ define([
                     wrapMode: $textarea.attr('wrap') !== 'off',
                     mdpage: JSINFO.plugin_aceeditor.mdpage,
                     auxId: id,
-                    dispatcher: this.dispatcher
+                    dispatcher: this.dispatcher,
+                    data: null // ALERTA[Xavi] Per l'editor complert no s'utilitza
                 });
             },
 
