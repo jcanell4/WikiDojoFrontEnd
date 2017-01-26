@@ -106,6 +106,8 @@ define([
         },
 
 
+
+
         addEditionListener: function () {
             //console.log("StructuredDocumentSubclass#addEditionListener");
             if (this.rev !== null && this.rev !== undefined && this.rev !== '') {
@@ -121,6 +123,14 @@ define([
                 auxId = this.data.id + "_" + this.data.chunks[i].header_id;
 
                 jQuery('#container_' + auxId).on('dblclick', function () {
+                    // var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
+
+                    context._changeCurrentSectionCallback(this.id);
+
+
+                    // ALERTA[Xavi] Fi codi duplicat
+                    currentSelection = context.dispatcher.getGlobalState().getCurrentElement()
+                    console.log("****DBL CLICK*** selection:", currentSelection);
 
 
                     var aux_id = this.id.replace('container_', ''),
@@ -847,7 +857,7 @@ define([
             // });
 
 
-            // ALERTA[Xavi] Això es necessari?
+            // // ALERTA[Xavi] Això es necessari?
             // jQuery('input[data-call-type="save_partial"]').each(function () {
             //     jQuery(this).css('display', 'visible');
             // });
@@ -976,6 +986,7 @@ define([
             this.editors = {};
         },
 
+
         // Aquesta es la gestió del ressaltat que es trobava a processContentPaje.js
         addSelectionListener: function () {
             //console.log("StructuredDocumentSubclass#addSelectionListener");
@@ -993,17 +1004,9 @@ define([
                 auxId = this.data.id + "_" + this.data.chunks[i].header_id;
                 $container = jQuery('#container_' + auxId);
 
-                $container.on('click', function () {
-                    // Comprovar si es la secció seleccionada i si el seu state es false (no està en edició)
-                    var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
 
-                    if (currentSelection.id === this.id && !currentSelection.state) {
-                        context._setCurrentSection(null);
-                    } else {
-                        context._setCurrentSection(this.id);
-                    }
-
-                    return true;
+                $container.on('click', function() {
+                    context._changeCurrentSectionCallback(this.id);
                 });
 
                 $container.on('mouseover mouseout', function () {
@@ -1013,6 +1016,18 @@ define([
 
             }
 
+        },
+
+        _changeCurrentSectionCallback: function (containerId) {
+            console.log("ContainerId:", containerId);
+
+            var currentSelection = this.dispatcher.getGlobalState().getCurrentElement();
+
+            if (currentSelection.id === containerId && !currentSelection.state) {
+                this._setCurrentSection(null);
+            } else {
+                this._setCurrentSection(containerId);
+                }
         },
 
         _changeAction: function (action) {
