@@ -682,7 +682,16 @@ define([
                             this._generateEmptyChangedChunk(chunk.header_id);
                         }
 
-                        this.changedChunks[chunk.header_id].content = chunk.text.editing;
+
+
+                        if (this.editors[chunk.header_id]) {
+
+                            var editor =this.getEditor(chunk.header_id);
+                            console.log("Editor:", editor);
+                            editor.setValue(chunk.text.editing);
+                        }
+
+                        // this.changedChunks[chunk.header_id].content = chunk.text.editing;
                         this.editingChunks.push(chunk.header_id);
                         this.editingChunksCounter++; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
 
@@ -892,8 +901,8 @@ define([
 
         addEditor: function (header_id, data) {
             console.log("header_id", header_id);
-            var editor = this.createEditor({id: data.auxId, header_id: header_id});
-            // var editor = this.createEditor(data.auxId, "DojoEditor");
+            // var editor = this.createEditor({id: data.auxId, header_id: header_id});
+            var editor = this.createEditor({id: data.auxId}, "DojoEditor");
 
             this.editors[header_id] = {
                 editor: editor
@@ -937,8 +946,7 @@ define([
                 wrapMode: $textarea.attr('wrap') !== 'off',
                 mdpage: JSINFO.plugin_aceeditor.mdpage,
                 auxId: config.id,
-                dispatcher: this.dispatcher,
-                // data: this.data // ALERTA[Xavi] Això no es troba en el basic
+                dispatcher: this.dispatcher
             });
         },
 

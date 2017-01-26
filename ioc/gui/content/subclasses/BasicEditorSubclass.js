@@ -220,44 +220,43 @@ define([
             // Afegeix un editorAce per cada editor actiu
             addEditors: function () {
                 // this.editor = this.createEditor(this.id, "DojoEditor"); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
-                this.editor = this.createEditor(this.id); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
+                this.editor = this.createEditor({id:this.id}); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
             },
 
-            createEditor: function(id, type) {
+            createEditor: function(config, type) {
                 switch (type) {
                     case "DojoEditor":
-                        return this.createDojoEditor(id);
+                        return this.createDojoEditor(config);
 
                     default:
-                        return this.createAceEditor(id);
+                        return this.createAceEditor(config);
                 }
             },
 
-            createDojoEditor: function(id) {
+            createDojoEditor: function(config) {
                 return new DojoEditorFacade(
                     {
-                        containerId:'editor_' + id,
-                        textareaId:'textarea_' + id,
+                        containerId:'editor_' + config.id,
+                        textareaId:'textarea_' + config.id,
                         dispatcher: this.dispatcher
                     }
                 );
             },
 
-            createAceEditor: function (id) {
-                var $textarea = jQuery('#textarea_' + id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
+            createAceEditor: function (config) {
+                var $textarea = jQuery('#textarea_' + config.id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
 
                 return new AceFacade({
                     xmltags: JSINFO.plugin_aceeditor.xmltags,
-                    containerId: 'editor_' + id,
-                    textareaId: 'textarea_' + id,
+                    containerId: 'editor_' + config.id,
+                    textareaId: 'textarea_' + config.id,
                     theme: JSINFO.plugin_aceeditor.colortheme,
                     readOnly: this.getReadOnly(),
                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                     wrapMode: $textarea.attr('wrap') !== 'off',
                     mdpage: JSINFO.plugin_aceeditor.mdpage,
-                    auxId: id,
+                    auxId: config.id,
                     dispatcher: this.dispatcher,
-                    data: null // ALERTA[Xavi] Per l'editor complert no s'utilitza
                 });
             },
 

@@ -130,9 +130,6 @@ define([
                 mapping = tokenizer.matchMappings[currentState];
 
                 re = tokenizer.regExps[currentState];
-
-
-                re = tokenizer.regExps[currentState];
                 re.lastIndex = lastIndex = 0;
                 states = [
                     {

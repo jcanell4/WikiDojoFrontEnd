@@ -10,14 +10,7 @@ define([
         },
 
         startup: function () {
-            console.log("*** Editor#startup: START");
-            console.log("*** Editor#startup: START");
-            console.log("*** Editor#startup: START");
             this.inherited(arguments);
-            console.log("*** Editor#startup: END");
-            console.log("*** Editor#startup: END");
-            console.log("*** Editor#startup: END");
-
             this.watch('value', this._checkOriginalContent);
         },
 
