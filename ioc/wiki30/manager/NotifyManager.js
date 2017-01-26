@@ -164,7 +164,7 @@ define([
         },
 
         _processWarning: function (notification) {
-            console.log("NotifyManager#_processWarning", notification);
+            // console.log("NotifyManager#_processWarning", notification);
 
             if (!this._receivedWarningIds[notification.data.id]) {
                 // alert(notification.data.text);

@@ -123,15 +123,7 @@ define([
                 auxId = this.data.id + "_" + this.data.chunks[i].header_id;
 
                 jQuery('#container_' + auxId).on('dblclick', function () {
-                    // var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
-
                     context._changeCurrentSectionCallback(this.id);
-
-
-                    // ALERTA[Xavi] Fi codi duplicat
-                    currentSelection = context.dispatcher.getGlobalState().getCurrentElement()
-                    console.log("****DBL CLICK*** selection:", currentSelection);
-
 
                     var aux_id = this.id.replace('container_', ''),
                         section_id = aux_id.replace(context.id + "_", '');
@@ -158,7 +150,7 @@ define([
 
 
         getQueryEdit: function (chunkId) {
-            console.log("StructuredDocumentSubclass#getQueryEdit", chunkId);
+            // console.log("StructuredDocumentSubclass#getQueryEdit", chunkId);
             var query = 'do=edit_partial'
                 + '&section_id=' + chunkId
                 + '&editing_chunks=' + this.getEditingChunks().toString()
@@ -455,13 +447,11 @@ define([
                 this.hasChanges = false;
             }
 
-            console.log("Detectats canvis: ", changes, this.hasChanges);
-
             return changes;
         },
 
         isContentChangedForChunk: function (chunkId) {
-            console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.getEditor(chunkId).isChanged());
+            // console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.getEditor(chunkId).isChanged());
 
             return this.getEditor(chunkId).isChanged();
             // var index = this.data.dictionary[chunkId],
@@ -559,7 +549,7 @@ define([
          * @override
          */
         resetContentChangeState: function () {
-            console.log("StructuredDocumentSubclass#resetContentChangeState", this.changedChunks);
+            // console.log("StructuredDocumentSubclass#resetContentChangeState", this.changedChunks);
 
             for (var header_id in this.changedChunks) {
                 if (this.getEditor(header_id).isChanged()) {
@@ -571,7 +561,6 @@ define([
                 // }
             }
 
-            console.log("StructuredDocumentSubclass#resetContentChangeState");
             delete this.changesManager.contentsChanged[this.id];
             this.onDocumentChangesReset();
             return true;
@@ -613,7 +602,6 @@ define([
             this.render();
 
             // Si existeix una secció seleccionada i no es tracta d'una revisió, la reseleccionem
-            console.log("És una revisió? ", this.rev);
             if (this._getCurrentSectionId() && !this.rev) {
                 this._setCurrentSection(this._getCurrentSectionId());
             }
@@ -679,7 +667,7 @@ define([
          * @private
          */
         _updateChunks: function (content) {
-            console.log("StructuredDocumentSubclass#_updateChunks", content);
+            // console.log("StructuredDocumentSubclass#_updateChunks", content);
             var i, chunk;
 
             this.editingChunksCounter = 0;
@@ -700,7 +688,6 @@ define([
                         if (this.editors[chunk.header_id]) {
 
                             var editor =this.getEditor(chunk.header_id);
-                            console.log("Editor:", editor);
                             editor.setValue(chunk.text.editing);
                         }
 
@@ -792,15 +779,16 @@ define([
         // },
 
         isAnyChunkChanged: function() {
-
-            for (var editor in this.editors) {
-                if (this.getEditor(editor).isChanged()) {
+            console.log("StructuredDocumentSubclass#isAnyChunkChanged", this.editors);
+            for (var header_id in this.editors) {
+                console.log("Comprovant editor per chunk", header_id);
+                if (this.getEditor(header_id).isChanged()) {
                     console.log("------------S'ha trobat un editor amb canvis")
                     return true
                 }
             }
 
-            console.log("------------No s'ha trobat un editor amb canvis")
+            console.log("------------No s'ha trobat cap editor amb canvis")
 
             return false;
         },
@@ -913,8 +901,7 @@ define([
         },
 
         addEditor: function (header_id, data) {
-            console.log("header_id", header_id);
-            // var editor = this.createEditor({id: data.auxId, header_id: header_id});
+            // console.log("StructuredDocumentSubclass#addEditor", header_id, data);
             var editor = this.createEditor({id: data.auxId}, "DojoEditor");
 
             this.editors[header_id] = {
@@ -926,7 +913,7 @@ define([
 
         // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
         createEditor: function(config, type) {
-            console.log("SructuredDocumentSubclass#createEditor", config);
+            // console.log("SructuredDocumentSubclass#createEditor", config, type);
             switch (type) {
                 case "DojoEditor":
                     return this.createDojoEditor(config);
@@ -1019,7 +1006,7 @@ define([
         },
 
         _changeCurrentSectionCallback: function (containerId) {
-            console.log("ContainerId:", containerId);
+            // console.log("ContainerId:", containerId);
 
             var currentSelection = this.dispatcher.getGlobalState().getCurrentElement();
 
@@ -1079,7 +1066,7 @@ define([
 
 
         _doEditPartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+            // console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
             var dataToSend = this.getQueryEdit(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -1099,7 +1086,7 @@ define([
         },
 
         _doSavePartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+            // console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
 
 
@@ -1123,7 +1110,7 @@ define([
                     standbyId: containerId
                 };
             } else {
-                console.log("*** NO HI HAN CANVIS ***");
+                // console.log("*** NO HI HAN CANVIS ***");
                 return {
                     _cancel: true
                 };
@@ -1240,7 +1227,7 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-            console.log("EditorSubclass#_doCancel", this.id, event);
+            // console.log("EditorSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 

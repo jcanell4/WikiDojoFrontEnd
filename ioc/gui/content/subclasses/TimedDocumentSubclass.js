@@ -19,7 +19,7 @@ define([
         },
         
         initTimer: function(timerParams){
-            console.log("TimedDocumentSubclass#initTimer", timerParams);
+            // console.log("TimedDocumentSubclass#initTimer", timerParams);
             this.timer.init(timerParams);  
         },
 
@@ -46,7 +46,7 @@ define([
         },
 
         onDestroy: function () {
-            console.log("TimedDocumentSubclass#onDestroy");
+            // console.log("TimedDocumentSubclass#onDestroy");
             this.cancelTimer();
             this.inherited(arguments);
         },

@@ -67,7 +67,7 @@ define([
                         })),
 
                         getRoot: function (onItem) {
-                            console.log(vid +": "+ this.store.target);
+                            // console.log(vid +": "+ this.store.target);
                             this.store.get(root).then(onItem);
                         },
 

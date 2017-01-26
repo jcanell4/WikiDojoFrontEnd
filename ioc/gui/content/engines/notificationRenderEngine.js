@@ -8,7 +8,7 @@ define([], function () {
 
         //ALERTA[Xavi] Problema: aqui el que retornem es una cadena de text i no un widget de dojo, per tant el reemplaç de les dades als 'dojo-attach-points' s'ha de fer "manualment"
 
-        console.log("DATA:", data);
+        // console.log("DATA:", data);
 
         var closeId = data.id + "_close_button",
             $pane = jQuery('<div class="notification ' + (data.type || '') + '"></div>'),
@@ -17,7 +17,7 @@ define([], function () {
             $closeButton = jQuery('<span class="dijitInline dijitTabCloseButton dijitTabCloseIcon" id="' + closeId + '"></span>'),
             $content = jQuery('<div></div>');
 
-        console.log("data title?", data, data.title);
+        // console.log("data title?", data, data.title);
         $title.text(data.title);
         $titleGroup.append($title);
 

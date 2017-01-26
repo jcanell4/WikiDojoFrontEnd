@@ -167,7 +167,7 @@ define([
             },
 
             isRefreshableContent: function (oldType, newType) {
-                console.log("ContentProcessor#isRefreshableContent", oldType);
+                // console.log("ContentProcessor#isRefreshableContent", oldType);
                 //return oldType === this.type && this.blackList.indexOf(this.type) === -1; TODO[Xavi] es pot reduir a això
 
                 if ((oldType === this.type && this.blackList.indexOf(this.type) === -1) ||

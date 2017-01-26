@@ -451,7 +451,7 @@ define([
                         break;
 
                     case this.generation.NOTIFICATION:
-                        console.log("contentToolFactory#createClass: NOTIFICATION");
+                        // console.log("contentToolFactory#createClass: NOTIFICATION");
                         GeneratedContentTool = base
                             .createSubclass(NotificationSubclass);
                         break;

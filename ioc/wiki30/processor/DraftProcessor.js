@@ -46,7 +46,7 @@ define([
             },
 
             _showDiffDialog: function (value) {
-                console.log("DraftProcessor#_showDiffDialog", value);
+                // console.log("DraftProcessor#_showDiffDialog", value);
 
                 var data = this._extractData(value),
                     dialogParams;
@@ -96,7 +96,7 @@ define([
             },
 
             _extractData: function (value) {
-                console.log("DraftProcessor#_extractData", value);
+                // console.log("DraftProcessor#_extractData", value);
 
                 return {
                     document: this._getDocument(value.params),
@@ -129,8 +129,8 @@ define([
             },
 
             _getDraftLocal: function (value) {
-                console.log("DraftProcessor#_getDraftLocal", value);
-                console.log("docId:", this.docId);
+                // console.log("DraftProcessor#_getDraftLocal", value);
+                // console.log("docId:", this.docId);
                 var draft = this.draftManager.getDraft(this.docId).recoverLocalDraft();
 
                 switch (value.type) {
@@ -159,7 +159,7 @@ define([
 
             _buildQuery: function (value) {
                 var query = '';
-                console.log("DraftProcessor#_buildQuery", value);
+                // console.log("DraftProcessor#_buildQuery", value);
 
                 switch (value.params.type) {
                     case 'full_document':
@@ -178,7 +178,7 @@ define([
             },
 
             _getDraftQuery: function () {
-                console.log("DraftProcessor#_getDraftQuery", this.query);
+                // console.log("DraftProcessor#_getDraftQuery", this.query);
                 var query = this.query;
 
                 if (this.isLocalDraft) {

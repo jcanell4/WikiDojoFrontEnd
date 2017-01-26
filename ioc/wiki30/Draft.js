@@ -82,7 +82,7 @@ define([
         },
 
         _doSaveLocal: function () {
-            console.log("Draft#_doSaveLocalStorage");
+            // console.log("Draft#_doSaveLocalStorage");
             this.lastRefresh = Date.now();
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
@@ -143,7 +143,7 @@ define([
         },
 
         _doSaveRemoteServer: function () {
-            console.log("Draft#_doSaveRemoteServer");
+            // console.log("Draft#_doSaveRemoteServer");
             this.lastRemoteRefresh = Date.now();
             this.lastRefresh = this.lastRemoteRefresh;
 

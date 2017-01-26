@@ -16,7 +16,7 @@ define([
 
 
         constructor: function (args) {
-            console.log("DojoEditorFacade#constructor", args);
+            // console.log("DojoEditorFacade#constructor", args);
 
             this.$textarea = jQuery('#' + args.textareaId);
 
@@ -48,19 +48,12 @@ define([
 
 
         setHeight: function (height) {
-            console.log("DojoEditorFacade#setHeight", height);
-            // this.editor.set('height', '1000px');
+            // console.log("DojoEditorFacade#setHeight", height);
             this.editor.resize({height: height+ 'px'});
-            // this.editor.set('height', "50px");
-            // setTimeout(function() {
-            //     this.editor.resize(height + 'px');
-            // }.bind(this), 1000);
-            // this.$editor.css('height', height + 'px');
-
         },
 
         getValue: function () {
-            console.log("DojoEditorFacade#getValue");
+            // console.log("DojoEditorFacade#getValue");
             return this.editor.get('value');
         },
 

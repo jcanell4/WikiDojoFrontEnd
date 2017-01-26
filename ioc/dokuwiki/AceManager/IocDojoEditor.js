@@ -15,7 +15,7 @@ define([
         },
 
         onDisplayChanged: function () {
-            console.log("IocDojoEditor#onDisplayChanged");
+            // console.log("IocDojoEditor#onDisplayChanged");
             this.inherited(arguments);
 
 
@@ -31,7 +31,7 @@ define([
 
             var $editorContainer = jQuery("iframe#" + this.domNode.id + "_iframe").contents().find('#dijitEditorBody');
             var callback = function () {
-                console.log("IocDojoEditor#onDisplayChanged->callback");
+                // console.log("IocDojoEditor#onDisplayChanged->callback");
                 this.onChange(this.get('value'));
             }.bind(this);
 
@@ -42,15 +42,14 @@ define([
         },
 
         _checkOriginalContent: function (name, oldValue, newValue) {
-            console.log("IocDojoEditor#_checkOriginalContent", newValue);
+            // console.log("IocDojoEditor#_checkOriginalContent", newValue);
             if (!this.originalContent) {
                 this.originalContent = newValue;
-                console.log("Establert el contingut original:", newValue);
             }
         },
 
         resetOriginalContentState: function() {
-            console.log("IocDojoEditor#resetOriginalContentState");
+            // console.log("IocDojoEditor#resetOriginalContentState");
             this.originalContent = this.get('value');
         },
 

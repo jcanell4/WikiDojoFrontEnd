@@ -27,7 +27,7 @@ define([
                  * @returns {boolean} - Cert si hi han hagut canvis o Fals en cas contrari
                  */
                 thereAreChangedContents: function () {
-                    console.log("ChangesManager#thereAreChangedContentes", this.contentsChanged);
+                    // console.log("ChangesManager#thereAreChangedContentes", this.contentsChanged);
                     return Object.keys(this.contentsChanged).length > 0;
                 },
 
@@ -67,7 +67,7 @@ define([
                  * @param {string} id - id del ContentTool a eliminar
                  */
                 removeContentTool: function (id) {
-                    console.log("ChangesManager#removeContentTool", id);
+                    // console.log("ChangesManager#removeContentTool", id);
                     delete this.contentsToCheck[id];
                     delete this.contentsChanged[id];
                 },
@@ -83,12 +83,11 @@ define([
 
                     var result = this.isContentChanged(id); // Si existeix o hi han canvis retorna cert
 
-                    console.log("ChangesManager#updateContentChangeState", id, result);
+                    // console.log("ChangesManager#updateContentChangeState", id, result);
 
                     if (result) {
                         this.contentsChanged[id] = true; // Si hi han canvis modifica la variable
                     } else {
-                        console.log("???? NO S'han detectat canvis ¿?????");
                         this.resetContentChangeState(id); // Si no els hi ha fa un reset del document
                     }
 
@@ -101,12 +100,8 @@ define([
                  * @param {string} id - Id del contingut a reiniciatlizar
                  */
                 resetContentChangeState: function (id) {
-                    console.log("ChangesManager#resetContentChangeState", id);
-                    var contentTool;
-
-
-
-                    contentTool = this._getContentTool(id);
+                    // console.log("ChangesManager#resetContentChangeState", id);
+                    var contentTool = this._getContentTool(id);
 
                     if (contentTool && contentTool.resetContentChangeState()) {
                         delete this.contentsChanged[id];
@@ -121,8 +116,7 @@ define([
                  * @returns {boolean} - Cert si el ContentTool es troba a la llista de continguts canviats
                  */
                 isChanged: function (id) {
-
-                    console.log("ChangesManager#isChanged", this.contentsChanged);
+                    // console.log("ChangesManager#isChanged", this.contentsChanged);
                     return this.contentsChanged[id] ? true : false;
                 }
             }
