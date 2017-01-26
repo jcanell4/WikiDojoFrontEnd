@@ -12,22 +12,24 @@ define([
 
         constructor: function (args) {
             console.log("AceEditorPartialFacade#constructor");
-            this.data = args.data;
+            // this.data = args.data;
         },
 
         addToolbars: function () {
             //console.log("StructuredDocumentSubclass#addToolbars");
-            var auxId;
+            // var auxId;
 
             this.addButtons();
 
-            for (var i = 0; i < this.data.chunks.length; i++) {
+            this.toolbarId = 'toolbar_' + this.id;
 
-                if (this.data.chunks[i].text) {
-                    auxId = this.data.id + "_" + this.data.chunks[i].header_id;
-                    toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
-                }
-            }
+            // for (var i = 0; i < this.data.chunks.length; i++) {
+
+                // if (this.data.chunks[i].text) {
+                //     auxId = this.data.id + "_" + this.data.chunks[i].header_id;
+                    toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
+                // }
+            // }
         },
 
         addButtons: function () {

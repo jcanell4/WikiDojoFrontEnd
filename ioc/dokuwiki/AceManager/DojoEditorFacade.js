@@ -3,9 +3,10 @@ define([
     'ioc/dokuwiki/AceManager/IocDojoEditor',
     'dijit/_editor/plugins/AlwaysShowToolbar',
     'dojo/dom',
+    'dojo/dom-style',
     'dojo/Evented',
     'dojo/dom-geometry',
-], function (declare, Editor, AlwaysShowToolbar, dom, Evented, geometry) {
+], function (declare, Editor, AlwaysShowToolbar, dom, style, Evented, geometry) {
     return declare([Evented], {
 
         editor: null,
@@ -83,6 +84,31 @@ define([
 
             console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
             this.setHeight(Math.max(this.MIN_HEIGHT, max));
-        }
+        },
+
+        lockEditor: function () {
+            this.editor.set('disabled', true); // readOnly no funciona, permet escriure igual
+            this.hideToolbar();
+        },
+
+        unlockEditor: function () {
+            this.editor.set('disabled', false); // readOnly no funciona, permet escriure igual
+            this.showToolbar();
+        },
+
+        hideToolbar:function() {
+            this._originalToolbarDisplayStyle = style.get(this.editor.toolbar.containerNode, "display");
+            style.set(this.editor.toolbar.containerNode, "display", "none");
+        },
+
+        showToolbar: function() {
+            style.set(this.editor.toolbar.containerNode, "display", this._originalToolbarDisplayStyle);
+        },
+
+        destroy: function () {
+          this.editor.destroy();
+        },
+
+
     });
 });

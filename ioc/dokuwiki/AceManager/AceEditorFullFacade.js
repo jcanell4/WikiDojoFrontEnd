@@ -193,11 +193,15 @@ define([
         },
 
         lockEditor: function () {
+            this.$textarea.attr('readonly', true);
             this.iocAceEditor.setReadOnly(true);
+            this.hideToolbar();
         },
 
         unlockEditor: function () {
+            this.$textarea.removeAttr('readonly');
             this.iocAceEditor.setReadOnly(false);
+            this.showToolbar();
         },
 
         setHeight: function (height) {
@@ -261,11 +265,14 @@ define([
         addToolbars: function () {
             toolbarManager.setDispatcher(this.dispatcher);
 
+
             if (this.iocAceEditor.getReadOnly()) {
                 return;
             }
             this.addButtons();
-            toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
+
+            this.toolbarId = 'toolbar_' + this.id;
+            toolbarManager.initToolbar(this.toolbarId, 'textarea_' + this.id, this.TOOLBAR_ID);
         },
 
         addButtons: function () {
@@ -349,6 +356,22 @@ define([
             eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id}, id);
 //                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
         },
+
+        hideToolbar: function () {
+            var $toolbar = jQuery('#' + this.toolbarId);
+
+            this._originalToolbarDisplayStyle = $toolbar.css('display');
+            $toolbar.css('display', 'none')
+        },
+
+        showToolbar: function () {
+            if (this._originalToolbarDisplayStyle) {
+                jQuery('#' + this.toolbarId).css('display', this._originalToolbarDisplayStyle);
+            } else {
+                jQuery('#' + this.toolbarId).css('display', 'inherit');
+            }
+
+        }
     });
 });
 

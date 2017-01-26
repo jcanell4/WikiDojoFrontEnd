@@ -806,18 +806,19 @@ define([
             }
 
 
-            jQuery('textarea[name="wikitext"]').each(function () {
-                jQuery(this).attr('readonly', 'readonly');
-            });
+            // jQuery('textarea[name="wikitext"]').each(function () {
+            //     jQuery(this).attr('readonly', 'readonly');
+            // });
 
-            jQuery('input[data-call-type="save_partial"]').each(function () {
-                jQuery(this).css('display', 'none');
-            });
+            // ALERTA[Xavi] Això es necessari?
+            // jQuery('input[data-call-type="save_partial"]').each(function () {
+            //     jQuery(this).css('display', 'none');
+            // });
 
-            for (var i = 0; i < this.data.chunks.length; i++) {
-                header_id = this.data.chunks[i].header_id;
-                jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
-            }
+            // for (var i = 0; i < this.data.chunks.length; i++) {
+            //     header_id = this.data.chunks[i].header_id;
+            //     jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
+            // }
         },
 
         // TODO[Xavi] Delegar als editors
@@ -829,19 +830,22 @@ define([
             }
 
 
-            jQuery('textarea[name="wikitext"]').each(function () {
-                jQuery(this).removeAttr('readonly');
-            });
-
-            jQuery('input[data-call-type="save_partial"]').each(function () {
-                jQuery(this).css('display', 'visible');
-            });
+            // jQuery('textarea[name="wikitext"]').each(function () {
+            //     jQuery(this).removeAttr('readonly');
+            // });
 
 
-            for (var i = 0; i < this.data.chunks.length; i++) {
-                header_id = this.data.chunks[i].header_id;
-                jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'visible')
-            }
+            // ALERTA[Xavi] Això es necessari?
+            // jQuery('input[data-call-type="save_partial"]').each(function () {
+            //     jQuery(this).css('display', 'visible');
+            // });
+
+
+            // ALERTA[Xavi] això ha de ser automàtica en fer un unlock
+            // for (var i = 0; i < this.data.chunks.length; i++) {
+            //     header_id = this.data.chunks[i].header_id;
+            //     jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'visible')
+            // }
         },
 
         _generateDraft: function () {
@@ -887,7 +891,9 @@ define([
         },
 
         addEditor: function (header_id, data) {
-            var editor = this.createEditor(data.auxId);
+            console.log("header_id", header_id);
+            var editor = this.createEditor({id: data.auxId, header_id: header_id});
+            // var editor = this.createEditor(data.auxId, "DojoEditor");
 
             this.editors[header_id] = {
                 editor: editor
@@ -895,43 +901,44 @@ define([
         },
 
         // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
-        createEditor: function(id, type) {
+        createEditor: function(config, type) {
+            console.log("SructuredDocumentSubclass#createEditor", config);
             switch (type) {
                 case "DojoEditor":
-                    return this.createDojoEditor(id);
+                    return this.createDojoEditor(config);
 
                 default:
-                    return this.createAceEditor(id);
+                    return this.createAceEditor(config);
             }
         },
 
         // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
-        createDojoEditor: function(id) {
+        createDojoEditor: function(config) {
             return new DojoEditorFacade(
                 {
-                    containerId:'editor_' + id,
-                    textareaId:'textarea_' + id,
+                    containerId:'editor_' + config.id,
+                    textareaId:'textarea_' + config.id,
                     dispatcher: this.dispatcher
                 }
             );
         },
 
         // TODO: Copiat a BasicEditorSubclass (per generalitzar)
-        createAceEditor: function (id) {
-            var $textarea = jQuery('textarea_' + id);
+        createAceEditor: function (config) {
+            var $textarea = jQuery('textarea_' + config.id);
 
             return new AceFacade({
                 xmltags: JSINFO.plugin_aceeditor.xmltags,
-                containerId: 'editor_' + id,
-                textareaId: 'textarea_' + id,
+                containerId: 'editor_' + config.id,
+                textareaId: 'textarea_' + config.id,
                 theme: JSINFO.plugin_aceeditor.colortheme,
                 readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient <-- només canvia això respecte al BasicEditorSubclass#createAceEditor
                 wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                 wrapMode: $textarea.attr('wrap') !== 'off',
                 mdpage: JSINFO.plugin_aceeditor.mdpage,
-                auxId: id,
+                auxId: config.id,
                 dispatcher: this.dispatcher,
-                data: this.data // ALERTA[Xavi] Això no es troba en el basic
+                // data: this.data // ALERTA[Xavi] Això no es troba en el basic
             });
         },
 
@@ -1172,7 +1179,7 @@ define([
 
         },
 
-        // TODO[Xavi] Moure al AceEditorPartialFacade
+        // TODO[Xavi] DELEGAR al AceEditorPartialFacade
         fillEditorContainer: function () {
 
 //            var editorNode = dom.byId(this.id),
@@ -1271,5 +1278,6 @@ define([
             eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: "no_response=true"}, this.id);
             return this.inherited(arguments);
         }
+
     })
 });
