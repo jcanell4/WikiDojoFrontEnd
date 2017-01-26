@@ -318,7 +318,10 @@ define([
         postAttach: function () {
             this.registerToChangesManager();
 
-            jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
+            // jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
+
+
+
             this.inherited(arguments);
 
             //console.log("StructuredDocumentSubclass#postLoad");
@@ -907,6 +910,8 @@ define([
             this.editors[header_id] = {
                 editor: editor
             };
+
+            editor.on('change', this._checkChanges.bind(this));
         },
 
         // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass

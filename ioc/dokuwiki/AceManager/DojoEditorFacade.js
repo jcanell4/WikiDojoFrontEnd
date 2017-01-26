@@ -37,11 +37,9 @@ define([
             var text = this.$textarea.val();
             this.setValue(text);
 
-            console.log("Establert contingut a partir del textarea:", text);
 
             this.editor.on('change', function (newContent) {
                 this.$textarea.val(newContent);
-                console.log("Canvi, establert al textarea:", this.$textarea.val());
                 this.emit('change', {newContent: newContent});
             }.bind(this));
 
@@ -107,10 +105,8 @@ define([
         },
 
         destroy: function () {
-            console.log("DojoEditorFacade#destroy", this.getValue())
-            console.log("Valor del textarea abans de destruir?", this.$textarea.val());
           this.editor.destroy();
-        },
+        }
 
 
     });
