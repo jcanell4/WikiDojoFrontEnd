@@ -26,7 +26,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //console.log("HtmlPartialContentProcessor#process", value);
+                console.log("HtmlPartialContentProcessor#process", value);
 
                 //
                 ////ALERTA[Xavi] Codi de prova pels notifiers -> INIT

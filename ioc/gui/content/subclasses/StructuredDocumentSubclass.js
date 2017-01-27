@@ -814,16 +814,24 @@ define([
         //     return false;
         // },
 
-        isAnyChunkChanged: function () {
-            // console.log("StructuredDocumentSubclass#isAnyChunkChanged", this.editors);
-            for (var header_id in this.editors) {
-                if (this.getEditor(header_id).isChanged()) {
+        isAnyChunkChanged: function (headers) {
+            console.log("StructuredDocumentSubclass#isAnyChunkChanged", headers, this.editingChunks);
+            var checkHeaders = headers ? headers : this.editingChunks;
+
+            for (var i = 0; i<checkHeaders.length; i++) {
+                console.log("header_id:", checkHeaders[i]);
+                if (this.getEditor(checkHeaders[i]).isChanged()) {
                     return true
                 }
             }
 
             return false;
         },
+
+
+
+
+
 
         isLockNeeded: function () {
 
