@@ -213,6 +213,7 @@ define([
             },
             
             _clearRemoteDraft: function(value, dispatcher){
+                console.log("HtmlPartialContentProcessor#_clearRemoteDraft");
                 dispatcher.getEventManager().fireEvent(
                     dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
                         id: value.id,
@@ -226,6 +227,7 @@ define([
                 );  
             },
             _clearRemoteDraftChunks: function(value, dispatcher){
+                console.log("HtmlPartialContentProcessor#_clearRemoteDraftChunks");
                 for(var i=0; i<value.cancel.length; i++){
                     dispatcher.getEventManager().fireEvent(
                         dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
