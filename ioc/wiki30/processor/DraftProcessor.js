@@ -173,7 +173,7 @@ define([
                             + '&editing_chunks=' + value.params.editing_chunks
                 }
 
-                console.log("QUERY BUILT", query);
+                // console.log("QUERY BUILT", query);
                 return query;
             },
 

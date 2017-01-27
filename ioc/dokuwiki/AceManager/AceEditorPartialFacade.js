@@ -10,11 +10,6 @@ define([
         VERTICAL_MARGIN: 100,
         MIN_HEIGHT: 200,
 
-        constructor: function (args) {
-            console.log("AceEditorPartialFacade#constructor");
-            // this.data = args.data;
-        },
-
         addToolbars: function () {
             //console.log("StructuredDocumentSubclass#addToolbars");
             // var auxId;
@@ -65,7 +60,7 @@ define([
 
         // ALERTA[Xavi] this fa referencia al dispatcher
         _funcSave: function () {
-            console.log("StructuredDocumentSubclass#_funcSave");
+            // console.log("StructuredDocumentSubclass#_funcSave");
 
             var chunk = this.getGlobalState().getCurrentElementId(),
                 id = this.getGlobalState().getCurrentId(),

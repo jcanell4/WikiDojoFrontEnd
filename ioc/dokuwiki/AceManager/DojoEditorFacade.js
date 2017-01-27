@@ -37,13 +37,28 @@ define([
             var text = this.$textarea.val();
             this.setValue(text);
 
+            if (args.originalContent) {
+                this.originalContent = args.originalContent;
+            } else {
+                this.resetOriginalContentState();
+            }
+
 
             this.editor.on('change', function (newContent) {
                 this.$textarea.val(newContent);
                 this.emit('change', {newContent: newContent});
             }.bind(this));
 
+            this.editor.on('focus', function () {
+                console.log('Focus DojoEditor');
+                console.log("Enviant click fals:", args.parentId);
+                jQuery('#'+args.parentId).trigger('click');
+                // this.emit('click', {id: args.parentId});
+            }.bind(this));
+
             this.editor.startup();
+
+
         },
 
 
@@ -99,8 +114,11 @@ define([
 
         destroy: function () {
           this.editor.destroy();
+        },
+
+
+        getOriginalValue: function() {
+            return this.editor.getOriginalValue();
         }
-
-
     });
 });

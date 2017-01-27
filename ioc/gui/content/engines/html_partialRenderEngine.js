@@ -14,7 +14,7 @@ define(function () {
     return function (data) {
         var $container, $viewContainer, $editContainer, $header, $content, $form, $doc, $textArea, text, aux_id, i;
 
-        // console.log("html_partialRenderEngine: ", data);
+        //console.log("html_partialRenderEngine: ", data);
 
         $doc = jQuery('<div>' + data.html + '</div><div class="end-of-document></div>"');
 

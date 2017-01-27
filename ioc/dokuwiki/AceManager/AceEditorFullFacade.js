@@ -25,7 +25,7 @@ define([
         MIN_HEIGHT: 200,
 
         constructor: function (args) {
-            console.log("AceEditorFullFacade#constructor");
+            // console.log("AceEditorFullFacade#constructor");
 
             var lang_rules = {},
                 iocAceMode = new IocAceMode({
@@ -97,6 +97,9 @@ define([
                 this.emit('change', {newContent: this.getValue()});
             }.bind(this));
 
+
+            this.originalContent = args.originalContent;
+
             this.enable();
             toolbarManager.setDispatcher(this.dispatcher);
             this.addToolbars();
@@ -108,10 +111,10 @@ define([
             this.dokuWrapper.set_value(value);
         },
 
-        updateEditor: function (value) {
-            //console.log("AceFacade#updateEditor", value);
-            this.aceWrapper.set_value(value);
-        },
+        // updateEditor: function (value) {
+        //     //console.log("AceFacade#updateEditor", value);
+        //     this.aceWrapper.set_value(value);
+        // },
 
 
         getValue: function () {
@@ -163,7 +166,7 @@ define([
             doku.set_cookie('aceeditor', 'on');
             //dispatcher.getContentCache(currentId).setAceEditorOn(true);
 
-            this.resetOriginalContentState();
+            // this.resetOriginalContentState();
 
             this.enabled = true;
         },
@@ -245,6 +248,7 @@ define([
         },
 
         resetOriginalContentState: function () {
+            // console.log("AceEditorFullFacade#resetOriginalContentState", this.id);
             this.originalContent = this.getValue();
         },
 
@@ -257,7 +261,7 @@ define([
                 h = geometry.getContentBox(contentNode).h,
                 max = h - this.VERTICAL_MARGIN;
 
-            console.log("AceFacade#fillEditorContainer", this.id, h);
+            // console.log("AceFacade#fillEditorContainer", this.id, h);
             this.setHeight(Math.max(this.MIN_HEIGHT, max));
         },
 
@@ -371,6 +375,10 @@ define([
                 jQuery('#' + this.toolbarId).css('display', 'inherit');
             }
 
+        },
+
+        getOriginalValue: function() {
+            return this.originalContent;
         }
     });
 });

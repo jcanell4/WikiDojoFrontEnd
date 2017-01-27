@@ -72,6 +72,11 @@ define([
                     delete this.contentsChanged[id];
                 },
 
+                removeContentChanges: function(id) {
+                    delete this.contentsChanged[id];
+                },
+
+
                 /**
                  * Comprova si hi han canvis, i si es així afegeix el id al array de continguts canviats i si no l'elimina
                  *

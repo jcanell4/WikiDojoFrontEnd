@@ -53,6 +53,10 @@ define([
             this.originalContent = this.get('value');
         },
 
+        getOriginalValue: function() {
+            return this.originalContent;
+        },
+
         isChanged: function() {
           return this.get('value') != this.originalContent;
         }
