@@ -35,7 +35,7 @@ define([
 
         DRAFT_TYPE: 'structured',
 
-        constructor: function (args) {
+        constructor: function () {
 
             // this._generateEmptyChangedChunks(args.content.chunks);
             this.savedDrafts = {};
@@ -315,7 +315,7 @@ define([
          * @override
          */
         preRender: function () {
-            console.log("StructuredDocumentSubclass#preRender");
+            // console.log("StructuredDocumentSubclass#preRender");
 
             for (var i = 0; i < this.data.chunks.length; i++) {
                 var aux_id = this.id + "_" + this.data.chunks[i].header_id,
@@ -336,6 +336,7 @@ define([
          * @override
          */
         postAttach: function () {
+            // console.log("StructuredDocumentSubclass#postAttach");
             this.registerToChangesManager();
 
             // jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
@@ -366,6 +367,7 @@ define([
             //this.registerObserverToEvent(this, this.eventNameCompound.CANCEL, this._doCancelDocument.bind(this));
 
             this.updateTitle(this.data);
+
         },
 
 
@@ -464,6 +466,7 @@ define([
             } else {
                 this.hasChanges = false;
             }
+            // console.log("isContentChanged?", changes);
 
             return changes;
         },
@@ -567,7 +570,7 @@ define([
          * @override
          */
         resetContentChangeState: function () {
-            // console.log("StructuredDocumentSubclass#resetContentChangeState", this.changedChunks);
+            // console.log("StructuredDocumentSubclass#resetContentChangeState", this.editors);
 
             for (var header_id in this.editors) {
                 if (this.getEditor(header_id).isChanged()) {
@@ -588,6 +591,7 @@ define([
             this.changesManager.removeContentChanges(this.id);
             // delete this.changesManager.contentsChanged[this.id];
             this.onDocumentChangesReset();
+            this.hasChanges = false;
             return true;
         },
 
@@ -614,7 +618,6 @@ define([
             this._updateChunks(content);
             // this._updateStructure(content);
             // this.updateTitle(content);
-
 
 
             if (content.locked) {
@@ -707,24 +710,24 @@ define([
 
 
                 // if (this.changedChunks[chunk.header_id]) {
-                    if (chunk.text) {
+                if (chunk.text) {
 
-                        // if (!this.changedChunks[chunk.header_id]) {
-                        //     this._generateEmptyChangedChunk(chunk.header_id);
-                        // }
+                    // if (!this.changedChunks[chunk.header_id]) {
+                    //     this._generateEmptyChangedChunk(chunk.header_id);
+                    // }
 
 
-                        // if (this.editors[chunk.header_id]) {
-                        //
-                        //     var editor =this.getEditor(chunk.header_id);
-                        //     editor.setValue(chunk.text.editing);
-                        // }
+                    // if (this.editors[chunk.header_id]) {
+                    //
+                    //     var editor =this.getEditor(chunk.header_id);
+                    //     editor.setValue(chunk.text.editing);
+                    // }
 
-                        // this.changedChunks[chunk.header_id].content = chunk.text.editing;
-                        this.editingChunks.push(chunk.header_id);
-                        this.editingChunksCounter++; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
+                    // this.changedChunks[chunk.header_id].content = chunk.text.editing;
+                    this.editingChunks.push(chunk.header_id);
+                    this.editingChunksCounter++; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
 
-                    }
+                }
                 // }
             }
 
@@ -815,11 +818,11 @@ define([
         // },
 
         isAnyChunkChanged: function (headers) {
-            console.log("StructuredDocumentSubclass#isAnyChunkChanged", headers, this.editingChunks);
+            // console.log("StructuredDocumentSubclass#isAnyChunkChanged", headers, this.editingChunks);
             var checkHeaders = headers ? headers : this.editingChunks;
 
-            for (var i = 0; i<checkHeaders.length; i++) {
-                console.log("header_id:", checkHeaders[i]);
+            for (var i = 0; i < checkHeaders.length; i++) {
+                // console.log("header_id:", checkHeaders[i]);
                 if (this.getEditor(checkHeaders[i]).isChanged()) {
                     return true
                 }
@@ -827,10 +830,6 @@ define([
 
             return false;
         },
-
-
-
-
 
 
         isLockNeeded: function () {
@@ -941,13 +940,16 @@ define([
         addEditor: function (header_id, data) {
             // console.log("StructuredDocumentSubclass#addEditor", header_id, data);
 
-            var editor = this.createEditor(
-                {
-                    id: data.auxId,
-                    originalContent: data.originalContent || data.text
-                });
+            // var editor = this.createEditor(
+            //     {
+            //         id: data.auxId,
+            //         originalContent: data.originalContent || data.text
+            //     });
 
-            // var editor = this.createEditor({id: data.auxId}, "DojoEditor");
+            var editor = this.createEditor({
+                id: data.auxId,
+                originalContent: data.originalContent || data.text
+            }, "DojoEditor");
 
             this.editors[header_id] = {
                 editor: editor
@@ -1338,7 +1340,13 @@ define([
                 dataToSend: "no_response=true"
             }, this.id);
             return this.inherited(arguments);
-        }
+        },
 
-    })
+        resetChunk: function(header_id) {
+            console.log("StructuredDocumentSubclass#resetChunk", header_id);
+            var editor = this.getEditor(header_id);
+            editor.resetValue();
+            this.resetContentChangeState();
+        }
+    });
 });

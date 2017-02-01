@@ -125,6 +125,14 @@ define([
             }
         },
 
+        setValue: function (value) {
+            if (this.enabled) {
+                this.setEditorValue(value);
+            } else {
+                return this.setTextareaValue(value);
+            }
+        },
+
         getEditorValue: function () {
             //console.log("AceFacade#getEditor", this.aceWrapper.get_value());
             return this.aceWrapper.get_value();
@@ -253,8 +261,15 @@ define([
         },
 
         isChanged: function () {
+            // console.log("IocAceEditor#isChanged", this.originalContent != this.getValue());
+
+            // this._compareStrings(this.originalContent,this.getValue());
+
             return this.originalContent != this.getValue();
         },
+
+
+
 
         fillEditorContainer: function () {
             var contentNode = dom.byId(this.id),
@@ -377,9 +392,32 @@ define([
 
         },
 
-        getOriginalValue: function() {
+        getOriginalValue: function () {
             return this.originalContent;
-        }
+        },
+
+        resetValue: function () {
+
+            this.setValue(this.getOriginalValue());
+        },
+
+        // TODO[Xavi] Aquest mètode només s'utilitza per depurar, pendent de moure a una subclasse més adient o elminar
+        _compareStrings: function (a, b) {
+            if (a === b) {
+                console.log("Son iguals");
+
+            } else if (a.length != b.length) {
+                console.log("No tenen la mateixa llargaria, diferencia: " + Math.abs(a.length - b.length));
+            } else {
+                for (var i = 0; i < a.length; i++) {
+                    if (a[i] != b[i]) {
+                        console.log("El caràcter a la posició " + i + " no coincideix: ", a[i], b[i]);
+                    }
+                }
+            }
+        },
     });
+
+
 });
 

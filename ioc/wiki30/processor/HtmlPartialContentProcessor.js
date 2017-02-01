@@ -26,7 +26,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("HtmlPartialContentProcessor#process", value);
+                // console.log("HtmlPartialContentProcessor#process", value);
 
                 //
                 ////ALERTA[Xavi] Codi de prova pels notifiers -> INIT
@@ -88,7 +88,7 @@ define([
                     // Es una nova edició?
 
                     // TODO[Xavi] Quan s'ha guardat el isChanged retorna false, s'ha de forçar una comprovació de canvis, però aquest mètode hauria de ser privat
-                    contentTool._checkChanges();
+                    // contentTool._checkChanges();
                     //console.log("is changed?", changesManager.isChanged(value.id) );
 
                     
@@ -98,6 +98,9 @@ define([
                     if(value.cancel){
                          if (contentTool.isAnyChunkChanged(value.cancel)) {
                             confirmation = dispatcher.discardChanges();
+                             if (confirmation) {
+                                 contentTool.resetChunk(value.cancel);
+                             }
                         } else {
                             confirmation = true;
                         }

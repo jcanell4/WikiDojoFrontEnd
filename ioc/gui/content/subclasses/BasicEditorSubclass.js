@@ -219,8 +219,8 @@ define([
 
             // Afegeix un editorAce per cada editor actiu
             addEditors: function () {
-                // this.editor = this.createEditor(this.id, "DojoEditor"); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
-                this.editor = this.createEditor({id:this.id}); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
+                this.editor = this.createEditor({id : this.id}, "DojoEditor"); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
+                // this.editor = this.createEditor({id:this.id}); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
             },
 
             createEditor: function(config, type) {

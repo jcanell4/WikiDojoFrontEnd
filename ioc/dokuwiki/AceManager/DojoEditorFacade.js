@@ -50,8 +50,8 @@ define([
             }.bind(this));
 
             this.editor.on('focus', function () {
-                console.log('Focus DojoEditor');
-                console.log("Enviant click fals:", args.parentId);
+                // console.log('Focus DojoEditor');
+                // console.log("Enviant click fals:", args.parentId);
                 jQuery('#'+args.parentId).trigger('click');
                 // this.emit('click', {id: args.parentId});
             }.bind(this));
@@ -89,7 +89,7 @@ define([
                 h = geometry.getContentBox(contentNode).h,
                 max = h - this.VERTICAL_MARGIN;
 
-            console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
+            // console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
             this.setHeight(Math.max(this.MIN_HEIGHT, max));
         },
 
@@ -119,6 +119,10 @@ define([
 
         getOriginalValue: function() {
             return this.editor.getOriginalValue();
+        },
+
+        resetValue: function() {
+            this.setValue(this.getOriginalValue());
         }
     });
 });
