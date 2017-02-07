@@ -215,19 +215,6 @@ define([
             this.showToolbar();
         },
 
-        setHeight: function (height) {
-            var node = dom.byId(this.dokuWrapper.textArea.id);
-            if (node) {
-                style.set(node, "height", "" + height + "px");
-            }
-            node = dom.byId(this.iocAceEditor.containerId);
-            if (node) {
-                style.set(node, "height", "" + height + "px");
-            }
-
-            this.container.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
-
-        },
 
         setWrap: function (on) {
             var textarea = this.$textarea.get(0);
@@ -273,12 +260,37 @@ define([
 
         fillEditorContainer: function () {
             var contentNode = dom.byId(this.id),
-                h = geometry.getContentBox(contentNode).h,
-                max = h - this.VERTICAL_MARGIN;
+                h = geometry.getContentBox(contentNode).h;
+
 
             // console.log("AceFacade#fillEditorContainer", this.id, h);
-            this.setHeight(Math.max(this.MIN_HEIGHT, max));
+            this.setHeight(Math.max(h));
         },
+
+        setHeight: function (height) {
+            console.log("AceEditorFullFacade#setHeight", height);
+            var min = this.MIN_HEIGHT,
+                contentNode = dom.byId(this.id),
+                h = geometry.getContentBox(contentNode).h,
+                max = h - this.VERTICAL_MARGIN,
+                normalizedHeight = Math.max(min, Math.min(height, max));
+
+
+            var node = dom.byId(this.dokuWrapper.textArea.id);
+
+            if (node) {
+                style.set(node, "height", "" + normalizedHeight  + "px");
+            }
+
+            node = dom.byId(this.iocAceEditor.containerId);
+            if (node) {
+                style.set(node, "height", "" + normalizedHeight  + "px");
+            }
+
+            this.container.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
+
+        },
+
 
 
         addToolbars: function () {

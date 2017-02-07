@@ -62,11 +62,6 @@ define([
         },
 
 
-        setHeight: function (height) {
-            // console.log("DojoEditorFacade#setHeight", height);
-            this.editor.resize({height: height+ 'px'});
-        },
-
         getValue: function () {
             // console.log("DojoEditorFacade#getValue");
             return this.editor.get('value');
@@ -86,12 +81,25 @@ define([
 
         fillEditorContainer: function () {
             var contentNode = this.editor.domNode,
-                h = geometry.getContentBox(contentNode).h,
-                max = h - this.VERTICAL_MARGIN;
+                h = geometry.getContentBox(contentNode).h;
 
-            // console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
-            this.setHeight(Math.max(this.MIN_HEIGHT, max));
+            console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
+            this.setHeight(h);
         },
+
+        setHeight: function (height) {
+            console.log("DojoEditorFacade#setHeight", height);
+
+            var min = this.MIN_HEIGHT,
+                contentNode = this.editor.domNode,
+                h = geometry.getContentBox(contentNode).h,
+                max = h - this.VERTICAL_MARGIN,
+                normalizedHeight = Math.max(min, Math.min(height, max));
+
+            console.log("Establint height..." + normalizedHeight+ 'px');
+            this.editor.resize({height: normalizedHeight+ 'px'});
+        },
+
 
         lockEditor: function () {
             this.editor.set('disabled', true); // readOnly no funciona, permet escriure igual

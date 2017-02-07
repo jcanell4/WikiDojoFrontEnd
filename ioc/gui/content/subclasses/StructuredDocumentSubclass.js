@@ -1253,19 +1253,28 @@ define([
 
 
             for (var header_id in editors) {
-                jQuery('#view_' + this.id + '_' + header_id).css('display', 'block'); // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
+                var $view = jQuery('#view_' + this.id + '_' + header_id);
 
-                viewNode = dom.byId('view_' + this.id + '_' + header_id);
-                p = geometry.getContentBox(viewNode).h;
+                $view.css('display', 'block'); // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
 
-                jQuery('#view_' + this.id + '_' + header_id).css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
+                // viewNode = dom.byId('view_' + this.id + '_' + header_id);
+                // p = geometry.getContentBox(viewNode).h;
+                p = $view.height();
 
-                var min = this.MIN_HEIGHT,
-                    max = h - this.VERTICAL_MARGIN;
+                $view.css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
 
-                editors[header_id].editor.setHeight(Math.max(min, Math.min(p, max))); //
+
+
+                //
+                // var min = this.MIN_HEIGHT,
+                //     var max = h ;
+
+                console.log("p:", p);
+                // editors[header_id].editor.setHeight(Math.max(min, Math.min(p, max))); //
+                editors[header_id].editor.setHeight(p); //
 
             }
+
 
 
         },
