@@ -6,7 +6,9 @@ define([
     'dojo/dom-style',
     'dojo/Evented',
     'dojo/dom-geometry',
-], function (declare, Editor, AlwaysShowToolbar, dom, style, Evented, geometry) {
+    'ioc/dokuwiki/AceManager/Plugins/Test',
+    'dijit/_editor/plugins/Print',
+], function (declare, Editor, AlwaysShowToolbar, dom, style, Evented, geometry, Test, Print ) {
     return declare([Evented], {
 
         editor: null,
@@ -31,7 +33,8 @@ define([
 
 
             this.editor = new Editor({
-                extraPlugins: [AlwaysShowToolbar],
+                extraPlugins: [Test],
+                // extraPlugins: [AlwaysShowToolbar, Test/*, Print*/],
                 // height: "100%"
             }, dom.byId(args.containerId));
 
