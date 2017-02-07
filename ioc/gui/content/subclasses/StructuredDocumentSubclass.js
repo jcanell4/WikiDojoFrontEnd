@@ -28,8 +28,8 @@ define([
     'ioc/dokuwiki/AceManager/AceEditorPartialFacade',
     'dojo/dom',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/AceManager/DojoEditorFacade',
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry/*, toolbarManager*/, DojoEditorFacade) {
+    'ioc/dokuwiki/AceManager/DojoEditorPartialFacade',
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry/*, toolbarManager*/, DojoEditorPartialFacade) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
@@ -972,7 +972,7 @@ define([
 
         // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
         createDojoEditor: function (config) {
-            return new DojoEditorFacade(
+            return new DojoEditorPartialFacade(
                 {
                     parentId: 'container_' + config.id,
                     containerId: 'editor_' + config.id,

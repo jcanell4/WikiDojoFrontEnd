@@ -18,6 +18,8 @@ define([
         constructor: function (args) {
             // console.log("DojoEditorFacade#constructor", args);
 
+            this.dispatcher = args.dispatcher;
+
             this.$textarea = jQuery('#' + args.textareaId);
 
 
@@ -97,6 +99,7 @@ define([
                 normalizedHeight = Math.max(min, Math.min(height, max));
 
             console.log("Establint height..." + normalizedHeight+ 'px');
+            console.log("contentNode:", contentNode);
             this.editor.resize({height: normalizedHeight+ 'px'});
         },
 
