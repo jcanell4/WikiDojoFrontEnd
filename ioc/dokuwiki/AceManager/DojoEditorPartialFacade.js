@@ -12,7 +12,7 @@ define([
 
 
         setHeight: function (height) {
-            console.log("DojoEditorFacade#setHeight", height);
+            // console.log("DojoEditorFacade#setHeight", height);
 
             var min = this.MIN_HEIGHT,
                 $contentNode = jQuery(this.editor.domNode),

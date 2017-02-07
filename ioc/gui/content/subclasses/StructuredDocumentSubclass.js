@@ -1256,26 +1256,10 @@ define([
                 var $view = jQuery('#view_' + this.id + '_' + header_id);
 
                 $view.css('display', 'block'); // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
-
-                // viewNode = dom.byId('view_' + this.id + '_' + header_id);
-                // p = geometry.getContentBox(viewNode).h;
-                p = $view.height();
-
                 $view.css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
 
-
-
-                //
-                // var min = this.MIN_HEIGHT,
-                //     var max = h ;
-
-                console.log("p:", p);
-                // editors[header_id].editor.setHeight(Math.max(min, Math.min(p, max))); //
-                editors[header_id].editor.setHeight(p); //
-
+                editors[header_id].editor.setHeight($view.height());
             }
-
-
 
         },
 

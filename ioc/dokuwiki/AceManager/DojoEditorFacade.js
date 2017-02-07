@@ -59,7 +59,7 @@ define([
             }.bind(this));
 
             this.editor.startup();
-
+            this.editor.focus();
 
         },
 
@@ -90,7 +90,7 @@ define([
         },
 
         setHeight: function (height) {
-            console.log("DojoEditorFacade#setHeight", height);
+            // console.log("DojoEditorFacade#setHeight", height);
 
             var min = this.MIN_HEIGHT,
                 contentNode = this.editor.domNode,
@@ -98,8 +98,6 @@ define([
                 max = h - this.VERTICAL_MARGIN,
                 normalizedHeight = Math.max(min, Math.min(height, max));
 
-            console.log("Establint height..." + normalizedHeight+ 'px');
-            console.log("contentNode:", contentNode);
             this.editor.resize({height: normalizedHeight+ 'px'});
         },
 
