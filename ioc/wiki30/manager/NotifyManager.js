@@ -143,6 +143,7 @@ define([
         },
 
         _createNotificationContentTool: function (notification) {
+            console.log("NotifyManager#_createNotificationContentTool", notification)
             var args = {
                     id: notification.notification_id,
                     data: {
