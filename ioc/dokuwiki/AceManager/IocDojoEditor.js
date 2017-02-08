@@ -1,7 +1,9 @@
 define([
     'dojo/_base/declare',
     'dijit/Editor',
-    //
+
+
+    // ALERTA[Xavi] Necessari pel addPlugin (només per depurar)
     "dojo/_base/array", // array.forEach
     // "dojo/_base/declare", // declare
     "dojo/Deferred", // Deferred
@@ -27,6 +29,13 @@ define([
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
     "dojo/i18n!dijit/_editor/nls/commands",
+
+    // Carrega de CSS mitjançant AMD (ALERTA[Xavi] Compte, no funciona!
+    // 'xstyle/css!./icons/editorIcons.css',
+    // 'xstyle/css!./icons/commonIcons.css',
+    // 'xstyle/css!./icons/editorIcons_rtl.css',
+    // 'xstyle/css!./icons/commonIcons_rtl.css',
+
 
 ], function (declare, Editor,
 
