@@ -94,6 +94,7 @@ define([
         },
 
 
+        // ALERTA[Xavi] Aquesta funció es idéntica a la del editor, sobreescrita només per facilitar la depuració i després es pot eliminar
         addPlugin: function(/*String||Object||Function*/ plugin, /*Integer?*/ index){
             console.log(" ** INICI ** ");
             // summary:
@@ -143,7 +144,7 @@ define([
                     throw new Error(this.id + ": cannot find plugin [" + args.name + "]");
                 }
                 plugin = o.plugin;
-                console.log("S'ha trobat el plugin?", plugin);
+                // console.log("S'ha trobat el plugin?", plugin);
             }
             if(arguments.length > 1){
                 this._plugins[index] = plugin;
@@ -154,7 +155,7 @@ define([
             if(lang.isFunction(plugin.setToolbar)){
                 plugin.setToolbar(this.toolbar);
             }
-            console.log(" ** FI ** ");
+            // console.log(" ** FI ** ");
         },
     })
 });
