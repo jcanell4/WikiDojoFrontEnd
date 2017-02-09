@@ -11,6 +11,7 @@ define([
 
             require(["ioc/wiki30/Request"], function (Request) {
                 this.requester = new Request();
+                this.requester.defaultUrlBase = "lib/plugins/ajaxcommand/ajax.php";
 
 //                this.requester.updateSectok = function (sectok) {
 //                    this.sectok = sectok;

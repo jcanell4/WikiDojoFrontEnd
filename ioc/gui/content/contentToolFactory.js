@@ -31,10 +31,15 @@ define([
         "ioc/gui/content/subclasses/RequestSubclass",
         "ioc/gui/content/subclasses/TimedDocumentSubclass",
         "ioc/gui/content/subclasses/NotificationSubclass",
-        "ioc/gui/content/subclasses/FormSubclass"
+        "ioc/gui/content/subclasses/FormSubclass",
+        "ioc/gui/content/subclasses/AjaxFormSubclass",
+        "ioc/gui/content/subclasses/AjaxLinkSubclass",
     ], function (lang, ContentTool, requestReplacerFactory,
-                 dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, /*ChangesManagerCentralSubclass,*/ EditorSubclass, BasicEditorSubclass,
-                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass, RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass) {
+                 dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, /*ChangesManagerCentralSubclass,*/
+                 EditorSubclass, BasicEditorSubclass,MediaDetailsSubclass, MetaMediaDetailsSubclass,
+                 StructuredDocumentSubclass, RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass,
+                 AjaxFormSubclass, AjaxLinkSubclass
+    ) {
 
         var patch = function (target, source) {
                 return function () {
@@ -398,7 +403,8 @@ define([
 
                     case this.generation.META:
                         GeneratedContentTool = base
-                            .createSubclass(MetaInfoSubclass);
+                            .createSubclass(MetaInfoSubclass)
+                            .createSubclass(AjaxFormSubclass);
                         break;
 
                     case this.generation.DOCUMENT:
@@ -453,7 +459,8 @@ define([
                     case this.generation.NOTIFICATION:
                         console.log("contentToolFactory#createClass: NOTIFICATION");
                         GeneratedContentTool = base
-                            .createSubclass(NotificationSubclass);
+                            .createSubclass(NotificationSubclass)
+                            .createSubclass(AjaxLinkSubclass);
                         break;
 
                     default:

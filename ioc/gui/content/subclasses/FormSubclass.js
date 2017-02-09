@@ -39,7 +39,6 @@ define([
              * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
              */
             isContentChanged: function () {
-                //console.log("FormSubclass#isContentChanged");
 
                 var checked = {},
                     item,
