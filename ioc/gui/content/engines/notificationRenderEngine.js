@@ -25,8 +25,7 @@ define([], function () {
             $titleGroup.append($closeButton);
         }
 
-        $content.text(data.text);
-
+        $content.html(data.text);
 
         $pane.append($titleGroup);
         $pane.append($content);
