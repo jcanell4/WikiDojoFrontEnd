@@ -40,7 +40,6 @@ define([
                         params = "call=page&" + $this.attr('href').replace(/^.*\?/, ""),
                         request = self.requester;
 
-                    console.log("Params:", params);
 
                     request.urlBase = request.defaultUrlBase;
                     request.setStandbyId(targetId);
