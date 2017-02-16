@@ -207,8 +207,8 @@ define([
              */
             setData: function (data) {
                 if (!data) {
-                    console.error('setData =', data);
-                }else {
+                    console.error('setData', data);
+                }else{
                     this.set('data', data);
                 }
                 this.dispatchEvent(this.eventName.DATA_REPLACED, {id: this.id});
