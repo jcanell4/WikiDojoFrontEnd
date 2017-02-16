@@ -3,12 +3,12 @@
  * o un missatge d'error si no era un string.
  *
  * @module standardEngineFactory
- * @author Xavier GarcÌa <xaviergaro.dev@gmail.com>
+ * @author Xavier Garc√≠a <xaviergaro.dev@gmail.com>
  */
 define([], function () {
 
     /**
-     * Si obj1.priority es major, es colocar‡ abans
+     * Si obj1.priority es major, es colocar√† abans
      * @param obj1
      * @param obj2
      * @returns {*}
@@ -273,10 +273,10 @@ define([], function () {
             var $button = jQuery('<div>'),
                 $submit = jQuery('<input>');
 
-            $button.addClass('col-sm-offset-5 col-xs-2') // Offset 5 i amplada del botÛ del botÛ 2
+            $button.addClass('col-sm-offset-5 col-xs-2') // Offset 5 i amplada del bot√≥ del bot√≥ 2
                 .append($submit);
 
-            // Alerta[Xavi] Eliminem el botÛ d'enviar, s'ha d'enviar via el botÛ de guardar
+            // Alerta[Xavi] Eliminem el bot√≥ d'enviar, s'ha d'enviar via el bot√≥ de guardar
             //$submit.attr('type', 'submit')
             //    .val('Enviar')
             //    .attr('name', 'submit')
@@ -292,7 +292,7 @@ define([], function () {
 
         $form.attr('id', 'form_' + data.id);
 
-        $doc.addClass('container-fluid ioc-bootstrap') // Si fem servir 'container' la amplada m‡xima es ~1200px
+        $doc.addClass('container-fluid ioc-bootstrap') // Si fem servir 'container' la amplada m√†xima es ~1200px
             .append($form);
 
         data.elements.sort(comparePriority);
