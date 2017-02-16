@@ -171,7 +171,7 @@ define([
 
             getQuerySave: function () {
                 var $form = jQuery('#form_' + this.id);
-                var values = {"id": this.ns};
+                var values = {"id": this.ns, "projectType":this.projectType};
 
                 jQuery.each($form.serializeArray(), function (i, field) {
                     values[field.name] = field.value;
@@ -292,8 +292,7 @@ define([
             },
             
             getProjectType: function() {
-                var node = dom.byId("projectType");
-                return node.value;
+                return this.projectType;
             }
         });
 });
