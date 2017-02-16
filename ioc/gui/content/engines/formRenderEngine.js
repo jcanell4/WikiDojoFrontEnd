@@ -3,19 +3,18 @@
  * o un missatge d'error si no era un string.
  *
  * @module standardEngineFactory
- * @author Xavier Garc√≠a <xaviergaro.dev@gmail.com>
+ * @author Xavier GarcÌa <xaviergaro.dev@gmail.com>
  */
 define([], function () {
 
     /**
-     * Si obj1.priority es major, es colocar√† abans
+     * Si obj1.priority es major, es colocar‡ abans
      * @param obj1
      * @param obj2
      * @returns {*}
      */
     var comparePriority = function (obj1, obj2) {
             //console.log('formRenderEngine#comparePriority', obj1.priority, obj2.priority);
-
             if (!obj1) {
                 return obj2.priority || 0;
             } else if (!obj2) {
@@ -26,7 +25,7 @@ define([], function () {
         },
 
         renderGroup = function (group) {
-            var fields = group.fields.sort(comparePriority),
+            var fields = group.elements.sort(comparePriority),
                 $group = jQuery('<div>'),
                 $header,
                 cols = group.columns || 12;
@@ -39,15 +38,19 @@ define([], function () {
 
                 $group.append($header);
             }
-
-            if (group.hasFrame) {
+            //JOSEP: Rafa, per que no tagarada el nom hasFrame? 
+            if (group.frame) {
                 $group.addClass('form-frame');
             } else {
                 $group.addClass('form-without-frame');
             }
 
             for (var i = 0; i < fields.length; i++) {
-                $group.append(renderField(fields[i]));
+                switch (group.elements[i].formType) {
+                    case 'row':   $group.append(renderRow(fields[i])); break;
+                    case 'group': $group.append(renderGroup(fields[i])); break;
+                    case 'field': $group.append(renderField(fields[i])); break;
+                }
             }
 
             if (group.id) {
@@ -72,6 +75,7 @@ define([], function () {
                 case 'select':
                     $field = renderFieldSelect(field);
                     break;
+                    
                 case 'checkbox': // TODO[Xavi] No s'ajusta correctament l'amplada
                 case 'radio':
                     $field = renderFieldCheckbox(field);
@@ -95,7 +99,6 @@ define([], function () {
                 $label.html(field.label);
                 $field.append($label)
             }
-
 
             $field.append($input);
 
@@ -155,7 +158,6 @@ define([], function () {
                 if (options[i].selected) {
                     $option.attr('selected', true);
                 }
-
 
                 $select.append($option);
             }
@@ -249,17 +251,19 @@ define([], function () {
 
                 $row.append($header.append($title));
             }
-            //console.log("Row:", row);
 
-            row.groups.sort(comparePriority);
+            row.elements.sort(comparePriority);
 
             if (row.id) {
                 $row.attr('id', row.id);
             }
 
-
-            for (var i = 0; i < row.groups.length; i++) {
-                $row.append(renderGroup(row.groups[i]));
+            for (var i = 0; i < row.elements.length; i++) {
+                switch (row.elements[i].formType) {
+                    case 'row':   $row.append(renderRow(row.elements[i])); break;
+                    case 'group': $row.append(renderGroup(row.elements[i])); break;
+                    case 'field': $row.append(renderField(row.elements[i])); break;
+                }
             }
 
             return $row;
@@ -269,10 +273,10 @@ define([], function () {
             var $button = jQuery('<div>'),
                 $submit = jQuery('<input>');
 
-            $button.addClass('col-sm-offset-5 col-xs-2') // Offset 5 i amplada del bot√≥ del bot√≥ 2
+            $button.addClass('col-sm-offset-5 col-xs-2') // Offset 5 i amplada del botÛ del botÛ 2
                 .append($submit);
 
-            // Alerta[Xavi] Eliminem el bot√≥ d'enviar, s'ha d'enviar via el bot√≥ de guardar
+            // Alerta[Xavi] Eliminem el botÛ d'enviar, s'ha d'enviar via el botÛ de guardar
             //$submit.attr('type', 'submit')
             //    .val('Enviar')
             //    .attr('name', 'submit')
@@ -283,25 +287,27 @@ define([], function () {
 
 
     return function (data) {
-        //console.log("FormRenderEngine", data);
-
         var $doc = jQuery('<div>'),
             $form = jQuery('<form>');
 
         $form.attr('id', 'form_' + data.id);
 
-        $doc.addClass('container-fluid ioc-bootstrap') // Si fem servir 'container' la amplada m√†xima es ~1200px
+        $doc.addClass('container-fluid ioc-bootstrap') // Si fem servir 'container' la amplada m‡xima es ~1200px
             .append($form);
 
-        data.rows.sort(comparePriority);
+        data.elements.sort(comparePriority);
 
-        for (var i = 0; i < data.rows.length; i++) {
-            $form.append(renderRow(data.rows[i]));
+        for (var i = 0; i < data.elements.length; i++) {
+            switch (data.elements[i].formType) {
+                case 'row':   $form.append(renderRow(data.elements[i])); break;
+                case 'group': $form.append(renderGroup(data.elements[i])); break;
+                case 'field': $form.append(renderField(data.elements[i])); break;
+            }
         }
 
-        $form.append(renderSubmitButton());
+        //$form.append(renderSubmitButton());
 
         return $doc;
-    }
+    };
 });
 

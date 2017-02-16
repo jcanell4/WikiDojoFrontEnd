@@ -6,24 +6,24 @@ define([
 
     return declare([ChangesManagerCentralSubclass],
         /**
-         * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
+         * Aquesta classe no s'ha de instanciar directament, s'ha de fer a travÃ©s del contentToolFactory.
          *
-         * S'ha deixat com un fitxer independent per facilitar la seva edició
+         * S'ha deixat com un fitxer independent per facilitar la seva ediciÃ³
          * i no es garanteix que sigui accesible en el futur.
          *
-         * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de edició de documents
+         * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de ediciÃ³ de documents
          * amb un ACE-Editor.
          *
          * @class FormSubclass
          * @extends DocumentSubclass, AbstractChangesManagerCentral
-         * @author Xavier García <xaviergaro.dev@gmail.com>
+         * @author Xavier GarcÃ­a <xaviergaro.dev@gmail.com>
          * @private
          * @see contentToolFactory.generate()
          */
         {
 
             /**
-             * El contingut original inicial s'ha de passar a travès del constructor dins dels arguments com la
+             * El contingut original inicial s'ha de passar a travÃ¨s del constructor dins dels arguments com la
              * propietat originalContent.
              *
              * @param args
@@ -34,7 +34,7 @@ define([
             },
 
             /**
-             * Retorna cert si el contingut actual i el contingut original són diferents o fals si són iguals.
+             * Retorna cert si el contingut actual i el contingut original sÃ³n diferents o fals si sÃ³n iguals.
              *
              * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
              */
@@ -72,7 +72,7 @@ define([
                     }
                 }
 
-
+ 
                 if (changed) {
                     this.onDocumentChanged();
                     this.hasChanges = true;
@@ -141,12 +141,12 @@ define([
 
             },
 
-            // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
+            // Alerta[Xavi] el event pot contenir informaciÃ³ que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
                 console.log("FormSubclass#_doCancelDocument", this.id, event);
 
                 var containerId = this.id,
-                    dataToSend = this.getQueryCancel(this.id); // el paràmetre no es fa servir
+                    dataToSend = this.getQueryCancel(this.id); // el parÃ metre no es fa servir
 
                 if (event.extraDataToSend) {
                     if (typeof event.extraDataToSend === "string") {
@@ -170,7 +170,7 @@ define([
 
             getQuerySave: function () {
                 var $form = jQuery('#form_' + this.id);
-                var values = {"id": this.ns};
+                var values = {"id": this.ns, "projectType":this.projectType};
 
                 jQuery.each($form.serializeArray(), function (i, field) {
                     values[field.name] = field.value;
@@ -178,7 +178,7 @@ define([
                 return values;
             },
 
-            // Alerta[Xavi] Aquesta versió del getQuerySave filtra l'enviament, però no funciona amb la implementació actual del setMeta() del MetaDataService
+            // Alerta[Xavi] Aquesta versiÃ³ del getQuerySave filtra l'enviament, perÃ² no funciona amb la implementaciÃ³ actual del setMeta() del MetaDataService
             //getQuerySave: function () {
             //    var $form = jQuery('#form_' + this.id),
             //        values = {},
@@ -190,7 +190,7 @@ define([
             //
             //        if (field.value != originalContent[field.name]) {
             //
-            //            // Si el valor actual es buit i abans també ho era no s'ha d'afegir
+            //            // Si el valor actual es buit i abans tambÃ© ho era no s'ha d'afegir
             //            if (!field.value && !originalContent[field.name]) {
             //                //console.log ("buit en tots dos casos");
             //            } else {
@@ -225,7 +225,7 @@ define([
              */
             _checkChanges: function () {
                 //console.log('EditorSubclass#_checkChanges');
-                // Si el document està bloquejat mai hi hauran canvis
+                // Si el document estÃ  bloquejat mai hi hauran canvis
 
 
                 //if (!this.locked) { // Els forms no es bloquejan
@@ -234,7 +234,7 @@ define([
             },
 
             /**
-             * Retorna el que està establert com a contingut original per fer comprovacions sobre canvis.
+             * Retorna el que estÃ  establert com a contingut original per fer comprovacions sobre canvis.
              *
              * @returns {string} - Contingut original
              * @private
@@ -245,7 +245,7 @@ define([
             },
 
             /**
-             * Estableix el contingut passat com paràmetre com a contingut original.
+             * Estableix el contingut passat com parÃ metre com a contingut original.
              *
              * @param {string} content - Contingut a establir com original
              * @private
@@ -276,8 +276,8 @@ define([
 
             getCurrentContent: function () {
                 // Obtenir tots els valors dels camps? generar diccionary id:valor
-                // Fàcil pels inputs (únic cas contemplat)
-                // TODO[Xavi] Afegir comprovació per check/radios i selects
+                // FÃ cil pels inputs (Ãºnic cas contemplat)
+                // TODO[Xavi] Afegir comprovaciÃ³ per check/radios i selects
 
                 var currentContent = {};
 
@@ -291,8 +291,7 @@ define([
             },
             
             getProjectType: function() {
-                var node = dom.byId("projectType");
-                return node.value;
+                return this.projectType;
             }
         });
 });

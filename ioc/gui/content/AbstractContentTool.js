@@ -206,14 +206,12 @@ define([
              * aplicada.
              */
             setData: function (data) {
-                //console.log("AbstractContentTool#setData", data);
                 if (!data) {
-                    console.error('setData', data);
+                    console.error('AbstractContentTool#setData(', data, ')');
+                }else{
+                    this.set('data', data);
                 }
-
-                this.set('data', data);
                 this.dispatchEvent(this.eventName.DATA_REPLACED, {id: this.id});
-
             },
 
             /**

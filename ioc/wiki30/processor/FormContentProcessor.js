@@ -68,8 +68,8 @@ define([
                         content: content.content,
                         closable: true,
                         dispatcher: dispatcher,
-                        //originalContent: this._extractContentFromNode(content),
                         originalContent: content.originalContent,
+                        projectType: content.extra.projectType,
                         type: this.type,
                     },
                     argsRequestForm = {
