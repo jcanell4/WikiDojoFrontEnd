@@ -208,7 +208,7 @@ define([
             setData: function (data) {
                 //console.log("AbstractContentTool#setData", data);
                 if (!data) {
-                    console.error('setData', data);
+                    console.error('AbstractContentTool#setData(', data, ')');
                 }else{
                     this.set('data', data);
                 }
