@@ -113,7 +113,7 @@ define([
              * @protected
              */
             createContentTool: function (metaContent) {
-                //console.log("MetaInfoProcessor#createContentTool", metaContent.id);
+
                 var args = {
                     id:         metaContent.id,
                     title:      metaContent.title,
@@ -121,11 +121,29 @@ define([
                     dispatcher: metaContent.dispatcher,
                     docId:      metaContent.docId,
                     action:     metaContent.action,
-                    type:       this.type
+                    // type:       metaContent.type
                 };
 
+
+                switch (metaContent.type) {
+                    case contentToolFactory.generation.REQUEST_FORM :
+                        args.type = metaContent.type;
+                        return this._createNotificationFormContentTool(args);
+                        break;
+
+                    default:
+                        args.type = this.type;
+                        return this._createMetaContentTool(args);
+                }
+
+            },
+
+            _createNotificationFormContentTool: function (args) {
+                return contentToolFactory.generate(contentToolFactory.generation.REQUEST_FORM, args);
+            },
+
+            _createMetaContentTool: function (args) {
                 return contentToolFactory.generate(contentToolFactory.generation.META, args);
-                //                    .decorate(contentToolFactory.decoration.META);
             }
 
         });

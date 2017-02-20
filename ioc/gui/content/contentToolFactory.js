@@ -283,6 +283,7 @@ define([
             /** @enum */
             generation: {
                 BASE: 'base',
+                REQUEST_FORM: 'request_form',
                 META: 'meta',
                 DOCUMENT: 'document',
                 EDITOR: 'editor',
@@ -402,6 +403,12 @@ define([
                         break;
 
                     case this.generation.META:
+                        GeneratedContentTool = base
+                            .createSubclass(MetaInfoSubclass);
+                            // .createSubclass(AjaxFormSubclass);
+                        break;
+
+                    case this.generation.REQUEST_FORM:
                         GeneratedContentTool = base
                             .createSubclass(MetaInfoSubclass)
                             .createSubclass(AjaxFormSubclass);
