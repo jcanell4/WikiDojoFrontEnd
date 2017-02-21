@@ -74,7 +74,7 @@ define([
                         mayHaveChildren: function (object) {
                             return object.type === "d" ||
                                    (object.type === "p" && self.expandProject) ||
-                                   object.type === "dp";
+                                   object.type === "pd";
                         },
 
                         getLabel: function (object) {
