@@ -8,7 +8,9 @@ define([
     'ioc/wiki30/manager/EventObservable',
     'ioc/wiki30/manager/EventObserver',
     'dijit/form/Button',
-], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable, EventObserver, Button) {
+    'ioc/gui/content/engines/request_formRenderEngine', // TODO[Xavi] Quan es faci el merg amb la branca T71 canviar per l'utilització del RenderEngineFactory passant el tipus
+], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable,
+             EventObserver, Button, formRenderEngine) {
 
     return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin, EventObservable, EventObserver], {
 
@@ -19,7 +21,10 @@ define([
             this.sections = [];
             this.nextDialogs = {};
             this.nextCallbacks = {};
+            this.forms = [];
 
+
+            console.log("Creat el dialog, que hi ha als forms?", this.forms);
             declare.safeMixin(this, arguments);
 
             this.style = "width: " + this.width + "px";
@@ -33,6 +38,7 @@ define([
             this._addMessage();
             this._addSections();
             this._addButtons();
+            this._addForms();
             this._addListerners();
             this._initNextDialogs();
             this._initNextCallbacks();
@@ -95,8 +101,12 @@ define([
         },
 
         _addMessage: function () {
-            this.contentNode.innerHTML = this.message;
+            if (this.message) {
+
+                this.contentNode.innerHTML = this.message;
+            }
         },
+
 
         _addSections: function () {
             for (var i = 0; i < this.sections.length; i++) {
@@ -146,6 +156,9 @@ define([
         },
 
         _addListerners: function () {
+            console.log("Afegint listeners, hi ha forms?", this.forms);
+            var formsData = this.getFormsData.bind(this);
+
             var $button;
 
             if (!this.buttons) {
@@ -166,7 +179,7 @@ define([
                     }
                     this.buttons[i].widget.onClick = function(){
                         for (var j = 0; j < this._callbackDlg.length; j++) {
-                            this._callbackDlg[j]();
+                            this._callbackDlg[j](formsData());
                         }
                         this._removeDlg();
 //                        $button.on('click', this.buttons[i].callback[j].bind(this));
@@ -174,8 +187,10 @@ define([
                 } else if(this.buttons[i].callback){
                     this.buttons[i].widget._callbackDlg = this.buttons[i].callback.bind(this);
                     this.buttons[i].widget._removeDlg = this.remove.bind(this);
+
                     this.buttons[i].widget.onClick = function(){
-                        this._callbackDlg();
+                            this._callbackDlg(formsData());
+
                         this._removeDlg();
 //                        $button.on('click', this.buttons[i].callback.bind(this));
                     };                    
@@ -184,7 +199,8 @@ define([
                     this.buttons[i].widget._removeDlg = this.remove.bind(this);
                     this.buttons[i].widget.onClick = function(){
                         if(oc){
-                            oc();
+
+                                oc(formsData());
                         }
                         this._removeDlg();
                     };                    
@@ -214,6 +230,45 @@ define([
         // Correspn al docId o algun altre tipus d'identificador únic amb el que volem agrupar dialegs
         setRefId: function (refId) {
             this.refId = refId;
+        },
+
+
+
+        _addForms: function() {
+            // this.contentNode <-- aqui es on s'ha d'afegir
+
+            var data;
+
+            for (var i=0; i<this.forms.length; i++) {
+                data =this.forms[i];
+                if (!data.id) {
+                    data.id = "form_" + this.refId + "_"+i;
+                }
+                this._addForm(this.forms[i]);
+            }
+        },
+
+        _addForm: function(data) {
+            var form = formRenderEngine(data);
+            console.log("generatedForm:", form);
+
+            jQuery(this.contentNode).append(form);
+        },
+
+        getFormsData: function() {
+
+            if (this.forms.length == 0) {
+                return null
+            }
+
+
+            var $forms = jQuery(this.contentNode).find('form');
+
+            console.log("Forms:", $forms);
+            console.log("Fields:", $forms.serialize());
+
+
+            return "TODO: obtenir la informació dels formularis i retornar-la";
         }
     });
 });

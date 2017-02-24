@@ -31,6 +31,7 @@ define([
             this.params.sections = [];
             this.params.initFunctions = [];
             this.params.buttons = [];
+            this.params.forms = [];
             this.params.nextDialogs = {};
             this.params.nextCallbacks = {};
 
@@ -73,6 +74,8 @@ define([
                 this.addButton(buttons[i].buttonType, buttons[i]);
             }
         },
+
+
 
         addButton: function (buttonType, params) {
             var button;
@@ -266,9 +269,19 @@ define([
             this.params.buttons.push(button);
         },
 
+
         _addInitFunction: function (func) {
             this.params.initFunctions.push(func);
         },
+
+        addForm: function (form){
+            this._addForm(form);
+        },
+
+        _addForm: function (form) {
+            this.params.forms.push(form);
+        },
+
 
     });
 

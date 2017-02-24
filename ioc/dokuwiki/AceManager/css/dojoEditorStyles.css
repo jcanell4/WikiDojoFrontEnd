@@ -1,0 +1,55 @@
+/* Estils pel DOJO-Editor */
+
+
+
+
+
+/* Plugin comentaris */
+
+.ioc-comment {
+    color: black;
+    background-color:#FEEFB3;
+    border: 1px solid #9F6000;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+
+note.ioc-comment {
+    float: right;
+    display: block;
+    max-width: 350px;
+    position: relative;
+    box-shadow: 0.2em 0.3em 1.5em #eee;
+
+}
+
+.ioc-signature {
+    display: block;
+    width: 100%;
+    border-top: 1px dotted #9F6000;
+    padding-top: 5px;
+    font-weight: bold;
+    font-size:smaller;
+}
+
+.triangle-inner{
+    position: absolute;
+    border-top: none;
+    border-bottom: 24px solid transparent;
+    border-left: none;
+    border-right: 24px solid #9F6000;
+    left: -15px;
+    top: -1px;
+    z-index: -1;
+}
+
+.triangle-outer{
+    position: absolute;
+    border-top: none;
+    border-bottom: 18px solid transparent;
+    border-left: none;
+    border-right: 18px solid #FEEFB3;
+    left: -13px;
+    top: 0;
+}

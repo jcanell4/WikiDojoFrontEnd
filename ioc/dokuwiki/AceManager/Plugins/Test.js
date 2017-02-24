@@ -33,7 +33,7 @@ define([
                 dir: editor.dir,
                 lang: editor.lang,
                 showLabel: false,
-                iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + "Print",
+                iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + "Print", // TODO[Xavi] el prefix ha de canviar per correspondre amb una classe CSS que mostri la icona
                 tabIndex: "-1",
                 onClick: lang.hitch(this, "_addNote")
             });

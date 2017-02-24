@@ -7,14 +7,15 @@ define([
     'dojo/Evented',
     'dojo/dom-geometry',
     'ioc/dokuwiki/AceManager/Plugins/Test',
-    'dijit/_editor/plugins/Print',
-], function (declare, Editor, AlwaysShowToolbar, dom, style, Evented, geometry, Test, Print ) {
+    'ioc/dokuwiki/AceManager/Plugins/CommentsDialog',
+    // 'dojox/editor/plugins/InsertEntity',
+], function (declare, Editor, AlwaysShowToolbar, dom, style, Evented, geometry, Test, CommentsDialog) {
     return declare([Evented], {
 
         editor: null,
 
         VERTICAL_MARGIN: 25,
-        MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+        MIN_HEIGHT: 200,
 
 
         constructor: function (args) {
@@ -33,7 +34,9 @@ define([
 
 
             this.editor = new Editor({
-                extraPlugins: [Test],
+                styleSheets: '/iocjslib/ioc/dokuwiki/AceManager/css/dojoEditorStyles.css',
+                extraPlugins: [Test, CommentsDialog],
+                dispatcher: this.dispatcher
                 // extraPlugins: [AlwaysShowToolbar, Test/*, Print*/],
                 // height: "100%"
             }, dom.byId(args.containerId));
