@@ -8,9 +8,10 @@ define([
     "dijit/form/Button",
     "dojo/string", // string.substitute
     'ioc/gui/DialogBuilder',
+    "dojo/text!./templates/CommentFragment.html",
     "dojo/i18n!ioc/dokuwiki/AceManager/nls/commands",
 
-], function (declare, i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder) {
+], function (declare, i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder, template) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.acemanager", "commands");
 
@@ -21,14 +22,15 @@ define([
 
         // htmlTemplate: [protected] String
         //		String used for templating the HTML to insert at the desired point.
-        htmlTemplate: '<span class="ioc-comment">*</span>' +
-            '<note class="ioc-comment">' +
-            '<div class="triangle-outer"> </div>' +
-            '<div class="triangle-inner"> </div>' +
-            '${content}</br>' +
-            '<span class="ioc-signature">${signature}</span>' +
-            '</note>',
+        // htmlTemplate: '<span class="ioc-comment">*</span>' +
+        //     '<note class="ioc-comment">' +
+        //     '<div class="triangle-outer"> </div>' +
+        //     '<div class="triangle-inner"> </div>' +
+        //     '${content}</br>' +
+        //     '<span class="ioc-signature">${signature}</span>' +
+        //     '</note>',
 
+        htmlTemplate: template,
 
         content: "comentari de prova",
 
@@ -130,16 +132,15 @@ define([
 
         _addNote: function (content) {
 
-            // alert ("Retornat: " + content);
+            console.log ("Retornat: ",  content);
 
             args = {
                 content: content.comment ||this._getSelectionText() || this.content,
-                signature: SIG // ALETA[Xavi] aquesta és una variable global definida per DokuWiki
+                signature: SIG // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
 
             };
             this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
 
-            console.log("Funciona!");
         },
 
         // ALERTA[Xavi] S'ha de fer a través de la propietat window de l'editor perqué aquest es troba en un iframe

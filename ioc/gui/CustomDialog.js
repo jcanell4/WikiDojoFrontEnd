@@ -265,10 +265,26 @@ define([
             var $forms = jQuery(this.contentNode).find('form');
 
             console.log("Forms:", $forms);
-            console.log("Fields:", $forms.serialize());
+            console.log("Fields:", this._arrayToObject($forms.serializeArray()));
 
 
-            return "TODO: obtenir la informació dels formularis i retornar-la";
+            return this._arrayToObject($forms.serializeArray());
+        },
+
+        _arrayToObject: function(a) {
+            var o = {};
+
+            jQuery.each(a, function() {
+                if (o[this.name] !== undefined) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
         }
     });
 });
