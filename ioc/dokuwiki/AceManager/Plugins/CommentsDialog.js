@@ -15,6 +15,12 @@ define([
 
     var strings = i18n.getLocalization("ioc.dokuwiki.acemanager", "commands");
 
+
+    // Aquí es guarda una referència a tots els comentaris creats
+    var comments = [];
+
+
+
     var CommentsDialog = declare("ioc.dokuwiki.acemanager.plugins.commentsdialog", _Plugin, {
         // summary:
         //		This plugin provides Print capability to the editor.  When
@@ -134,13 +140,33 @@ define([
 
             console.log ("Retornat: ",  content);
 
+            // ALERTA[Xavi] Generem el id basat en el temps perquè només necessitem que sigui únic
             args = {
+                id: "ioc-comment-" + Date.now(),
                 content: content.comment ||this._getSelectionText() || this.content,
-                signature: SIG // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
-
+                signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
             };
-            this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
 
+            var htmlCode = string.substitute(this.htmlTemplate, args);
+            this.editor.execCommand('inserthtml', htmlCode);
+
+
+            // TODO:
+            // Afegir quadre de text per respondre (que afegirà la firma automàticament). Mateix format que el template però sense el * ja que aquest ha d'estar lligat al comentari anterior
+
+
+
+            var $node = jQuery(this.editor.iframe).contents().find('#' + args.id);
+
+            console.log("Trobat el node?", $node);
+
+
+            $node.on('click', function(e) {
+                alert("Stop the madness!");
+                e.preventDefault();
+            });
+
+            comments.push($node);
         },
 
         // ALERTA[Xavi] S'ha de fer a través de la propietat window de l'editor perqué aquest es troba en un iframe

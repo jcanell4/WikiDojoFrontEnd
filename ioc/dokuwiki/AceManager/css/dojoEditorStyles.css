@@ -15,7 +15,7 @@
 }
 
 
-note.ioc-comment {
+div.ioc-comment [data-type="ioc-comment"]{
     float: right;
     display: block;
     max-width: 350px;

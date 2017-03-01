@@ -166,5 +166,96 @@ define([
             }
             // console.log(" ** FI ** ");
         },
+
+        onKeyDown: function(e){
+            console.log("key down");
+            // summary:
+            //		Handler for onkeydown event.
+            // tags:
+            //		private
+
+            //We need to save selection if the user TAB away from this editor
+            //no need to call _saveSelection for IE, as that will be taken care of in onBeforeDeactivate
+            if(!has("ie") && !this.iframe && e.keyCode == keys.TAB && !this.tabIndent){
+                this._saveSelection();
+            }
+            if(!this.customUndo){
+                this.inherited(arguments);
+                return;
+            }
+            var k = e.keyCode;
+            if(e.ctrlKey && !e.shiftKey && !e.altKey){//undo and redo only if the special right Alt + z/y are not pressed #5892
+                if(k == 90 || k == 122){ //z, but also F11 key
+                    e.stopPropagation();
+                    e.preventDefault();
+                    this.undo();
+                    return;
+                }else if(k == 89 || k == 121){ //y
+                    e.stopPropagation();
+                    e.preventDefault();
+                    this.redo();
+                    return;
+                }
+            }
+            this.inherited(arguments);
+
+            switch(k){
+                case keys.ENTER:
+                case keys.BACKSPACE:
+                case keys.DELETE:
+                    this.beginEditing();
+                    break;
+                case 88: //x
+                case 86: //v
+                    if(e.ctrlKey && !e.altKey && !e.metaKey){
+                        this.endEditing();//end current typing step if any
+                        if(e.keyCode == 88){
+                            this.beginEditing('cut');
+                        }else{
+                            this.beginEditing('paste');
+                        }
+                        //use timeout to trigger after the paste is complete
+                        this.defer("endEditing", 1);
+                        break;
+                    }
+                //pass through
+                default:
+                    if(!e.ctrlKey && !e.altKey && !e.metaKey && (e.keyCode < keys.F1 || e.keyCode > keys.F15)){
+                        this.beginEditing();
+                        break;
+                    }
+                //pass through
+                case keys.ALT:
+                    this.endEditing();
+                    break;
+                case keys.UP_ARROW:
+                case keys.DOWN_ARROW:
+                case keys.LEFT_ARROW:
+                case keys.RIGHT_ARROW:
+                case keys.HOME:
+                case keys.END:
+                case keys.PAGE_UP:
+                case keys.PAGE_DOWN:
+                    this.endEditing(true);
+                    break;
+                //maybe ctrl+backspace/delete, so don't endEditing when ctrl is pressed
+                case keys.CTRL:
+                case keys.SHIFT:
+                case keys.TAB:
+                    break;
+            }
+        },
+
+        onClick: function(){
+            // summary:
+            //		Handler for when editor is clicked
+            // tags:
+            //		protected
+
+            console.log("click");
+
+            this.endEditing(true);
+            this.inherited(arguments);
+        },
     })
 });
