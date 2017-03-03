@@ -8,7 +8,7 @@ define([
         postAttach: function () {
             this._addCloseButtonListener();
             this.inherited(arguments);
-            if (!this.readed) {
+            if (!this.read) {
                 this.markAsUnread();
             }
 
@@ -25,19 +25,19 @@ define([
 
         markAsRead: function () {
             //console.log("NotificationSubclass#markAsRead", this.domNode);
-            domClass.remove(this.domNode, 'unreaded');
-            this.readed = true;
+            domClass.remove(this.domNode, 'unread');
+            this.read = true;
         },
 
         markAsUnread: function () {
             //console.log("NotificationSubclass#markAsUnread", this.domNode);
-            domClass.add(this.domNode, 'unreaded');
-            this.readed = false;
+            domClass.add(this.domNode, 'unread');
+            this.read = false;
         },
 
-        isReaded: function () {
-            console.log("NotificationSubclass#isReaded", this.readed);
-            return this.readed;
+        isRead: function () {
+            console.log("NotificationSubclass#isRead", this.read);
+            return this.read;
         },
 
         show: function() {

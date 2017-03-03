@@ -63,8 +63,8 @@ define([], function () {
             if (data.properties) {
 
                 for (var i = 0; i < data.properties.length; i++) {
-                    $input.attr(data.properties[i], true);
-                    // $input.prop(data.properties[i], true);
+                    // $input.attr(data.properties[i], true);
+                    $input.prop(data.properties[i], true);
                     // console.log("** Afegit prop?", $input.prop());
                 }
             }

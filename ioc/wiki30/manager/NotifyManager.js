@@ -38,18 +38,27 @@ define([
                     break;
 
                 case 'notification_send':
-                    // TODO[Xavi] això només ens indica que hem enviat una notificació
-                    //console.log(action, params);
+                    // TODO[Xavi] a la resposta ha d'arribar la notificació d'enviat
+                    console.log(action, params);
                     break;
 
                 case 'notification_received':
-                    //console.log(action, params);
+                    console.log(action, params);
                     this._processNotifications(params.notifications);
                     break;
 
                 case 'close_notifier':
                     //console.log(action, params);
                     this._closeNotifier(params);
+                    break;
+
+
+                case 'notification_updated':
+                    console.log(action, params);
+                    break;
+
+                case 'notification_deleted':
+                    console.log(action, params);
                     break;
 
                 default:
@@ -91,14 +100,19 @@ define([
         },
 
         _processNotifications: function (notifications) {
-            //console.log("NotifyManager#_processNotifications", notifications);
+            console.log("NotifyManager#_processNotifications", notifications);
+
+            if (!Array.isArray(notifications)) {
+                throw new NotifyManagerException("S'esperava un array de notificacions i s'ha rebut altre cosa");
+            }
+
             for (var i=0; i<notifications.length; i++) {
                 this._processNotification(notifications[i]);
             }
         },
 
         _processNotification: function(notification) {
-            //console.log("NotifyManager#_processNotification:", notification);
+            console.log("NotifyManager#_processNotification:", notification);
             switch (notification.type) {
                 case 'cancel_notification':
                 case 'lock_expiring':
@@ -106,7 +120,7 @@ define([
                     break;
                 case 'message':
                     //afegir/sobrescriure per ID, al notificador (GUI)
-                    this._processMessage(notification); // ALERTA[Xavi] Substituit per fer proves pel processWarning
+                    this._processMessage(notification);
                     break;
 
 
@@ -155,7 +169,7 @@ define([
                     },
                     dispatcher: this.dispatcher,
                     type: 'notification',
-                    readed: notification.readed,
+                    read: notification.read,
                 },
 
                 contentTool = contentToolFactory.generate(contentToolFactory.generation.NOTIFICATION, args);
@@ -169,7 +183,7 @@ define([
 
             if (!this._receivedWarningIds[notification.data.id]) {
                 // alert(notification.data.text);
-                notification.readed = true;
+                notification.read = true;
                 notification.data.closable = false;
                 // this._processMessage(notification);
 
@@ -268,7 +282,15 @@ define([
             this.removeAllWarnings();
             this.removeAllNotifications();
             this.resetUnreadCounter();
-        }
+        },
 
+
+        updateNotification: function (notificationId, changes) {
+            this._notificationEngine.updateNotification(notificationId, changes);
+        },
+
+        deleteNotification: function (notificationId) {
+            this._notificationEngine.deleteNotification(notificationId);
+        }
     });
 });

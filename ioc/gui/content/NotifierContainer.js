@@ -7,6 +7,7 @@ define([
     'dijit/_TemplatedMixin',
     "dojo/text!./templates/NotifierContainer.html",
     "ioc/wiki30/dispatcherSingleton",
+    "ioc/gui/content/subclasses/RequestSubclass"
 
 ], function (declare, EventObserver, ContainerContentTool, _Container, _WidgetBase, _TemplatedMixin, template, getDispatcher) {
 
@@ -15,6 +16,7 @@ define([
             this.name = "NotifierContainerException";
         },
         dispatcher = getDispatcher();
+
 
     return declare("ioc.gui.content.NotifierContainer", [_WidgetBase, _Container, _TemplatedMixin, EventObserver, ContainerContentTool],
         {
@@ -26,6 +28,7 @@ define([
                 this.notifications = {};
                 this.notifyManager = dispatcher.getNotifyManager();
 
+
 //                this.watch('notificationsCounter', this._updateNotifyButton);
             },
 
@@ -36,7 +39,7 @@ define([
                 if (!this.isNotificationInContainer(contentTool.id)) {
                     throw new NotifierContainerException("No es pot cridar a addChild directament en aquest contenidor. Utilitza addNotification() o removeNotification()");
                 }
-                
+
                 this.registerMeToEventFromObservable(contentTool, this.eventName.DESTROY, this._destroyNotification.bind(this));
 
                 this.inherited(arguments);
@@ -54,7 +57,7 @@ define([
                 // Actualitzem el comptador si no existia o ja estava llegida
 
 
-                if (!contentTool.readed) {
+                if (!contentTool.read) {
                     this.notifyManager.increaseNotificationCounter();
                 }
 
@@ -64,14 +67,17 @@ define([
             removeNotification: function (id) { //ALERTA[Xavi] la crida a aquest mètode destrueix la notificació
                 //console.log("NotifierContainer#removeNotification", id, this.notifications);
 
-                if (!this.isNotificationReaded(id)) {
+                if (!this.isNotificationRead(id)) {
                     this.notifyManager.decreaseNotificationCounter();
                 }
 
+                this.clearing = true;
                 this.notifications[id].removeContentTool();
+                this.clearing = false;
             },
 
             removeAllNotifications: function (resetCounter) {
+                this.clearing = true;
                 console.log("NotifierContainer#removeAllNotifications", this.notifications);
                 for (var notification in this.notifications) {
                     this.notifications[notification].removeContentTool();
@@ -80,12 +86,20 @@ define([
                         this.notifyManager.resetNotificationsCounter();
                     }
                 }
+                this.clearing = false;
             },
 
 
             _destroyNotification: function (data) { //ALERTA[Xavi] la crida a aquest mètode només elimina la notificació de la llista
-                //console.log("NotifierContainer#_destroyNotification", data);
-                delete(this.notifications[data.id]);                
+                console.log("NotifierContainer#_destroyNotification", data);
+                if (!this.clearing) {
+                    this.notifyManager.deleteNotification(data.id);
+
+                }
+
+                delete(this.notifications[data.id]);
+
+
             },
 
 
@@ -107,6 +121,8 @@ define([
 
             markAsRead: function (id) {
                 this.notifications[id].markAsRead();
+                this.notifyManager.updateNotification(id, {read: true});
+
             },
 
             markAsUnread: function (id) {
@@ -119,9 +135,9 @@ define([
                 }
             },
 
-            isNotificationReaded: function (id) {
+            isNotificationRead: function (id) {
                 //console.log("NotifierContainer#isNotificationReaded", this.notifications[id].isReaded());
-                return this.notifications[id].isReaded();
+                return this.notifications[id].isRead();
             }
         });
 });
