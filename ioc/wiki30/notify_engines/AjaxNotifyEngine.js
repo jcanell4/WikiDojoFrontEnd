@@ -48,7 +48,7 @@ define([
             this.dispatcher.getEventManager().fireEvent('notify', {
                 dataToSend: {
                     do: 'update',
-                    blackboardId: this.blackboardId,
+                    // blackboardId: this.blackboardId,
                     notificationId: notificationId,
                     changes: JSON.stringify(changes)
                 }
@@ -61,7 +61,7 @@ define([
             this.dispatcher.getEventManager().fireEvent('notify', {
                 dataToSend: {
                     do: 'delete',
-                    blackboardId: this.blackboardId,
+                    // blackboardId: this.blackboardId,
                     notificationId: notificationId
                 }
             });

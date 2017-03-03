@@ -46,7 +46,7 @@ define([
                     request.sendRequest(params);
                     request.on('completed', function(e) {
 
-                        if (e.status == 'success') {
+                        if (e.status == 'success' && e.data[0].type !="error") {
                             $form.each(function() {
                                 this.reset();
                             });
@@ -59,7 +59,8 @@ define([
 
 
                         } else {
-                            console.error("S'ha produit un error en enviar el formulari");
+                                console.error("S'ha produit un error en enviar el formulari");
+
                         }
 
                     })

@@ -266,7 +266,7 @@ define([
 
                     resp = request.post(vUrl, configPost).then(
                         function (data) {
-                            req.emit("completed", {status: 'success'});
+                            req.emit("completed", {status: 'success', data:data});
                             return req.responseHandler(data);
                         }, function (error) {
                             req.emit("completed", {status: 'error'});
