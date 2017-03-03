@@ -44,9 +44,26 @@ define([
                     request.urlBase = $this.attr('action');
                     request.setStandbyId(targetId);
                     request.sendRequest(params);
-                    $form.each(function() {
-                        this.reset();
-                    });
+                    request.on('completed', function(e) {
+
+                        if (e.status == 'success') {
+                            $form.each(function() {
+                                this.reset();
+                            });
+
+                            $form.find('input[type="checkbox"]').each(function() {
+                                if (this.getAttribute('data-checked')) {
+                                    this.setAttribute('checked', true);
+                                }
+                            });
+
+
+                        } else {
+                            console.error("S'ha produit un error en enviar el formulari");
+                        }
+
+                    })
+
                 });
             }
 

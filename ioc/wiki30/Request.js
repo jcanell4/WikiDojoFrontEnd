@@ -9,11 +9,12 @@ define([
     "dojo/dom-construct",
     "dojo/dom-geometry",
     "dojo/dom-style",
-    "dojo/dom"
+    "dojo/dom",
+    "dojo/Evented",
 ], function (declare, Standby, request, iframe, getDispatcher, Stateful
-    , timing, domConstruct, domGeom, style, dom) {
+    , timing, domConstruct, domGeom, style, dom, Evented) {
     
-    var ret = declare([Stateful],
+    var ret = declare([Stateful, Evented],
         /**
          * @class Request
          */
@@ -265,8 +266,10 @@ define([
 
                     resp = request.post(vUrl, configPost).then(
                         function (data) {
+                            req.emit("completed", {status: 'success'});
                             return req.responseHandler(data);
                         }, function (error) {
+                            req.emit("completed", {status: 'error'});
                             return req.errorHandler(error);
                         }
                     );
@@ -274,8 +277,10 @@ define([
 
                     resp = request.get(vUrl, configPost).then(
                         function (data) {
+                            req.emit("completed", {status: 'success'});
                             return req.responseHandler(data);
                         }, function (error) {
+                            req.emit("completed", {status: 'error'});
                             return req.errorHandler(error);
                         }
                     );

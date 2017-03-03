@@ -65,6 +65,7 @@ define([], function () {
                 for (var i = 0; i < data.properties.length; i++) {
                     // $input.attr(data.properties[i], true);
                     $input.prop(data.properties[i], true);
+                    $input.attr('data-'+data.properties[i], true); // ALERTA[Xavi]Això permet recordar els props originals, per exemple la casella marcada per defecte
                     // console.log("** Afegit prop?", $input.prop());
                 }
             }
