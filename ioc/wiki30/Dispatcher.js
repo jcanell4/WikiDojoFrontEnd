@@ -324,7 +324,13 @@ define([
              */
             changeWidgetProperty: function (id, propertyName, value) {
                 var widget = registry.byId(id);
-                widget.set(propertyName, value);
+                console.log("ID:", id, "propertyName:", propertyName);
+                if (widget) {
+                    widget.set(propertyName, value);
+                } else {
+                    console.error("ALERTA: No s'ha trobat el widget, continuem a veure que passa");
+                }
+
             },
 
             /**
@@ -545,15 +551,16 @@ define([
                 return this.dialogManager;
             },
 
-            setNotifierContainer: function(notifierContainer) {
-                var notifyManager = this.getNotifyManager();
-                notifyManager.setNotifierContainer(notifierContainer);
-            },
-
-            setWarningContainer: function(warningContainer) {
-                var notifyManager = this.getNotifyManager();
-                notifyManager.setWarningContainer(warningContainer);
-            }
+            // TODO[Xavi] Esborrar, ja no son necessaries
+            // setNotifierContainer: function(notifierContainer) {
+            //     var notifyManager = this.getNotifyManager();
+            //     notifyManager.setNotifierContainer(notifierContainer);
+            // },
+            //
+            // setWarningContainer: function(warningContainer) {
+            //     var notifyManager = this.getNotifyManager();
+            //     notifyManager.setWarningContainer(warningContainer);
+            // }
         });
     return ret;
 });

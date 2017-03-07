@@ -12,6 +12,8 @@ define([
 
     return declare([EventObserver], {
 
+        DEFAULT_MAILBOX : 'inbox',
+
         _notificationEngine: null,
 
         _receivedWarningIds: null,
@@ -22,6 +24,7 @@ define([
             this._receivedWarningIds = [];
 
             this.lastNewNotification = 0;
+            this.mailboxes = {};
         },
 
         process: function (action, params) {
@@ -154,13 +157,17 @@ define([
                 this._notificationEngine.setLastNewNotification(notification.timestamp);
             }
 
-            if (this.notifierContainer.isNotificationInContainer(notification.notification_id)) {
-                this.notifierContainer.removeNotification(notification.notification_id);
+            var mailbox = notification.mailbox | this.DEFAULT_MAILBOX;
+
+            console.log("Mailbox:", mailbox, notification.mailbox);
+
+            if (this.mailboxes[mailbox].isNotificationInContainer(notification.notification_id)) {
+                this.mailboxes[mailbox].removeNotification(notification.notification_id);
             }
 
             var contentTool = this._createNotificationContentTool(notification);
 
-            this.addNotificationContentTool(contentTool);
+            this.addNotificationContentTool(contentTool, mailbox);
         },
 
         _createNotificationContentTool: function (notification) {
@@ -210,19 +217,23 @@ define([
 
         },
 
+        addNotifyContainer: function (mailbox, container) {
+            if (!mailbox) {
+                mailbox = this.DEFAULT_MAILBOX;
+            }
 
-        setNotifierContainer: function (notifierContainer) {
-            this.notifierContainer = notifierContainer;
-            notifierContainer.set('title',  'Notificacions');
+
+            this.mailboxes[mailbox] = container;
         },
 
-        setWarningContainer: function(warningContainer) {
-            this.warningContainer = warningContainer;
+        addWarningContainer: function (container) {
+            this.warningContainer = container;
         },
 
-        addNotificationContentTool: function (contentTool) {
-            if (this.notifierContainer) {
-                this.notifierContainer.addNotification(contentTool);
+
+        addNotificationContentTool: function (contentTool, mailbox) {
+            if (this.mailboxes[mailbox]) {
+                this.mailboxes[mailbox].addNotification(contentTool);
             } else {
                 throw new NotifyManagerException("No s'ha establert el contenidor de notificacions");
             }
@@ -241,48 +252,62 @@ define([
             this.warningContainer.reset();
         },
 
-        removeAllNotifications: function() {
-            this.notifierContainer.removeAllNotifications(true);
+        removeAllNotifications: function(mailbox) {
+
+            if (mailbox) {
+                this.mailboxes[mailbox].removeAllNotifications(true);
+            } else {
+                for(mailbox in this.mailboxes) {
+                    this.mailboxes[mailbox].removeAllNotifications(true);
+                }
+            }
+
         },
 
         removeWarning: function (id) {
             this.warningContainer.removeNotification(id);
         },
 
-        removeNotification: function (id) {
-            this.notifierContainer.removeNotification(id);
+        removeNotification: function (id, mailbox) {
+            this.mailboxes[mailbox].removeNotification(id);
+
+            // TODO: El compatador ha de ser propi per cada bustia
              this.set('notificationsCounter', this.get('notificationsCounter') - 1);
         },
 
-        markAsRead: function (id) {
-            this.notifierContainer.markAsRead(id);
+        markAsRead: function (id, mailbox) {
+            this.mailboxes[mailbox].markAsRead(id);
         },
 
-        markAllAsRead: function () {
-            this.notifierContainer.markAllAsRead();
+        markAllAsRead: function (mailbox) {
+            this.mailboxes[mailbox].markAllAsRead();
         },
 
-        resetUnreadCounter: function () {
+        resetUnreadCounter: function (mailbox) {
+            // TODO: El comptador ha de ser propi per cada bustia
             this.set('unreadCounter', 0);
         },
 
-        increaseNotificationCounter: function () {
+        increaseNotificationCounter: function (mailbox) {
+            // TODO: El comptador ha de ser propi per cada bustia
             //console.log("NotifyManager#increaseNotificationCounter");
             this.set('unreadCounter', this.get('unreadCounter') + 1);
             this.set('notificationsCounter', this.get('notificationsCounter') + 1);
         },
 
-        decreaseNotificationCounter: function () {
+        decreaseNotificationCounter: function (mailbox) {
+            // TODO: El comptador ha de ser propi per cada bustia
             //console.log("NotifyManager#decreaseNotificationCounter");
             this.set('unreadCounter', this.get('unreadCounter') - 1);
         },
 
-        resetNotificationsCounter: function() {
+        resetNotificationsCounter: function(mailbox) {
+            // TODO: El comptador ha de ser propi per cada bustia
             this.set('unreadcounter', 0);
         },
         
-        hasNotifications: function(){
-            return Object.keys(this.notifierContainer.notifications).length > 0;
+        hasNotifications: function(mailbox){
+            return Object.keys(this.mailboxes[mailbox].notifications).length > 0;
         },
 
         clearAll: function() {

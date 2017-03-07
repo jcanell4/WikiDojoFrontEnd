@@ -20,7 +20,7 @@ define([
              TODO: Cal passar un nom o icona que acompanyarà al comptador
              */
             constructor: function () {
-                //console.log("IocDropDownButton");
+                console.log("IocDropDownButton", arguments);
                 this.counter = 0;
             },
 
@@ -49,15 +49,15 @@ define([
                     this.updateContainer();
                 } else {
                     // S'ha obert el panell, reiniticiem el comptador
-                    this.notifyManager.resetUnreadCounter();
-                    if(!this.notifyManager.hasNotifications()){
+                    this.notifyManager.resetUnreadCounter(this.mailbox);
+                    if(!this.notifyManager.hasNotifications(this.mailbox)){
                         this.closeDropDown(false);
                     }
                 }
             },
 
             updateContainer: function () {
-                this.notifyManager.markAllAsRead();
+                this.notifyManager.markAllAsRead(this.mailbox);
             },
 
             _updateLabel: function (property, oldValue, newValue) {
@@ -76,7 +76,7 @@ define([
             },
             
             _updateNotifyButton: function(){
-                if(!this.notifyManager.hasNotifications()){
+                if(!this.notifyManager.hasNotifications(this.mailbox)){
                     this.closeDropDown(false);
                 }
             }
