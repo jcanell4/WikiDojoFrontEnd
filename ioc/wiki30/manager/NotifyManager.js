@@ -157,9 +157,10 @@ define([
                 this._notificationEngine.setLastNewNotification(notification.timestamp);
             }
 
-            var mailbox = notification.mailbox | this.DEFAULT_MAILBOX;
+            var mailbox = notification.mailbox? notification.mailbox : this.DEFAULT_MAILBOX;
 
             console.log("Mailbox:", mailbox, notification.mailbox);
+            console.log("Registered Mailboxes:", this.mailboxes);
 
             if (this.mailboxes[mailbox].isNotificationInContainer(notification.notification_id)) {
                 this.mailboxes[mailbox].removeNotification(notification.notification_id);

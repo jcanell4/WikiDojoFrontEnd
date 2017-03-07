@@ -44,6 +44,7 @@ define([
             },
 
             _onToggleButton: function (property, oldValue, newValue) {
+                console.log("Toggle", this.mailbox);
                 if (newValue === false) {
                     // S'ha tancat el panell, neteixem les classes extres de les notificacions
                     this.updateContainer();
