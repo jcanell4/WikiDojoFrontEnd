@@ -15,8 +15,6 @@ define([
         init: function (args) {
             //console.log("AjaxEngine#init");
             this.timer = setInterval(this._refreshNotifications.bind(this), args.timer);
-
-            this.blackboardId = this.dispatcher.getGlobalState().userId;
         },
 
         _refreshNotifications: function () {
@@ -48,7 +46,6 @@ define([
             this.dispatcher.getEventManager().fireEvent('notify', {
                 dataToSend: {
                     do: 'update',
-                    // blackboardId: this.blackboardId,
                     notificationId: notificationId,
                     changes: JSON.stringify(changes)
                 }
@@ -61,7 +58,6 @@ define([
             this.dispatcher.getEventManager().fireEvent('notify', {
                 dataToSend: {
                     do: 'delete',
-                    // blackboardId: this.blackboardId,
                     notificationId: notificationId
                 }
             });

@@ -112,7 +112,7 @@ define([
         },
 
         _processNotification: function(notification) {
-            console.log("NotifyManager#_processNotification:", notification);
+            console.log("NotifyManager#_processNotification:", notification.type, notification);
             switch (notification.type) {
                 case 'cancel_notification':
                 case 'lock_expiring':
@@ -128,7 +128,8 @@ define([
                     this._processAlert(notification);
                     break;
 
-                case 'warning':
+                case 'system':
+                    console.log("+++Processant notificació warning", notification);
                     this._processWarning(notification);
                     break;
 
