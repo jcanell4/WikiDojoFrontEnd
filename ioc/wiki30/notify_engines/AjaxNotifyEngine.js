@@ -15,17 +15,25 @@ define([
         init: function (args) {
             //console.log("AjaxEngine#init");
             this.timer = setInterval(this._refreshNotifications.bind(this), args.timer);
+            this.lastNewNotification = 0;
         },
 
         _refreshNotifications: function () {
             //console.log("AjaxEngine#refreshNotifications");
             // S'ha de fer un pop de les notificacions
+            var that = this;
+
             this.dispatcher.getEventManager().fireEvent('notify', {
                 //id: value.id, // ALERTA[Xavi] crec que això, en el cas de les notificacions, no és necessari
                 dataToSend: {
-                    do: 'get'
+                    do: 'get',
+                    since: this.lastNewNotification
                 }
             });
+        },
+
+        setLastNewNotification: function (timestamp) {
+            this.lastNewNotification = timestamp;
         },
 
         update: function (args) {

@@ -20,6 +20,8 @@ define([
             this.dispatcher = args.dispatcher;
             this.unreadCounter = 0;
             this._receivedWarningIds = [];
+
+            this.lastNewNotification = 0;
         },
 
         process: function (action, params) {
@@ -147,6 +149,10 @@ define([
             //console.log("NotifyManager#_processMessage", notification);
 //            notification.notification_id = notification.notification_id.replace(/:/g, '_');
 
+            if (notification.timestamp> this.lastNewNotification) {
+                this.lastNewNotification = notification.timestamp;
+                this._notificationEngine.setLastNewNotification(notification.timestamp);
+            }
 
             if (this.notifierContainer.isNotificationInContainer(notification.notification_id)) {
                 this.notifierContainer.removeNotification(notification.notification_id);
