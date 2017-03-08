@@ -44,9 +44,10 @@ define([
                     }
                     break;
 
-                case 'notification_send':
+                case 'notification_sent':
                     // TODO[Xavi] a la resposta ha d'arribar la notificació d'enviat
                     console.log(action, params);
+                    this._processSentNotification(params.notification);
                     break;
 
                 case 'notification_received':
@@ -104,6 +105,12 @@ define([
             }
 
             this._notificationEngine.init(params);
+        },
+
+        _processSentNotification: function(notification) {
+            // ALERTA[Xavi] S'elimina el timestamp per no interferir amb les actualitzacions, es restrableix al pròxim update
+            notification.timestamp = -1;
+            this._processNotification(notification);
         },
 
         _processNotifications: function (notifications) {

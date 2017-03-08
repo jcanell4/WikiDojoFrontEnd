@@ -21,7 +21,6 @@ define([
         _refreshNotifications: function () {
             //console.log("AjaxEngine#refreshNotifications");
             // S'ha de fer un pop de les notificacions
-            var that = this;
 
             this.dispatcher.getEventManager().fireEvent('notify', {
                 //id: value.id, // ALERTA[Xavi] crec que això, en el cas de les notificacions, no és necessari
