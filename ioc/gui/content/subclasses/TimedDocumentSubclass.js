@@ -19,7 +19,7 @@ define([
         },
         
         initTimer: function(timerParams){
-            console.log("TimedDocumentSubclass#initTimer", timerParams);
+            // console.log("TimedDocumentSubclass#initTimer", timerParams);
             this.timer.init(timerParams);  
         },
 

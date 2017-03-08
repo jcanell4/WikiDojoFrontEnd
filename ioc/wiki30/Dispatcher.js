@@ -324,12 +324,7 @@ define([
              */
             changeWidgetProperty: function (id, propertyName, value) {
                 var widget = registry.byId(id);
-                console.log("ID:", id, "propertyName:", propertyName);
-                if (widget) {
-                    widget.set(propertyName, value);
-                } else {
-                    console.error("ALERTA: No s'ha trobat el widget, continuem a veure que passa");
-                }
+                widget.set(propertyName, value);
 
             },
 

@@ -34,7 +34,7 @@ define([
 
 
             addChild: function (contentTool) {
-                console.log("NotifierContainer#addChild", contentTool);
+                // console.log("NotifierContainer#addChild", contentTool);
 
                 if (!this.isNotificationInContainer(contentTool.id)) {
                     throw new NotifierContainerException("No es pot cridar a addChild directament en aquest contenidor. Utilitza addNotification() o removeNotification()");
@@ -56,9 +56,8 @@ define([
 
                 // Actualitzem el comptador si no existia o ja estava llegida
 
-
                 if (!contentTool.read) {
-                    this.notifyManager.increaseNotificationCounter();
+                    this.notifyManager.increaseNotificationCounter(this.name);
                 }
 
             },
@@ -68,7 +67,7 @@ define([
                 //console.log("NotifierContainer#removeNotification", id, this.notifications);
 
                 if (!this.isNotificationRead(id)) {
-                    this.notifyManager.decreaseNotificationCounter();
+                    this.notifyManager.decreaseNotificationCounter(this.name);
                 }
 
                 this.clearing = true;
@@ -77,13 +76,15 @@ define([
             },
 
             removeAllNotifications: function (resetCounter) {
+                // console.log("NotifierContainer#removeAllNotifications", this.notifications);
+
                 this.clearing = true;
-                console.log("NotifierContainer#removeAllNotifications", this.notifications);
+
                 for (var notification in this.notifications) {
                     this.notifications[notification].removeContentTool();
 
                     if (resetCounter) {
-                        this.notifyManager.resetNotificationsCounter();
+                        this.notifyManager.resetNotificationsCounter(this.name);
                     }
                 }
                 this.clearing = false;
@@ -91,7 +92,7 @@ define([
 
 
             _destroyNotification: function (data) { //ALERTA[Xavi] la crida a aquest mètode només elimina la notificació de la llista
-                console.log("NotifierContainer#_destroyNotification", data);
+                // console.log("NotifierContainer#_destroyNotification", data);
                 if (!this.clearing) {
                     this.notifyManager.deleteNotification(data.id);
 

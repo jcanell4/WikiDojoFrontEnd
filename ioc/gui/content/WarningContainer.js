@@ -85,7 +85,6 @@ define([
 
             toggleNotifications: function() {
                 this.notificationsVisible = !this.notificationsVisible;
-                console.log("Toggle:", this.notificationsVisible);
 
                 // TODO[Xavi] Afegir o eliminar la classe ''toggle'' dels botons de warning
 

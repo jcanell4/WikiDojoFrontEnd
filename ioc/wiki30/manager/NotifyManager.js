@@ -2,15 +2,16 @@ define([
     'dojo/_base/declare',
     'ioc/wiki30/manager/EventObserver',
     'ioc/wiki30/notify_engines/AjaxNotifyEngine',
-    'ioc/gui/content/contentToolFactory'
-], function (declare, EventObserver, AjaxNotifyEngine, contentToolFactory) {
+    'ioc/gui/content/contentToolFactory',
+    "dojo/Evented",
+], function (declare, EventObserver, AjaxNotifyEngine, contentToolFactory, Evented) {
 
     var NotifyManagerException = function (message) {
         this.message = message;
         this.name = "NotifyManagerException";
     };
 
-    return declare([EventObserver], {
+    return declare([EventObserver, Evented], {
 
         DEFAULT_MAILBOX : 'inbox',
 
@@ -25,6 +26,7 @@ define([
 
             this.lastNewNotification = 0;
             this.mailboxes = {};
+            this.counters = {};
         },
 
         process: function (action, params) {
@@ -48,7 +50,7 @@ define([
                     break;
 
                 case 'notification_received':
-                    console.log(action, params);
+                    // console.log(action, params);
                     this._processNotifications(params.notifications);
                     break;
 
@@ -59,11 +61,11 @@ define([
 
 
                 case 'notification_updated':
-                    console.log(action, params);
+                    // console.log(action, params);
                     break;
 
                 case 'notification_deleted':
-                    console.log(action, params);
+                    // console.log(action, params);
                     break;
 
                 default:
@@ -105,7 +107,7 @@ define([
         },
 
         _processNotifications: function (notifications) {
-            console.log("NotifyManager#_processNotifications", notifications);
+            // console.log("NotifyManager#_processNotifications", notifications);
 
             if (!Array.isArray(notifications)) {
                 throw new NotifyManagerException("S'esperava un array de notificacions i s'ha rebut altre cosa");
@@ -117,7 +119,7 @@ define([
         },
 
         _processNotification: function(notification) {
-            console.log("NotifyManager#_processNotification:", notification.type, notification);
+            // console.log("NotifyManager#_processNotification:", notification.type, notification);
             switch (notification.type) {
                 case 'cancel_notification':
                 case 'lock_expiring':
@@ -134,8 +136,7 @@ define([
                     break;
 
                 case 'system':
-                    console.log("+++Processant notificació warning", notification);
-                    this._processWarning(notification);
+                    this._processSystem(notification);
                     break;
 
                 case 'dialog':
@@ -159,8 +160,6 @@ define([
 
             var mailbox = notification.mailbox? notification.mailbox : this.DEFAULT_MAILBOX;
 
-            console.log("Mailbox:", mailbox, notification.mailbox);
-            console.log("Registered Mailboxes:", this.mailboxes);
 
             if (this.mailboxes[mailbox].isNotificationInContainer(notification.notification_id)) {
                 this.mailboxes[mailbox].removeNotification(notification.notification_id);
@@ -172,7 +171,7 @@ define([
         },
 
         _createNotificationContentTool: function (notification) {
-            console.log("NotifyManager#_createNotificationContentTool", notification)
+            // console.log("NotifyManager#_createNotificationContentTool", notification)
             var args = {
                     id: notification.notification_id,
                     data: {
@@ -193,8 +192,8 @@ define([
 
         },
 
-        _processWarning: function (notification) {
-            console.log("NotifyManager#_processWarning", notification);
+        _processSystem: function (notification) {
+            // console.log("NotifyManager#_processWarning", notification);
 
             if (!this._receivedWarningIds[notification.data.id]) {
                 // alert(notification.data.text);
@@ -225,6 +224,7 @@ define([
 
 
             this.mailboxes[mailbox] = container;
+            this.counters[mailbox] = {unread : 0, notifications: 0};
         },
 
         addWarningContainer: function (container) {
@@ -273,7 +273,7 @@ define([
             this.mailboxes[mailbox].removeNotification(id);
 
             // TODO: El compatador ha de ser propi per cada bustia
-             this.set('notificationsCounter', this.get('notificationsCounter') - 1);
+            //  this.set('notificationsCounter', this.get('notificationsCounter') - 1);
         },
 
         markAsRead: function (id, mailbox) {
@@ -286,25 +286,35 @@ define([
 
         resetUnreadCounter: function (mailbox) {
             // TODO: El comptador ha de ser propi per cada bustia
-            this.set('unreadCounter', 0);
+            this.counters[mailbox]['unread'] = 0;
+            this.emit('unreadCounterUpdate', {mailbox: mailbox, counter: 0})
         },
 
         increaseNotificationCounter: function (mailbox) {
-            // TODO: El comptador ha de ser propi per cada bustia
-            //console.log("NotifyManager#increaseNotificationCounter");
-            this.set('unreadCounter', this.get('unreadCounter') + 1);
-            this.set('notificationsCounter', this.get('notificationsCounter') + 1);
+            // console.log("NotifyManager#increaseNotificationCounter", mailbox, this.counters);
+
+            this.counters[mailbox]['unread'] =this.counters[mailbox]['unread']+1;
+            this.counters[mailbox]['notifications'] =this.counters[mailbox]['notifications']+1;
+
+            this.emit('unreadCounterUpdate', {mailbox: mailbox, counter: this.counters[mailbox]['unread']})
+            this.emit('notificationsCounterUpdate', {mailbox: mailbox, counter: this.counters[mailbox]['notifications']})
+
         },
 
         decreaseNotificationCounter: function (mailbox) {
             // TODO: El comptador ha de ser propi per cada bustia
             //console.log("NotifyManager#decreaseNotificationCounter");
-            this.set('unreadCounter', this.get('unreadCounter') - 1);
+            // this.set('unreadCounter', this.get('unreadCounter') - 1);
+            this.counters[mailbox]['notifications']--;
+            this.emit('notificationsCounterUpdate', {mailbox: mailbox, counter: this.counters[mailbox]['notifications']})
+
         },
 
         resetNotificationsCounter: function(mailbox) {
             // TODO: El comptador ha de ser propi per cada bustia
-            this.set('unreadcounter', 0);
+            // this.set('unreadcounter', 0);
+            this.counters[mailbox]['unread'] = 0;
+            this.emit('unreadCounterUpdate', {mailbox: mailbox, counter: 0})
         },
         
         hasNotifications: function(mailbox){
@@ -312,9 +322,13 @@ define([
         },
 
         clearAll: function() {
+
             this.removeAllWarnings();
-            this.removeAllNotifications();
-            this.resetUnreadCounter();
+
+            for (var mailbox in this.mailboxes){
+                this.removeAllNotifications(mailbox);
+                this.resetUnreadCounter(mailbox);
+            }
         },
 
 

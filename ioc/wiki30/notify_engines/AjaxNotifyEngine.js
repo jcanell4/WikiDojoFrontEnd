@@ -50,7 +50,6 @@ define([
         },
 
         updateNotification: function(notificationId, changes) {
-            console.log("** Update notification ID:", notificationId);
             this.dispatcher.getEventManager().fireEvent('notify', {
                 dataToSend: {
                     do: 'update',
@@ -61,7 +60,6 @@ define([
         },
 
         deleteNotification:function(notificationId) {
-            console.log("** deleteNotification", notificationId);
 
             this.dispatcher.getEventManager().fireEvent('notify', {
                 dataToSend: {

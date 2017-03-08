@@ -81,7 +81,7 @@ define([], function () {
 
 
 
-        console.log("DATA:", data);
+        // console.log("DATA:", data);
 
         var $container = jQuery('<div>'),
         $form = jQuery('<form>');

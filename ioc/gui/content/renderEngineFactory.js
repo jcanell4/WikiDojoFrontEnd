@@ -43,7 +43,6 @@ define([
             // after.content;
             // before.content;
 
-            console.log("** Demanat RenderEngine:", type);
 
             return renderEngines[type] ? renderEngines[type] : defaultRenderEngine;
         },

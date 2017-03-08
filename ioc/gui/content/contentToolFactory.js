@@ -464,7 +464,6 @@ define([
                         break;
 
                     case this.generation.NOTIFICATION:
-                        console.log("contentToolFactory#createClass: NOTIFICATION");
                         GeneratedContentTool = base
                             .createSubclass(NotificationSubclass)
                             .createSubclass(AjaxLinkSubclass);

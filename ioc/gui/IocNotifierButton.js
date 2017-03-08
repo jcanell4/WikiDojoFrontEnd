@@ -5,7 +5,8 @@ define([
     "dojo/text!./templates/DropDownButton.html",
     "ioc/gui/ResizableComponent",
     "dojo/dom-class",
-    "ioc/wiki30/dispatcherSingleton"
+    "ioc/wiki30/dispatcherSingleton",
+    // "dojo/on"
 
 ], function (declare, DropDownButton, _Templated, template, IocComponent, domClass, getDispatcher) {
 
@@ -20,7 +21,6 @@ define([
              TODO: Cal passar un nom o icona que acompanyarà al comptador
              */
             constructor: function () {
-                console.log("IocDropDownButton", arguments);
                 this.counter = 0;
             },
 
@@ -34,8 +34,15 @@ define([
                 this.notifyManager = dispatcher.getNotifyManager();
                 this.watch('_opened', this._onToggleButton.bind(this));
 
-                this.notifyManager.watch('unreadCounter', this._updateLabel.bind(this));
-                this.notifyManager.watch('notificationsCounter', this._updateNotifyButton.bind(this));
+
+                if (this.counter) {
+                    this.notifyManager.on('unreadCounterUpdate', this._updateLabel.bind(this));
+                    this.notifyManager.on('notificationsCounterUpdate',  this._updateNotifyButton.bind(this));
+                }
+
+
+                // this.notifyManager.watch('unreadCounter', this._updateLabel.bind(this));
+                // this.notifyManager.watch('notificationsCounter', this._updateNotifyButton.bind(this));
                 this.inactiveIconClass = this.get("iconClass");
                 if(!this.activeIconClass){
                     this.activeIconClass = this.get("iconClass");
@@ -44,7 +51,7 @@ define([
             },
 
             _onToggleButton: function (property, oldValue, newValue) {
-                console.log("Toggle", this.mailbox);
+
                 if (newValue === false) {
                     // S'ha tancat el panell, neteixem les classes extres de les notificacions
                     this.updateContainer();
@@ -61,8 +68,11 @@ define([
                 this.notifyManager.markAllAsRead(this.mailbox);
             },
 
-            _updateLabel: function (property, oldValue, newValue) {
-                this.updateLabel(newValue);
+            _updateLabel: function (data) {
+                if (data.mailbox == this.mailbox) {
+                    this.updateLabel(data.counter);
+                }
+
             },
 
             updateLabel: function (value) {
@@ -76,8 +86,8 @@ define([
                 }
             },
             
-            _updateNotifyButton: function(){
-                if(!this.notifyManager.hasNotifications(this.mailbox)){
+            _updateNotifyButton: function(data){
+                if(data.mailbox == this.mailbox && !this.notifyManager.hasNotifications(this.mailbox)){
                     this.closeDropDown(false);
                 }
             }
