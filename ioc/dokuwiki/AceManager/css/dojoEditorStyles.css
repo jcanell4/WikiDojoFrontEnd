@@ -6,7 +6,16 @@
 
 /* Plugin comentaris */
 
+.ioc-comment-block {
+    display: inline;
+}
+
+.ioc-comment-reference {
+    font-style: italic;
+}
+
 .ioc-comment {
+    cursor: default;
     color: black;
     background-color:#FEEFB3;
     border: 1px solid #9F6000;
@@ -14,6 +23,35 @@
     padding: 5px;
 }
 
+.ioc-comment-body {
+    position:relative;
+}
+
+.ioc-comment textarea {
+    width:99%;
+    margin-top: 10px;
+    resize:none;
+}
+
+.ioc-comment-reply {
+    margin:5px;
+    padding:10px;
+    border-radius: 5px;
+}
+
+.ioc-comment-reply:nth-child(odd) {
+    background-color:#CBBF8F;
+}
+
+/*.ioc-comment-reply:nth-child(even) {*/
+    /*background-color:#FEE067;*/
+/*}*/
+
+
+
+.ioc-comment-body, .ioc-comment button {
+    float:right;
+}
 
 div.ioc-comment [data-type="ioc-comment"]{
     float: right;

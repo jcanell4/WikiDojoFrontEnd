@@ -48,11 +48,34 @@ define([
 
         constructor: function () {
             this.changeDetectorEnabled = false;
+            this._pluginsToParse = [];
         },
+
+
+
 
         startup: function () {
             this.inherited(arguments);
             this.watch('value', this._checkOriginalContent);
+            this.runOnce = this.watch('value', this._parsePlugins);
+        },
+
+
+
+        _addPluginParser: function(plugin) {
+
+            this._pluginsToParse.push(plugin);
+        },
+
+        _parsePlugins: function() {
+            // console.log("****Parsing plugins....", this._pluginsToParse);
+            this.runOnce.unwatch('value');
+
+            for(var i=0; i<this._pluginsToParse.length; i++) {
+                this._pluginsToParse[i].parse();
+            }
+
+
         },
 
         onDisplayChanged: function () {
@@ -83,6 +106,8 @@ define([
         },
 
         _checkOriginalContent: function (name, oldValue, newValue) {
+
+
             // console.log("IocDojoEditor#_checkOriginalContent", newValue);
             if (!this.originalContent) {
                 this.originalContent = newValue;
@@ -161,11 +186,17 @@ define([
                 this._plugins.push(plugin);
             }
             plugin.setEditor(this);
+
             if(lang.isFunction(plugin.setToolbar)){
                 plugin.setToolbar(this.toolbar);
             }
+
+            if (plugin.needsParse) {
+             this._addPluginParser(plugin);
+            }
             // console.log(" ** FI ** ");
         },
+
 
         onKeyDown: function(e){
             console.log("key down");
@@ -203,7 +234,6 @@ define([
                 case keys.ENTER:
                 case keys.BACKSPACE:
                 case keys.DELETE:
-                    this.beginEditing();
                     break;
                 case 88: //x
                 case 86: //v
@@ -256,6 +286,8 @@ define([
 
             this.endEditing(true);
             this.inherited(arguments);
-        },
+        }
+
+
     })
 });

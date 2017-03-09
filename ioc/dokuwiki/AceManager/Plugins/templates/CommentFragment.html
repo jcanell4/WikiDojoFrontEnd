@@ -1,8 +1,22 @@
-<span class="ioc-comment">*</span>
-<div data-type="ioc-comment" class="ioc-comment" id="${id}">
-    <div class="triangle-outer"></div>
-    <div class="triangle-inner"></div>
-    ${content}<br>
-    <span class="ioc-signature">${signature}</span>
-    <div></div>
-</div>'
+<div id="${id}" class="ioc-comment-block">
+    <span class="ioc-comment ioc-comment-reference">${reference}</span>
+
+    <div data-type="ioc-comment" class="ioc-comment ioc-comment-body">
+        <div class="triangle-outer"> </div>
+        <div class="triangle-inner"> </div>
+        <button data-action="resolve" title="Elimina el comentari">
+            Resol
+        </button>
+        <div class="ioc-comment-main">
+            ${content}
+        </div>
+
+        <span class="ioc-signature">${signature}</span>
+        <div>
+            <div class="ioc-reply-list">
+            </div>
+            <textarea rows="2" placeholder="Escriu una resposta..."></textarea>
+        </div>
+        <button  data-action="reply" title="Afegeix una resposta">Respon</button>
+    </div>
+</div>
