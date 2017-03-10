@@ -58,9 +58,14 @@ define([
                 $form.on('submit', function(event) {
                     event.preventDefault();
                     var $this = jQuery( this ),
-                        button = event.originalEvent.explicitOriginalTarget,
-                        params = $this.serialize() + "&"+button.name+'='+button.value,
-                        request = self.requester;
+                        // button = event.originalEvent.explicitOriginalTarget,
+                        // params = $this.serialize() /*+ "&"+button.name+'='+button.value*/,
+                        $button = jQuery(document.activeElement),
+                        params = $this.serialize() + "&"+$button.attr('name')+'='+$button.val(),
+
+
+
+                    request = self.requester;
                     if(urlBase){
                         request.urlBase = urlBase;
                     }else{ 
