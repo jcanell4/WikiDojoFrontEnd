@@ -89,10 +89,6 @@ define([
                         cp = this.createContentTool(currentMetaContent);
                         nodeMetaInfo.addChild(cp);
 
-                        if (!ret.firstPane) {
-                            ret.firstPane = cp.id;
-                        }
-
                     } else {
                         console.log("Actualitzant la meta del document:", meta)
                         currentMetaItem.updateDocument(meta.content);
@@ -101,7 +97,9 @@ define([
                     if (meta.defaultSelected) { //Des del servidor ens marquen aquesta opció com a defaultSelected
                         ret.defaultSelected = cp.id;
                     }
-                    ret.firstPane = cp.id;
+                    if (!ret.firstPane) {
+                        ret.firstPane = cp.id;
+                    }
                 }
             },
 
