@@ -292,7 +292,8 @@ define([
                 MEDIADETAILS: 'mediadetails',
                 METAMEDIADETAILS: 'metamediadetails',
                 STRUCTURED_DOCUMENT: 'structured_document',
-                NOTIFICATION: 'notification'
+                NOTIFICATION: 'notification',
+                RECENTS: 'recents'
             },
 
             /**
@@ -468,6 +469,14 @@ define([
                         GeneratedContentTool = base
                             .createSubclass(NotificationSubclass)
                             .createSubclass(AjaxLinkSubclass);
+                        break;
+
+                    case this.generation.RECENTS:
+                        console.log("contentToolFactory#createClass: RECENTS");
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(AjaxLinkSubclass)
+                            .createSubclass(AjaxFormSubclass);
                         break;
 
                     default:

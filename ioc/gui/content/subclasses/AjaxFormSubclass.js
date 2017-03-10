@@ -17,6 +17,7 @@ define([
          * @extends RequestSubclass
          * @class AjaxFormSubclass
          * @author Xavier García <xaviergaro.dev@gmail.com>
+         * @author Josep Cañellas <jcanell4@ioc.cat>
          * @private
          * @see contentToolFactory.generate()
          */
@@ -29,19 +30,42 @@ define([
              */
             postRender: function () {
                 this.inherited(arguments);
+                
+                if(!this.aRequestFormArgs){
+                    this._configureRequestForm();
+                }else if(!Array.isArray(this.aRequestFormArgs)){
+                    this._configureRequestForm(this.aRequestFormArgs.formId, this.aRequestFormArgs.urlBase);
+                }else{
+                    for(var i=0; this.aRequestFormArgs; ++i){
+                        this._configureRequestForm(this.aRequestFormArgs[i].formId, this.aRequestFormArgs[i].urlBase);
+                    }
+                }
 
-                var $form = jQuery(this.domNode).find('form'),
-                    targetId = this.domNode,
-                    self = this;
+            },
+            
+            _configureRequestForm: function(formId, urlBase){
+                var $form, targetId, self;
 
+                targetId = this.domNode;
+                self = this;
+                
+                if(formId){
+                    $form = jQuery(this.domNode).find('#' + formId);
+                }else{
+                    $form = jQuery(this.domNode).find('form');                    
+                }
+                
                 $form.on('submit', function(event) {
                     event.preventDefault();
                     var $this = jQuery( this ),
-                        params = $this.serialize(),
+                        button = event.originalEvent.explicitOriginalTarget,
+                        params = $this.serialize() + "&"+button.name+'='+button.value,
                         request = self.requester;
-
-
-                    request.urlBase = $this.attr('action');
+                    if(urlBase){
+                        request.urlBase = urlBase;
+                    }else{ 
+                        request.urlBase = $this.attr('action');
+                    }                    
                     request.setStandbyId(targetId);
                     request.sendRequest(params);
                     $form.each(function() {
@@ -49,7 +73,5 @@ define([
                     });
                 });
             }
-
-
         });
 });

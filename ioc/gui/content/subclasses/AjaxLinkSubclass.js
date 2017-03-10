@@ -17,6 +17,7 @@ define([
          * @extends RequestSubclass
          * @class AjaxLinkSubclass
          * @author Xavier García <xaviergaro.dev@gmail.com>
+         * @author Josep Cañellas <jcanell4@ioc.cat>
          * @private
          * @see contentToolFactory.generate()
          */
@@ -28,26 +29,50 @@ define([
              * @override
              */
             postRender: function () {
+                var $link, targetId, self;
                 this.inherited(arguments);
 
-                var $link = jQuery(this.domNode).find('a'),
-                    targetId = this.domNode,
-                    self = this;
+                targetId = this.domNode;
+                self = this;
+                
+                $link = jQuery(this.domNode).find('a');
 
                 $link.on('click', function(event) {
                     event.preventDefault();
-                    var $this = jQuery( this ),
-                        params = "call=page&" + $this.attr('href').replace(/^.*\?/, ""),
-                        request = self.requester;
-
-
-                    request.urlBase = request.defaultUrlBase;
+                    var $this, call, params, request, urlBase, aHref;
+                    
+                    request = self.requester;
+                    $this = jQuery( this );
+                    aHref = $this.attr('href').split('?');
+                    if(!self.requestLinkArgs){
+                        call = 'page';
+                        urlBase = request.defaultUrlBase?request.defaultUrlBase:aHref[0];
+                    }else{
+                        if(!self.requestLinkArgs.callAtt){
+                            call = this.dataset['data-call'];
+                        }else{
+                            call = this.dataset[self.requestLinkArgs.callAtt];
+                        }
+                        if(!self.requestLinkArgs.urlBase){
+                            urlBase = request.defaultUrlBase?request.defaultUrlBase:aHref[0];
+                        }else{
+                            urlBase = self.requestLinkArgs.urlBase;
+                        }
+                    }
+                    
+                    if(!call){
+                        call = 'page';
+                    }
+                        
+                    //params = "call="+call+"&" + $this.attr('href').replace(/^.*\?/, "");
+                    params = "call="+call+ (aHref.length>1?"&"+aHref[1]:"");
+                    
+                    request.urlBase = urlBase;
                     request.setStandbyId(targetId);
                     request.sendRequest(params);
 
                 });
             }
-
 
         });
 });
