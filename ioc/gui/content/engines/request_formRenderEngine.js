@@ -32,6 +32,7 @@ define([], function () {
                 $fieldContainer.addClass('hidden');
             }
 
+
             return $fieldContainer;
         },
 
@@ -45,6 +46,13 @@ define([], function () {
                     if (data.value) {
                         $input.html(data.value);
                     }
+                    break;
+
+                case 'button':
+                    console.log("*** afegint button ***");
+                    $input = jQuery('<button>');
+                    $input.val(data.value);
+                    $input.html(data.value);
                     break;
 
                 default:
@@ -90,6 +98,7 @@ define([], function () {
         $container.addClass('request_form');
 
         for (var i = 0; i < data.fields.length; i++) {
+            console.log(data.fields[i]);
             // ALERTA[Xavi] La creació del camp inclou el label
             var $field = createField(data.fields[i]);
 
