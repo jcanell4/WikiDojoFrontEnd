@@ -61,7 +61,7 @@ define([
                         // button = event.originalEvent.explicitOriginalTarget,
                         // params = $this.serialize() /*+ "&"+button.name+'='+button.value*/,
                         $button = jQuery(document.activeElement),
-                        params = $this.serialize() + "&"+$button.attr('name')+'='+$button.val(),
+                        params = $this.serialize() + "&"+$button.attr('name')+'='+encodeURIComponent($button.val()),
 
 
 
