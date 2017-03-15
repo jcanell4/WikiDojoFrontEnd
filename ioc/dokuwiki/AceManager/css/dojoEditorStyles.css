@@ -43,7 +43,11 @@
     background-color:#CBBF8F;
 }
 
-/*.ioc-comment-reply:nth-child(even) {*/
+.ioc-reply-list div:first-child {
+    background-color:#FEE067;
+}
+
+/*.ioc-comment-reply:nth-child(odd) {*/
     /*background-color:#FEE067;*/
 /*}*/
 

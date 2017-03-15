@@ -38,7 +38,6 @@ define([
 
 
 ], function (declare, Editor,
-
              array, /*declare,*/ Deferred, i18n, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
@@ -52,8 +51,6 @@ define([
         },
 
 
-
-
         startup: function () {
             this.inherited(arguments);
             this.watch('value', this._checkOriginalContent);
@@ -61,17 +58,15 @@ define([
         },
 
 
-
-        _addPluginParser: function(plugin) {
+        _addPluginParser: function (plugin) {
 
             this._pluginsToParse.push(plugin);
         },
 
-        _parsePlugins: function() {
-            // console.log("****Parsing plugins....", this._pluginsToParse);
+        _parsePlugins: function () {
             this.runOnce.unwatch('value');
 
-            for(var i=0; i<this._pluginsToParse.length; i++) {
+            for (var i = 0; i < this._pluginsToParse.length; i++) {
                 this._pluginsToParse[i].parse();
             }
 
@@ -114,22 +109,22 @@ define([
             }
         },
 
-        resetOriginalContentState: function() {
+        resetOriginalContentState: function () {
             // console.log("IocDojoEditor#resetOriginalContentState");
             this.originalContent = this.get('value');
         },
 
-        getOriginalValue: function() {
+        getOriginalValue: function () {
             return this.originalContent;
         },
 
-        isChanged: function() {
-          return this.get('value') != this.originalContent;
+        isChanged: function () {
+            return this.get('value') != this.originalContent;
         },
 
 
         // ALERTA[Xavi] Aquesta funció es idéntica a la del editor, sobreescrita només per facilitar la depuració i després es pot eliminar
-        addPlugin: function(/*String||Object||Function*/ plugin, /*Integer?*/ index){
+        addPlugin: function (/*String||Object||Function*/ plugin, /*Integer?*/ index) {
             console.log(" ** INICI ** ");
             // summary:
             //		takes a plugin name as a string or a plugin instance and
@@ -148,57 +143,57 @@ define([
             //		instance is assigned to this.plugins at that index.
             var args = lang.isString(plugin) ? {name: plugin} : lang.isFunction(plugin) ? {ctor: plugin} : plugin;
 
-            if(!args.setEditor){
+            if (!args.setEditor) {
                 var o = {"args": args, "plugin": null, "editor": this};
-                if(args.name){
+                if (args.name) {
                     // search registry for a plugin factory matching args.name, if it's not there then
                     // fallback to 1.0 API:
                     // ask all loaded plugin modules to fill in o.plugin if they can (ie, if they implement args.name)
                     // remove fallback for 2.0.
-                    if(_Plugin.registry[args.name]){
+                    if (_Plugin.registry[args.name]) {
                         o.plugin = _Plugin.registry[args.name](args);
-                    }else{
+                    } else {
                         topic.publish(dijit._scopeName + ".Editor.getPlugin", o);	// publish
                     }
                 }
-                if(!o.plugin){
+                if (!o.plugin) {
 
-                    try{
+                    try {
                         // TODO: remove lang.getObject() call in 2.0
                         var pc = args.ctor || lang.getObject(args.name) || require(args.name);
-                        if(pc){
+                        if (pc) {
                             o.plugin = new pc(args);
                         }
 
-                    }catch(e){
+                    } catch (e) {
                         throw new Error(this.id + ": cannot find plugin [" + args.name + "]");
                     }
                 }
-                if(!o.plugin){
+                if (!o.plugin) {
                     throw new Error(this.id + ": cannot find plugin [" + args.name + "]");
                 }
                 plugin = o.plugin;
                 // console.log("S'ha trobat el plugin?", plugin);
             }
-            if(arguments.length > 1){
+            if (arguments.length > 1) {
                 this._plugins[index] = plugin;
-            }else{
+            } else {
                 this._plugins.push(plugin);
             }
             plugin.setEditor(this);
 
-            if(lang.isFunction(plugin.setToolbar)){
+            if (lang.isFunction(plugin.setToolbar)) {
                 plugin.setToolbar(this.toolbar);
             }
 
             if (plugin.needsParse) {
-             this._addPluginParser(plugin);
+                this._addPluginParser(plugin);
             }
             // console.log(" ** FI ** ");
         },
 
 
-        onKeyDown: function(e){
+        onKeyDown: function (e) {
             console.log("key down");
             // summary:
             //		Handler for onkeydown event.
@@ -207,21 +202,21 @@ define([
 
             //We need to save selection if the user TAB away from this editor
             //no need to call _saveSelection for IE, as that will be taken care of in onBeforeDeactivate
-            if(!has("ie") && !this.iframe && e.keyCode == keys.TAB && !this.tabIndent){
+            if (!has("ie") && !this.iframe && e.keyCode == keys.TAB && !this.tabIndent) {
                 this._saveSelection();
             }
-            if(!this.customUndo){
+            if (!this.customUndo) {
                 this.inherited(arguments);
                 return;
             }
             var k = e.keyCode;
-            if(e.ctrlKey && !e.shiftKey && !e.altKey){//undo and redo only if the special right Alt + z/y are not pressed #5892
-                if(k == 90 || k == 122){ //z, but also F11 key
+            if (e.ctrlKey && !e.shiftKey && !e.altKey) {//undo and redo only if the special right Alt + z/y are not pressed #5892
+                if (k == 90 || k == 122) { //z, but also F11 key
                     e.stopPropagation();
                     e.preventDefault();
                     this.undo();
                     return;
-                }else if(k == 89 || k == 121){ //y
+                } else if (k == 89 || k == 121) { //y
                     e.stopPropagation();
                     e.preventDefault();
                     this.redo();
@@ -230,18 +225,18 @@ define([
             }
             this.inherited(arguments);
 
-            switch(k){
+            switch (k) {
                 case keys.ENTER:
                 case keys.BACKSPACE:
                 case keys.DELETE:
                     break;
                 case 88: //x
                 case 86: //v
-                    if(e.ctrlKey && !e.altKey && !e.metaKey){
+                    if (e.ctrlKey && !e.altKey && !e.metaKey) {
                         this.endEditing();//end current typing step if any
-                        if(e.keyCode == 88){
+                        if (e.keyCode == 88) {
                             this.beginEditing('cut');
-                        }else{
+                        } else {
                             this.beginEditing('paste');
                         }
                         //use timeout to trigger after the paste is complete
@@ -250,7 +245,7 @@ define([
                     }
                 //pass through
                 default:
-                    if(!e.ctrlKey && !e.altKey && !e.metaKey && (e.keyCode < keys.F1 || e.keyCode > keys.F15)){
+                    if (!e.ctrlKey && !e.altKey && !e.metaKey && (e.keyCode < keys.F1 || e.keyCode > keys.F15)) {
                         this.beginEditing();
                         break;
                     }
@@ -276,7 +271,7 @@ define([
             }
         },
 
-        onClick: function(){
+        onClick: function () {
             // summary:
             //		Handler for when editor is clicked
             // tags:
@@ -286,7 +281,26 @@ define([
 
             this.endEditing(true);
             this.inherited(arguments);
-        }
+        },
+
+        execCommand: function (cmd) {
+            // summary:
+            //		Main handler for executing any commands to the editor, like paste, bold, etc.
+            //		Called by plugins, but not meant to be called by end users.
+            // tags:
+            //		protected
+            if (this.customUndo && (cmd == 'undo' || cmd == 'redo')) {
+                var r = this[cmd]();
+                this._parsePlugins();
+                return r;
+            } else {
+                var r = this.inherited(arguments);
+                if (this.customUndo) {
+                    this._endEditing();
+                }
+                return r;
+            }
+        },
 
 
     })

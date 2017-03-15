@@ -12,13 +12,10 @@ define([
     "dojo/text!./templates/CommentFragmentReply.html",
     "dojo/i18n!ioc/dokuwiki/AceManager/nls/commands",
 
+
 ], function (declare, i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.acemanager", "commands");
-
-
-    // Aquí es guarda una referència a tots els comentaris creats
-    var comments = [];
 
 
     var CommentsDialog = declare("ioc.dokuwiki.acemanager.plugins.commentsdialog", _Plugin, {
@@ -39,15 +36,14 @@ define([
         htmlTemplate: template,
         replyTemplate: templateReply,
 
+
         needsParse: true,
 
-        content: "comentari de prova",
-
-
+    // @override
         _initButton: function () {
-            // summary:
-            //		Over-ride for creation of the Print button.
             var editor = this.editor;
+            editor.customUndo = true;
+
             this.button = new Button({
                 label: strings["commentplugin"],
                 ownerDocument: editor.ownerDocument,
@@ -60,8 +56,6 @@ define([
                 onClick: lang.hitch(this, "_showCommentDialog")
             });
 
-            console.log("** Inicialitzat NotesPlugin");
-
             // ALERTA[Xavi] En aquest punt ja tenim el text disponible?
             // this._parse(this.editor.get('value'));
 
@@ -69,60 +63,57 @@ define([
         },
 
         _showCommentDialog: function () {
-            var refId = "comments";
 
-            var dialogParams = {
-                dispatcher: this.editor.dispatcher,
-                id: "commentsDialog",
-                // ns: params.ns,
-                title: strings['addcommenttitle'],
-                // message: strings['addcommentmessage'],
-                closable: true
-            };
-            var builder = new DialogBuilder(dialogParams),
-                dialogManager = this.editor.dispatcher.getDialogManager(),
-                dlg;
-
-            dlg = dialogManager.getDialog(refId, builder.getId());
+            this._addNote();
 
 
-            if (!dlg) {
-                var button = {
-                    id: refId + '_ok',
-                    buttonType: 'default',
-                    description: strings['addcommentbutton'],
-                    callback: this._addNote.bind(this),
-                };
+            // var refId = "comments";
+            //
+            // var dialogParams = {
+            //     dispatcher: this.editor.dispatcher,
+            //     id: "commentsDialog",
+            //     // ns: params.ns,
+            //     title: strings['addcommenttitle'],
+            //     // message: strings['addcommentmessage'],
+            //     closable: true
+            // };
+            // var builder = new DialogBuilder(dialogParams),
+            //     dialogManager = this.editor.dispatcher.getDialogManager(),
+            //     dlg;
+            //
+            // dlg = dialogManager.getDialog(refId, builder.getId());
+            //
+            //
+            // if (!dlg) {
+            //     var button = {
+            //         id: refId + '_ok',
+            //         buttonType: 'default',
+            //         description: strings['addcommentbutton'],
+            //         callback: this._addNote.bind(this),
+            //     };
+            //
+            //     console.log("** Afegir aqui la crida al textarea del builder");
+            //     // alert("Afegir textareas al builder, lligats al component");
+            //     // builder.addTextArea() // ALERTA: Comprovar els contextes d'execució del callback
+            //
+            //     builder.addButton(button.buttonType, button);
+            //
+            //
+            //     builder.addForm({
+            //         fields: [
+            //             {
+            //                 type: 'textarea',
+            //                 name: 'comment',
+            //                 properties: ['required']
+            //             }
+            //         ]
+            //     });
 
-                console.log("** Afegir aqui la crida al textarea del builder");
-                // alert("Afegir textareas al builder, lligats al component");
-                // builder.addTextArea() // ALERTA: Comprovar els contextes d'execució del callback
-
-                builder.addButton(button.buttonType, button);
-
-
-                builder.addForm({
-                    fields: [
-                        {
-                            type: 'textarea',
-                            name: 'comment',
-                            properties: ['required']
-                        }
-                    ]
-                });
-
-                //     'type' => 'textarea',
-                // 'name' => 'message',
-                // 'value' => '',
-                // 'label' => WikiIocLangManager::getLang('notification_form_message'), // Optional
-                // 'properties' => ['required'] // Optional
-
-
-                dlg = builder.build();
-                dialogManager.addDialog(refId, dlg);
-            }
-
-            dlg.show();
+            //     dlg = builder.build();
+            //     dialogManager.addDialog(refId, dlg);
+            // }
+            //
+            // dlg.show();
 
         },
 
@@ -138,6 +129,7 @@ define([
         _addHandlers: function ($node, context) {
             var $replyNode = $node.find('textarea');
             var $buttons = $node.find('button');
+            var $removeButtons = $node.find('[data-button="remove"]');
 
             $buttons.on('click', function (e) {
                 // alert("Click a un botó");
@@ -162,10 +154,13 @@ define([
 
             var $commentBody = $node.find('.ioc-comment-body');
 
+
             $commentBody.on('click', function (e) {
                 $replyNode.focus();
                 e.preventDefault();
             });
+
+
         },
 
         parse: function() {
@@ -179,72 +174,56 @@ define([
 
         },
 
-        _addNote: function (content) {
-
-            console.log("Retornat: ", content);
+        _addNote: function () {
 
             // ALERTA[Xavi] Generem el id basat en el temps perquè només necessitem que sigui únic
 
+            this.editor.beginEditing();
             var reference = this._getSelectionText();
+
+            var time = Date.now();
+
+            var ref = this._referenceFromDate(time);
 
             if (!reference) {
                 reference = "*"
             }
 
+
+            reference += " ("+ref+")";
+
             args = {
                 id: "ioc-comment-" + Date.now(),
                 reference: reference,
-                content: content.comment || this.content,
-                signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
+                ref: ref,
+                resolveBtnTitle: strings['resolveBtnTitle'],
+                resolveBtn : strings['resolveBtn'],
+                textareaPlaceholder : strings['textareaPlaceholder'],
+                replyBtnTitle : strings['replyBtnTitle'],
+                replyBtn : strings['replyBtn']
+                // signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
 
             };
 
             var htmlCode = string.substitute(this.htmlTemplate, args);
             this.editor.execCommand('inserthtml', htmlCode); //ALERTA[Xavi] S'afegeix la referència per evitar esborrar el text ressaltat
 
-
-            // TODO:
-            // Afegir quadre de text per respondre (que afegirà la firma automàticament). Mateix format que el template però sense el * ja que aquest ha d'estar lligat al comentari anterior
-
-
             var $node = jQuery(this.editor.iframe).contents().find('#' + args.id);
+            $node.find('textarea').focus();
+
+
 
             this._addHandlers($node, this);
 
-            // var $replyNode = $node.find('textarea');
-            //
-            // var $buttons = $node.find('button');
-            //
-            // var that = this;
-            //
-            // $buttons.on('click', function (e) {
-            //     // alert("Click a un botó");
-            //
-            //     var $button = jQuery(this);
-            //     var func = $button.attr('data-action');
-            //     that[func].bind(that);
-            //     that[func]($node);
-            //     e.preventDefault();
-            //
-            // });
-            //
-            // $replyNode.on('keypress keydown keyup', function (e) {
-            //     $replyNode.focus();
-            //
-            //     if (e.keyCode == 13 || e.charCode == 13) {
-            //         e.stopPropagation();
-            //     }
-            //
-            // });
-            //
-            //
-            // var $commentBody = $node.find('.ioc-comment-body');
-            //
-            // $commentBody.on('click', function (e) {
-            //     $replyNode.focus();
-            //     e.preventDefault();
-            // });
+            this.editor.endEditing();
 
+        },
+
+        // ALERTA[Xavi] es genera la referència a partir de la data, simplificant el nombre: limitant a 1 per segon, comptant a partir del 1 de gener del 2017
+        _referenceFromDate: function(time) {
+            time = time - 1483228800000; // 2017-1-1
+
+            return Math.floor(time / 1000);
         },
 
 
@@ -256,6 +235,7 @@ define([
 
         reply: function ($node) {
 
+            this.editor.beginEditing();
             var $textarea = $node.find('textarea');
             var reply = $textarea.val();
             var $replyList = $node.find('.ioc-reply-list');
@@ -273,24 +253,42 @@ define([
 
             var $replyCode = jQuery(string.substitute(this.replyTemplate, args));
 
-            // console.log("replycode:", $replyCode);
-            // console.log("ReplyList:", $replyList);
+
+            var user = this._getSignatureUser(SIG);
+            $replyCode.attr('data-user', user);
 
             $replyList.append($replyCode);
             $textarea.val('');
             $textarea.focus();
+
+            this.editor.endEditing();
+        },
+
+
+        // ALERTA[Xav] No es correspon amb el user del global state, només amb el de la signatura
+        _getSignatureUser: function(signature) {
+            // console.log(("Sig?", SIG));
+            var match = /\[\[(.*)\]\]/gi.exec(signature);
+            // console.log("Match:", match);
+            return match[1];
         },
 
         resolve: function ($node) {
 
-
+            this.editor.beginEditing();
             var $reference = $node.find('.ioc-comment-reference');
 
-            if ($reference.html() != '*') {
-                jQuery(document.createTextNode($reference.html())).insertBefore($node);
+            var ref = $reference.attr('data-reference');
+
+            if ($reference.html() != '* (' + ref + ')') {
+                var text = $reference.html().replace('(' + ref + ')', '');
+
+                jQuery(document.createTextNode(text)).insertBefore($node);
             }
 
             $node.remove();
+            this.editor.endEditing();
+
         }
     });
 

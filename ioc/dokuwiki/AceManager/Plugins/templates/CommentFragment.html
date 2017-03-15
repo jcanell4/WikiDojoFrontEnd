@@ -1,22 +1,21 @@
 <div id="${id}" class="ioc-comment-block">
-    <span class="ioc-comment ioc-comment-reference">${reference}</span>
+    <span class="ioc-comment ioc-comment-reference" data-reference="${ref}">${reference}</span>
 
     <div data-type="ioc-comment" class="ioc-comment ioc-comment-body">
         <div class="triangle-outer"> </div>
         <div class="triangle-inner"> </div>
-        <button data-action="resolve" title="Elimina el comentari">
-            Resol
+        <button data-action="resolve" title="${resolveBtnTitle}">
+            ${resolveBtn}
         </button>
         <div class="ioc-comment-main">
-            ${content}
+            <b>Ref. ${ref}</b>
         </div>
 
-        <span class="ioc-signature">${signature}</span>
         <div>
             <div class="ioc-reply-list">
             </div>
-            <textarea rows="2" placeholder="Escriu una resposta..."></textarea>
+            <textarea rows="2" placeholder="${textareaPlaceholder}..."></textarea>
         </div>
-        <button  data-action="reply" title="Afegeix una resposta">Respon</button>
+        <button  data-action="reply" title="${replyBtnTitle}">${replyBtn}</button>
     </div>
 </div>
