@@ -13,6 +13,7 @@ define([
     "dojo/i18n!ioc/dokuwiki/AceManager/nls/commands",
 
 
+
 ], function (declare, i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.acemanager", "commands");
@@ -36,6 +37,7 @@ define([
         htmlTemplate: template,
         replyTemplate: templateReply,
         needsParse: true,
+        iconClassPrefix: 'dijitIocIcon',
 
     // @override
         _initButton: function () {
@@ -48,7 +50,7 @@ define([
                 dir: editor.dir,
                 lang: editor.lang,
                 showLabel: false,
-                iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + "Print", // TODO[Xavi] el prefix ha de canviar per correspondre amb una classe CSS que mostri la icona
+                iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + "Comments",
                 tabIndex: "-1",
                 // onClick: lang.hitch(this, "_addNote")
                 onClick: lang.hitch(this, "_showCommentDialog")
@@ -157,17 +159,38 @@ define([
             });
 
 
-            $removeButtons.each(function() {
+            // Això només ha de ser disponible en els comentaris propis de l'usuari
+            console.log("**** user:", context.editor.dispatcher.getGlobalState().userId);
+
+            $removeButtons.each(function () {
                 var $button = jQuery(this);
-                var $commentNode =$button.closest('.ioc-comment-reply');
-                $button.on('click', context.addRemoveCommentHandler($commentNode).bind(context));
+                var $commentNode = $button.closest('.ioc-comment-reply');
+                var $toolbar = $button.closest('.ioc-comment-toolbar');
+
+                var user = $commentNode.attr('data-user');
+                if (user == context.editor.dispatcher.getGlobalState().userId) {
+                    $button.on('click', context.addRemoveCommentHandler($commentNode).bind(context));
+                    $toolbar.css('display', 'inherit');
+                } else {
+
+                    $toolbar.css('display', 'none');
+                }
             });
 
-            $editButtons.each(function() {
+            $editButtons.each(function () {
                 var $button = jQuery(this);
-                var $commentNode =$button.closest('.ioc-comment-reply');
-                $button.on('click', context.addEditCommentHandler($commentNode).bind(context));
+                var $commentNode = $button.closest('.ioc-comment-reply');
+
+                var user = $commentNode.attr('data-user');
+
+                if (user == context.editor.dispatcher.getGlobalState().userId) {
+                    $button.on('click', context.addEditCommentHandler($commentNode).bind(context));
+                }
+                // ALERTA[Xavi] No cal amargar-la perquè ja es fa al botó anterior.
             });
+
+
+
 
 
 
@@ -280,7 +303,7 @@ define([
             var $replyCode = jQuery(string.substitute(this.replyTemplate, args));
 
 
-            var user = this._getSignatureUser(SIG);
+            var user = this.editor.dispatcher.getGlobalState().userId;
             $replyCode.attr('data-user', user);
             $replyList.append($replyCode);
             $textarea.val('');
@@ -301,13 +324,6 @@ define([
         },
 
 
-        // ALERTA[Xav] No es correspon amb el user del global state, només amb el de la signatura
-        _getSignatureUser: function(signature) {
-            // console.log(("Sig?", SIG));
-            var match = /\[\[(.*)\]\]/gi.exec(signature);
-            // console.log("Match:", match);
-            return match[1];
-        },
 
         resolve: function ($node) {
 

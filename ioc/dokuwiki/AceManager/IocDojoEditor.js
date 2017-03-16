@@ -28,14 +28,7 @@ define([
     "dijit/_editor/range",
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
-    "dojo/i18n!dijit/_editor/nls/commands",
-
-    // Carrega de CSS mitjançant AMD (ALERTA[Xavi] Compte, no funciona!
-    // 'xstyle/css!./icons/editorIcons.css',
-    // 'xstyle/css!./icons/commonIcons.css',
-    // 'xstyle/css!./icons/editorIcons_rtl.css',
-    // 'xstyle/css!./icons/commonIcons_rtl.css',
-
+    "dojo/i18n!dijit/_editor/nls/commands"
 
 ], function (declare, Editor,
              array, /*declare,*/ Deferred, i18n, domAttr, domClass, domGeometry, domStyle,
