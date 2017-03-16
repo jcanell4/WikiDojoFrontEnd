@@ -25,6 +25,7 @@
 
 .ioc-comment-body {
     position:relative;
+    max-width: 400px;
 }
 
 .ioc-comment textarea {
@@ -39,23 +40,51 @@
     border-radius: 5px;
 }
 
-.ioc-comment-reply:nth-child(odd) {
+.ioc-comment-reply:nth-child(even) {
     background-color:#CBBF8F;
 }
 
-.ioc-reply-list div:first-child {
-    background-color:#FEE067;
+.ioc-signature span {
+    color: red;
+    font-weight:normal;
+    font-style: italic;
 }
+
+div.editComment {
+    display: none;
+}
+
+/*.ioc-reply-list div:first-child {*/
+    /*background-color:#FEE067;*/
+/*}*/
 
 /*.ioc-comment-reply:nth-child(odd) {*/
     /*background-color:#FEE067;*/
 /*}*/
 
+.ioc-comment-reply .editComment{
+    overflow : auto;
+}
 
+.ioc-comment-reply textarea {
+    width: 98%;
+}
 
 .ioc-comment-body, .ioc-comment button {
     float:right;
 }
+
+span.ioc-comment-toolbar {
+    float:right;
+    color:#9F6000;
+}
+
+span.ioc-comment-toolbar-button {
+    cursor: pointer;
+    font-weight: 100;
+    font-size:smaller;
+}
+
 
 div.ioc-comment [data-type="ioc-comment"]{
     float: right;
@@ -63,7 +92,6 @@ div.ioc-comment [data-type="ioc-comment"]{
     max-width: 350px;
     position: relative;
     box-shadow: 0.2em 0.3em 1.5em #eee;
-
 }
 
 .ioc-signature {

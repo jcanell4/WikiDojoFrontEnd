@@ -35,8 +35,6 @@ define([
 
         htmlTemplate: template,
         replyTemplate: templateReply,
-
-
         needsParse: true,
 
     // @override
@@ -59,7 +57,7 @@ define([
             // ALERTA[Xavi] En aquest punt ja tenim el text disponible?
             // this._parse(this.editor.get('value'));
 
-
+            this.$forcedTextArea = null;
         },
 
         _showCommentDialog: function () {
@@ -127,9 +125,16 @@ define([
         },
 
         _addHandlers: function ($node, context) {
-            var $replyNode = $node.find('textarea');
-            var $buttons = $node.find('button');
+            var $replyNode = $node.find('textarea.reply');
+            var $buttons = $node.find('button[data-action]');
             var $removeButtons = $node.find('[data-button="remove"]');
+            var $editButtons = $node.find('[data-button="edit"]');
+            // var $saveButons = $node.find('button[data-action-reply="save"]');
+            // var $cancelButtons = $node.find('button[data-action-reply="cancel"]');
+
+            var that = this;
+
+            console.log("************* buttons:", $buttons);
 
             $buttons.on('click', function (e) {
                 // alert("Click a un botó");
@@ -152,11 +157,31 @@ define([
             });
 
 
+            $removeButtons.each(function() {
+                var $button = jQuery(this);
+                var $commentNode =$button.closest('.ioc-comment-reply');
+                $button.on('click', context.addRemoveCommentHandler($commentNode).bind(context));
+            });
+
+            $editButtons.each(function() {
+                var $button = jQuery(this);
+                var $commentNode =$button.closest('.ioc-comment-reply');
+                $button.on('click', context.addEditCommentHandler($commentNode).bind(context));
+            });
+
+
+
+
+
+
             var $commentBody = $node.find('.ioc-comment-body');
 
+            this.$forcedTextArea = $replyNode;
+            this.$defaultTextArea = $replyNode;
 
             $commentBody.on('click', function (e) {
-                $replyNode.focus();
+                // $replyNode.focus();
+                that.$forcedTextArea.focus();
                 e.preventDefault();
             });
 
@@ -236,7 +261,7 @@ define([
         reply: function ($node) {
 
             this.editor.beginEditing();
-            var $textarea = $node.find('textarea');
+            var $textarea = $node.find('textarea.reply');
             var reply = $textarea.val();
             var $replyList = $node.find('.ioc-reply-list');
 
@@ -249,6 +274,7 @@ define([
             var args = {
                 reply: reply,
                 signature: SIG
+                // TODO[Xavi] Afegir els noms dels botons esborrar i editar localitzats
             };
 
             var $replyCode = jQuery(string.substitute(this.replyTemplate, args));
@@ -256,10 +282,20 @@ define([
 
             var user = this._getSignatureUser(SIG);
             $replyCode.attr('data-user', user);
-
             $replyList.append($replyCode);
             $textarea.val('');
             $textarea.focus();
+
+
+            var $removeButton = $replyCode.find('[data-button="remove"]');
+            $removeButton.on('click', this.addRemoveCommentHandler($replyCode));
+
+            var $editButton = $replyCode.find('[data-button="edit"]');
+
+            $editButton.on('click', this.addEditCommentHandler($replyCode));
+
+            //TODO[Xavi] Al parse afegir la comprovació d'usuari per mostrar o no els botons (i afegir o no els listeners).
+
 
             this.editor.endEditing();
         },
@@ -289,6 +325,129 @@ define([
             $node.remove();
             this.editor.endEditing();
 
+        },
+
+
+
+
+
+        addEditCommentHandler: function($commentNode) {
+            var context = this;
+            var $editNode = $commentNode.find('.editComment');
+            var $viewNode = $commentNode.find('.viewComment');
+            var $textarea = $commentNode.find('textarea');
+            var $content = $commentNode.find('.replyContent');
+            var $signature = $commentNode.find('.ioc-signature');
+
+
+            var $saveButton = $commentNode.find('button[data-action-reply="save"]');
+            var $cancelButton = $commentNode.find('button[data-action-reply="cancel"]');
+
+
+            $textarea.on('keypress keydown keyup', function (e) {
+                $textarea.focus();
+
+                if (e.keyCode == 13 || e.charCode == 13) {
+                    e.stopPropagation();
+                }
+
+            });
+
+            $textarea.on('focus', function() {
+                context.editor.beginEditing();
+            });
+
+            $textarea.on('blur', function() {
+                context.editor.endEditing();
+            });
+
+
+            $textarea.on('click', function() {
+                // context.editor.beginEditing();
+                context.$forcedTextArea = $textarea;
+                context.$forcedTextArea.focus();
+                // context.editor.endEditing();
+            });
+
+            $saveButton.on('click', function() {
+
+                context.editor.beginEditing();
+                $editNode.css('display', 'none');
+                $viewNode.css('display', 'inherit');
+
+
+
+                // TODO[Xavi] Convertir els salts de línia en <BR>
+                $content.html($textarea.val());
+
+                context.$forcedTextArea = context.$defaultTextArea;
+                context.$forcedTextArea.focus();
+
+
+                // TODO[Xavi]: Actualitzar la signatura
+                // TODO[Xavi]: Afegir la marca "editat" (o classe css?)
+
+                $signature.html('<span>(editat)</span>' + SIG); // TODO[Xavi] Localitzar el "editat"
+
+
+                context.editor.endEditing();
+
+            });
+
+            $cancelButton.on('click', function() {
+
+                $editNode.css('display', 'none');
+                $viewNode.css('display', 'inherit');
+
+                context.$forcedTextArea = context.$defaultTextArea;
+                context.$forcedTextArea.focus();
+                // context.editor.endEditing();
+                // alert("TODO: Cancel·lar els canvis");
+
+
+                //
+                context.editor.endEditing();
+            });
+
+
+
+            // Amaga el text
+            // Mostra un textarea amb 2 botons.
+            // Establir el valor del text area com el contingut del node
+            // Mostrar els botons desar i cancel·lar
+            //  - Desar: amaga el textarea i els botons i estableix el valor del textarea com a text, mostra el text.
+            //  - Cancel·lar: amaga el textarea i mostra el text.
+
+
+            return  function() {
+                context.editor.beginEditing();
+
+                $editNode.css('display', 'inherit');
+                $viewNode.css('display', 'none');
+                context.$forcedTextArea = $textarea;
+
+                // TODO[Xavi] Convertir els <BR> en salts de línia
+
+                $textarea.val($content.html());
+
+
+                $textarea.focus();
+
+                // $commentNode.remove();
+                // context.editor.beginEditing();
+            };
+        },
+
+
+
+        addRemoveCommentHandler: function ($commentNode) {
+            var context = this;
+
+            return  function() {
+                context.editor.beginEditing();
+                $commentNode.remove();
+                context.endEditing();
+            };
         }
     });
 
