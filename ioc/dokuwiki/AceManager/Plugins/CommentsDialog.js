@@ -41,6 +41,7 @@ define([
 
     // @override
         _initButton: function () {
+
             var editor = this.editor;
             editor.customUndo = true;
 
@@ -58,13 +59,13 @@ define([
 
             // ALERTA[Xavi] En aquest punt ja tenim el text disponible?
             // this._parse(this.editor.get('value'));
+            this.firstRun = true;
 
-            this.$forcedTextArea = null;
         },
 
         _showCommentDialog: function () {
 
-            this._addNote();
+
 
 
             // var refId = "comments";
@@ -152,11 +153,20 @@ define([
             $replyNode.on('keypress keydown keyup', function (e) {
                 $replyNode.focus();
 
+
                 if (e.keyCode == 13 || e.charCode == 13) {
                     e.stopPropagation();
                 }
 
             });
+
+            // $replyNode.on('focus', function() {
+            //
+            // });
+            //
+            // $replyNode.on('blur', function() {
+            //
+            // });
 
 
             // Això només ha de ser disponible en els comentaris propis de l'usuari
@@ -190,21 +200,15 @@ define([
             });
 
 
-
-
-
-
-
-
-
             var $commentBody = $node.find('.ioc-comment-body');
 
-            this.$forcedTextArea = $replyNode;
-            this.$defaultTextArea = $replyNode;
+
 
             $commentBody.on('click', function (e) {
                 // $replyNode.focus();
-                that.$forcedTextArea.focus();
+                // that.$forcedTextArea.focus();
+                $node.find('textarea.reply').focus();
+
                 e.preventDefault();
             });
 
@@ -217,8 +221,14 @@ define([
             var context = this;
 
             $nodes.each(function() {
+                $nodes.find('.viewComment').css('display', 'inherit');
+                $nodes.find('.editComment').css('display', 'none');
                 context._addHandlers(jQuery(this), context);
             });
+
+            if (this.firstRun) {
+                this.firstRun  =false;
+            }
 
         },
 
@@ -252,6 +262,12 @@ define([
                 // signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
 
             };
+
+
+            // Comprovem si es pot insertar en aquest punt
+            iframe= document.getElementById('my');
+
+
 
             var htmlCode = string.substitute(this.htmlTemplate, args);
             this.editor.execCommand('inserthtml', htmlCode); //ALERTA[Xavi] S'afegeix la referència per evitar esborrar el text ressaltat
@@ -378,10 +394,11 @@ define([
             });
 
 
-            $textarea.on('click', function() {
+            $textarea.on('click', function(e) {
                 // context.editor.beginEditing();
-                context.$forcedTextArea = $textarea;
-                context.$forcedTextArea.focus();
+                // context.$forcedTextArea = $textarea;
+                // context.$forcedTextArea.focus();
+                e.stopPropagation();
                 // context.editor.endEditing();
             });
 
@@ -393,15 +410,10 @@ define([
 
 
 
-                // TODO[Xavi] Convertir els salts de línia en <BR>
-                $content.html($textarea.val());
 
-                context.$forcedTextArea = context.$defaultTextArea;
-                context.$forcedTextArea.focus();
+                $content.html($textarea.val().replace(new RegExp('\n', 'g'), '<br>'));
 
-
-                // TODO[Xavi]: Actualitzar la signatura
-                // TODO[Xavi]: Afegir la marca "editat" (o classe css?)
+                $commentNode.find('.ioc-comment-main textarea.reply').focus();
 
                 $signature.html('<span>(editat)</span>' + SIG); // TODO[Xavi] Localitzar el "editat"
 
@@ -415,8 +427,7 @@ define([
                 $editNode.css('display', 'none');
                 $viewNode.css('display', 'inherit');
 
-                context.$forcedTextArea = context.$defaultTextArea;
-                context.$forcedTextArea.focus();
+                $commentNode.find('.ioc-comment-main textarea.reply').focus();
                 // context.editor.endEditing();
                 // alert("TODO: Cancel·lar els canvis");
 
@@ -440,11 +451,11 @@ define([
 
                 $editNode.css('display', 'inherit');
                 $viewNode.css('display', 'none');
-                context.$forcedTextArea = $textarea;
+                // context.$forcedTextArea = $textarea;
 
                 // TODO[Xavi] Convertir els <BR> en salts de línia
 
-                $textarea.val($content.html());
+                $textarea.val($content.html().replace(new RegExp('<br>', 'g'), '\n'));
 
 
                 $textarea.focus();
