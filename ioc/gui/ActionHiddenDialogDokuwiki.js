@@ -43,8 +43,6 @@ define([
                         //enviar
                         var query = domForm.toQuery(this.id);
                         hiddenDialog.sendRequest(query);
-                        // var node = hiddenDialog.domNode;
-                        // style.set(node, "display", "none");
                     } else {
                         alert('Les dades no són correctes');
                         return false;
@@ -68,6 +66,7 @@ define([
                 if (this._standby) {
                     this._standby.hide();
                 }
+                this.reset();
                 popup.close(this);
             }
         });
