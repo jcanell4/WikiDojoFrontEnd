@@ -7,7 +7,6 @@ define([
     "dojo/_base/lang"
 ], function (declare, Request, NsTreeContainer, aspect, query, lang) {
     var ret = declare("ioc.gui.ContentTabDokuwikiNsTree", [NsTreeContainer, Request],
-
         /**
          * Aquest widget sobreescriu l'onclick a l'arbre.
          *
@@ -16,7 +15,6 @@ define([
          * @extends Request
          */
         {
-            
             constructor: function (args) {
                 var openOnClick = args.openOnClick? args.openOnClick: true;
                 this.set("openOnClick", openOnClick);
@@ -34,7 +32,7 @@ define([
                     if(nsTree.updateQuery){
                         nsTree.query = nsTree.updateQuery(item);
                     }else{
-                        nsTree.query = "id="+item.id;
+                        nsTree.query = "id="+item.id+"&projectType="+item.projectType;
                     }
 
                     /* Inici fragment nou */
@@ -82,12 +80,11 @@ define([
             },             
             
             setUrlBaseTypedDefault: function () {
-                //console.log('#ContentTabDokuwikiNsTree#setUrlBaseTypedDefault', this.urlBaseTyped);
                 if(!this.urlBaseTyped){
                     this.urlBaseTyped = {};
                 }
                 this.urlBaseTyped['*'] = this.urlBase;
-            },
+            }
         });
     return ret;
 });
