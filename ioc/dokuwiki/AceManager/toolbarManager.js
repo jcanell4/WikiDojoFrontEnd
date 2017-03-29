@@ -210,6 +210,8 @@ define([], function () {
             var $toolbar = jQuery('#' + toolbarId);
             $toolbar.attr('role', 'toolbar');
 
+            console.log("S'ha trobat la toolbar?", toolbarId, $toolbar)
+
             // Recorrem tots els botons
             var _buttons = this.getToolbar(type);
 

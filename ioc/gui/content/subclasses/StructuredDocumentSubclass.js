@@ -740,7 +740,7 @@ define([
          * @private
          */
         _updateChunks: function (content) {
-            console.log("StructuredDocumentSubclass#_updateChunks", content);
+            // console.log("StructuredDocumentSubclass#_updateChunks", content);
             var i, chunk;
 
             this.editingChunksCounter = 0;

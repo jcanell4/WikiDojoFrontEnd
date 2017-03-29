@@ -19,17 +19,18 @@ define([
         constructor: function (args) {
             this.dispatcher = args.dispatcher;
             this.contentTool = args.contentTool;
-            this.contentToolId = args.contentTool.id;
+            this.contentToolId = args.contentTool.id; // Sempre es desa sobre el document original, no sobre els revisions
             this.id = args.contentTool.id+"_draft";
             this.lastRefresh = Date.now();
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
             this.eventManager = this.dispatcher.getEventManager();
             if(this.contentTool.autosaveTimer){
-                // this.AUTOSAVE_REMOTE = 10000; ALERTA[Xavi] per fer proves, canvia el save remot a 10s
+                // this.AUTOSAVE_REMOTE = 10000; //ALERTA[Xavi] per fer proves, canvia el save remot a 10s
                 this.AUTOSAVE_REMOTE = this.contentTool.autosaveTimer;
             }
             this._init();
+            console.log("Desant remotament cada:", this.AUTOSAVE_REMOTE);
         },
 
         _init: function () {
@@ -60,7 +61,7 @@ define([
         },
 
         _doSave: function () {
-            //console.log('Draft#_doSave');
+            console.log('Draft#_doSave');
             var ret = 0;
             var now = Date.now(),
                 elapsedTime = now - this.lastRemoteRefresh;
@@ -149,6 +150,8 @@ define([
 
             var dataToSend = this._getQueryLock();
 
+
+
             this.eventManager.fireEvent(this.eventName.SAVE_DRAFT, {
                 id: this.contentToolId,
                 dataToSend: dataToSend
@@ -164,10 +167,10 @@ define([
             var pages = this._doGetPages(),
                 chunkId = data.dataToSend.section_id;
 
-            if (pages[this.contentTool.id]
-                && pages[this.contentTool.id].drafts
-                && pages[this.contentTool.id].drafts['structured']) {
-                delete(pages[this.contentTool.id].drafts['structured'][chunkId]);
+            if (pages[this.contentTool.ns]
+                && pages[this.contentTool.ns].drafts
+                && pages[this.contentTool.ns].drafts['structured']) {
+                delete(pages[this.contentTool.ns].drafts['structured'][chunkId]);
 
 
 
@@ -185,12 +188,12 @@ define([
         _clearLocalAll: function (data) {
             var pages = this._doGetPages();
 
-            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                if(pages[this.contentTool.id].drafts['full']){
-                    delete(pages[this.contentTool.id].drafts['full']);
+            if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
+                if(pages[this.contentTool.ns].drafts['full']){
+                    delete(pages[this.contentTool.ns].drafts['full']);
                 }
-                if(pages[this.contentTool.id].drafts['structured']){
-                    delete(pages[this.contentTool.id].drafts['structured']);
+                if(pages[this.contentTool.ns].drafts['structured']){
+                    delete(pages[this.contentTool.ns].drafts['structured']);
                 }
             //} else {
                 //console.log("No existeix cap esborrany que eliminar");
@@ -226,10 +229,10 @@ define([
             var pages = this._doGetPages(),
                 draft = this._getLastGeneratedDraft();
 
-            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
+            if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
                 for (var chunk in draft.content) {
-                    if (pages[this.contentTool.id].drafts['structured']) {
-                        delete(pages[this.contentTool.id].drafts['structured'][chunk]);
+                    if (pages[this.contentTool.ns].drafts['structured']) {
+                        delete(pages[this.contentTool.ns].drafts['structured'][chunk]);
                     }
                 }
             }
@@ -241,13 +244,13 @@ define([
 //            console.log("Draft#_removeLocalFullDraft", this.contentTool.id);
             var pages = this._doGetPages();
 
-            if (pages[this.contentTool.id] && pages[this.contentTool.id].drafts) {
-                delete(pages[this.contentTool.id].drafts['full']);
-                delete(pages[this.contentTool.id].drafts['structured']); // ALERTA[Xavi] Al esborrar el complet s'ha d'esborrar també el parcial, així es com funcionen els drafts remots
+            if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
+                delete(pages[this.contentTool.ns].drafts['full']);
+                delete(pages[this.contentTool.ns].drafts['structured']); // ALERTA[Xavi] Al esborrar el complet s'ha d'esborrar també el parcial, així es com funcionen els drafts remots
                 this._doSetPages(pages);
 //                console.log("S'ha esborrat?", pages);
             } else {
-                console.log("Fallat: ", this.contentTool.id, pages);
+                console.log("Fallat: ", this.contentTool.ns, pages);
             }
         },
 
@@ -284,7 +287,7 @@ define([
             //console.log('Draft#_doGetPage');
             var pages = this._doGetPages();
 
-            return pages && pages[this.contentTool.id] ? pages[this.contentTool.id] : null;
+            return pages && pages[this.contentTool.ns] ? pages[this.contentTool.ns] : null;
         },
 
         // TODO[Xavi] aquí podem afegir la compresió de dades
@@ -293,7 +296,7 @@ define([
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = this._doGetUser(userId);
 
-            user.pages[this.contentTool.id] = page;
+            user.pages[this.contentTool.ns] = page;
 
             localStorage.setItem(userId, JSON.stringify(user));
 

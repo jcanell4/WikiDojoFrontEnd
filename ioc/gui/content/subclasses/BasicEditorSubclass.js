@@ -88,6 +88,9 @@ define([
 //                    dataToSend: dataToSend,
 //                    standbyId: containerId
 //                })
+
+                console.log("Datatosend:", dataToSend);
+
                 return {
                     id: this.id,
                     dataToSend: dataToSend,
@@ -100,6 +103,8 @@ define([
             _doCancelDocument: function (event) {
                 var containerId = this.id,
                     dataToSend = this.getQueryCancel(this.id); // el paràmetre no es fa servir
+
+
 
                 if(event.extraDataToSend){
                     if(typeof event.extraDataToSend==="string"){
@@ -144,7 +149,7 @@ define([
             },
 
             getQueryCancel: function () {
-                return 'do=cancel&id=' + this.ns;
+                return 'do=cancel&id=' + this.ns + (this.rev ? "&rev=" + this.rev :'');
             },
 
             /**
@@ -243,6 +248,7 @@ define([
 
             // TODO[Xavi] en aquest cas només cal una toolbar
             addToolbars: function () {
+                console.log("Afegint toolbar:", this.id);
                 if (this.getReadOnly()) {
                     return;
                 }

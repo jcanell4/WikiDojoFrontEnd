@@ -45,8 +45,16 @@ define([
                     contentCache = dispatcher.getContentCache(content.id),
                     ret = {};
 
+                console.log("Quina es la id del metaInfonode?", dispatcher.metaInfoNodeId);
+
                 // TODO[Xavi] La neteja del container s'hauria de fer a traves del RemoveAllContentProcessor. Compte amb el setCurrentId que deixaría de funcionar!
-                nodeMetaInfo.clearContainer(content.id);
+
+                if (!nodeMetaInfo) {
+                    alert("Alerta, s'ha creat el metaInfoNodeId?" + dispatcher.metaInfoNodeId);
+                }else {
+                    nodeMetaInfo.clearContainer(content.id);
+                }
+
                 contentCache.setCurrentId("metadataPane", null);
 
                 for (m in content.meta) {
@@ -80,7 +88,7 @@ define([
                     currentMetaContent = meta;
 
                     currentMetaItem = registry.byId(currentMetaContent.id);
-                    if (!currentMetaItem) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
+                    if (!currentMetaItem) {
 
                         // Afegim la informació extra necessaria per generar el ContentTool
                         currentMetaContent.dispatcher = dispatcher;
