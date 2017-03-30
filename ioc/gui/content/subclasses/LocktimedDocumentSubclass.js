@@ -36,7 +36,7 @@ define([
 
         unlockDocument: function () {
             //ALERTA[Xavi] Provem d'alliberar el bloqueig
-            this.dispatcher.getGlobalState().freePage(this.id, this.ns);
+            this.freePage();
 
             if (this.readonly) { // Si el document es de només lectura no pot ser bloquejat
                 return;

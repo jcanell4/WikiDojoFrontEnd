@@ -235,30 +235,18 @@ define([
             },
 
             requirePage: function() {
-                var readOnly;
-
-                // if (!this.readonly) {
-                    readOnly = !this.dispatcher.getGlobalState().requirePage(this);
-
-                    console.log("***** valor de readonly?", readOnly);
-                    this.requiredDocument = true;
-
-
+                var readOnly = !this.dispatcher.getGlobalState().requirePage(this);
                 this.setReadOnly(readOnly);
             },
 
             requirePageAgain: function () {
-                //TODO[Xavi] Codi per canviar aquest document a edició: mostrar Toolbars, canviar l'edició a readonly = false
-                console.log("!!S'ha alliberat el document " + this.ns + " mostrant missatge desde " + this.id);
 
                 this.requirePage();
 
                 if (!this.readonly) {
-                    console.log("Requerint...");
                     this.addToolbars();
                     this.editor.unlockEditor();
                 } else {
-                    console.log("continua bloquejat?");
                 }
 
             },
@@ -291,13 +279,10 @@ define([
 
             // TODO[Xavi] en aquest cas només cal una toolbar
             addToolbars: function () {
-                console.log("Afegint toolbar:", this.id);
                 if (this.readonly) {
-                    console.log("**** ES READ ONLY!");
                     return;
-                } else {
-                    console.log("**** NO ES READ ONLY!");
                 }
+
                 this.addButtons();
                 toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
             },
@@ -417,7 +402,6 @@ define([
             onClose: function() {
                 var eventManager = this.dispatcher.getEventManager();
                 eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: {no_response: true}}, this.id);
-                this.freePage();
                 return this.inherited(arguments);
             },
 

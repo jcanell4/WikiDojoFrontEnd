@@ -109,14 +109,16 @@ define([
         },
 
         addToolbars: function () {
-            //console.log("StructuredDocumentSubclass#addToolbars");
+            console.log("StructuredDocumentSubclass#addToolbars");
             var auxId;
 
             this.addButtons();
 
             for (var i = 0; i < this.data.chunks.length; i++) {
 
+
                 if (this.data.chunks[i].text) {
+                    console.log("Afegint toolbar per:", this.data.chunks[i].header_id);
                     auxId = this.data.id + "_" + this.data.chunks[i].header_id;
                     toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
                 }
@@ -879,6 +881,7 @@ define([
             });
 
             for (var i = 0; i < this.data.chunks.length; i++) {
+                console.log("**** Amagant la toolbar:", header_id, this.id);
                 header_id = this.data.chunks[i].header_id;
                 jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
             }
@@ -897,14 +900,17 @@ define([
             });
 
             jQuery('input[data-call-type="save_partial"]').each(function () {
-                jQuery(this).css('display', 'visible');
+                jQuery(this).css('display', 'inherit');
             });
 
 
             for (var i = 0; i < this.data.chunks.length; i++) {
                 header_id = this.data.chunks[i].header_id;
-                jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'visible')
+                jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'inherit')
+
+                console.log("**** Mostrant la toolbar:", header_id, jQuery('#toolbar_' + this.id + '_' + header_id).css('display'), this.id);
             }
+
         },
 
         _generateDraft: function () {
@@ -1287,23 +1293,26 @@ define([
         },
 
         requirePage: function() {
-            var readOnly;
-
-
-                readOnly = !this.dispatcher.getGlobalState().requirePage(this);
-
-                console.log("***** valor de readonly?", readOnly);
-                this.requiredDocument = true;
-
-
-
+            var readOnly = !this.dispatcher.getGlobalState().requirePage(this);
             this.setReadOnly(readOnly);
         },
 
         requirePageAgain: function () {
-            //TODO[Xavi] Codi per canviar aquest document a edició: mostrar Toolbars, canviar l'edició a readonly = false
-            alert("S'ha alliberat el document " + this.ns);
+            this.requirePage();
+
+            if (!this.getReadOnly()) {
+                this.unlockEditors();
+                this.isLockNeeded();
+            }
         },
+
+
+
+        freePage: function() {
+            this.dispatcher.getGlobalState().freePage(this.id, this.ns);
+            this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
+        },
+
 
         onDestroy: function() {
             console.log("StructuredDocumentSubclass#onDestroy");
