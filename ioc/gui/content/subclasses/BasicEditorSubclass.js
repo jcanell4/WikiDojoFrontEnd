@@ -213,8 +213,12 @@ define([
                 this.inherited(arguments);
                 
                 if(!this.editorCreated){
-                    this.addToolbars();
+                    if (!this.readonly) {
+                        this.requirePage();
+                    }
+
                     this.addEditors();
+                    this.addToolbars();
 
                     on(window, 'resize', function () {
                         this.fillEditorContainer();
@@ -230,15 +234,54 @@ define([
                 this.editor = this.createEditor(this.id);
             },
 
+            requirePage: function() {
+                var readOnly;
+
+                // if (!this.readonly) {
+                    readOnly = !this.dispatcher.getGlobalState().requirePage(this);
+
+                    console.log("***** valor de readonly?", readOnly);
+                    this.requiredDocument = true;
+
+
+                this.setReadOnly(readOnly);
+            },
+
+            requirePageAgain: function () {
+                //TODO[Xavi] Codi per canviar aquest document a edició: mostrar Toolbars, canviar l'edició a readonly = false
+                console.log("!!S'ha alliberat el document " + this.ns + " mostrant missatge desde " + this.id);
+
+                this.requirePage();
+
+                if (!this.readonly) {
+                    console.log("Requerint...");
+                    this.addToolbars();
+                    this.editor.unlockEditor();
+                } else {
+                    console.log("continua bloquejat?");
+                }
+
+            },
+
+            freePage: function() {
+                this.dispatcher.getGlobalState().freePage(this.id, this.ns);
+                this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
+            },
+
+
+
             createEditor: function (id) {
                 var $textarea = jQuery('#textarea_' + id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
+
+                console.log("BasicEditorSubclass#createEditor");
+
 
                 return new AceFacade({
                     xmltags: JSINFO.plugin_aceeditor.xmltags,
                     containerId: 'editor_' + id,
                     textareaId: 'textarea_' + id,
                     theme: JSINFO.plugin_aceeditor.colortheme,
-                    readOnly: this.getReadOnly(),
+                    readOnly: this.readonly,
                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                     wrapMode: $textarea.attr('wrap') !== 'off',
                     mdpage: JSINFO.plugin_aceeditor.mdpage,
@@ -249,8 +292,11 @@ define([
             // TODO[Xavi] en aquest cas només cal una toolbar
             addToolbars: function () {
                 console.log("Afegint toolbar:", this.id);
-                if (this.getReadOnly()) {
+                if (this.readonly) {
+                    console.log("**** ES READ ONLY!");
                     return;
+                } else {
+                    console.log("**** NO ES READ ONLY!");
                 }
                 this.addButtons();
                 toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
@@ -334,6 +380,7 @@ define([
                     eventManager = this.getEventManager();
 //                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
 
+
                 eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id}, id);
 //                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
             },
@@ -370,9 +417,16 @@ define([
             onClose: function() {
                 var eventManager = this.dispatcher.getEventManager();
                 eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: {no_response: true}}, this.id);
+                this.freePage();
                 return this.inherited(arguments);
-            }
+            },
 
+
+            onDestroy: function() {
+                console.log("BasicEditorSubclass#onDestroy");
+                this.freePage();
+                this.inherited(arguments);
+            }
 
 
         })

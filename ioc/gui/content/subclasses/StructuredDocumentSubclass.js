@@ -61,8 +61,12 @@ define([
 
             this.inherited(arguments);
 
-            this.addToolbars();
+            if (!this.readonly) {
+                this.requirePage();
+            }
+
             this.addEditors();
+            this.addToolbars();
 
             this.addEditionListener();
             this.addSelectionListener();
@@ -1280,6 +1284,31 @@ define([
             var eventManager = this.dispatcher.getEventManager();
             eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: "no_response=true"}, this.id);
             return this.inherited(arguments);
+        },
+
+        requirePage: function() {
+            var readOnly;
+
+
+                readOnly = !this.dispatcher.getGlobalState().requirePage(this);
+
+                console.log("***** valor de readonly?", readOnly);
+                this.requiredDocument = true;
+
+
+
+            this.setReadOnly(readOnly);
+        },
+
+        requirePageAgain: function () {
+            //TODO[Xavi] Codi per canviar aquest document a edició: mostrar Toolbars, canviar l'edició a readonly = false
+            alert("S'ha alliberat el document " + this.ns);
+        },
+
+        onDestroy: function() {
+            console.log("StructuredDocumentSubclass#onDestroy");
+            this.dispatcher.getGlobalState().freePage(this);
+            this.inherited(arguments);
         }
     })
 });

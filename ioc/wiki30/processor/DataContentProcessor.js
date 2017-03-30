@@ -28,6 +28,8 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+
+
                 //console.log("DataContentProcessor#process", value);
 //                var $form = jQuery(value.htmlForm),
 //                    draftContent;
@@ -63,7 +65,7 @@ define([
                 ret = this.inherited(arguments);
 
                 this._initTimer(value, dispatcher);
-                
+
                 return ret;
             },
 

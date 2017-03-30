@@ -241,6 +241,46 @@ define([
         
         removeExtraTab:function(id){
             delete this.extratabs[id];
+        },
+
+        requiredPages: {},
+
+        requirePage: function (contentTool) {
+            console.log("GlobalState#requirePage", contentTool.id);
+
+            if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] == contentTool.id){
+                this.requiredPages[contentTool.ns] = contentTool.id;
+                console.log("Requerit amb èxit");
+                return true;
+            }  else {
+                // TODO[Xavi] suscriure a l'event "freePage" per saber quan s'ha alliberat
+                console.log("No es pot requerir");
+
+                if (this.requiredPages[contentTool.ns]) {
+                    console.log("RAO: Ja es troba obert:", this.requiredPages)
+                } else {
+                    console.log("RAO: Es troba obert per altre id: ", this.requiredPages[contentTool.ns])
+                }
+
+                var id = this.requiredPages[contentTool.ns],
+                    owner = contentTool.dispatcher.getContentCache(id).getMainContentTool();
+
+
+
+                owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
+
+                return false;
+            }
+
+        },
+
+        freePage: function (id, ns) {
+            console.log("Alliberat id:",id,"ns:", ns);
+            if (this.requiredPages[ns] && this.requiredPages[ns] === id) {
+                delete this.requiredPages[ns];
+
+                // TODO[Xavi] disparar l'event "freePage" indicant el "ns" del document
+            }
         }
     };
 
