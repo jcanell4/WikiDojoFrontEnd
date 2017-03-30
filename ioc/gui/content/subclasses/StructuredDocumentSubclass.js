@@ -881,7 +881,6 @@ define([
             });
 
             for (var i = 0; i < this.data.chunks.length; i++) {
-                console.log("**** Amagant la toolbar:", header_id, this.id);
                 header_id = this.data.chunks[i].header_id;
                 jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
             }
@@ -908,7 +907,6 @@ define([
                 header_id = this.data.chunks[i].header_id;
                 jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'inherit')
 
-                console.log("**** Mostrant la toolbar:", header_id, jQuery('#toolbar_' + this.id + '_' + header_id).css('display'), this.id);
             }
 
         },
