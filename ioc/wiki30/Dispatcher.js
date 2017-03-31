@@ -51,6 +51,7 @@ define([
     "ioc/wiki30/processor/TabResponseProcessor",
     "ioc/wiki30/processor/RecentsProcessor",
     "ioc/wiki30/processor/MetaFormProcessor",
+    "ioc/wiki30/processor/PrintProcessor",
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -63,7 +64,7 @@ define([
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
              LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
              NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
-             FormContentProcessor, TabResponseProcessor, RecentsProcessor, MetaFormProcessor) {
+             FormContentProcessor, TabResponseProcessor, RecentsProcessor, MetaFormProcessor, PrintProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -195,6 +196,7 @@ define([
                 this.processors["tab"] = new TabResponseProcessor();
                 this.processors["recents"] = new RecentsProcessor();
                 this.processors["meta_form"] = new MetaFormProcessor();
+                this.processors["print"] = new PrintProcessor();
 
             },
 
