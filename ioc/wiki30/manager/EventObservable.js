@@ -24,7 +24,6 @@ define([
                 _onDestroy: "before"
             },
 
-            // TODO[Xavi] Ordenar-les i afegir-les alfabeticament
             eventName: EventFactory.eventName,
 
             callbacks: {},

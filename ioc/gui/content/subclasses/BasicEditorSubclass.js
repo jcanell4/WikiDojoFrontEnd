@@ -88,6 +88,9 @@ define([
 //                    dataToSend: dataToSend,
 //                    standbyId: containerId
 //                })
+
+                console.log("Datatosend:", dataToSend);
+
                 return {
                     id: this.id,
                     dataToSend: dataToSend,
@@ -100,6 +103,8 @@ define([
             _doCancelDocument: function (event) {
                 var containerId = this.id,
                     dataToSend = this.getQueryCancel(this.id); // el paràmetre no es fa servir
+
+
 
                 if(event.extraDataToSend){
                     if(typeof event.extraDataToSend==="string"){
@@ -144,7 +149,7 @@ define([
             },
 
             getQueryCancel: function () {
-                return 'do=cancel&id=' + this.ns;
+                return 'do=cancel&id=' + this.ns + (this.rev ? "&rev=" + this.rev :'');
             },
 
             /**
@@ -208,8 +213,12 @@ define([
                 this.inherited(arguments);
                 
                 if(!this.editorCreated){
-                    this.addToolbars();
+                    if (!this.readonly) {
+                        this.requirePage();
+                    }
+
                     this.addEditors();
+                    this.addToolbars();
 
                     on(window, 'resize', function () {
                         this.fillEditorContainer();
@@ -225,15 +234,42 @@ define([
                 this.editor = this.createEditor(this.id);
             },
 
+            requirePage: function() {
+                var readOnly = !this.dispatcher.getGlobalState().requirePage(this);
+                this.setReadOnly(readOnly);
+            },
+
+            requirePageAgain: function () {
+
+                this.requirePage();
+
+                if (!this.readonly) {
+                    this.addToolbars();
+                    this.editor.unlockEditor();
+                } else {
+                }
+
+            },
+
+            freePage: function() {
+                this.dispatcher.getGlobalState().freePage(this.id, this.ns);
+                this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
+            },
+
+
+
             createEditor: function (id) {
                 var $textarea = jQuery('#textarea_' + id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
+
+                console.log("BasicEditorSubclass#createEditor");
+
 
                 return new AceFacade({
                     xmltags: JSINFO.plugin_aceeditor.xmltags,
                     containerId: 'editor_' + id,
                     textareaId: 'textarea_' + id,
                     theme: JSINFO.plugin_aceeditor.colortheme,
-                    readOnly: this.getReadOnly(),
+                    readOnly: this.readonly,
                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                     wrapMode: $textarea.attr('wrap') !== 'off',
                     mdpage: JSINFO.plugin_aceeditor.mdpage,
@@ -243,9 +279,10 @@ define([
 
             // TODO[Xavi] en aquest cas només cal una toolbar
             addToolbars: function () {
-                if (this.getReadOnly()) {
+                if (this.readonly) {
                     return;
                 }
+
                 this.addButtons();
                 toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
             },
@@ -328,6 +365,7 @@ define([
                     eventManager = this.getEventManager();
 //                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
 
+
                 eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id}, id);
 //                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
             },
@@ -365,8 +403,14 @@ define([
                 var eventManager = this.dispatcher.getEventManager();
                 eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: {no_response: true}}, this.id);
                 return this.inherited(arguments);
-            }
+            },
 
+
+            onDestroy: function() {
+                console.log("BasicEditorSubclass#onDestroy");
+                this.freePage();
+                this.inherited(arguments);
+            }
 
 
         })

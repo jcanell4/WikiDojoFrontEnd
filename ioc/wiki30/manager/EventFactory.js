@@ -28,7 +28,8 @@ define([
             NOTIFY: 'notify',
             TIMEOUT: 'timeout',
             SAVE_FORM: 'save_form',
-            MEDIA_DETAIL: 'media_detail'
+            MEDIA_DETAIL: 'media_detail',
+            FREE_DOCUMENT: 'free_document'
         },
         
         getEventNameList:function(){

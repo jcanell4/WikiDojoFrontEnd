@@ -70,13 +70,16 @@ define([
 
 
                 var changesManager = dispatcher.getChangesManager(),
-                    cache = dispatcher.getContentCache(value.id), // TODO[Xavi] de vegades torna null?
+                    cache = dispatcher.getContentCache(value.id),
                     confirmation = false,
                     clearDraft = 0,             //0 = no eliminar, 1 = eliminar parcial, 2 = eliminar tot
                     contentTool, ret;
 
                 if (cache) {
                     contentTool = cache.getMainContentTool();
+
+                    console.log("S'ha trobat el cache:", cache);
+                    console.log("Això és una revisió?", value.rev);
                 }
 
                 // TODO[Xavi] Refactoritzar, massa condicionals
@@ -157,6 +160,7 @@ define([
 //                    }
 
                     contentTool.rev = value.rev;
+
 
                     if (confirmation) {
                         if(clearDraft===1){
@@ -277,6 +281,12 @@ define([
              */
             createContentTool: function (content, dispatcher) {
 //                console.log("Content:", content);
+
+                if (content.rev) {
+                    console.log("És una revisió, no cal fer res perque l'id ja arriba modificat")
+                }
+
+
                 var args = {
                     ns: content.ns,
                     id: content.id,

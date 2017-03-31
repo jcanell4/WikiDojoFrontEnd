@@ -35,6 +35,9 @@ define([
         },
 
         unlockDocument: function () {
+            //ALERTA[Xavi] Provem d'alliberar el bloqueig
+            this.freePage();
+
             if (this.readonly) { // Si el document es de només lectura no pot ser bloquejat
                 return;
             }

@@ -28,13 +28,16 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+
+
                 //console.log("DataContentProcessor#process", value);
 //                var $form = jQuery(value.htmlForm),
 //                    draftContent;
 //
 //                // Reemplaçem el contingut del content amb el del draft
 //
-                var contentTool
+                console.log("value:",value);
+
                 var ret;
                 if (value.recover_draft) {
                     var  draftContent;                
@@ -54,10 +57,15 @@ define([
                     value.content = draftContent;
                 }
 
+
+                if (value.rev) {
+                    dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
+                }
+
                 ret = this.inherited(arguments);
-               
+
                 this._initTimer(value, dispatcher);
-                
+
                 return ret;
             },
 
@@ -73,6 +81,9 @@ define([
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
                 dispatcher.getGlobalState().getContent(value.id).readonly = value.editing?value.editing.readonly:false;
+                dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
+
+                console.log("al updatestate del data content processor es posa la rev??", dispatcher.getGlobalState().getContent(value.id));
             },
 
             /**

@@ -61,8 +61,12 @@ define([
 
             this.inherited(arguments);
 
-            this.addToolbars();
+            if (!this.readonly) {
+                this.requirePage();
+            }
+
             this.addEditors();
+            this.addToolbars();
 
             this.addEditionListener();
             this.addSelectionListener();
@@ -105,14 +109,16 @@ define([
         },
 
         addToolbars: function () {
-            //console.log("StructuredDocumentSubclass#addToolbars");
+            console.log("StructuredDocumentSubclass#addToolbars");
             var auxId;
 
             this.addButtons();
 
             for (var i = 0; i < this.data.chunks.length; i++) {
 
+
                 if (this.data.chunks[i].text) {
+                    console.log("Afegint toolbar per:", this.data.chunks[i].header_id);
                     auxId = this.data.id + "_" + this.data.chunks[i].header_id;
                     toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
                 }
@@ -740,7 +746,7 @@ define([
          * @private
          */
         _updateChunks: function (content) {
-            console.log("StructuredDocumentSubclass#_updateChunks", content);
+            // console.log("StructuredDocumentSubclass#_updateChunks", content);
             var i, chunk;
 
             this.editingChunksCounter = 0;
@@ -893,14 +899,16 @@ define([
             });
 
             jQuery('input[data-call-type="save_partial"]').each(function () {
-                jQuery(this).css('display', 'visible');
+                jQuery(this).css('display', 'inherit');
             });
 
 
             for (var i = 0; i < this.data.chunks.length; i++) {
                 header_id = this.data.chunks[i].header_id;
-                jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'visible')
+                jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'inherit')
+
             }
+
         },
 
         _generateDraft: function () {
@@ -1280,6 +1288,34 @@ define([
             var eventManager = this.dispatcher.getEventManager();
             eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: "no_response=true"}, this.id);
             return this.inherited(arguments);
+        },
+
+        requirePage: function() {
+            var readOnly = !this.dispatcher.getGlobalState().requirePage(this);
+            this.setReadOnly(readOnly);
+        },
+
+        requirePageAgain: function () {
+            this.requirePage();
+
+            if (!this.getReadOnly()) {
+                this.unlockEditors();
+                this.isLockNeeded();
+            }
+        },
+
+
+
+        freePage: function() {
+            this.dispatcher.getGlobalState().freePage(this.id, this.ns);
+            this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
+        },
+
+
+        onDestroy: function() {
+            console.log("StructuredDocumentSubclass#onDestroy");
+            this.dispatcher.getGlobalState().freePage(this);
+            this.inherited(arguments);
         }
     })
 });
