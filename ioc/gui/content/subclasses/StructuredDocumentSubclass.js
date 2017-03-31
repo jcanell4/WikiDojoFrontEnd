@@ -1280,9 +1280,10 @@ define([
             this.set('readonly', value);
         },
 
-        getReadOnly: function () {
-            return this.get('readonly');
-        },
+// NO cal. Ja està definit a LocktimedDocumentSubclass!
+//        getReadOnly: function () {
+//            return this.get('readonly');
+//        },
 
         onClose: function() {
             var eventManager = this.dispatcher.getEventManager();

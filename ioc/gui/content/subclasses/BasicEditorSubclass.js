@@ -40,6 +40,10 @@ define([
                 this.set("readonly", value);
             },
 
+            getReadOnly: function () {
+                return this.get("readonly");
+            },
+
 
             /**
              * Es registra als esdeveniments i activa la detecció de canvis, copiar, enganxar i pijar tecles dins
@@ -213,7 +217,7 @@ define([
                 this.inherited(arguments);
                 
                 if(!this.editorCreated){
-                    if (!this.readonly) {
+                    if (!this.getReadOnly()) {
                         this.requirePage();
                     }
 
@@ -243,7 +247,7 @@ define([
 
                 this.requirePage();
 
-                if (!this.readonly) {
+                if (!this.getReadOnly()) {
                     this.addToolbars();
                     this.editor.unlockEditor();
                 } else {
@@ -269,7 +273,7 @@ define([
                     containerId: 'editor_' + id,
                     textareaId: 'textarea_' + id,
                     theme: JSINFO.plugin_aceeditor.colortheme,
-                    readOnly: this.readonly,
+                    readOnly: this.getReadOnly(),
                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                     wrapMode: $textarea.attr('wrap') !== 'off',
                     mdpage: JSINFO.plugin_aceeditor.mdpage,
@@ -279,7 +283,7 @@ define([
 
             // TODO[Xavi] en aquest cas només cal una toolbar
             addToolbars: function () {
-                if (this.readonly) {
+                if (this.getReadOnly()) {
                     return;
                 }
 

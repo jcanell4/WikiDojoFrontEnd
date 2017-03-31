@@ -51,11 +51,6 @@ define([
             this.contentTool.registerObserverToEvent(this, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.CANCEL, this.destroy.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.DESTROY, this.destroy.bind(this));
-//            this.registerToEvent(this.eventManager, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
-//            this.registerToEvent(this.eventManager, this.eventName.SAVE, this._clearLocalAll.bind(this));
-            //[JOSEP] Valorar si no ha de ser un simple registerToEvent
-//            this.eventManager.registerToEventFromObservable(this, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
-//            this.eventManager.registerToEventFromObservable(this, this.eventName.SAVE, this._clearLocalAll.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.SAVE, this._clearLocalAll.bind(this));
         },
