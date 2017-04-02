@@ -78,8 +78,8 @@ define([
                 if (cache) {
                     contentTool = cache.getMainContentTool();
 
-                    console.log("S'ha trobat el cache:", cache);
-                    console.log("Això és una revisió?", value.rev);
+//                    console.log("S'ha trobat el cache:", cache);
+//                    console.log("Això és una revisió?", value.rev);
                 }
 
                 // TODO[Xavi] Refactoritzar, massa condicionals

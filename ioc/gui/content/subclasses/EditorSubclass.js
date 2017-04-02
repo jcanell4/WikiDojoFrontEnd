@@ -113,9 +113,9 @@ define([
 
 
                 if (data.discardChanges) {
-                    dataToSend = this.getQueryForceCancel(this.id); // el paràmetre no es fa servir
+                    dataToSend = this.getQueryForceCancel(); // el paràmetre no es fa servir
                 } else {
-                    dataToSend = this.getQueryCancel(this.id); // el paràmetre no es fa servir
+                    dataToSend = this.getQueryCancel(); // el paràmetre no es fa servir
                 }
 
                 if (data.keep_draft) {

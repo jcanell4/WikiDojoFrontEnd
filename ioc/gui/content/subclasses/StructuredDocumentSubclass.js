@@ -109,7 +109,7 @@ define([
         },
 
         addToolbars: function () {
-            console.log("StructuredDocumentSubclass#addToolbars");
+//            console.log("StructuredDocumentSubclass#addToolbars");
             var auxId;
 
             this.addButtons();
@@ -118,7 +118,7 @@ define([
 
 
                 if (this.data.chunks[i].text) {
-                    console.log("Afegint toolbar per:", this.data.chunks[i].header_id);
+//                    console.log("Afegint toolbar per:", this.data.chunks[i].header_id);
                     auxId = this.data.id + "_" + this.data.chunks[i].header_id;
                     toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
                 }
@@ -158,7 +158,7 @@ define([
 
         // ALERTA[Xavi] this fa referencia al dispatcher
         _funcSave: function () {
-            console.log("StructuredDocumentSubclass#_funcSave");
+//            console.log("StructuredDocumentSubclass#_funcSave");
 
             var chunk = this.getGlobalState().getCurrentElementId(),
                 id = this.getGlobalState().getCurrentId(),
@@ -267,7 +267,7 @@ define([
 
 
         getQueryEdit: function (chunkId) {
-            console.log("StructuredDocumentSubclass#getQueryEdit", chunkId);
+//            console.log("StructuredDocumentSubclass#getQueryEdit", chunkId);
             var query = 'do=edit_partial'
                 + '&section_id=' + chunkId
                 + '&editing_chunks=' + this.getEditingChunks().toString()
@@ -535,7 +535,7 @@ define([
         },
 
         isContentChangedForChunk: function (chunkId) {
-            console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.data);
+//            console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.data);
             var index = this.data.dictionary[chunkId],
                 chunk = this.data.chunks[index],
                 $textarea,
@@ -680,7 +680,7 @@ define([
             this.render();
 
             // Si existeix una secció seleccionada i no es tracta d'una revisió, la reseleccionem
-            console.log("És una revisió? ", this.rev);
+//            console.log("És una revisió? ", this.rev);
             if (this._getCurrentSectionId() && !this.rev) {
                 this._setCurrentSection(this._getCurrentSectionId());
             }
@@ -1070,7 +1070,7 @@ define([
 
 
         _doEditPartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+//            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
             var dataToSend = this.getQueryEdit(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -1090,7 +1090,7 @@ define([
         },
 
         _doSavePartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+//            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
 
 
@@ -1122,7 +1122,7 @@ define([
         },
 
         _doSavePartialAll: function (event) {
-            console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
+//            console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
 
 
             var chunkParams = [],
@@ -1143,7 +1143,7 @@ define([
             this.hasChanges = false;
 
 
-            console.log("Chunks per desar: ", {chunk_params: chunkParams});
+//            console.log("Chunks per desar: ", {chunk_params: chunkParams});
 
             var section_id = this.dispatcher.getGlobalState().getCurrentElementId();
             section_id= section_id.replace(this.id + "_", "");
@@ -1160,7 +1160,7 @@ define([
 
 
         _doCancelPartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+//            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
             var dataToSend = this.getQueryCancel(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
@@ -1223,7 +1223,7 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-            console.log("EditorSubclass#_doCancel", this.id, event);
+//            console.log("EditorSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
@@ -1314,7 +1314,7 @@ define([
 
 
         onDestroy: function() {
-            console.log("StructuredDocumentSubclass#onDestroy");
+//            console.log("StructuredDocumentSubclass#onDestroy");
             this.dispatcher.getGlobalState().freePage(this);
             this.inherited(arguments);
         }

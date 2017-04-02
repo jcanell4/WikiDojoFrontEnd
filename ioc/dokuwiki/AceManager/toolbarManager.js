@@ -158,7 +158,7 @@ define([], function () {
                         if ($container) {
 
                             var idContainer = $container.attr('id');
-                            console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
+//                            console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
 
                             _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
                             jQuery('#' + idContainer).find('textarea').focus();
@@ -210,7 +210,7 @@ define([], function () {
             var $toolbar = jQuery('#' + toolbarId);
             $toolbar.attr('role', 'toolbar');
 
-            console.log("S'ha trobat la toolbar?", toolbarId, $toolbar)
+//            console.log("S'ha trobat la toolbar?", toolbarId, $toolbar)
 
             // Recorrem tots els botons
             var _buttons = this.getToolbar(type);

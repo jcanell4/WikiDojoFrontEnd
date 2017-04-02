@@ -251,7 +251,7 @@ define([
          * @returns {boolean}
          */
         requirePage: function (contentTool) {
-            console.log("GlobalState#requirePage", contentTool.id);
+//            console.log("GlobalState#requirePage", contentTool.id);
 
             if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] == contentTool.id){
                 this.requiredPages[contentTool.ns] = contentTool.id;
@@ -269,7 +269,7 @@ define([
         },
 
         freePage: function (id, ns) {
-            console.log("Alliberat id:",id,"ns:", ns);
+//            console.log("Alliberat id:",id,"ns:", ns);
             if (this.requiredPages[ns] && this.requiredPages[ns] === id) {
                 delete this.requiredPages[ns];
 

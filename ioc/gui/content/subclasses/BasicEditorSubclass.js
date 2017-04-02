@@ -117,14 +117,9 @@ define([
                         dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
                     }
                 }
-//                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
-//                    id: this.id,
-//                    dataToSend: dataToSend,
-//                    standbyId: containerId
-//                })
 
-                console.log("DATA Enviada amb l'event: ", event);
-                console.log("DATA Enviada al servidor: ", dataToSend);
+//                console.log("DATA Enviada amb l'event: ", event);
+//                console.log("DATA Enviada al servidor: ", dataToSend);
                 
                 return {
                     id: this.id,
@@ -265,7 +260,7 @@ define([
             createEditor: function (id) {
                 var $textarea = jQuery('#textarea_' + id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
 
-                console.log("BasicEditorSubclass#createEditor");
+//                console.log("BasicEditorSubclass#createEditor");
 
 
                 return new AceFacade({

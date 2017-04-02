@@ -45,7 +45,7 @@ define([
                     contentCache = dispatcher.getContentCache(content.id),
                     ret = {};
 
-                console.log("Quina es la id del metaInfonode?", dispatcher.metaInfoNodeId);
+//                console.log("Quina es la id del metaInfonode?", dispatcher.metaInfoNodeId);
 
                 // TODO[Xavi] La neteja del container s'hauria de fer a traves del RemoveAllContentProcessor. Compte amb el setCurrentId que deixaría de funcionar!
 

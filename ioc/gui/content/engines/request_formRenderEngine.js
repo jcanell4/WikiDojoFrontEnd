@@ -98,7 +98,7 @@ define([], function () {
         $container.addClass('request_form');
 
         for (var i = 0; i < data.fields.length; i++) {
-            console.log(data.fields[i]);
+//            console.log(data.fields[i]);
             // ALERTA[Xavi] La creació del camp inclou el label
             var $field = createField(data.fields[i]);
 

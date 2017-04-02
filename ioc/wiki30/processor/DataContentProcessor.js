@@ -36,7 +36,7 @@ define([
 //
 //                // Reemplaçem el contingut del content amb el del draft
 //
-                console.log("value:",value);
+//                console.log("value:",value);
 
                 var ret;
                 if (value.recover_draft) {
@@ -83,7 +83,7 @@ define([
                 dispatcher.getGlobalState().getContent(value.id).readonly = value.editing?value.editing.readonly:false;
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
 
-                console.log("al updatestate del data content processor es posa la rev??", dispatcher.getGlobalState().getContent(value.id));
+//                console.log("al updatestate del data content processor es posa la rev??", dispatcher.getGlobalState().getContent(value.id));
             },
 
             /**
