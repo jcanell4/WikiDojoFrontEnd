@@ -348,7 +348,7 @@ define([
             },
 
             _destroyContentTool: function () {
-                //console.log("AbstractContentTool#destroyContentTool", this.id);
+                console.log("AbstractContentTool#destroyContentTool", this.id);
                 this.dispatchEvent(this.eventName.DESTROY, {id: this.id});
                 this.removeListenerHandlers();
                 this._onDestroy();

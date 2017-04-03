@@ -289,7 +289,7 @@ define([
 
         _generateLastLocalDraftTimesParam: function (chunkId) {
             //return '&structured_last_loca_draft_time=42';
-            return this.draftManager.generateLastLocalDraftTimesParam(this.id, chunkId);
+            return this.draftManager.generateLastLocalDraftTimesParam(this.id, this.ns, chunkId);
 
         },
 

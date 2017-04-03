@@ -125,7 +125,7 @@ define([
             //},
 
             _getLocalDraftContent: function(value, dispatcher) {
-                var draft = dispatcher.getDraftManager().getDraft(value.id),
+                var draft = dispatcher.getDraftManager().getDraft(value.id, value.ns),
                     draftContent = draft.recoverLocalDraft().full.content;
 
                 return draftContent;

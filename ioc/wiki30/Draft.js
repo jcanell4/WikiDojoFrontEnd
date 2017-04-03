@@ -20,12 +20,13 @@ define([
             this.dispatcher = args.dispatcher;
             this.contentTool = args.contentTool;
             this.contentToolId = args.contentTool.id; // Sempre es desa sobre el document original, no sobre els revisions
-            this.id = args.contentTool.id+"_draft";
+            this.id = args.contentTool.id + "_draft";
+            this.ns = args.contentTool.ns;
             this.lastRefresh = Date.now();
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
             this.eventManager = this.dispatcher.getEventManager();
-            if(this.contentTool.autosaveTimer){
+            if (this.contentTool.autosaveTimer) {
                 // this.AUTOSAVE_REMOTE = 10000; //ALERTA[Xavi] per fer proves, canvia el save remot a 10s
                 this.AUTOSAVE_REMOTE = this.contentTool.autosaveTimer;
             }
@@ -51,8 +52,10 @@ define([
             this.contentTool.registerObserverToEvent(this, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.CANCEL, this.destroy.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.DESTROY, this.destroy.bind(this));
-            this.contentTool.registerObserverToEvent(this, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
-            this.contentTool.registerObserverToEvent(this, this.eventName.SAVE, this._clearLocalAll.bind(this));
+            // this.contentTool.registerObserverToEvent(this, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
+            // this.contentTool.registerObserverToEvent(this, this.eventName.SAVE, this._clearLocalAll.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.SAVE_PARTIAL, this._onSavePartial.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.SAVE, this._onSave.bind(this));
         },
 
         _doSave: function () {
@@ -82,19 +85,17 @@ define([
             this.lastRefresh = Date.now();
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
-            var docNs = this.contentTool.ns, // guardat al page
-                draft = this.contentTool._generateDraft(),
+            var draft = this.contentTool._generateDraft(),
                 page = this._doGetPage(),
                 date = Date.now();
 
 
             // Si existeix la actualitzarem, i si no, la creem
             if (!page) {
-                page = {
-                    ns: docNs,
-                    drafts: {}
-                }
+                page = this._createNewPage();
             }
+
+            console.log("Page: ", page);
 
             if (!page.drafts[draft.type]) {
                 page.drafts[draft.type] = {};
@@ -111,6 +112,13 @@ define([
 
             this._doSetPage(page);
 
+        },
+
+        _createNewPage: function () {
+            return {
+                ns: this.contentTool.ns,
+                drafts: {}
+            }
         },
 
         _formatLocalStructuredPage: function (page, draft, date) {
@@ -146,7 +154,6 @@ define([
             var dataToSend = this._getQueryLock();
 
 
-
             this.eventManager.fireEvent(this.eventName.SAVE_DRAFT, {
                 id: this.contentToolId,
                 dataToSend: dataToSend
@@ -157,52 +164,70 @@ define([
             this._removeLocalDraft(this.contentTool.DRAFT_TYPE);
         },
 
-        _clearLocalStructured: function (data) {
-            //console.log("Draft#_clearLocalStructured", data);
-            var pages = this._doGetPages(),
-                chunkId = data.dataToSend.section_id;
+        _onSavePartial: function (data) {
+            console.error("Draft#_onSavePartial", data);
+
+            this.clearDraftChunks(data.dataToSend.section_id);
+
+            // S'ha de cancelar el refresc de l'esborrany
+            this.timers.refresh.cancel();
+
+        },
+
+
+        //ALERTA[Xavi] Nomes elimina els draft local
+        clearDraft: function () {
+            var pages = this._doGetPages();
+
+            pages[this.contentTool.ns] = this._createNewPage();
+
+            // if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
+            //     if(pages[this.contentTool.ns].drafts['full']){
+            //         delete(pages[this.contentTool.ns].drafts['full']);
+            //     }
+            //     if(pages[this.contentTool.ns].drafts['structured']){
+            //         delete(pages[this.contentTool.ns].drafts['structured']);
+            //     }
+            // }
+
+            this._doSetPages(pages);
+        },
+
+        clearDraftChunks: function (chunks) {
+            for (var i = 0; i < chunks.length; i++) {
+                this.clearDraftChunk(chunks[i]);
+            }
+        },
+
+        clearDraftChunk: function (chunkId) {
+            var pages = this._doGetPages();
 
             if (pages[this.contentTool.ns]
                 && pages[this.contentTool.ns].drafts
                 && pages[this.contentTool.ns].drafts['structured']) {
                 delete(pages[this.contentTool.ns].drafts['structured'][chunkId]);
 
-
-
-            } else {
-                //console.log("No existeix cap esborrany que eliminar");
             }
 
             this._doSetPages(pages);
+
+
+        },
+
+        _onSave: function (data) {
+            console.log("Draft#_onSave");
+            this.clearDraft();
 
             // S'ha de cancelar el refresc de l'esborrany
             this.timers.refresh.cancel();
 
         },
 
-        _clearLocalAll: function (data) {
-            var pages = this._doGetPages();
-
-            if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
-                if(pages[this.contentTool.ns].drafts['full']){
-                    delete(pages[this.contentTool.ns].drafts['full']);
-                }
-                if(pages[this.contentTool.ns].drafts['structured']){
-                    delete(pages[this.contentTool.ns].drafts['structured']);
-                }
-            //} else {
-                //console.log("No existeix cap esborrany que eliminar");
-            }
-
-            this._doSetPages(pages);
-
-            // S'ha de cancelar el refresc de l'esborrany
-            this.timers.refresh.cancel();
-
-        },
 
         // Només elimina el draft del tipus indicat
         _removeLocalDraft: function (type) {
+            console.log("Draft#_removeLocalDraft", type);
+
             switch (type) {
                 case 'structured':
                     this._removeLocalStructuredDraft();
@@ -219,7 +244,7 @@ define([
         },
 
         _removeLocalStructuredDraft: function () {
-//            console.log("Draft#_removeLocalStructureDraft");
+            console.log("Draft#_removeLocalStructureDraft");
             // En aquest cas només s'han d'esborrar el draft dels chunks actius al desar
             var pages = this._doGetPages(),
                 draft = this._getLastGeneratedDraft();
@@ -236,17 +261,21 @@ define([
         },
 
         _removeLocalFullDraft: function () {
-//            console.log("Draft#_removeLocalFullDraft", this.contentTool.id);
+            console.log("Draft#_removeLocalFullDraft", this.contentTool.ns);
             var pages = this._doGetPages();
 
-            if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
-                delete(pages[this.contentTool.ns].drafts['full']);
-                delete(pages[this.contentTool.ns].drafts['structured']); // ALERTA[Xavi] Al esborrar el complet s'ha d'esborrar també el parcial, així es com funcionen els drafts remots
-                this._doSetPages(pages);
-//                console.log("S'ha esborrat?", pages);
-            } else {
-                console.log("Fallat: ", this.contentTool.ns, pages);
-            }
+            pages[this.contentTool.ns].drafts = {};
+
+            // ALERTA[Xavi] Al esborrar el complet s'ha d'esborrar també el parcial, així es com funcionen els drafts remots
+
+//             if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
+//                 delete(pages[this.contentTool.ns].drafts['full']);
+//                 delete(pages[this.contentTool.ns].drafts['structured']);
+            this._doSetPages(pages);
+// //                console.log("S'ha esborrat?", pages);
+//             } else {
+//                 console.log("Fallat: ", this.contentTool.ns, pages);
+//             }
         },
 
 
@@ -320,13 +349,13 @@ define([
         },
 
         _doRefresh: function (event) {
-            //console.log('Draft#_doRefresh');
+            // console.log('Draft#_doRefresh');
             var now = Date.now(),
                 elapsedTime = now - this.lastRefresh;
 
             if (elapsedTime >= this.AUTOSAVE_LOCAL) {
                 var saveMode = this._doSave();
-                if(saveMode==0){
+                if (saveMode == 0) {
                     this.waitingRemoteRefresh = true;
                     this._setPendingRefresh(this.AUTOSAVE_REMOTE - elapsedTime + 1);
                 }
@@ -336,16 +365,16 @@ define([
         },
 
         _setPendingRefresh: function (timeout) {
-            //console.log('Draft#_setPendingRefresh', timeout);
+            // console.log('Draft#_setPendingRefresh', timeout);
 
             if (this.waitingRemoteRefresh || this.timers.refresh.expired) {
-                this.waitingRemoteRefresh=false;
+                this.waitingRemoteRefresh = false;
                 this.timers.refresh.start(timeout);
             }
         },
 
         _initTimers: function () {
-            //console.log('Draft#_initTimers');
+            console.log('Draft#_initTimers');
             this.timers = {
                 refresh: new Timer({onExpire: this._doRefresh.bind(this)})
             };
@@ -353,7 +382,7 @@ define([
         },
 
         _cancelTimers: function () {
-            //console.log('Draft#_cancelTimers', this.timers);
+            console.log('Draft#_cancelTimers', this.timers);
             for (var timer in this.timers) {
                 this.timers[timer].cancel();
             }
@@ -364,23 +393,24 @@ define([
         },
 
         _onDestroy: function () {
-            //console.log("Draft#onDestroy");
+            console.log("Draft#onDestroy", this.contentTool.id, this.contentTool.ns);
             //alert("Destruint draft:" + this.contentToolId);
             this._cancelTimers();
 //            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
 //            this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
-            this.dispatchEvent(this.eventName.DESTROY, {id: this.contentToolId});
+            this.dispatchEvent(this.eventName.DESTROY, {id: this.contentToolId, ns: this.contentTool.ns});
             this.inherited(arguments);
         },
 
         recoverLocalDraft: function () {
-            //console.log("Draft#recoverLocalDraft", this._doGetPage());
+            console.log("Draft#recoverLocalDraft", this._doGetPage());
 
             var page = this._doGetPage();
+
             if (page && page.drafts) {
-                return page.drafts
+                return page.drafts;
             } else {
-                return {}
+                return {};
             }
         },
 
@@ -389,12 +419,13 @@ define([
 
             for (var i = 0; i < localStorage.length; i++) {
                 spaceUsed += (localStorage[localStorage.key(i)].length * 2) / 1024; // KB
-        }
+            }
 
 //            console.log("LocalStorage usage: ", spaceUsed.toFixed(2) + " KB");
 
             return spaceUsed;
-        }
+        },
+
 
     });
 

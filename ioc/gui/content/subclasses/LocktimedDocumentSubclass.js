@@ -54,13 +54,13 @@ define([
         onDestroy: function () {
             //console.log("LocktimedDocumentSubclass#onDestroy");
             this.dispatcher.getLockManager().unlock(this.id);
-            this.draftManager.getDraft(this.id, this).destroy();
+            this.draftManager.getDraft(this.id, this.ns, this).destroy();
             this.inherited(arguments);
         },
 
         getDraft: function () {
             //console.log("LocktimedDocumentSubclass#getDraft", this.id);
-            var draft = this.draftManager.getDraft(this.id, this);
+            var draft = this.draftManager.getDraft(this.id, this.ns, this);
             //console.log("Draft:", draft);
             return draft;
 

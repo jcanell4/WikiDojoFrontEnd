@@ -59,11 +59,13 @@ define([
                 }
 
                 if (confirmation) {
+                    console.log("S'ha confirmat, quin es el valor de clarDraft?", clearDraft);
                     if(clearDraft){
-                        dispatcher.getDraftManager().clearDraft(id);
+                        dispatcher.getDraftManager().clearDraft(value.id, value.ns);
+
+
                         if(value.hasDraft){
-                            //console.log("Eliminat esborrany");
-                            // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
+                            console.log("Eliminat esborrany");
                             dispatcher.getEventManager().fireEvent(
                                    dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
                                        id: value.id,

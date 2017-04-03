@@ -164,12 +164,12 @@ define([
 
                     if (confirmation) {
                         if(clearDraft===1){
-                            dispatcher.getDraftManager().clearDraftChunks(value.id, value.cancel);
+                            dispatcher.getDraftManager().clearDraftChunks(value.id, value.ns, value.cancel);
                             if(value.hasDraft){
                                 this._clearRemoteDraftChunks(value, dispatcher);
                             }
                         }else if(clearDraft===2){
-                            dispatcher.getDraftManager().clearDraft(value.id);
+                            dispatcher.getDraftManager().clearDraft(value.id, value.ns);
                             if(value.hasDraft){
                                 this._clearRemoteDraft(value, dispatcher);
                             }                            

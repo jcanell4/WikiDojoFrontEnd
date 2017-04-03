@@ -39,6 +39,7 @@ define([
                 this._setActionType(value);
 
                 this.docId = value.id;
+                this.docNs = value.ns;
                 this.query = this._buildQuery(value);
                 this.isLocalDraft = value.params.local;
 
@@ -131,13 +132,12 @@ define([
             _getDraftLocal: function (value) {
                 console.log("DraftProcessor#_getDraftLocal", value);
                 console.log("docId:", this.docId);
-                var draft = this.draftManager.getDraft(this.docId).recoverLocalDraft();
+                var draft = this.draftManager.getDraft(this.docId, this.docNs).recoverLocalDraft();
 
                 switch (value.type) {
                     case 'full_document': //falling-through intencionat
                         return {content: draft.full.content, date: draft.full.date};
                     case 'partial_document':
-                        // TODO[Xavi] S'ha d canviar la estructura si volem poder recuperar la data de cada fragment individualment
                         return {
                             content: draft.structured[value.selected].content,
                             date: draft.structured[value.selected].date

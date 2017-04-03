@@ -7,6 +7,8 @@ define([
     var DraftManagerException = function (message) {
         this.message = message;
         this.name = "DraftManagerException";
+
+        console.error(this.name, this.message);
     };
 
     return declare([EventObserver], {
@@ -16,39 +18,41 @@ define([
             this.drafts = {};
         },
 
-        getDraft: function (docId, contentTool) {
-            //console.log('DraftManager#getDraft', docId);
+        getDraft: function (docId, docNs, contentTool) {
+            console.error('DraftManager#getDraft', docId, docNs);
             var contentCache;
 
-            if (!docId) {
-                throw new DraftManagerException('No s\'ha passat cap identificador del document: ', docId);
+            if (!docNs) {
+                throw new DraftManagerException('No s\'ha passat cap identificador del document: ', docNs);
             }
 
-            if (!this.drafts[docId] && contentTool) {
-                //console.log("Creant nou draft a partir del contenttool");
+            if (!this.drafts[docNs] && contentTool) {
+                console.log("Creant nou draft a partir del contenttool");
                 this._generateDraft(contentTool);
 
-            } else if (!this.drafts[docId]) {
+            } else if (!this.drafts[docNs]) {
 
                 contentCache = this.dispatcher.getContentCache(docId);
 
 
                 if (contentCache) {
-                    //console.log("Creant nou draft a partir del contentCache");
+                    console.log("Creant nou draft a partir del contentCache");
 
                     this._generateDraft(contentCache.getMainContentTool());
 
                 } else {
-                    throw new DraftManagerException('No existeix cap ContentTool pel document: ' + docId);
+                    throw new DraftManagerException('No existeix cap ContentTool pel document: ' + docNs);
                 }
             }
 
-            return this.drafts[docId];
+            console.log("Retornant draft: ", this.drafts[docNs], this.drafts);
+
+            return this.drafts[docNs];
         },
 
-        getLastLocalDraftTime: function (docId, chunkId) {
-            //console.log("DraftManager#getLastLocalDraftTime", docId, chunkId);
-            var draft = this.getDraft(docId),
+        getLastLocalDraftTime: function (docId, docNs, chunkId) {
+            console.error("DraftManager#getLastLocalDraftTime", docId, docNs, chunkId);
+            var draft = this.getDraft(docId, docNs),
                 drafts = draft.recoverLocalDraft(),
                 time = {};
 
@@ -67,10 +71,10 @@ define([
             return time;
         },
 
-        generateLastLocalDraftTimesParam: function (docId, chunkId) {
+        generateLastLocalDraftTimesParam: function (docId, docNs, chunkId) {
             //console.log("DraftManager#generateLastLocalDraftTimesParam", docId, chunkId);
 
-            var localDraftTimes = this.getLastLocalDraftTime(docId, chunkId),
+            var localDraftTimes = this.getLastLocalDraftTime(docId, docNs, chunkId),
                 param = '';
 
             if (localDraftTimes !== null) {
@@ -84,80 +88,111 @@ define([
         },
 
         _generateDraft: function (contentTool) {
+            console.log("DraftManager#_generateDraft", contentTool);
             var draft = new Draft({dispatcher: this.dispatcher, contentTool: contentTool});
             this.registerMeToEventFromObservable(draft, this.eventName.DESTROY, this._removeDraft.bind(this));
-            this.drafts[contentTool.id] = draft;
+            this.drafts[contentTool.ns] = draft;
+
+            console.log("Generat draft:", draft, " Pel ns:", contentTool.ns);
         },
 
         _removeDraft: function (data) {
-            //console.log("DraftManager#_removeDraft", data);
-            delete(this.drafts[data.id]);
+            console.log("DraftManager#_removeDraft", data);
+            delete(this.drafts[data.ns]);
         },
 
-        clearDraft: function (id) {
-            //console.log("DraftManager#clearDraft", id);
+        clearDraft: function (id, ns) {
+            console.log("DraftManager#clearDraft", id, ns);
 
-            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
-                user = JSON.parse(localStorage.getItem(userId)) || {pages: {}},
-                pages = user.pages;
+            var draft;
 
-            if (pages && pages[id]) {
-                //console.log("Eliminant esborrany local per l'usuari", user);
-                pages[id].drafts = {};
-                //delete(pages[id]);
-                localStorage.setItem(userId, JSON.stringify({pages: pages}));
-
+            if (!this.drafts[ns]) {
+                draft = this.getDraft(id, ns);
             } else {
-                //console.log("No hi ha esborranys locals per descartar per aquest usuari i document", user, id);
+                draft = this.drafts[ns];
             }
+
+            draft.clearDraft();
+
+
+
+            // var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+            //     user = JSON.parse(localStorage.getItem(userId)) || {pages: {}},
+            //     pages = user.pages;
+            //
+            // if (pages && pages[id]) {
+            //     //console.log("Eliminant esborrany local per l'usuari", user);
+            //     pages[id].drafts = {};
+            //     //delete(pages[id]);
+            //     localStorage.setItem(userId, JSON.stringify({pages: pages}));
+            //
+            // } else {
+            //     //console.log("No hi ha esborranys locals per descartar per aquest usuari i document", user, id);
+            // }
 
             //console.log("DraftManager#clearDraft OK");
 
         },
 
-        clearDraftChunks: function (id, chunks) {
-            //console.log("DraftManager#clearDraftChunks", id);
+        clearDraftChunks: function (id, ns, chunks) {
+            console.log("DraftManager#clearDraftChunks", id, ns, chunks);
+            var draft;
 
-            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
-                user = JSON.parse(localStorage.getItem(userId)),
-                pages = user?user.pages:null;
-
-            if (pages && pages[id]) {
-                //console.log("Eliminant chunks locals per l'usuari", user, chunks);
-
-                pages[id].drafts = this._removeDraftChunk(pages[id].drafts, chunks);
-                //delete(pages[id]);
-                localStorage.setItem(userId, JSON.stringify({pages: pages}));
-
+            if (!this.drafts[ns]) {
+                draft = this.getDraft(id, ns);
             } else {
-                //console.log("No hi ha esborranys locals per descartar per aquest usuari i document", user, id);
+                draft = this.drafts[ns];
             }
+
+            draft.clearDraftChunks(chunks);
+
+
+            // var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+            //     user = JSON.parse(localStorage.getItem(userId)),
+            //     pages = user?user.pages:null;
+            //
+            // if (pages && pages[id]) {
+            //     //console.log("Eliminant chunks locals per l'usuari", user, chunks);
+            //
+            //     pages[id].drafts = this._removeDraftChunk(pages[id].drafts, chunks);
+            //     //delete(pages[id]);
+            //     localStorage.setItem(userId, JSON.stringify({pages: pages}));
+            //
+            // }
 
             //console.log("DraftManager#clearDraft OK");
 
         },
 
-        _removeDraftChunk: function (drafts, chunks) {
-            if (!drafts) {
-                //console.log("No hi han pàgines, no cal eliminar res", drafts);
-                return;
+        // _removeDraftChunk: function (drafts, chunks) {
+        //     if (!drafts) {
+        //         //console.log("No hi han pàgines, no cal eliminar res", drafts);
+        //         return;
+        //     }
+        //
+        //     for (var i = 0; i < chunks.length; i++) {
+        //         if (drafts.structured) {
+        //             delete(drafts.structured[chunks[i]]);
+        //         } else {
+        //             //console.log("No hi ha draft per esborrar:", drafts);
+        //         }
+        //
+        //
+        //     }
+        //
+        //     return drafts;
+        // },
+
+        hasDraft: function (ns) {
+            var draft = this.drafts[ns];
+
+            if (draft && drafts[ns]) {
+                return true;
+            } else {
+                return false;
             }
 
-            for (var i = 0; i < chunks.length; i++) {
-                if (drafts.structured) {
-                    delete(drafts.structured[chunks[i]]);
-                } else {
-                    //console.log("No hi ha draft per esborrar:", drafts);
-                }
-
-
-            }
-
-            return drafts;
-        },
-
-        hasDraft: function (id) {
-            return this.drafts[id] ? true : false;
+            // return this.drafts[ns] ? true : false;
         }
 
     });
