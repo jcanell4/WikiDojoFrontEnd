@@ -42,18 +42,24 @@ define([
                 if (value.recover_draft) {
                     var  draftContent;                
                     if (value.recover_draft.recover_local === true) {
+                        console.log("** Recuperant draft local **");
                         draftContent =this._getLocalDraftContent(value, dispatcher);
-
                     } else if (value.recover_draft.recover_draft ===true && value.draft !=null) {
+                        console.log("** Recuperant draft remot **");
+
                         draftContent = value.draft.content;
 
                     } else {
+                        console.log("** Document original, no hi ha draft **");
                         // No s'ha demanat recuperar cap draft, o no s'ha enviat el draft per recuperar
                     }
 //
 //                    $form.find('textarea').html(draftContent);
 //                    value.content = jQuery('<div>').append($form.clone()).html();
 
+
+
+                    value.originalContent = value.content;
                     value.content = draftContent;
                 }
 
@@ -97,6 +103,8 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
+
+                console.log("***Existeix el currentContent?", content.currentContent);
                 var args = {
                     ns: content.ns,
                     id: content.id,
@@ -105,7 +113,8 @@ define([
                     closable: true,
                     dispatcher: dispatcher,
                     //originalContent: this._extractContentFromNode(content),
-                    originalContent: content.content,
+                    //originalContent: content.content,
+                    originalContent: content.originalContent? content.originalContent : content.content,
                     type: this.type,
                     locked: content.editing.locked,
                     readonly: content.editing.readonly,

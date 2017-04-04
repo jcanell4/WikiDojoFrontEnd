@@ -95,6 +95,8 @@ define([
                 this.inherited(arguments);
                 
                 this.lockDocument(); // Lock i Draft  [JOSEP]:Ara no cal això, ja que es bloqueja des del servidor en fer la petició d'edició
+
+                this._checkChanges();
             },
             
             _refreshEdition: function(event){
@@ -237,7 +239,7 @@ define([
             },
 
             _doSave: function (event) {
-                if (this.hasChanges) {
+                if (this.hasChanges || this.rev) {
                     return this.inherited(arguments);
                 } else {
                     return {_cancel:true}

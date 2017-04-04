@@ -82,6 +82,7 @@ define([
             }
 
             this.fillEditorContainer();
+            this._checkChanges();
 
         },
 
@@ -384,6 +385,7 @@ define([
          * @param {string} text - Text per substituir
          */
         updateChunk: function (header_id, text) {
+            console.log("StructuredDocumentSubclass#updateChunk", header_id);
             var chunk,
                 i = 0,
                 found = false;
@@ -463,6 +465,7 @@ define([
             //this.registerObserverToEvent(this, this.eventNameCompound.CANCEL, this._doCancelDocument.bind(this));
 
             this.updateTitle(this.data);
+            // this._checkChanges();
         },
 
 
@@ -470,7 +473,7 @@ define([
         _checkChanges: function () {
 
             // Si el document està bloquejat mai hi hauran canvis
-            if (!this.locked) {
+            if (!this.locked && this.changesManager) {
                 this.changesManager.updateContentChangeState(this.id);
             }
         },
@@ -483,7 +486,7 @@ define([
          */
         isContentChanged: function () {
 
-            //console.log("StructuredDocumentSubclass#isContentChanged");
+            console.log("StructuredDocumentSubclass#isContentChanged");
 
             // * El editing dels chunks en edicio es diferent del $textarea corresponent
             var chunk,
@@ -588,8 +591,10 @@ define([
          * @private
          */
         _getOriginalContent: function (header_id) {
-            if (this.changedChunks[header_id] && this.changedChunks[header_id].content) {
+            console.log("StructuredDocumentSubclass#_getOriginalContent");
 
+            if (this.changedChunks[header_id] && this.changedChunks[header_id].content) {
+                // console.log("Trobat el changed chunk!", this.changedChunks[header_id].content)
                 return this.changedChunks[header_id].content;
 
             } else {
@@ -600,7 +605,7 @@ define([
 
                     if (chunk.text && chunk.header_id == header_id) {
 
-                        //console.log("ChangedChunks:", this.changedChunks, "header_id", header_id);
+                        // console.log("ChangedChunks:", this.changedChunks, "header_id", header_id);
                         this.changedChunks[header_id].content = chunk.text.editing;
                         return chunk.text.editing;
                     }
@@ -609,18 +614,9 @@ define([
         },
 
         _setOriginalContent: function (header_id, content) {
-//            console.log("StructuredDocumentSubclass#_setOriginalContent", header_id, content);
-
-
-            var index = this.data.dictionary[header_id],
-                chunk = this.data.chunks[index];
-
-//            console.log("Contingut anterior:", chunk.text.editing );
-
-            chunk.text.editing = content;
-
-//            console.log("Contingut actual:", chunk.text.editing );
-
+           // console.log("StructuredDocumentSubclass#_setOriginalContent", header_id, content);
+            this.changedChunks[header_id] = {};
+            this.changedChunks[header_id].content = content;
 
 
 
@@ -650,20 +646,40 @@ define([
          * @param content
          */
         updateDocument: function (content) {
-            var draft, index;
+            var draft, index, keepOriginalContent = false;
             //console.log('StructuredDocumentSubclass#updateDocument', content);
+            index = content.dictionary[content.selected];
+
 
             if (content.recover_local === true) {
+                console.log("*** ESBORRANY LOCAL***");
                 draft = this.getDraftChunk(content.selected);
-                index = content.dictionary[content.selected];
+
 
                 //console.log("Draft:", draft);
                 //console.log("Content:", content.chunks[index].text.editing);
 
+                // Això estableix el contingut anterior com a contingut original
+                this._setOriginalContent(content.selected, content.chunks[index].text.editing);
+
                 content.chunks[index].text.editing = draft;
+                keepOriginalContent = true;
+
+            } else if (content.chunks[index] && content.chunks[index].text && content.chunks[index].text.originalContent) {
+                console.log("*** ESBORRANY REMOT ***");
+                this._setOriginalContent(content.selected, content.chunks[index].text.originalContent);
+                keepOriginalContent = true;
+            } else {
+                console.log("*** NO ES TRACTA D'UN ESBORRANY ***");
             }
 
-            this._updateChunks(content);
+            // TODO[Xavi] En cas del draft remot el content ja arriba modificat, s'ha d'extreure el contentOriginal (que ara no s'envia) d'un altre camp
+
+
+
+
+
+            this._updateChunks(content, keepOriginalContent);
             this._updateStructure(content);
             this.updateTitle(content);
 
@@ -745,7 +761,7 @@ define([
          * @param content
          * @private
          */
-        _updateChunks: function (content) {
+        _updateChunks: function (content, keepOriginalContent) {
             // console.log("StructuredDocumentSubclass#_updateChunks", content);
             var i, chunk;
 
@@ -762,7 +778,10 @@ define([
                             this._generateEmptyChangedChunk(chunk.header_id);
                         }
 
-                        this.changedChunks[chunk.header_id].content = chunk.text.editing;
+                        if (!keepOriginalContent) {
+                            this.changedChunks[chunk.header_id].content = chunk.text.editing;
+                        }
+
                         this.editingChunks.push(chunk.header_id);
                         this.editingChunksCounter++; // TODO[Xavi] Afegir un mètode generic per tots els contentTools que retorni aquest nombre
 

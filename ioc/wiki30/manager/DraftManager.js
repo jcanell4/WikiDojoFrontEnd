@@ -45,7 +45,7 @@ define([
                 }
             }
 
-            console.log("Retornant draft: ", this.drafts[docNs], this.drafts);
+            console.error("Retornant draft: ", this.drafts[docNs], this.drafts);
 
             return this.drafts[docNs];
         },
@@ -183,17 +183,19 @@ define([
         //     return drafts;
         // },
 
-        hasDraft: function (ns) {
-            var draft = this.drafts[ns];
-
-            if (draft && drafts[ns]) {
-                return true;
-            } else {
-                return false;
-            }
-
-            // return this.drafts[ns] ? true : false;
-        }
+        // ALERTA[Xavi] No es crida en lloc
+        // hasDraft: function (ns) {
+        //
+        //     var draft = this.drafts[ns];
+        //
+        //     if (draft && drafts[ns]) {
+        //         return true;
+        //     } else {
+        //         return false;
+        //     }
+        //
+        //     // return this.drafts[ns] ? true : false;
+        // }
 
     });
 
