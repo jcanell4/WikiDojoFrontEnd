@@ -351,7 +351,7 @@ define([
              * @returns {DokuwikiContent} el contingut corresponent
              */
             getContentCache: function (id) {
-                //console.log("Dispatcher#getContentCache", id);
+                // console.log("Dispatcher#getContentCache", id, this.contentCache);
                 return this.contentCache[id];
             },
 
@@ -527,7 +527,7 @@ define([
              * @param {string} id
              */
             removeDocumentState: function (id) {
-                //console.log("Dispatcher#removeDocumentState", id);
+                // console.log("Dispatcher#removeDocumentState", id);
                 this.getGlobalState().deleteContent(id);
 
                 if (this.contentCache[id]) {

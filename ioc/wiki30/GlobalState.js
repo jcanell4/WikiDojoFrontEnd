@@ -251,29 +251,33 @@ define([
          * @returns {boolean}
          */
         requirePage: function (contentTool) {
-//            console.log("GlobalState#requirePage", contentTool.id);
+           console.log("GlobalState#requirePage", contentTool.id);
 
             if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] == contentTool.id){
                 this.requiredPages[contentTool.ns] = contentTool.id;
+                console.log("Requerit amb èxit");
                 return true;
             }  else {
 
                 var id = this.requiredPages[contentTool.ns],
-                    owner = contentTool.dispatcher.getContentCache(id).getMainContentTool();
+                    contentCache =contentTool.dispatcher.getContentCache(id),
+                    owner;
+
+
+                    owner = contentCache.getMainContentTool();
 
                 owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
 
+                console.log("No es pot requerir");
                 return false;
             }
 
         },
 
         freePage: function (id, ns) {
-//            console.log("Alliberat id:",id,"ns:", ns);
+           // console.log("Alliberat id:",id,"ns:", ns);
             if (this.requiredPages[ns] && this.requiredPages[ns] === id) {
                 delete this.requiredPages[ns];
-
-                // TODO[Xavi] disparar l'event "freePage" indicant el "ns" del document
             }
         }
     };

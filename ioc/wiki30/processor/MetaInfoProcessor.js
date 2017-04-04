@@ -98,7 +98,6 @@ define([
                         nodeMetaInfo.addChild(cp);
 
                     } else {
-                        console.log("Actualitzant la meta del document:", meta)
                         currentMetaItem.updateDocument(meta.content);
                         cp = currentMetaItem;
                     }

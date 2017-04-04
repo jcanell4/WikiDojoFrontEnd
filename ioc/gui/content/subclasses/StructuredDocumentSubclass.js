@@ -1288,11 +1288,15 @@ define([
         onClose: function() {
             var eventManager = this.dispatcher.getEventManager();
             eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: "no_response=true"}, this.id);
+            this.freePage();
             return this.inherited(arguments);
         },
 
         requirePage: function() {
             var readOnly = !this.dispatcher.getGlobalState().requirePage(this);
+
+            console.log("S'ha requerit?", !readOnly);
+
             this.setReadOnly(readOnly);
         },
 
@@ -1308,6 +1312,7 @@ define([
 
 
         freePage: function() {
+            console.log("StructuredDocumentSubclass#freePage");
             this.dispatcher.getGlobalState().freePage(this.id, this.ns);
             this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
         },

@@ -19,7 +19,7 @@ define([
         },
 
         getDraft: function (docId, docNs, contentTool) {
-            console.error('DraftManager#getDraft', docId, docNs);
+            // console.log('DraftManager#getDraft', docId, docNs);
             var contentCache;
 
             if (!docNs) {
