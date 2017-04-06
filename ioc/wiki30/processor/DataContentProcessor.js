@@ -2,8 +2,9 @@ define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/ContentProcessor",
     "ioc/gui/content/contentToolFactory",
-    "dijit/registry"
-], function (declare, ContentProcessor, contentToolFactory, registry) {
+    "dijit/registry",
+    "ioc/wiki30/manager/EventFactory",
+], function (declare, ContentProcessor, contentToolFactory, registry, EventFactory) {
 
     return declare([ContentProcessor],
         /**
@@ -40,11 +41,11 @@ define([
 
                 var ret;
                 if (value.recover_draft) {
-                    var  draftContent;                
+                    var draftContent;
                     if (value.recover_draft.recover_local === true) {
                         console.log("** Recuperant draft local **");
-                        draftContent =this._getLocalDraftContent(value, dispatcher);
-                    } else if (value.recover_draft.recover_draft ===true && value.draft !=null) {
+                        draftContent = this._getLocalDraftContent(value, dispatcher);
+                    } else if (value.recover_draft.recover_draft === true && value.draft != null) {
                         console.log("** Recuperant draft remot **");
 
                         draftContent = value.draft.content;
@@ -56,7 +57,6 @@ define([
 //
 //                    $form.find('textarea').html(draftContent);
 //                    value.content = jQuery('<div>').append($form.clone()).html();
-
 
 
                     value.originalContent = value.content;
@@ -86,7 +86,7 @@ define([
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
-                dispatcher.getGlobalState().getContent(value.id).readonly = value.editing?value.editing.readonly:false;
+                dispatcher.getGlobalState().getContent(value.id).readonly = value.editing ? value.editing.readonly : false;
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
 
 //                console.log("al updatestate del data content processor es posa la rev??", dispatcher.getGlobalState().getContent(value.id));
@@ -114,14 +114,16 @@ define([
                     dispatcher: dispatcher,
                     //originalContent: this._extractContentFromNode(content),
                     //originalContent: content.content,
-                    originalContent: content.originalContent? content.originalContent : content.content,
+                    originalContent: content.originalContent ? content.originalContent : content.content,
                     type: this.type,
                     locked: content.editing.locked,
                     readonly: content.editing.readonly,
                     rev: content.rev,
-                    ignoreLastNSSections : content.ignoreLastNSSections
+                    ignoreLastNSSections: content.ignoreLastNSSections,
+                    cancelDialog: this._generateDiscardDialog(content.id, dispatcher, content.extra.dialogSaveOrDiscard),
+                    messageChangesDetected: content.extra.messageChangesDetected
                 };
-                if(content.autosaveTimer){
+                if (content.autosaveTimer) {
                     args["autosaveTimer"] = content.autosaveTimer;
                 }
 
@@ -133,25 +135,25 @@ define([
             //    return content.content;
             //},
 
-            _getLocalDraftContent: function(value, dispatcher) {
+            _getLocalDraftContent: function (value, dispatcher) {
                 var draft = dispatcher.getDraftManager().getDraft(value.id, value.ns),
                     draftContent = draft.recoverLocalDraft().full.content;
 
                 return draftContent;
             },
-            
-            _initTimer: function(params, dispatcher){
+
+            _initTimer: function (params, dispatcher) {
                 var contentTool = registry.byId(params.id);
                 var paramsOnExpire = params.timer.dialogOnExpire;
                 paramsOnExpire.contentTool = contentTool;
                 paramsOnExpire.closable = false;
                 paramsOnExpire.timeout = params.timer.timeout;
                 contentTool.initTimer({
-                        onExpire: function(ptimer){
-                            // a) Si hi ha canvis:
-                            if(ptimer.contentTool.isContentChanged()){
+                    onExpire: function (ptimer) {
+                        // a) Si hi ha canvis:
+                        if (ptimer.contentTool.isContentChanged()) {
                             //          1) enviar demanda de bloqueig
-                                ptimer.contentTool.fireEvent(ptimer.contentTool.eventName.REFRESH_EDITION);
+                            ptimer.contentTool.fireEvent(ptimer.contentTool.eventName.REFRESH_EDITION);
                             //          2) Mostrar diàleg no closable informant 
                             //                  que s'ha sobrepassat el temps de bloqueig 
                             //                  sense cap activitat i per tant es demana
@@ -161,23 +163,70 @@ define([
                             //                  en X temps, es passarà a calcel·lar els canvis.
                             //                  La cancel·lació s'envia forçant la cancel·lació 
                             //                  dels canvis + un alerta informant del fet
-                                ptimer.id = ptimer.contentTool.id;
-                                var dialog = dispatcher.getDialogManager().getDialog('lock_expiring'
-                                                                        , "lockExpiring_"+ptimer.contentTool.id
-                                                                        , ptimer);
-                                ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
-                                dialog.show();                                
+                            ptimer.id = ptimer.contentTool.id;
+                            var dialog = dispatcher.getDialogManager().getDialog('lock_expiring'
+                                , "lockExpiring_" + ptimer.contentTool.id
+                                , ptimer);
+                            ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
+                            dialog.show();
                             // b) Si no hi ha canvis, es cancel·la sense avís previ, però a mé 
                             //                  de l'html s'envia també una alerta informant del fet
-                            }else{                                
-                                ptimer.contentTool.fireEvent(
-                                        ptimer.cancelContentEvent, 
-                                        ptimer.cancelEventParams);
-                            }
-                        },
-                        paramsOnExpire: paramsOnExpire
-                    });
+                        } else {
+                            ptimer.contentTool.fireEvent(
+                                ptimer.cancelContentEvent,
+                                ptimer.cancelEventParams);
+                        }
+                    },
+                    paramsOnExpire: paramsOnExpire
+                });
                 contentTool.startTimer(params.timer.timeout);
+            },
+
+            // TODO[Xavi] Localitzar tots els textos (arribaran del servidor, params.message i params del buttons)
+            _generateDiscardDialog: function (docId, dispatcher, params) {
+                // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, {
+                //     id: docId,
+                //     message: "Vols desar els canvis?",
+                //     closable: false,
+                //     buttons: [
+                //         {
+                //             id: 'no-desar',
+                //             description: 'No desar',
+                //             buttonType: 'fire_event',
+                //
+                //             extra: [{
+                //                 eventType : 'cancel',
+                //                 data: {discardChanges: true},
+                //                 observable: docId
+                //             }
+                //             ]
+                //
+                //         },
+                //         {
+                //             id: 'desar',
+                //             description: 'Desar el document',
+                //             buttonType: 'fire_event',
+                //
+                //             extra: [ {
+                //                 eventType : 'save',
+                //                 data: {},
+                //                 observable: docId
+                //             },{
+                //                 eventType : 'cancel',
+                //                 data: {discardChanges: true},
+                //                 observable: docId
+                //             }
+                //             ]
+                //         }
+                //     ]
+                //
+                // });
+
+                console.log("Params pel dialog:", params);
+
+                var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
+                return dialog;
             }
+
         });
 });

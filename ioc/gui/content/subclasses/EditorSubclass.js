@@ -114,9 +114,34 @@ define([
                 var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
+                // if (data.discardChanges || (data.discardChanges == null && (this.isContentChanged() && this.dispatcher.discardChanges()))) {
                 if (data.discardChanges) {
+
                     dataToSend = this.getQueryForceCancel(); // el paràmetre no es fa servir
-                } else {
+
+                } else if (data.discardChanges === undefined && this.isContentChanged() /*&& !data.confirmed*/) {
+
+                    if (this._discardChanges()) {
+                        // TODO[Xavi] Mostrar el dialog per cancel·lar edició -> desar document o sortir sense desar, el callback dispara el mateix event amb el paràmetre ("confirmed: true");
+                        // El dialog s'haurà passat al constructor des del processor
+                        console.log("Existeix el dialog?", this.cancelDialog);
+                        this.cancelDialog.show();
+
+                        // La cancel·lació es tornarà a disparar des del dialog
+
+                    } else {
+                        console.log("No s'ha cridat al dialog");
+                    }
+                    // ALERTA[Xavi] Es cancel·la l'enviament
+
+                    return {_cancel: true};
+
+
+                }   else {
+
+
+
+
                     dataToSend = this.getQueryCancel(); // el paràmetre no es fa servir
                 }
 
@@ -152,6 +177,12 @@ define([
                     standbyId: containerId
                 };
 
+            },
+
+            _discardChanges:function() {
+                // TODO[Xavi] Localitzar
+                // return confirm("S'han produït canvis al document. Vols tancar-lo?");
+                return confirm(this.messageChangesDetected);
             },
 
             _getDataFromEvent: function (event) {
@@ -238,7 +269,8 @@ define([
                 this.lastCheckedContent = content;
             },
 
-            _doSave: function (event) {
+            _doSave: function (event)
+            {
                 if (this.hasChanges || this.rev) {
                     return this.inherited(arguments);
                 } else {

@@ -14,6 +14,7 @@ define([
 
         buttonType: {
             REQUEST_CONTROL: 'request_control',
+            FIRE_EVENT: 'fire_event',
             CANCEL: 'cancel',
             DEFAULT: 'default'
         },
@@ -87,6 +88,11 @@ define([
                     //          dataToSend: dades que es passen al request control}
                     button = this._createRequestButton(params);
                     break;
+
+                case this.buttonType.FIRE_EVENT:
+                    button = this._createEventButton(params);
+                    break;
+
 
                 case this.buttonType.CANCEL:
                     button = this._createCancelButton(params);
@@ -193,9 +199,10 @@ define([
 
         _createRequestButton: function (params) {
             var button = {
-                id: params.id,
-                description: params.description,
-            }, callback;
+                    id: params.id,
+                    description: params.description
+                },
+                callback;
 
 
             if (Array.isArray(params.extra)) {
@@ -212,6 +219,30 @@ define([
             button.callback = callback;
 
             return button;
+        },
+
+        _createEventButton: function(params) {
+            var button = {
+                    id: params.id,
+                    description: params.description,
+                },
+                callback;
+
+
+            if (Array.isArray(params.extra)) {
+                callback = [];
+                for (var i = 0; i < params.extra.length; i++) {
+                    callback.push(this._generateFireEventCallback(params.extra[i].eventType, params.extra[i].data, params.extra[i].observable));
+                }
+
+            } else {
+                callback = this._generateFireEventCallback(params.extra[i].eventType, params.extra[i].data, params.extra[i].observable);
+            }
+
+            button.callback = callback;
+
+            return button;
+
         },
 
         _createCancelButton: function (params) {
@@ -242,6 +273,25 @@ define([
                     id: this.id,
                     dataToSend: dataToSend
                 }, observable);
+            }
+
+        },
+
+        _generateFireEventCallback: function (event, data, observable) {
+            //console.log("DialogBuilder#_generateRequestControllCallback", event, dataToSend);
+
+            if (!data.id) {
+                if (typeof pObservable === "string") {
+                    data.id = observable;
+
+                } else {
+                    data.id = observable.id;
+                }
+            }
+
+            return function () {
+                //console.log("Click:", event, dataToSend);
+                this.eventManager.fireEventFromObservable(event, data, observable); // Això fa referencia al eventManager del dialog
             }
 
         },

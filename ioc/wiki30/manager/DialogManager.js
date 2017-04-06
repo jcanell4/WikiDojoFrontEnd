@@ -20,7 +20,8 @@ define([
                 DIFF: 'diff',
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
-                LOCK_WARNING: 'lock_warning'
+                LOCK_WARNING: 'lock_warning',
+                SAVE_OR_CANCEL: 'save_or_cancel',
             },
 
             constructor: function (args) {
@@ -83,6 +84,10 @@ define([
 
                     case this.type.LOCK_WARNING:
                         dialogBuilder = this._getLockWarningDialog(refId, params);
+                        break;
+
+                    case this.type.SAVE_OR_CANCEL:
+                        dialogBuilder = this._getSaveOrCancelDialog(refId, params);
                         break;
 
 
@@ -300,6 +305,7 @@ define([
                 //console.log("DialogManager#_removeDialog", data);
                 delete(this.dialogs[data.refId][data.id]);
             },
+
 
             /**
              * Cancela tots els dialogs corresponents a la raferencia passat com argument

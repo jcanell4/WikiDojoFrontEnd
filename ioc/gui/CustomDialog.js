@@ -152,6 +152,9 @@ define([
                 return;
             }
             var buttonId;
+
+            var context = this;
+
             for (var i = 0; i < this.buttons.length; i++) {
                 buttonId = this._getButtonId(this.buttons[i].id);
 //                $button = jQuery('#' + buttonId);
@@ -162,11 +165,15 @@ define([
                     this.buttons[i].widget._callbackDlg = [];
                     this.buttons[i].widget._removeDlg = this.remove.bind(this);
                     for (var j = 0; j < this.buttons[i].callback.length; j++) {
-                        this.buttons[i].widget._callbackDlg.push(this.buttons[i].callback.bind(this));
+
+                        this.buttons[i].widget._callbackDlg.push(this.buttons[i].callback[j]);
                     }
+
+
                     this.buttons[i].widget.onClick = function(){
                         for (var j = 0; j < this._callbackDlg.length; j++) {
-                            this._callbackDlg[j]();
+                            console.log("Qui hi ha al callback?", this._callbackDlg[j]);
+                            this._callbackDlg[j].call(context);
                         }
                         this._removeDlg();
 //                        $button.on('click', this.buttons[i].callback[j].bind(this));
