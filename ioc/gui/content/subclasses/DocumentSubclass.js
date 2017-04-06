@@ -161,6 +161,9 @@ define([
              * @param content
              */
             updateDocument: function (content) {
+
+
+
                 //this.setData(content.content);
                 this.setData(content);
                 //this.updateTitle(content.content);

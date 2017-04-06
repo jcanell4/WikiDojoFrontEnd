@@ -182,9 +182,9 @@ define([
                 contentTool.startTimer(params.timer.timeout);
             },
 
-            // TODO[Xavi] Localitzar tots els textos (arribaran del servidor, params.message i params del buttons)
             _generateDiscardDialog: function (docId, dispatcher, params) {
-                // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, {
+                // ALERTA[Xavi]Exemple de la estructura que arriba del servidor
+                // {
                 //     id: docId,
                 //     message: "Vols desar els canvis?",
                 //     closable: false,

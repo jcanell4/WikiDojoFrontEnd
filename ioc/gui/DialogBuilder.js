@@ -274,14 +274,13 @@ define([
                     dataToSend: dataToSend
                 }, observable);
             }
-
         },
 
         _generateFireEventCallback: function (event, data, observable) {
-            //console.log("DialogBuilder#_generateRequestControllCallback", event, dataToSend);
+            // console.log("DialogBuilder#_generateFireEventCallback", event, data, observable);
 
             if (!data.id) {
-                if (typeof pObservable === "string") {
+                if (typeof observable === "string") {
                     data.id = observable;
 
                 } else {
@@ -289,8 +288,18 @@ define([
                 }
             }
 
+            console.log("DialogBuilder#_generateFireEventCallback", event, data, observable);
+
             return function () {
-                //console.log("Click:", event, dataToSend);
+                console.log("Click:", event, data);
+
+                // ALERTA[Xavi] Això permet afegir dades extras a l'event que s'obtenen des del dialog
+                if (this.extraData) {
+                    for(var item in this.extraData) {
+                        data[item] = this.extraData[item];
+                    }
+                }
+
                 this.eventManager.fireEventFromObservable(event, data, observable); // Això fa referencia al eventManager del dialog
             }
 

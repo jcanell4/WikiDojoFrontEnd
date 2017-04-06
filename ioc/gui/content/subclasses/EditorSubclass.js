@@ -119,7 +119,7 @@ define([
 
                     dataToSend = this.getQueryForceCancel(); // el paràmetre no es fa servir
 
-                } else if (data.discardChanges === undefined && this.isContentChanged() /*&& !data.confirmed*/) {
+                } else if (data.discardChanges === undefined && this.isContentChanged()) {
 
                     if (this._discardChanges()) {
                         // TODO[Xavi] Mostrar el dialog per cancel·lar edició -> desar document o sortir sense desar, el callback dispara el mateix event amb el paràmetre ("confirmed: true");
@@ -180,8 +180,6 @@ define([
             },
 
             _discardChanges:function() {
-                // TODO[Xavi] Localitzar
-                // return confirm("S'han produït canvis al document. Vols tancar-lo?");
                 return confirm(this.messageChangesDetected);
             },
 

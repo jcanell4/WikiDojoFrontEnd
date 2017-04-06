@@ -45,13 +45,13 @@ define([
                 }
             }
 
-            console.error("Retornant draft: ", this.drafts[docNs], this.drafts);
+            // console.log("Retornant draft: ", this.drafts[docNs], this.drafts);
 
             return this.drafts[docNs];
         },
 
         getLastLocalDraftTime: function (docId, docNs, chunkId) {
-            console.error("DraftManager#getLastLocalDraftTime", docId, docNs, chunkId);
+            // console.log("DraftManager#getLastLocalDraftTime", docId, docNs, chunkId);
             var draft = this.getDraft(docId, docNs),
                 drafts = draft.recoverLocalDraft(),
                 time = {};

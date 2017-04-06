@@ -182,6 +182,13 @@ define([
                         //HardCODED RAFA
                         value.editing = {readonly:value.readonly};  //HardCODED RAFA
 
+
+                        // Alerta[Xavi] la informació del dialog només s'ha d'afegir quan s'edita el primer chunk
+                        if (!contentTool.cancelDialogConfig && value.extra) {
+                            contentTool.cancelDialogConfig = value.extra.dialogSaveOrDiscard,
+                            contentTool.messageChangesDetected =  value.extra.messageChangesDetected
+                        }
+
                         contentTool.updateDocument(value);
 
                         dispatcher.getGlobalState().getContent(value.id).rev = contentTool.rev; // ALERTA[Xavi] posava content.rev, això no pot ser, es referia contentTool.rev (que a la seva vegada es el mateix que value.rev)?
@@ -297,7 +304,7 @@ define([
                     rev: content.rev || '',
                     type: this.type,
                     readonly: content.readonly? content.readonly : false,
-                    ignoreLastNSSections : content.ignoreLastNSSections
+                    ignoreLastNSSections : content.ignoreLastNSSections,
                 };
 
                 if(content.autosaveTimer){
@@ -379,7 +386,9 @@ define([
                 contentTool.registerObserverToEvent(contentTool, contentTool.eventName.CANCEL_PARTIAL, function(event){
                     this.stopTimer();
                 }.bind(contentTool));
-            }
+            },
+
+
 
         })
 

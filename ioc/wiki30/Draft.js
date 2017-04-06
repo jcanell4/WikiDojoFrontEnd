@@ -165,7 +165,7 @@ define([
         },
 
         _onSavePartial: function (data) {
-            console.error("Draft#_onSavePartial", data);
+            console.log("Draft#_onSavePartial", data);
 
             this.clearDraftChunks(data.dataToSend.section_id);
 

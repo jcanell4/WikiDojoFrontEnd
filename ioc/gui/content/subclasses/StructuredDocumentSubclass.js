@@ -485,8 +485,7 @@ define([
          * @returns {boolean} Cert si s'ha produït algun canvi
          */
         isContentChanged: function () {
-
-            console.log("StructuredDocumentSubclass#isContentChanged");
+            // console.log("StructuredDocumentSubclass#isContentChanged");
 
             // * El editing dels chunks en edicio es diferent del $textarea corresponent
             var chunk,
@@ -559,7 +558,7 @@ define([
             //var result = !(this.changedChunks[header_id].lastChecked == content);
             var lastCheckedContent = this._getLastCheckedContent(header_id);
             var result = false;
-            
+
             if(lastCheckedContent){
                 result = lastCheckedContent != content;
             }else{
@@ -591,7 +590,7 @@ define([
          * @private
          */
         _getOriginalContent: function (header_id) {
-            console.log("StructuredDocumentSubclass#_getOriginalContent");
+            // console.log("StructuredDocumentSubclass#_getOriginalContent");
 
             if (this.changedChunks[header_id] && this.changedChunks[header_id].content) {
                 // console.log("Trobat el changed chunk!", this.changedChunks[header_id].content)
@@ -708,9 +707,9 @@ define([
                 this._changeAction("sec_edit");
             }
         },
-        
+
         hasEditors: function(){
-          return (Object.keys(this.editors).length > 0);  
+          return (Object.keys(this.editors).length > 0);
         },
 
         /**
@@ -1053,7 +1052,7 @@ define([
             }
             this._setCurrentSection(section_id);
         },
-        
+
         _setCurrentSection: function (section_id) {
 
             if (section_id) {
@@ -1179,13 +1178,39 @@ define([
 
 
         _doCancelPartial: function (event) {
-//            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+           console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+
+           var data = this._getDataFromEvent(event);
+           // Les dades que arriben son {id, chunk, name (del event)}
+
+
+            if (data.discardChanges === undefined && this.isContentChangedForChunk(event.chunk)) {
+
+                if (this._discardChanges()) {
+                    // // TODO[Xavi] Mostrar el dialog per cancel·lar edició -> desar document o sortir sense desar, el callback dispara el mateix event amb el paràmetre ("confirmed: true");
+                    // // El dialog s'haurà passat al constructor des del processor
+                    console.log("Existeix el dialog?", this.cancelDialog);
+                    // ALERTA[Xavi] S'ha d'especificar el chunk al dialog
+                    // TODO[Xavi] pendent de determinar com, establir-lo manualment com a propietat abans de visualitzar-lo?
+                    var cancelDialog = this._generateDiscardDialog();
+                    cancelDialog.extraData = {chunk : data.chunk};
+                    cancelDialog.show();
+
+                    // La cancel·lació es tornarà a disparar des del dialog
+
+                } else {
+                    console.log("No s'ha cridat al dialog");
+                }
+                // ALERTA[Xavi] Es cancel·la l'enviament
+
+                return {_cancel: true};
+            }
+
 
             var dataToSend = this.getQueryCancel(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
             return {
-
                 id: this.id,
                 dataToSend: dataToSend,
                 standbyId: containerId
@@ -1199,8 +1224,12 @@ define([
 
         },
 
-        //TODO[Xavi] Copiat de processAceEditor
-        //TODO: no es tracta d'un editor, si no del array d'editors, tenim la llista?
+        _discardChanges:function() {
+            // TODO[Xavi] Localitzar
+            return confirm("S'han produït canvis al document. Vols tancar-lo?");
+            // return confirm(this.messageChangesDetected);
+        },
+
 
         getEditors: function () {
             return this.editors;
@@ -1242,7 +1271,7 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-//            console.log("EditorSubclass#_doCancel", this.id, event);
+           console.log("StructuredDocumentSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
@@ -1341,6 +1370,57 @@ define([
 //            console.log("StructuredDocumentSubclass#onDestroy");
             this.dispatcher.getGlobalState().freePage(this);
             this.inherited(arguments);
+        },
+
+
+        _generateDiscardDialog: function () {
+            console.log("HtmlPartialContentProcessor#_generateDiscardDialog", this.id, this.cancelDialogConfig);
+            var dialog = this.dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + this.id, this.cancelDialogConfig);
+
+            // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId,
+            //     {
+            //         id: docId,
+            //         message: "Vols desar els canvis?",
+            //         closable: false,
+            //         buttons: [
+            //             {
+            //                 id: 'no-desar',
+            //                 description: 'No desar',
+            //                 buttonType: 'fire_event',
+            //
+            //                 extra: [{
+            //                     eventType : 'cancel_partial',
+            //                     data: {discardChanges: true},
+            //                     observable: docId
+            //                 }
+            //                 ]
+            //
+            //             },
+            //             {
+            //                 id: 'desar',
+            //                 description: 'Desar el document',
+            //                 buttonType: 'fire_event',
+            //
+            //                 extra: [ {
+            //                     eventType : 'save_partial',
+            //                     data: {},
+            //                     observable: docId
+            //                 },{
+            //                     eventType : 'cancel_partial',
+            //                     data: {discardChanges: true},
+            //                     observable: docId
+            //                 }
+            //                 ]
+            //             }
+            //         ]
+            //
+            //     });
+            //
+            // console.log("Params pel dialog:", params);
+
+            // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
+            return dialog;
         }
+
     })
 });
