@@ -101,6 +101,55 @@ define([
             }
 
             return confirmation;
+        },
+
+        _generateDiscardDialog: function () {
+            console.log("ChangesManagerCentralSubclass#_generateDiscardDialog", this.id, this.cancelDialogConfig);
+            var dialog = this.dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + this.id, this.cancelDialogConfig);
+
+            // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId,
+            //     {
+            //         id: docId,
+            //         message: "Vols desar els canvis?",
+            //         closable: false,
+            //         buttons: [
+            //             {
+            //                 id: 'no-desar',
+            //                 description: 'No desar',
+            //                 buttonType: 'fire_event',
+            //
+            //                 extra: [{
+            //                     eventType : 'cancel_partial',
+            //                     data: {discardChanges: true},
+            //                     observable: docId
+            //                 }
+            //                 ]
+            //
+            //             },
+            //             {
+            //                 id: 'desar',
+            //                 description: 'Desar el document',
+            //                 buttonType: 'fire_event',
+            //
+            //                 extra: [ {
+            //                     eventType : 'save_partial',
+            //                     data: {},
+            //                     observable: docId
+            //                 },{
+            //                     eventType : 'cancel_partial',
+            //                     data: {discardChanges: true},
+            //                     observable: docId
+            //                 }
+            //                 ]
+            //             }
+            //         ]
+            //
+            //     });
+            //
+            // console.log("Params pel dialog:", params);
+
+            // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
+            return dialog;
         }
     });
 });

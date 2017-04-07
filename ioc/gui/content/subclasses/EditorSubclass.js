@@ -124,8 +124,9 @@ define([
                     if (this._discardChanges()) {
                         // TODO[Xavi] Mostrar el dialog per cancel·lar edició -> desar document o sortir sense desar, el callback dispara el mateix event amb el paràmetre ("confirmed: true");
                         // El dialog s'haurà passat al constructor des del processor
-                        console.log("Existeix el dialog?", this.cancelDialog);
-                        this.cancelDialog.show();
+                        var cancelDialog = this._generateDiscardDialog();
+                        cancelDialog.show();
+
 
                         // La cancel·lació es tornarà a disparar des del dialog
 

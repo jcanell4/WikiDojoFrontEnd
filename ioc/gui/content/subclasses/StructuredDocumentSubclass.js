@@ -1189,7 +1189,6 @@ define([
                 if (this._discardChanges()) {
                     // // TODO[Xavi] Mostrar el dialog per cancel·lar edició -> desar document o sortir sense desar, el callback dispara el mateix event amb el paràmetre ("confirmed: true");
                     // // El dialog s'haurà passat al constructor des del processor
-                    console.log("Existeix el dialog?", this.cancelDialog);
                     // ALERTA[Xavi] S'ha d'especificar el chunk al dialog
                     // TODO[Xavi] pendent de determinar com, establir-lo manualment com a propietat abans de visualitzar-lo?
                     var cancelDialog = this._generateDiscardDialog();
@@ -1373,54 +1372,7 @@ define([
         },
 
 
-        _generateDiscardDialog: function () {
-            console.log("HtmlPartialContentProcessor#_generateDiscardDialog", this.id, this.cancelDialogConfig);
-            var dialog = this.dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + this.id, this.cancelDialogConfig);
 
-            // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId,
-            //     {
-            //         id: docId,
-            //         message: "Vols desar els canvis?",
-            //         closable: false,
-            //         buttons: [
-            //             {
-            //                 id: 'no-desar',
-            //                 description: 'No desar',
-            //                 buttonType: 'fire_event',
-            //
-            //                 extra: [{
-            //                     eventType : 'cancel_partial',
-            //                     data: {discardChanges: true},
-            //                     observable: docId
-            //                 }
-            //                 ]
-            //
-            //             },
-            //             {
-            //                 id: 'desar',
-            //                 description: 'Desar el document',
-            //                 buttonType: 'fire_event',
-            //
-            //                 extra: [ {
-            //                     eventType : 'save_partial',
-            //                     data: {},
-            //                     observable: docId
-            //                 },{
-            //                     eventType : 'cancel_partial',
-            //                     data: {discardChanges: true},
-            //                     observable: docId
-            //                 }
-            //                 ]
-            //             }
-            //         ]
-            //
-            //     });
-            //
-            // console.log("Params pel dialog:", params);
-
-            // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
-            return dialog;
-        }
 
     })
 });

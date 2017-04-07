@@ -120,7 +120,7 @@ define([
                     readonly: content.editing.readonly,
                     rev: content.rev,
                     ignoreLastNSSections: content.ignoreLastNSSections,
-                    cancelDialog: this._generateDiscardDialog(content.id, dispatcher, content.extra.dialogSaveOrDiscard),
+                    cancelDialogConfig: content.extra.dialogSaveOrDiscard,
                     messageChangesDetected: content.extra.messageChangesDetected
                 };
                 if (content.autosaveTimer) {
