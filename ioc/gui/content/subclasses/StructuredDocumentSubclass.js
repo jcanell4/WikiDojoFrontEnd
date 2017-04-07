@@ -1131,7 +1131,7 @@ define([
                     standbyId: containerId
                 };
             } else {
-                console.log("*** NO HI HAN CANVIS ***");
+                // console.log("*** NO HI HAN CANVIS ***");
                 return {
                     _cancel: true
                 };
@@ -1280,7 +1280,7 @@ define([
                 dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
             }
 
-            if (data.keep_draft) {
+            if (data.keep_draft !== undefined) {
                 dataToSend += '&keep_draft=' + data.keep_draft;
             }
 

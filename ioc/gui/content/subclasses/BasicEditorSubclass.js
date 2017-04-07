@@ -405,7 +405,7 @@ define([
                     var eventManager = this.dispatcher.getEventManager();
                     eventManager.fireEvent(eventManager.eventName.CANCEL, {
                         id: this.id,
-                        dataToSend: {no_response: true, discardChanges: true}
+                        dataToSend: {no_response: true, discardChanges: true, keep_draft: false}
                     }, this.id);
                 }
                 return ret;
