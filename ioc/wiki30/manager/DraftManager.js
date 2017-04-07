@@ -27,8 +27,7 @@ define([
             }
 
             if (!this.drafts[docNs] && contentTool) {
-                console.log("Creant nou draft a partir del contenttool");
-                this._generateDraft(contentTool);
+                this._generateDraftInMemory(contentTool);
 
             } else if (!this.drafts[docNs]) {
 
@@ -36,9 +35,7 @@ define([
 
 
                 if (contentCache) {
-                    console.log("Creant nou draft a partir del contentCache");
-
-                    this._generateDraft(contentCache.getMainContentTool());
+                    this._generateDraftInMemory(contentCache.getMainContentTool());
 
                 } else {
                     throw new DraftManagerException('No existeix cap ContentTool pel document: ' + docNs);
@@ -87,22 +84,22 @@ define([
             return param;
         },
 
-        _generateDraft: function (contentTool) {
-            console.log("DraftManager#_generateDraft", contentTool);
+        _generateDraftInMemory: function (contentTool) {
+            // console.log("DraftManager#_generateDraft", contentTool);
             var draft = new Draft({dispatcher: this.dispatcher, contentTool: contentTool});
-            this.registerMeToEventFromObservable(draft, this.eventName.DESTROY, this._removeDraft.bind(this));
+            this.registerMeToEventFromObservable(draft, this.eventName.DESTROY, this._removeDraftInMemory.bind(this));
             this.drafts[contentTool.ns] = draft;
 
-            console.log("Generat draft:", draft, " Pel ns:", contentTool.ns);
+            // console.log("Generat draft:", draft, " Pel ns:", contentTool.ns);
         },
 
-        _removeDraft: function (data) {
-            console.log("DraftManager#_removeDraft", data);
+        _removeDraftInMemory: function (data) {
+            // console.log("DraftManager#_removeDraft", data);
             delete(this.drafts[data.ns]);
         },
 
         clearDraft: function (id, ns) {
-            console.log("DraftManager#clearDraft", id, ns);
+            // console.log("DraftManager#clearDraft", id, ns);
 
             var draft;
 
@@ -114,28 +111,10 @@ define([
 
             draft.clearDraft();
 
-
-
-            // var userId = 'user_' + this.dispatcher.getGlobalState().userId,
-            //     user = JSON.parse(localStorage.getItem(userId)) || {pages: {}},
-            //     pages = user.pages;
-            //
-            // if (pages && pages[id]) {
-            //     //console.log("Eliminant esborrany local per l'usuari", user);
-            //     pages[id].drafts = {};
-            //     //delete(pages[id]);
-            //     localStorage.setItem(userId, JSON.stringify({pages: pages}));
-            //
-            // } else {
-            //     //console.log("No hi ha esborranys locals per descartar per aquest usuari i document", user, id);
-            // }
-
-            //console.log("DraftManager#clearDraft OK");
-
         },
 
         clearDraftChunks: function (id, ns, chunks) {
-            console.log("DraftManager#clearDraftChunks", id, ns, chunks);
+            // console.log("DraftManager#clearDraftChunks", id, ns, chunks);
             var draft;
 
             if (!this.drafts[ns]) {
@@ -145,57 +124,7 @@ define([
             }
 
             draft.clearDraftChunks(chunks);
-
-
-            // var userId = 'user_' + this.dispatcher.getGlobalState().userId,
-            //     user = JSON.parse(localStorage.getItem(userId)),
-            //     pages = user?user.pages:null;
-            //
-            // if (pages && pages[id]) {
-            //     //console.log("Eliminant chunks locals per l'usuari", user, chunks);
-            //
-            //     pages[id].drafts = this._removeDraftChunk(pages[id].drafts, chunks);
-            //     //delete(pages[id]);
-            //     localStorage.setItem(userId, JSON.stringify({pages: pages}));
-            //
-            // }
-
-            //console.log("DraftManager#clearDraft OK");
-
         },
-
-        // _removeDraftChunk: function (drafts, chunks) {
-        //     if (!drafts) {
-        //         //console.log("No hi han pàgines, no cal eliminar res", drafts);
-        //         return;
-        //     }
-        //
-        //     for (var i = 0; i < chunks.length; i++) {
-        //         if (drafts.structured) {
-        //             delete(drafts.structured[chunks[i]]);
-        //         } else {
-        //             //console.log("No hi ha draft per esborrar:", drafts);
-        //         }
-        //
-        //
-        //     }
-        //
-        //     return drafts;
-        // },
-
-        // ALERTA[Xavi] No es crida en lloc
-        // hasDraft: function (ns) {
-        //
-        //     var draft = this.drafts[ns];
-        //
-        //     if (draft && drafts[ns]) {
-        //         return true;
-        //     } else {
-        //         return false;
-        //     }
-        //
-        //     // return this.drafts[ns] ? true : false;
-        // }
 
     });
 

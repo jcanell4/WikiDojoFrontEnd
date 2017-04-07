@@ -651,7 +651,7 @@ define([
 
 
             if (content.recover_local === true) {
-                console.log("*** ESBORRANY LOCAL***");
+                // console.log("*** ESBORRANY LOCAL***");
                 draft = this.getDraftChunk(content.selected);
 
 
@@ -665,11 +665,11 @@ define([
                 keepOriginalContent = true;
 
             } else if (content.chunks[index] && content.chunks[index].text && content.chunks[index].text.originalContent) {
-                console.log("*** ESBORRANY REMOT ***");
+                // console.log("*** ESBORRANY REMOT ***");
                 this._setOriginalContent(content.selected, content.chunks[index].text.originalContent);
                 keepOriginalContent = true;
             } else {
-                console.log("*** NO ES TRACTA D'UN ESBORRANY ***");
+                // console.log("*** NO ES TRACTA D'UN ESBORRANY ***");
             }
 
             // TODO[Xavi] En cas del draft remot el content ja arriba modificat, s'ha d'extreure el contentOriginal (que ara no s'envia) d'un altre camp
@@ -929,7 +929,7 @@ define([
 
         },
 
-        _generateDraft: function () {
+        _generateDraftInMemory: function () {
             var draft = {
                 type: this.DRAFT_TYPE,
 //                id: this.id,
@@ -1178,7 +1178,7 @@ define([
 
 
         _doCancelPartial: function (event) {
-           console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+           // console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
            var data = this._getDataFromEvent(event);
            // Les dades que arriben son {id, chunk, name (del event)}
@@ -1333,17 +1333,20 @@ define([
 //        },
 
         onClose: function() {
-            var eventManager = this.dispatcher.getEventManager();
-            eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: "no_response=true"}, this.id);
-            this.freePage();
-            return this.inherited(arguments);
+            var ret = this.inherited(arguments);
+
+            if (ret) {
+                // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
+                var eventManager = this.dispatcher.getEventManager();
+                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: "no_response=true&discardChanges=true"}, this.id);
+                this.freePage();
+            }
+
+            return ret;
         },
 
         requirePage: function() {
             var readOnly = !this.dispatcher.getGlobalState().requirePage(this);
-
-            console.log("S'ha requerit?", !readOnly);
-
             this.setReadOnly(readOnly);
         },
 
@@ -1359,7 +1362,7 @@ define([
 
 
         freePage: function() {
-            console.log("StructuredDocumentSubclass#freePage");
+            // console.log("StructuredDocumentSubclass#freePage");
             this.dispatcher.getGlobalState().freePage(this.id, this.ns);
             this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
         },

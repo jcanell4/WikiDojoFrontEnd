@@ -251,11 +251,10 @@ define([
          * @returns {boolean}
          */
         requirePage: function (contentTool) {
-           console.log("GlobalState#requirePage", contentTool.id);
+           // console.log("GlobalState#requirePage", contentTool.id);
 
             if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] == contentTool.id){
                 this.requiredPages[contentTool.ns] = contentTool.id;
-                console.log("Requerit amb èxit");
                 return true;
             }  else {
 

@@ -104,7 +104,7 @@ define([
         },
 
         _generateDiscardDialog: function () {
-            console.log("ChangesManagerCentralSubclass#_generateDiscardDialog", this.id, this.cancelDialogConfig);
+            // console.log("ChangesManagerCentralSubclass#_generateDiscardDialog", this.id, this.cancelDialogConfig);
             var dialog = this.dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + this.id, this.cancelDialogConfig);
 
             // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId,

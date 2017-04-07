@@ -49,9 +49,9 @@ define([
 
                 // TODO[Xavi] La neteja del container s'hauria de fer a traves del RemoveAllContentProcessor. Compte amb el setCurrentId que deixaría de funcionar!
 
-                if (!nodeMetaInfo) {
-                    alert("Alerta, s'ha creat el metaInfoNodeId?" + dispatcher.metaInfoNodeId);
-                }else {
+
+                if (nodeMetaInfo && nodeMetaInfo.clearContainer) {
+                    //Alerta[Xavi] si es clica un document abans de que es faci el canvi del nodeMetaInfo a ContainerContentTool dona error, per això s'ha de controlar
                     nodeMetaInfo.clearContainer(content.id);
                 }
 

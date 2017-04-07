@@ -15,7 +15,7 @@ define([
         },
 
         /** @abstract */
-        _generateDraft: function () { // TODO[Xavi] això anirà en el nou sistema pels drafts
+        _generateDraftInMemory: function () { // TODO[Xavi] això anirà en el nou sistema pels drafts
             throw new LocktimedDocumentSubclassException("El ContentTool ha d'implementar la funció generateDraft a " +
                 "les subclasses per poder generar l'esborrany");
         },

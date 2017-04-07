@@ -59,7 +59,6 @@ define([
                 }
 
                 if (confirmation) {
-                    console.log("S'ha confirmat, quin es el valor de clearDraft?", clearDraft);
                     if(clearDraft){
                         dispatcher.getDraftManager().clearDraft(value.id, value.ns);
 

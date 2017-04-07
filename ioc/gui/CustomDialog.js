@@ -172,7 +172,6 @@ define([
 
                     this.buttons[i].widget.onClick = function(){
                         for (var j = 0; j < this._callbackDlg.length; j++) {
-                            console.log("Qui hi ha al callback?", this._callbackDlg[j]);
                             this._callbackDlg[j].call(context);
                         }
                         this._removeDlg();
@@ -204,16 +203,17 @@ define([
         },
 
         remove: function () {
+            // console.log("CustomDialog#remove", this.id);
             if (!this.destroying) {
                 this.destroying = true;
-                console.log("CustomDialog#remove", this.id);
+                // console.log("CustomDialog#remove (confirmed)", this.id);
                 this.destroyRecursive();
                 this.dispatchEvent(this.eventName.DESTROY, {id: this.id, refId: this.refId});
             }
         },
 
         onHide: function () {
-            console.log("CustomDialog#onHide");
+            // console.log("CustomDialog#onHide");
             this.inherited(arguments);
             this.dispatchEvent(this.eventName.CANCEL, {id: this.id, refId: this.refId});
             this.remove()

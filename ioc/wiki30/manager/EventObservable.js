@@ -111,7 +111,7 @@ define([
                 
 
                 if (eventData._cancel) {
-                    console.warn("S'ha cancel·lat l'event");
+                    // console.warn("S'ha cancel·lat l'event");
                 } else {
                     eventData.name = event;
                     callbacks = this.callbacks[eventData.name];

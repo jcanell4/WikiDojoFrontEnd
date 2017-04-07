@@ -119,7 +119,7 @@ define([
 
                     dataToSend = this.getQueryForceCancel(); // el paràmetre no es fa servir
 
-                } else if (data.discardChanges === undefined && this.isContentChanged()) {
+                } else if (data.discardChanges === undefined && (this.isContentChanged())) {
 
                     if (this._discardChanges()) {
                         // TODO[Xavi] Mostrar el dialog per cancel·lar edició -> desar document o sortir sense desar, el callback dispara el mateix event amb el paràmetre ("confirmed: true");
@@ -131,7 +131,7 @@ define([
                         // La cancel·lació es tornarà a disparar des del dialog
 
                     } else {
-                        console.log("No s'ha cridat al dialog");
+                        // console.log("No s'ha cridat al dialog");
                     }
                     // ALERTA[Xavi] Es cancel·la l'enviament
 
@@ -239,7 +239,7 @@ define([
                 this.inherited(arguments);
             },
 
-            _generateDraft: function () {
+            _generateDraftInMemory: function () {
                 return {
                     type: this.DRAFT_TYPE,
 //                    id: this.id,

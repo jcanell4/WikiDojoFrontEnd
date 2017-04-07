@@ -104,7 +104,6 @@ define([
              */
             createContentTool: function (content, dispatcher) {
 
-                console.log("***Existeix el currentContent?", content.currentContent);
                 var args = {
                     ns: content.ns,
                     id: content.id,
@@ -130,10 +129,6 @@ define([
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             },
 
-            //_extractContentFromNode: function (content) {
-            //    //return  jQuery.trim(jQuery(content.content).find('textarea').val());
-            //    return content.content;
-            //},
 
             _getLocalDraftContent: function (value, dispatcher) {
                 var draft = dispatcher.getDraftManager().getDraft(value.id, value.ns),

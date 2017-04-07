@@ -22,7 +22,7 @@ define([
 
             // TODO[Xavi] Molt semblant al que hi ha al DraftProcessor, cerca la manera de generalitzar
             _buildQuery: function (type, value) {
-                console.log('processDraftSelectionDialog#_buildQuery',type, value);
+                // console.log('processDraftSelectionDialog#_buildQuery',type, value);
                 var query = '';
 
                 switch (type) {

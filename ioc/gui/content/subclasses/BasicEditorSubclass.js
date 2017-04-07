@@ -93,7 +93,6 @@ define([
 //                    standbyId: containerId
 //                })
 
-                console.log("Datatosend:", dataToSend);
 
                 return {
                     id: this.id,
@@ -399,14 +398,22 @@ define([
             },
 
             onClose: function() {
-                var eventManager = this.dispatcher.getEventManager();
-                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: {no_response: true}}, this.id);
-                return this.inherited(arguments);
+                var ret = this.inherited(arguments);
+
+                if (ret) {
+                    // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
+                    var eventManager = this.dispatcher.getEventManager();
+                    eventManager.fireEvent(eventManager.eventName.CANCEL, {
+                        id: this.id,
+                        dataToSend: {no_response: true, discardChanges: true}
+                    }, this.id);
+                }
+                return ret;
             },
 
 
             onDestroy: function() {
-                console.log("BasicEditorSubclass#onDestroy");
+                // console.log("BasicEditorSubclass#onDestroy");
                 this.freePage();
                 this.inherited(arguments);
             }

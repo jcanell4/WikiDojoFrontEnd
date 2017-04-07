@@ -288,10 +288,10 @@ define([
                 }
             }
 
-            console.log("DialogBuilder#_generateFireEventCallback", event, data, observable);
+            // console.log("DialogBuilder#_generateFireEventCallback", event, data, observable);
 
             return function () {
-                console.log("Click:", event, data);
+                // console.log("Click:", event, data);
 
                 // ALERTA[Xavi] Això permet afegir dades extras a l'event que s'obtenen des del dialog
                 if (this.extraData) {
