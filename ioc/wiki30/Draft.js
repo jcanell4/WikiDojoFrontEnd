@@ -392,7 +392,7 @@ define([
         },
 
         _onDestroy: function () {
-            // console.log("Draft#onDestroy", this.contentTool.id, this.contentTool.ns);
+            console.log("Draft#onDestroy", this.contentTool.id, this.contentTool.ns);
             //alert("Destruint draft:" + this.contentToolId);
             this._cancelTimers();
 //            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);

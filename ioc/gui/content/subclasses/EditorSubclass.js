@@ -143,7 +143,7 @@ define([
                     dataToSend = this.getQueryCancel(); // el paràmetre no es fa servir
                 }
 
-                if (data.keep_draft !== undefined) {
+                if (this.required && data.keep_draft !== undefined) {
                     dataToSend += '&keep_draft=' + data.keep_draft;
                 }
 
@@ -162,6 +162,10 @@ define([
                     }else{
                         dataToSend += "&" + ioQuery.objectToQuery(event.dataToSend);
                     }
+                }
+
+                if (!this.required) {
+                    dataToSend +="&unlock=false";
                 }
 
 //                this.eventManager.dispatchEvent(this.eventName.CANCEL, {

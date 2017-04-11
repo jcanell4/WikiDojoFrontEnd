@@ -356,6 +356,10 @@ define([
             if(this.type == "requiring_partial"){
                 ret += "&to_require=true"
             }
+
+            if (!this.required) {
+                ret += "&unlock=false"
+            }
             return ret;
         },
 
@@ -1280,7 +1284,7 @@ define([
                 dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
             }
 
-            if (data.keep_draft !== undefined) {
+            if (this.required && data.keep_draft !== undefined) {
                 dataToSend += '&keep_draft=' + data.keep_draft;
             }
 
@@ -1290,6 +1294,10 @@ define([
 
             if (typeof event.dataToSend === "string") {
                 dataToSend += "&" + event.dataToSend;
+            }
+
+            if (!this.required) {
+                dataToSend +="&unlock=false";
             }
 
             containerId = event.id;
@@ -1346,7 +1354,8 @@ define([
         },
 
         requirePage: function() {
-            var readOnly = !this.dispatcher.getGlobalState().requirePage(this);
+            this.required = this.dispatcher.getGlobalState().requirePage(this);
+            var readOnly = !this.required;
             this.setReadOnly(readOnly);
         },
 
@@ -1363,6 +1372,7 @@ define([
 
         freePage: function() {
             // console.log("StructuredDocumentSubclass#freePage");
+            this.required = false;
             this.dispatcher.getGlobalState().freePage(this.id, this.ns);
             this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
         },

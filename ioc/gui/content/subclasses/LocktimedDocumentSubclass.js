@@ -55,14 +55,20 @@ define([
         },
 
         onDestroy: function () {
-            //console.log("LocktimedDocumentSubclass#onDestroy");
+            console.log("LocktimedDocumentSubclass#onDestroy");
             this.dispatcher.getLockManager().unlock(this.id);
-            this.draftManager.getDraft(this.id, this.ns, this).destroy();
+
+            if (this.required) {
+                console.log("Eliminant el draft");
+                this.draftManager.getDraft(this.id, this.ns, this).destroy();
+            } else {
+                console.log("Aquest content tool no ha requerit el document, per consegüent no cal eliminar el draft");
+            }
+
             this.inherited(arguments);
         },
 
         getDraft: function () {
-            //console.log("LocktimedDocumentSubclass#getDraft", this.id);
             var draft = this.draftManager.getDraft(this.id, this.ns, this);
             //console.log("Draft:", draft);
             return draft;

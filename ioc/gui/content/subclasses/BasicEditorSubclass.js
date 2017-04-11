@@ -233,7 +233,8 @@ define([
             },
 
             requirePage: function() {
-                var readOnly = !this.dispatcher.getGlobalState().requirePage(this);
+                this.required = this.dispatcher.getGlobalState().requirePage(this);
+                var readOnly = !this.required;
                 this.setReadOnly(readOnly);
             },
 
@@ -250,6 +251,7 @@ define([
             },
 
             freePage: function() {
+                this.required = false;
                 this.dispatcher.getGlobalState().freePage(this.id, this.ns);
                 this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
             },
