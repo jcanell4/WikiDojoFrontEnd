@@ -274,7 +274,7 @@ define([
 
             _doSave: function (event)
             {
-                console.log("EditorSubclass#_doSave", event);
+                // console.log("EditorSubclass#_doSave", event);
                 if (this.hasChanges || this.rev) {
                     return this.inherited(arguments);
                 } else {

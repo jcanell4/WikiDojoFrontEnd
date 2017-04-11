@@ -73,7 +73,7 @@ define([
 
 
             _doSave: function (event) {
-                console.log("BasicEditorSubclass#_doSave", this.id, event);
+                // console.log("BasicEditorSubclass#_doSave", this.id, event);
 
 
 
@@ -87,8 +87,6 @@ define([
                         lang.mixin(dataToSend, event.extraDataToSend);
                     }
 
-
-                    console.log("DataToSend definitiu:", dataToSend);
                 }
 //                this.eventManager.dispatchEvent(this.eventName.SAVE, {
 //                    id: this.id,
