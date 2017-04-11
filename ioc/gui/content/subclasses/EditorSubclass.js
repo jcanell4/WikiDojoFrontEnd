@@ -164,9 +164,7 @@ define([
                     }
                 }
 
-                if (!this.required) {
-                    dataToSend +="&unlock=false";
-                }
+
 
 //                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
 //                    id: this.id,
@@ -194,7 +192,12 @@ define([
             },
 
             getQueryForceCancel: function () {
-                return 'do=cancel&discard_changes=true&id=' + this.ns;
+                var query = 'do=cancel&discard_changes=true&id=' + this.ns;
+
+                if (this.rev) {
+                    query += '&rev=' + this.rev;
+                }
+                return query;
             },
 
 
@@ -271,6 +274,7 @@ define([
 
             _doSave: function (event)
             {
+                console.log("EditorSubclass#_doSave", event);
                 if (this.hasChanges || this.rev) {
                     return this.inherited(arguments);
                 } else {

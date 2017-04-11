@@ -263,7 +263,12 @@ define([
             // console.log("Draft#_removeLocalFullDraft", this.contentTool.ns);
             var pages = this._doGetPages();
 
-            pages[this.contentTool.ns].drafts = {};
+            if (pages[this.contentTool.ns]) {
+                pages[this.contentTool.ns].drafts = {};
+            } else {
+                pages[this.contentTool.ns] = {drafts:{}};
+            }
+
 
             // ALERTA[Xavi] Al esborrar el complet s'ha d'esborrar també el parcial, així es com funcionen els drafts remots
 
@@ -392,8 +397,7 @@ define([
         },
 
         _onDestroy: function () {
-            console.log("Draft#onDestroy", this.contentTool.id, this.contentTool.ns);
-            //alert("Destruint draft:" + this.contentToolId);
+            // console.log("Draft#onDestroy", this.contentTool.id, this.contentTool.ns);
             this._cancelTimers();
 //            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
 //            this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);

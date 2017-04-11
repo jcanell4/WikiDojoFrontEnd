@@ -291,7 +291,7 @@ define([
 
                 parent.removeChild(this);
                 this.destroyRecursive();
-                //console.log("AbstractContentTool#removeContentTool", this.id);
+                // console.log("AbstractContentTool#removeContentTool", this.id);
             },
 
             /**

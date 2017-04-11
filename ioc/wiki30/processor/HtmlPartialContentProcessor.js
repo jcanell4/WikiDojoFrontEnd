@@ -289,11 +289,6 @@ define([
             createContentTool: function (content, dispatcher) {
 //                console.log("Content:", content);
 
-                if (content.rev) {
-                    console.log("És una revisió, no cal fer res perque l'id ja arriba modificat")
-                }
-
-
                 var args = {
                     ns: content.ns,
                     id: content.id,

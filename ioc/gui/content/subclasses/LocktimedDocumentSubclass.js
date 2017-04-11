@@ -55,14 +55,11 @@ define([
         },
 
         onDestroy: function () {
-            console.log("LocktimedDocumentSubclass#onDestroy");
+            // console.log("LocktimedDocumentSubclass#onDestroy");
             this.dispatcher.getLockManager().unlock(this.id);
 
             if (this.required) {
-                console.log("Eliminant el draft");
                 this.draftManager.getDraft(this.id, this.ns, this).destroy();
-            } else {
-                console.log("Aquest content tool no ha requerit el document, per consegüent no cal eliminar el draft");
             }
 
             this.inherited(arguments);

@@ -55,6 +55,7 @@ define([
                     nodeMetaInfo.clearContainer(content.id);
                 }
 
+                // TODO[Xavi] Si es fa clic a un document de l'arbre de fitxers abans de que acabi de carregar la aplicació peta
                 contentCache.setCurrentId("metadataPane", null);
 
                 for (m in content.meta) {

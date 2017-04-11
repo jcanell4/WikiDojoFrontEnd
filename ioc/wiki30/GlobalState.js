@@ -267,7 +267,6 @@ define([
 
                 owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
 
-                console.log("No es pot requerir");
                 return false;
             }
 

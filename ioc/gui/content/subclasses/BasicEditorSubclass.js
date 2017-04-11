@@ -73,7 +73,7 @@ define([
 
 
             _doSave: function (event) {
-                //console.log("BasicEditorSubclass#_doSave", this.id, event);
+                console.log("BasicEditorSubclass#_doSave", this.id, event);
 
 
 
@@ -86,6 +86,9 @@ define([
                     }else{
                         lang.mixin(dataToSend, event.extraDataToSend);
                     }
+
+
+                    console.log("DataToSend definitiu:", dataToSend);
                 }
 //                this.eventManager.dispatchEvent(this.eventName.SAVE, {
 //                    id: this.id,
@@ -147,7 +150,12 @@ define([
             },
 
             getQueryCancel: function () {
-                return 'do=cancel&id=' + this.ns + (this.rev ? "&rev=" + this.rev :'');
+                var query = 'do=cancel&id=' + this.ns;
+
+                if (this.rev) {
+                    query += '&rev=' + this.rev;
+                }
+                return query;
             },
 
             /**
@@ -407,7 +415,7 @@ define([
                     var eventManager = this.dispatcher.getEventManager();
                     eventManager.fireEvent(eventManager.eventName.CANCEL, {
                         id: this.id,
-                        dataToSend: {no_response: true, discardChanges: true, keep_draft: false}
+                        dataToSend: {no_response: true, discardChanges: true}
                     }, this.id);
                 }
                 return ret;
