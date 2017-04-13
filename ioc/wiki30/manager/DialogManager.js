@@ -124,11 +124,18 @@ define([
              * @param params
              */
             _getDefaultDialog: function (refId, params) {
+                var title = params.title;
+
+                if (params.id) {
+                    title += ": " + params.id;
+                }
+
                 var dialogParams = {
                         id: 'dialog_' + refId + '_' + params.id,
-                        title: params.title + ": " + params.id,  //refId,
+                        title: title,  //refId,
                         message: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
                         closable: params.closable || true,// opcional amb default
+                        sections: params.sections,
                         dispatcher: this.dispatcher
                     },
                     dialogBuilder = new DialogBuilder(dialogParams);

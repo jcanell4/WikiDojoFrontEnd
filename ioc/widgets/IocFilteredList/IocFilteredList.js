@@ -5,13 +5,18 @@ define([
         'dojo/text!./templates/IocFilteredList.html',
         'dojo/_base/array',
         'ioc/widgets/IocFilteredItem/IocFilteredItem',
-        'dojo/text!./css/IocFilteredList.css'
+        'dojo/text!./css/IocFilteredList.css',
+        'dijit/form/Button',
+        'ioc/wiki30/dispatcherSingleton',
+        'ioc/widgets/SearchUsersPane/SearchUsersPane',
     ],
-    function (declare, _WidgetBase, _TemplatedMixin, template, arrayUtil, IocFilteredItem, css) {
+    function (declare, _WidgetBase, _TemplatedMixin, template, arrayUtil, IocFilteredItem, css, Button, getDispatcher, SearchUsersPane) {
 
         var cssStyle = document.createElement('style');
         cssStyle.innerHTML = css;
         document.head.appendChild(cssStyle);
+
+        var dispatcher = getDispatcher();
 
 
         return declare([_WidgetBase, _TemplatedMixin], {
@@ -21,22 +26,6 @@ define([
 
             constructor: function (/*data, field*/) {
                 this.inherited(arguments);
-
-
-                console.log("IocFilteredList#constructor", arguments);
-                // El template és només una llista
-                // Que es omple amb IocFilteredItems
-                // Ha de rebre:
-                //  - el node a sota del qual s'ha de desplegar
-                //  - l'array d'elements total
-                //  - L'element de destí: rebrà l'objecte amb la informació del item clicat
-
-                // ALERTA[Xavi]: data contindrà l'array d'elements, i selector el objecte al que se li pasarà la informació quan un element sigui seleccionat <-- Eliminar això i fer servir un on i emit amb la informació de l'objecte?
-
-                // this.data = data;
-                // this.fieldName = field;
-
-
                 this.selected = {}; // referenciats pel id per trobar-los més ràpidament
                 this.candidate = null;
             },
@@ -59,8 +48,7 @@ define([
 
 
                 $input.on('keydown', function (e) {
-                    if (e.which == 13) {
-                        console.log("S'ha pres enter...");
+                    if (e.which == 13) { // Enter
 
                         var item;
                         // cas 1: Hi ha almenys un element visible a la llista, es selecciona
@@ -69,16 +57,14 @@ define([
                         } else {
                             item = {name: $input.val(), username: ''};
                         }
-                        // cas 2: No hi ha cap element, es crea un nou amb el text entrat
-
-                        console.log("Buidant el valor de l'input");
-
-
-                        console.log("S'ha buidat?", $input.val(''));
-
 
                         this.filter('');
                         this._itemSelected(item);
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                    } else if (e.which === 27) {
+                        this.filter(null);
                         e.preventDefault();
                         e.stopPropagation();
                     }
@@ -86,66 +72,97 @@ define([
 
                 }.bind(this));
 
-                        console.log("Existeix el entryListItem?", this.entryListItem);
-
-                $input.on('blur', function(e) {
-                    console.log("BLUR!", e);
-
-
-                    // console.log("Qui te el focus??", e.relatedTarget.className);
-
-                    if (e.relatedTarget && (e.relatedTarget.className.indexOf('ioc-filtered-list')>=0 ||  e.relatedTarget.className.indexOf('ioc-filtered-item')>=0)) {
+                $input.on('blur', function (e) {
+                    if (e.relatedTarget && (e.relatedTarget.className.indexOf('ioc-filtered-list') >= 0 || e.relatedTarget.className.indexOf('ioc-filtered-item') >= 0)) {
                         return;
                     } else {
                         this.filter(null);
                     }
-
-
-                    // }.bind(this), 100);
-
-                    // this.filter(null);
-677
-
                 }.bind(this));
 
-                $input.on('focus', function() {
-                    console.log("FOCUS!");
+                $input.on('focus', function () {
                     this.filter($input.val());
                 }.bind(this));
 
 
-
-                jQuery(this.selectedItemsNode).on('click', function() {
+                jQuery(this.selectedItemsNode).on('click', function () {
                     $input.focus();
 
                 });
 
 
-                jQuery(this.hiddenSelected).attr('name', this.fieldName);
+                var searchButton = new Button({
+                    iconClass: 'ioc-filtered-list-icon search', //ALERTA[Xavi] L'icona es una llanterna, canviar per les nostre spropies classes
+                    showLabel: false
+                }).placeAt(this.buttonContainer);
 
+
+                var $searchButton = jQuery(searchButton.domNode);
+
+                $searchButton.on('click', function () {
+
+                    var searchUserWidget = new SearchUsersPane({
+                        searchDataUrl: this.searchDataUrl,
+                        buttonLabel: this.buttonLabel,
+                        token: this.token,
+                        colNameLabel: 'Nom', // TODO[Xavi] Localitzar
+                        colUsernameLabel: 'Nom d\'usuari'// TODO[Xavi] Localitzar
+                    });
+
+                    var dialogParams = {
+                        title: "Cerca usuaris per afegir", //TODO[Xavi] Localitzar
+                        message: '',
+
+                        sections: [
+                            // Secció 1: widget de cerca que inclou la taula pel resultat.
+                            // searchUserWidget.domNode
+
+                            {widget: searchUserWidget},
+                        ],
+
+                        buttons: [
+                            {
+                                id: 'add-results',
+                                description: 'Afegir', // TODO[Xavi] Localitzar
+                                buttonType: 'default',
+                                callback: function () {
+                                    var items = searchUserWidget.getSelected();
+                                    // console.log("Retornat del widget: ", items);
+
+                                    for (var item in items) {
+                                        this._itemSelected(items[item]);
+                                    }
+
+                                }.bind(this),
+                            },
+
+                        ]
+
+                    };
+
+                    var dialogManager = dispatcher.getDialogManager();
+                    var dialog = dialogManager.getDialog(dialogManager.type.DEFAULT, 'search-users', dialogParams);
+
+                    dialog.show();
+
+                }.bind(this));
 
             },
 
-            reset: function() {
-                console.log("RESET: Posem el valor a en blanc");
+            reset: function () {
                 var $input = jQuery(this.entryText);
                 $input.val('');
 
-                console.log("RESET: Posem el valor ocult en blanc");
                 var $field = jQuery(this.hiddenSelected);
                 $field.val('');
 
                 var $items = jQuery(this.selectedItemsNode).find('.selected');
-
-                console.log("RESET: eliminant selected:", $items);
                 $items.remove();
 
 
-                console.log("RESET: inicialitzant seletect, candidate i lastquery");
-                this.selected={};
+                this.selected = {};
                 this.candidate = null;
                 this.lastQuery = null;
-
 
 
                 this.filter(null);
@@ -153,8 +170,7 @@ define([
 
 
             _fill: function () {
-                console.log("IocFilteredList#fill", this.data);
-                // Omple la llista amb tots els elements
+                // console.log("IocFilteredList#fill", this.data);
                 this.itemListByUserId = {};
 
                 var that = this;
@@ -169,26 +185,21 @@ define([
                     that.itemListByUserId[item.username] = item;
                 });
 
-                // ALERTA[Xavi] Comprovar si el valor establert s'ha passat correctament per referencia
-                console.log("S'han actualitzat els items de l'array?", this.items);
             },
 
 
             _itemSelected: function (item) {
-                console.log("IocFilteredList#_itemSelected", item);
-                console.log("IocFilteredList#_itemSelected");
-                console.log("S'ha fet click a l'item:", item);
 
-                console.log("llista completa d'items:", this.data);
+                if (this.selected[item.username]) {
+                    // console.log("Ja s'ha afegit anteriorment")
+                    return;
+                }
 
                 var newItem = jQuery('<li class="selected"></li>');
                 newItem.html(item.name + " &lt;" + item.username + "&gt;" + " <span>x</span>");
                 newItem.attr('data-user-id', item.username);
                 newItem.attr('data-name', item.name);
 
-                // TODO[Xavi] Afegir botó de tancar i listener
-
-                console.log("Existeix el node entryListItem?", this.entryListItem);
                 newItem.insertBefore(this.entryListItem);
 
                 var that = this;
@@ -199,7 +210,11 @@ define([
 
                 if (item.username) {
                     this.selected[item.username] = item;
-                    this.itemListByUserId[item.username].widget.hide();
+
+                    // ALERTA[Xavi] Els elements afegits a partir del dialeg no són a la llista
+                    if (this.itemListByUserId[item.username]) {
+                        this.itemListByUserId[item.username].widget.hide();
+                    }
 
                 } else {
                     // Aquest cas només pot ocorrer quan s'entra un valor que no es trobi a la llista
@@ -214,23 +229,19 @@ define([
                 if (!this.$form) {
                     this.$form = $input.closest('form');
 
-                    console.log ("^***** TROBAT FORM??? ", this.$form);
-                    this.$form.on('reset', function() {
-                        console.log("Form Reset!");
+                    this.$form.on('reset', function () {
                         this.reset();
-
                     }.bind(this));
                 }
 
             },
 
             _itemUnselected: function (itemNode) {
-                console.log("IocFilteredList#_itemUnselected", itemNode);
+                // console.log("IocFilteredList#_itemUnselected", itemNode);
 
                 var $node = jQuery(itemNode.parentElement);
 
                 if (this.selected[$node.attr('data-user-id')] || this.selected[$node.attr('data-name')]) {
-                    console.log("L'item estava seleccionat");
                     delete(this.selected[$node.attr('data-user-id')]);
                     this.selectedCount--;
                     $node.remove();
@@ -238,7 +249,7 @@ define([
                     this._updateHiddentSelectedField();
 
                 } else {
-                    console.error("L'item no es troba a la llista de seleccionats:", $node, this.selected);
+                    // console.error("L'item no es troba a la llista de seleccionats:", $node, this.selected);
                 }
 
 
@@ -265,16 +276,10 @@ define([
                 $hiddenField.val(selectedUserIds);
 
                 if (selectedUserIds.length === 0) {
-                    console.log("El camp principal a passat a required");
                     jQuery(this.entryText).prop('required', true);
                 } else {
-                    console.log("El camp principal ja no es required");
                     jQuery(this.entryText).prop('required', false);
                 }
-
-                console.log("Updated Hiddenfield:", $hiddenField.val());
-                console.log("Required Hiddenfield:", $hiddenField.prop('required'));
-
             },
 
 
@@ -284,7 +289,7 @@ define([
              * @param query
              */
             filter: function (query) {
-                console.log("IocFilteredList#filter");
+                // console.log("IocFilteredList#filter");
 
                 if (this.candidate) {
 
@@ -312,18 +317,16 @@ define([
 
                     // Si es troba seleccioant no cal comprovar-lo, ja s'ha amagat abans.
                     if (this.selected[item.username]) {
-                        console.log("Ja es troba seleccionat", item.username);
+                        // console.log("Ja es troba seleccionat", item.username);
                         continue;
 
-                    } else if (query=== null) {
-                        console.log("El query es null");
+                    } else if (query === null) {
                         item.widget.hide();
 
                     } else {
                         // Si la mida del query es 0 es mostren tots
 
                         if (query.length === 0 || lowerUserId.indexOf(query) >= 0 || lowerName.indexOf(query) >= 0) {
-                            console.log(item, " ha passat el filtre ", query);
                             item.widget.show();
 
                             if (isEmpty) {
@@ -340,13 +343,11 @@ define([
                     }
                 }
 
-                // TODO: Si la mida de la llista es 0 s'amaga la llista, en cas contrari es mostra
                 if (isEmpty) {
                     jQuery(this.contentListNode).css('display', 'none');
                 } else {
                     jQuery(this.contentListNode).css('display', 'inherit');
                 }
-
 
 
             }

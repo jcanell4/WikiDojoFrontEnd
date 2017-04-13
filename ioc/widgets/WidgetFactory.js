@@ -1,9 +1,7 @@
 /**
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
-define([
-        "dojo/dom",
-    ], function (dom) {
+define([], function () {
 
         var URL_BASE = 'ioc/widgets/',// URL per defecte
             RETRY_TIMER = 100
@@ -21,10 +19,10 @@ define([
                 url = URL_BASE + data.class + '/' + data.class;
             }
 
-            console.log("URL Demanada per carregar mòdul AMD:", url);
+            // console.log("URL Demanada per carregar mòdul AMD:", url);
 
             require([url], function (Widget) {
-                console.log("Carrega del modul completa");
+                // console.log("Carrega del modul completa");
                 appendAMDWidget(Widget, data, id);
             });
         },
@@ -34,22 +32,17 @@ define([
                 var parentNode;
 
                 if (typeof nodeId !== "object") {
-                    console.log("nodeid no és un objecte");
                     parentNode = document.getElementById(nodeId);
                 } else {
-                    console.log("nodeid és un objecte");
                     parentNode = nodeId;
                 }
 
-                console.log("Parent Node: ", parentNode, nodeId);
-
                 if (!parentNode) {
-                    console.log("Posat en espera " + RETRY_TIMER + " ms");
+                    // console.log("Posat en espera " + RETRY_TIMER + " ms");
                     setTimeout(appendAMDWidget, RETRY_TIMER, Widget, data, nodeId);
                 } else {
                     data.id = nodeId;
                     var widget = new Widget(data.data).placeAt(parentNode);
-                    console.log("Widget afegit al dom", parentNode, widget);
                 }
             },
 

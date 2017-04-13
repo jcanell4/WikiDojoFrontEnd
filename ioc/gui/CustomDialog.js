@@ -99,8 +99,15 @@ define([
         },
 
         _addSections: function () {
+            // console.log("CustomDialog#_addSections", this.sections);
             for (var i = 0; i < this.sections.length; i++) {
-                this.sectionsNode.appendChild(this.sections[i]);
+
+                if (this.sections[i].widget) {
+                    this.sections[i].widget.placeAt(this.sectionsNode);
+                } else {
+                    this.sectionsNode.appendChild(this.sections[i]);
+                }
+
                 jQuery(this.sectionsNode.lastChild).animate({scrollTop: (0)}); // En cas de que es mostri una barra de desplaçament sempre es mostrarà el principi de la secció
             }
         },

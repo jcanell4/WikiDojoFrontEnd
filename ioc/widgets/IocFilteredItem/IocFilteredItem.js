@@ -3,13 +3,11 @@ define([
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
     'dojo/text!./templates/IocFilteredItem.html',
-    'dojo/dom-style',
-    'dojo/mouse',
     'dojo/on',
     'dojo/_base/lang',
     'dojo/text!./css/IocFilteredItem.css',
     "dojo/Evented",
-], function (declare, _WidgetBase, _TemplatedMixin, template, domStyle, mouse, on, lang, css, Evented) {
+], function (declare, _WidgetBase, _TemplatedMixin, template, on, lang, css, Evented) {
 
     var cssStyle = document.createElement('style');
     cssStyle.innerHTML= css;
@@ -35,7 +33,6 @@ define([
         },
 
         _click: function() {
-            console.log("Click!", this);
             this.emit("selected", {name: this.name, username: this.username});
         },
 
