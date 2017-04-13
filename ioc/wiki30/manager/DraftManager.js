@@ -97,7 +97,7 @@ define([
         clearDraft: function (id) {
             //console.log("DraftManager#clearDraft", id);
 
-            var userId = 'user_' + this.dispatcher.getGlobalState().username,
+            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = JSON.parse(localStorage.getItem(userId)) || {pages: {}},
                 pages = user.pages;
 
@@ -118,7 +118,7 @@ define([
         clearDraftChunks: function (id, chunks) {
             //console.log("DraftManager#clearDraftChunks", id);
 
-            var userId = 'user_' + this.dispatcher.getGlobalState().username,
+            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = JSON.parse(localStorage.getItem(userId)),
                 pages = user?user.pages:null;
 

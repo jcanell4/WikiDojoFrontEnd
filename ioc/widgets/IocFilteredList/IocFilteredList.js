@@ -19,11 +19,11 @@ define([
 
             baseClass: 'ioc-filtered-list',
 
-            constructor: function (data, field) {
+            constructor: function (/*data, field*/) {
                 this.inherited(arguments);
 
 
-                console.log("IocFilteredList#constructor", data);
+                console.log("IocFilteredList#constructor", arguments);
                 // El template és només una llista
                 // Que es omple amb IocFilteredItems
                 // Ha de rebre:
@@ -33,10 +33,8 @@ define([
 
                 // ALERTA[Xavi]: data contindrà l'array d'elements, i selector el objecte al que se li pasarà la informació quan un element sigui seleccionat <-- Eliminar això i fer servir un on i emit amb la informació de l'objecte?
 
-                this.data = data;
-                this.fieldName = field;
-
-                this.fullList = data;
+                // this.data = data;
+                // this.fieldName = field;
 
 
                 this.selected = {}; // referenciats pel id per trobar-los més ràpidament
@@ -155,13 +153,13 @@ define([
 
 
             _fill: function () {
-                console.log("IocFilteredList#fill", this.fullList);
+                console.log("IocFilteredList#fill", this.data);
                 // Omple la llista amb tots els elements
                 this.itemListByUserId = {};
 
                 var that = this;
 
-                arrayUtil.forEach(this.fullList, function (item) {
+                arrayUtil.forEach(this.data, function (item) {
                     // Create our widget and place it
                     var data = item;
                     data.container = that;
@@ -181,7 +179,7 @@ define([
                 console.log("IocFilteredList#_itemSelected");
                 console.log("S'ha fet click a l'item:", item);
 
-                console.log("llista completa d'items:", this.fullList);
+                console.log("llista completa d'items:", this.data);
 
                 var newItem = jQuery('<li class="selected"></li>');
                 newItem.html(item.name + " &lt;" + item.username + "&gt;" + " <span>x</span>");
@@ -304,9 +302,9 @@ define([
                 this.lastQuery = query;
 
 
-                for (var i = 0; i < this.fullList.length; i++) {
+                for (var i = 0; i < this.data.length; i++) {
 
-                    var item = this.fullList[i];
+                    var item = this.data[i];
 
                     var lowerUserId = item.username.toLowerCase(),
                         lowerName = item.name.toLowerCase();

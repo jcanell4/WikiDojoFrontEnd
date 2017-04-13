@@ -48,7 +48,7 @@ define([
                     setTimeout(appendAMDWidget, RETRY_TIMER, Widget, data, nodeId);
                 } else {
                     data.id = nodeId;
-                    var widget = new Widget(data.data, data.name).placeAt(parentNode);
+                    var widget = new Widget(data.data).placeAt(parentNode);
                     console.log("Widget afegit al dom", parentNode, widget);
                 }
             },

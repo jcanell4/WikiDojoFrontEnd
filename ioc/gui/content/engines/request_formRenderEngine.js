@@ -55,9 +55,9 @@ define([
                     break;
 
                 case 'amd':
-                    //ALERTA[Xavi] Es genera un on s'instanciarà el widget
-                    $input = jQuery('<div>');
+                    // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
                     var token = Date.now() + Math.ceil(Math.random() * 16);
+                    $input = jQuery('<div>');
                     $input.attr('id', token);
                     createAMDWidget(data, token);
                     break;
