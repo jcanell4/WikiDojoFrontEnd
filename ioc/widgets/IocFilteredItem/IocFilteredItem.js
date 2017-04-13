@@ -20,7 +20,7 @@ define([
         templateString: template,
 
         name: "Sense nom",
-        userId: "Sense userId",
+        username: "Sense username",
 
         baseClass: "ioc-filtered-item",
 
@@ -36,7 +36,7 @@ define([
 
         _click: function() {
             console.log("Click!", this);
-            this.emit("selected", {name: this.name, userId: this.userId});
+            this.emit("selected", {name: this.name, username: this.username});
         },
 
         hide: function() {

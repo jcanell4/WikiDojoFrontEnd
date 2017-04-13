@@ -259,7 +259,7 @@ define([
 
         _doGetUser: function () {
             //console.log('Draft#_doGetUser');
-            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+            var userId = 'user_' + this.dispatcher.getGlobalState().username,
                 user = JSON.parse(localStorage.getItem(userId));
 
             if (user && user.pages) {
@@ -273,7 +273,7 @@ define([
 
         _doSetPages: function (pages) {
             //console.log('Draft#_doSetPages', pages);
-            var userId = 'user_' + this.dispatcher.getGlobalState().userId;
+            var userId = 'user_' + this.dispatcher.getGlobalState().username;
             localStorage.setItem(userId, JSON.stringify({pages: pages}));
         },
 
@@ -288,7 +288,7 @@ define([
         // TODO[Xavi] aquí podem afegir la compresió de dades
         _doSetPage: function (page) {
             //console.log('Draft#_doSetPage');
-            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+            var userId = 'user_' + this.dispatcher.getGlobalState().username,
                 user = this._doGetUser(userId);
 
             user.pages[this.contentTool.ns] = page;

@@ -59,7 +59,7 @@ define([
              */
             updateState: function (dispatcher, value) {
                 dispatcher.getGlobalState().login = value.loginResult;
-                dispatcher.getGlobalState().userId = value.userId;
+                dispatcher.getGlobalState().username = value.username;
             },
 
             /**
@@ -67,8 +67,8 @@ define([
              * del tamany dels ContentPane
              */
             _updateGUI: function (dispatcher, value) {
-                if (value.userId) {
-                    dispatcher.almacenLocal.loadUserConfig(dispatcher, value.userId);
+                if (value.username) {
+                    dispatcher.almacenLocal.loadUserConfig(dispatcher, value.username);
                 }else {
                     dispatcher.almacenLocal.setUserDefaultPanelsSize(dispatcher);
                 }

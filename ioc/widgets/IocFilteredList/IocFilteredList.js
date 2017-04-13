@@ -69,7 +69,7 @@ define([
                         if (this.candidate) {
                             item = this.candidate;
                         } else {
-                            item = {name: $input.val(), userId: ''};
+                            item = {name: $input.val(), username: ''};
                         }
                         // cas 2: No hi ha cap element, es crea un nou amb el text entrat
 
@@ -126,16 +126,6 @@ define([
                 jQuery(this.hiddenSelected).attr('name', this.fieldName);
 
 
-                // var $form = jQuery($input).closest('form');
-                //
-                // alert("Mira si existeix el form");
-                //
-                // console.log ("^***** TROBAT FORM??? ", $form);
-                // $form.on('reset', function() {
-                //     console.log("Form Reset!");
-                //     this.reset();
-                //
-                // }.bind(this));
             },
 
             reset: function() {
@@ -178,7 +168,7 @@ define([
                     item.widget = new IocFilteredItem(data);
                     item.widget.placeAt(that.contentListNode);
                     item.widget.on('selected', that._itemSelected.bind(that));
-                    that.itemListByUserId[item.userId] = item;
+                    that.itemListByUserId[item.username] = item;
                 });
 
                 // ALERTA[Xavi] Comprovar si el valor establert s'ha passat correctament per referencia
@@ -194,8 +184,8 @@ define([
                 console.log("llista completa d'items:", this.fullList);
 
                 var newItem = jQuery('<li class="selected"></li>');
-                newItem.html(item.name + " &lt;" + item.userId + "&gt;" + " <span>x</span>");
-                newItem.attr('data-user-id', item.userId);
+                newItem.html(item.name + " &lt;" + item.username + "&gt;" + " <span>x</span>");
+                newItem.attr('data-user-id', item.username);
                 newItem.attr('data-name', item.name);
 
                 // TODO[Xavi] Afegir botó de tancar i listener
@@ -209,9 +199,9 @@ define([
                 });
 
 
-                if (item.userId) {
-                    this.selected[item.userId] = item;
-                    this.itemListByUserId[item.userId].widget.hide();
+                if (item.username) {
+                    this.selected[item.username] = item;
+                    this.itemListByUserId[item.username].widget.hide();
 
                 } else {
                     // Aquest cas només pot ocorrer quan s'entra un valor que no es trobi a la llista
@@ -221,16 +211,6 @@ define([
 
                 var $input = jQuery(this.entryText);
                 $input.val('');
-
-
-
-
-
-
-
-
-
-
 
                 // ALERTA[Xavi] en el post create no el troba. Com no cal fer res fins que es selecciona alguna cosa ho afegim aquí
                 if (!this.$form) {
@@ -243,15 +223,6 @@ define([
 
                     }.bind(this));
                 }
-
-
-
-
-
-
-
-
-
 
             },
 
@@ -306,9 +277,6 @@ define([
                 console.log("Updated Hiddenfield:", $hiddenField.val());
                 console.log("Required Hiddenfield:", $hiddenField.prop('required'));
 
-
-
-
             },
 
 
@@ -336,19 +304,17 @@ define([
                 this.lastQuery = query;
 
 
-                // 1- Filtra els elements que no acompleixen la condició (ni el nom ni el id es contenent la query)
-
                 for (var i = 0; i < this.fullList.length; i++) {
 
                     var item = this.fullList[i];
 
-                    var lowerUserId = item.userId.toLowerCase(),
+                    var lowerUserId = item.username.toLowerCase(),
                         lowerName = item.name.toLowerCase();
 
 
                     // Si es troba seleccioant no cal comprovar-lo, ja s'ha amagat abans.
-                    if (this.selected[item.userId]) {
-                        console.log("Ja es troba seleccionat", item.userId);
+                    if (this.selected[item.username]) {
+                        console.log("Ja es troba seleccionat", item.username);
                         continue;
 
                     } else if (query=== null) {
@@ -384,113 +350,9 @@ define([
                 }
 
 
-                // 2- Elimina els elements
+
             }
         });
     });
 
 
-// define([
-//     'dojo/_base/declare',
-//     "dijit/_WidgetBase",
-//     "dijit/_TemplatedMixin",
-//     /*'dijit/_WidgetsInTemplateMixin',*/
-//     'dojo/text!./templates/IocFilteredList.html',
-//     'dojo/_base/array',
-//     "dojo/domReady!"
-//     // 'ioc/widgets/IocFilteredItem/IocFilteredItem'
-//
-// ], function (_WidgetBase, _TemplatedMixin, /*_WidgetsInTemplateMixin,*/ declare, template, arrayUtil) {
-//
-//     console.log("*** carregat IocFilteredList ***");
-//
-//     return declare("ioc.widgets.IocFilteredList", [_WidgetBase, _TemplatedMixin /*,_WidgetsInTemplateMixin*/], {
-//
-//         templateString: template,
-//
-//         baseClass: "ioc-filtered",
-//
-//         constructor: function(data) {
-//
-//             console.log("IocFilteredList#constructor", data);
-//             // El template és només una llista
-//             // Que es omple amb IocFilteredItems
-//             // Ha de rebre:
-//             //  - el node a sota del qual s'ha de desplegar
-//             //  - l'array d'elements total
-//             //  - L'element de destí: rebrà l'objecte amb la informació del item clicat
-//
-//             // ALERTA[Xavi]: data contindrà l'array d'elements, i selector el objecte al que se li pasarà la informació quan un element sigui seleccionat <-- Eliminar això i fer servir un on i emit amb la informació de l'objecte?
-//
-//
-//
-//             // ALERTA[Xavi] Codi de prova
-//             this.fullList = [
-//                 {name: "Xavier Garcia", userId: "foo"},
-//                 {name: "Josep Cañellas", userId: "bar"},
-//                 {name: "Joan Ramon", userId: "asdf"},
-//                 {name: "Alicia Vila", userId: "fdsasd"},
-//                 {name: "Josep Lladonosa", userId: "qwer"}
-//             ];
-//
-//             this.selected = {}; // referenciats pel id per trobar-los més ràpidament
-//             this.filtered = {}
-//
-//         },
-//
-//
-//         postCreate: function() {
-//             this.inherited(arguments);
-//             // this.fill();
-//         },
-//
-//
-//         fill: function() {
-//             // Omple la llista amb tots els elements
-//
-//             arrayUtil.forEach(this.items, function(item){
-//                 // Create our widget and place it
-//                 var data = item;
-//                 data.container = this;
-//                 item.widget = new IocFilteredItem(data).placeAt(this.contentListNode);
-//             });
-//
-//             // ALERTA[Xavi] Comprovar si el valor establert s'ha passat correctament per referencia
-//             console.log("S'han actualitzat els items de l'array?", this.items);
-//         },
-//
-//         _itemSelected: function(item) {
-//             // TODO[Xavi] Això és seleccionarà automàticament en fer clic a un item
-//             // Afegir a l'array this.selected.
-//             // TODO: Comprovar que passa en aquest moment, si la llista es visible s'ha d'amagar
-//         },
-//
-//         _itemUnselected: function(item) {
-//             // Cridat pel ContactSelector quan es tanca un element (seran elements individuals?)
-//             // Eleminar de l'array this.selected.
-//             // TODO: Comprovar que passa en aquest moment, si la llista es visible s'ha d'amagar
-//         },
-//
-//         show: function(items) {
-//             // Mostra la llista amb l'array. display: inherit
-//
-//
-//         },
-//
-//         hide: function (items) {
-//             // Amaga els elements de la llista passats com argument
-//             // display: none;
-//
-//             // TODO[Xavi]: Per afegir al final si hi ha temps: Aquesta funció serà cridada també pel selector de contactes per eliminar els elements ja afegits a la llista
-//         },
-//
-//         filter: function (query) {
-//             // 1- Filtra els elements que no acompleixen la condició (ni el nom ni el id es contenent la query)
-//
-//
-//             // 2- Elimina els elements
-//         }
-//
-//
-//     });
-// });
