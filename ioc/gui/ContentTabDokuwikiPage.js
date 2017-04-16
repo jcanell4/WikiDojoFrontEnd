@@ -27,6 +27,9 @@ define([
                     var arr = att.get(this, "href").split("?");
                     if (arr.length > 1) {
                         q = arr[1];
+                        if(q.indexOf("call") === -1){
+                            q = tab.defaultCall + "&" + q;
+                        }
                     }
                     tab.sendRequest(q);
                     event.stop(e);
