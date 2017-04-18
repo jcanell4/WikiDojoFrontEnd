@@ -341,7 +341,7 @@ define([
             },
 
             onUnload: function () {
-                //console.log("AbstractContentTool#onUnload");
+                // console.log("AbstractContentTool#onUnload");
                 if (!this.updating) {
                     this._destroyContentTool();
                 }

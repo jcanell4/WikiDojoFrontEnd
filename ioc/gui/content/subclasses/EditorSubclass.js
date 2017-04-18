@@ -110,30 +110,25 @@ define([
 
             // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
-                // console.log("EditorSubclass#_doCancelDocument", this.id, event);
+                console.log("EditorSubclass#_doCancelDocument", this.id, event);
                 var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
+                console.log("S'ha requerid confirmació?", event.requireConfirmation)
+
                 // if (data.discardChanges || (data.discardChanges == null && (this.isContentChanged() && this.dispatcher.discardChanges()))) {
-                if (data.discardChanges) {
+                if (!event.requireConfirmation && data.discardChanges) {
 
                     dataToSend = this.getQueryForceCancel(); // el paràmetre no es fa servir
 
-                } else if (data.discardChanges === undefined && (this.isContentChanged())) {
+                    // ALERTA[Xavi] Per defecte no es demana confirmació
+                } else if (event.requireConfirmation || (data.discardChanges === undefined && (this.isContentChanged()))) {
 
-                    if (this._discardChanges()) {
-                        // TODO[Xavi] Mostrar el dialog per cancel·lar edició -> desar document o sortir sense desar, el callback dispara el mateix event amb el paràmetre ("confirmed: true");
-                        // El dialog s'haurà passat al constructor des del processor
+
+                    if (!event.requireConfirmation || (event.requireConfirmation && this._discardChanges())) {
                         var cancelDialog = this._generateDiscardDialog();
                         cancelDialog.show();
-
-
-                        // La cancel·lació es tornarà a disparar des del dialog
-
-                    } else {
-                        // console.log("No s'ha cridat al dialog");
                     }
-                    // ALERTA[Xavi] Es cancel·la l'enviament
 
                     return {_cancel: true};
 
@@ -180,6 +175,7 @@ define([
             },
 
             _discardChanges:function() {
+                console.log("EditorSubclass#_discardChanges");
                 return confirm(this.messageChangesDetected);
             },
 
@@ -280,6 +276,24 @@ define([
                 } else {
                     return {_cancel:true}
                 }
-            }
+            },
+
+            onClose: function() {
+
+                var ret = this.isContentChanged();
+
+                if (ret) {
+                    // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
+                    var eventManager = this.dispatcher.getEventManager();
+                    eventManager.fireEvent(eventManager.eventName.CANCEL, {
+                        id: this.id,
+                        name: eventManager.eventName.CANCEL,
+                        requireConfirmation: true,
+                        dataToSend: {no_response: true, discardChanges: true}
+                    }, this.id);
+                }
+
+                return !ret;
+            },
         });
 });

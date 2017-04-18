@@ -26,7 +26,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //console.log("HtmlPartialContentProcessor#process", value);
+                console.log("HtmlPartialContentProcessor#process", value);
 
                 //
                 ////ALERTA[Xavi] Codi de prova pels notifiers -> INIT
@@ -185,10 +185,12 @@ define([
 
                         // Alerta[Xavi] la informació del dialog només s'ha d'afegir quan s'edita el primer chunk
                         if (!contentTool.cancelDialogConfig && value.extra) {
-                            contentTool.cancelDialogConfig = value.extra.dialogSaveOrDiscard,
-                            contentTool.messageChangesDetected =  value.extra.messageChangesDetected
+                            contentTool.cancelDialogConfig = value.extra.dialogSaveOrDiscard;
+                            contentTool.cancelAllDialogConfig = value.extra.dialogSaveOrDiscardAll,
+                            contentTool.messageChangesDetected =  value.extra.messageChangesDetected;
                         }
 
+                        console.log("")
                         contentTool.updateDocument(value);
 
                         dispatcher.getGlobalState().getContent(value.id).rev = contentTool.rev; // ALERTA[Xavi] posava content.rev, això no pot ser, es referia contentTool.rev (que a la seva vegada es el mateix que value.rev)?

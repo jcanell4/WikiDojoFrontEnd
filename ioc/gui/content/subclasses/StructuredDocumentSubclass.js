@@ -1144,16 +1144,14 @@ define([
         },
 
         _doSavePartialAll: function (event) {
-//            console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
-
+           console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
+            console.log("this.ns=", this.ns);
 
             var chunkParams = [],
                 containerId = this.id;
 
             for (var header_id in this.editors) {
                 chunkParams.push(this.getQuerySave(header_id));
-
-
             }
 
             //this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
@@ -1167,13 +1165,13 @@ define([
 
 //            console.log("Chunks per desar: ", {chunk_params: chunkParams});
 
-            var section_id = this.dispatcher.getGlobalState().getCurrentElementId();
+            /*var section_id = this.dispatcher.getGlobalState().getCurrentElementId();
             section_id= section_id.replace(this.id + "_", "");
-            section_id = section_id.replace("container_", "");
+            section_id = section_id.replace("container_", "");*/
 
 
             return {
-                dataToSend: {chunk_params: JSON.stringify(chunkParams), id: event.id, section_id: section_id},
+                dataToSend: {chunk_params: JSON.stringify(chunkParams), id: this.ns/*, section_id: section_id*/},
                 standbyId: containerId
             };
 
@@ -1182,29 +1180,19 @@ define([
 
 
         _doCancelPartial: function (event) {
-           // console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+           console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
            var data = this._getDataFromEvent(event);
            // Les dades que arriben son {id, chunk, name (del event)}
 
 
+            console.log("Event:", event);
+
             if (data.discardChanges === undefined && this.isContentChangedForChunk(event.chunk)) {
 
-                if (this._discardChanges()) {
-                    // // TODO[Xavi] Mostrar el dialog per cancel·lar edició -> desar document o sortir sense desar, el callback dispara el mateix event amb el paràmetre ("confirmed: true");
-                    // // El dialog s'haurà passat al constructor des del processor
-                    // ALERTA[Xavi] S'ha d'especificar el chunk al dialog
-                    // TODO[Xavi] pendent de determinar com, establir-lo manualment com a propietat abans de visualitzar-lo?
                     var cancelDialog = this._generateDiscardDialog();
                     cancelDialog.extraData = {chunk : data.chunk};
                     cancelDialog.show();
-
-                    // La cancel·lació es tornarà a disparar des del dialog
-
-                } else {
-                    console.log("No s'ha cridat al dialog");
-                }
-                // ALERTA[Xavi] Es cancel·la l'enviament
 
                 return {_cancel: true};
             }
@@ -1274,48 +1262,60 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-           // console.log("StructuredDocumentSubclass#_doCancel", this.id, event);
+           console.log("StructuredDocumentSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
-            if (data.discardChanges || data['discard_changes']) {
-                dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
+            //ALERTA|TODO[Xavi]: en aquest cas s'ha de fer servir un dialeg diferent, per que el botó ha de disparar SAVE_PARTIAL_ALL
+            if (event.requiredConfirmation && this._discardChanges()) {
+                var cancelDialog = this._generateDiscardAllDialog();
+                // cancelDialog.extraData = {chunk : data.chunk};
+                cancelDialog.show();
+
+
+                return {_cancel: true};
             } else {
-                dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
+
+                if (data.discardChanges || data['discard_changes']) {
+                    dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
+                } else {
+                    dataToSend = this.getQueryCancel(event.id); // el paràmetre no es fa servir
+                }
+
+                if (this.required && data.keep_draft !== undefined) {
+                    dataToSend += '&keep_draft=' + data.keep_draft;
+                }
+
+                if (event.extraDataToSend) {
+                    dataToSend += '&' + event.extraDataToSend;
+                }
+
+                if (typeof event.dataToSend === "string") {
+                    dataToSend += "&" + event.dataToSend;
+                }
+
+                if (!this.required) {
+                    dataToSend +="&unlock=false";
+                }
+
+                containerId = event.id;
+
+                //this.eventManager.fireEvent(this.eventName.CANCEL, {
+                //    id: this.id,
+                //    dataToSend: dataToSend,
+                //    standbyId: containerId
+                //}, this.id)
+                //
+                //
+
+                this.freePage();
+
+                return {
+                    id: this.id,
+                    dataToSend: dataToSend,
+                    standbyId: containerId
+                }
             }
-
-            if (this.required && data.keep_draft !== undefined) {
-                dataToSend += '&keep_draft=' + data.keep_draft;
-            }
-
-            if (event.extraDataToSend) {
-                dataToSend += '&' + event.extraDataToSend;
-            }
-
-            if (typeof event.dataToSend === "string") {
-                dataToSend += "&" + event.dataToSend;
-            }
-
-            if (!this.required) {
-                dataToSend +="&unlock=false";
-            }
-
-            containerId = event.id;
-
-            //this.eventManager.fireEvent(this.eventName.CANCEL, {
-            //    id: this.id,
-            //    dataToSend: dataToSend,
-            //    standbyId: containerId
-            //}, this.id)
-            //
-            //
-
-            return {
-                id: this.id,
-                dataToSend: dataToSend,
-                standbyId: containerId
-            }
-
         },
 
         _getDataFromEvent: function (event) {
@@ -1341,16 +1341,26 @@ define([
 //        },
 
         onClose: function() {
-            var ret = this.inherited(arguments);
+            var ret = this.isContentChanged();
 
+            console.log("NS:", this.ns);
             if (ret) {
                 // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
                 var eventManager = this.dispatcher.getEventManager();
-                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: "no_response=true&discardChanges=true"}, this.id);
-                this.freePage();
+                eventManager.fireEvent(eventManager.eventName.CANCEL, {
+                    id: this.ns,
+                    requiredConfirmation: true,
+                    name: eventManager.eventName.CANCEL,
+                    dataToSend: "no_response=true&discardChanges=true"
+                }, this.id);
             }
+                // this.freePage();
+            // }
+            //ALERTA[Xavi] Si no hi ha canvis es tanca directament
 
-            return ret;
+        console.log("Hi han canvis?", ret);
+
+            return !ret;
         },
 
         requirePage: function() {
@@ -1384,7 +1394,11 @@ define([
             this.inherited(arguments);
         },
 
-
+        _generateDiscardAllDialog: function() {
+            console.log("StructuredDocumentSubclass#_generateDiscardAllDialog", this.cancelAllDialogConfig);
+            var dialog = this.dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + this.id, this.cancelAllDialogConfig);
+            return dialog;
+        },
 
 
     })
