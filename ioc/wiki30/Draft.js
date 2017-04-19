@@ -225,7 +225,7 @@ define([
 
         // Només elimina el draft del tipus indicat
         _removeLocalDraft: function (type) {
-            console.log("Draft#_removeLocalDraft", type);
+            // console.log("Draft#_removeLocalDraft", type);
 
             switch (type) {
                 case 'structured':
@@ -243,7 +243,7 @@ define([
         },
 
         _removeLocalStructuredDraft: function () {
-            console.log("Draft#_removeLocalStructureDraft");
+            // console.log("Draft#_removeLocalStructureDraft");
             // En aquest cas només s'han d'esborrar el draft dels chunks actius al desar
             var pages = this._doGetPages(),
                 draft = this._getLastGeneratedDraft();
@@ -397,7 +397,7 @@ define([
         },
 
         _onDestroy: function () {
-            console.log("Draft#_onDestroy", this.contentTool.id, this.contentTool.ns);
+            // console.log("Draft#_onDestroy", this.contentTool.id, this.contentTool.ns);
             this._cancelTimers();
 //            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
 //            this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
@@ -453,13 +453,11 @@ define([
         _deparam: function(queryString) {
             var pairs = queryString.split('&');
             var dictionary = {};
-            console.log("pairs:", pairs);
+
             for (var item in pairs) {
                 var pair = pairs[item].split('=');
-                console.log("Pair:", pair);
                 var key = pair[0];
-                var value = this._getParamValue(pair[1]);
-                dictionary[key] = value;
+                dictionary[key] = this._getParamValue(pair[1]);
             }
 
             return dictionary;

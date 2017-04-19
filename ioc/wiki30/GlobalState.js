@@ -253,7 +253,7 @@ define([
         requirePage: function (contentTool) {
            // console.log("GlobalState#requirePage", contentTool.id);
 
-            console.log("Es troba lliure el document??", this.requiredPages[contentTool.ns]);
+            // console.log("Es troba lliure el document??", this.requiredPages[contentTool.ns]);
 
             if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] === contentTool.id){
                 this.requiredPages[contentTool.ns] = contentTool.id;

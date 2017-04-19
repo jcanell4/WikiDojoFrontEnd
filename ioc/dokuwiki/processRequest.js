@@ -23,7 +23,7 @@ define([
     };
 
     return function(params){
-        console.log("processRequest", params);
+        // console.log("processRequest", params);
 
         request.urlBase = params.urlBase;
 

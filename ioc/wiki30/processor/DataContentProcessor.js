@@ -70,7 +70,9 @@ define([
 
                 ret = this.inherited(arguments);
 
-                this._initTimer(value, dispatcher);
+                if (value.timer) {
+                    this._initTimer(value, dispatcher);
+                }
 
                 return ret;
             },

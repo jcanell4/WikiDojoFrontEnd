@@ -110,6 +110,7 @@ define([
             }
 
 
+            // ALERTA[Xavi] En principi sempre s'ha de trobar el draft, això no ha de ser necesari:
             // if (!draft) {
             //     return;
             // }
@@ -120,19 +121,20 @@ define([
         },
 
         clearDraftChunks: function (id, ns, chunks) {
-            console.log("DraftManager#clearDraftChunks", id, ns, chunks);
+            // console.log("DraftManager#clearDraftChunks", id, ns, chunks);
             var draft;
 
             if (!this.drafts[ns]) {
-                console.log("No existeix el this.drafts[" + ns + "]", this.drafts);
+                // console.log("No existeix el this.drafts[" + ns + "]", this.drafts);
                 draft = this.getDraft(id, ns);
 
-                console.log("s'ha obtingut alguna cosa?", draft);
+                // console.log("s'ha obtingut alguna cosa?", draft);
             } else {
-                console.log("Existeix el draft", this.drafts[ns]);
+                // console.log("Existeix el draft", this.drafts[ns]);
                 draft = this.drafts[ns];
             }
 
+            // ALERTA[Xavi] En principi sempre s'ha de trobar el draft, això no ha de ser necesari:
             // if (!draft) {
             //     return;
             // }

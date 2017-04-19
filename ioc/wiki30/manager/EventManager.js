@@ -46,7 +46,7 @@ define([
         dispatchEvent: null,
         
         _dispatchEvent: function (event, eventData) {
-            console.log("EventManager#dispatchEvent: ", event, eventData);
+            // console.log("EventManager#dispatchEvent: ", event, eventData);
             var callbacks;
 
             eventData.name = event;
@@ -55,7 +55,6 @@ define([
             if (callbacks) {
                 for(var key in callbacks){
                     for(var i=0; i<callbacks[key].callbacks.length; i++){
-                        console.log("avisant a: ", key, "amb", eventData);
                         callbacks[key].callbacks[i](eventData);
                     }
                 }

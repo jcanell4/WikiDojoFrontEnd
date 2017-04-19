@@ -26,7 +26,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("HtmlPartialContentProcessor#process", value);
+                // console.log("HtmlPartialContentProcessor#process", value);
 
                 //
                 ////ALERTA[Xavi] Codi de prova pels notifiers -> INIT
@@ -190,7 +190,6 @@ define([
                             contentTool.messageChangesDetected =  value.extra.messageChangesDetected;
                         }
 
-                        console.log("")
                         contentTool.updateDocument(value);
 
                         dispatcher.getGlobalState().getContent(value.id).rev = contentTool.rev; // ALERTA[Xavi] posava content.rev, això no pot ser, es referia contentTool.rev (que a la seva vegada es el mateix que value.rev)?

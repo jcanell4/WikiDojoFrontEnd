@@ -358,7 +358,6 @@ define([
             }
 
             if (!this.required) {
-                console.log("---El document no es troba requerit!");
                 ret += "&unlock=false"
             }
             return ret;
@@ -390,7 +389,7 @@ define([
          * @param {string} text - Text per substituir
          */
         updateChunk: function (header_id, text) {
-            console.log("StructuredDocumentSubclass#updateChunk", header_id);
+            // console.log("StructuredDocumentSubclass#updateChunk", header_id);
             var chunk,
                 i = 0,
                 found = false;
@@ -1147,8 +1146,7 @@ define([
         },
 
         _doSavePartialAll: function (event) {
-           console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
-            console.log("this.ns=", this.ns);
+           // console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
 
             var chunkParams = [],
                 containerId = this.id;
@@ -1195,13 +1193,10 @@ define([
 
 
         _doCancelPartial: function (event) {
-           console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+           // console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
            var data = this._getDataFromEvent(event);
            // Les dades que arriben son {id, chunk, name (del event)}
-
-
-            console.log("Event:", event);
 
             if (data.discardChanges === undefined && this.isContentChangedForChunk(event.chunk)) {
 
@@ -1277,7 +1272,7 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-           console.log("StructuredDocumentSubclass#_doCancel", this.id, event);
+           // console.log("StructuredDocumentSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
@@ -1309,7 +1304,6 @@ define([
                 }
 
                 if (!this.required) {
-                    console.log("---El document no es troba requerit!", this.required);
                     dataToSend +="&unlock=false";
                 }
 
@@ -1390,7 +1384,7 @@ define([
 
 
         freePage: function() {
-            console.log("StructuredDocumentSubclass#freePage");
+            // console.log("StructuredDocumentSubclass#freePage");
             this.required = false;
             this.dispatcher.getGlobalState().freePage(this.id, this.ns);
             this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
@@ -1405,7 +1399,7 @@ define([
         },
 
         _generateDiscardAllDialog: function() {
-            console.log("StructuredDocumentSubclass#_generateDiscardAllDialog", this.cancelAllDialogConfig);
+            // console.log("StructuredDocumentSubclass#_generateDiscardAllDialog", this.cancelAllDialogConfig);
             var dialog = this.dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + this.id, this.cancelAllDialogConfig);
             return dialog;
         },

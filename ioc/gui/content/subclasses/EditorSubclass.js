@@ -110,7 +110,7 @@ define([
 
             // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
-                console.error("EditorSubclass#_doCancelDocument", this.id, event);
+                // console.log("EditorSubclass#_doCancelDocument", this.id, event);
                 var dataToSend, containerId, data = this._getDataFromEvent(event);
 
                 var isAuto = (event.extraDataToSend && event.extraDataToSend.indexOf('auto=true')>=0);
@@ -279,7 +279,6 @@ define([
                 var ret = this.isContentChanged();
 
                 if (ret) {
-                    console.log("Contingu canviat");
                     // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
                     var eventManager = this.dispatcher.getEventManager();
                     eventManager.fireEvent(eventManager.eventName.CANCEL, {
