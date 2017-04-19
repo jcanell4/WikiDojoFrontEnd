@@ -1364,12 +1364,8 @@ define([
                     name: eventManager.eventName.CANCEL,
                     dataToSend: "no_response=true&discardChanges=true"
                 }, this.id);
+                this.freePage();
             }
-                // this.freePage();
-            // }
-            //ALERTA[Xavi] Si no hi ha canvis es tanca directament
-
-        console.log("Hi han canvis?", ret);
 
             return !ret;
         },
@@ -1392,7 +1388,7 @@ define([
 
 
         freePage: function() {
-            // console.log("StructuredDocumentSubclass#freePage");
+            console.log("StructuredDocumentSubclass#freePage");
             this.required = false;
             this.dispatcher.getGlobalState().freePage(this.id, this.ns);
             this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
@@ -1401,7 +1397,8 @@ define([
 
         onDestroy: function() {
 //            console.log("StructuredDocumentSubclass#onDestroy");
-            this.dispatcher.getGlobalState().freePage(this);
+//             this.dispatcher.getGlobalState().freePage(this.id, this.ns);
+            this.freePage();
             this.inherited(arguments);
         },
 

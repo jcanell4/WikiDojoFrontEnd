@@ -253,7 +253,9 @@ define([
         requirePage: function (contentTool) {
            // console.log("GlobalState#requirePage", contentTool.id);
 
-            if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] == contentTool.id){
+            console.log("Es troba lliure el document??", this.requiredPages[contentTool.ns]);
+
+            if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] === contentTool.id){
                 this.requiredPages[contentTool.ns] = contentTool.id;
                 return true;
             }  else {
@@ -263,9 +265,12 @@ define([
                     owner;
 
 
+                if (contentCache) {
                     owner = contentCache.getMainContentTool();
-
-                owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
+                    owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
+                } else {
+                    console.error("No s'ha trobat el content cache per", contentTool);
+                }
 
                 return false;
             }
@@ -273,7 +278,7 @@ define([
         },
 
         freePage: function (id, ns) {
-           // console.log("Alliberat id:",id,"ns:", ns);
+           console.error("Alliberat id:",id,"ns:", ns);
             if (this.requiredPages[ns] && this.requiredPages[ns] === id) {
                 delete this.requiredPages[ns];
             }
