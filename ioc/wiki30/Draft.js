@@ -397,7 +397,7 @@ define([
         },
 
         _onDestroy: function () {
-            console.log("Draft#onDestroy", this.contentTool.id, this.contentTool.ns);
+            console.log("Draft#_onDestroy", this.contentTool.id, this.contentTool.ns);
             this._cancelTimers();
 //            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
 //            this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);

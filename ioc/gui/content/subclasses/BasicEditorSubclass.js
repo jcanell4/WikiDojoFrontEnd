@@ -415,7 +415,6 @@ define([
                     eventManager.fireEvent(eventManager.eventName.CANCEL, {
                         id: this.id,
                         name: eventManager.eventName.CANCEL,
-                        requireConfirmation: true,
                         dataToSend: {no_response: true, discardChanges: true}
                     }, this.id);
                 }

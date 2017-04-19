@@ -278,11 +278,16 @@ define([
         },
 
         freePage: function (id, ns) {
-           console.error("Alliberat id:",id,"ns:", ns);
+           // console.log("Alliberat id:",id,"ns:", ns);
             if (this.requiredPages[ns] && this.requiredPages[ns] === id) {
                 delete this.requiredPages[ns];
             }
-        }
+        },
+
+        isPageRequired: function (ns) {
+            return this.requiredPages[ns] ? true : false;
+        },
+
     };
 
     return ret;

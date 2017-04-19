@@ -358,6 +358,7 @@ define([
             }
 
             if (!this.required) {
+                console.log("---El document no es troba requerit!");
                 ret += "&unlock=false"
             }
             return ret;
@@ -931,6 +932,8 @@ define([
 
             }
 
+
+            this.freePage();
         },
 
         _generateDraftInMemory: function () {
@@ -1112,7 +1115,7 @@ define([
         },
 
         _doSavePartial: function (event) {
-//            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+           console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
 
 
@@ -1279,13 +1282,12 @@ define([
 
 
             //ALERTA|TODO[Xavi]: en aquest cas s'ha de fer servir un dialeg diferent, per que el botó ha de disparar SAVE_PARTIAL_ALL
-            if (event.requiredConfirmation && this._discardChanges()) {
+            if (this.isContentChanged()) {
                 var cancelDialog = this._generateDiscardAllDialog();
-                // cancelDialog.extraData = {chunk : data.chunk};
                 cancelDialog.show();
 
-
                 return {_cancel: true};
+
             } else {
 
                 if (data.discardChanges || data['discard_changes']) {
@@ -1307,6 +1309,7 @@ define([
                 }
 
                 if (!this.required) {
+                    console.log("---El document no es troba requerit!", this.required);
                     dataToSend +="&unlock=false";
                 }
 
@@ -1360,9 +1363,8 @@ define([
                 var eventManager = this.dispatcher.getEventManager();
                 eventManager.fireEvent(eventManager.eventName.CANCEL, {
                     id: this.ns,
-                    requiredConfirmation: true,
                     name: eventManager.eventName.CANCEL,
-                    dataToSend: "no_response=true&discardChanges=true"
+                    dataToSend: "no_response=true"
                 }, this.id);
                 this.freePage();
             }

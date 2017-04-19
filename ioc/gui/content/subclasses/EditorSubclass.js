@@ -110,24 +110,21 @@ define([
 
             // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
-                console.log("EditorSubclass#_doCancelDocument", this.id, event);
+                console.error("EditorSubclass#_doCancelDocument", this.id, event);
                 var dataToSend, containerId, data = this._getDataFromEvent(event);
 
                 var isAuto = (event.extraDataToSend && event.extraDataToSend.indexOf('auto=true')>=0);
 
                 // if (data.discardChanges || (data.discardChanges == null && (this.isContentChanged() && this.dispatcher.discardChanges()))) {
-                if (!event.requireConfirmation && (data.discardChanges || isAuto)) {
+                if (data.discardChanges || isAuto) {
 
                     dataToSend = this.getQueryForceCancel(); // el paràmetre no es fa servir
 
                     // ALERTA[Xavi] Per defecte no es demana confirmació
-                } else if (event.requireConfirmation || (data.discardChanges === undefined && (this.isContentChanged()))) {
+                } else if (data.discardChanges === undefined && (this.isContentChanged())) {
 
-
-                    if (!event.requireConfirmation || (event.requireConfirmation && this._discardChanges())) {
                         var cancelDialog = this._generateDiscardDialog();
                         cancelDialog.show();
-                    }
 
                     return {_cancel: true};
 
@@ -282,15 +279,14 @@ define([
                 var ret = this.isContentChanged();
 
                 if (ret) {
+                    console.log("Contingu canviat");
                     // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
                     var eventManager = this.dispatcher.getEventManager();
                     eventManager.fireEvent(eventManager.eventName.CANCEL, {
                         id: this.id,
                         name: eventManager.eventName.CANCEL,
-                        requireConfirmation: true,
-                        dataToSend: {no_response: true, discardChanges: true}
+                        dataToSend: {no_response: true}
                     }, this.id);
-                    this.freePage();
                 }
 
                 return !ret;
