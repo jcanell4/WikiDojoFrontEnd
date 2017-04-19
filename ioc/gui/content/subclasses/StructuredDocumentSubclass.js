@@ -1169,9 +1169,21 @@ define([
             section_id= section_id.replace(this.id + "_", "");
             section_id = section_id.replace("container_", "");*/
 
+            var dataToSend;
+
+            if (event.extraDataToSend) {
+                dataToSend =event.extraDataToSend;
+            } else {
+                dataToSend = {};
+            }
+
+            dataToSend.chunk_params =JSON.stringify(chunkParams);
+            dataToSend.id = this.ns;
+
+
 
             return {
-                dataToSend: {chunk_params: JSON.stringify(chunkParams), id: this.ns/*, section_id: section_id*/},
+                dataToSend: dataToSend,
                 standbyId: containerId
             };
 
@@ -1343,7 +1355,6 @@ define([
         onClose: function() {
             var ret = this.isContentChanged();
 
-            console.log("NS:", this.ns);
             if (ret) {
                 // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
                 var eventManager = this.dispatcher.getEventManager();
