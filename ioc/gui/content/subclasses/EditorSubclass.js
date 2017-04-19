@@ -115,9 +115,12 @@ define([
 
 
                 console.log("S'ha requerid confirmació?", event.requireConfirmation)
+                console.log("Contingut de data?", event.extraDataToSend.indexOf('auto=true')>=0);
+
+                var isAuto = event.extraDataToSend.indexOf('auto=true')>=0;
 
                 // if (data.discardChanges || (data.discardChanges == null && (this.isContentChanged() && this.dispatcher.discardChanges()))) {
-                if (!event.requireConfirmation && data.discardChanges) {
+                if (!event.requireConfirmation && (data.discardChanges || isAuto)) {
 
                     dataToSend = this.getQueryForceCancel(); // el paràmetre no es fa servir
 
