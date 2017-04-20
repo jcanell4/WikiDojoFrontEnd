@@ -906,6 +906,8 @@ define([
                 header_id = this.data.chunks[i].header_id;
                 jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
             }
+
+            this.freePage();          
         },
 
         unlockEditors: function () {
@@ -931,8 +933,6 @@ define([
 
             }
 
-
-            this.freePage();
         },
 
         _generateDraftInMemory: function () {
@@ -1277,7 +1277,7 @@ define([
 
 
             //ALERTA|TODO[Xavi]: en aquest cas s'ha de fer servir un dialeg diferent, per que el botó ha de disparar SAVE_PARTIAL_ALL
-            if (this.isContentChanged()) {
+            if (!event.discardChanges && this.isContentChanged()) {
                 var cancelDialog = this._generateDiscardAllDialog();
                 cancelDialog.show();
 
@@ -1400,7 +1400,7 @@ define([
 
         _generateDiscardAllDialog: function() {
             // console.log("StructuredDocumentSubclass#_generateDiscardAllDialog", this.cancelAllDialogConfig);
-            var dialog = this.dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + this.id, this.cancelAllDialogConfig);
+            var dialog = this.dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_partial_' + this.id, this.cancelAllDialogConfig);
             return dialog;
         },
 
