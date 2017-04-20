@@ -29,7 +29,11 @@ define([
             }
 
             this.params.width = 400;
-            this.params.sections = [];
+
+            if (!this.params.sections) {
+                this.params.sections = [];
+            }
+
             this.params.initFunctions = [];
             this.params.buttons = [];
             this.params.nextDialogs = {};
@@ -192,7 +196,7 @@ define([
 
 
         build: function () {
-            //console.log('DialogBuilder#build', this.params);
+            // console.log('DialogBuilder#build', this.params);
             return new CustomDialog(this.params);
         },
 

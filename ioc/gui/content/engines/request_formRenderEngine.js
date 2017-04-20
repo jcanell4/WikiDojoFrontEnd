@@ -1,9 +1,9 @@
 /**
- * @module NotificationEngineFactory
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
-define([], function () {
-
+define([
+    'ioc/widgets/WidgetFactory',
+], function (widgetFactory) {
 
     var createField = function (data) {
             var $fieldContainer = jQuery('<div>'),
@@ -49,10 +49,17 @@ define([], function () {
                     break;
 
                 case 'button':
-                    console.log("*** afegint button ***");
                     $input = jQuery('<button>');
                     $input.val(data.value);
                     $input.html(data.value);
+                    break;
+
+                case 'amd':
+                    // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
+                    var token = Date.now() + Math.ceil(Math.random() * 16);
+                    $input = jQuery('<div>');
+                    $input.attr('id', token);
+                    createAMDWidget(data, token);
                     break;
 
                 default:
@@ -73,15 +80,22 @@ define([], function () {
                 for (var i = 0; i < data.properties.length; i++) {
                     // $input.attr(data.properties[i], true);
                     $input.prop(data.properties[i], true);
-                    $input.attr('data-'+data.properties[i], true); // ALERTA[Xavi]Això permet recordar els props originals, per exemple la casella marcada per defecte
+                    $input.attr('data-' + data.properties[i], true); // ALERTA[Xavi]Això permet recordar els props originals, per exemple la casella marcada per defecte
                     // console.log("** Afegit prop?", $input.prop());
                 }
             }
 
 
-
             return $input;
-        };
+        },
+
+        createAMDWidget= function (data, nodeId) {
+            widgetFactory.addWidgetToNode(data, nodeId)
+        }
+
+
+
+        ;
 
 
     return function (data) {
@@ -92,7 +106,7 @@ define([], function () {
         // console.log("DATA:", data);
 
         var $container = jQuery('<div>'),
-        $form = jQuery('<form>');
+            $form = jQuery('<form>');
         $form.attr('action', data.action);
         $form.attr('method', data.method);
         $container.addClass('request_form');

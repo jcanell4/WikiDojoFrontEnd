@@ -67,7 +67,7 @@ define([
              * del tamany dels ContentPane
              */
             _updateGUI: function (dispatcher, value) {
-                if (value.userId) {
+                if (value.username) {
                     dispatcher.almacenLocal.loadUserConfig(dispatcher, value.userId);
                 }else {
                     dispatcher.almacenLocal.setUserDefaultPanelsSize(dispatcher);
