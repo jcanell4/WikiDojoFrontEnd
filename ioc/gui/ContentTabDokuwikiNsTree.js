@@ -32,7 +32,9 @@ define([
                     if(nsTree.updateQuery){
                         nsTree.query = nsTree.updateQuery(item);
                     }else{
-                        nsTree.query = "id="+item.id+"&projectType="+item.projectType;
+                        var projectType = (item.projectType) ? "&projectType="+item.projectType : "";
+                        var nsProject = (item.nsProject) ? "&nsProject="+item.nsProject : "";
+                        nsTree.query = "id="+item.id+projectType+nsProject;
                     }
 
                     /* Inici fragment nou */
