@@ -47,10 +47,7 @@ define([
                     },
 
                     success: function (response) {
-                        console.log("Resposta:", response);
-
-                        // TODO[Xavi] comprovar que el type es "array"
-                        // TODO[Xavi] els valors es troben a data[0].value
+                        // console.log("Resposta:", response);
 
                         var data = response[0].value;
 

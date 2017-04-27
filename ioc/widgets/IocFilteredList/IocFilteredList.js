@@ -84,11 +84,15 @@ define([
                     this.filter($input.val());
                 }.bind(this));
 
-
-                jQuery(this.selectedItemsNode).on('click', function () {
+                this.selectedItemsNode.addEventListener('click', function () {
                     $input.focus();
 
                 });
+
+                // jQuery(this.selectedItemsNode).on('click', function () {
+                //     $input.focus();
+                //
+                // });
 
 
                 var searchButton = new Button({
