@@ -43,25 +43,30 @@ define([
                     dataType: 'json',
                     data: {
                         sectok: that.token,
-                        query: $input.val()
+                        filter: $input.val()
                     },
 
-                    success: function (data) {
-                        // console.log("Resposta:", data);
+                    success: function (response) {
+                        console.log("Resposta:", response);
+
+                        // TODO[Xavi] comprovar que el type es "array"
+                        // TODO[Xavi] els valors es troben a data[0].value
+
+                        var data = response[0].value;
 
                         $tableBody.empty();
 
-                        for (var i = 0; i < data.data.length; i++) {
+                        for (var i = 0; i < data.length; i++) {
                             var $row = jQuery('<tr>');
                             var $colName = jQuery('<td>');
-                            $colName.html(data.data[i].name);
+                            $colName.html(data[i].name);
 
                             var $colUsername = jQuery('<td>');
-                            $colUsername.html(data.data[i].username);
+                            $colUsername.html(data[i].username);
 
                             var $colSelect = jQuery('<input type="checkbox">');
-                            $colSelect.attr('data-username', data.data[i].username);
-                            $colSelect.attr('data-name', data.data[i].name);
+                            $colSelect.attr('data-username', data[i].username);
+                            $colSelect.attr('data-name', data[i].name);
 
                             $colSelect.on('click', function () {
                                 var $this = jQuery(this);

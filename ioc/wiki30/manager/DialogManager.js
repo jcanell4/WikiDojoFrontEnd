@@ -97,7 +97,7 @@ define([
 
 
                 if (this._existsDialog(refId, dialogBuilder.getId())) {
-                    console.log("Ja existeix el dialog, el retornem");
+                    console.error("Ja existeix el dialog, el retornem");
                     return this._getExistingDialog(refId, dialogBuilder.getId());
                 } else {
                     dialog = dialogBuilder.build();
