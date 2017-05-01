@@ -86,7 +86,6 @@ define([
 
                 this.selectedItemsNode.addEventListener('click', function () {
                     $input.focus();
-
                 });
 
                 // jQuery(this.selectedItemsNode).on('click', function () {
@@ -106,9 +105,9 @@ define([
                 $searchButton.on('click', function () {
 
                     var searchUserWidget = new SearchUsersPane({
-                        searchDataUrl: this.searchDataUrl,
+                        urlBase: this.searchDataUrl,
                         buttonLabel: this.buttonLabel,
-                        token: this.token,
+                        //token: this.token,
                         colNameLabel: 'Nom', // TODO[Xavi] Localitzar
                         colUsernameLabel: 'Nom d\'usuari'// TODO[Xavi] Localitzar
                     });

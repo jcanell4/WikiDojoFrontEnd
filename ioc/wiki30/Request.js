@@ -226,18 +226,19 @@ define([
                     (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
                 var vUrl = this.urlBase;
                 if (!query) {
-                    var q = this.getQuery();
-                    if (q && typeof q === "string" && q.length > 0) {
-                        query = q;
-                    } else {
-                        this.content = q;
-                    }
+                    query = this.getQuery();
                 }
                 
                 //Setting the linkChar value.
-                if (query) {
+                if (query && typeof query === "string" && query.length > 0) {
                     vUrl += linkChar + query;
                     linkChar = "&";
+                }else if(this.content) {
+                    for (var attrname in query) {
+                        this.content[attrname] = query[attrname]; 
+                    }
+                }else{
+                    this.content = query;
                 }
                 
                 //Setting the sectok value to a correct checking in the server side.
@@ -254,7 +255,7 @@ define([
                 var req = this;
                 var configPost = {handleAs: "json"};
                 if (this.content) {
-                    configPost.content = this.content;
+                    configPost.query = this.content;
                     configPost.sync = synchronized || false;
                     //sincronized <-- del dojo
                 }
