@@ -24,11 +24,11 @@ define([
 
 
         postCreate: function(){
+            var fclick = lang.hitch(this, "_click");
             var domNode = this.domNode;
             this.inherited(arguments);
             this.own(
-//              on(domNode, 'click', lang.hitch(this, "_click"))
-                on(domNode, 'click', this._click.bind(this))
+              on(domNode, 'click', fclick)
             );
         },
 

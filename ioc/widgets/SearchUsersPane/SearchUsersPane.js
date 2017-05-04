@@ -9,7 +9,7 @@ define([
     "dojo/Evented",
     'dijit/form/Button',
     'ioc/wiki30/Request',
-    'ioc/wiki30/processor/AbstractResponseProcessor'
+    'ioc/wiki30/processor/AbstractResponseProcessor',
 ], function (declare, _WidgetBase, _TemplatedMixin, template, on, lang, css, Evented, Button, Request, AbstractResponseProcessor) {
 
     var cssStyle = document.createElement('style');
@@ -78,68 +78,17 @@ define([
             this.addProcessor("array", this);
 
             searchButton.on('click', function () {
-
-                var $input = jQuery(that.searchNode);
-                
-                that.sendRequest({
-                        filter: $input.val()
-                    });
-                
-
-//                jQuery.ajax(that.searchDataUrl, {
-//
-//                    dataType: 'json',
-//                    data: {
-//                        sectok: that.token,
-//                        filter: $input.val()
-//                    },
-//
-//                    success: function (response) {
-//                        // console.log("Resposta:", response);
-//
-//                        var data = response[0].value;
-//
-//                        $tableBody.empty();
-//
-//                        for (var i = 0; i < data.length; i++) {
-//                            var $row = jQuery('<tr>');
-//                            var $colName = jQuery('<td>');
-//                            $colName.html(data[i].name);
-//
-//                            var $colUsername = jQuery('<td>');
-//                            $colUsername.html(data[i].username);
-//
-//                            var $colSelect = jQuery('<input type="checkbox">');
-//                            $colSelect.attr('data-username', data[i].username);
-//                            $colSelect.attr('data-name', data[i].name);
-//
-//                            $colSelect.on('click', function () {
-//                                var $this = jQuery(this);
-//                                if ($this.prop('checked')) {
-//                                    that.selection[$this.attr('data-username')] = {
-//                                        name: $this.attr('data-name'),
-//                                        username: $this.attr('data-username')
-//                                    };
-//
-//                                } else {
-//                                    delete(that.selection[$this.attr('data-username')]);
-//                                }
-//                            });
-//
-//                            $row.append($colName);
-//                            $row.append($colUsername);
-//                            $row.append($colSelect);
-//                            $tableBody.append($row);
-//                        }
-//
-//                    }
-//                });
-
-                $input.val('');
-
+                that.onClickButton();
             })
-
-
+        },
+        
+        onClickButton: function(){
+            var $input = jQuery(this.searchNode);
+                
+            this.sendRequest({
+                    filter: $input.val()
+            });            
+            $input.val('');
         },
 
         getSelected: function () {

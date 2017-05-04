@@ -9,14 +9,26 @@ define([
         'dijit/form/Button',
         'ioc/wiki30/dispatcherSingleton',
         'ioc/widgets/SearchUsersPane/SearchUsersPane',
+        'dojo/dom-class',
     ],
-    function (declare, _WidgetBase, _TemplatedMixin, template, arrayUtil, IocFilteredItem, css, Button, getDispatcher, SearchUsersPane) {
+    function (declare, _WidgetBase, _TemplatedMixin, template, arrayUtil, IocFilteredItem, css, Button, getDispatcher, SearchUsersPane, domClass) {
 
         var cssStyle = document.createElement('style');
         cssStyle.innerHTML = css;
         document.head.appendChild(cssStyle);
 
         var dispatcher = getDispatcher();
+        
+        var isRelatedTargetAnItem = function(event){
+            var ret = false;
+            var relatedTarget = event.relatedTarget || event.originalEvent.explicitOriginalTarget || event.originalTarget;
+            ret = relatedTarget && (domClass.contains(relatedTarget, 'ioc-filtered-list') || domClass.contains(relatedTarget, 'ioc-filtered-item'));
+            if(relatedTarget && !ret){
+                relatedTarget = relatedTarget.parentNode;
+                ret = relatedTarget && (domClass.contains(relatedTarget, 'ioc-filtered-list') || domClass.contains(relatedTarget, 'ioc-filtered-item'));
+            }
+            return ret;
+        }
 
 
         return declare([_WidgetBase, _TemplatedMixin], {
@@ -43,12 +55,14 @@ define([
 
 
                 $input.on('change click input', function () {
+//                    console.log("on (change, click or input)");
                     this.filter($input.val());
                 }.bind(this));
 
 
                 $input.on('keydown', function (e) {
                     if (e.which == 13) { // Enter
+//                        console.log("on (Enter)");
 
                         var item;
                         // cas 1: Hi ha almenys un element visible a la llista, es selecciona
@@ -64,7 +78,8 @@ define([
                         e.stopPropagation();
 
                     } else if (e.which === 27) {
-                        this.filter(null);
+//                       console.log("on (Esc)");
+                       this.filter(null);
                         e.preventDefault();
                         e.stopPropagation();
                     }
@@ -73,18 +88,24 @@ define([
                 }.bind(this));
 
                 $input.on('blur', function (e) {
-                    if (e.relatedTarget && (e.relatedTarget.className.indexOf('ioc-filtered-list') >= 0 || e.relatedTarget.className.indexOf('ioc-filtered-item') >= 0)) {
+//                    console.log("on (blur)");
+//                    if (e.relatedTarget && (e.relatedTarget.className.indexOf('ioc-filtered-list') >= 0 || e.relatedTarget.className.indexOf('ioc-filtered-item') >= 0)) {
+                    if (isRelatedTargetAnItem(e)) {
+//                        console.log("on (blur.return)");
                         return;
                     } else {
+//                        console.log("on (blur.filter(null))");
                         this.filter(null);
                     }
                 }.bind(this));
 
                 $input.on('focus', function () {
+//                    console.log("on (focus)");
                     this.filter($input.val());
                 }.bind(this));
 
                 this.selectedItemsNode.addEventListener('click', function () {
+//                    console.log("on (selectedItemsNode.click)");
                     $input.focus();
                 });
 
