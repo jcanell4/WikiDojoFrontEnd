@@ -443,7 +443,7 @@ define([
         postAttach: function () {
             this.registerToChangesManager();
 
-            jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
+            // jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
             this.inherited(arguments);
 
             //console.log("StructuredDocumentSubclass#postLoad");
@@ -977,7 +977,9 @@ define([
         createEditor: function (id) {
             var $textarea = jQuery('textarea_' + id);
 
-            return new AceFacade({
+            var $editor =
+
+            new AceFacade({
                 xmltags: JSINFO.plugin_aceeditor.xmltags,
                 containerId: 'editor_' + id,
                 textareaId: 'textarea_' + id,
@@ -988,6 +990,10 @@ define([
                 mdpage: JSINFO.plugin_aceeditor.mdpage,
                 auxId: id
             });
+
+            $editor.on('change', this._checkChanges.bind(this));
+
+            return $editor;
         },
 
         disableEditor: function (header_id) { // TODO[Xavi] No es fa servir

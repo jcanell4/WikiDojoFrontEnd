@@ -9,9 +9,10 @@ define([
     'ioc/dokuwiki/AceManager/IocCommands',
     'ioc/dokuwiki/AceManager/patcher',
     'dojo/dom-style',
-    "dojo/dom"
-], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style, dom) {
-    return declare([], {
+    "dojo/dom",
+    'dojo/Evented',
+], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style, dom, Evented) {
+    return declare([Evented], {
 
         constructor: function (args) {
             var lang_rules = {},
@@ -67,6 +68,7 @@ define([
                 this.updateTextarea(this.getEditorValue());
                 dokuWrapper.text_changed();
                 commands.hide_menu();
+                this.emit('change', {newContent: this.getValue()});
             }.bind(this));
 
             iocAceEditor.setChangeCursorCallback(function () {
