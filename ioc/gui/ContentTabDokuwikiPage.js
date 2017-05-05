@@ -23,7 +23,7 @@ define([
                 /*TO DO: */
                 var q = null;
                 var tab = this;
-                on(this.domNode, "a:click", function (e) {
+                on(this.domNode, "a:not(.nocommand):click", function (e) {
                     var arr = att.get(this, "href").split("?");
                     if (arr.length > 1) {
                         q = arr[1];

@@ -45,7 +45,7 @@ define([
 
             processors: null,
 
-            content: null,
+            dataToSend: null,
 
             constructor: function () {
                 //console.log("Request");
@@ -177,8 +177,8 @@ define([
                 var resp;
                 var req = this;
                 var configPost = {handleAs: "json"};
-                if (this.content) {
-                    configPost.content = this.content;
+                if (this.dataToSend) {
+                    configPost.query = this.dataToSend;
                 }
                 configPost.form = formObject;
                 configPost.data = {iframe: 1};
@@ -233,12 +233,12 @@ define([
                 if (query && typeof query === "string" && query.length > 0) {
                     vUrl += linkChar + query;
                     linkChar = "&";
-                }else if(this.content) {
+                }else if(this.dataToSend) {
                     for (var attrname in query) {
-                        this.content[attrname] = query[attrname]; 
+                        this.dataToSend[attrname] = query[attrname]; 
                     }
                 }else{
-                    this.content = query;
+                    this.dataToSend = query;
                 }
                 
                 //Setting the sectok value to a correct checking in the server side.
@@ -254,8 +254,8 @@ define([
                 var resp;
                 var req = this;
                 var configPost = {handleAs: "json"};
-                if (this.content) {
-                    configPost.query = this.content;
+                if (this.dataToSend) {
+                    configPost.query = this.dataToSend;
                     configPost.sync = synchronized || false;
                     //sincronized <-- del dojo
                 }

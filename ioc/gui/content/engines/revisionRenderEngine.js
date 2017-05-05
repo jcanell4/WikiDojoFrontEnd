@@ -63,7 +63,7 @@ define(function () {
         };
 
 
-    return function (data) {
+    return function (data, contentTool) {
         data = JSON.parse(JSON.stringify(data)); // Com que data es un objecte hem de fer una copia per no modificar l'original
 
 
@@ -138,6 +138,8 @@ define(function () {
 
         html += '</table>';
         html += '</form>';
+        
+        contentTool.set("title", "Revisions(" + sortable.length + ")");  //Josep: CAL LOCALITZAR!
 
         return html;
     }

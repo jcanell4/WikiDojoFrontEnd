@@ -31,7 +31,7 @@ define([
 
             $tableBody.empty();
 
-            for (var i = 0; i < data.length; i++) {
+            for (var i = 0; data!= null && i<data.length; i++) {
                 var $row = jQuery('<tr>');
                 var $colName = jQuery('<td>');
                 $colName.html(data[i].name);

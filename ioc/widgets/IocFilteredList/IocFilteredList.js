@@ -22,10 +22,12 @@ define([
         var isRelatedTargetAnItem = function(event){
             var ret = false;
             var relatedTarget = event.relatedTarget || event.originalEvent.explicitOriginalTarget || event.originalTarget;
-            ret = relatedTarget && (domClass.contains(relatedTarget, 'ioc-filtered-list') || domClass.contains(relatedTarget, 'ioc-filtered-item'));
+            //ret = relatedTarget && (domClass.contains(relatedTarget, 'ioc-filtered-list') || domClass.contains(relatedTarget, 'ioc-filtered-item'));
+            ret = relatedTarget && domClass.contains(relatedTarget, 'ioc-filtered-item');
             if(relatedTarget && !ret){
                 relatedTarget = relatedTarget.parentNode;
-                ret = relatedTarget && (domClass.contains(relatedTarget, 'ioc-filtered-list') || domClass.contains(relatedTarget, 'ioc-filtered-item'));
+                //ret = relatedTarget && (domClass.contains(relatedTarget, 'ioc-filtered-list') || domClass.contains(relatedTarget, 'ioc-filtered-item'));
+                ret = relatedTarget && domClass.contains(relatedTarget, 'ioc-filtered-item');
             }
             return ret;
         }

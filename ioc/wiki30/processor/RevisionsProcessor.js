@@ -61,6 +61,8 @@ define([
                     //console.log("Creat ContentTool: ", contentTool);
                     nodeMetaInfo.addChild(contentTool);
 
+                } else {
+                    widgetMetaInfo.updateDocument(content.revisions);
                 }
 
                 selectedPane = contentCache.getCurrentId("metadataPane");
