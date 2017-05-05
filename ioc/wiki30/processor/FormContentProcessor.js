@@ -28,7 +28,6 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //console.log("FormContentProcessor#process", value);
                 return this.inherited(arguments);
             },
 
@@ -60,7 +59,6 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
-                //console.log("FormContentProcessor#createContentTool", content);
 
                 var args = {
                         ns: content.ns,
@@ -71,15 +69,10 @@ define([
                         dispatcher: dispatcher,
                         originalContent: content.originalContent,
                         projectType: content.extra.projectType,
-                        type: this.type,
-                    },
-                    argsRequestForm = {
-                        urlBase: content.content.action,
-                        form: '#' + content.content.id
+                        type: this.type
                     };
 
-                return contentToolFactory.generate(contentToolFactory.generation.FORM, args)
-                    //.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm); // Això ja no s'ha de fer servir, ha de funcionar a travésd els botons
+                return contentToolFactory.generate(contentToolFactory.generation.FORM, args);
             },
 
             isRefreshableContent: function (oldType, newType) {
