@@ -90,7 +90,9 @@ define([
                 
                 this.registerToChangesManager();
 
-                jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
+                // jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
+                this.editor.on('change', this._checkChanges.bind(this));
+
                 
                 this.inherited(arguments);
                 
