@@ -977,9 +977,7 @@ define([
         createEditor: function (id) {
             var $textarea = jQuery('textarea_' + id);
 
-            var $editor =
-
-            new AceFacade({
+            var editor =new AceFacade({
                 xmltags: JSINFO.plugin_aceeditor.xmltags,
                 containerId: 'editor_' + id,
                 textareaId: 'textarea_' + id,
@@ -991,9 +989,10 @@ define([
                 auxId: id
             });
 
-            $editor.on('change', this._checkChanges.bind(this));
+            console.log("No tiene método on??", editor.on);
+            editor.on('change', this._checkChanges.bind(this));
 
-            return $editor;
+            return editor;
         },
 
         disableEditor: function (header_id) { // TODO[Xavi] No es fa servir
