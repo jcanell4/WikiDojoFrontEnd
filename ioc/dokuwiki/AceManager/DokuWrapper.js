@@ -107,7 +107,8 @@ define([
                      */
                     _patchCurrentHeadlineLevel = function (func, id) {
                         if (id === self.textArea.id) {
-                            jQuery(self.textArea).val(self.aceGetValue());
+                            // ALERTA[Xavi] això provoca errors quan es treballa amb el textarea i no sembla fer res al AceEditor
+                            // jQuery(self.textArea).val(self.aceGetValue());
                         }
 
                         return func(id);
