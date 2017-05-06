@@ -71,6 +71,11 @@ define([
                 this.setDocumentChangeCallback(args.onDocumentChange);
                 this.setChangeCursorCallback(args.onCursorChange);
 
+                this.editor.setOptions({
+                        fontFamily: "monospace",
+                        fontSize: "14px"
+                });
+
 
                 // ALERTA[Xavi] No esborrar, descomentar per depurar, mostra la informació sobre el token i el estat a la posició del cursor
                 // var editor = this.editor;
