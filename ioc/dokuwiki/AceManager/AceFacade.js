@@ -65,13 +65,14 @@ define([
 
 
             // ----------------------------
-            var editor = this.iocAceEditor.editor;
-            editor.on("changeSelection", function() {
-                var position = editor.getCursorPosition();
-                var token = editor.session.getTokenAt(position.row, position.column);
-                var state = editor.session.getState(position.row);
-                console.log("Token: " , token, "State" , state);
-            });
+            // ALERTA[Xavi] No esborrar, descomentar per depurar, mostra la informació sobre el token i el estat a la posició del cursor
+            // var editor = this.iocAceEditor.editor;
+            // editor.on("changeSelection", function() {
+            //     var position = editor.getCursorPosition();
+            //     var token = editor.session.getTokenAt(position.row, position.column);
+            //     var state = editor.session.getState(position.row);
+            //     console.log("Token: " , token, "State" , state);
+            // });
             // ----------------------------
 
             iocAceEditor.setDocumentChangeCallback(function () {
