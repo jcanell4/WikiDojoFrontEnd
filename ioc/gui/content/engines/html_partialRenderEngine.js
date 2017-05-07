@@ -29,6 +29,7 @@ define(function () {
         for (i = 0; i < data.chunks.length; i++) {
             aux_id = data.id + "_" + data.chunks[i].header_id;
             $container = jQuery('<div id="container_' + aux_id + '" data-editor-container=""></div>');
+            $container.addClass('new-section');
 
             $header = $doc.find('#' + data.chunks[i].header_id);
 
@@ -122,6 +123,8 @@ define(function () {
             $divInsideForm.append('<input type="hidden" value="' + id + '" name="section_id"/>');
             $divInsideForm.append('<input name="editing_chunks" value="' + editing_chunks + '" type="hidden">');
         });
+
+
 
         return $doc;
     }
