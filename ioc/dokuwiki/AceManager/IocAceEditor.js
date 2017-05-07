@@ -64,7 +64,7 @@ define([
                 this.setMode(args.mode);
                 this.setReadOnly(args.readOnly);
                 this.setWrapMode(args.wrapMode);
-                this.setWrapLimit(args.wrapLimit);
+                this.setWrapLimit(args.wraplimit);
                 this.setUndoManager();
                 this.setTabSize(args.tabSize);
                 this.setHorizontalScrollBarVisible(args.horizontalScrollBar);
