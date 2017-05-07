@@ -63,12 +63,31 @@ define([
             var text = this.getTextareaValue();
             this.setEditorValue(text);
 
+
+            // ----------------------------
+            // ALERTA[Xavi] No esborrar, descomentar per depurar, mostra la informació sobre el token i el estat a la posició del cursor
+            // var editor = this.iocAceEditor.editor;
+            // editor.on("changeSelection", function() {
+            //     var position = editor.getCursorPosition();
+            //     var token = editor.session.getTokenAt(position.row, position.column);
+            //     var state = editor.session.getState(position.row);
+            //     console.log("Token: " , token, "State" , state);
+            // });
+            // ----------------------------
+
             iocAceEditor.setDocumentChangeCallback(function () {
                 //console.log("AceFacade#setDocumentChangeCallback");
                 this.updateTextarea(this.getEditorValue());
                 dokuWrapper.text_changed();
                 commands.hide_menu();
                 this.emit('change', {newContent: this.getValue()});
+
+
+
+
+
+
+
             }.bind(this));
 
             iocAceEditor.setChangeCursorCallback(function () {
@@ -79,6 +98,31 @@ define([
             jQuery(this.$editor).find('textarea').on('focus', this.select.bind(this));
 
             this.enable();
+
+            this.initDwEditor();
+        },
+
+        //ALERTA[Xav] Aquest mètode lliga el textarea als events originals de la wiki
+        initDwEditor: function() {
+            var $editor = this.$textarea;
+
+            if($editor.length === 0) {
+                return;
+            }
+
+            window.dw_editor.initSizeCtl('#size__ctl',$editor);
+
+            if($editor.attr('readOnly')) {
+                return;
+            }
+
+            // in Firefox, keypress doesn't send the correct keycodes,
+            // in Opera, the default of keydown can't be prevented
+            if (jQuery.browser.opera) {
+                $editor.keypress(window.dw_editor.keyHandler);
+            } else {
+                $editor.keydown(window.dw_editor.keyHandler);
+            }
         },
 
         updateTextarea: function (value) {

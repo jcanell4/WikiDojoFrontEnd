@@ -13,7 +13,7 @@ define(function () {
 
     return function (data) {
 
-        // TODO afegir el beforeConten
+        // TODO afegir el beforeContent
 
         var $container = jQuery('<div id="container_' + data.id + '" data-editor-container></div>'),
             $form = jQuery(data.htmlForm).find('form').clone(),
