@@ -76,16 +76,11 @@ define([
             // ----------------------------
 
             iocAceEditor.setDocumentChangeCallback(function () {
-                //console.log("AceFacade#setDocumentChangeCallback");
+                // console.log("AceFacade#setDocumentChangeCallback");
                 this.updateTextarea(this.getEditorValue());
                 dokuWrapper.text_changed();
                 commands.hide_menu();
                 this.emit('change', {newContent: this.getValue()});
-
-
-
-
-
 
 
             }.bind(this));
@@ -103,16 +98,23 @@ define([
         },
 
         //ALERTA[Xav] Aquest mètode lliga el textarea als events originals de la wiki
-        initDwEditor: function() {
-            var $editor = this.$textarea;
+        initDwEditor: function () {
+            var $editor = this.$textarea,
+                self = this;
 
-            if($editor.length === 0) {
+
+            $editor.on('input change focus', function (event) {
+                self.emit('change', {newContent: $editor.val()});
+            });
+
+
+            if ($editor.length === 0) {
                 return;
             }
 
-            window.dw_editor.initSizeCtl('#size__ctl',$editor);
+            window.dw_editor.initSizeCtl('#size__ctl', $editor);
 
-            if($editor.attr('readOnly')) {
+            if ($editor.attr('readOnly')) {
                 return;
             }
 
@@ -136,7 +138,7 @@ define([
         },
 
 
-        getValue: function() {
+        getValue: function () {
             if (this.enabled) {
                 return this.getEditorValue();
             } else {
@@ -188,7 +190,7 @@ define([
             this.enabled = true;
         },
 
-        disable: function() {
+        disable: function () {
             var selection,
                 container = this.container,
                 ace = container.aceWrapper,
@@ -222,11 +224,11 @@ define([
 
         setHeight: function (height) {
             var node = dom.byId(this.dokuWrapper.textArea.id);
-            if(node){
-                style.set(node, "height", "" + height  + "px");
+            if (node) {
+                style.set(node, "height", "" + height + "px");
             }
             node = dom.byId(this.iocAceEditor.containerId);
-            if(node){
+            if (node) {
                 style.set(node, "height", "" + height + "px");
             }
 
@@ -250,7 +252,7 @@ define([
             this.setWrap(this.wrap);
         },
 
-        toggleEditor: function() {
+        toggleEditor: function () {
 
             if (this.enabled) {
                 this.disable();

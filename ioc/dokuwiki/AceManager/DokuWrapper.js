@@ -73,7 +73,7 @@ define([
                 if (textArea) {
                     this.set('textArea', document.getElementById(textArea));
                 } else {
-                    this.setTextArea('wiki__text');
+                    this.setTextArea('wiki__text'); // ALERTA[Xavi] Això ja no es correcte, aquest era el valor per defecte antic
                 }
             },
 
@@ -124,6 +124,7 @@ define([
                      * @private
                      */
                     _patchPasteText = function (func, selection, text, opts) {
+                        // console.log("DokuWrapper#_patchPasteText", self.textArea);
                         if (!opts) {
                             opts = {};
                         }
@@ -138,6 +139,10 @@ define([
                         } else {
                             func(selection, text, opts);
                         }
+
+                        var event = new Event('change', {newContent: jQuery(self.textArea).val()});
+
+                        self.textArea.dispatchEvent(event);
                     },
 
                     /**
@@ -297,7 +302,7 @@ define([
 
                 return {
                     start: selection.start,
-                    end:   selection.end
+                    end: selection.end
                 };
             },
 
@@ -352,12 +357,13 @@ define([
              *
              * @param {string} value
              */
-            set_value:    function (value) {
+            set_value: function (value) {
                 jQuery(this.textArea).val(value);
             },
 
             // TODO d'on surt el summaryCheck()? de js.php? --> Surt de /lib/scripts/edit.js#summaryCheck()
             text_changed: function () { // TODO[Xavi] No es crida?
+                // console.log("DokuWrapper#text_changed");
                 // TODO[Xavi] Afegit nou:
                 //dispatcher.getChangesManager().addDocumentChanged();
                 //dispatcher.setUnsavedChangesState(true);
