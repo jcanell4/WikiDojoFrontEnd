@@ -42,11 +42,19 @@ define([], function () {
         });
     };
 
-    var listHeadings = function (idContent) {
+    var listHeadings = function (idContent, ns) {
         var number, ini;
 
+        if(!ns){
+            if(NS){
+                ns = NS;
+            }else if(JSINFO && JSINFO.id){
+                ns = JSINFO.id;
+            }
+        }
+
         indices = [];
-        number = /:a(\d+)$|:a(\d+):/.exec(JSINFO.id);
+        number = /:a(\d+)$|:a(\d+):/.exec(ns);
 
         if (number) {
             ini = (number[1] != undefined) ? number[1] - 1 : number[2] - 1;

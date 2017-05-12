@@ -57,15 +57,31 @@ define([
                 };
                 var tree = this.tree;
                 aspect.after(this.tree, "_adjustWidths", function () {
-                    var parentNode = tree.domNode.parentNode;
-                    var node = query(".dijitTreeRow", tree.domNode)[0];
+                    var parentNode;
+                    var node;
+                    
+                    parentNode = tree.domNode.parentNode;
+                    if(!parentNode){
+                        return;
+                    }
+                    node = query(".dijitTreeRow", tree.domNode)[0];
 
                     if (node && parentNode.offsetWidth<node.offsetWidth) {
+//                        console.log("if(node && parentNode.offsetWidth<node.offsetWidth)");
+//                        console.log("node.offsetWidth: " + node.offsetWidth);
                         parentNode.style.width = "" + node.offsetWidth + "px";
-                    }else if(node){
-                        parentNode.style.width = node.scrollWidth > node.offsetWidth ? "auto" : "100%";
+//                        console.log("parentNode.offsetWidth: " + parentNode.offsetWidth);
+                    }else if(node) {
+//                        console.log("else if(node)");
+//                        console.log("node.offsetWidth: " + node.offsetWidth);
+                        if(parentNode.offsetWidth>node.offsetWidth){
+                                parentNode.style.width = node.offsetWidth;
+                        }
+//                        console.log("parentNode.offsetWidth: " + parentNode.offsetWidth);
                     }else{
                         parentNode.style.width="100%";
+//                        console.log("else");
+//                        console.log("parentNode.offsetWidth: " + parentNode.offsetWidth);
                     }
 
                 }, true);
@@ -88,6 +104,9 @@ define([
                 }
                 this.urlBaseTyped['*'] = this.urlBase;
             },
+            resize:function(changeSize,resultSize){
+                this.updateRendering();
+            }
         });
     return ret;
 });
