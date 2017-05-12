@@ -35,7 +35,7 @@ define([
         },
 
         unlockDocument: function () {
-            console.log("LocktimedDocumentSubclass#unlockDocument");
+            // console.log("LocktimedDocumentSubclass#unlockDocument");
 
             //ALERTA[Xavi] Provem d'alliberar el bloqueig només si es tracta d'una revisió
             // if (this.rev) {

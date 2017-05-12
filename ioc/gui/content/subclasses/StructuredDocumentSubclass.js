@@ -989,7 +989,6 @@ define([
                 auxId: id
             });
 
-            console.log("No tiene método on??", editor.on);
             editor.on('change', this._checkChanges.bind(this));
 
             return editor;
