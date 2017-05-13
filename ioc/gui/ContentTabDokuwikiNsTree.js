@@ -18,6 +18,8 @@ define([
         {
             
             constructor: function (args) {
+                this.inherited(arguments);
+                // console.log("ContentTabDokuwikiNsTree#constructor", args);
                 var openOnClick = args.openOnClick? args.openOnClick: true;
                 this.set("openOnClick", openOnClick);
             },
@@ -88,6 +90,7 @@ define([
                 }
                 this.urlBaseTyped['*'] = this.urlBase;
             },
+
         });
     return ret;
 });
