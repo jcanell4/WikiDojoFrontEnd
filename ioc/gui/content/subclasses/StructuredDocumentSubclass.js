@@ -44,7 +44,7 @@ define([
             this._generateEmptyChangedChunks(args.content.chunks);
             this.savedDrafts = {};
             this.editors = {}; // A aquest objecte es guardarà per cada header_id el seu editor
-            this.currentSectionId = null;
+            this.currentElementId = null;
             this.hasChanges = false;
 
             toolbarManager.setDispatcher(args.dispatcher);
@@ -244,22 +244,22 @@ define([
 
 
                     var aux_id = this.id.replace('container_', ''),
-                        section_id = aux_id.replace(context.id + "_", '');
+                        header_id = aux_id.replace(context.id + "_", '');
 
-                    if (jQuery.inArray(section_id, context.editingChunks) === -1) {
+                    if (jQuery.inArray(header_id, context.editingChunks) === -1) {
 
                         //console.log("contex id: ", context.id, "chunk:", section_id);
 
                         context.fireEvent(context.eventName.EDIT_PARTIAL, {
                             id: context.id,
-                            chunk: section_id
+                            chunk: header_id
                         });
                         //context.dispatchEvent(context.eventNameCompound.EDIT_PARTIAL + context.id, {
                         //    id: context.id,
                         //    chunk: section_id
                         //});
                     } else {
-                        console.log("Ja s'està editant ", section_id);
+                        console.log("Ja s'està editant ", header_id);
                     }
 
                 });
@@ -294,8 +294,8 @@ define([
 
         },
 
-        getQuerySave: function (section_id) {
-            var $form = jQuery('#form_' + this.id + "_" + section_id),
+        getQuerySave: function (form_header_id) {
+            var $form = jQuery('#form_' + this.id + "_" + form_header_id),
                 values = {},
                 header_id,
                 pre = '',
@@ -350,8 +350,8 @@ define([
             return values;
         },
 
-        getQueryCancel: function (section_id) {
-            var ret = 'do=cancel_partial&id=' + this.ns + '&section_id=' + section_id
+        getQueryCancel: function (header_id) {
+            var ret = 'do=cancel_partial&id=' + this.ns + '&section_id=' + header_id
                 + '&editing_chunks=' + this.getEditingChunks().join(',');
             if(this.type == "requiring_partial"){
                 ret += "&to_require=true"
@@ -548,13 +548,13 @@ define([
                 content;
 
 
-                if (chunk.text) {
-                    $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
-                    content = $textarea.val();
-                    return this._getOriginalContent(chunk.header_id) != content
-                } else {
-                    return false;
-                }
+            if (chunk.text) {
+                $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
+                content = $textarea.val();
+                return this._getOriginalContent(chunk.header_id) != content
+            } else {
+                return false;
+            }
 
         },
 
@@ -617,7 +617,7 @@ define([
         },
 
         _setOriginalContent: function (header_id, content) {
-           // console.log("StructuredDocumentSubclass#_setOriginalContent", header_id, content);
+            // console.log("StructuredDocumentSubclass#_setOriginalContent", header_id, content);
             this.changedChunks[header_id] = {};
             this.changedChunks[header_id].content = content;
 
@@ -700,8 +700,8 @@ define([
 
             // Si existeix una secció seleccionada i no es tracta d'una revisió, la reseleccionem
 //            console.log("És una revisió? ", this.rev);
-            if (this._getCurrentSectionId() && !this.rev) {
-                this._setCurrentSection(this._getCurrentSectionId());
+            if (this._getCurrentElementId() && !this.rev) {
+                this._setCurrentElement(this._getCurrentElementId());
             }
 
             //TODO:canvia la edició de view a edit
@@ -713,7 +713,7 @@ define([
         },
 
         hasEditors: function(){
-          return (Object.keys(this.editors).length > 0);
+            return (Object.keys(this.editors).length > 0);
         },
 
         /**
@@ -907,7 +907,7 @@ define([
                 jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
             }
 
-            this.freePage();          
+            this.freePage();
         },
 
         unlockEditors: function () {
@@ -1032,9 +1032,9 @@ define([
                     var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
 
                     if (currentSelection.id === this.id && !currentSelection.state) {
-                        context._setCurrentSection(null);
+                        context._setCurrentElement(null);
                     } else {
-                        context._setCurrentSection(this.id);
+                        context._setCurrentElement(this.id);
                     }
 
                     return true;
@@ -1053,29 +1053,31 @@ define([
             this.dispatcher.getGlobalState().getContent(this.id)["action"] = action;
         },
 
-        setCurrentSection: function (sid) {
-            var section_id;
+        setCurrentElement: function (sid) {
+            var element_id;
             if(sid.startsWith("container_")){
-                section_id = sid;
+                element_id = sid;
             }else{
-                section_id = "container_" + this.id + "_" + sid;
+                element_id = "container_" + this.id + "_" + sid;
             }
-            this._setCurrentSection(section_id);
+            this._setCurrentElement(element_id);
         },
 
-        _setCurrentSection: function (section_id) {
+        _setCurrentElement: function (element_id) {
 
-            if (section_id) {
-                var isEditing = jQuery.inArray(section_id.replace('container_' + this.id + '_', ''), this.getEditingChunks()) > -1;
+            if (element_id) {
+                var header_id = element_id.replace('container_' + this.id + '_', '');
 
-                this.dispatcher.getGlobalState().setCurrentElement(section_id, isEditing);
-                this._setHighlight(section_id, 'section_selected');
-                this.currentSectionId = section_id;
+                var isEditing = jQuery.inArray(header_id, this.getEditingChunks()) > -1;
+
+                this.dispatcher.getGlobalState().setCurrentElement(element_id, isEditing);
+                this._setHighlight(element_id, 'section_selected');
+                this.currentElementId = element_id;
 
             } else {
                 this._removeHighlight('section_selected');
                 this.dispatcher.getGlobalState().setCurrentElement(null, false);
-                this.currentSectionId = null;
+                this.currentElementId = null;
             }
 
             this.dispatcher.updateFromState();
@@ -1083,17 +1085,17 @@ define([
 
         },
 
-        _getCurrentSectionId: function () {
-            return this.currentSectionId;
+        _getCurrentElementId: function () {
+            return this.currentElementId;
         },
 
         _removeHighlight: function(className) {
             jQuery('.' + className).removeClass(className);
         },
 
-        _setHighlight: function (section_id, className) {
+        _setHighlight: function (element_id, className) {
             this._removeHighlight(className);
-            jQuery('#' + section_id).addClass(className);
+            jQuery('#' + element_id).addClass(className);
         },
 
 
@@ -1118,7 +1120,7 @@ define([
         },
 
         _doSavePartial: function (event) {
-           console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
 
 
@@ -1150,7 +1152,7 @@ define([
         },
 
         _doSavePartialAll: function (event) {
-           // console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
+            // console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
 
             var chunkParams = [],
                 containerId = this.id;
@@ -1171,8 +1173,8 @@ define([
 //            console.log("Chunks per desar: ", {chunk_params: chunkParams});
 
             /*var section_id = this.dispatcher.getGlobalState().getCurrentElementId();
-            section_id= section_id.replace(this.id + "_", "");
-            section_id = section_id.replace("container_", "");*/
+             section_id= section_id.replace(this.id + "_", "");
+             section_id = section_id.replace("container_", "");*/
 
             var dataToSend;
 
@@ -1197,16 +1199,16 @@ define([
 
 
         _doCancelPartial: function (event) {
-           // console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+            // console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
-           var data = this._getDataFromEvent(event);
-           // Les dades que arriben son {id, chunk, name (del event)}
+            var data = this._getDataFromEvent(event);
+            // Les dades que arriben son {id, chunk, name (del event)}
 
             if (data.discardChanges === undefined && this.isContentChangedForChunk(event.chunk)) {
 
-                    var cancelDialog = this._generateDiscardDialog();
-                    cancelDialog.extraData = {chunk : data.chunk};
-                    cancelDialog.show();
+                var cancelDialog = this._generateDiscardDialog();
+                cancelDialog.extraData = {chunk : data.chunk};
+                cancelDialog.show();
 
                 return {_cancel: true};
             }
@@ -1276,7 +1278,7 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-           // console.log("StructuredDocumentSubclass#_doCancel", this.id, event);
+            // console.log("StructuredDocumentSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
