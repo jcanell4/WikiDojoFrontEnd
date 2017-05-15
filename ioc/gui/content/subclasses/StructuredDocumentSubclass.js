@@ -1053,6 +1053,13 @@ define([
             this.dispatcher.getGlobalState().getContent(this.id)["action"] = action;
         },
 
+        // ALERTA[Xavi] S'ha de canviar el nom a getCurrentElement
+        getCurrentSection: function () {
+            var ret = this.currentElementId;
+//            ret = ret.replace(this.id + "_", "").replace("container_", "");
+            return ret;
+        },
+
         setCurrentElement: function (sid) {
             var element_id;
             if(sid.startsWith("container_")){

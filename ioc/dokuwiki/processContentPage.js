@@ -13,7 +13,7 @@ define([
     var request = new Request();
     return function (id, params) {
 
-        listHeadings(id);
+        listHeadings(id, params.ns);
         runRender(id);
         runQuiz(id);
 

@@ -43,6 +43,7 @@ define([
                         treeParams.sortBy = this.sortBy;
                         treeParams.onlyDirs = this.onlyDirs;
                         treeParams.expandProject = this.expandProject;
+                        treeParams.processOnClickAndOpenOnClick=this.processOnClickAndOpenOnClick;
                         treeParams.standbyId = this.standbyId;
                         if(this.urlBase){
                             treeParams.urlBase = this.urlBase;    
