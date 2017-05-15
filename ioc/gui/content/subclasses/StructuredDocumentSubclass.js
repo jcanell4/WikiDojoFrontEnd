@@ -28,8 +28,9 @@ define([
     'ioc/dokuwiki/AceManager/AceFacade',
     'dojo/dom',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/AceManager/toolbarManager'
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, toolbarManager) {
+    'ioc/dokuwiki/AceManager/toolbarManager',
+    'dojo/_base/lang'
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, toolbarManager, lang) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
@@ -1127,14 +1128,18 @@ define([
         },
 
         _doSavePartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
-
-
-
+            var ret;
+            // console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
             if (this.isContentChangedForChunk(event.chunk)) {
                 var dataToSend = this.getQuerySave(event.chunk),
                     containerId = "container_" + event.id + "_" + event.chunk;
+
+                if (event.extraDataToSend) {
+                    dataToSend = lang.mixin(dataToSend, event.extraDataToSend);
+                }
+
+
 
                 //this.eventManager.dispatchEvent(this.eventName.SAVE_PARTIAL, {
                 //    id: this.id,
@@ -1144,18 +1149,21 @@ define([
 
                 this.hasChanges = false;
 
-                return {
+                ret = {
                     id: this.id,
                     dataToSend: dataToSend,
                     standbyId: containerId
                 };
             } else {
-                // console.log("*** NO HI HAN CANVIS ***");
-                return {
+                // console.log("*** NO HI HA CANVIS ***");
+                ret = {
                     _cancel: true
                 };
             }
 
+
+
+            return ret;
         },
 
         _doSavePartialAll: function (event) {
