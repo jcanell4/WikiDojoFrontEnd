@@ -34,11 +34,12 @@ define([
         "ioc/gui/content/subclasses/FormSubclass",
         "ioc/gui/content/subclasses/AjaxFormSubclass",
         "ioc/gui/content/subclasses/AjaxLinkSubclass",
+        "ioc/gui/content/subclasses/DokuwikiNSTreeSubclass",
     ], function (lang, ContentTool, requestReplacerFactory,
                  dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, /*ChangesManagerCentralSubclass,*/
                  EditorSubclass, BasicEditorSubclass,MediaDetailsSubclass, MetaMediaDetailsSubclass,
                  StructuredDocumentSubclass, RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass,
-                 AjaxFormSubclass, AjaxLinkSubclass
+                 AjaxFormSubclass, AjaxLinkSubclass, DokuwikiNSTreeSubclass
     ) {
 
         var patch = function (target, source) {
@@ -293,7 +294,8 @@ define([
                 METAMEDIADETAILS: 'metamediadetails',
                 STRUCTURED_DOCUMENT: 'structured_document',
                 NOTIFICATION: 'notification',
-                RECENTS: 'recents'
+                RECENTS: 'recents',
+                META_DOKUWIKI_NS_TREE: 'meta_dokuwiki_ns_tree'
             },
 
             /**
@@ -471,12 +473,22 @@ define([
                         break;
 
                     case this.generation.RECENTS:
-                        console.log("contentToolFactory#createClass: RECENTS");
+                        // console.log("contentToolFactory#createClass: RECENTS");
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass)
                             .createSubclass(AjaxLinkSubclass)
                             .createSubclass(AjaxFormSubclass);
                         break;
+
+                    case this.generation.META_DOKUWIKI_NS_TREE:
+                        console.log("contentToolFactory#createClass: DokuwikiNSTreeContentTool");
+                        GeneratedContentTool = base
+                             .createSubclass(MetaInfoSubclass) 
+                            .createSubclass(DokuwikiNSTreeSubclass);
+                        break;
+
+
+
 
                     default:
                         console.error('No existeix el tipus de ContentTool: ' + type);
