@@ -270,7 +270,7 @@ define([
                 if(contentTool.hasEditors()){
                     dispatcher.getGlobalState().getContent(value.id).action = "sec_edit"; // ALERTA[xavi] això quan es fa servir?                          
                     if(!dispatcher.getGlobalState().getCurrentElementState() && value.selected){
-                        contentTool.setCurrentSection(value.selected);
+                        contentTool.setCurrentElement(value.selected);
                     }
                 }else{
                     dispatcher.getGlobalState().getContent(value.id).action = "view"; // ALERTA[xavi] això quan es fa servir?
