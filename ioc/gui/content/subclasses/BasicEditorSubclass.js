@@ -129,7 +129,7 @@ define([
 
             },
 
-            getQuerySave: function (id) {
+            getQuerySave: function () {
 
                 var $form = jQuery('#form_' + this.id),
                     values = {},

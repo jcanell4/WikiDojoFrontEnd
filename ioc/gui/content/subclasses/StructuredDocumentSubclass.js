@@ -1053,6 +1053,12 @@ define([
             this.dispatcher.getGlobalState().getContent(this.id)["action"] = action;
         },
 
+        getCurrentSection: function () {
+            var ret = this.currentSectionId;
+//            ret = ret.replace(this.id + "_", "").replace("container_", "");
+            return ret;
+        },
+        
         setCurrentSection: function (sid) {
             var section_id;
             if(sid.startsWith("container_")){

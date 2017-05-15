@@ -563,6 +563,10 @@ define([
             //     var notifyManager = this.getNotifyManager();
             //     notifyManager.setWarningContainer(warningContainer);
             // }
+            
+            getWidget: function(id){
+                return registry.byId(id);
+            },
         });
     return ret;
 });
