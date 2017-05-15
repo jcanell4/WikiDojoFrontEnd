@@ -302,7 +302,7 @@ define([
                 suf = '',
                 text,
                 chunks = this.data.chunks,
-                editingIndex = -1;
+                editingIndex = chunks.length;
 
 
             jQuery.each($form.serializeArray(), function (i, field) {
@@ -316,7 +316,9 @@ define([
 
                 if (chunks[i].header_id === header_id) {
                     editingIndex = i;
-                    pre += chunks[i].text.pre;
+                    if(chunks[i].text){
+                        pre += chunks[i].text.pre;
+                    }
                     break;
                 }
 
@@ -337,9 +339,12 @@ define([
             suf += this.data.suf || '';
 
             // Actualitzem les dades d'edició
-
-            text = this.editors[header_id].editor.getValue();
-            this.updateChunk(header_id, {'editing': text});
+            if(this.editors[header_id]){
+                text = this.editors[header_id].editor.getValue();
+                this.updateChunk(header_id, {'editing': text});
+            }else{
+                text="";
+            }
 
 
             // Afegim un salt per assegurar que no es perdi cap caràcter
@@ -1054,9 +1059,9 @@ define([
         },
 
         // ALERTA[Xavi] S'ha de canviar el nom a getCurrentElement
-        getCurrentSection: function () {
+        getCurrentHeaderId: function () {
             var ret = this.currentElementId;
-//            ret = ret.replace(this.id + "_", "").replace("container_", "");
+            ret = ret?ret.replace(this.id + "_", "").replace("container_", ""):'';
             return ret;
         },
 
