@@ -354,6 +354,7 @@ define([
         getQueryCancel: function (header_id) {
             var ret = 'do=cancel_partial&id=' + this.ns + '&section_id=' + header_id
                 + '&editing_chunks=' + this.getEditingChunks().join(',');
+
             if(this.type == "requiring_partial"){
                 ret += "&to_require=true"
             }
@@ -1232,6 +1233,16 @@ define([
             var dataToSend = this.getQueryCancel(event.chunk),
                 containerId = "container_" + event.id + "_" + event.chunk;
 
+            if (data.discardChanges) {
+                dataToSend +="&discard_changes=" + data.discardChanges;
+            }
+
+            if (data.keep_draft) {
+                dataToSend +="&keep_draft=" + data.keep_draft;
+            }
+
+
+
             return {
                 id: this.id,
                 dataToSend: dataToSend,
@@ -1293,7 +1304,7 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-            // console.log("StructuredDocumentSubclass#_doCancel", this.id, event);
+            console.log("StructuredDocumentSubclass#_doCancel", this.id, event);
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
@@ -1349,6 +1360,7 @@ define([
         },
 
         _getDataFromEvent: function (event) {
+            // console.log("StructuredDocumentSubclass#_getDataFromEvent", event);
             if (event.dataToSend) {
                 return event.dataToSend;
             } else {

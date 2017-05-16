@@ -495,7 +495,7 @@ define([
              * @returns {bool}
              */
             discardChanges: function () {
-                console.log("Dispatcher#discardChanges");
+                console.error("Dispatcher#discardChanges");
                 return confirm("No s'han desat els canvis al document actual, vols descartar els canvis?");
             },
 
