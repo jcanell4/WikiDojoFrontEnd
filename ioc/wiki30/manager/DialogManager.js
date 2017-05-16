@@ -21,7 +21,6 @@ define([
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
                 LOCK_WARNING: 'lock_warning',
-                SAVE_OR_CANCEL: 'save_or_cancel',
             },
 
             constructor: function (args) {
@@ -52,7 +51,7 @@ define([
             },
 
             _getDialog: function (type, refId, params) {
-                //console.log("DialogManager#getDialog", type, refId);
+                // console.log("DialogManager#getDialog", type, refId, params);
 
                 var dialogBuilder = null,
                     dialog;
@@ -86,9 +85,6 @@ define([
                         dialogBuilder = this._getLockWarningDialog(refId, params);
                         break;
 
-                    case this.type.SAVE_OR_CANCEL:
-                        dialogBuilder = this._getSaveOrCancelDialog(refId, params);
-                        break;
 
 
                     default:
