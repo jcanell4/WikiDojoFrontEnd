@@ -106,6 +106,7 @@ define([
                         } else if (contentTool.isAnyChunkChanged(value.cancel)) {
                             confirmation = dispatcher.discardChanges();
                         } else {
+                            console.log("no hi han canvis, es descarla el cancel·lat! Cas 1");
                             confirmation = true;
                         }
                         clearDraft=1;

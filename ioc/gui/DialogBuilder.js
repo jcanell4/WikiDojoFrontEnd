@@ -281,7 +281,6 @@ define([
         },
 
         _generateFireEventCallback: function (event, data, observable) {
-            // console.log("DialogBuilder#_generateFireEventCallback", event, data, observable);
 
             if (!data.id) {
                 if (typeof observable === "string") {
@@ -295,7 +294,7 @@ define([
             // console.log("DialogBuilder#_generateFireEventCallback", event, data, observable);
 
             return function () {
-                // console.log("Click:", event, data);
+                console.log("Click:", event, data);
 
                 // ALERTA[Xavi] Això permet afegir dades extras a l'event que s'obtenen des del dialog
                 if (this.extraData) {
@@ -304,7 +303,7 @@ define([
                     }
                 }
 
-                // console.log("dades afegides a l'event:", data);
+                console.log("dades afegides a l'event:", data);
                 this.eventManager.fireEventFromObservable(event, data, observable); // Això fa referencia al eventManager del dialog
             }
 

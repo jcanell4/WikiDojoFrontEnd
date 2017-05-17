@@ -178,7 +178,11 @@ define([
         clearDraft: function () {
             var pages = this._doGetPages();
 
+
+
             pages[this.contentTool.ns] = this._createNewPage();
+
+
 
             // if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
             //     if(pages[this.contentTool.ns].drafts['full']){

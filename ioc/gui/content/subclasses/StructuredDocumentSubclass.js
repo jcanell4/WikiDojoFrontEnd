@@ -195,6 +195,7 @@ define([
         },
 
         _funcCancel: function () {
+            // console.log("StructuredDocumentSubclass#_funcCancel");
             var chunk = this.getGlobalState().getCurrentElementId(),
                 id = this.getGlobalState().getCurrentId(),
                 eventManager = this.getEventManager();
@@ -202,14 +203,11 @@ define([
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
 
-            //this.getEventManager().dispatchEvent(eventManager.eventNameCompound.CANCEL_PARTIAL + id, {
-            //    id: id,
-            //    chunk: chunk
-            //});
             eventManager.fireEvent(eventManager.eventName.CANCEL_PARTIAL, {
                 id: id,
                 chunk: chunk
             }, id);
+
         },
 
         /**
@@ -543,7 +541,7 @@ define([
         },
 
         isContentChangedForChunk: function (chunkId) {
-//            console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.data);
+           console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.data);
             var index = this.data.dictionary[chunkId],
                 chunk = this.data.chunks[index],
                 $textarea,
@@ -1233,50 +1231,67 @@ define([
         },
 
         _doCancelPartial: function (event) {
-            // console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
-            // console.log("Chunks en edició?", Object.keys(this.getEditors()).length);
+            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+
+            var ret;
             var numberOfEditors = Object.keys(this.getEditors()).length;
 
             if (numberOfEditors <= 1) {
-                event.unlock = true;
-                return this._doCancelDocument(event);
-            }
+                //ALERTA[Xavi], cancel·lem aquest event i ho rellancem com 'cancel'
 
+                event.dataToSend = {unlock : true, keep_draft:false};
 
-            var data = this._getDataFromEvent(event);
-            // Les dades que arriben son {id, chunk, name (del event)}
+                this.fireCancelEvent(event);
 
-
-            if (data.discardChanges === undefined && this.isContentChangedForChunk(event.chunk)) {
-
-                var cancelDialog = this._generateDiscardDialog();
-                cancelDialog.extraData = {chunk: data.chunk};
-                cancelDialog.show();
-
-                return {_cancel: true};
-            }
-
-
-            var dataToSend = this.getQueryCancel(event.chunk),
-                containerId = "container_" + event.id + "_" + event.chunk;
-
-            if (data.discardChanges) {
-                dataToSend += "&discard_changes=" + data.discardChanges;
-            }
-
-            if (data.keep_draft) {
-                dataToSend += "&keep_draft=" + data.keep_draft;
+                ret = {_cancel: true};
 
             } else {
-                this._removePartialDraft(event.chunk);
+                var data = this._getDataFromEvent(event);
+                // Les dades que arriben son {id, chunk, name (del event)}
+
+                console.log("Data:", data);
+
+
+                if (data.discardChanges === undefined && this.isContentChangedForChunk(event.chunk)) {
+
+                    var cancelDialog = this._generateDiscardDialog();
+                    cancelDialog.extraData = {chunk: data.chunk};
+                    cancelDialog.show();
+
+                    ret = {_cancel: true};
+                } else {
+
+                    var dataToSend = this.getQueryCancel(event.chunk),
+                        containerId = "container_" + event.id + "_" + event.chunk;
+
+                    if (data.discardChanges) {
+                        dataToSend += "&discard_changes=" + data.discardChanges;
+                    }
+
+                    if (data.keep_draft) {
+                        dataToSend += "&keep_draft=" + data.keep_draft;
+
+                    } else {
+                        this._removePartialDraft(event.chunk);
+                    }
+
+
+                    ret = {
+                        id: this.id,
+                        dataToSend: dataToSend,
+                        standbyId: containerId
+                    };
+                }
+
+
+
+
+
+
             }
 
+            return ret;
 
-            return {
-                id: this.id,
-                dataToSend: dataToSend,
-                standbyId: containerId
-            };
 
             //this.eventManager.dispatchEvent(this.eventName.CANCEL_PARTIAL, {
             //    id: this.id,
@@ -1333,7 +1348,7 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-            console.log("StructuredDocumentSubclass#_doCancelDocument", this.id, event);
+            console.log("StructuredDocumentSubclass#_doCancelDocument", this.id, event, this.cachedDataToSend);
 
             var ret;
 
@@ -1350,9 +1365,14 @@ define([
                 this.cachedDataToSend = event.dataToSend; // Aquestes dades es recuperaran a la següent passada que no activi el dialeg
                 cancelDialog.show();
 
-                return {_cancel: true};
+                ret = {_cancel: true};
 
             } else {
+
+
+                if (typeof this.cachedDataToSend === 'object') {
+                    lang.mixin(data, this.cachedDataToSend);
+                }
 
                 if (data.discardChanges || data['discard_changes']) {
                     dataToSend = this.getQueryForceCancel(event.id); // el paràmetre no es fa servir
@@ -1370,6 +1390,7 @@ define([
                 }
 
 
+                console.log("keep en el cache?" , this.cachedDataToSend);
                 if (this.required && data.keep_draft !== undefined) {
                     dataToSend += '&keep_draft=' + data.keep_draft;
 
@@ -1391,16 +1412,16 @@ define([
                 }
 
                 if (this.cachedDataToSend) {
-
+                    var cachedQuery;
                     if (typeof this.cachedDataToSend === 'object') {
-                        this.cachedDataToSend = jQuery.param(this.cachedDataToSend);
+                        cachedQuery = jQuery.param(this.cachedDataToSend);
                     }
 
-                    dataToSend += "&" + this.cachedDataToSend;
+                    dataToSend += "&" + cachedQuery;
                     this.cachedDataToSend = null;
                 }
 
-                containerId = event.id;
+                containerId = event.standbyId || event.id;
 
 
                 //this.eventManager.fireEvent(this.eventName.CANCEL, {
@@ -1412,7 +1433,6 @@ define([
                 //
 
                 this.freePage();
-                // TODO: Remove All Local Drafts
 
 
                 if (event.dataToSend && event.dataToSend.close === true || dataToSend.indexOf('close=true') > -1) {
@@ -1429,14 +1449,18 @@ define([
                         standbyId: containerId
                     }
                 }
+                
+                
+                console.log("Retorn:", ret);
 
-                return ret;
+
             }
+            return ret;
         },
 
         _removeAllDrafts: function () {
             console.log("StructuredDocumentSubclass#_removeAllDrafts", this.id);
-            this.draftManager.clearDraft(this.id, this.ns);
+            this.draftManager.clearDraft(this.id, this.ns, true);
         },
 
         _removePartialDraft: function (headerId) {
@@ -1464,11 +1488,6 @@ define([
             this.set('readonly', value);
         },
 
-// NO cal. Ja està definit a LocktimedDocumentSubclass!
-//        getReadOnly: function () {
-//            return this.get('readonly');
-//        },
-
         _getEditorsCount: function () {
             return Object.keys(this.editors).length;
         },
@@ -1483,17 +1502,32 @@ define([
             // Si el nombre d'editors es major de 0 s'ha de fer cancel, independentment de si hi han canvis o no
 
             if (ret) {
-                // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
-                var eventManager = this.dispatcher.getEventManager();
-                eventManager.fireEvent(eventManager.eventName.CANCEL, {
-                    id: this.ns,
-                    name: eventManager.eventName.CANCEL,
-                    dataToSend: {close: true, no_response: true},
-                    standbyId: this.getContainer().domNode.id
-                }, this.id);
+
+                this.fireCancelEvent({
+                    dataToSend: {close: true, no_response: true}
+                });
+
+                // // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
+                // var eventManager = this.dispatcher.getEventManager();
+                // eventManager.fireEvent(eventManager.eventName.CANCEL, {
+                //     id: this.ns,
+                //     name: eventManager.eventName.CANCEL,
+                //     dataToSend: {close: true, no_response: true},
+                //     standbyId: this.getContainer().domNode.id
+                // }, this.id);
             }
 
             return !ret;
+        },
+
+        fireCancelEvent: function (event) {
+
+            var eventManager = this.dispatcher.getEventManager();
+            event.name = eventManager.eventName.CANCEL;
+            event.standbyId= this.getContainer().domNode.id;
+            event.id = this.ns;
+
+            eventManager.fireEvent(eventManager.eventName.CANCEL, event, this.id);
         },
 
         requirePage: function () {

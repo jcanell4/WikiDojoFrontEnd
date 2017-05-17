@@ -12,7 +12,7 @@ define([
 
         var eventManager = dispatcher.getEventManager();
 
-        eventManager.fireEvent(params.event, {dataToSend: params.data}, params.id);
+        eventManager.fireEvent(params.event, params, params.id);
 
 
 
