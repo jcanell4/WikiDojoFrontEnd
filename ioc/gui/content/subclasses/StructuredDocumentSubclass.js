@@ -205,7 +205,8 @@ define([
 
             eventManager.fireEvent(eventManager.eventName.CANCEL_PARTIAL, {
                 id: id,
-                chunk: chunk
+                chunk: chunk,
+                keep_draft: false
             }, id);
 
         },
@@ -1239,7 +1240,7 @@ define([
             if (numberOfEditors <= 1) {
                 //ALERTA[Xavi], cancel·lem aquest event i ho rellancem com 'cancel'
 
-                event.dataToSend = {unlock : true, keep_draft:false};
+                event.dataToSend = {unlock : true};
 
                 this.fireCancelEvent(event);
 
