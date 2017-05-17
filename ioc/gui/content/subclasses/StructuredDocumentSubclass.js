@@ -542,7 +542,7 @@ define([
         },
 
         isContentChangedForChunk: function (chunkId) {
-           console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.data);
+           // console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.data);
             var index = this.data.dictionary[chunkId],
                 chunk = this.data.chunks[index],
                 $textarea,
@@ -1128,7 +1128,7 @@ define([
 
         _doSavePartial: function (event) {
             var ret;
-            console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+            // console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
             if (this.isContentChangedForChunk(event.chunk)) {
                 var dataToSend = this.getQuerySave(event.chunk),
@@ -1164,7 +1164,7 @@ define([
         },
 
         _doSavePartialAll: function (event) {
-            console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
+            // console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
 
             var chunkParams = [],
                 containerId = this.id;
@@ -1190,7 +1190,6 @@ define([
 
             var dataToSend;
 
-            console.log("Cached data to send?", this.cachedDataToSend);
 
             if (event.extraDataToSend) {
                 dataToSend = event.extraDataToSend;
@@ -1213,7 +1212,7 @@ define([
             dataToSend.id = this.ns;
 
 
-            console.log("DataToSend:", dataToSend);
+
 
             return {
                 dataToSend: dataToSend,
@@ -1232,7 +1231,7 @@ define([
         },
 
         _doCancelPartial: function (event) {
-            console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
+            // console.log("StructuredDocumentSubclass#_doCancelPartial", this.id, event);
 
             var ret;
             var numberOfEditors = Object.keys(this.getEditors()).length;
@@ -1249,9 +1248,6 @@ define([
             } else {
                 var data = this._getDataFromEvent(event);
                 // Les dades que arriben son {id, chunk, name (del event)}
-
-                console.log("Data:", data);
-
 
                 if (data.discardChanges === undefined && this.isContentChangedForChunk(event.chunk)) {
 
@@ -1349,7 +1345,7 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         _doCancelDocument: function (event) {
-            console.log("StructuredDocumentSubclass#_doCancelDocument", this.id, event, this.cachedDataToSend);
+            // console.log("StructuredDocumentSubclass#_doCancelDocument", this.id, event, this.cachedDataToSend);
 
             var ret;
 
@@ -1357,11 +1353,10 @@ define([
             var dataToSend, containerId, data = this._getDataFromEvent(event);
 
 
-            var auto = (data.extraDataToSend && (data.extraDataToSend.indexOf('auto=true') > -1 ||data.extraDataToSend.auto === true));
-            // console.log("Auto?" , auto);
+            var isAuto = (data.extraDataToSend && (data.extraDataToSend.indexOf('auto=true') > -1 ||data.extraDataToSend.auto === true));
 
             //ALERTA|TODO[Xavi]: en aquest cas s'ha de fer servir un dialeg diferent, per que el botó ha de disparar SAVE_PARTIAL_ALL
-            if (!event.discardChanges && this.isContentChanged() && !auto) {
+            if (!event.discardChanges && this.isContentChanged() && !isAuto) {
                 var cancelDialog = this._generateDiscardAllDialog();
                 this.cachedDataToSend = event.dataToSend; // Aquestes dades es recuperaran a la següent passada que no activi el dialeg
                 cancelDialog.show();
@@ -1391,7 +1386,6 @@ define([
                 }
 
 
-                console.log("keep en el cache?" , this.cachedDataToSend);
                 if (this.required && data.keep_draft !== undefined) {
                     dataToSend += '&keep_draft=' + data.keep_draft;
 
@@ -1451,9 +1445,6 @@ define([
                     }
                 }
                 
-                
-                console.log("Retorn:", ret);
-
 
             }
             return ret;
@@ -1495,12 +1486,12 @@ define([
 
 
         onClose: function () {
-            // var ret = this.isContentChanged();
-            var ret = this._getEditorsCount() > 0;
-
-            console.log("StructuredDocumentSubclass#onClose", ret);
+            // console.log("StructuredDocumentSubclass#onClose", ret);
 
             // Si el nombre d'editors es major de 0 s'ha de fer cancel, independentment de si hi han canvis o no
+
+            // var ret = this.isContentChanged();
+            var ret = this._getEditorsCount() > 0;
 
             if (ret) {
 

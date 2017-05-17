@@ -146,7 +146,7 @@ define([
         },
 
         _doSaveRemoteServer: function () {
-            console.log("Draft#_doSaveRemoteServer");
+            // console.log("Draft#_doSaveRemoteServer");
             this.lastRemoteRefresh = Date.now();
             this.lastRefresh = this.lastRemoteRefresh;
 
@@ -164,7 +164,7 @@ define([
         },
 
         _onSavePartial: function (data) {
-            console.log("Draft#_onSavePartial", data);
+            // console.log("Draft#_onSavePartial", data);
 
             this.clearDraftChunks(data.dataToSend.section_id);
 
@@ -218,7 +218,7 @@ define([
         },
 
         _onSave: function (data) {
-            console.log("Draft#_onSave");
+            // console.log("Draft#_onSave");
             this.clearDraft();
 
             // S'ha de cancelar el refresc de l'esborrany
@@ -229,7 +229,7 @@ define([
 
         // Només elimina el draft del tipus indicat
         _removeLocalDraft: function (type) {
-            console.log("Draft#_removeLocalDraft", type);
+            // console.log("Draft#_removeLocalDraft", type);
 
             switch (type) {
                 case 'structured':
@@ -247,7 +247,7 @@ define([
         },
 
         _removeLocalStructuredDraft: function () {
-            console.log("Draft#_removeLocalStructureDraft");
+            // console.log("Draft#_removeLocalStructureDraft");
             // En aquest cas només s'han d'esborrar el draft dels chunks actius al desar
             var pages = this._doGetPages(),
                 draft = this._getLastGeneratedDraft();
@@ -264,7 +264,7 @@ define([
         },
 
         _removeLocalFullDraft: function () {
-            console.log("Draft#_removeLocalFullDraft", this.contentTool.ns);
+            // console.log("Draft#_removeLocalFullDraft", this.contentTool.ns);
             var pages = this._doGetPages();
 
             if (pages[this.contentTool.ns]) {
@@ -401,7 +401,7 @@ define([
         },
 
         _onDestroy: function () {
-            console.log("Draft#_onDestroy", this.contentTool.id, this.contentTool.ns);
+            // console.log("Draft#_onDestroy", this.contentTool.id, this.contentTool.ns);
             this._cancelTimers();
 //            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
 //            this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
@@ -435,7 +435,7 @@ define([
 
 
         _cancel: function(event) {
-            console.log('Draft#_cancel', event);
+            // console.log('Draft#_cancel', event);
 
             var removeDraft = false;
 

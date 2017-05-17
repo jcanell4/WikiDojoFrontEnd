@@ -114,7 +114,7 @@ define([
 
             // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
-                console.log("EditorSubclass#_doCancelDocument", this.id, event);
+                // console.log("EditorSubclass#_doCancelDocument", this.id, event);
                 var dataToSend, containerId, data = this._getDataFromEvent(event);
 
                 var isAuto = (event.extraDataToSend && event.extraDataToSend.indexOf('auto=true') >= 0);
@@ -124,8 +124,6 @@ define([
                     data = lang.mixin(data, this.cachedDataToSend);
                 }
 
-                console.log("Cached", this.cachedDataToSend);
-                console.log("Data", data);
 
                 // if (data.discardChanges || (data.discardChanges == null && (this.isContentChanged() && this.dispatcher.discardChanges()))) {
                 if (data.discardChanges || isAuto) {
@@ -181,7 +179,6 @@ define([
 
                 this.cachedDataToSend = null;
 
-                console.log("dataToSend:", dataToSend, "event.dataToSend:", event.dataToSend);
 
                 if (event.dataToSend && event.dataToSend.close === true || dataToSend.indexOf('close=true') > -1) {
                     this.removeContentTool();
@@ -206,7 +203,7 @@ define([
             },
 
             _discardChanges: function () {
-                console.log("EditorSubclass#_discardChanges");
+                // console.log("EditorSubclass#_discardChanges");
                 return confirm(this.messageChangesDetected);
             },
 
@@ -310,7 +307,7 @@ define([
 
             /** @override */
             onClose: function () {
-                console.log("EditorSubclass#onClose");
+                // console.log("EditorSubclass#onClose");
 
                 var ret = this.isContentChanged();
 
