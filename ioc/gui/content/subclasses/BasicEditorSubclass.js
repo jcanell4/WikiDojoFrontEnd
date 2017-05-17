@@ -409,19 +409,22 @@ define([
             },
 
             onClose: function() {
-                // var ret = this.inherited(arguments);
+                 var ret = this.inherited(arguments);
+                 if(ret===undefined){
+                     ret = true;
+                 }
 
-                // if (ret) {
+                if (ret) {
                     // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
                     var eventManager = this.dispatcher.getEventManager();
                     eventManager.fireEvent(eventManager.eventName.CANCEL, {
                         id: this.id,
                         name: eventManager.eventName.CANCEL,
-                        dataToSend: {no_response: true, discardChanges: true, close: true}
+                        dataToSend: {no_response: true, close: true}
                     }, this.id);
-                // }
+                }
 
-                return this.inherited(arguments);
+                return ret;
             },
 
 

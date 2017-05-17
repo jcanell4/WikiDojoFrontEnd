@@ -294,67 +294,101 @@ define([
 
         },
 
-        getQuerySave: function (form_header_id) {
-            var $form = jQuery('#form_' + this.id + "_" + form_header_id),
+        getQuerySave: function (header_id) {
+            var $form = jQuery('#form_' + this.id + "_" + header_id),
                 values = {},
-                header_id,
-                pre = '',
-                suf = '',
-                text,
-                chunks = this.data.chunks,
-                editingIndex = chunks.length;
-
+                rebuildText;
 
             jQuery.each($form.serializeArray(), function (i, field) {
                 values[field.name] = field.value;
             });
 
-            header_id = values['section_id'];
+            console.log("prova amb contingut original dels chunks:", this._rebuildText(null, false));
 
-            // ALERTA[Xavi]! S'ha de fer servir el this.data perquè el this.content no es actualitzat
-            for (var i = 0; i < chunks.length; i++) {
-
-                if (chunks[i].header_id === header_id) {
-                    editingIndex = i;
-                    if(chunks[i].text){
-                        pre += chunks[i].text.pre;
-                    }
-                    break;
-                }
-
-                if (chunks[i].text) {
-                    pre += chunks[i].text.pre;
-                    //pre += chunks[i].text.editing;
-                    pre += this.changedChunks[chunks[i].header_id].content;
-                }
-            }
+            console.log("prova amb contingut actual dels editors:", this._rebuildText(null, true));
 
 
-            for (i = editingIndex + 1; i < chunks.length; i++) {
-                if (chunks[i].text) {
-                    suf += chunks[i].text.pre;
-                    suf += chunks[i].text.editing;
-                }
-            }
-            suf += this.data.suf || '';
+            // ALERTA[Xavi] s'actualitza el chunk amb el contingut de l'editor abans de reconstruir el text
+            this.updateChunk(header_id, {'editing': this.getEditor(header_id).getValue()});
 
-            // Actualitzem les dades d'edició
-            if(this.editors[header_id]){
-                text = this.editors[header_id].editor.getValue();
-                this.updateChunk(header_id, {'editing': text});
-            }else{
-                text="";
-            }
-
-
-            // Afegim un salt per assegurar que no es perdi cap caràcter
-            values.prefix = pre + "\n";
-            values.suffix = suf;
-            values.wikitext = text;
+            rebuildText = this._rebuildText(header_id, false);
+            lang.mixin(values, rebuildText);
 
             return values;
         },
 
+        /**
+         *
+         * @param {null|string} header_id: capçalera de la secció central, correspondrà al wikitext
+         * @param {null|boolean} current:  sí es cert es reconstrueix el text amb el contingut dels editors, en cas contrari es reconstrueix amb el contingut desat al servidor
+         * @return {{prefix: {string}, suffix:{string}, wikitext:{string}}}
+         * @private
+         */
+        _rebuildText: function (header_id, current) {
+            var text = {},
+                chunks = this.data.chunks,
+                pre = '',
+                suf = '',
+                i = 0;
+
+            while (i < chunks.length && (chunks[i].header_id !== header_id || !header_id)) {
+                if (chunks[i].text) {
+                    pre += chunks[i].text.pre;
+
+                    if (current) {
+                        // TODO: Obtenir el contingut de l'editor
+                        pre += this.getEditor(chunks[i].header_id).getValue()
+                    } else {
+                        pre += this.changedChunks[chunks[i].header_id].content
+                    }
+
+                }
+                i++;
+            }
+
+            // Si no s'ha arribat al final es que s'ha trobat el chunk central, s'afegeix el pre del chunk central.
+            if (i < chunks.length) {
+                pre += chunks[i].text.pre;
+                // Ens saltem el processament del chunk actual perquè es tracta del chunk "central"
+                i++;
+            }
+
+            while (i < chunks.length) {
+                if (chunks[i].text) {
+                    suf += chunks[i].text.pre;
+                    if (current) {
+                        suf += this.getEditor(chunks[i].header_id).getValue();
+                    } else {
+                        suf += this.changedChunks[chunks[i].header_id].content
+                    }
+                }
+                i++;
+            }
+
+
+            suf += this.data.suf || '';
+
+            text.prefix = pre + "\n";
+            text.suffix = suf;
+            text.wikitext = '';
+
+            if (header_id) {
+                var index = this.data.dictionary[header_id];
+                if (chunks[index].text) {
+                    if (current) {
+                        text.wikitext = this.getEditor(chunks[i].header_id).getValue();
+
+                    } else {
+
+                        text.wikitext = chunks[index].text.editing;
+                    }
+                }
+            }
+
+            return text;
+
+        },
+        
         getQueryCancel: function (header_id) {
             var ret = 'do=cancel_partial&id=' + this.ns + '&section_id=' + header_id
                 + '&editing_chunks=' + this.getEditingChunks().join(',');
@@ -375,7 +409,7 @@ define([
             this.editingChunks = [];
 
             for (var i = 0; i < this.data.chunks.length; i++) {
-                chunk = this.data.chunks[i];
+                var chunk = this.data.chunks[i];
 
                 if (chunk.text) {
                     this.editingChunks.push(chunk.header_id);
