@@ -324,6 +324,7 @@ define([
             },
 
             _startStandby: function () {
+
                 if (this._standbyDisabled) {
                     return;
                 }

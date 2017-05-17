@@ -1,13 +1,15 @@
 define([
     "dojo/_base/declare",
     "dojo/on",
+    'dojo/_base/lang',
     "ioc/gui/content/subclasses/LocktimedDocumentSubclass",  //Canviar per DraftTimedSubclass
     "ioc/gui/content/subclasses/BasicEditorSubclass",
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
     "dojo/io-query",
     'ioc/wiki30/Draft',
-    'ioc/dokuwiki/AceManager/toolbarManager'
-], function (declare, on, LocktimedDocumentSubclass, BasicEditorSubclass, ChangesManagerCentralSubclass, ioQuery, toolbarManager) {
+    'ioc/dokuwiki/AceManager/toolbarManager',
+
+], function (declare, on, lang, LocktimedDocumentSubclass, BasicEditorSubclass, ChangesManagerCentralSubclass, ioQuery, toolbarManager) {
 
     return declare([BasicEditorSubclass, LocktimedDocumentSubclass, ChangesManagerCentralSubclass],
         //return declare(null,
@@ -87,26 +89,26 @@ define([
             postAttach: function () {
                 //console.log("EditorSubclass#postAttach");
                 this.registerObserverToEvent(this, this.eventName.REFRESH_EDITION, this._refreshEdition.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
-                
+
                 this.registerToChangesManager();
 
                 // jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
                 this.editor.on('change', this._checkChanges.bind(this));
 
-                
+
                 this.inherited(arguments);
-                
+
                 this.lockDocument(); // Lock i Draft  [JOSEP]:Ara no cal això, ja que es bloqueja des del servidor en fer la petició d'edició
 
                 this._checkChanges();
             },
-            
-            _refreshEdition: function(event){
-                this.eventManager.fireEvent(this.eventManager.eventName.EDIT, 
-                                            {
-                                                id: this.id,
-                                                dataToSend: "id=" + this.ns + "&refresh=true"                        
-                                            });                
+
+            _refreshEdition: function (event) {
+                this.eventManager.fireEvent(this.eventManager.eventName.EDIT,
+                    {
+                        id: this.id,
+                        dataToSend: "id=" + this.ns + "&refresh=true"
+                    });
             },
 
 
@@ -115,7 +117,13 @@ define([
                 // console.log("EditorSubclass#_doCancelDocument", this.id, event);
                 var dataToSend, containerId, data = this._getDataFromEvent(event);
 
-                var isAuto = (event.extraDataToSend && event.extraDataToSend.indexOf('auto=true')>=0);
+                var isAuto = (event.extraDataToSend && event.extraDataToSend.indexOf('auto=true') >= 0);
+
+
+                if (typeof this.cachedDataToSend === 'object') {
+                    data = lang.mixin(data, this.cachedDataToSend);
+                }
+
 
                 // if (data.discardChanges || (data.discardChanges == null && (this.isContentChanged() && this.dispatcher.discardChanges()))) {
                 if (data.discardChanges || isAuto) {
@@ -125,38 +133,42 @@ define([
                     // ALERTA[Xavi] Per defecte no es demana confirmació
                 } else if (data.discardChanges === undefined && (this.isContentChanged())) {
 
-                        var cancelDialog = this._generateDiscardDialog();
-                        cancelDialog.show();
+                    var cancelDialog = this._generateDiscardDialog();
+                    cancelDialog.show();
+                    this.cachedDataToSend = event.dataToSend;
 
                     return {_cancel: true};
 
 
-                }   else {
+                } else {
 
                     dataToSend = this.getQueryCancel(); // el paràmetre no es fa servir
                 }
 
                 if (this.required && data.keep_draft !== undefined) {
                     dataToSend += '&keep_draft=' + data.keep_draft;
+
+                    if (!data.keep_draft) {
+                        this._removeAllDrafts();
+                    }
                 }
 
                 containerId = this.id;
 
-                if(event.extraDataToSend){
-                    if(typeof event.extraDataToSend==="string"){
+                if (event.extraDataToSend) {
+                    if (typeof event.extraDataToSend === "string") {
                         dataToSend += "&" + event.extraDataToSend;
-                    }else{
+                    } else {
                         dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
                     }
                 }
-                if(event.dataToSend){
-                    if(typeof event.dataToSend==="string"){
+                if (event.dataToSend) {
+                    if (typeof event.dataToSend === "string") {
                         dataToSend += "&" + event.dataToSend;
-                    }else{
+                    } else {
                         dataToSend += "&" + ioQuery.objectToQuery(event.dataToSend);
                     }
                 }
-
 
 
 //                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
@@ -164,6 +176,19 @@ define([
 //                    dataToSend: dataToSend,
 //                    standbyId: containerId
 //                })
+
+                this.cachedDataToSend = null;
+
+
+                if (event.dataToSend && event.dataToSend.close === true || dataToSend.indexOf('close=true') > -1) {
+                    this.removeContentTool();
+
+                    return {
+                        id: this.id,
+                        dataToSend: dataToSend
+                    }
+                }
+
                 return {
                     id: this.id,
                     dataToSend: dataToSend,
@@ -172,8 +197,13 @@ define([
 
             },
 
-            _discardChanges:function() {
-                console.log("EditorSubclass#_discardChanges");
+            _removeAllDrafts: function () {
+                console.log("EditorSubclass#_removeAllDrafts", this.id);
+                this.draftManager.clearDraft(this.id, this.ns, true);
+            },
+
+            _discardChanges: function () {
+                // console.log("EditorSubclass#_discardChanges");
                 return confirm(this.messageChangesDetected);
             },
 
@@ -266,29 +296,30 @@ define([
                 this.lastCheckedContent = content;
             },
 
-            _doSave: function (event)
-            {
+            _doSave: function (event) {
                 // console.log("EditorSubclass#_doSave", event);
                 if (this.hasChanges || this.rev) {
                     return this.inherited(arguments);
                 } else {
-                    return {_cancel:true}
+                    return {_cancel: true}
                 }
             },
 
-            onClose: function() {
+            /** @override */
+            onClose: function () {
+                // console.log("EditorSubclass#onClose");
 
                 var ret = this.isContentChanged();
 
-                if (ret) {
-                    // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
-                    var eventManager = this.dispatcher.getEventManager();
-                    eventManager.fireEvent(eventManager.eventName.CANCEL, {
-                        id: this.id,
-                        name: eventManager.eventName.CANCEL,
-                        dataToSend: {no_response: true}
-                    }, this.id);
-                }
+                // if (ret) {
+                // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
+                var eventManager = this.dispatcher.getEventManager();
+                eventManager.fireEvent(eventManager.eventName.CANCEL, {
+                    id: this.id,
+                    name: eventManager.eventName.CANCEL,
+                    dataToSend: {no_response: true, close: true}
+                }, this.id);
+                // }
 
                 return !ret;
             },

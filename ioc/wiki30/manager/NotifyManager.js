@@ -148,7 +148,7 @@ define([
 
                 case 'dialog':
                 default:
-                    console.warn("Notificació de tipus "+notification.type+" rebuda:", notification);
+                    // console.warn("Notificació de tipus "+notification.type+" rebuda:", notification);
             }
         },
 

@@ -281,7 +281,6 @@ define([
         },
 
         _generateFireEventCallback: function (event, data, observable) {
-            // console.log("DialogBuilder#_generateFireEventCallback", event, data, observable);
 
             if (!data.id) {
                 if (typeof observable === "string") {

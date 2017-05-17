@@ -99,9 +99,14 @@ define([
                     
                     //S'ha cancel·lat
                     if(value.cancel){
-                         if (contentTool.isAnyChunkChanged(value.cancel)) {
+
+                        if (value['discard_changes_partial']) {
+                            confirmation = true;
+
+                        } else if (contentTool.isAnyChunkChanged(value.cancel)) {
                             confirmation = dispatcher.discardChanges();
                         } else {
+                            console.log("no hi han canvis, es descarla el cancel·lat! Cas 1");
                             confirmation = true;
                         }
                         clearDraft=1;
@@ -239,7 +244,7 @@ define([
                 );  
             },
             _clearRemoteDraftChunks: function(value, dispatcher){
-                console.log("HtmlPartialContentProcessor#_clearRemoteDraftChunks");
+                // console.log("HtmlPartialContentProcessor#_clearRemoteDraftChunks");
                 for(var i=0; i<value.cancel.length; i++){
                     dispatcher.getEventManager().fireEvent(
                         dispatcher.getEventManager().eventName.REMOVE_DRAFT, {

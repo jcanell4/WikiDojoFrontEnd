@@ -50,7 +50,7 @@ define([
 
 
             this.contentTool.registerObserverToEvent(this, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
-            this.contentTool.registerObserverToEvent(this, this.eventName.CANCEL, this._cancel.bind(this));
+            // this.contentTool.registerObserverToEvent(this, this.eventName.CANCEL, this._cancel.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.DESTROY, this.destroy.bind(this));
             // this.contentTool.registerObserverToEvent(this, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
             // this.contentTool.registerObserverToEvent(this, this.eventName.SAVE, this._clearLocalAll.bind(this));
@@ -178,7 +178,11 @@ define([
         clearDraft: function () {
             var pages = this._doGetPages();
 
+
+
             pages[this.contentTool.ns] = this._createNewPage();
+
+
 
             // if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
             //     if(pages[this.contentTool.ns].drafts['full']){
