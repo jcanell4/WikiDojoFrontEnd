@@ -316,6 +316,10 @@ define([
 
             return values;
         },
+        
+        getEditedText: function(header_id){
+            return this._rebuildText(header_id, true);
+        },
 
         /**
          *
@@ -376,7 +380,7 @@ define([
                 var index = this.data.dictionary[header_id];
                 if (chunks[index].text) {
                     if (current) {
-                        text.wikitext = this.getEditor(chunks[i].header_id).getValue();
+                        text.wikitext = this.getEditor(chunks[index].header_id).getValue();
 
                     } else {
 
