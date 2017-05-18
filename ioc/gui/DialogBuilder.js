@@ -303,6 +303,8 @@ define([
                     }
                 }
 
+                // console.log("Click:", event, data);
+
                 // console.log("dades afegides a l'event:", data);
                 this.eventManager.fireEventFromObservable(event, data, observable); // Això fa referencia al eventManager del dialog
             }

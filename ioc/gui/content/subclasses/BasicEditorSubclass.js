@@ -73,12 +73,23 @@ define([
 
 
             _doSave: function (event) {
-                // console.log("BasicEditorSubclass#_doSave", this.id, event);
+                console.log("BasicEditorSubclass#_doSave", this.id, event);
 
 
 
                 var dataToSend = this.getQuerySave(this.id),
                     containerId = this.id;
+
+                // ALERTA[Xavi] No es pot fer servir el this.mixData perquè pertany al ChangesManagerCentralSubclass
+                // if (event.dataToSend) {
+                //     dataToSend = this.mixData(dataToSend, event.dataToSend, 'object');
+                // }
+                //
+                // if (event.extraDataToSend) {
+                //     // dataToSend = lang.mixin(dataToSend, event.extraDataToSend);
+                //     dataToSend = this.mixData(dataToSend, event.extraDataToSend, 'object');
+                // }
+
 
                 if(event.extraDataToSend){
                     if(typeof event.extraDataToSend==="string"){
@@ -88,6 +99,19 @@ define([
                     }
 
                 }
+
+
+                if(event.dataToSend){
+                    if(typeof event.dataToSend==="string"){
+                        lang.mixin(dataToSend, ioQuery.queryToObject(event.dataToSend));
+                    }else{
+                        lang.mixin(dataToSend, event.dataToSend);
+                    }
+
+                }
+
+
+
 //                this.eventManager.dispatchEvent(this.eventName.SAVE, {
 //                    id: this.id,
 //                    dataToSend: dataToSend,
@@ -409,18 +433,19 @@ define([
             },
 
             onClose: function() {
+                console.log("BasicEditorSubclass#onClose");
                  var ret = this.inherited(arguments);
                  if(ret===undefined){
                      ret = true;
                  }
 
                 if (ret) {
-                    // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
+
                     var eventManager = this.dispatcher.getEventManager();
                     eventManager.fireEvent(eventManager.eventName.CANCEL, {
                         id: this.id,
                         name: eventManager.eventName.CANCEL,
-                        dataToSend: {no_response: true, close: true}
+                        dataToSend: {no_response: true, keep_draft:false, close: true /* <-- ALERTA[Xavi] Quan no hi han canvis això provoca un error */}
                     }, this.id);
                 }
 
@@ -435,5 +460,5 @@ define([
             }
 
 
-        })
-})
+        });
+});

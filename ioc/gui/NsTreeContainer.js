@@ -103,7 +103,6 @@ define([
                 this.tree.getIconClass = function(item, opened) {
                     var ret = this.getIconClassOrig(item, opened);
                     if (item.type === "p") {
-                        console.log("expand project/open click:", self.expandProject,  self.openOnClick);
                         ret = (opened && self.expandProject) ? "dijitIconConnector" : "dijitIconPackage";
                     }
                     return ret;

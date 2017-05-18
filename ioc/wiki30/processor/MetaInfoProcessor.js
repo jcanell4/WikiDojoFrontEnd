@@ -89,7 +89,7 @@ define([
             },
 
             _addMetainfo: function (id, meta, dispatcher, nodeMetaInfo, ret, standalone) {
-                console.log(id, meta);
+                // console.log(id, meta);
 
 
                 var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
@@ -136,7 +136,7 @@ define([
              */
             createContentTool: function (metaContent) {
 
-                console.log("MetaInfoProcessor#createContentTool");
+                // console.log("MetaInfoProcessor#createContentTool");
                 var args = {
                     id: metaContent.id,
                     title: metaContent.title,

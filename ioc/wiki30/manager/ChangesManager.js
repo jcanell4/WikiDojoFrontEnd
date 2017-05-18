@@ -66,7 +66,7 @@ define([
                  * @param {string} id - id del ContentTool a eliminar
                  */
                 removeContentTool: function (id) {
-                    //console.log("ChangesManager#removeContentTool", id);
+                    // console.log("ChangesManager#removeContentTool", id);
                     delete this.contentsToCheck[id];
                     delete this.contentsChanged[id];
                 },

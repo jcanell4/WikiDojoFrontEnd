@@ -115,14 +115,17 @@ define([
             // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
                 // console.log("EditorSubclass#_doCancelDocument", this.id, event);
+
+                event = this._mixCachedEvent(event);
+
                 var dataToSend, containerId, data = this._getDataFromEvent(event);
 
-                var isAuto = (event.extraDataToSend && event.extraDataToSend.indexOf('auto=true') >= 0);
+                var isAuto = (typeof event.extraDataToSend === 'string' && event.extraDataToSend.indexOf('auto=true') >= 0);
 
 
-                if (typeof this.cachedDataToSend === 'object') {
-                    data = lang.mixin(data, this.cachedDataToSend);
-                }
+                // if (typeof this.cachedDataToSend === 'object') {
+                //     data = lang.mixin(data, this.cachedDataToSend);
+                // }
 
 
                 // if (data.discardChanges || (data.discardChanges == null && (this.isContentChanged() && this.dispatcher.discardChanges()))) {
@@ -135,7 +138,7 @@ define([
 
                     var cancelDialog = this._generateDiscardDialog();
                     cancelDialog.show();
-                    this.cachedDataToSend = event.dataToSend;
+                    this.cachedEvent = event;
 
                     return {_cancel: true};
 
@@ -145,31 +148,36 @@ define([
                     dataToSend = this.getQueryCancel(); // el paràmetre no es fa servir
                 }
 
-                if (this.required && data.keep_draft !== undefined) {
-                    dataToSend += '&keep_draft=' + data.keep_draft;
+                if (event.dataToSend) {
+                    dataToSend = this.mixData(dataToSend, event.dataToSend, 'string');
+                }
 
-                    if (!data.keep_draft) {
-                        this._removeAllDrafts();
-                    }
+                if (event.extraDataToSend) {
+                    // dataToSend = lang.mixin(dataToSend, event.extraDataToSend);
+                    dataToSend = this.mixData(dataToSend, event.extraDataToSend, 'string');
+                }
+                    //
+
+                if (this.required && this.getPropertyValueFromData(dataToSend, 'keep_draft') === false) {
+                    this._removeAllDrafts();
                 }
 
                 containerId = this.id;
 
-                if (event.extraDataToSend) {
-                    if (typeof event.extraDataToSend === "string") {
-                        dataToSend += "&" + event.extraDataToSend;
-                    } else {
-                        dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
-                    }
-                }
-                if (event.dataToSend) {
-                    if (typeof event.dataToSend === "string") {
-                        dataToSend += "&" + event.dataToSend;
-                    } else {
-                        dataToSend += "&" + ioQuery.objectToQuery(event.dataToSend);
-                    }
-                }
-
+                // if (event.extraDataToSend) {
+                //     if (typeof event.extraDataToSend === "string") {
+                //         dataToSend += "&" + event.extraDataToSend;
+                //     } else {
+                //         dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
+                //     }
+                // }
+                // if (event.dataToSend) {
+                //     if (typeof event.dataToSend === "string") {
+                //         dataToSend += "&" + event.dataToSend;
+                //     } else {
+                //         dataToSend += "&" + ioQuery.objectToQuery(event.dataToSend);
+                //     }
+                // }
 
 
 //                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
@@ -180,18 +188,18 @@ define([
 
 //                this.cachedDataToSend = null;
 
-                if (this.cachedDataToSend) {
-                    var cachedQuery;
-                    if (typeof this.cachedDataToSend === 'object') {
-                        cachedQuery = jQuery.param(this.cachedDataToSend);
-                    }
+                // if (this.cachedDataToSend) {
+                //     var cachedQuery;
+                //     if (typeof this.cachedDataToSend === 'object') {
+                //         cachedQuery = jQuery.param(this.cachedDataToSend);
+                //     }
+                //
+                //     dataToSend += "&" + cachedQuery;
+                //     this.cachedDataToSend = null;
+                // }
 
-                    dataToSend += "&" + cachedQuery;
-                    this.cachedDataToSend = null;
-                }
 
-
-                if (event.dataToSend && event.dataToSend.close === true || dataToSend.indexOf('close=true') > -1) {
+                if (event.dataToSend && event.dataToSend.close === true || this.getPropertyValueFromData(dataToSend, 'close')) {
                     this.removeContentTool();
 
                     return {
@@ -308,7 +316,11 @@ define([
             },
 
             _doSave: function (event) {
-                // console.log("EditorSubclass#_doSave", event);
+                console.log("EditorSubclass#_doSave", event, arguments);
+                // event = this._mixCachedEvent(event);
+
+                arguments[0] =  this._mixCachedEvent(event);
+
                 if (this.hasChanges || this.rev) {
                     return this.inherited(arguments);
                 } else {
@@ -316,14 +328,16 @@ define([
                 }
             },
 
-            /** @override */
+
             onClose: function () {
-                // console.log("EditorSubclass#onClose");
+                console.log("EditorSubclass#onClose");
                 var ret = this.inherited(arguments);
 
                 ret = ret && !this.isContentChanged();
 
                 return ret;
             },
+
+
         });
 });

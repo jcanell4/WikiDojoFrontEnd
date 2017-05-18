@@ -89,6 +89,7 @@ define([
          * @returns {boolean}
          */
         onClose: function () {
+            // console.log("ChangesManagerCentralSubclass#onClose");
             var confirmation = this.inherited(arguments);
 
 //            if (confirmation && this.changesManager.isChanged(this.id)) {
@@ -150,6 +151,222 @@ define([
 
             // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
             return dialog;
-        }
+        },
+
+        _mixCachedEvent: function (event, expectedDataToSendType) {
+            // console.log("ChangesManagerCentralSubclass#_mixCachedEvent", event, this.cachedEvent);
+            var mixedEvent;
+
+            if (!this.cachedEvent) {
+                return event;
+            }
+
+
+            var cachedDataToSend = this.cachedEvent.dataToSend,
+                eventDataToSend = event.dataToSend;
+
+
+            var mixedDataToSend = this.mixData(cachedDataToSend, eventDataToSend, expectedDataToSendType);
+
+            var cachedExtraDataToSend = this.cachedEvent.extraDataToSend,
+                eventExtraDataToSend = event.extraDataToSend;
+
+
+            var mixedExtraDataToSend = this.mixData(cachedExtraDataToSend, eventExtraDataToSend, expectedDataToSendType);
+
+            mixedEvent = {};
+            this.mixin(mixedEvent, this.cachedEvent)
+            this.mixin(mixedEvent, event);
+
+
+            mixedEvent.dataToSend = mixedDataToSend;
+            mixedEvent.extraDataToSend = mixedExtraDataToSend;
+
+            this.cachedEvent = null;
+
+
+            // console.log("### Nou Event generat:", mixedEvent);
+            return mixedEvent;
+        },
+
+        /**
+         * @param {string|object} data: el tipus de dada ha de ser string o object, altres tipus no estan definits
+         * @param {string} expectedType: el valor ha de ser 'object' o 'string', altres tipus no estan definits
+         * @returns {string|object}
+         */
+        setToExpectedType: function (data, expectedType) {
+            var convertedData;
+
+            if (typeof data === expectedType) {
+                return data;
+            }
+
+            if (typeof data !== 'string' && typeof data !== 'object') {
+                console.error("El tipus de les dades només pot ser 'object' o 'string' i era: ", typeof data );
+                return null;
+            }
+
+
+            switch (expectedType) {
+                case 'string':
+
+                    if (!data) {
+                        convertedData = '';
+                    } else {
+                        convertedData = jQuery.param(data);
+                    }
+
+                    break;
+
+                case 'object':
+
+                    if (!data) {
+                        convertedData = '{}';
+                    } else {
+                        convertedData = this._stringToObject(data);
+                    }
+
+                    break;
+
+                default:
+                    console.error("El tipus " +expectedType+" no es troba definit");
+
+            }
+
+
+            return convertedData;
+        },
+
+
+        /**
+         * ALERTA[Xavi] Si no s'especifica l'expectedType i el eventData no es troba definit:
+         *      - Sí el cachedData tampoc existeix es retornarà un objecte buit.
+         *      - Sí el cachedData existeix el tipus serà el del cachedData.
+         */
+        mixData: function (eventData, cachedData, expectedType) {
+            // console.log("StructuredDocumentSubclass#_mixCachedDataToSend", eventData, cachedData);
+
+            var mixedDataToSend;
+
+            if (expectedType) {
+                eventData = this.setToExpectedType(eventData, expectedType);
+                cachedData = this.setToExpectedType(cachedData, expectedType);
+            }
+
+
+            if (!eventData && !cachedData) {
+                mixedDataToSend = {};
+
+            } else if (!eventData && cachedData) {
+                mixedDataToSend = cachedData;
+
+            } else if (eventData && !cachedData) {
+                mixedDataToSend = eventData;
+
+            } else if (typeof eventData === 'string' && typeof cachedData === 'string') {
+
+                mixedDataToSend = this._mixStringsData(eventData, cachedData);
+
+            } else if (typeof eventData === 'object' && typeof cachedData === 'object') {
+                mixedDataToSend = {};
+                this.mixin(mixedDataToSend, cachedData);
+                this.mixin(mixedDataToSend, eventData);
+
+            } else if (typeof eventData === 'object' && typeof cachedData === 'string') {
+                mixedDataToSend = {};
+                this.mixin(mixedDataToSend, this._stringToObject(cachedData));
+                this.mixin(mixedDataToSend, eventData);
+
+            } else if (typeof eventData === 'string' && typeof cachedData === 'object') {
+                mixedDataToSend = this._mixStringsData(eventData, cachedData);
+
+            } else {
+                console.error("Els tipus d'eventDataToSend i cachedDataToSend no són compatibles", typeof eventData, typeof cachedData);
+            }
+
+            return mixedDataToSend;
+        },
+
+        // ALERTA[Xavi] Duplicat a StructuredDocumentSubclass
+        _mixStringsData: function (eventData, cachedData) {
+            var objEventData = this._stringToObject(eventData),
+                objCachedData = this._stringToObject(cachedData),
+                mixedData = {};
+
+            // lang.mixin(mixedData, objCachedData);
+            // lang.mixin(mixedData, objEventData);
+            this.mixin(mixedData,objCachedData);
+            this.mixin(mixedData,objEventData);
+
+            return jQuery.param(mixedData);
+        },
+
+        // ALERTA[Xavi] Duplicat a StructuredDocumentSubclass
+        _stringToObject: function (text) {
+            if (typeof text !== 'string') {
+                return text;
+            } else if (!text) {
+                return {};
+            } else {
+
+                return JSON.parse('{"' + text.replace(/&/g, '","').replace(/=/g, '":"') + '"}',
+                    function (key, value) {
+                        return key === "" ? value : decodeURIComponent(value)
+                    });
+            }
+        },
+
+        /**
+         * Afegeix les propietats de l'objecte de la dreta a l'objecte de la esquerra, ignorant les propietats de
+         * l'objecte esquerra a les que no s'ha assignat cap valor (undefined)
+         * @param target
+         * @param source
+         */
+        mixin: function (target, source) {
+            if (!source) {
+                return;
+            }
+
+            for (var key in source) {
+                if (source[key] === undefined) {
+                    continue;
+                }
+                target[key] = source[key];
+            }
+        },
+
+        /**
+         *
+         * @param {string|object} data
+         * @param {string} property
+         * @returns {*}
+         */
+        getPropertyValueFromData: function(data, property) {
+            var value;
+            // console.log("ChangesManagerCentralSubclass#checkPropertyValue", data, property);
+            if (typeof data === 'string') {
+                data = this._stringToObject(data);
+            }
+
+            if (typeof data !== 'object') {
+                return null;
+            }
+
+            value = data[property];
+
+
+            if (value === 'true') {
+                value = true;
+            } else if (value ==='false') {
+                value = false;
+            } else if (!isNaN(value)) {
+                value = Number(value)
+            }
+
+            // console.log("---- retornant:", value);
+
+            return value;
+        },
+
     });
 });

@@ -100,6 +100,7 @@ define([
 
         // ALERTA[Xavi] destroy es un booleà que indica si s'ha de destruir el draft desprès d'esborrar-lo del local storage
         clearDraft: function (id, ns, destroy) {
+
             // console.log("DraftManager#clearDraft", id, ns);
 
             var draft;
