@@ -91,14 +91,14 @@ define([
         onClose: function () {
             var confirmation = this.inherited(arguments);
 
-            if (confirmation && this.changesManager.isChanged(this.id)) {
-                confirmation = this.dispatcher.discardChanges();
-            }
-
-            if (confirmation) {
-                this.removeState();
-                this.changesManager.removeContentTool(this.id);
-            }
+//            if (confirmation && this.changesManager.isChanged(this.id)) {
+//                confirmation = this.dispatcher.discardChanges();
+//            }
+//
+//            if (confirmation) {
+//                this.removeState();
+//                this.changesManager.removeContentTool(this.id);
+//            }
 
             return confirmation;
         },

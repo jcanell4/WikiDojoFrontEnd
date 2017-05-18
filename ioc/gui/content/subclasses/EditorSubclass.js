@@ -171,13 +171,24 @@ define([
                 }
 
 
+
 //                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
 //                    id: this.id,
 //                    dataToSend: dataToSend,
 //                    standbyId: containerId
 //                })
 
-                this.cachedDataToSend = null;
+//                this.cachedDataToSend = null;
+
+                if (this.cachedDataToSend) {
+                    var cachedQuery;
+                    if (typeof this.cachedDataToSend === 'object') {
+                        cachedQuery = jQuery.param(this.cachedDataToSend);
+                    }
+
+                    dataToSend += "&" + cachedQuery;
+                    this.cachedDataToSend = null;
+                }
 
 
                 if (event.dataToSend && event.dataToSend.close === true || dataToSend.indexOf('close=true') > -1) {
