@@ -398,7 +398,7 @@ define([
 
                 eventManager.fireEvent(eventManager.eventName.CANCEL, {
                     id: id,
-                    keep_draft: false
+                    dataToSend: {keep_draft: false}
                 }, id);
 //                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
             },
