@@ -84,7 +84,8 @@ define([], function () {
                 throw new ToolbarManagerException("No s'ha establert el dispatcher. Crida a toolbarManager.setDispatcher(dispatcher) abans.");
             }
 
-            var funcType = 'addBtnAction' + (config.type = config.type + '_' + type); // TODO[Xavi] comprovar si es correcta l'assignació, sembla un error
+//            var funcType = 'addBtnAction' + (config.type = config.type + '_' + type); // TODO[Xavi] comprovar si es correcta l'assignació, sembla un error
+            var funcType = 'addBtnAction' + (config.type = config.type.charAt(0).toUpperCase()+config.type.substring(1) + '_' + type);
 
             window[funcType] = function ($btn) {
 

@@ -150,12 +150,32 @@ define([
                     type: "EnableWrapper", // we havea new type that links to the function
                     title: "Activar/Desactivar embolcall",
                     icon: "/iocjslib/ioc/gui/img/wrap.png"
+                },
+                        
+                argPreview = {
+                    type: "preview", // we havea new type that links to the function
+                    title: "Previsualitzar el contingut d'aquest editor",
+                    icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
                 };
 
+            toolbarManager.addButton(argPreview, this._funcPreview.bind(this), this.TOOLBAR_ID);
             toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
+        },
+        
+        _funcPreview: function(){
+            var chunk = this.dispatcher.getGlobalState().getCurrentElementId();
+            chunk = chunk.replace(this.id + "_", "");
+            chunk = chunk.replace("container_", "");
+            var dataToSend = this.requester.get("dataToSend");
+            var urlBase = this.requester.get("urlBase");
+            this.requester.set("dataToSend", {call:"preview", wikitext:this.getEditedChunk(chunk)});
+            this.requester.set("urlBase", this.requester.get("defaultUrlBase"));
+            this.requester.sendRequest();            
+            this.requester.set("urlBase", urlBase);
+            this.requester.set("dataToSend", dataToSend);
         },
 
         // ALERTA[Xavi] this fa referencia al dispatcher
@@ -388,6 +408,10 @@ define([
 
             return text;
 
+        },
+        
+        getEditedChunk: function(header_id){
+            return this.getEditor(header_id).getValue();  
         },
 
         getQueryCancel: function (header_id) {

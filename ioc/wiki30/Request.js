@@ -253,16 +253,18 @@ define([
                 //Build and send the request.
                 var resp;
                 var req = this;
-                var configPost = {handleAs: "json"};
-                if (this.dataToSend) {
-                    configPost.query = this.dataToSend;
-                    configPost.sync = synchronized || false;
-                    //sincronized <-- del dojo
-                }
+                var configPost = {handleAs: "json", sync: (synchronized || false)};
                 if (this.method === "post") {
 
                     if (this.hasPostData()) {
                         configPost.data = this.getPostData();
+                        if (this.dataToSend) {
+                            for (var attrname in this.dataToSend) {
+                                this.data[attrname] = this.dataToSend[attrname]; 
+                            }
+                        }
+                    }else if (this.dataToSend) {
+                        configPost.data = this.dataToSend;
                     }
 
                     resp = request.post(vUrl, configPost).then(
@@ -276,6 +278,9 @@ define([
                     );
                 } else {
 
+                    if (this.dataToSend) {
+                        configPost.query = this.dataToSend;
+                    }
                     resp = request.get(vUrl, configPost).then(
                         function (data) {
                             req.emit("completed", {status: 'success'});
