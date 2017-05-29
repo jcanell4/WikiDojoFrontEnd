@@ -48,6 +48,7 @@ define([
                     this._initTimer(value, contentTool);
                     this._processTimerDialog(value, contentTool, dispatcher);
                 }else if(value.action==="refresh"){
+                    console.log("Refrescant timer durant " + value.timer.timeout + "s");
                     var contentTool = registry.byId(value.id);
                     contentTool.refreshTimer(value.timer.timeout, value.timer.paramsOnExpire);
                 }

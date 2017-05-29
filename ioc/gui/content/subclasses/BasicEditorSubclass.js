@@ -60,11 +60,6 @@ define([
                 this.registerObserverToEvent(this, this.eventName.DATA_REPLACED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
                 this.registerObserverToEvent(this, this.eventName.CONTENT_SELECTED, this.fillEditorContainer.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
 
-//                this.eventManager = this.dispatcher.getEventManager();
-
-//                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.SAVE + this.id, this._doSave.bind(this));
-//                this.eventManager.registerEventForBroadcasting(this, this.eventNameCompound.CANCEL + this.id, this._doCancelDocument.bind(this));
-                
                 this.setFireEventHandler(this.eventName.SAVE, this._doSave.bind(this));
                 this.setFireEventHandler(this.eventName.CANCEL, this._doCancelDocument.bind(this));
 
@@ -348,7 +343,7 @@ define([
                         icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
                     };
 
-                toolbarManager.addButton(argPreview, this._funcPreview.bind(this), this.TOOLBAR_ID);
+                toolbarManager.addButton(argPreview, this._funcPreview.bind(this.dispatcher), this.TOOLBAR_ID);
                 toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
                 toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
                 toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
@@ -356,15 +351,17 @@ define([
             },
 
             _funcPreview: function(){
-                var dataToSend = this.requester.get("dataToSend");
-                var urlBase = this.requester.get("urlBase");
-                this.requester.set("dataToSend", {call:"preview", wikitext:this.getCurrentContent()});
-                this.requester.set("urlBase", this.requester.get("defaultUrlBase"));
-                this.requester.sendRequest();            
-                this.requester.set("urlBase", urlBase);
-                this.requester.set("dataToSend", dataToSend);
-            },
+                var id = this.getGlobalState().getCurrentId(),
+                    contentTool = this.getContentCache(id).getMainContentTool(),
+                    dataToSend = contentTool.requester.get("dataToSend"),
+                    urlBase = contentTool.requester.get("urlBase");
 
+                contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getCurrentContent()});
+                contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
+                contentTool.requester.sendRequest();
+                contentTool.requester.set("urlBase", urlBase);
+                contentTool.requester.set("dataToSend", dataToSend);
+            },
 
             /**
              * Activa o desactiva l'embolcall del text.
@@ -474,8 +471,6 @@ define([
                 // console.log("BasicEditorSubclass#onDestroy");
                 this.freePage();
                 this.inherited(arguments);
-            }
-
-
+            },
         });
 });

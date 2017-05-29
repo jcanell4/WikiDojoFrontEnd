@@ -202,10 +202,9 @@ define([
             }
 
             if (typeof data !== 'string' && typeof data !== 'object') {
-                console.error("El tipus de les dades només pot ser 'object' o 'string' i era: ", typeof data );
-                return null;
+                // console.error("El tipus de les dades només pot ser 'object' o 'string' i era: ", typeof data );
+                return expectedType === 'string' ? '' : {};
             }
-
 
             switch (expectedType) {
                 case 'string':
@@ -282,6 +281,7 @@ define([
 
             } else {
                 console.error("Els tipus d'eventDataToSend i cachedDataToSend no són compatibles", typeof eventData, typeof cachedData);
+                console.error(eventData, cachedData);
             }
 
             return mixedDataToSend;
