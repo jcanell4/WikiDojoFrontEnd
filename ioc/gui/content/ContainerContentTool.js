@@ -1,18 +1,8 @@
 define([
     'dojo/_base/declare',
     'ioc/wiki30/manager/EventObservable',
-    'ioc/wiki30/manager/EventObserver',
-    'dojo/dnd/Source',
-    'dojo/dom-class',
-    'dojo/_base/array',
-    'dijit/registry',
-    'dojo/on',
-    'dojo/text!./templates/avatarTemplate.html',
-    'dojo/topic',
-    'dojo/_base/lang'
-
-
-], function (declare, EventObservable, EventObserver, Source, domClass, array, registry, on, avatarTemplate, topic, lang) {
+    'ioc/wiki30/manager/EventObserver'
+], function (declare, EventObservable, EventObserver) {
 
 
     return declare([EventObservable, EventObserver],
