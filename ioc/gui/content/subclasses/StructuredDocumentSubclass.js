@@ -175,7 +175,8 @@ define([
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
 
-            console.log(contentTool.editors);
+
+
 
             contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getEditedChunk(chunk)});
             contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));

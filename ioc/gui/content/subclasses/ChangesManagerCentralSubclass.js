@@ -32,6 +32,15 @@ define([
 
     return declare([AbstractChangesManagerSubclass], {
 
+
+        constructor: function() {
+            this.isCentral = true;
+        },
+
+        startup: function() {
+            this.inherited(arguments);
+        },
+
         /**
             * Elimina aquest ContentTool del ContainerContentTool en el que es trobi i es destrueix junt amb tots els
             * elements que el composin.
