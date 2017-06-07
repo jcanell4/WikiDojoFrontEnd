@@ -32,11 +32,6 @@ define([
 
     return declare([AbstractChangesManagerSubclass], {
 
-
-        constructor: function() {
-            this.isCentral = true;
-        },
-
         startup: function() {
             this.inherited(arguments);
         },

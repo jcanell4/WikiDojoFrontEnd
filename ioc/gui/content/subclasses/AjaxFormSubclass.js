@@ -54,8 +54,11 @@ define([
                 }else{
                     $form = jQuery(this.domNode).find('form');                    
                 }
+
+                console.log("Form trobat?", $form);
                 
                 $form.on('submit', function(event) {
+                    console.log("*** S'ha fet un submit ***");
                     event.preventDefault();
                     var $this = jQuery( this ),
                         // button = event.originalEvent.explicitOriginalTarget,
@@ -88,7 +91,7 @@ define([
 
 
                         } else {
-                                console.error("S'ha produit un error en enviar el formulari");
+                                console.error("S'ha produit un error en enviar el formulari", e);
 
                         }
 

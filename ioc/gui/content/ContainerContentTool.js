@@ -85,7 +85,7 @@ define([
 
 
 
-                if (contentTool.isCentral) {
+                if (this.isCentral) {
                     this.addDisplacementArrowsToTab(contentTool);
                 }
 

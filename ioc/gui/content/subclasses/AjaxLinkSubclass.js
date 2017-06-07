@@ -45,7 +45,9 @@ define([
                     $this = jQuery( this );
                     aHref = $this.attr('href').split('?');
                     if(!self.requestLinkArgs){
-                        call = 'page';
+                        call = $this.attr('data-call') || 'page';
+
+
                         urlBase = request.defaultUrlBase?request.defaultUrlBase:aHref[0];
                     }else{
                         if(!self.requestLinkArgs.callAtt){
@@ -56,6 +58,7 @@ define([
                         if(!self.requestLinkArgs.urlBase){
                             urlBase = request.defaultUrlBase?request.defaultUrlBase:aHref[0];
                         }else{
+
                             urlBase = self.requestLinkArgs.urlBase;
                         }
                     }
@@ -63,7 +66,9 @@ define([
                     if(!call){
                         call = 'page';
                     }
-                        
+
+
+
                     //params = "call="+call+"&" + $this.attr('href').replace(/^.*\?/, "");
                     params = "call="+call+ (aHref.length>1?"&"+aHref[1]:"");
                     

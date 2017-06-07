@@ -286,6 +286,7 @@ define([
                 BASE: 'base',
                 REQUEST_FORM: 'request_form',
                 META: 'meta',
+                META_REVISIONS: 'meta_revisions',
                 DOCUMENT: 'document',
                 EDITOR: 'editor',
                 FORM: 'form',
@@ -409,6 +410,13 @@ define([
                         GeneratedContentTool = base
                             .createSubclass(MetaInfoSubclass);
                             // .createSubclass(AjaxFormSubclass);
+                        break;
+
+                    case this.generation.META_REVISIONS:
+                        GeneratedContentTool = base
+                            .createSubclass(MetaInfoSubclass)
+                            .createSubclass(AjaxFormSubclass)
+                            .createSubclass(AjaxLinkSubclass);
                         break;
 
                     case this.generation.REQUEST_FORM:

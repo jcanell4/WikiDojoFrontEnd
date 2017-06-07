@@ -56,18 +56,20 @@ define(function () {
             html += '</a></td>';
 
             return html;
-        },
-
-        _generateFormId = function (id) {
-            return 'revisions_selector_' + id.replace(/:/g, '_');
         };
+
+        // _generateFormId = function (id) {
+        //     return 'revisions_selector_' + id.replace(/:/g, '_');
+        // };
 
 
     return function (data, contentTool) {
+        console.log("data:", data);
         data = JSON.parse(JSON.stringify(data)); // Com que data es un objecte hem de fer una copia per no modificar l'original
 
 
-        var id = data.docId,
+        var id = contentTool.id,
+            ns = data.docId,
             html = '',
             //first = true,
             linkRev,
@@ -76,8 +78,8 @@ define(function () {
             linkCurrent;
 
 
-        html += '<form id="' + _generateFormId(id) + '" action="" method="post">';
-        html += '<input name="id" value="' + id + '" type="hidden">';
+        html += '<form id="revisions_selector_' + id + '" action="'+ data.urlBase+'" method="post">';
+        html += '<input name="id" value="' + ns + '" type="hidden">';
         html += '<table class="meta-revisions">';
         html += '<tr><th colspan="5" style="text-align: center"><input type="submit" name="submit" value="comparar revisions"/></th></tr>'; // TODO[Xavi]no funciona, surt fora de la taula, perquè?
 
@@ -92,6 +94,7 @@ define(function () {
         linkCurrent = '?id=' + data.docId;
 
         delete(data.docId);
+        delete(data.urlBase);
 
 
         // extreiem cada objecte i l'afegim a un array per poder ordenar-los
@@ -113,6 +116,8 @@ define(function () {
         html += '<td colspan="4" class="current-revision"><a href="' + linkCurrent + '" title="' + 'Obrir la revisió actual">';
         html += 'Versió actual';
         html += '</a></td>';
+
+
 
 
         for (var i = 0; i < sortable.length; i++) {
@@ -138,7 +143,7 @@ define(function () {
 
         html += '</table>';
         html += '</form>';
-        
+
         contentTool.set("title", "Revisions(" + sortable.length + ")");  //Josep: CAL LOCALITZAR!
 
         return html;
