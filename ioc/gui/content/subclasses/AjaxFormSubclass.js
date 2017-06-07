@@ -58,7 +58,7 @@ define([
                 console.log("Form trobat?", $form);
                 
                 $form.on('submit', function(event) {
-                    console.log("*** S'ha fet un submit ***");
+
                     event.preventDefault();
                     var $this = jQuery( this ),
                         // button = event.originalEvent.explicitOriginalTarget,
