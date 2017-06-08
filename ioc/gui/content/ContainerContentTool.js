@@ -147,10 +147,6 @@ define([
 
                 this.inherited(arguments);
 
-                if (this.tablist) {
-                    this.initializeDragAndDrop();
-                }
-
             },
 
 

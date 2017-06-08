@@ -39,11 +39,9 @@ define([
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "diff";
-                console.log("Setting rev:", value);
                 dispatcher.getGlobalState().getContent(value.id)["rev1"] = value.rev1;
                 dispatcher.getGlobalState().getContent(value.id)["rev2"] = value.rev2;
 
-                console.log("s'han guardat els canvis?", dispatcher.getGlobalState().getContent(value.id));
                 //dispatcher.getGlobalState().getContent(value.id)["rev"] = value.rev;
             },
 

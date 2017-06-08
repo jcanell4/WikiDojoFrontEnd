@@ -64,7 +64,6 @@ define(function () {
 
 
     return function (data, contentTool) {
-        console.log("data:", data);
         data = JSON.parse(JSON.stringify(data)); // Com que data es un objecte hem de fer una copia per no modificar l'original
 
 

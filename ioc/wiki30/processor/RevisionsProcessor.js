@@ -86,7 +86,6 @@ define([
              * @protected
              */
             createContentTool: function (content) {
-                console.log("Creant RevisionsContentTool", content);
                 var count = Object.keys(content.revisions).length - 2,
 
                     args = {
@@ -169,7 +168,6 @@ define([
                     //};
 
 
-                console.log("Abans de carregar, el docId és:", args.docId);
                 return contentToolFactory.generate(contentToolFactory.generation.META_REVISIONS, args)
                     .decorate(contentToolFactory.decoration.CONTROL_CHANGES, argsControlsToCheck);
 

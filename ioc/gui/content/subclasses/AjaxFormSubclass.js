@@ -55,14 +55,11 @@ define([
                     $form = jQuery(this.domNode).find('form');                    
                 }
 
-                console.log("Form trobat?", $form);
-                
+
                 $form.on('submit', function(event) {
 
                     event.preventDefault();
                     var $this = jQuery( this ),
-                        // button = event.originalEvent.explicitOriginalTarget,
-                        // params = $this.serialize() /*+ "&"+button.name+'='+button.value*/,
                         $button = jQuery(document.activeElement),
                         params = $this.serialize() + "&"+$button.attr('name')+'='+encodeURIComponent($button.val()),
 
