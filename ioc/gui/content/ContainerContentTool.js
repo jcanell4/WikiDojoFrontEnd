@@ -163,8 +163,8 @@ define([
                     $detachButton = jQuery('<span class="arrow-icon arrow-up"></span>');
 
 
-                $button.prepend($prevButton);
-                $button.append($detachButton);
+                $button.append($prevButton);
+                // $button.append($detachButton);
                 $button.append($nextButton);
 
                 $button.on('mouseenter', function () {
