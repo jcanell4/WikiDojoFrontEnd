@@ -3,9 +3,9 @@ define([], function () {
 
         //TODO [Josep] Sempre hauria d'haver JSINFO[plugin_iocexportl] excepte si eliminem el plugin (REVISAR)
         if (!JSINFO['plugin_iocexportl'] || !JSINFO['plugin_iocexportl']['toccontents']) {
-            $toc = jQuery('#toc__inside');
+            var $toc = jQuery('#toc__inside');
             $toc.css('display', 'none');
-            $tocul = $toc.children('ul.toc');
+            var $tocul = $toc.children('ul.toc');
             $tocul.css('display', 'none');
         }
 

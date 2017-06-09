@@ -29,8 +29,9 @@ define([
     'dojo/dom',
     'dojo/dom-geometry',
     'ioc/dokuwiki/AceManager/toolbarManager',
+    'dojo/cookie',
     // 'dojo/_base/lang'
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, toolbarManager /*,lang*/) {
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, toolbarManager, cookie /*,lang*/) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
@@ -171,6 +172,8 @@ define([
                 contentTool = this.getContentCache(id).getMainContentTool(),
                 dataToSend = contentTool.requester.get("dataToSend"),
                 urlBase = contentTool.requester.get("urlBase");
+
+            cookie("IOCForceScriptLoad", 1);
 
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");

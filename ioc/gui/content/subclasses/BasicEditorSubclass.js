@@ -8,7 +8,8 @@ define([
     "dojo/io-query",
     "dojo/_base/lang",
     'ioc/wiki30/Draft',
-], function (declare, on, toolbarManager, AceFacade, geometry, dom, ioQuery, lang) {
+    'dojo/cookie',
+], function (declare, on, toolbarManager, AceFacade, geometry, dom, ioQuery, lang, cookie) {
 
     return declare([],
         //return declare(null,
@@ -355,6 +356,8 @@ define([
                     contentTool = this.getContentCache(id).getMainContentTool(),
                     dataToSend = contentTool.requester.get("dataToSend"),
                     urlBase = contentTool.requester.get("urlBase");
+
+                cookie("IOCForceScriptLoad", 1);
 
                 contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getCurrentContent()});
                 contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
