@@ -7,9 +7,9 @@ define([
     'dojo/dom',
     "dojo/io-query",
     "dojo/_base/lang",
-    'ioc/wiki30/Draft',
+    // 'ioc/wiki30/Draft',
     'dojo/cookie',
-], function (declare, on, toolbarManager, AceFacade, geometry, dom, ioQuery, lang, cookie) {
+], function (declare, on, toolbarManager, AceFacade, geometry, dom, ioQuery, lang, /*Draft, */cookie) {
 
     return declare([],
         //return declare(null,
