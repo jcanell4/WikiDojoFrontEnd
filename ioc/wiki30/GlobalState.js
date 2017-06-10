@@ -9,11 +9,16 @@ define([
 
     /** @typedef {{ns:string, mode:string, action:string}} Page */
 
+
+    var globalStateId = new Date().getTime();
+
+
     var ret = {
         /**
          * El index del hash es el mateix que el ns, que es el mateix que es mostra a la pestanya
          * @type {{string:Page?}}
          */
+
         pages: {},
 
         permissions: {},
@@ -63,7 +68,6 @@ define([
             } else {
                 this.getCurrentContent().currentElementState = null;
             }
-            this._updateStorage();
         },
 
 
@@ -71,7 +75,6 @@ define([
             // console.log("GlobalState#setCurrentElement", elementId, state);
             this.setCurrentElementId(elementId);
             this.setCurrentElementState(state);
-            this._updateStorage();
         },
 
         /**
@@ -108,7 +111,6 @@ define([
                 // S'ha deseleccionat l'element
                 this.pages[id].currentElementId = null;
             }
-            this._updateStorage();
         },
 
         /**
@@ -210,7 +212,6 @@ define([
          */
         setInfoStorage: function (infoStorage) {
             this.infoStorage = infoStorage;
-            this._updateStorage();
         },
 
 
@@ -228,14 +229,12 @@ define([
          */
         setCurrentNavigationId: function (navigationId) {
             this.currentNavigationId = navigationId;
-            this._updateStorage();
         },
 
         deleteContent: function (id) {
             if (this.pages[id]) {
                 delete this.pages[id];
             }
-            this._updateStorage();
         },
 
         getExtraTab: function (id) {
@@ -244,12 +243,10 @@ define([
 
         addExtraTab: function (id) {
             this.extratabs[id] = true;
-            this._updateStorage();
         },
 
         removeExtraTab: function (id) {
             delete this.extratabs[id];
-            this._updateStorage();
         },
 
         requiredPages: {},
@@ -260,13 +257,17 @@ define([
          * @returns {boolean}
          */
         requirePage: function (contentTool) {
-            // console.log("GlobalState#requirePage", contentTool.id);
+            console.log("GlobalState#requirePage", contentTool.id, globalStateId);
 
             // console.log("Es troba lliure el document??", this.requiredPages[contentTool.ns]);
 
-            if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] === contentTool.id) {
-                this.requiredPages[contentTool.ns] = contentTool.id;
-                this._updateStorage();
+
+            if (!this.isPageRequired(contentTool.ns) || this.requiredPages[contentTool.ns] === contentTool.id) {
+                this.requiredPages[contentTool.ns] = {
+                    id : contentTool.id,
+                    globalStateId: globalStateId
+                };
+                this.updateRequiredPagesState();
                 return true;
             } else {
 
@@ -288,20 +289,56 @@ define([
         },
 
         freePage: function (id, ns) {
-            // console.log("Alliberat id:",id,"ns:", ns);
-            if (this.requiredPages[ns] && this.requiredPages[ns] === id) {
-                delete this.requiredPages[ns];
-            }
 
-            this._updateStorage();
+            if (this.requiredPages[ns]
+                && this.requiredPages[ns]['id'] === id
+                && this.requiredPages[ns]['globalStateId'] === globalStateId) {
+                // console.log("Alliberat id:",id,"ns:", ns);
+                delete this.requiredPages[ns];
+                this.updateRequiredPagesState();
+            }
+        },
+
+        freeAllPages: function () {
+            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+            if (storedPages && storedPages.userId === this.userId) {
+                // console.log("Alliberant pàgines");
+
+                for (var ns in storedPages.requiredPages) {
+                    if (storedPages.requiredPages[ns]['globalStateId'] === globalStateId) {
+                        // console.log("alliberant", ns);
+                        delete(storedPages.requiredPages[ns]);
+                    }
+                }
+
+                this.requiredPages = storedPages.requiredPages;
+
+
+                this.updateRequiredPagesState();
+            }
         },
 
         isPageRequired: function (ns) {
-            return this.requiredPages[ns] ? true : false;
+            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+
+
+            if (storedPages && storedPages.userId === this.userId) {
+                this.requiredPages = storedPages.requiredPages;
+
+            } else {
+                // Si les págines guardades no són de l'usuari actual s'actualitza el localstorage
+                this.updateRequiredPagesState();
+                return false;
+            }
+
+
+
+            return storedPages.requiredPages[ns] ? true : false;
+            // return this.requiredPages[ns] ? true : false;
         },
 
 
-        setLoginStatus: function (userId, loginResult) {
+        updateLoginState: function (userId, loginResult) {
             console.log("Cridat en fer logout?");
             this.userId = userId;
             this.login = loginResult;
@@ -314,14 +351,21 @@ define([
                 },
                 storageManager.type.LOCAL);
 
-            // this._updateStorage();
+
         },
 
-        _updateStorage: function () {
+        updateRequiredPagesState: function () {
+            storageManager.setObject('requiredPages', {
+                userId: this.userId,
+                requiredPages: this.requiredPages
+            }, storageManager.type.LOCAL);
+
+        },
+
+        updateStorage: function () {
             console.log("_updateStorage");
             // Update del sessionStorage, això és el que es fa ara en recarregar la pàgina
-            storageManager.setItem('globalState', JSON.stringify(this));
-
+            storageManager.setObject('globalState', this);
 
 
             // TODO: Documents en edició?  <--- Al ChangesManagerCentral

@@ -23,6 +23,7 @@ define([], function () {
                     type = DEFAULT;
                 }
 
+                console.log("_getItem:", _storage[type].getItem(key));
                 return _storage[type].getItem(key);
             },
 
@@ -103,7 +104,7 @@ define([], function () {
 
             _addEventListener = function (event, key, callback) {
 
-                console.log("Afegit escoltador", event, key);
+                // console.log("Afegit escoltador", event, key);
 
                 if (event !== 'change') {
                     console.error("StorageManager només dispara la detecció de l'event 'change'");
@@ -119,9 +120,15 @@ define([], function () {
 
 
             _dispatchEvent = function (name, event) {
-                console.log("Despatxant event", event.key);
+                // console.log("Despatxant event", event.key);
                 console.log(_listeners);
+                if (!_listeners[event.key]) {
+                    // No hi ha cap listener, no cal fer res
+                    return;
+                }
+
                 for (var i = 0; i < _listeners[event.key].length; i++) {
+                    console.log("i:", i, _listeners[event.key]);
                     _listeners[event.key][i]({
                         key: event.key,
                         oldValue: event.oldValue,
@@ -132,7 +139,6 @@ define([], function () {
             };
 
         window.addEventListener('storage', function (e) {
-            console.log("Detectat canvit al storage");
             _dispatchEvent('change', e);
         });
 

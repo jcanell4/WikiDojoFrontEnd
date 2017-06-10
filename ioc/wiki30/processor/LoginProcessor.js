@@ -61,7 +61,7 @@ define([
                 // dispatcher.getGlobalState().login = value.loginResult;
                 // dispatcher.getGlobalState().userId = value.userId;
 
-                dispatcher.getGlobalState().setLoginStatus(value.userId, value.loginResult);
+                dispatcher.getGlobalState().updateLoginState(value.userId, value.loginResult);
             },
 
             /**
