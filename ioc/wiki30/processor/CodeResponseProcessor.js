@@ -18,6 +18,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                console.log(value);
                 if(value.code!=0){
                     this._processAlert(value.info, dispatcher);
                 }
