@@ -23,7 +23,7 @@ define([], function () {
                     type = DEFAULT;
                 }
 
-                console.log("_getItem:", _storage[type].getItem(key));
+                // console.log("_getItem:", key, _storage[type].getItem(key));
                 return _storage[type].getItem(key);
             },
 
@@ -56,6 +56,7 @@ define([], function () {
 
 
             _removeItem = function (key, type) {
+                // console.log("StorageManager#_removeItem:", key, type);
                 if (!type) {
                     type = DEFAULT;
                 }
@@ -120,15 +121,12 @@ define([], function () {
 
 
             _dispatchEvent = function (name, event) {
-                // console.log("Despatxant event", event.key);
-                console.log(_listeners);
                 if (!_listeners[event.key]) {
                     // No hi ha cap listener, no cal fer res
                     return;
                 }
 
                 for (var i = 0; i < _listeners[event.key].length; i++) {
-                    console.log("i:", i, _listeners[event.key]);
                     _listeners[event.key][i]({
                         key: event.key,
                         oldValue: event.oldValue,

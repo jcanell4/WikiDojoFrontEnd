@@ -28,40 +28,64 @@
 define([
     "dojo/_base/declare",
     "ioc/gui/content/subclasses/AbstractChangesManagerSubclass",
-], function (declare, AbstractChangesManagerSubclass) {
+    'ioc/wiki30/manager/StorageManager',
+    'dojo/_base/unload',
+], function (declare, AbstractChangesManagerSubclass, storageManager, unload) {
 
     return declare([AbstractChangesManagerSubclass], {
 
-        startup: function() {
+
+        startup: function () {
             this.inherited(arguments);
+
+            var storedChangedPages = storageManager.getObject('changedPages', storageManager.type.LOCAL),
+                userId = this.dispatcher.getGlobalState().userId;
+
+
+            if (userId && storedChangedPages && storedChangedPages.userId !== userId) {
+                // Estem loginats i la informació guardada pertany a un altre usuari, la descartem
+                this.resetChangedPagesState();
+            }
+
+            unload.addOnWindowUnload(function(){
+                // console.log("Unloading page", this.hasChanges);
+                if (this.hasChanges) {
+                    this.hasChanges = false;
+                    this.updateChangedPagesState();
+                }
+            }.bind(this));
         },
 
         /**
-            * Elimina aquest ContentTool del ContainerContentTool en el que es trobi i es destrueix junt amb tots els
-            * elements que el composin.
-            */
-        removeContentTool: function(){
+         * Elimina aquest ContentTool del ContainerContentTool en el que es trobi i es destrueix junt amb tots els
+         * elements que el composin.
+         */
+        removeContentTool: function () {
             this.forceReset();
-            this.inherited(arguments);            
+            this.inherited(arguments);
         },
-        
+
         /**
          * Accio a realitzar quan hi han canvis al document.
          *
          * @protected
          */
         onDocumentChanged: function () {
-            //console.log('ChangesManagerCentralSubclass#onDocumentChanged', this.id);
+            // console.log('ChangesManagerCentralSubclass#onDocumentChanged', this.id);
 //            this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_CHANGED + this.id, {id: this.id});
             this.dispatchEvent(this.eventName.DOCUMENT_CHANGED, {id: this.id}, true); //La línia de dalt equival ara, al true
 
             if (this.controlButton) {
                 this.controlButton.containerNode.style.color = 'red';
             }
+
+            this.updateChangedPagesState();
+
+
         },
 
         onDocumentRefreshed: function () {
-            //console.log('ChangesManagerCentralSubclass#onDocumentRefreshed', this.id);
+            // console.log('ChangesManagerCentralSubclass#onDocumentRefreshed', this.id);
 //            this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.id, {id: this.id});
             this.dispatchEvent(this.eventName.DOCUMENT_REFRESHED, {id: this.id}, true); //La línia de dalt equival ara, al true
 
@@ -78,6 +102,8 @@ define([
             if (this.controlButton) {
                 this.controlButton.containerNode.style.color = 'black';
             }
+
+            this.updateChangedPagesState();
         },
 
         forceReset: function () {
@@ -232,7 +258,7 @@ define([
                     break;
 
                 default:
-                    console.error("El tipus " +expectedType+" no es troba definit");
+                    console.error("El tipus " + expectedType + " no es troba definit");
 
             }
 
@@ -299,8 +325,8 @@ define([
 
             // lang.mixin(mixedData, objCachedData);
             // lang.mixin(mixedData, objEventData);
-            this.mixin(mixedData,objCachedData);
-            this.mixin(mixedData,objEventData);
+            this.mixin(mixedData, objCachedData);
+            this.mixin(mixedData, objEventData);
 
             return jQuery.param(mixedData);
         },
@@ -345,7 +371,7 @@ define([
          * @param {string} property
          * @returns {*}
          */
-        getPropertyValueFromData: function(data, property) {
+        getPropertyValueFromData: function (data, property) {
             var value;
             // console.log("ChangesManagerCentralSubclass#checkPropertyValue", data, property);
             if (typeof data === 'string') {
@@ -361,7 +387,7 @@ define([
 
             if (value === 'true') {
                 value = true;
-            } else if (value ==='false') {
+            } else if (value === 'false') {
                 value = false;
             } else if (!isNaN(value)) {
                 value = Number(value)
@@ -372,5 +398,81 @@ define([
             return value;
         },
 
+        resetChangedPagesState: function () {
+            //ALERTA[Xavi] Compte, això s'ha d'invocar quan no hi ha cap document en edició a cap pestanya o per eliminar
+            // totes les pàgines cambiadas perqué l'usuari no es vàlid (canvi global per totes les pestanyes),
+            // però NO quan es tanca la finestra (canvi només per la pestanya activa)
+            // console.log("Eliminant tots els canvis");
+            storageManager.removeItem('changedPages', storageManager.type.LOCAL);
+        },
+
+        updateChangedPagesState: function () {
+            var storedChangedPages = storageManager.getObject('changedPages', storageManager.type.LOCAL);
+
+
+            // El documet és den només lectura: RETURN
+
+            if (this.getReadOnly()) {
+                return;
+            }
+
+
+            // El storage no existeix i hi han canvis: Crear nou storage
+            if (!storedChangedPages && this.hasChanges) {
+                // console.log("Storage no existeix i però hi ha canvis. Creem un storage buit", storedChangedPages);
+
+                storedChangedPages = {
+                    userId: this.dispatcher.getGlobalState().userId,
+                    pages: {}
+                }
+            }
+
+            // alert("Next 1");
+
+            // El storage no existeix i no hi han canvis: RETURN
+            if (!storedChangedPages && !this.hasChanges) {
+                // console.log("RETORN: L'estorage no existeix i no hi han canvis, sortim");
+                return;
+            }
+
+
+
+            //El storage existeix i hi han canvis: AFEGIR
+
+            if (this.hasChanges) {
+                // console.log("Afegint document", this.id);
+                storedChangedPages['pages'][this.id] = true;
+            } else {
+
+                // El storage no existeix i no hi han canvis: ELIMINAR
+                // console.log("Eliminant document:", this.id);
+                delete storedChangedPages['pages'][this.id];
+            }
+
+            // alert("Next 2");
+
+
+            if (Object.keys(storedChangedPages.pages).length > 0) {
+                // console.log("Desant els canvis");
+                storageManager.setObject('changedPages',
+                    storedChangedPages,
+                    storageManager.type.LOCAL);
+            } else {
+                this.resetChangedPagesState();
+            }
+
+
+        },
+
+        onDestroy: function () {
+            // console.log("ChangesManagerCentralSubclass#onDestroy", this.hasChanges);
+
+            if (this.hasChanges) {
+                this.hasChanges = false;
+                this.updateChangedPagesState();
+            }
+
+            this.inherited(arguments);
+        }
     });
 });
