@@ -62,9 +62,6 @@ define([
              * @private
              */
             validator: function (data) {
-                console.log("RequestControl#validator", this.validatorData, this.id);
-
-                var DEFAULT_ERROR_MESSAGE = "No s'ha pogut realitzar l'operació";
 
                 var result = {
                     success: true
@@ -80,7 +77,7 @@ define([
                         if (!this.validatorData[i].callback(data)) {
                             result = {
                                 success: false,
-                                message: this.validatorData[i].message || DEFAULT_ERROR_MESSAGE
+                                message: this.validatorData[i].message || null
                             };
                             break;
                         }
@@ -92,7 +89,7 @@ define([
                     if (!this.validatorData.callback(data)) {
                         result = {
                             success: false,
-                            message: this.validatorData.message || DEFAULT_ERROR_MESSAGE
+                            message: this.validatorData.message || null
                         };
 
                     }
@@ -102,15 +99,19 @@ define([
             },
 
 
+            /**
+             * Els casos possibles són:
+             *      Validació amb èxit: envia la petició
+             *      Validació erronea amb missatge: es mostra missatge d'error
+             *      Validació erronea sense missatge: s'ignora la petició silenciosament
+             */
             _validate: function (data) {
-                console.log("RequestControl#_validate", this.validatorData, this.perico);
                 var validationResult = this.validator(data);
 
                 if (validationResult.success) {
                     this._sendRequest(data);
-                } else {
+                } else if (validationResult.message !== null) {
                     var errorMessage = {response: {text: validationResult.message}};
-
                     this._sendError(errorMessage);
                 }
             },

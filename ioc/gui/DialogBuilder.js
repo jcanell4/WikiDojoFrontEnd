@@ -272,9 +272,9 @@ define([
             //console.log("DialogBuilder#_generateRequestControllCallback", event, dataToSend);
 
             return function () {
-                //console.log("Click:", event, dataToSend);
                 this.eventManager.fireEvent(event, { // Això fa referencia al eventManager del dialog
                     id: this.id,
+                    ns: this.ns,
                     dataToSend: dataToSend
                 }, observable);
             }

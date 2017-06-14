@@ -279,30 +279,45 @@ define([
         requirePage: function (contentTool) {
             // console.log("GlobalState#requirePage", contentTool.id, globalStateId);
 
-            // console.log("Es troba lliure el document??", this.requiredPages[contentTool.ns]);
 
             if (!this.isPageRequired(contentTool.ns, contentTool.id)) {
 
                 this.addRequirePageToStore(contentTool.ns, contentTool.id, globalStateId);
 
                 return true;
+
             } else {
 
 
-                var id = this.getIdForRequiredPage(contentTool.ns),
-                    contentCache = contentTool.dispatcher.getContentCache(id),
-                    owner;
+                // var id = this.getIdForRequiredPageOwned(contentTool.ns),
+                //     contentCache = contentTool.dispatcher.getContentCache(id),
+                //     owner;
+                //
+                //
+                // if (contentCache) {
+                //     // Només ens enregistrem si s'ha trobat el content tool
+                //     owner = contentCache.getMainContentTool();
+                //     console.log("enregistrant el requirePageAgain");
+                //     owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
+                // }
 
-
-                if (contentCache) {
-                    // Només ens enregistrem si s'ha trobat el content tool
-                    owner = contentCache.getMainContentTool();
-                    owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
-                }
                 return false;
             }
 
         },
+
+        // ALERTA[Xavi] només es retorna l'id si el document està requerit per aquesta finestra
+        // getIdForRequiredPageOwned: function (ns) {
+        //     var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+        //
+        //     if (storedPages
+        //         && storedPages.requiredPages
+        //         && storedPages.requiredPages[ns]
+        //         && storedPages.requiredPages[ns].globalStateId === globalStateId) {
+        //         return this.getIdForRequiredPage(ns);
+        //     }
+        // },
+
 
         getIdForRequiredPage: function (ns) {
             var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
@@ -375,17 +390,25 @@ define([
             storageManager.setObject('requiredPages', storedPages, storageManager.type.LOCAL);
         },
 
+        /**
+         * ALERTA[Xavi] Actualment el id no es necessari perquè sempre serà el mateix (abans podia ser el id del document o la revisió perqué eran editables)
+         */
         isPageRequired: function (ns, id) {
-            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL),
+                isRequired;
+            // console.log("GlobalState#isPageRequired", ns, id, storedPages.requiredPages[ns]);
 
 
             if (!this.userId) {
                 // L'usuari no es troba loginat, no pot modificar
+                console.error("**** TRUE: usuari no loginat", this.userId, this);
+
                 return true;
 
             } else if (storedPages && storedPages.userId === this.userId) {
                 // L'estore correspon a l'usuari actual
                 // console.log("TROBAT: Trobat storage per l'usuari actual");
+
 
             } else {
                 // console.log("REEMPLAÇ: L'storage no és de l'usuari o no existeix, el reemplacem");
@@ -395,11 +418,24 @@ define([
                     userId: this.userId,
                     requiredPages: {}
                 }, storageManager.type.LOCAL);
-
-
             }
 
-            return (storedPages && storedPages.requiredPages[ns] && storedPages.requiredPages[ns]['id'] === id) ? true : false;
+
+
+
+
+            if (id) {
+                isRequired = (storedPages && storedPages.requiredPages[ns] && storedPages.requiredPages[ns]['id'] === id) ? true : false;
+            } else {
+                isRequired = (storedPages && storedPages.requiredPages[ns]) ? true : false;
+            }
+
+            // En cas que la pàgina estiguir requerida per la mateixa aplicació es considerarà lliure (per exemple, per les edicions parcials)
+            var isPageRequiredByCurrentApp = storedPages && storedPages.requiredPages[ns] && storedPages.requiredPages[ns]['globalStateId'] === globalStateId;
+
+            // console.log("Pàgina requerida?", !isPageRequiredByCurrentApp);
+
+            return isRequired && !isPageRequiredByCurrentApp;
 
             // return this.requiredPages[ns] ? true : false;
         },

@@ -71,7 +71,7 @@ define([
          * @protected
          */
         onDocumentChanged: function () {
-            // console.log('ChangesManagerCentralSubclass#onDocumentChanged', this.id);
+            // console.log('ChangesManagerCentralSubclass#onDocumentChanged', this.hasChanges);
 //            this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_CHANGED + this.id, {id: this.id});
             this.dispatchEvent(this.eventName.DOCUMENT_CHANGED, {id: this.id}, true); //La línia de dalt equival ara, al true
 
@@ -97,6 +97,7 @@ define([
          * @protected
          */
         onDocumentChangesReset: function () {
+            // console.log("ChangesManagerCentralSubclass#onDocumentChangesReset");
             this.dispatchEvent(this.eventName.DOCUMENT_CHANGES_RESET, {id: this.id});
 
             if (this.controlButton) {
@@ -407,6 +408,8 @@ define([
         },
 
         updateChangedPagesState: function () {
+            // console.log("ChangesManagerCentralSubclass#updateChangedPagesState", this.hasChanges);
+
             var storedChangedPages = storageManager.getObject('changedPages', storageManager.type.LOCAL);
 
 
