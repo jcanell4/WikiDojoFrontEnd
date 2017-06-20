@@ -1,24 +1,48 @@
 define([
     "dojo/_base/lang",
-    "ioc/dokuwiki/dwPageUi"
-], function (lang, dwPageUi) {
+    "ioc/dokuwiki/dwPageUi",
+    'ioc/wiki30/manager/StorageManager',
+    'dojo/cookie',
+], function (lang, dwPageUi, storageManager, cookie) {
     /**
      * @class GlobalState
      */
 
     /** @typedef {{ns:string, mode:string, action:string}} Page */
 
+
+    var globalStateId = new Date().getTime();
+
+    // ALERTA[Xavi] En cas de que no existeixi la cookie es que s'han tancat totes les finestres o s'ha tancat el
+    // navegador, en aquest cas cal fer neteja dels storage temporals com 'requiredPages' i 'changedPages'.
+    var isGlobalCookieSet = cookie('globalSessionStorage'),
+        globalSessionStorageItems = ['requiredPages', 'changedPages', 'login'];
+
+
+    if (!isGlobalCookieSet) {
+        // console.log("No s'ha trobat la cookie global");
+        cookie('globalSessionStorage', true);
+
+        for (var i = 0; i < globalSessionStorageItems.length; i++) {
+
+            storageManager.removeItem(globalSessionStorageItems[i], storageManager.type.LOCAL);
+        }
+    }
+
+
     var ret = {
+
         /**
          * El index del hash es el mateix que el ns, que es el mateix que es mostra a la pestanya
          * @type {{string:Page?}}
          */
+
         pages: {},
 
         permissions: {},
 
-        extratabs:{},
-        
+        extratabs: {},
+
         login: false,
 
         info: "",
@@ -190,6 +214,8 @@ define([
         },
 
 
+
+
         /**
          * Retorna el magatzem de informació.
          *
@@ -230,20 +256,20 @@ define([
                 delete this.pages[id];
             }
         },
-        
-        getExtraTab:function(id){
+
+        getExtraTab: function (id) {
             return this.extratabs[id];
         },
-        
-        addExtraTab:function(id){
-            this.extratabs[id]=true;
+
+        addExtraTab: function (id) {
+            this.extratabs[id] = true;
         },
-        
-        removeExtraTab:function(id){
+
+        removeExtraTab: function (id) {
             delete this.extratabs[id];
         },
 
-        requiredPages: {},
+        // requiredPages: {},
 
         /**
          * Retorna cert si s'ha pogut reclamar la pàgina o fals en cas contrari
@@ -251,44 +277,211 @@ define([
          * @returns {boolean}
          */
         requirePage: function (contentTool) {
-           // console.log("GlobalState#requirePage", contentTool.id);
+            // console.log("GlobalState#requirePage", contentTool.id, globalStateId);
 
-            // console.log("Es troba lliure el document??", this.requiredPages[contentTool.ns]);
 
-            if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] === contentTool.id){
-                this.requiredPages[contentTool.ns] = contentTool.id;
+            if (!this.isPageRequired(contentTool.ns, contentTool.id)) {
+
+                this.addRequirePageToStore(contentTool.ns, contentTool.id, globalStateId);
+
                 return true;
-            }  else {
 
-                var id = this.requiredPages[contentTool.ns],
-                    contentCache =contentTool.dispatcher.getContentCache(id),
-                    owner;
+            } else {
 
 
-                if (contentCache) {
-                    owner = contentCache.getMainContentTool();
-                    owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
-                } else {
-                    console.error("No s'ha trobat el content cache per", contentTool);
-                }
+                // var id = this.getIdForRequiredPageOwned(contentTool.ns),
+                //     contentCache = contentTool.dispatcher.getContentCache(id),
+                //     owner;
+                //
+                //
+                // if (contentCache) {
+                //     // Només ens enregistrem si s'ha trobat el content tool
+                //     owner = contentCache.getMainContentTool();
+                //     console.log("enregistrant el requirePageAgain");
+                //     owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
+                // }
 
                 return false;
             }
 
         },
 
-        freePage: function (id, ns) {
-           // console.log("Alliberat id:",id,"ns:", ns);
-            if (this.requiredPages[ns] && this.requiredPages[ns] === id) {
-                delete this.requiredPages[ns];
+        // ALERTA[Xavi] només es retorna l'id si el document està requerit per aquesta finestra
+        // getIdForRequiredPageOwned: function (ns) {
+        //     var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+        //
+        //     if (storedPages
+        //         && storedPages.requiredPages
+        //         && storedPages.requiredPages[ns]
+        //         && storedPages.requiredPages[ns].globalStateId === globalStateId) {
+        //         return this.getIdForRequiredPage(ns);
+        //     }
+        // },
+
+
+        getIdForRequiredPage: function (ns) {
+            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+
+            if (storedPages && storedPages.requiredPages && storedPages.requiredPages[ns]) {
+                return storedPages.requiredPages[ns]['id']
+            } else {
+                return null;
             }
         },
 
-        isPageRequired: function (ns) {
-            return this.requiredPages[ns] ? true : false;
+        addRequirePageToStore: function (ns, id, globalStateId) {
+            // console.log("GlobalState#addRequirePageToStore", ns, id, globalStateId);
+            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+
+            if (!storedPages) {
+                storedPages = {
+                    userId: this.userId,
+                    requiredPages: {}
+                };
+            }
+
+            storedPages.requiredPages[ns] = {
+                id: id,
+                globalStateId: globalStateId
+            };
+
+            this.updateRequiredPagesState(storedPages);
+
         },
 
+
+        freePage: function (id, ns) {
+            // console.log("GlobalState#freePage", id, ns, globalStateId);
+
+            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+
+            if (this.getIdForRequiredPage(ns) === id
+                && storedPages.requiredPages[ns]['globalStateId'] === globalStateId) {
+
+                delete storedPages.requiredPages[ns];
+                this.updateRequiredPagesState(storedPages);
+            } else {
+                // console.log("** no s'ha alliberat id:", id, storedPages);
+            }
+        },
+
+        freeAllPages: function () {
+            // console.log("GlobalState#freeAllPages");
+            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+            if (storedPages && storedPages.userId === this.userId) {
+                // console.log("Alliberant pàgines");
+
+                for (var ns in storedPages.requiredPages) {
+                    if (storedPages.requiredPages[ns]['globalStateId'] === globalStateId) {
+                        // console.log("alliberant", ns);
+                        delete(storedPages.requiredPages[ns]);
+                    }
+                }
+
+                this.requiredPages = storedPages.requiredPages;
+
+
+                this.updateRequiredPagesState(storedPages);
+            }
+        },
+
+        updateRequiredPagesState: function (storedPages) {
+            // console.log("GlobalState#updateRequiredPagesState", storedPages);
+            storageManager.setObject('requiredPages', storedPages, storageManager.type.LOCAL);
+        },
+
+        /**
+         * ALERTA[Xavi] Actualment el id no es necessari perquè sempre serà el mateix (abans podia ser el id del document o la revisió perqué eran editables)
+         */
+        isPageRequired: function (ns, id) {
+            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL),
+                isRequired;
+            // console.log("GlobalState#isPageRequired", ns, id, storedPages.requiredPages[ns]);
+
+
+            if (!this.userId) {
+                // L'usuari no es troba loginat, no pot modificar
+                console.error("**** TRUE: usuari no loginat", this.userId, this);
+
+                return true;
+
+            } else if (storedPages && storedPages.userId === this.userId) {
+                // L'estore correspon a l'usuari actual
+                // console.log("TROBAT: Trobat storage per l'usuari actual");
+
+
+            } else {
+                // console.log("REEMPLAÇ: L'storage no és de l'usuari o no existeix, el reemplacem");
+
+                // Si les págines guardades no són de l'usuari actual s'inicialitza l'storage
+                storageManager.setObject('requiredPages', {
+                    userId: this.userId,
+                    requiredPages: {}
+                }, storageManager.type.LOCAL);
+            }
+
+
+
+
+
+            if (id) {
+                isRequired = (storedPages && storedPages.requiredPages[ns] && storedPages.requiredPages[ns]['id'] === id) ? true : false;
+            } else {
+                isRequired = (storedPages && storedPages.requiredPages[ns]) ? true : false;
+            }
+
+            // En cas que la pàgina estiguir requerida per la mateixa aplicació es considerarà lliure (per exemple, per les edicions parcials)
+            var isPageRequiredByCurrentApp = storedPages && storedPages.requiredPages[ns] && storedPages.requiredPages[ns]['globalStateId'] === globalStateId;
+
+            // console.log("Pàgina requerida?", !isPageRequiredByCurrentApp);
+
+            return isRequired && !isPageRequiredByCurrentApp;
+
+            // return this.requiredPages[ns] ? true : false;
+        },
+
+
+        updateLoginState: function (userId, loginResult) {
+            this.userId = userId;
+            this.login = loginResult;
+
+            // Afegim les dades noves que han de persistir entre sessions
+
+            storageManager.setObject('login', {
+                    userId: this.userId,
+                    login: this.login
+                },
+                storageManager.type.LOCAL);
+
+
+        },
+
+        updateSessionStorage: function () {
+            // console.log("GlobalState#_updateSessionStorage");
+            // Update del sessionStorage, això és el que es fa ara en recarregar la pàgina
+            storageManager.setObject('globalState', this);
+        },
+
+
+
+        isAnyPageChanged: function () {
+            var storedChangedPages = storageManager.getObject('changedPages', storageManager.type.LOCAL);
+
+
+
+            if (this.userId && storedChangedPages && storedChangedPages.userId === this.userId) {
+                console.log("GlobalState#isAnyPageChanged", Object.keys(storedChangedPages.pages).length > 0);
+                return Object.keys(storedChangedPages.pages).length > 0;
+            } else {
+                console.log("GlobalState#isAnyPageChanged", false);
+                return false;
+            }
+        }
+
     };
+
+
+    window.testAnyPageChanged = ret.isAnyPageChanged.bind(ret);
 
     return ret;
 });

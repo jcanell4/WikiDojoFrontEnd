@@ -58,8 +58,10 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
-                dispatcher.getGlobalState().login = value.loginResult;
-                dispatcher.getGlobalState().userId = value.userId;
+                // dispatcher.getGlobalState().login = value.loginResult;
+                // dispatcher.getGlobalState().userId = value.userId;
+
+                dispatcher.getGlobalState().updateLoginState(value.userId, value.loginResult);
             },
 
             /**

@@ -69,6 +69,7 @@ define([
                                 description: 'Obrir el document',
                                 buttonType: 'request_control',
                                 extra: {
+                                    ns: value.ns,
                                     eventType: this._getActionType(),
                                     dataToSend: this._getDocumentQuery(),
                                 }
@@ -79,6 +80,7 @@ define([
                                 description: "Obrir l'esborrany",
                                 buttonType: 'request_control',
                                 extra: {
+                                    ns: value.ns,
                                     eventType: this._getActionType(),
                                     dataToSend: this._getDraftQuery()
                                 }

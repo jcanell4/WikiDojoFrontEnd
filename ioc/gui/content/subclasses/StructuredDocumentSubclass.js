@@ -605,8 +605,9 @@ define([
             }
 
             if (documentChanged && !this.hasChanges) {
-                this.onDocumentChanged();
                 this.hasChanges = true;
+                this.onDocumentChanged();
+
             } else if (!documentChanged) {
                 this.hasChanges = false;
             }
@@ -966,6 +967,9 @@ define([
         lockEditors: function () {
             var header_id;
 
+
+
+
             for (header_id in this.editors) {
                 this.editors[header_id].editor.lockEditor();
             }
@@ -984,7 +988,11 @@ define([
                 jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
             }
 
-            this.freePage();
+
+            // if (Object.keys(this.editors).length > 0) {
+
+                this.freePage();
+
         },
 
         unlockEditors: function () {
@@ -1010,6 +1018,7 @@ define([
 
             }
 
+            // this.freePage();
         },
 
         _generateDraftInMemory: function () {
@@ -1190,6 +1199,7 @@ define([
 
             return {
                 id: this.id,
+                ns: this.ns,
                 dataToSend: dataToSend,
                 standbyId: this.id
             };
@@ -1595,7 +1605,7 @@ define([
         },
 
         _removePartialDraft: function (headerId) {
-            console.log("StructuredDocumentSubclass#_removePartialDraft", headerId);
+            // console.log("StructuredDocumentSubclass#_removePartialDraft", headerId);
             var index = this.data.dictionary[headerId],
                 chunk = this.data.chunks[index];
             this.draftManager.clearDraftChunks(this.id, this.ns, [chunk.header_id]);
@@ -1665,9 +1675,9 @@ define([
         },
 
         requirePage: function () {
+            // console.log("StructuredDocumentSubclass#requirePage");
             this.required = this.dispatcher.getGlobalState().requirePage(this);
-            var readOnly = !this.required;
-            this.setReadOnly(readOnly);
+            this.setReadOnly(!this.required);
         },
 
         requirePageAgain: function () {

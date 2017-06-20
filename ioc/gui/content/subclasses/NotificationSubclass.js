@@ -36,7 +36,7 @@ define([
         },
 
         isRead: function () {
-            console.log("NotificationSubclass#isRead", this.read);
+            // console.log("NotificationSubclass#isRead", this.read);
             return this.read;
         },
 

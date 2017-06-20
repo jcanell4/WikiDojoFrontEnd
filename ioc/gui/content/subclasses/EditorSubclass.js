@@ -50,7 +50,7 @@ define([
              * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
              */
             isContentChanged: function () {
-                //console.log("EditorSubclass#isContentChanged");
+                // console.log("EditorSubclass#isContentChanged");
                 var content = this.getCurrentContent(),
                     diffFromOriginal = this._getOriginalContent() != content,
                     diffFromLastCheck = this.isLastCheckedContentChanged();
@@ -61,8 +61,8 @@ define([
                 }
 
                 if (diffFromOriginal && !this.hasChanges) {
-                    this.onDocumentChanged();
                     this.hasChanges = true;
+                    this.onDocumentChanged();
                 }
 
                 return diffFromOriginal;

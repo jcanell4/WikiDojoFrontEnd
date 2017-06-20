@@ -90,6 +90,7 @@ define([
             },
             
             fireEvent: function(eventName, dataEventBase, preventGlobalProp){
+                // console.log("EventObservable#fireEvent: ", eventName, dataEventBase);
                 var eventData,
                         fireEventFunc = this.fireEvents[eventName];
                 if(fireEventFunc){
@@ -106,7 +107,7 @@ define([
             },
             
             dispatchEvent: function (event, eventData, globalPropagation) {
-                //console.log("EventObserver#dispatchEvent: ", event, data);
+                // console.log("EventObservable#dispatchEvent: ", event, eventData);
                 var callbacks;
                 
 

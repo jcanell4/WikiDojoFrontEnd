@@ -49,7 +49,7 @@ define([
             clickListener: null,
 
             /**
-             * Al clicar aquest botó es recorren tots els listeners afegits, si es una funció la executa i si es un
+             * En clicar aquest botó es recorren tots els listeners afegits, si es una funció la executa i si es un
              * objecte crida al seu métode process() passant aquest event com argument.
              *
              *En acabar si no s'ha previngut l'esdeveniment per defecte, s'executa la funció postListenOnClick.
@@ -68,10 +68,7 @@ define([
                         if (typeof this.clickListener[i] == "function") {
                             this.clickListener[i](evt);
                         } else if (dojoBase.isObject(this.clickListener[i])) {
-                            this.clickListener[i].process(evt); // TODO[Xavi] Error, s'hauria de passar també el Dispatcher
-                                                                //[Josep] Dispatcher és un Singleton que es pot recollir a 
-                                                                // qualsevol lloc. No cal passar-lo per paràmetre.
-                                                                // Diria que no pot haver cap cas que faci servir un disatcher diferent
+                            this.clickListener[i].process(evt);
                         }
                     }
                 }
@@ -92,7 +89,6 @@ define([
 
 
             /**
-             * TODO[Xavi] No es crida enlloc?
              *
              * @param {function|AbstractResponseProcessor} listener
              * @returns {*}
@@ -107,7 +103,6 @@ define([
             },
 
             /**
-             * TODO[Xavi] Fer servir un diccionari?
              * @param {string} key
              * @param {function|AbstractResponseProcessor} listener
              */

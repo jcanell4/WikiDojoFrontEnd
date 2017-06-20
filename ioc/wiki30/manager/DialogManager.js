@@ -133,6 +133,7 @@ define([
 
                 var dialogParams = {
                         id: 'dialog_' + refId + '_' + params.id,
+                        ns: params.ns,
                         title: title,  //refId,
                         message: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
                         closable: params.closable || true,// opcional amb default
