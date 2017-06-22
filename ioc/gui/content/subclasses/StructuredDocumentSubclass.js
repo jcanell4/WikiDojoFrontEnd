@@ -708,10 +708,12 @@ define([
          */
         resetContentChangeState: function () {
 
-            for (var header_id in this.changedChunks) {
-                if (this.changedChunks[header_id].changed) {
-                    // Mentre hi hagi un chunk amb canvis no es fa el reset
-                    return;
+            if (!this.discardChanges) {
+                for (var header_id in this.changedChunks) {
+                    if (this.changedChunks[header_id].changed) {
+                        // Mentre hi hagi un chunk amb canvis no es fa el reset
+                        return;
+                    }
                 }
             }
 
@@ -1570,7 +1572,17 @@ define([
 
 
                 if (event.dataToSend && event.dataToSend.close === true || dataToSend.indexOf('close=true') > -1) {
-                    this.removeContentTool();
+                    // this.removeContentTool();
+
+                    // ALERTA[Xavi] Per forçar el tancament de la pestanya hem de descartar els canvis per actualizar
+                    // El ChangesManager i forçar la crida de la pestanya com si s'hagues fet click a la pestanya
+                    this.forceReset();
+                    // this.discardChanges = true;
+                    // this.resetContentChangeState();
+                    this.editors = {}; // no pot haver cap editor obert
+                    this.container.closeChild(this);
+
+
 
                     ret = {
                         id: this.id,
@@ -1590,7 +1602,7 @@ define([
         },
 
         _removeAllDrafts: function () {
-            console.log("StructuredDocumentSubclass#_removeAllDrafts", this.id);
+            // console.log("StructuredDocumentSubclass#_removeAllDrafts", this.id);
             this.draftManager.clearDraft(this.id, this.ns, true);
         },
 
@@ -1623,17 +1635,14 @@ define([
             return Object.keys(this.editors).length;
         },
 
-
         onClose: function () {
             // ALERTA[Xavi] Es descarta el retorn
             this.inherited(arguments);
 
-
+            // var ret = this.isContentChanged();
             // console.log("StructuredDocumentSubclass#onClose", ret);
 
-            // Si el nombre d'editors es major de 0 s'ha de fer cancel, independentment de si hi han canvis o no
-
-
+            // ALERTA[Xavi] Si el nombre d'editors es major de 0 s'ha de fer cancel, independentment de si hi han canvis o no per desbloquejar el document!
             var ret = this._getEditorsCount() > 0;
 
             if (ret) {

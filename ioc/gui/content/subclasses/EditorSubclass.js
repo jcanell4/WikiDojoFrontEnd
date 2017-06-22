@@ -42,6 +42,7 @@ define([
             constructor: function (args) {
                 this._setOriginalContent(args.originalContent);
                 this.hasChanges = false;
+                this.forceClose = false;
             },
 
             /**
@@ -200,7 +201,15 @@ define([
 
 
                 if (event.dataToSend && event.dataToSend.close === true || this.getPropertyValueFromData(dataToSend, 'close')) {
-                    this.removeContentTool();
+                    // this.removeContentTool();
+                    // ALERTA[Xavi] Per forçar el tancament de la pestanya hem de descartar els canvis per actualizar
+                    // El ChangesManager i forçar la crida de la pestanya com si s'hagues fet click a la pestanya
+
+                    this.forceReset();
+                    this.forceClose = true;
+                    this.container.closeChild(this);
+
+
 
                     return {
                         id: this.id,
@@ -316,7 +325,7 @@ define([
             },
 
             _doSave: function (event) {
-                console.log("EditorSubclass#_doSave", event, arguments);
+                // console.log("EditorSubclass#_doSave", event, arguments);
                 // event = this._mixCachedEvent(event);
 
                 arguments[0] =  this._mixCachedEvent(event);
@@ -330,13 +339,15 @@ define([
 
 
             onClose: function () {
-                console.log("EditorSubclass#onClose");
+                // console.log("EditorSubclass#onClose");
                 var ret = this.inherited(arguments);
 
                 ret = ret && !this.isContentChanged();
 
-                return ret;
+                return ret || this.forceClose;
             },
+
+
 
 
         });
