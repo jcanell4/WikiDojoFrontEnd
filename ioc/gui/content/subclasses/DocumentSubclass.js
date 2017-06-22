@@ -82,21 +82,20 @@ define([
 
             getFileStorageNS: function () {
                 var ns;
+                var ignoreLastNSSections;
 
                 // ALERTA[Xavi] Codi de proves, això s'ha d'afegir al constructor i ha de provenir del servidor
-
-
-                if (this.ignoreLastNSSections) {
+                //ALERTA[JOSEP] He fet aquesta modificació provisionalment . Resul
+                if(this.ns){
+                    if (this.ignoreLastNSSections) {
+                        ignoreLastNSSections = this.ignoreLastNSSections+1;
+                    } else {
+                        ignoreLastNSSections = 1;
+                    }
                     var tokens = this.ns.split(':');
-                    tokens = tokens.slice(0, tokens.length-this.ignoreLastNSSections);
+                    tokens = tokens.slice(0, tokens.length-ignoreLastNSSections);
                     ns = tokens.join(':');
-
-                } else {
-                    ns = this.ns;
                 }
-
-
-
 
                 return ns;
 
