@@ -69,7 +69,7 @@ define([
 
 
             _doSave: function (event) {
-                console.log("BasicEditorSubclass#_doSave", this.id, event);
+                // console.log("BasicEditorSubclass#_doSave", this.id, event);
 
 
 

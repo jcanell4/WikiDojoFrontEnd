@@ -1251,7 +1251,7 @@ define([
         },
 
         _doSavePartialAll: function (event) {
-            console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
+            // console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
 
             event = this._mixCachedEvent(event);
 
