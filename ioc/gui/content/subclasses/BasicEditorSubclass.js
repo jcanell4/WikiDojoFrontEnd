@@ -36,6 +36,10 @@ define([
             MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
             
             editorCreated:false,
+
+            constructor: function () {
+                this.forceClose = false;
+            },
             
             setReadOnly: function (value) {
                 this.set("readonly", value);
@@ -450,30 +454,34 @@ define([
             },
 
             onClose: function() {
-                console.log("BasicEditorSubclass#onClose");
-                 var ret = this.inherited(arguments);
-                 if(ret===undefined){
-                     ret = true;
-                 }
+                // console.log("BasicEditorSubclass#onclose");
+                var ret = this.inherited(arguments);
 
-                if (ret) {
+                if(ret===undefined){
+                    ret = true;
+                }
+
+
+
+                if (ret && !this.forceClose) {
+
 
                     var eventManager = this.dispatcher.getEventManager();
+
                     eventManager.fireEvent(eventManager.eventName.CANCEL, {
                         id: this.id,
                         name: eventManager.eventName.CANCEL,
-                        dataToSend: {no_response: true, keep_draft:false, close: true /* <-- ALERTA[Xavi] Quan no hi han canvis això provoca un error */}
+                        dataToSend: {
+                            no_response: true,
+                            keep_draft: false,
+                            close: true
+                        }
                     }, this.id);
+
+                    ret = false; // Si es dispara l'event no es tanca la pestanya
                 }
 
                 return ret;
-            },
-
-
-            onDestroy: function() {
-                // console.log("BasicEditorSubclass#onDestroy");
-                this.freePage();
-                this.inherited(arguments);
             },
         });
 });

@@ -200,7 +200,15 @@ define([
 
 
                 if (event.dataToSend && event.dataToSend.close === true || this.getPropertyValueFromData(dataToSend, 'close')) {
-                    this.removeContentTool();
+                    // this.removeContentTool();
+                    // ALERTA[Xavi] Per forçar el tancament de la pestanya hem de descartar els canvis per actualizar
+                    // El ChangesManager i forçar la crida de la pestanya com si s'hagues fet click a la pestanya
+
+                    this.forceReset();
+                    this.forceClose = true;
+                    this.container.closeChild(this);
+
+
 
                     return {
                         id: this.id,
@@ -213,6 +221,7 @@ define([
                     dataToSend: dataToSend,
                     standbyId: containerId
                 };
+
 
             },
 
@@ -330,14 +339,13 @@ define([
 
 
             onClose: function () {
-                console.log("EditorSubclass#onClose");
+                // console.log("EditorSubclass#onClose");
                 var ret = this.inherited(arguments);
 
                 ret = ret && !this.isContentChanged();
 
-                return ret;
+                return ret || this.forceClose;
             },
-
 
         });
 });
