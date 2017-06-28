@@ -365,14 +365,13 @@ define([
             }
         },
 
-        freeAllPages: function () {
-            // console.log("GlobalState#freeAllPages");
+        freeAllPages: function (ignoreGlobalStateId) {
+            // console.log("GlobalState#freeAllPages", this.userId);
             var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
             if (storedPages && storedPages.userId === this.userId) {
-                // console.log("Alliberant pàgines");
 
                 for (var ns in storedPages.requiredPages) {
-                    if (storedPages.requiredPages[ns]['globalStateId'] === globalStateId) {
+                    if (storedPages.requiredPages[ns]['globalStateId'] === globalStateId || ignoreGlobalStateId) {
                         // console.log("alliberant", ns);
                         delete(storedPages.requiredPages[ns]);
                     }
@@ -400,7 +399,7 @@ define([
 
 
             if (!this.userId) {
-                // L'usuari no es troba loginat, no pot modificar. ALERTA[Xavi] Això passa amb algunes pestanyes sense cap efecte, per exemple la pestanya de dreceres
+                // L'usuari no es troba loginat, no pot modificar. ALERTA[Xavi] Això passa per algunes pestanyes sense cap efecte, per exemple la pestanya de dreceres
 
                 return true;
 

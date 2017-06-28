@@ -44,7 +44,7 @@ define([
                 } else if (!result.loginRequest && !result.loginResult) {
                     var notifyManager = dispatcher.getNotifyManager();
                     notifyManager.clearAll();
-
+                    dispatcher.getGlobalState().freeAllPages(true);
                 }
 
             },
