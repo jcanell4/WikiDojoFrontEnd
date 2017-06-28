@@ -400,8 +400,7 @@ define([
 
 
             if (!this.userId) {
-                // L'usuari no es troba loginat, no pot modificar
-                console.error("**** TRUE: usuari no loginat", this.userId, this);
+                // L'usuari no es troba loginat, no pot modificar. ALERTA[Xavi] Això passa amb algunes pestanyes sense cap efecte, per exemple la pestanya de dreceres
 
                 return true;
 

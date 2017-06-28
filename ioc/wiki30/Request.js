@@ -219,7 +219,7 @@ define([
 
 
 
-                var validationResult = this.validator(query);
+                var validationResult = this.validate(query);
 
                 if (!validationResult.success) {
                     if (!validationResult.message) {
@@ -432,7 +432,7 @@ define([
                 this.validatorData = validatorData;
             },
 
-            validator: function (data) {
+            validate: function (data) {
                 var result = {
                     success: true
                 };

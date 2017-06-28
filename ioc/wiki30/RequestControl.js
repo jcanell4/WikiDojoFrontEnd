@@ -62,9 +62,9 @@ define([
              * @param validator
              * @private
              */
-            validator: function (data) {
+            validate: function (data) {
 
-                return this.request.validator();
+                return this.request.validate();
                 // var result = {
                 //     success: true
                 // };
