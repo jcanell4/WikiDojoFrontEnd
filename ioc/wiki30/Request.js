@@ -222,9 +222,9 @@ define([
                 var validationResult = this.validate(query);
 
                 if (!validationResult.success) {
-                    if (!validationResult.message) {
-                        validationResult.message = "No es pot enviar la petició"; // TODO[Xavi] Localitzar
-                    }
+                    // if (!validationResult.message) {
+                    //     validationResult.message = "No es pot enviar la petició"; // TODO[Xavi] Localitzar
+                    // }
 
                     var errorMessage = {response: {text: validationResult.message}};
                     this._sendError(errorMessage);
@@ -425,7 +425,8 @@ define([
                 // En cas de passar com a validador només una funcío la assignem a un objecte correcte. Es farà servir el missatge d'error per defecte
                 if (typeof validatorData === 'function') {
                     validatorData = {
-                        callback: validatorData
+                        callback: validatorData,
+                        message: LANG.template['ioc-template'].default_validation_request_error
                     }
                 }
 
@@ -447,7 +448,7 @@ define([
                         if (!this.validatorData[i].callback(data)) {
                             result = {
                                 success: false,
-                                message: this.validatorData[i].message || null
+                                message: this.validatorData[i].message || LANG.template['ioc-template'].default_validation_request_error
                             };
                             break;
                         }
@@ -459,7 +460,7 @@ define([
                     if (!this.validatorData.callback(data)) {
                         result = {
                             success: false,
-                            message: this.validatorData.message || null
+                            message: this.validatorData.message || LANG.template['ioc-template'].default_validation_request_error
                         };
 
                     }

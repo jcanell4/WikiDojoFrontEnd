@@ -39,7 +39,7 @@ define([
 
                 if (result.loginRequest && !result.loginResult) {
                     // TODO[Xavi] el missatge d'error es mostra cridant a un mètode privat.
-                    dispatcher._processError("Usuari o contrasenya incorrectes");
+                    dispatcher._processError(LANG.template['ioc-template'].login_error);
 
                 } else if (!result.loginRequest && !result.loginResult) {
                     var notifyManager = dispatcher.getNotifyManager();
