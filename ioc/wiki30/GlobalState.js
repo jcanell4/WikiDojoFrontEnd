@@ -241,7 +241,53 @@ define([
         
         removeExtraTab:function(id){
             delete this.extratabs[id];
-        }
+        },
+
+        requiredPages: {},
+
+        /**
+         * Retorna cert si s'ha pogut reclamar la pàgina o fals en cas contrari
+         * @param contentTool
+         * @returns {boolean}
+         */
+        requirePage: function (contentTool) {
+           // console.log("GlobalState#requirePage", contentTool.id);
+
+            // console.log("Es troba lliure el document??", this.requiredPages[contentTool.ns]);
+
+            if (!this.requiredPages[contentTool.ns] || this.requiredPages[contentTool.ns] === contentTool.id){
+                this.requiredPages[contentTool.ns] = contentTool.id;
+                return true;
+            }  else {
+
+                var id = this.requiredPages[contentTool.ns],
+                    contentCache =contentTool.dispatcher.getContentCache(id),
+                    owner;
+
+
+                if (contentCache) {
+                    owner = contentCache.getMainContentTool();
+                    owner.registerObserverToEvent(contentTool, owner.eventName.FREE_DOCUMENT, contentTool.requirePageAgain.bind(contentTool));
+                } else {
+                    console.error("No s'ha trobat el content cache per", contentTool);
+                }
+
+                return false;
+            }
+
+        },
+
+        freePage: function (id, ns) {
+           // console.log("Alliberat id:",id,"ns:", ns);
+            if (this.requiredPages[ns] && this.requiredPages[ns] === id) {
+                delete this.requiredPages[ns];
+            }
+        },
+
+        isPageRequired: function (ns) {
+            return this.requiredPages[ns] ? true : false;
+        },
+
     };
 
     return ret;

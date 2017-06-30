@@ -39,48 +39,71 @@ define([
             _processMetaInfo: function (content, dispatcher) {
                 var nodeMetaInfo = registry.byId(dispatcher.metaInfoNodeId),
                     m,
-                //defaultSelected=0,
-                //firstPane=1,
+                    //defaultSelected=0,
+                    //firstPane=1,
                     selectedPane,
                     contentCache = dispatcher.getContentCache(content.id),
-                    ret = {};
+                    ret = {},
+                    standalone = (contentCache === undefined); // La meta no està lligada a cap document central
+
+//                console.log("Quina es la id del metaInfonode?", dispatcher.metaInfoNodeId);
 
                 // TODO[Xavi] La neteja del container s'hauria de fer a traves del RemoveAllContentProcessor. Compte amb el setCurrentId que deixaría de funcionar!
-                nodeMetaInfo.clearContainer(content.id);
-                contentCache.setCurrentId("metadataPane", null);
+
+
+                if (nodeMetaInfo && nodeMetaInfo.clearContainer) {
+                    //Alerta[Xavi] si es clica un document abans de que es faci el canvi del nodeMetaInfo a ContainerContentTool dona error, per això s'ha de controlar
+                    nodeMetaInfo.clearContainer(content.id);
+                }
+
+                // TODO[Xavi] Si es fa clic a un document de l'arbre de fitxers abans de que acabi de carregar la aplicació peta
+                if (contentCache) {
+                    // ALERTA[Xavi] Si es fa click en el projecte com que no te document principal associat peta, s'ha d'ignorar
+                    contentCache.setCurrentId("metadataPane", null);
+                }
+
 
                 for (m in content.meta) {
-                    //console.log("Meta type:", content.meta[m].type);
-                    this._addMetainfo(content.id, content.meta[m], dispatcher, nodeMetaInfo, ret);
+                    this._addMetainfo(content.id, content.meta[m], dispatcher, nodeMetaInfo, ret,standalone);
                 }
 
-                selectedPane = contentCache.getCurrentId("metadataPane");
+                if (contentCache) {
+                    // ALERTA[Xavi] Si es fa click en el projecte com que no te document principal associat peta, s'ha d'ignorar
+                    selectedPane = contentCache.getCurrentId("metadataPane");
 
-                if (!selectedPane && ret.defaultSelected) {
-                    selectedPane = ret.defaultSelected;
-                } else if (!selectedPane) {
-                    selectedPane = ret.firstPane;
+                    if (!selectedPane && ret.defaultSelected) {
+                        selectedPane = ret.defaultSelected;
+                    } else if (!selectedPane) {
+                        selectedPane = ret.firstPane;
+                    }
+
+                    nodeMetaInfo.selectChild(selectedPane);
+                    contentCache.setCurrentId("metadataPane", selectedPane);
+
+                } else {
+                    nodeMetaInfo.selectChild(ret.firstPane);
+
                 }
-
-                nodeMetaInfo.selectChild(selectedPane);
-                contentCache.setCurrentId("metadataPane", selectedPane);
 
                 return 0;
             },
 
-            _addMetainfo: function (id, meta, dispatcher, nodeMetaInfo, ret) {
+            _addMetainfo: function (id, meta, dispatcher, nodeMetaInfo, ret, standalone) {
+                console.log(id, meta);
+
+
                 var widgetCentral = registry.byId(dispatcher.containerNodeId).selectedChildWidget,
                     cp,
-                //defaultSelected=0,
-                //firstPane=1,
+                    //defaultSelected=0,
+                    //firstPane=1,
                     currentMetaItem,
                     currentMetaContent;
 
-                if (widgetCentral && widgetCentral.id === id) { // aquesta metainfo pertany a la pestanya activa
+                if ((widgetCentral && widgetCentral.id === id) || standalone) { // aquesta metainfo pertany a la pestanya activa
                     currentMetaContent = meta;
 
                     currentMetaItem = registry.byId(currentMetaContent.id);
-                    if (!currentMetaItem) { // TODO[Xavi] comprovar si fa falta aquesta comprovació
+                    if (!currentMetaItem) {
 
                         // Afegim la informació extra necessaria per generar el ContentTool
                         currentMetaContent.dispatcher = dispatcher;
@@ -88,20 +111,19 @@ define([
 
                         cp = this.createContentTool(currentMetaContent);
                         nodeMetaInfo.addChild(cp);
-
-                        if (!ret.firstPane) {
-                            ret.firstPane = cp.id;
-                        }
+                        nodeMetaInfo.resize();
 
                     } else {
-                        console.log("Actualitzant la meta del document:", meta)
-                        currentMetaItem.updateDocument(meta.content);
+                        this._updateContentTool(currentMetaItem, currentMetaContent);
+                        // currentMetaItem.updateDocument(currentMetaContent.content);
                         cp = currentMetaItem;
                     }
                     if (meta.defaultSelected) { //Des del servidor ens marquen aquesta opció com a defaultSelected
                         ret.defaultSelected = cp.id;
                     }
-                    ret.firstPane = cp.id;
+                    if (!ret.firstPane) {
+                        ret.firstPane = cp.id;
+                    }
                 }
             },
 
@@ -113,19 +135,96 @@ define([
              * @protected
              */
             createContentTool: function (metaContent) {
-                //console.log("MetaInfoProcessor#createContentTool", metaContent.id);
+
+                console.log("MetaInfoProcessor#createContentTool");
                 var args = {
-                    id:         metaContent.id,
-                    title:      metaContent.title,
-                    data:       metaContent.content || ' ',
+                    id: metaContent.id,
+                    title: metaContent.title,
+                    data: metaContent.content || ' ',
                     dispatcher: metaContent.dispatcher,
-                    docId:      metaContent.docId,
-                    action:     metaContent.action,
-                    type:       this.type
+                    docId: metaContent.docId,
+                    action: metaContent.action,
+                    // type:       metaContent.type
                 };
 
+
+                switch (metaContent.type) {
+                    case contentToolFactory.generation.REQUEST_FORM :
+                        args.type = metaContent.type;
+                        return this._createNotificationFormContentTool(args);
+
+                    case contentToolFactory.generation.META_DOKUWIKI_NS_TREE:
+                        return this._createDokuwikiNSTreeContentTool(metaContent);
+
+
+                    default:
+                        args.type = this.type;
+                        return this._createMetaContentTool(args);
+                }
+
+            },
+
+            _createNotificationFormContentTool: function (args) {
+                return contentToolFactory.generate(contentToolFactory.generation.REQUEST_FORM, args);
+            },
+
+            _createMetaContentTool: function (args) {
                 return contentToolFactory.generate(contentToolFactory.generation.META, args);
-                //                    .decorate(contentToolFactory.decoration.META);
+            },
+
+            _createDokuwikiNSTreeContentTool: function (metaContent) {
+                console.log(metaContent);
+                var args = {
+                    id: metaContent.id,
+                    title: metaContent.title,
+                    type: metaContent.type,
+                    data: '',
+                    dispatcher: metaContent.dispatcher,
+                    docId: metaContent.docId,
+                    fromRoot: metaContent.fromRoot,
+                    expandProject: true,
+                    processOnClickAndOpenOnClick: false,
+                    openOnClick: true,
+                    typeDictionary: metaContent.typeDictionary,
+                    treeDataSource: metaContent.treeDataSource,
+                    urlBase: metaContent.urlBase
+                    // action: metaContent.action,
+                }
+
+                return contentToolFactory.generate(contentToolFactory.generation.META_DOKUWIKI_NS_TREE, args);
+
+            },
+
+            _updateContentTool: function(contentTool, newContent) {
+
+                var content;
+
+                switch (contentTool.type) {
+                    case contentToolFactory.generation.META_DOKUWIKI_NS_TREE:
+                        content = {
+                            id: newContent.id,
+                            title: newContent.title,
+                            type: newContent.type,
+                            // data: '',
+                            dispatcher: contentTool.dispatcher,
+                            docId: newContent.docId,
+                            fromRoot: newContent.fromRoot,
+                            expandProject: true,
+                            processOnClickAndOpenOnClick: false,
+                            openOnClick: true,
+                            typeDictionary: newContent.typeDictionary,
+                            treeDataSource: newContent.treeDataSource,
+                            urlBase: newContent.urlBase
+                        };
+
+                        break;
+
+                    default:
+                        content = newContent.content;
+                }
+
+
+                contentTool.updateDocument(content);
             }
 
         });

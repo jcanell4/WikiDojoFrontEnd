@@ -26,7 +26,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //console.log("HtmlPartialContentProcessor#process", value);
+                // console.log("HtmlPartialContentProcessor#process", value);
 
                 //
                 ////ALERTA[Xavi] Codi de prova pels notifiers -> INIT
@@ -70,13 +70,16 @@ define([
 
 
                 var changesManager = dispatcher.getChangesManager(),
-                    cache = dispatcher.getContentCache(value.id), // TODO[Xavi] de vegades torna null?
+                    cache = dispatcher.getContentCache(value.id),
                     confirmation = false,
                     clearDraft = 0,             //0 = no eliminar, 1 = eliminar parcial, 2 = eliminar tot
                     contentTool, ret;
 
                 if (cache) {
                     contentTool = cache.getMainContentTool();
+
+//                    console.log("S'ha trobat el cache:", cache);
+//                    console.log("Això és una revisió?", value.rev);
                 }
 
                 // TODO[Xavi] Refactoritzar, massa condicionals
@@ -158,14 +161,15 @@ define([
 
                     contentTool.rev = value.rev;
 
+
                     if (confirmation) {
                         if(clearDraft===1){
-                            dispatcher.getDraftManager().clearDraftChunks(value.id, value.cancel);
+                            dispatcher.getDraftManager().clearDraftChunks(value.id, value.ns, value.cancel);
                             if(value.hasDraft){
                                 this._clearRemoteDraftChunks(value, dispatcher);
                             }
                         }else if(clearDraft===2){
-                            dispatcher.getDraftManager().clearDraft(value.id);
+                            dispatcher.getDraftManager().clearDraft(value.id, value.ns);
                             if(value.hasDraft){
                                 this._clearRemoteDraft(value, dispatcher);
                             }                            
@@ -177,6 +181,14 @@ define([
                         }
                         //HardCODED RAFA
                         value.editing = {readonly:value.readonly};  //HardCODED RAFA
+
+
+                        // Alerta[Xavi] la informació del dialog només s'ha d'afegir quan s'edita el primer chunk
+                        if (!contentTool.cancelDialogConfig && value.extra) {
+                            contentTool.cancelDialogConfig = value.extra.dialogSaveOrDiscard;
+                            contentTool.cancelAllDialogConfig = value.extra.dialogSaveOrDiscardAll,
+                            contentTool.messageChangesDetected =  value.extra.messageChangesDetected;
+                        }
 
                         contentTool.updateDocument(value);
 
@@ -258,7 +270,7 @@ define([
                 if(contentTool.hasEditors()){
                     dispatcher.getGlobalState().getContent(value.id).action = "sec_edit"; // ALERTA[xavi] això quan es fa servir?                          
                     if(!dispatcher.getGlobalState().getCurrentElementState() && value.selected){
-                        contentTool.setCurrentSection(value.selected);
+                        contentTool.setCurrentElement(value.selected);
                     }
                 }else{
                     dispatcher.getGlobalState().getContent(value.id).action = "view"; // ALERTA[xavi] això quan es fa servir?
@@ -277,6 +289,7 @@ define([
              */
             createContentTool: function (content, dispatcher) {
 //                console.log("Content:", content);
+
                 var args = {
                     ns: content.ns,
                     id: content.id,
@@ -287,7 +300,7 @@ define([
                     rev: content.rev || '',
                     type: this.type,
                     readonly: content.readonly? content.readonly : false,
-                    ignoreLastNSSections : content.ignoreLastNSSections
+                    ignoreLastNSSections : content.ignoreLastNSSections,
                 };
 
                 if(content.autosaveTimer){
@@ -369,7 +382,9 @@ define([
                 contentTool.registerObserverToEvent(contentTool, contentTool.eventName.CANCEL_PARTIAL, function(event){
                     this.stopTimer();
                 }.bind(contentTool));
-            }
+            },
+
+
 
         })
 

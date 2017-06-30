@@ -40,6 +40,10 @@ define([
                 this.set("readonly", value);
             },
 
+            getReadOnly: function () {
+                return this.get("readonly");
+            },
+
 
             /**
              * Es registra als esdeveniments i activa la detecció de canvis, copiar, enganxar i pijar tecles dins
@@ -69,7 +73,7 @@ define([
 
 
             _doSave: function (event) {
-                //console.log("BasicEditorSubclass#_doSave", this.id, event);
+                // console.log("BasicEditorSubclass#_doSave", this.id, event);
 
 
 
@@ -82,12 +86,15 @@ define([
                     }else{
                         lang.mixin(dataToSend, event.extraDataToSend);
                     }
+
                 }
 //                this.eventManager.dispatchEvent(this.eventName.SAVE, {
 //                    id: this.id,
 //                    dataToSend: dataToSend,
 //                    standbyId: containerId
 //                })
+
+
                 return {
                     id: this.id,
                     dataToSend: dataToSend,
@@ -101,6 +108,8 @@ define([
                 var containerId = this.id,
                     dataToSend = this.getQueryCancel(this.id); // el paràmetre no es fa servir
 
+
+
                 if(event.extraDataToSend){
                     if(typeof event.extraDataToSend==="string"){
                         dataToSend += "&" + event.extraDataToSend;
@@ -108,14 +117,9 @@ define([
                         dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
                     }
                 }
-//                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
-//                    id: this.id,
-//                    dataToSend: dataToSend,
-//                    standbyId: containerId
-//                })
 
-                console.log("DATA Enviada amb l'event: ", event);
-                console.log("DATA Enviada al servidor: ", dataToSend);
+//                console.log("DATA Enviada amb l'event: ", event);
+//                console.log("DATA Enviada al servidor: ", dataToSend);
                 
                 return {
                     id: this.id,
@@ -125,7 +129,7 @@ define([
 
             },
 
-            getQuerySave: function (id) {
+            getQuerySave: function () {
 
                 var $form = jQuery('#form_' + this.id),
                     values = {},
@@ -144,7 +148,12 @@ define([
             },
 
             getQueryCancel: function () {
-                return 'do=cancel&id=' + this.ns;
+                var query = 'do=cancel&id=' + this.ns;
+
+                if (this.rev) {
+                    query += '&rev=' + this.rev;
+                }
+                return query;
             },
 
             /**
@@ -208,8 +217,12 @@ define([
                 this.inherited(arguments);
                 
                 if(!this.editorCreated){
-                    this.addToolbars();
+                    if (!this.getReadOnly()) {
+                        this.requirePage();
+                    }
+
                     this.addEditors();
+                    this.addToolbars();
 
                     on(window, 'resize', function () {
                         this.fillEditorContainer();
@@ -225,8 +238,37 @@ define([
                 this.editor = this.createEditor(this.id);
             },
 
+            requirePage: function() {
+                this.required = this.dispatcher.getGlobalState().requirePage(this);
+                var readOnly = !this.required;
+                this.setReadOnly(readOnly);
+            },
+
+            requirePageAgain: function () {
+
+                this.requirePage();
+
+                if (!this.getReadOnly()) {
+                    this.addToolbars();
+                    this.editor.unlockEditor();
+                } else {
+                }
+
+            },
+
+            freePage: function() {
+                this.required = false;
+                this.dispatcher.getGlobalState().freePage(this.id, this.ns);
+                this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
+            },
+
+
+
             createEditor: function (id) {
                 var $textarea = jQuery('#textarea_' + id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
+
+//                console.log("BasicEditorSubclass#createEditor");
+
 
                 return new AceFacade({
                     xmltags: JSINFO.plugin_aceeditor.xmltags,
@@ -246,6 +288,7 @@ define([
                 if (this.getReadOnly()) {
                     return;
                 }
+
                 this.addButtons();
                 toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
             },
@@ -328,6 +371,7 @@ define([
                     eventManager = this.getEventManager();
 //                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
 
+
                 eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id}, id);
 //                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
             },
@@ -362,11 +406,27 @@ define([
             },
 
             onClose: function() {
-                var eventManager = this.dispatcher.getEventManager();
-                eventManager.fireEvent(eventManager.eventName.CANCEL, {id: this.id, dataToSend: {no_response: true}}, this.id);
-                return this.inherited(arguments);
-            }
 
+                var ret = this.inherited(arguments);
+
+                if (ret) {
+                    // ALERTA[Xavi] Això es crida quan ja s'ha confirmat el tancament de la pestanya i per consegüent no es poden desar els canvis
+                    var eventManager = this.dispatcher.getEventManager();
+                    eventManager.fireEvent(eventManager.eventName.CANCEL, {
+                        id: this.id,
+                        name: eventManager.eventName.CANCEL,
+                        dataToSend: {no_response: true, discardChanges: true}
+                    }, this.id);
+                }
+                return ret;
+            },
+
+
+            onDestroy: function() {
+                // console.log("BasicEditorSubclass#onDestroy");
+                this.freePage();
+                this.inherited(arguments);
+            }
 
 
         })
