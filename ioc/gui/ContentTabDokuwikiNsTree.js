@@ -1,5 +1,5 @@
 define([
-    "dojo/_base/declare", // declare
+    "dojo/_base/declare",
     "ioc/wiki30/Request",
     "ioc/gui/NsTreeContainer",
     "dojo/aspect",    
@@ -15,7 +15,9 @@ define([
          * @extends Request
          */
         {
+            
             constructor: function (args) {
+                this.inherited(arguments);
                 var openOnClick = args.openOnClick? args.openOnClick: true;
                 this.set("openOnClick", openOnClick);
             },
@@ -57,13 +59,21 @@ define([
                 };
                 var tree = this.tree;
                 aspect.after(this.tree, "_adjustWidths", function () {
-                    var parentNode = tree.domNode.parentNode;
-                    var node = query(".dijitTreeRow", tree.domNode)[0];
+                    var parentNode;
+                    var node;
+                    
+                    parentNode = tree.domNode.parentNode;
+                    if (!parentNode) {
+                        return;
+                    }
+                    node = query(".dijitTreeRow", tree.domNode)[0];
 
-                    if (node && parentNode.offsetWidth<node.offsetWidth) {
+                    if (node && parentNode.offsetWidth < node.offsetWidth) {
                         parentNode.style.width = "" + node.offsetWidth + "px";
-                    }else if(node){
-                        parentNode.style.width = node.scrollWidth > node.offsetWidth ? "auto" : "100%";
+                    }else if(node) {
+                        if (parentNode.offsetWidth > node.offsetWidth){
+                            parentNode.style.width = node.offsetWidth;
+                        }
                     }else{
                         parentNode.style.width="100%";
                     }
@@ -86,6 +96,9 @@ define([
                     this.urlBaseTyped = {};
                 }
                 this.urlBaseTyped['*'] = this.urlBase;
+            },
+            resize:function(changeSize, resultSize){
+                this.updateRendering();
             }
         });
     return ret;
