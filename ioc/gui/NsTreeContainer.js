@@ -67,7 +67,6 @@ define([
                         })),
 
                         getRoot: function (onItem) {
-                            console.log(vid +": "+ this.store.target);
                             this.store.get(root).then(onItem);
                         },
 
@@ -97,10 +96,13 @@ define([
                 this.tree.openOnClick = this.openOnClick && !this.getProcessOnClickAndOpenOnClick();
                 
                 this.tree.getIconClassOrig = this.tree.getIconClass;
+
+                var self = this;
+
                 this.tree.getIconClass = function(item, opened) {
                     var ret = this.getIconClassOrig(item, opened);
                     if (item.type === "p") {
-                        ret = (opened) ? "dijitIconConnector" : "dijitIconPackage";
+                        ret = (opened && self.expandProject) ? "dijitIconConnector" : "dijitIconPackage";
                     }
                     return ret;
                 };
