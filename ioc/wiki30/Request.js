@@ -210,8 +210,6 @@ define([
                     return;
                 }
 
-
-//                console.log("Request:sendRequest ("+query+"). this.parameters: " + this.parameters);
                 //run standby resource while ajax response doesn't arribe
 
                 this._createStandbyObject();
@@ -219,17 +217,6 @@ define([
 
 
 
-                var validationResult = this.validate(query);
-
-                if (!validationResult.success) {
-                    // if (!validationResult.message) {
-                    //     validationResult.message = "No es pot enviar la petició"; // TODO[Xavi] Localitzar
-                    // }
-
-                    var errorMessage = {response: {text: validationResult.message}};
-                    this._sendError(errorMessage);
-                    return;
-                }
 
 
 
@@ -271,6 +258,30 @@ define([
 
                 //starting standby proces if exsit some stantBy object
                 this._startStandby();
+
+
+
+                // console.log("query", query, this.method, this.getPostData());
+                var validationResult = this.validate(query || this.getPostData());
+
+                if (!validationResult.success) {
+                    // if (!validationResult.message) {
+                    //     validationResult.message = "No es pot enviar la petició"; // TODO[Xavi] Localitzar
+                    // }
+
+                    var errorMessage = {response: {text: validationResult.message}};
+                    this._sendError(errorMessage);
+                    this._stopStandby();
+                    return;
+                }
+
+
+
+
+
+
+
+
 
                 //Build and send the request.
                 var resp;
@@ -422,7 +433,7 @@ define([
             },
 
             setValidator: function(validatorData) {
-                // En cas de passar com a validador només una funcío la assignem a un objecte correcte. Es farà servir el missatge d'error per defecte
+                // En cas de passar com a validador només una funció la assignem a un objecte correcte. Es farà servir el missatge d'error per defecte
                 if (typeof validatorData === 'function') {
                     validatorData = {
                         callback: validatorData,
@@ -434,6 +445,7 @@ define([
             },
 
             validate: function (data) {
+                // console.log('Request#validate', data);
                 var result = {
                     success: true
                 };
