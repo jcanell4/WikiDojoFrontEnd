@@ -31,10 +31,16 @@ define([
         "ioc/gui/content/subclasses/RequestSubclass",
         "ioc/gui/content/subclasses/TimedDocumentSubclass",
         "ioc/gui/content/subclasses/NotificationSubclass",
-        "ioc/gui/content/subclasses/FormSubclass"
+        "ioc/gui/content/subclasses/FormSubclass",
+        "ioc/gui/content/subclasses/AjaxFormSubclass",
+        "ioc/gui/content/subclasses/AjaxLinkSubclass",
+        "ioc/gui/content/subclasses/DokuwikiNSTreeSubclass",
     ], function (lang, ContentTool, requestReplacerFactory,
-                 dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, /*ChangesManagerCentralSubclass,*/ EditorSubclass, BasicEditorSubclass,
-                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass, RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass) {
+                 dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, /*ChangesManagerCentralSubclass,*/
+                 EditorSubclass, BasicEditorSubclass,MediaDetailsSubclass, MetaMediaDetailsSubclass,
+                 StructuredDocumentSubclass, RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass,
+                 AjaxFormSubclass, AjaxLinkSubclass, DokuwikiNSTreeSubclass
+    ) {
 
         var patch = function (target, source) {
                 return function () {
@@ -278,6 +284,7 @@ define([
             /** @enum */
             generation: {
                 BASE: 'base',
+                REQUEST_FORM: 'request_form',
                 META: 'meta',
                 DOCUMENT: 'document',
                 EDITOR: 'editor',
@@ -286,7 +293,9 @@ define([
                 MEDIADETAILS: 'mediadetails',
                 METAMEDIADETAILS: 'metamediadetails',
                 STRUCTURED_DOCUMENT: 'structured_document',
-                NOTIFICATION: 'notification'
+                NOTIFICATION: 'notification',
+                RECENTS: 'recents',
+                META_DOKUWIKI_NS_TREE: 'meta_dokuwiki_ns_tree'
             },
 
             /**
@@ -399,6 +408,13 @@ define([
                     case this.generation.META:
                         GeneratedContentTool = base
                             .createSubclass(MetaInfoSubclass);
+                            // .createSubclass(AjaxFormSubclass);
+                        break;
+
+                    case this.generation.REQUEST_FORM:
+                        GeneratedContentTool = base
+                            .createSubclass(MetaInfoSubclass)
+                            .createSubclass(AjaxFormSubclass);
                         break;
 
                     case this.generation.DOCUMENT:
@@ -451,10 +467,28 @@ define([
                         break;
 
                     case this.generation.NOTIFICATION:
-                        console.log("contentToolFactory#createClass: NOTIFICATION");
                         GeneratedContentTool = base
-                            .createSubclass(NotificationSubclass);
+                            .createSubclass(NotificationSubclass)
+                            .createSubclass(AjaxLinkSubclass);
                         break;
+
+                    case this.generation.RECENTS:
+                        // console.log("contentToolFactory#createClass: RECENTS");
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(AjaxLinkSubclass)
+                            .createSubclass(AjaxFormSubclass);
+                        break;
+
+                    case this.generation.META_DOKUWIKI_NS_TREE:
+                        console.log("contentToolFactory#createClass: DokuwikiNSTreeContentTool");
+                        GeneratedContentTool = base
+                             .createSubclass(MetaInfoSubclass) 
+                            .createSubclass(DokuwikiNSTreeSubclass);
+                        break;
+
+
+
 
                     default:
                         console.error('No existeix el tipus de ContentTool: ' + type);
