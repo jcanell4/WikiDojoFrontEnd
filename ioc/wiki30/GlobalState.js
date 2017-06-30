@@ -384,6 +384,25 @@ define([
             }
         },
 
+        getAllRequiredPagesNS: function() {
+            console.log("GlobalState#getAllRequiredPagesNS");
+            var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
+            var requiredPagesNS = [];
+
+            if (storedPages && storedPages.userId === this.userId) {
+
+
+                for (var ns in storedPages.requiredPages) {
+                    requiredPagesNS.push(ns);
+                }
+
+            }
+
+            return requiredPagesNS;
+        },
+
+
+
         updateRequiredPagesState: function (storedPages) {
             // console.log("GlobalState#updateRequiredPagesState", storedPages);
             storageManager.setObject('requiredPages', storedPages, storageManager.type.LOCAL);
