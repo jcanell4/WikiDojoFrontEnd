@@ -38,19 +38,20 @@ define([
                 //eventManager.registerEventForBroadcasting(this, eventToControl, this._sendRequest.bind(this)); // Alerta [Xavi] No cal fer broadcasting, aquest objecte només escolta
 //                this.registerToEvent(eventManager, eventToControl, this._sendRequest.bind(this)); 
                 //NOU CANVI. ARA cal afegir-lo al event manager com observador d'un objecte observable
-                // eventManager.registerObserverToEvent(this, eventToControl, this._sendRequest.bind(this));
-                eventManager.registerObserverToEvent(this, eventToControl, this._validate.bind(this));
+                eventManager.registerObserverToEvent(this, eventToControl, this._sendRequest.bind(this));
+                // eventManager.registerObserverToEvent(this, eventToControl, this._validate.bind(this));
 
 
                 // En cas de passar com a validador només una funcío la assignem a un objecte correcte. Es farà servir el missatge d'error per defecte
-                if (typeof validatorData === 'function') {
-                    validatorData = {
-                        callback: validatorData
-                    }
-                }
+                // if (typeof validatorData === 'function') {
+                //     validatorData = {
+                //         callback: validatorData
+                //     }
+                // }
 
-                this.validatorData = validatorData;
+                // this.validatorData = validatorData;
 
+                this.request.setValidator(validatorData);
             },
 
             /**
@@ -61,60 +62,61 @@ define([
              * @param validator
              * @private
              */
-            validator: function (data) {
+            validate: function (data) {
 
-                var result = {
-                    success: true
-                };
-
-
-                if (!this.validatorData) {
-                    // No cal fer res
-
-                } else if (Array.isArray(this.validatorData)) {
-
-                    for (var i = 0; i < this.validatorData.length; i++) {
-                        if (!this.validatorData[i].callback(data)) {
-                            result = {
-                                success: false,
-                                message: this.validatorData[i].message || null
-                            };
-                            break;
-                        }
-                    }
-
-
-                } else {
-
-                    if (!this.validatorData.callback(data)) {
-                        result = {
-                            success: false,
-                            message: this.validatorData.message || null
-                        };
-
-                    }
-                }
-
-                return result;
+                return this.request.validate();
+                // var result = {
+                //     success: true
+                // };
+                //
+                //
+                // if (!this.validatorData) {
+                //     // No cal fer res
+                //
+                // } else if (Array.isArray(this.validatorData)) {
+                //
+                //     for (var i = 0; i < this.validatorData.length; i++) {
+                //         if (!this.validatorData[i].callback(data)) {
+                //             result = {
+                //                 success: false,
+                //                 message: this.validatorData[i].message || null
+                //             };
+                //             break;
+                //         }
+                //     }
+                //
+                //
+                // } else {
+                //
+                //     if (!this.validatorData.callback(data)) {
+                //         result = {
+                //             success: false,
+                //             message: this.validatorData.message || null
+                //         };
+                //
+                //     }
+                // }
+                //
+                // return result;
             },
 
 
-            /**
-             * Els casos possibles són:
-             *      Validació amb èxit: envia la petició
-             *      Validació erronea amb missatge: es mostra missatge d'error
-             *      Validació erronea sense missatge: s'ignora la petició silenciosament
-             */
-            _validate: function (data) {
-                var validationResult = this.validator(data);
-
-                if (validationResult.success) {
-                    this._sendRequest(data);
-                } else if (validationResult.message !== null) {
-                    var errorMessage = {response: {text: validationResult.message}};
-                    this._sendError(errorMessage);
-                }
-            },
+            // /**
+            //  * Els casos possibles són:
+            //  *      Validació amb èxit: envia la petició
+            //  *      Validació erronea amb missatge: es mostra missatge d'error
+            //  *      Validació erronea sense missatge: s'ignora la petició silenciosament
+            //  */
+            // _validate: function (data) {
+            //     var validationResult = this.validator(data);
+            //
+            //     if (validationResult.success) {
+            //         this._sendRequest(data);
+            //     } else if (validationResult.message !== null) {
+            //         var errorMessage = {response: {text: validationResult.message}};
+            //         this._sendError(errorMessage);
+            //     }
+            // },
 
 
             _sendRequest: function (data) {
@@ -130,9 +132,9 @@ define([
                 }
             },
 
-            _sendError: function (message) {
-                dispatcher.processError(message);
-            }
+            // _sendError: function (message) {
+            //     dispatcher.processError(message);
+            // }
         });
     return ret;
 });

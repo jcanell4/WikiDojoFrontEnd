@@ -209,9 +209,18 @@ define([
                 if(this._disabled){
                     return;
                 }
-//                console.log("Request:sendRequest ("+query+"). this.parameters: " + this.parameters);
+
                 //run standby resource while ajax response doesn't arribe
+
                 this._createStandbyObject();
+
+
+
+
+
+
+
+
 
                 //Checking if sending can be run.
                 if (this.urlBase === null || this.dispatcher === null) {
@@ -249,6 +258,30 @@ define([
 
                 //starting standby proces if exsit some stantBy object
                 this._startStandby();
+
+
+
+                // console.log("query", query, this.method, this.getPostData());
+                var validationResult = this.validate(query || this.getPostData());
+
+                if (!validationResult.success) {
+                    // if (!validationResult.message) {
+                    //     validationResult.message = "No es pot enviar la petició"; // TODO[Xavi] Localitzar
+                    // }
+
+                    var errorMessage = {response: {text: validationResult.message}};
+                    this._sendError(errorMessage);
+                    this._stopStandby();
+                    return;
+                }
+
+
+
+
+
+
+
+
 
                 //Build and send the request.
                 var resp;
@@ -397,8 +430,77 @@ define([
                         nodeCounter.style["font-size"] = "" + (textSize) + "px";
                     }
                 };
+            },
+
+            setValidator: function(validatorData) {
+                // En cas de passar com a validador només una funció la assignem a un objecte correcte. Es farà servir el missatge d'error per defecte
+                if (typeof validatorData === 'function') {
+                    validatorData = {
+                        callback: validatorData,
+                        message: LANG.template['ioc-template'].default_validation_request_error
+                    }
+                }
+
+                this.validatorData = validatorData;
+            },
+
+            validate: function (data) {
+                // console.log('Request#validate', data);
+                var result = {
+                    success: true
+                };
+
+
+                if (!this.validatorData) {
+                    // No cal fer res
+
+                } else if (Array.isArray(this.validatorData)) {
+
+                    for (var i = 0; i < this.validatorData.length; i++) {
+                        if (!this.validatorData[i].callback(data)) {
+                            result = {
+                                success: false,
+                                message: this.validatorData[i].message || LANG.template['ioc-template'].default_validation_request_error
+                            };
+                            break;
+                        }
+                    }
+
+
+                } else {
+
+                    if (!this.validatorData.callback(data)) {
+                        result = {
+                            success: false,
+                            message: this.validatorData.message || LANG.template['ioc-template'].default_validation_request_error
+                        };
+
+                    }
+                }
+
+                return result;
+            },
+
+            _sendError: function (message) {
+                this.dispatcher.processError(message);
             }
-            
+            //
+            // /**
+            //  * Els casos possibles són:
+            //  *      Validació amb èxit: envia la petició
+            //  *      Validació erronea amb missatge: es mostra missatge d'error
+            //  *      Validació erronea sense missatge: s'ignora la petició silenciosament
+            //  */
+            // _validate: function (data) {
+            //     var validationResult = this.validator(data);
+            //
+            //     if (validationResult.success) {
+            //         this._sendRequest(data);
+            //     } else if (validationResult.message !== null) {
+            //         var errorMessage = {response: {text: validationResult.message}};
+            //         this._sendError(errorMessage);
+            //     }
+            // },
         });
     return ret;
 });

@@ -164,7 +164,7 @@ define([
 
 
                 $button.append($prevButton);
-                // $button.append($detachButton);
+                $button.append($detachButton);
                 $button.append($nextButton);
 
                 $button.on('mouseenter', function () {
@@ -186,7 +186,13 @@ define([
                 });
 
                 $detachButton.on('click', function() {
-                    console.log("TODO: Detach");
+                    // ALERTA[Xavi] Posibles opcions:
+                    // - Múltiples finestres pel mateix document:
+                    var windowName = Date.now();
+                    // - Finestra única per cada document (Requereix controls adicionals no implementats, el "detach" d'una finestra extreta no obre una altra finestra si no que s'actualitza a si mateixa perquè és el mateix nom, independenment de si hi ha una finestra "mestre" oberta o no.
+                    // var windowName = contentTool.ns;
+                    window.open("doku.php?id=" + contentTool.ns, windowName);
+
                 });
 
                 $nextButton.on('click', function() {
