@@ -42,6 +42,7 @@ define([
             constructor: function (args) {
                 this._setOriginalContent(args.originalContent);
                 this.hasChanges = false;
+                this.forceClose = false;
             },
 
             /**
@@ -325,7 +326,7 @@ define([
             },
 
             _doSave: function (event) {
-                console.log("EditorSubclass#_doSave", event, arguments);
+                // console.log("EditorSubclass#_doSave", event, arguments);
                 // event = this._mixCachedEvent(event);
 
                 arguments[0] =  this._mixCachedEvent(event);

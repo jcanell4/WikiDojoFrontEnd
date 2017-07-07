@@ -709,10 +709,12 @@ define([
          */
         resetContentChangeState: function () {
 
-            for (var header_id in this.changedChunks) {
-                if (this.changedChunks[header_id].changed) {
-                    // Mentre hi hagi un chunk amb canvis no es fa el reset
-                    return;
+            if (!this.discardChanges) {
+                for (var header_id in this.changedChunks) {
+                    if (this.changedChunks[header_id].changed) {
+                        // Mentre hi hagi un chunk amb canvis no es fa el reset
+                        return;
+                    }
                 }
             }
 
@@ -1259,7 +1261,7 @@ define([
         },
 
         _doSavePartialAll: function (event) {
-            console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
+            // console.log("StructuredDocumentSubclass#_doSavePartialAll", this.id, event);
 
             event = this._mixCachedEvent(event);
 
@@ -1611,7 +1613,7 @@ define([
         },
 
         _removeAllDrafts: function () {
-            console.log("StructuredDocumentSubclass#_removeAllDrafts", this.id);
+            // console.log("StructuredDocumentSubclass#_removeAllDrafts", this.id);
             this.draftManager.clearDraft(this.id, this.ns, true);
         },
 
@@ -1643,7 +1645,6 @@ define([
         _getEditorsCount: function () {
             return Object.keys(this.editors).length;
         },
-
 
         onClose: function () {
             // ALERTA[Xavi] Es descarta el retorn

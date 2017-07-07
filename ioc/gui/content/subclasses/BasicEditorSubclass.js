@@ -73,7 +73,7 @@ define([
 
 
             _doSave: function (event) {
-                console.log("BasicEditorSubclass#_doSave", this.id, event);
+                // console.log("BasicEditorSubclass#_doSave", this.id, event);
 
 
 
@@ -452,6 +452,7 @@ define([
                     $form.height(args.changeSize.h);
                 }
             },
+
 
             onClose: function() {
                 // console.log("BasicEditorSubclass#onclose");
