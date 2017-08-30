@@ -117,8 +117,6 @@ define(function () {
         html += '</a></td>';
 
 
-
-
         for (var i = 0; i < sortable.length; i++) {
             linkRev = '?id=' + sortable[i]['id'] + "&rev=" + sortable[i]['rev'];
             linkTime = sortable[i]['date'].substring(0, 10);

@@ -5,8 +5,7 @@ define([
     "dojo/text!./templates/DropDownButton.html",
     "ioc/gui/ResizableComponent",
     "dojo/dom-class",
-    "ioc/wiki30/dispatcherSingleton",
-    // "dojo/on"
+    "ioc/wiki30/dispatcherSingleton"
 
 ], function (declare, DropDownButton, _Templated, template, IocComponent, domClass, getDispatcher) {
 

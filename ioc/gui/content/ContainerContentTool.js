@@ -54,7 +54,6 @@ define([
              */
             addChild: function (contentTool) {
 
-
                 if (contentTool.docId) {
                     if (this.dispatcher.getGlobalState().getCurrentId() === contentTool.docId) {
                         contentTool.showContent();

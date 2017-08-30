@@ -124,8 +124,6 @@ define(function () {
             $divInsideForm.append('<input name="editing_chunks" value="' + editing_chunks + '" type="hidden">');
         });
 
-
-
         return $doc;
     }
 });

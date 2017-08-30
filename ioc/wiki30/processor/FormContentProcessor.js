@@ -46,6 +46,7 @@ define([
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "form";
                 dispatcher.getGlobalState().getContent(value.id)["ns"] = value.ns;
                 dispatcher.getGlobalState().getContent(value.id)["projectType"] = value.extra.projectType;
+                dispatcher.getGlobalState().getContent(value.id)["rol"] = value.extra.rol;
             },
 
             /**

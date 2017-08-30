@@ -209,7 +209,6 @@ define([
                 if (data) {
                     this.set('data', data);
                 }
-
                 this.dispatchEvent(this.eventName.DATA_REPLACED, {id: this.id});
             },
 

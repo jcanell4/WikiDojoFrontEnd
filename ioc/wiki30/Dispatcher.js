@@ -331,7 +331,6 @@ define([
             changeWidgetProperty: function (id, propertyName, value) {
                 var widget = registry.byId(id);
                 widget.set(propertyName, value);
-
             },
 
             /**
@@ -495,7 +494,7 @@ define([
              * @returns {bool}
              */
             discardChanges: function () {
-                console.error("Dispatcher#discardChanges");
+                //console.error("Dispatcher#discardChanges");
                 return confirm("No s'han desat els canvis al document actual, vols descartar els canvis?");
             },
 

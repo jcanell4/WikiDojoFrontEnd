@@ -453,7 +453,6 @@ define([
                 }
             },
 
-
             onClose: function() {
                 // console.log("BasicEditorSubclass#onclose");
                 var ret = this.inherited(arguments);
@@ -468,7 +467,6 @@ define([
 
 
                     var eventManager = this.dispatcher.getEventManager();
-
                     eventManager.fireEvent(eventManager.eventName.CANCEL, {
                         id: this.id,
                         name: eventManager.eventName.CANCEL,
@@ -481,7 +479,6 @@ define([
 
                     ret = false; // Si es dispara l'event no es tanca la pestanya
                 }
-
                 return ret;
             },
         });

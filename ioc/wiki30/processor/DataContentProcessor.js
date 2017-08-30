@@ -29,8 +29,6 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-
-
                 //console.log("DataContentProcessor#process", value);
 //                var $form = jQuery(value.htmlForm),
 //                    draftContent;
@@ -43,15 +41,15 @@ define([
                 if (value.recover_draft) {
                     var draftContent;
                     if (value.recover_draft.recover_local === true) {
-                        console.log("** Recuperant draft local **");
+                        //console.log("** Recuperant draft local **");
                         draftContent = this._getLocalDraftContent(value, dispatcher);
                     } else if (value.recover_draft.recover_draft === true && value.draft != null) {
-                        console.log("** Recuperant draft remot **");
+                        //console.log("** Recuperant draft remot **");
 
                         draftContent = value.draft.content;
 
                     } else {
-                        console.log("** Document original, no hi ha draft **");
+                        //console.log("** Document original, no hi ha draft **");
                         // No s'ha demanat recuperar cap draft, o no s'ha enviat el draft per recuperar
                     }
 //
@@ -105,7 +103,6 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
-
                 var args = {
                     ns: content.ns,
                     id: content.id,
@@ -224,6 +221,5 @@ define([
                 var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
                 return dialog;
             }
-
         });
 });

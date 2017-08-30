@@ -152,7 +152,6 @@ define([
 
             var dataToSend = this._getQueryLock();
 
-
             this.eventManager.fireEvent(this.eventName.SAVE_DRAFT, {
                 id: this.contentToolId,
                 dataToSend: dataToSend

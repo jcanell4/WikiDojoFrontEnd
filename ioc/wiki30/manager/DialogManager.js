@@ -86,7 +86,6 @@ define([
                         break;
 
 
-
                     default:
                         throw new DialogManagerException("El tipus de dialeg no existeix: ", type);
                 }
@@ -309,7 +308,6 @@ define([
                 //console.log("DialogManager#_removeDialog", data);
                 delete(this.dialogs[data.refId][data.id]);
             },
-
 
             /**
              * Cancela tots els dialogs corresponents a la raferencia passat com argument
