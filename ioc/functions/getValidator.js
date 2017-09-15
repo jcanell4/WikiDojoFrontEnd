@@ -2,7 +2,7 @@ define([
     'ioc/wiki30/dispatcherSingleton',
 ], function (getSingleton) {
 
-    console.log("Loaded getValidator");
+//    console.log("Loaded getValidator");
 
     var dispatcher = getSingleton(),
         validator = {};
@@ -18,7 +18,7 @@ define([
     };
 
     var validatorPageNotRequired = function (data, ignoreRevision) {
-        console.log("getValidator#validatorPageNotRequired", data);
+//        console.log("getValidator#validatorPageNotRequired", data);
 
         data = normalizeData(data);
 

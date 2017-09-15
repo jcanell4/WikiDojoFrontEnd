@@ -85,7 +85,7 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
-                console.log(content);
+//                console.log(content);
 
 
                 switch (content.requiring_type) {
@@ -208,10 +208,10 @@ define([
             // ALERTA[Xavi] Compte, a aquest processor es generen diferents tipus de ContentTool i llavors la implementació original no funciona, sempre es crea un de nou
 
             isRefreshableContent: function (oldType) {
-                console.log("ContentProcessor#isRefreshableContent", oldType);
+//                console.log("ContentProcessor#isRefreshableContent", oldType);
 
                 if ((oldType === 'requiring' || oldType === "requiring_partial")) {
-                    console.log('ContentProcessor#isRefreshableContent', true);
+//                    console.log('ContentProcessor#isRefreshableContent', true);
                     return true;
                 }
                 //console.log('ContentProcessor#isRefreshableContent', false);

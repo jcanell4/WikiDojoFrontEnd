@@ -128,7 +128,7 @@ define(function () {
         });
 
         } catch (e){
-            var message = "S'ha produït un error. S'ha desactivat la edició parcial";
+            var message = "S'ha produït un error. S'ha desactivat la edició parcial";  //TODO[JOSEP]: Cal passar els missatge a ll JSINFO per internacionalitzar
             alert(message);
             console.error(message);
             $doc = jQuery('<div>' + data.html + '</div><div class="end-of-document></div>"');
