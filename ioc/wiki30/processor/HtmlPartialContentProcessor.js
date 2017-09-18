@@ -181,6 +181,8 @@ define([
                         }
                         if (value.cancel) {
                             contentTool.resetChangesForChunks(value.cancel);
+                            //[2017/09/18] [FET PER JOSEP] Cal aturar el timer de la cancel·lació atomàtica doncs acabaem de cancel·lar.
+                            contentTool.stopTimer();
                         } else if (!value.selected) {
                             contentTool.resetAllChangesForChunks();
                         }
