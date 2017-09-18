@@ -25,6 +25,8 @@ define([
                         case "stop":
                             timer.stopTimer();
                             break;
+                        default:
+                            console.error("Paràmetre action: "+ value.action +", no reconegut!");
                     }                    
                 }
             },
