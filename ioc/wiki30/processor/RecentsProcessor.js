@@ -18,7 +18,6 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("RecentsProcessor#process");
                 this.inherited(arguments);
             },
 

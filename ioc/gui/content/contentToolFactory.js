@@ -489,7 +489,7 @@ define([
                         break;
 
                     case this.generation.META_DOKUWIKI_NS_TREE:
-                        console.log("contentToolFactory#createClass: DokuwikiNSTreeContentTool");
+                        //console.log("contentToolFactory#createClass: DokuwikiNSTreeContentTool");
                         GeneratedContentTool = base
                              .createSubclass(MetaInfoSubclass) 
                             .createSubclass(DokuwikiNSTreeSubclass);

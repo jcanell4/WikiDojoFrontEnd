@@ -64,7 +64,7 @@ define([
 
 
                         if(value.hasDraft){
-                            console.log("Eliminat esborrany");
+                            //console.log("Eliminat esborrany");
                             dispatcher.getEventManager().fireEvent(
                                    dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
                                        id: value.id,
@@ -173,7 +173,7 @@ define([
 
                 if ((oldType === this.type && this.blackList.indexOf(this.type) === -1) ||
                     (newType && newType === oldType)) {
-                    console.log('ContentProcessor#isRefreshableContent', true);
+                    //console.log('ContentProcessor#isRefreshableContent', true);
                     return true;
                 }
                 //console.log('ContentProcessor#isRefreshableContent', false);

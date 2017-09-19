@@ -18,7 +18,6 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("AdminTaskProcessor#process");
                 this.inherited(arguments);
             },
 

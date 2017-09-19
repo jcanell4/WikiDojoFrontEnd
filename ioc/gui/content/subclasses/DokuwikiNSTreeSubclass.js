@@ -30,7 +30,7 @@ define([
         },
 
         updateDocument: function (content) {
-            console.log("DokuwikiNSTresSubclass#updateDocument", content);
+            //console.log("DokuwikiNSTresSubclass#updateDocument", content);
             // ALERTA[Xavi] El mètode refresh() de l'arbre no funciona quan es crida aquí, es perden les referencies al rootNode
             this.tree.destroyRecursive();
             this._createTree(this, content);

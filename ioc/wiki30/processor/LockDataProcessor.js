@@ -38,7 +38,7 @@ define([
                 if(cTool && cTool.refreshTimer){
                     cTool.refreshTimer(data.timeout);
                 }else{
-                    console.log("Error no esxisteix el contentTool o no és TimedDocumentSubclass");
+                    //console.log("Error no esxisteix el contentTool o no és TimedDocumentSubclass");
                 }
                 
             }

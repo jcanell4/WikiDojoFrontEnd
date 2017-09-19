@@ -127,7 +127,7 @@ define([
         },
 
         clearDraftChunks: function (id, ns, chunks) {
-            console.log("DraftManager#clearDraftChunks", id, ns, chunks);
+            //console.log("DraftManager#clearDraftChunks", id, ns, chunks);
             var draft;
 
             if (!this.drafts[ns]) {

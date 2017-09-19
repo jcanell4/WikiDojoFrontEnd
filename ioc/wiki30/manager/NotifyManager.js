@@ -46,7 +46,7 @@ define([
 
                 case 'notification_sent':
                     // TODO[Xavi] a la resposta ha d'arribar la notificació d'enviat
-                    console.log(action, params);
+                    //console.log(action, params);
                     this._processSentNotification(params.notification);
                     break;
 
@@ -70,7 +70,7 @@ define([
                     break;
 
                 default:
-                    console.log("action no trobada:",action);
+                    //console.log("action no trobada:",action);
                     throw new NotifyManagerException("Acció desconeguda: ", action);
             }
         },

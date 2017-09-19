@@ -96,7 +96,7 @@ define([
                         return this._createStructuredContentTool(content, dispatcher);
 
                 }
-                console.log("Type?:", content.type);
+                //console.log("Type?:", content.type);
 
 
             },
@@ -121,7 +121,7 @@ define([
             },
 
             _createStructuredContentTool: function (content, dispatcher) {
-                console.log("RequiringContentProcessor#_createStructuredContentTool", content);
+                //console.log("RequiringContentProcessor#_createStructuredContentTool", content);
 
                 var args = {
                     ns: content.ns,
