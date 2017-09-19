@@ -28,7 +28,6 @@ define([
                 this.notifications = {};
                 this.notifyManager = dispatcher.getNotifyManager();
 
-
 //                this.watch('notificationsCounter', this._updateNotifyButton);
             },
 

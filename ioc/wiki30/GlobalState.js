@@ -31,18 +31,16 @@ define([
 
 
     var ret = {
-
         /**
          * El index del hash es el mateix que el ns, que es el mateix que es mostra a la pestanya
          * @type {{string:Page?}}
          */
-
         pages: {},
 
         permissions: {},
 
-        extratabs: {},
-
+        extratabs:{},
+        
         login: false,
 
         info: "",
@@ -212,8 +210,6 @@ define([
         getCurrentId: function () {
             return this.currentTabId;
         },
-
-
 
 
         /**

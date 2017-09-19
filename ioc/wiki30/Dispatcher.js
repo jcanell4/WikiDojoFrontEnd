@@ -52,6 +52,7 @@ define([
     "ioc/wiki30/processor/RecentsProcessor",
     "ioc/wiki30/processor/MetaFormProcessor",
     "ioc/wiki30/processor/PrintProcessor",
+    "ioc/wiki30/processor/ContentToolTimerProcessor",
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -64,7 +65,8 @@ define([
              DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
              LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
              NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
-             FormContentProcessor, TabResponseProcessor, RecentsProcessor, MetaFormProcessor, PrintProcessor) {
+             FormContentProcessor, TabResponseProcessor, RecentsProcessor, MetaFormProcessor, PrintProcessor,
+             ContentTooTimerProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -197,6 +199,7 @@ define([
                 this.processors["recents"] = new RecentsProcessor();
                 this.processors["meta_form"] = new MetaFormProcessor();
                 this.processors["print"] = new PrintProcessor();
+                this.processors["contentTool_timer"] = new ContentTooTimerProcessor();
 
             },
 
@@ -331,7 +334,6 @@ define([
             changeWidgetProperty: function (id, propertyName, value) {
                 var widget = registry.byId(id);
                 widget.set(propertyName, value);
-
             },
 
             /**
@@ -495,7 +497,7 @@ define([
              * @returns {bool}
              */
             discardChanges: function () {
-                console.error("Dispatcher#discardChanges");
+                //console.error("Dispatcher#discardChanges");
                 return confirm("No s'han desat els canvis al document actual, vols descartar els canvis?");
             },
 

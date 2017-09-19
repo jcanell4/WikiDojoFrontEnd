@@ -8,8 +8,6 @@ define([
         this.name = "NotifyEngineException";
     };
 
-
-
     return declare([AbstractNotifyEngine], {
 
         init: function (args) {
@@ -67,7 +65,6 @@ define([
                 }
             });
         }
-
     });
 
 });

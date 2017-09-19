@@ -25,39 +25,44 @@ define([], function () {
         },
 
         renderGroup = function (group) {
-            var fields = group.elements.sort(comparePriority),
-                $group = jQuery('<div>'),
+            var fields,
+                $group = '',
                 $header,
                 cols = group.columns || 12;
 
-            // renderitzar el marc i titol
-            if (group.title) {
-                $header = jQuery('<p>')
-                    .addClass('h2')
-                    .html(group.title);
+            if (group.elements) {
+                $group = jQuery('<div>');
+                fields = group.elements.sort(comparePriority);
+                
+                // renderitzar el marc i titol
+                if (group.title) {
+                    $header = jQuery('<p>')
+                        .addClass('h2')
+                        .html(group.title);
 
-                $group.append($header);
-            }
-            //JOSEP: Rafa, per que no tagarada el nom hasFrame? 
-            if (group.frame) {
-                $group.addClass('form-frame');
-            } else {
-                $group.addClass('form-without-frame');
-            }
-
-            for (var i = 0; i < fields.length; i++) {
-                switch (group.elements[i].formType) {
-                    case 'row':   $group.append(renderRow(fields[i])); break;
-                    case 'group': $group.append(renderGroup(fields[i])); break;
-                    case 'field': $group.append(renderField(fields[i])); break;
+                    $group.append($header);
                 }
-            }
+                
+                if (group.frame) {
+                    $group.addClass('form-frame');
+                } else {
+                    $group.addClass('form-without-frame');
+                }
 
-            if (group.id) {
-                $group.attr('id', group.id);
-            }
+                for (var i = 0; i < fields.length; i++) {
+                    switch (group.elements[i].formType) {
+                        case 'row':   $group.append(renderRow(fields[i])); break;
+                        case 'group': $group.append(renderGroup(fields[i])); break;
+                        case 'field': $group.append(renderField(fields[i])); break;
+                    }
+                }
 
-            $group.addClass('form-group col-xs-' + cols); // input-group o form-group?
+                if (group.id) {
+                    $group.attr('id', group.id);
+                }
+
+                $group.addClass('form-group col-xs-' + cols); // input-group o form-group?
+            }
 
             return $group;
 

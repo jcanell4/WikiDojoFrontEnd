@@ -74,12 +74,12 @@ define([
                             dispatcher.getGlobalState().pages[value.id]["ns"] = value.ns;
                             if(value.mediado){
                                 if(value.mediado === "diff"){
-                                    dispatcher.getGlobalState().pages[value.id]["mediado"] = value.mediado;
+                                    dispatcher.getGlobalState().getContent(value.id)["mediado"] = value.mediado;
                                 }
                             }
                             dispatcher.getGlobalState().getContent(value.id)["action"] = "mediadetails";
-                            dispatcher.getGlobalState().pages[value.id]["ns"] = value.ns;
-                            dispatcher.getGlobalState().pages[value.id]["myid"] = value.id;
+                            dispatcher.getGlobalState().getContent(value.id)["ns"] = value.ns;
+                            dispatcher.getGlobalState().getContent(value.id)["myid"] = value.id;
                         },
                         createContentTool: function (content, dispatcher) {
                             var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";

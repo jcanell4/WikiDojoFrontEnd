@@ -383,10 +383,10 @@ define([
                     paramsOnExpire: paramsOnExpire
                 });
                 contentTool.startTimer(params.timer.timeout);
-                //SI hi ha cancel·lació parcial => finalitza el timer
-                contentTool.registerObserverToEvent(contentTool, contentTool.eventName.CANCEL_PARTIAL, function(event){
-                    this.stopTimer();
-                }.bind(contentTool));
+//                //SI hi ha cancel·lació parcial => finalitza el timer
+//                contentTool.registerObserverToEvent(contentTool, contentTool.eventName.CANCEL_PARTIAL, function(event){
+//                    this.stopTimer();
+//                }.bind(contentTool));
             },
 
 

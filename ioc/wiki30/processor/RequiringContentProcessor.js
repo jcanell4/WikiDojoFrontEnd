@@ -48,7 +48,7 @@ define([
                     this._initTimer(value, contentTool);
                     this._processTimerDialog(value, contentTool, dispatcher);
                 }else if(value.action==="refresh"){
-                    console.log("Refrescant timer durant " + value.timer.timeout + "s");
+                    //console.log("Refrescant timer durant " + value.timer.timeout + "s");
                     var contentTool = registry.byId(value.id);
                     contentTool.refreshTimer(value.timer.timeout, value.timer.paramsOnExpire);
                 }
@@ -85,7 +85,7 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
-                console.log(content);
+//                console.log(content);
 
 
                 switch (content.requiring_type) {
@@ -208,10 +208,10 @@ define([
             // ALERTA[Xavi] Compte, a aquest processor es generen diferents tipus de ContentTool i llavors la implementació original no funciona, sempre es crea un de nou
 
             isRefreshableContent: function (oldType) {
-                console.log("ContentProcessor#isRefreshableContent", oldType);
+//                console.log("ContentProcessor#isRefreshableContent", oldType);
 
                 if ((oldType === 'requiring' || oldType === "requiring_partial")) {
-                    console.log('ContentProcessor#isRefreshableContent', true);
+//                    console.log('ContentProcessor#isRefreshableContent', true);
                     return true;
                 }
                 //console.log('ContentProcessor#isRefreshableContent', false);

@@ -241,7 +241,6 @@ define([
                 chunk: chunk,
                 dataToSend: {keep_draft: false}
             }, id);
-
         },
 
         /**
@@ -398,8 +397,6 @@ define([
                 }
                 i++;
             }
-
-
             suf += this.data.suf || '';
 
             text.prefix = pre + "\n";
@@ -969,9 +966,6 @@ define([
         lockEditors: function () {
             var header_id;
 
-
-
-
             for (header_id in this.editors) {
                 this.editors[header_id].editor.lockEditor();
             }
@@ -990,11 +984,7 @@ define([
                 jQuery('#toolbar_' + this.id + '_' + header_id).css('display', 'none')
             }
 
-
-            // if (Object.keys(this.editors).length > 0) {
-
-                this.freePage();
-
+            this.freePage();          
         },
 
         unlockEditors: function () {
@@ -1020,7 +1010,6 @@ define([
 
             }
 
-            // this.freePage();
         },
 
         _generateDraftInMemory: function () {
@@ -1213,8 +1202,6 @@ define([
             //})
 
         },
-
-
 
         _doSavePartial: function (event) {
             var ret;
@@ -1569,7 +1556,6 @@ define([
 
                 containerId = event.standbyId || event.id;
 
-
                 //this.eventManager.fireEvent(this.eventName.CANCEL, {
                 //    id: this.id,
                 //    dataToSend: dataToSend,
@@ -1606,8 +1592,6 @@ define([
                         standbyId: containerId
                     }
                 }
-
-
             }
             return ret;
         },

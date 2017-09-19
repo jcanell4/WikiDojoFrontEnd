@@ -209,18 +209,9 @@ define([
                 if(this._disabled){
                     return;
                 }
-
+//                console.log("Request:sendRequest ("+query+"). this.parameters: " + this.parameters);
                 //run standby resource while ajax response doesn't arribe
-
                 this._createStandbyObject();
-
-
-
-
-
-
-
-
 
                 //Checking if sending can be run.
                 if (this.urlBase === null || this.dispatcher === null) {
@@ -362,7 +353,6 @@ define([
             },
 
             _startStandby: function () {
-
                 if (this._standbyDisabled) {
                     return;
                 }

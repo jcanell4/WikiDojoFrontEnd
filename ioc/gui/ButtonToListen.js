@@ -49,7 +49,7 @@ define([
             clickListener: null,
 
             /**
-             * En clicar aquest botó es recorren tots els listeners afegits, si es una funció la executa i si es un
+             * Al clicar aquest botó es recorren tots els listeners afegits, si es una funció la executa i si es un
              * objecte crida al seu métode process() passant aquest event com argument.
              *
              *En acabar si no s'ha previngut l'esdeveniment per defecte, s'executa la funció postListenOnClick.

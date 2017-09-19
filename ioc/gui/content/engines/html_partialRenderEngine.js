@@ -18,7 +18,10 @@ define(function () {
 
         $doc = jQuery('<div>' + data.html + '</div><div class="end-of-document></div>"');
 
-        var editing_chunks = [];
+        try {
+
+
+            var editing_chunks = [];
 
         for (i = 0; i < data.chunks.length; i++) {
             if (data.chunks[i].text) {
@@ -124,7 +127,12 @@ define(function () {
             $divInsideForm.append('<input name="editing_chunks" value="' + editing_chunks + '" type="hidden">');
         });
 
-
+        } catch (e){
+            var message = "S'ha produït un error. S'ha desactivat la edició parcial";  //TODO[JOSEP]: Cal passar els missatge a ll JSINFO per internacionalitzar
+            alert(message);
+            console.error(message);
+            $doc = jQuery('<div>' + data.html + '</div><div class="end-of-document></div>"');
+        }
 
         return $doc;
     }
