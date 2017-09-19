@@ -181,8 +181,6 @@ define([
                         }
                         if (value.cancel) {
                             contentTool.resetChangesForChunks(value.cancel);
-                            //[2017/09/18] [FET PER JOSEP] Cal aturar el timer de la cancel·lació atomàtica doncs acabaem de cancel·lar.
-                            contentTool.stopTimer();
                         } else if (!value.selected) {
                             contentTool.resetAllChangesForChunks();
                         }
@@ -385,10 +383,10 @@ define([
                     paramsOnExpire: paramsOnExpire
                 });
                 contentTool.startTimer(params.timer.timeout);
-                //SI hi ha cancel·lació parcial => finalitza el timer
-                contentTool.registerObserverToEvent(contentTool, contentTool.eventName.CANCEL_PARTIAL, function(event){
-                    this.stopTimer();
-                }.bind(contentTool));
+//                //SI hi ha cancel·lació parcial => finalitza el timer
+//                contentTool.registerObserverToEvent(contentTool, contentTool.eventName.CANCEL_PARTIAL, function(event){
+//                    this.stopTimer();
+//                }.bind(contentTool));
             },
 
 

@@ -39,7 +39,9 @@ define([
         
         stopTimer: function (){
             //console.log("TimedDocumentSubclass#stopTimer");
-            this.timer.stop();
+            if(this.timer){
+                this.timer.stop();
+            }
         },
 
         cancelTimer: function () {
