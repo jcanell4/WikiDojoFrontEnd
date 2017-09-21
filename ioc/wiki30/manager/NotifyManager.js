@@ -46,7 +46,7 @@ define([
 
                 case 'notification_sent':
                     // TODO[Xavi] a la resposta ha d'arribar la notificació d'enviat
-                    console.log(action, params);
+                    // console.log(action, params);
                     this._processSentNotification(params.notification);
                     break;
 
@@ -277,6 +277,7 @@ define([
         },
 
         removeNotification: function (id, mailbox) {
+            console.log("RemoveNotification", id);
             this.mailboxes[mailbox].removeNotification(id);
 
             // TODO: El compatador ha de ser propi per cada bustia
@@ -325,7 +326,8 @@ define([
         },
         
         hasNotifications: function(mailbox){
-            return Object.keys(this.mailboxes[mailbox].notifications).length > 0;
+            return !this.mailboxes[mailbox].isEmpty();
+            // return Object.keys(this.mailboxes[mailbox].notifications).length > 0;
         },
 
         clearAll: function() {
@@ -345,6 +347,10 @@ define([
 
         deleteNotification: function (notificationId) {
             this._notificationEngine.deleteNotification(notificationId);
+        },
+
+        resetButton: function(mailbox) {
+            this.emit('reset', {mailbox: mailbox});
         }
     });
 });
