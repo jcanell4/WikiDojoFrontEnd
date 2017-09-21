@@ -11,6 +11,15 @@ define([
         console.error(this.name, this.message);
     };
 
+    // Pollyfill
+    if (!String.prototype.startsWith) {
+        String.prototype.startsWith = function (searchString, position) {
+            position = position || 0;
+            return this.indexOf(searchString, position) === position;
+        };
+    }
+
+
     return declare([EventObserver], {
 
         constructor: function (args) {
@@ -140,13 +149,52 @@ define([
                 draft = this.drafts[ns];
             }
 
-            // ALERTA[Xavi] En principi sempre s'ha de trobar el draft, això no ha de ser necesari:
-            // if (!draft) {
-            //     return;
-            // }
-
             draft.clearDraftChunks(chunks);
         },
+
+        /**
+         * Elimina totes les estructures de draft buits i els drafts generats utilitzats el id en lloc del ns com a
+         * identificador.
+         *
+         * ALERTA: Aquesta funció treballa directament sobre el localStorage i no sobre els drafts.
+         */
+        compactDrafts: function () {
+            for (var key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    if (key.startsWith('user_')) {
+                        this._compactDraft(key);
+                    }
+                }
+            }
+        },
+
+        _compactDraft: function (userKey) {
+            var userData = localStorage.getItem(userKey);
+            var user = JSON.parse(userData);
+
+            if (!user.pages) {
+                return;
+            }
+
+            for (var ns in user.pages) {
+                if (ns.indexOf('_') !== -1) {
+                    delete (user.pages[ns]);
+                } else {
+                    var page = user.pages[ns];
+
+                    if (Object.keys(page.drafts).length === 0) {
+                        delete (user.pages[ns]);
+                    }
+                }
+            }
+
+            if (Object.keys(user.pages).length === 0) {
+                localStorage.removeItem(userKey);
+
+            } else {
+                localStorage.setItem(userKey, JSON.stringify(user));
+            }
+        }
 
     });
 
