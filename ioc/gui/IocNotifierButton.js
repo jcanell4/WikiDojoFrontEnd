@@ -39,6 +39,8 @@ define([
                     this.notifyManager.on('notificationsCounterUpdate',  this._updateNotifyButton.bind(this));
                 }
 
+                this.notifyManager.on('reset', this._reset.bind(this));
+
 
                 // this.notifyManager.watch('unreadCounter', this._updateLabel.bind(this));
                 // this.notifyManager.watch('notificationsCounter', this._updateNotifyButton.bind(this));
@@ -89,8 +91,12 @@ define([
                 if(data.mailbox == this.mailbox && !this.notifyManager.hasNotifications(this.mailbox)){
                     this.closeDropDown(false);
                 }
-            }
+            },
 
-            
+            _reset: function(data){
+                if(data.mailbox == this.mailbox) {
+                    this.closeDropDown(false);
+                }
+            }
         });
 });
