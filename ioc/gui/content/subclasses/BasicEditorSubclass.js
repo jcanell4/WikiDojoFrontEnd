@@ -1,15 +1,17 @@
 define([
     "dojo/_base/declare",
     "dojo/on",
-    'ioc/dokuwiki/AceManager/toolbarManager',
-    'ioc/dokuwiki/AceManager/AceFacade',
+    // 'ioc/dokuwiki/AceManager/toolbarManager',
+    // 'ioc/dokuwiki/AceManager/AceFacade',
+    'ioc/dokuwiki/AceManager/AceEditorFullFacade',
+    'ioc/dokuwiki/AceManager/DojoEditorFacade',
     'dojo/dom-geometry',
     'dojo/dom',
     "dojo/io-query",
     "dojo/_base/lang",
     // 'ioc/wiki30/Draft',
-    'dojo/cookie',
-], function (declare, on, toolbarManager, AceFacade, geometry, dom, ioQuery, lang, /*Draft, */cookie) {
+    // 'dojo/cookie',
+], function (declare, on, /*toolbarManager,*/ AceFacade, DojoEditorFacade, geometry, dom, ioQuery, lang, /*Draft, */cookie) {
 
     return declare([],
         //return declare(null,
@@ -31,9 +33,9 @@ define([
          */
         {
 
-            TOOLBAR_ID: 'full_editor',
-            VERTICAL_MARGIN: 25,
-            MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+            // TOOLBAR_ID: 'full_editor',
+            // VERTICAL_MARGIN: 25,
+            // MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
             
             editorCreated:false,
 
@@ -246,7 +248,7 @@ define([
                     }
 
                     this.addEditors();
-                    this.addToolbars();
+                    // this.addToolbars();
 
                     on(window, 'resize', function () {
                         this.fillEditorContainer();
@@ -259,7 +261,45 @@ define([
 
             // Afegeix un editorAce per cada editor actiu
             addEditors: function () {
-                this.editor = this.createEditor(this.id);
+                this.editor = this.createEditor({id : this.id}, "DojoEditor"); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
+                // this.editor = this.createEditor({id:this.id}); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
+            },
+
+            createEditor: function(config, type) {
+                switch (type) {
+                    case "DojoEditor":
+                        return this.createDojoEditor(config);
+
+                    default:
+                        return this.createAceEditor(config);
+                }
+            },
+
+            createDojoEditor: function(config) {
+                return new DojoEditorFacade(
+                    {
+                        containerId:'editor_' + config.id,
+                        textareaId:'textarea_' + config.id,
+                        dispatcher: this.dispatcher
+                    }
+                );
+            },
+
+            createAceEditor: function (config) {
+                var $textarea = jQuery('#textarea_' + config.id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
+
+                return new AceFacade({
+                    xmltags: JSINFO.plugin_aceeditor.xmltags,
+                    containerId: 'editor_' + config.id,
+                    textareaId: 'textarea_' + config.id,
+                    theme: JSINFO.plugin_aceeditor.colortheme,
+                    readOnly: this.getReadOnly(),
+                    wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+                    wrapMode: $textarea.attr('wrap') !== 'off',
+                    mdpage: JSINFO.plugin_aceeditor.mdpage,
+                    auxId: config.id,
+                    dispatcher: this.dispatcher,
+                });
             },
 
             requirePage: function() {
@@ -288,154 +328,156 @@ define([
 
 
 
-            createEditor: function (id) {
-                var $textarea = jQuery('#textarea_' + id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
+//             createEditor: function (id) {
+//                 var $textarea = jQuery('#textarea_' + id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
+//
+// //                console.log("BasicEditorSubclass#createEditor");
+//
+//
+//                 return new AceFacade({
+//                     xmltags: JSINFO.plugin_aceeditor.xmltags,
+//                     containerId: 'editor_' + id,
+//                     textareaId: 'textarea_' + id,
+//                     theme: JSINFO.plugin_aceeditor.colortheme,
+//                     readOnly: this.getReadOnly(),
+//                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+//                     wrapMode: $textarea.attr('wrap') !== 'off',
+//                     mdpage: JSINFO.plugin_aceeditor.mdpage,
+//                     auxId: id
+//                 });
+//             },
+//
+//             // TODO[Xavi] en aquest cas només cal una toolbar
+//             addToolbars: function () {
+//                 if (this.getReadOnly()) {
+//                     return;
+//                 }
+//
+//                 this.addButtons();
+//                 toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
+//             },
+//
+//             addButtons: function () {
+//                 var argSave = {
+//                         type: 'SaveButton',
+//                         title: 'Desar',
+//                         icon: '/iocjslib/ioc/gui/img/save.png'
+//                     },
+//
+//                     argCancel = {
+//                         type: 'BackButton',
+//                         title: 'Tornar',
+//                         icon: '/iocjslib/ioc/gui/img/back.png'
+//                     },
+//
+//                     confEnableAce = {
+//                         type: 'EnableAce',
+//                         title: 'Activar/Desactivar ACE',
+//                         icon: '/iocjslib/ioc/gui/img/toggle_on.png'
+//                     },
+//
+//                     confEnableWrapper = {
+//                         type: 'EnableWrapper', // we havea new type that links to the function
+//                         title: 'Activar/Desactivar embolcall',
+//                         icon: '/iocjslib/ioc/gui/img/wrap.png'
+//                     },
+//
+//                     argPreview = {
+//                         type: "preview", // we havea new type that links to the function
+//                         title: "Previsualitzar el contingut d'aquest editor",
+//                         icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
+//                     };
+//
+//                 toolbarManager.addButton(argPreview, this._funcPreview.bind(this.dispatcher), this.TOOLBAR_ID);
+//                 toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
+//                 toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
+//                 toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
+//                 toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
+//             },
 
-//                console.log("BasicEditorSubclass#createEditor");
+            // _funcPreview: function(){
+            //     var id = this.getGlobalState().getCurrentId(),
+            //         contentTool = this.getContentCache(id).getMainContentTool(),
+            //         dataToSend = contentTool.requester.get("dataToSend"),
+            //         urlBase = contentTool.requester.get("urlBase");
+            //
+            //     cookie("IOCForceScriptLoad", 1);
+            //
+            //     contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getCurrentContent()});
+            //     contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
+            //     contentTool.requester.sendRequest();
+            //     contentTool.requester.set("urlBase", urlBase);
+            //     contentTool.requester.set("dataToSend", dataToSend);
+            // },
 
-
-                return new AceFacade({
-                    xmltags: JSINFO.plugin_aceeditor.xmltags,
-                    containerId: 'editor_' + id,
-                    textareaId: 'textarea_' + id,
-                    theme: JSINFO.plugin_aceeditor.colortheme,
-                    readOnly: this.getReadOnly(),
-                    wraplimit: JSINFO.plugin_aceeditor.wraplimit,
-                    wrapMode: $textarea.attr('wrap') !== 'off',
-                    mdpage: JSINFO.plugin_aceeditor.mdpage,
-                    auxId: id
-                });
-            },
-
-            // TODO[Xavi] en aquest cas només cal una toolbar
-            addToolbars: function () {
-                if (this.getReadOnly()) {
-                    return;
-                }
-
-                this.addButtons();
-                toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
-            },
-
-            addButtons: function () {
-                var argSave = {
-                        type: 'SaveButton',
-                        title: 'Desar',
-                        icon: '/iocjslib/ioc/gui/img/save.png'
-                    },
-
-                    argCancel = {
-                        type: 'BackButton',
-                        title: 'Tornar',
-                        icon: '/iocjslib/ioc/gui/img/back.png'
-                    },
-
-                    confEnableAce = {
-                        type: 'EnableAce',
-                        title: 'Activar/Desactivar ACE',
-                        icon: '/iocjslib/ioc/gui/img/toggle_on.png'
-                    },
-
-                    confEnableWrapper = {
-                        type: 'EnableWrapper', // we havea new type that links to the function
-                        title: 'Activar/Desactivar embolcall',
-                        icon: '/iocjslib/ioc/gui/img/wrap.png'
-                    },
-
-                    argPreview = {
-                        type: "preview", // we havea new type that links to the function
-                        title: "Previsualitzar el contingut d'aquest editor",
-                        icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
-                    };
-
-                toolbarManager.addButton(argPreview, this._funcPreview.bind(this.dispatcher), this.TOOLBAR_ID);
-                toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
-                toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
-                toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
-                toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
-            },
-
-            _funcPreview: function(){
-                var id = this.getGlobalState().getCurrentId(),
-                    contentTool = this.getContentCache(id).getMainContentTool(),
-                    dataToSend = contentTool.requester.get("dataToSend"),
-                    urlBase = contentTool.requester.get("urlBase");
-
-                cookie("IOCForceScriptLoad", 1);
-
-                contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getCurrentContent()});
-                contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
-                contentTool.requester.sendRequest();
-                contentTool.requester.set("urlBase", urlBase);
-                contentTool.requester.set("dataToSend", dataToSend);
-            },
-
-            /**
-             * Activa o desactiva l'embolcall del text.
-             * @returns {boolean} - Sempre retorna fals
-             * @protected
-             */
-            _funcEnableWrapper: function () {
-                var id = this.getGlobalState().getCurrentId(),
-                    editor = this.getContentCache(id).getMainContentTool().getEditor();
-
-                editor.toggleWrap();
-            },
-
-            /**
-             * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
-             *
-             * @protected
-             */
-            _funcSave: function () {
-                var id = this.getGlobalState().getCurrentId(),
-                    eventManager = this.getEventManager();
-//                eventManager.dispatchEvent(eventManager.eventNameCompound.SAVE, {id: id}, id);
-                eventManager.fireEvent(eventManager.eventName.SAVE, {id: id}, id);
-            },
-
-            /**
-             * Activa o desactiva l'editor ACE segons l'estat actual
-             *
-             * @returns {boolean} - Sempre retorna fals.
-             * @protected
-             */
-            _funcEnableAce: function () {
-                var id = this.getGlobalState().getCurrentId(),
-                    editor = this.getContentCache(id).getMainContentTool().getEditor();
-                editor.toggleEditor();
-            },
-
-            /**
-             * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
-             * @protected
-             */
-            _funcCancel: function () {
-                //console.log("EditorSubclass#_funcCancel");
-                var id = this.getGlobalState().getCurrentId(),
-                    eventManager = this.getEventManager();
-//                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
-
-
-                eventManager.fireEvent(eventManager.eventName.CANCEL, {
-                    id: id,
-                    dataToSend: {keep_draft: false}
-                }, id);
-//                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
-            },
+//             /**
+//              * Activa o desactiva l'embolcall del text.
+//              * @returns {boolean} - Sempre retorna fals
+//              * @protected
+//              */
+//             _funcEnableWrapper: function () {
+//                 var id = this.getGlobalState().getCurrentId(),
+//                     editor = this.getContentCache(id).getMainContentTool().getEditor();
+//
+//                 editor.toggleWrap();
+//             },
+//
+//             /**
+//              * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
+//              *
+//              * @protected
+//              */
+//             _funcSave: function () {
+//                 var id = this.getGlobalState().getCurrentId(),
+//                     eventManager = this.getEventManager();
+// //                eventManager.dispatchEvent(eventManager.eventNameCompound.SAVE, {id: id}, id);
+//                 eventManager.fireEvent(eventManager.eventName.SAVE, {id: id}, id);
+//             },
+//
+//             /**
+//              * Activa o desactiva l'editor ACE segons l'estat actual
+//              *
+//              * @returns {boolean} - Sempre retorna fals.
+//              * @protected
+//              */
+//             _funcEnableAce: function () {
+//                 var id = this.getGlobalState().getCurrentId(),
+//                     editor = this.getContentCache(id).getMainContentTool().getEditor();
+//                 editor.toggleEditor();
+//             },
+//
+//             /**
+//              * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
+//              * @protected
+//              */
+//             _funcCancel: function () {
+//                 //console.log("EditorSubclass#_funcCancel");
+//                 var id = this.getGlobalState().getCurrentId(),
+//                     eventManager = this.getEventManager();
+// //                eventManager.dispatchEvent(eventManager.eventNameCompound.CANCEL + id, {id: id, extra: 'trololo'});
+//
+//
+//                 eventManager.fireEvent(eventManager.eventName.CANCEL, {
+//                     id: id,
+//                     dataToSend: {keep_draft: false}
+//                 }, id);
+// //                this.fireEvent(this.eventName.CANCEL, {id: id, extra: 'trololo'}); // Si és possible, canviar-hi a aquest sistema
+//             },
 
             getEditor: function () {
                 return this.editor;
             },
 
             fillEditorContainer: function () {
-                //console.log('EditorSubclass#fillEditorContainer');
-                var contentNode = dom.byId(this.id),
-                    h = geometry.getContentBox(contentNode).h,
-                    max = h - this.VERTICAL_MARGIN;
+                this.editor.fillEditorContainer();
 
-                //console.log("Alçada:", h);
-                this.editor.setHeight(Math.max(this.MIN_HEIGHT, max));
+                //console.log('EditorSubclass#fillEditorContainer');
+                // var contentNode = dom.byId(this.id),
+                //     h = geometry.getContentBox(contentNode).h,
+                //     max = h - this.VERTICAL_MARGIN;
+                //
+                // console.log("Alçada:", h);
+                // this.editor.setHeight(Math.max(this.MIN_HEIGHT, max));
 
             },
 

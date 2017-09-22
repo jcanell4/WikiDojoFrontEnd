@@ -221,6 +221,10 @@ define([
 
             destroy: function () {
                 ace.edit(this.args.containerId).destroy()
+            },
+
+            getReadOnly:function() {
+                return this._readOnly ? this._readOnly : false;
             }
         });
 });
