@@ -11,7 +11,8 @@ define([
     'dojo/dom-style',
     "dojo/dom",
     'dojo/Evented',
-], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style, dom, Evented) {
+    "ioc/dokuwiki/ace-preview"
+], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher, style, dom, Evented, acePreview) {
     return declare([Evented], {
 
         constructor: function (args) {
@@ -41,7 +42,9 @@ define([
 
                 container = new Container(aceWrapper, dokuWrapper),// Comprovar que es el que ha de fer currentEditor!
 
-                commands;
+                commands,
+                preview;
+
 
             this.wrap = args.wrapMode;
 
@@ -63,6 +66,8 @@ define([
             var text = this.getTextareaValue();
             this.setEditorValue(text);
 
+            preview = acePreview({ace: aceWrapper});
+
 
             // ----------------------------
             // ALERTA[Xavi] No esborrar, descomentar per depurar, mostra la informació sobre el token i el estat a la posició del cursor
@@ -82,10 +87,15 @@ define([
                 this.emit('change', {newContent: this.getValue()});
 
 
+                preview.trigger();
+
+
             }.bind(this));
 
             iocAceEditor.setChangeCursorCallback(function () {
                 commands.hide_menu();
+
+                preview.trigger();
             });
 
 

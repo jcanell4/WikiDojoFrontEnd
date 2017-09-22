@@ -322,7 +322,7 @@ define([
              */
             get_text_range: function (start, end) {
                 var session = this.getSession(),
-                    range = new Range(start.row, start.column, end.row, end.column);
+                    range = new this.Range(start.row, start.column, end.row, end.column);
 
                 return session.getTextRange(range);
             },
