@@ -9,7 +9,7 @@ define(function() {
         var i, state, _i, _len;
         if (index == null) {
           row = pos.row;
-          states = spec.ace.get_line_states(row);
+          states = spec.ace.get_line_states_preview(row, true);
           for (i = _i = 0, _len = states.length; _i < _len; i = ++_i) {
             state = states[i];
             index = i;
@@ -23,15 +23,19 @@ define(function() {
           index += 1;
         } else if (backwards && row > 0) {
           row -= 1;
-          states = spec.ace.get_line_states(row);
+          states = spec.ace.get_line_states_preview(row, true);
           index = states.length - 1;
         } else if (!backwards && row + 1 < spec.ace.get_length()) {
           row += 1;
-          states = spec.ace.get_line_states(row);
+          states = spec.ace.get_line_states_preview(row, true);
           index = 0;
         } else {
           return;
         }
+
+        console.log("States:", states);
+        console.log("Index:", index);
+
         states[index].row = row;
         if (test(states[index])) {
           return states[index];
@@ -53,6 +57,9 @@ define(function() {
       while (state = it()) {
         start_state = state;
       }
+
+        console.log("Start:", start_state, "End:", end_state);
+
       if (!(start_state && end_state)) {
         return;
       }
@@ -65,7 +72,13 @@ define(function() {
         column: end_state.end
       };
       text = spec.ace.get_text_range(start, end);
+
+
+      console.log(text);
+
       url = DOKU_BASE + 'lib/plugins/aceeditor/preview.php';
+
+
       return jQuery.getJSON(url, {
         text: text
       }, function(data) {

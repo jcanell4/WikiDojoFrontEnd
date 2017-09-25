@@ -130,9 +130,6 @@ define([
                 mapping = tokenizer.matchMappings[currentState];
 
                 re = tokenizer.regExps[currentState];
-
-
-                re = tokenizer.regExps[currentState];
                 re.lastIndex = lastIndex = 0;
                 states = [
                     {
@@ -141,9 +138,13 @@ define([
                     }
                 ];
 
+                var previousLastIndex = -1;
+                var MAX_ITERATIONS = 200;
+                var currentIterations = 0;
+
                 while (match = re.exec(line)) {
                     for (var i = 0, len = match.length - 2; i < len; i++) {
-                        if (match[i + 1] != null) {
+                        if (match[i + 1] !== undefined) {
                             rule = state[mapping[i]];
                             if (rule.next && rule.next !== currentState) {
                                 currentState = rule.next;
@@ -161,13 +162,118 @@ define([
                             break;
                         }
                     }
-                    if (lastIndex === line.length) {
-                        break;
+
+                    if (previousLastIndex !== -1 && previousLastIndex === lastIndex) {
+                        currentIterations++;
                     }
-                    lastIndex = re.lastIndex;
+
+                    if (lastIndex === line.length /*|| (previousLastIndex !== -1 && previousLastIndex === lastIndex)*/
+                        || currentIterations>MAX_ITERATIONS
+                    ) {
+
+                        console.log("Breaking loop");
+                        break;
+                    } else {
+                        previousLastIndex = lastIndex;
+                    }
                 }
+
+                console.log("Current Iterations", currentIterations);
                 _.last(states).end = lastIndex;
 
+                return states;
+            },
+
+            /* ALERTA: Duplicat de l'anterior (i modificat) per evitar fer canvis que trenquin a la crida d'altres objectes (el ContextTable i el IocCommand) */
+            getLineStatesPreview: function (line, startState, tokenizer, includeFirst) {
+                console.log("**** INCLUDE FIRST? ****", includeFirst);
+
+
+                var currentState, lastIndex, mapping, match, re, rule, state, states;
+
+                if (Array.isArray(startState)) {
+                    currentState = startState[0];
+                } else {
+                    currentState = startState
+                }
+                state = tokenizer.states[currentState];
+                mapping = tokenizer.matchMappings[currentState];
+
+                re = tokenizer.regExps[currentState];
+                re.lastIndex = lastIndex = 0;
+                states = [
+                    {
+                        start: 0,
+                        name:  startState
+                    }
+                ];
+
+                var previousLastIndex = -1;
+                var firstMatch = null;
+                var MAX_ITERATIONS = 200;
+                var currentIterations = 0;
+
+                while (match = re.exec(line)) {
+                    for (var i = 0, len = match.length - 2; i < len; i++) {
+                        if (match[i + 1] !== undefined) {
+                            rule = state[mapping[i]];
+
+                            if (!firstMatch && includeFirst) {
+                                firstMatch = match[i+1];
+                                console.log("firstMatch:", firstMatch);
+                                includeFirst = false;
+                            }
+
+                            if (rule.next && rule.next !== currentState) {
+                                currentState = rule.next;
+                                state = tokenizer.states[currentState];
+                                mapping = tokenizer.matchMappings[currentState];
+                                lastIndex = re.lastIndex;
+
+
+                                re = tokenizer.regExps[currentState];
+                                re.lastIndex = lastIndex;
+                                _.last(states).end = lastIndex;
+
+                                // ALERTA! S'augmentan el nombre d'estats afegits, segurament perqué la nova cerca torna a incloure'ls. Això no te efecte en el cas de les línies, però si en els tokens inline
+                                if (firstMatch) {
+                                    lastIndex -= firstMatch.length;
+                                    firstMatch = null;
+                                }
+
+
+                                console.log("Afegint estat:", {
+                                    start: lastIndex,
+                                    name:  currentState
+                                });
+
+                                states.push({
+                                    start: lastIndex,
+                                    name:  currentState
+                                });
+                            }
+                            break;
+                        }
+                    }
+
+                    if (previousLastIndex !== -1 && previousLastIndex === lastIndex) {
+                        currentIterations++;
+                    }
+
+                    if (lastIndex === line.length /*|| (previousLastIndex !== -1 && previousLastIndex === lastIndex)*/
+                        || currentIterations>MAX_ITERATIONS
+                    ) {
+
+                        console.log("Breaking loop");
+                        break;
+                    } else {
+                        previousLastIndex = lastIndex;
+                    }
+                }
+
+                console.log("Current Iterations", currentIterations);
+
+                _.last(states).end = lastIndex;
 
                 return states;
             },
@@ -293,8 +399,19 @@ define([
                     state = row > 0 ? session.getState(row - 1) : 'start',
                     line = session.getLine(row);
 
+
                 return this.getLineStates(line, state, session.getMode().getTokenizer());
             },
+
+            get_line_states_preview: function (row, includeFirst) {
+                var session = this.getSession(),
+                    state = row > 0 ? session.getState(row - 1) : 'start',
+                    line = session.getLine(row);
+
+
+                return this.getLineStatesPreview(line, state, session.getMode().getTokenizer(), includeFirst);
+            },
+
 
             /**
              * Retorna un objecte amb la posició del caràcter inicial i el caràcter final seleccionats. S'ha de tenir en
