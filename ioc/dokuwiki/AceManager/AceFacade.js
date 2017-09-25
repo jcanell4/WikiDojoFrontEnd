@@ -81,7 +81,6 @@ define([
             // ----------------------------
 
             iocAceEditor.setDocumentChangeCallback(function () {
-                // console.log("AceFacade#setDocumentChangeCallback");
                 this.updateTextarea(this.getEditorValue());
                 dokuWrapper.text_changed();
                 commands.hide_menu();
@@ -143,7 +142,6 @@ define([
         },
 
         updateEditor: function (value) {
-            //console.log("AceFacade#updateEditor", value);
             this.aceWrapper.set_value(value);
         },
 
@@ -157,7 +155,6 @@ define([
         },
 
         getEditorValue: function () {
-            //console.log("AceFacade#getEditor", this.aceWrapper.get_value());
             return this.aceWrapper.get_value();
         },
 
@@ -166,7 +163,6 @@ define([
         },
 
         setEditorValue: function (value) {
-            //console.log("AceFacade#setEditorValue", value);
             return this.aceWrapper.set_value(value);
         },
 
@@ -220,7 +216,6 @@ define([
         },
 
         select: function () {
-            //console.log("AceFacade#select", this.id);
             patcher.restoreCachedFunctions(this.id);
         },
 

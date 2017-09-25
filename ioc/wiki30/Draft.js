@@ -178,9 +178,7 @@ define([
             var pages = this._doGetPages();
 
 
-
             pages[this.contentTool.ns] = this._createNewPage();
-
 
 
             // if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
@@ -269,7 +267,7 @@ define([
             if (pages[this.contentTool.ns]) {
                 pages[this.contentTool.ns].drafts = {};
             } else {
-                pages[this.contentTool.ns] = {drafts:{}};
+                pages[this.contentTool.ns] = {drafts: {}};
             }
 
 
@@ -310,8 +308,27 @@ define([
         _doSetPages: function (pages) {
             //console.log('Draft#_doSetPages', pages);
             var userId = 'user_' + this.dispatcher.getGlobalState().userId;
-            localStorage.setItem(userId, JSON.stringify({pages: pages}));
+
+            this._compactPages(pages);
+
+            if (Object.keys(pages).length === 0) {
+                localStorage.removeItem(userId);
+            } else {
+                localStorage.setItem(userId, JSON.stringify({pages: pages}));
+            }
         },
+
+        _compactPages: function (pages) {
+            console.log("Compactant pàgines:", pages);
+
+            for (var ns in pages) {
+                if (Object.keys(pages[ns].drafts).length === 0) {
+                    console.log("Esborrant pàgina", ns);
+                    delete (pages[ns]);
+                }
+            }
+        },
+
 
         // TODO[Xavi] aquí podem afegir la descompresió de dades
         _doGetPage: function () {
@@ -433,7 +450,7 @@ define([
         },
 
 
-        _cancel: function(event) {
+        _cancel: function (event) {
             // console.log('Draft#_cancel', event);
 
             var removeDraft = false;
@@ -441,7 +458,7 @@ define([
             if (event.dataToSend && typeof event.dataToSend === "string") {
                 var params = this._deparam(event.dataToSend);
                 removeDraft = !params.keep_draft;
-            } else if (event.dataToSend && event.dataToSend.keep_draft !== undefined ){
+            } else if (event.dataToSend && event.dataToSend.keep_draft !== undefined) {
                 removeDraft = event.dataToSend.keep_draft;
             }
 
@@ -453,7 +470,7 @@ define([
         },
 
 
-        _deparam: function(queryString) {
+        _deparam: function (queryString) {
             var pairs = queryString.split('&');
             var dictionary = {};
 
@@ -466,7 +483,7 @@ define([
             return dictionary;
         },
 
-        _getParamValue: function(value) {
+        _getParamValue: function (value) {
             if (value === "true") {
                 return true;
             } else if (value === "false") {

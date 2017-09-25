@@ -83,8 +83,6 @@ define([
             },
 
             isRefreshableContent: function (oldType, newType) {
-                console.log("ContentProcessor#isRefreshableContent", oldType);
-
                 return false;
             }
 

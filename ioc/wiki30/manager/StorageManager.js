@@ -97,9 +97,6 @@ define([], function () {
                     spaceUsed += (storage[storage.key(i)].length * 2) / 1024; // KB
                 }
 
-                console.log(type + " Storage usat: ", spaceUsed.toFixed(2) + " KB");
-
-
                 return spaceUsed;
             },
 

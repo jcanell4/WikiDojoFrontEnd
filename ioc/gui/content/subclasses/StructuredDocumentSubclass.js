@@ -286,12 +286,8 @@ define([
                             id: context.id,
                             chunk: header_id
                         });
-                        //context.dispatchEvent(context.eventNameCompound.EDIT_PARTIAL + context.id, {
-                        //    id: context.id,
-                        //    chunk: section_id
-                        //});
                     } else {
-                        console.log("Ja s'està editant ", header_id);
+                        //console.log("Ja s'està editant ", header_id);
                     }
 
                 });
@@ -1360,7 +1356,7 @@ define([
                     if (this.required && this.getPropertyValueFromData(dataToSend, 'keep_draft') === false) {
                         this._removePartialDraft(event.chunk);
                     } else {
-                        console.log("No s'elimina l'esborrany parcial", this.getPropertyValueFromData(dataToSend, 'keep_draft'), this.required);
+                        //console.log("No s'elimina l'esborrany parcial", this.getPropertyValueFromData(dataToSend, 'keep_draft'), this.required);
                     }
 
                     // ALERTA[Xavi] això s'hauria de canviar, el discardChanges i discard_changes són el mateix però es troben per tot arreu amb qualsevol dels dos noms!
@@ -1507,7 +1503,7 @@ define([
                 if (this.required && this.getPropertyValueFromData(dataToSend, 'keep_draft') === false) {
                     this._removeAllDrafts();
                 } else {
-                    console.log("No s'eliminen els esborranys", this.getPropertyValueFromData(dataToSend, 'keep_draft'), this.required);
+                    //console.log("No s'eliminen els esborranys", this.getPropertyValueFromData(dataToSend, 'keep_draft'), this.required);
                 }
 
                 // if (event.dataToSend) {

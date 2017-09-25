@@ -2,7 +2,7 @@ define([
     "dojo/Stateful",
     "dojo/_base/declare",
     "ioc/dokuwiki/AceManager/patcher",
-    'ioc/wiki30/GlobalState',
+    'ioc/wiki30/GlobalState'
 ], function (Stateful, declare, patcher, GlobalState) {
     return declare([Stateful],
         /**
@@ -81,7 +81,7 @@ define([
              * @param {AceWrapper} aceWrapper - Embolcall del editor ace que volem enllaçar
              */
             setAceWrapper: function (aceWrapper) {
-                this.set('aceWrapper', aceWrapper)
+                this.set('aceWrapper', aceWrapper);
             },
 
 
@@ -124,7 +124,6 @@ define([
                      * @private
                      */
                     _patchPasteText = function (func, selection, text, opts) {
-                        // console.log("DokuWrapper#_patchPasteText", self.textArea);
                         if (!opts) {
                             opts = {};
                         }
@@ -361,12 +360,11 @@ define([
                 jQuery(this.textArea).val(value);
             },
 
-            // TODO d'on surt el summaryCheck()? de js.php? --> Surt de /lib/scripts/edit.js#summaryCheck()
             text_changed: function () { // TODO[Xavi] No es crida?
-                // console.log("DokuWrapper#text_changed");
                 // TODO[Xavi] Afegit nou:
                 //dispatcher.getChangesManager().addDocumentChanged();
                 //dispatcher.setUnsavedChangesState(true);
+                // summaryCheck() surt de /lib/scripts/edit.js#summaryCheck()
                 return summaryCheck();
             },
 

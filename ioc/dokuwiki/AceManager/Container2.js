@@ -1,7 +1,11 @@
 define([
     "dojo/Stateful",
-    "dojo/_base/declare",
+    "dojo/_base/declare"
 ], function (Stateful, declare) {
+    
+/**
+ * AVÍS [Rafa] Hola Xavi, hauras de revisar i eliminar allò que ja ho serveixi
+ */    
     return declare([Stateful],
         /**
          * Embolcall per manipular un editor ace.
@@ -44,7 +48,6 @@ define([
             },
 
             _init: function () {
-                //console.log("Container#init");
                 var element = jQuery('<div>'),
                     textarea = jQuery(this.dokuWrapper.textArea),
                     wrapper = jQuery('<div>', {
@@ -76,17 +79,14 @@ define([
             },
 
             element: function () { // TODO[Xavi] No se si això continua fent falta, no veig que es cridi
-//                console.log("Container#element");
                 return this.$elementContainer.get(0);
             },
 
             hide: function () {
-                //console.log("Container#hide");
                 return this.$wrapper.hide();
             },
 
             incr_height: function (value) {
-                //console.log("Container#incr_height");
                 var wrapper = this.$wrapper,
                     element = this.$elementContainer;
 
@@ -95,18 +95,15 @@ define([
             },
 
             on_resize:  function () {
-                //console.log("Container#on_resize");
                 return this.$elementContainer.css('width', this.$wrapper.width() + 'px');
             },
 
             set_height: function (value) {
-                //console.log("Container#set_height");
                 this.$wrapper.css('height', value + 'px');
                 return this.$elementContainer.css('height', this.$wrapper.height() + 'px');
             },
 
             show: function () {
-                //console.log("Container#show");
                 var wrapper = this.$wrapper,
                     element = this.$elementContainer;
                 wrapper.show();
@@ -132,14 +129,14 @@ define([
 
             /** @param {ElementCollection | Element | id} editorNode*/
             setEditorNode: function(editorNode){
-                console.log("eliminada");
+                //console.log("eliminada");
                 //if(this.dokuEditor){
                 //    this.dokuEditor.setEditorNode(editorNode);
                 //}
             },
             
             select: function(){
-                console.log("eliminada");
+                //console.log("eliminada");
                 //if(this.dokuEditor){
                 //    this.dokuEditor.select();
                 //}
@@ -147,14 +144,14 @@ define([
 
     
             unselect: function(){
-                console.log("eliminada");
+                //console.log("eliminada");
                 //if(this.dokuEditor){
                 //    this.dokuEditor.unselect();
                 //}
             },
             
             getEditorNode: function(){
-                console.log("eliminada");
+                //console.log("eliminada");
                 //return this.dokuEditor.getEditorNode();
             }
             

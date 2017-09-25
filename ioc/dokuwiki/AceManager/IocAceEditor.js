@@ -35,10 +35,8 @@ define([
                 horizontalScrollBar: false,
                 undoManager:         new ace.UndoManager(),
                 onDocumentChange:    function (e) {
-                    //console.log("callback: document change");
                 },
                 onCursorChange:      function (e) {
-                    //console.log("callback: cursor change");
                 }
             },
 

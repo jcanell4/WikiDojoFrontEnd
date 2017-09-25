@@ -216,7 +216,7 @@ define([
                 //
                 // });
 
-                console.log("Params pel dialog:", params);
+                //console.log("Params pel dialog:", params);
 
                 var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
                 return dialog;

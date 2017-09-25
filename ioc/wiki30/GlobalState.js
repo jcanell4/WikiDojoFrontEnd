@@ -381,7 +381,7 @@ define([
         },
 
         getAllRequiredPagesNS: function() {
-            console.log("GlobalState#getAllRequiredPagesNS");
+            //console.log("GlobalState#getAllRequiredPagesNS");
             var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
             var requiredPagesNS = [];
 
@@ -483,10 +483,10 @@ define([
 
 
             if (this.userId && storedChangedPages && storedChangedPages.userId === this.userId) {
-                console.log("GlobalState#isAnyPageChanged", Object.keys(storedChangedPages.pages).length > 0);
+                //console.log("GlobalState#isAnyPageChanged", Object.keys(storedChangedPages.pages).length > 0);
                 return Object.keys(storedChangedPages.pages).length > 0;
             } else {
-                console.log("GlobalState#isAnyPageChanged", false);
+                //console.log("GlobalState#isAnyPageChanged", false);
                 return false;
             }
         }

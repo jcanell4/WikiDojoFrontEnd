@@ -715,25 +715,15 @@ define([
                 this.defRule(i, "\\s*$|^", "text", o);
 
 
-                // console.log("Comprovant si s'ha demanat l'id");
-                // console.log("e:", e);
-                // console.log("n:", n);
                 if (n.indexOf("id") < 0) {
-                    // console.log("no s'ha trobat l'id, es posarà qualsevol text en vermell");
                     this.defRule(i, ".+", "keyword.invalid");
 
                 }
 
-                // console.log("Comprovant si s'ha demanat l'offset", e, n);
                 if (n.indexOf("offset") >= 0) {
-
-                    // console.log("Offset igual o major que 0 --> afegint rule per offset");
-
                     this.defRule(o, "^(  :)(offset)(:)", a, s);
                     this.defRule(s, "\\s*-?\\d+\\s*$", "constant.numeric", o);
                     this.defRule(s, ".+$", "keyword.invalid", o);
-                } else {
-                    // console.log("no s'ha trobat l'offset");
                 }
 
 

@@ -23,7 +23,6 @@ define([
         baseClass: "search-users-pane",
         
         process: function(response, dispatcher){
-            console.log("Resposta:", response);
             
             var that = this;
             var $tableBody = jQuery(this.tableBodyNode);

@@ -1,14 +1,13 @@
 define([
-//    'ioc/wiki30/dispatcherSingleton',
     'ioc/gui/DialogBuilder' ,
     'ioc/wiki30/Timer'
-], function (/*getDispatcher,*/ DialogBuilder, Timer) {
+], function (DialogBuilder, Timer) {
 
 /*
- * Alerta [Josep] Aquesta funció no es fa servir. No més és aquí per ilustrar com generar diversos diàlegs amb diferents tipus de botons
+ * Alerta [Josep] Aquesta funció no es fa servir. 
+ * No més és aquí per ilustrar com generar diversos diàlegs amb diferents tipus de botons
  */
     return function (params) {
-        console.log("processTimerDIalog", params);
         
         var refId = "requiring_timer",
                 dlg,

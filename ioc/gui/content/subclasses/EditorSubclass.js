@@ -227,7 +227,7 @@ define([
             },
 
             _removeAllDrafts: function () {
-                console.log("EditorSubclass#_removeAllDrafts", this.id);
+                //console.log("EditorSubclass#_removeAllDrafts", this.id);
                 this.draftManager.clearDraft(this.id, this.ns, true);
             },
 

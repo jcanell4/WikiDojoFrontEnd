@@ -173,7 +173,6 @@ define([
             },
 
             _createDokuwikiNSTreeContentTool: function (metaContent) {
-                console.log(metaContent);
                 var args = {
                     id: metaContent.id,
                     title: metaContent.title,

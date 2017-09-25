@@ -143,7 +143,7 @@ define([
 
             // Alerta[Xavi] el event pot contenir informaciÃ³ que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
-                console.log("FormSubclass#_doCancelDocument", this.id, event);
+                //console.log("FormSubclass#_doCancelDocument", this.id, event);
 
                 var containerId = this.id,
                     dataToSend = this.getQueryCancel(this.id); // el parÃ metre no es fa servir
