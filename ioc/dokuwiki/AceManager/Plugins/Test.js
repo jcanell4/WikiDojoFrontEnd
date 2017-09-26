@@ -10,7 +10,7 @@ define([
     "dojo/i18n!ioc/dokuwiki/AceManager/nls/commands"
 ], function (declare, i18n, lang, has, focus, _Plugin, Button, string) {
 
-    var TestPlugin = declare("ioc.dokuwiki.acemanager.plugins.testplugin", _Plugin, {
+    var TestPlugin = declare("ioc.dokuwiki.AceManager.plugins.testplugin", _Plugin, {
         // summary:
         //		This plugin provides Print capability to the editor.  When
         //		clicked, the document in the editor frame will be printed.
@@ -25,7 +25,7 @@ define([
         _initButton: function () {
             // summary:
             //		Over-ride for creation of the Print button.
-            var strings = i18n.getLocalization("ioc.dokuwiki.acemanager", "commands"),
+            var strings = i18n.getLocalization("ioc.dokuwiki.AceManager", "commands"),
                 editor = this.editor;
             this.button = new Button({
                 label: strings["testplugin"],

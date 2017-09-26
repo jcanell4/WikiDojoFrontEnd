@@ -16,10 +16,10 @@ define([
 
 ], function (declare, i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
 
-    var strings = i18n.getLocalization("ioc.dokuwiki.acemanager", "commands");
+    var strings = i18n.getLocalization("ioc.dokuwiki.AceManager", "commands");
 
 
-    var CommentsDialog = declare("ioc.dokuwiki.acemanager.plugins.commentsdialog", _Plugin, {
+    var CommentsDialog = declare("ioc.dokuwiki.AceManager.plugins.commentsdialog", _Plugin, {
         // summary:
         //		This plugin provides Print capability to the editor.  When
         //		clicked, the document in the editor frame will be printed.
