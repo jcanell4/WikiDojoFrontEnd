@@ -198,7 +198,7 @@ define([
             return this.aceWrapper.set_value(value);
         },
 
-        setTextareaValue: function () {
+        setTextareaValue: function (value) {
             return this.dokuWrapper.set_value(value);
         },
 
