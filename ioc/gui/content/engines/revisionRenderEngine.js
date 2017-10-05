@@ -47,7 +47,7 @@ define(function () {
 
         _generateHtmlForDiff = function (revision) {
             var html = '',
-                linkDiff = '?id=' + revision['id'] + "&rev=" + revision['rev'] + "&difftype=sidebyside";
+                linkDiff = '?id=' + revision['id'] + '?id=' + revision['ns']+ "&rev=" + revision['rev'] + "&difftype=sidebyside";
 
             html += '<td><a href="' + linkDiff + '" data-call="diff">';
             html += '<img width="15" height="11" alt="Mostra diferències amb la versió actual"';
@@ -62,26 +62,52 @@ define(function () {
         //     return 'revisions_selector_' + id.replace(/:/g, '_');
         // };
 
+        _generateNextButton = function (id, ns, offset) {
+            var link= '?id=' + ns + '&targetId=' + id+"&offset=" + offset;
+
+            var html = '<a href="' + link + '" data-call="revision">&gt;&gt;</a>';
+
+            return html;
+        };
+
+        _generatePreviousButton = function (id, ns, offset) {
+            var link= '?id=' + ns + '&targetId=' + id +"&offset=" + offset;
+
+            var html = '<a href="' + link + '" data-call="revision">&lt;&lt;</a>';
+
+            return html;
+        };
+
+        _generatePaginationRow = function (lessButton, moreButton, page) {
+
+            var html = '<tr><td style="text-align: center;" colspan="3">';
+            html += lessButton ? lessButton : '<<';
+            html += ' ';
+            html += page;
+            html += ' ';
+            html += moreButton? moreButton : '>>';
+            html += '</td></tr>';
+
+            return html;
+        }
+
 
     return function (data, contentTool) {
         data = JSON.parse(JSON.stringify(data)); // Com que data es un objecte hem de fer una copia per no modificar l'original
 
 
-        var id = contentTool.id,
+        var id = contentTool.docId,
             ns = data.docId,
             html = '',
-            //first = true,
             linkRev,
             linkTime,
             sortable = [],
             linkCurrent;
 
-
         html += '<form id="revisions_selector_' + id + '" action="'+ data.urlBase+'" method="post">';
         html += '<input name="id" value="' + ns + '" type="hidden">';
         html += '<table class="meta-revisions">';
         html += '<tr><th colspan="5" style="text-align: center"><input type="submit" name="submit" value="comparar revisions"/></th></tr>'; // TODO[Xavi]no funciona, surt fora de la taula, perquè?
-
 
         // Comprovem si existeix el actual i si es així l'eliminem de la llista de revisions
         if (data[data.current]) {
@@ -92,8 +118,25 @@ define(function () {
 
         linkCurrent = '?id=' + data.docId;
 
+        if (data.position && data.position>-1) {
+            var lessButton = _generatePreviousButton(id, data.docId, Math.max(-1, data.position-data.amount));
+        }
+
+        if (data.show_more_button) {
+            var moreButton = _generateNextButton(id, data.docId, Math.max(0, data.position) + data.amount);
+        }
+
+        var page = Math.floor(Math.max(data.position, 0) /data.amount) +1;
+
+
+
+        delete(data.position);
+        delete(data.amount);
+        delete(data.show_more_button);
+
         delete(data.docId);
         delete(data.urlBase);
+
 
 
         // extreiem cada objecte i l'afegim a un array per poder ordenar-los
@@ -111,11 +154,12 @@ define(function () {
 
 
         // Afegim el actual
-        html += "<td></td>";
+        html += '<tr><td></td>';
         html += '<td colspan="4" class="current-revision"><a href="' + linkCurrent + '" title="' + 'Obrir la revisió actual">';
         html += 'Versió actual';
-        html += '</a></td>';
+        html += '</a></td></tr>';
 
+        html+=_generatePaginationRow(lessButton, moreButton, page);
 
         for (var i = 0; i < sortable.length; i++) {
             linkRev = '?id=' + sortable[i]['id'] + "&rev=" + sortable[i]['rev'];
@@ -137,6 +181,9 @@ define(function () {
 
             html += '</tr>';
         }
+
+        html+=_generatePaginationRow(lessButton, moreButton, page);
+
 
         html += '</table>';
         html += '</form>';
