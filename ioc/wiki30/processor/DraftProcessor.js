@@ -21,7 +21,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                this._processDialog(value, dispatcher);
+                    this._processDialog(value, dispatcher);
             },
 
             /**
