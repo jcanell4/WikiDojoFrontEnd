@@ -29,8 +29,7 @@ define([
 
             _extraRules: [
                 ['inline', ["\\{\{\\s?(?:vimeo|youtube|dailymotion|altamarVideos|altamarFromUrl|altamarFromId|altamarFromReq).*?>[^}]+\\}\\}", "keyword"]],
-                ['inline',["\\{\\{\\s?(?:soundcloud|iocsound).*?>.*?:[^}]+\\}\\}", "keyword"]],
-                ['inline',["\\{\\{\\s?(?:iocgif).*?>.*?:[^}]+\\}\\}", "keyword"]],
+                ['inline',["\\{\\{\\s?(?:soundcloud|iocgif).*?>.*?:[^}]+\\}\\}", "keyword"]],
 
                 ['container', ["quiz", "<quiz>", "keyword"]],
                 ['rule', ["quiz-start", "^(?: {2,}|	{1,})[-\\*]", "markup.list"]],
