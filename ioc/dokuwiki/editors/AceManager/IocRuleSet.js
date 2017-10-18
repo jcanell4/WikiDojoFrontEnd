@@ -1,11 +1,11 @@
 define([
     'dojo/_base/declare',
-    'ioc/dokuwiki/AceManager/AbstractRuleSet',
+    'ioc/dokuwiki/editors/AceManager/AbstractRuleSet',
     'ace-builds/mode-java',
     'ace-builds/mode-php',
     'ace-builds/mode-html',
     'ace-builds/mode-markdown',
-    'ioc/dokuwiki/AceManager/modes/mode-latex',
+    'ioc/dokuwiki/editors/AceManager/modes/mode-latex',
     // 'ace-builds/mode-latex',
 
 ], function (declare, AbstractRuleSet) {

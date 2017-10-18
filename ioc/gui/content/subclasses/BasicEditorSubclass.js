@@ -1,17 +1,13 @@
 define([
     "dojo/_base/declare",
     "dojo/on",
-    // 'ioc/dokuwiki/AceManager/toolbarManager',
-    // 'ioc/dokuwiki/AceManager/AceFacade',
-    'ioc/dokuwiki/AceManager/AceEditorFullFacade',
-    'ioc/dokuwiki/AceManager/DojoEditorFacade',
+    'ioc/dokuwiki/editors/AceManager/AceEditorFullFacade',
+    'ioc/dokuwiki/editors/DojoManager/DojoEditorFacade',
     'dojo/dom-geometry',
     'dojo/dom',
     "dojo/io-query",
     "dojo/_base/lang",
-    // 'ioc/wiki30/Draft',
-    // 'dojo/cookie',
-], function (declare, on, /*toolbarManager,*/ AceFacade, DojoEditorFacade, geometry, dom, ioQuery, lang, /*Draft, */cookie) {
+], function (declare, on, AceFacade, DojoEditorFacade, geometry, dom, ioQuery, lang) {
 
     return declare([],
         //return declare(null,
@@ -262,7 +258,7 @@ define([
             // Afegeix un editorAce per cada editor actiu
             addEditors: function () {
                 this.editor = this.createEditor({id : this.id}, "DojoEditor"); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
-                // this.editor = this.createEditor({id:this.id}); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
+                //this.editor = this.createEditor({id:this.id}); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
             },
 
             createEditor: function(config, type) {

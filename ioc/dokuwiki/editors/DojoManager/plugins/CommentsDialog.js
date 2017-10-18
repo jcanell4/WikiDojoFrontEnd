@@ -10,16 +10,16 @@ define([
     'ioc/gui/DialogBuilder',
     "dojo/text!./templates/CommentFragment.html",
     "dojo/text!./templates/CommentFragmentReply.html",
-    "dojo/i18n!ioc/dokuwiki/AceManager/nls/commands",
+    "dojo/i18n!ioc/dokuwiki/editors/DojoManager/nls/commands",
 
 
 
 ], function (declare, i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
 
-    var strings = i18n.getLocalization("ioc.dokuwiki.AceManager", "commands");
+    var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
 
 
-    var CommentsDialog = declare("ioc.dokuwiki.AceManager.plugins.commentsdialog", _Plugin, {
+    var CommentsDialog = declare("ioc.dokuwiki.editors.DojoManager.plugins.commentsdialog", _Plugin, {
         // summary:
         //		This plugin provides Print capability to the editor.  When
         //		clicked, the document in the editor frame will be printed.
@@ -41,7 +41,6 @@ define([
 
     // @override
         _initButton: function () {
-            console.log("Init button");
 
             var editor = this.editor;
             editor.customUndo = true;
@@ -62,7 +61,6 @@ define([
             // this._parse(this.editor.get('value'));
             this.firstRun = true;
 
-            console.log("Init button: okk");
         },
 
         _showCommentDialog: function () {
@@ -130,17 +128,12 @@ define([
         },
 
         _addHandlers: function ($node, context) {
-            console.log("addHandlers");
             var $replyNode = $node.find('textarea.reply');
             var $buttons = $node.find('button[data-action]');
             var $removeButtons = $node.find('[data-button="remove"]');
             var $editButtons = $node.find('[data-button="edit"]');
             // var $saveButons = $node.find('button[data-action-reply="save"]');
             // var $cancelButtons = $node.find('button[data-action-reply="cancel"]');
-
-            var that = this;
-
-            console.log("************* buttons:", $buttons);
 
             $buttons.on('click', function (e) {
                 // alert("Click a un botó");
@@ -173,7 +166,6 @@ define([
 
 
             // Això només ha de ser disponible en els comentaris propis de l'usuari
-            console.log("**** user:", context.editor.dispatcher.getGlobalState().userId);
 
             $removeButtons.each(function () {
                 var $button = jQuery(this);
@@ -208,8 +200,6 @@ define([
 
 
             $commentBody.on('click', function (e) {
-                // $replyNode.focus();
-                // that.$forcedTextArea.focus();
                 $node.find('textarea.reply').focus();
 
                 e.preventDefault();
@@ -236,7 +226,6 @@ define([
         },
 
         _addNote: function () {
-            console.log("addNote");
 
             // ALERTA[Xavi] Generem el id basat en el temps perquè només necessitem que sigui únic
 

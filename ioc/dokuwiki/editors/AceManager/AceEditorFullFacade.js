@@ -1,25 +1,25 @@
 define([
-    "dojo/_base/declare",
-    'ioc/dokuwiki/AceManager/IocAceEditor',
-    'ioc/dokuwiki/AceManager/IocAceMode',
-    'ioc/dokuwiki/AceManager/IocRuleSet',
-    'ioc/dokuwiki/AceManager/AceWrapper',
-    'ioc/dokuwiki/AceManager/DokuWrapper',
-    'ioc/dokuwiki/AceManager/Container2',
-    'ioc/dokuwiki/AceManager/IocCommands',
-    'ioc/dokuwiki/AceManager/patcher',
+    'dojo/_base/declare',
+    'ioc/dokuwiki/editors/AbstractIocFacade',
+    'ioc/dokuwiki/editors/AceManager/IocAceEditor',
+    'ioc/dokuwiki/editors/AceManager/IocAceMode',
+    'ioc/dokuwiki/editors/AceManager/IocRuleSet',
+    'ioc/dokuwiki/editors/AceManager/AceWrapper',
+    'ioc/dokuwiki/editors/AceManager/DokuWrapper',
+    'ioc/dokuwiki/editors/AceManager/Container2',
+    'ioc/dokuwiki/editors/AceManager/IocCommands',
+    'ioc/dokuwiki/editors/AceManager/patcher',
     'dojo/dom-style',
-    "dojo/dom",
-    'dojo/Evented',
-    'ioc/dokuwiki/AceManager/toolbarManager',
+    'dojo/dom',
+    'ioc/dokuwiki/editors/AceManager/toolbarManager',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/ace-preview',
+    'ioc/dokuwiki/editors/AceManager/ace-preview',
     'dojo/cookie',
-], function (declare, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher,
-             style, dom, Evented, toolbarManager, geometry, acePreview, cookie) {
+], function (declare, AbstractIocFacade, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher,
+             style, dom, toolbarManager, geometry, acePreview, cookie) {
 
 
-    return declare([Evented], {
+    return declare([AbstractIocFacade], {
 
         TOOLBAR_ID: "full-editor",
         VERTICAL_MARGIN: 25,
@@ -486,21 +486,6 @@ define([
             this.setValue(this.getOriginalValue());
         },
 
-        // TODO[Xavi] Aquest mètode només s'utilitza per depurar, pendent de moure a una subclasse més adient o elminar
-        _compareStrings: function (a, b) {
-            if (a === b) {
-                console.log("Son iguals");
-
-            } else if (a.length != b.length) {
-                console.log("No tenen la mateixa llargaria, diferencia: " + Math.abs(a.length - b.length));
-            } else {
-                for (var i = 0; i < a.length; i++) {
-                    if (a[i] != b[i]) {
-                        console.log("El caràcter a la posició " + i + " no coincideix: ", a[i], b[i]);
-                    }
-                }
-            }
-        },
     });
 
 

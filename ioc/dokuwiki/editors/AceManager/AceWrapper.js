@@ -1,7 +1,7 @@
 define([
     "dojo/Stateful",
     "dojo/_base/declare",
-    'ioc/dokuwiki/AceManager/state_handler' // TODO: Aquest fitxer no es troba al ACE no conflict, hauria d'estar com ace/keyboard/state_handler al mateix lloc que el de vim i emacs
+    'ioc/dokuwiki/editors/AceManager/state_handler' // TODO: Aquest fitxer no es troba al ACE no conflict, hauria d'estar com ace/keyboard/state_handler al mateix lloc que el de vim i emacs
 ], function (Stateful, declare, state_handler) {
     return declare([Stateful],
         /**
@@ -171,14 +171,12 @@ define([
                         || currentIterations>MAX_ITERATIONS
                     ) {
 
-                        console.log("Breaking loop");
                         break;
                     } else {
                         previousLastIndex = lastIndex;
                     }
                 }
 
-                console.log("Current Iterations", currentIterations);
                 _.last(states).end = lastIndex;
 
                 return states;
@@ -186,8 +184,6 @@ define([
 
             /* ALERTA: Duplicat de l'anterior (i modificat) per evitar fer canvis que trenquin a la crida d'altres objectes (el ContextTable i el IocCommand) */
             getLineStatesPreview: function (line, startState, tokenizer, includeFirst) {
-                console.log("**** INCLUDE FIRST? ****", includeFirst);
-
 
                 var currentState, lastIndex, mapping, match, re, rule, state, states;
 
@@ -220,7 +216,6 @@ define([
 
                             if (!firstMatch && includeFirst) {
                                 firstMatch = match[i+1];
-                                console.log("firstMatch:", firstMatch);
                                 includeFirst = false;
                             }
 
@@ -241,12 +236,6 @@ define([
                                     firstMatch = null;
                                 }
 
-
-                                console.log("Afegint estat:", {
-                                    start: lastIndex,
-                                    name:  currentState
-                                });
-
                                 states.push({
                                     start: lastIndex,
                                     name:  currentState
@@ -264,14 +253,11 @@ define([
                         || currentIterations>MAX_ITERATIONS
                     ) {
 
-                        console.log("Breaking loop");
                         break;
                     } else {
                         previousLastIndex = lastIndex;
                     }
                 }
-
-                console.log("Current Iterations", currentIterations);
 
                 _.last(states).end = lastIndex;
 

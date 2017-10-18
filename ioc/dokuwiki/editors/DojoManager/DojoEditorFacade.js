@@ -1,16 +1,16 @@
 define([
     'dojo/_base/declare',
-    'ioc/dokuwiki/AceManager/IocDojoEditor',
+    'ioc/dokuwiki/editors/AbstractIocFacade',
+    'ioc/dokuwiki/editors/DojoManager/IocDojoEditor',
     'dijit/_editor/plugins/AlwaysShowToolbar',
     'dojo/dom',
     'dojo/dom-style',
-    'dojo/Evented',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/AceManager/Plugins/Test',
-    'ioc/dokuwiki/AceManager/Plugins/CommentsDialog',
+    'ioc/dokuwiki/editors/DojoManager/plugins/Test',
+    'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
     // 'dojox/editor/plugins/InsertEntity',
-], function (declare, Editor, AlwaysShowToolbar, dom, style, Evented, geometry, Test, CommentsDialog) {
-    return declare([Evented], {
+], function (declare, AbstractIocFacade, Editor, AlwaysShowToolbar, dom, style, geometry, Test, CommentsDialog) {
+    return declare([AbstractIocFacade], {
 
         editor: null,
 
@@ -32,13 +32,11 @@ define([
             this.$textarea.after(this.$editor);
             this.$textarea.hide();
 
-            console.log("container id?", args.containerId);
-
             this.containerNode = jQuery('#' + args.containerId.replace(/^editor_/, '')).get(0);
 
 
             this.editor = new Editor({
-                styleSheets: '/iocjslib/ioc/dokuwiki/AceManager/css/dojoEditorStyles.css',
+                styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
                 extraPlugins: [Test, CommentsDialog],
                 dispatcher: this.dispatcher
                 // extraPlugins: [AlwaysShowToolbar, Test/*, Print*/],
@@ -96,7 +94,7 @@ define([
             var contentNode = this.containerNode,
                 h = geometry.getContentBox(contentNode).h;
 
-            console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
+            // console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
             this.setHeight(h);
         },
 

@@ -1,9 +1,9 @@
 define([
-    "dojo/Stateful",
-    "dojo/_base/declare",
-    "dojo/_base/lang"
-], function (Stateful, declare, lang) {
-    return declare([Stateful],
+    'ioc/dokuwiki/editors/AbstractIocEditor',
+    'dojo/_base/declare',
+    'dojo/_base/lang'
+], function (AbstractIocEditor, declare, lang) {
+    return declare([AbstractIocEditor],
         /**
          * Classe per la gestió del editor ACE adaptat a la DokuWiki 3.0 del IOC. Aquesta classe hereta de Stateful,
          * no s'han de modificar les propietats manualment si es fa externament, s'han de cridar els mètodes

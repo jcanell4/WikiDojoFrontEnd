@@ -25,14 +25,12 @@ define([
     'dojo/_base/declare',
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
     'ioc/gui/content/subclasses/LocktimedDocumentSubclass',
-    // 'ioc/dokuwiki/AceManager/AceFacade',
-    'ioc/dokuwiki/AceManager/AceEditorPartialFacade',
+    'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'dojo/dom',
     'dojo/dom-geometry',
-    // 'ioc/dokuwiki/AceManager/toolbarManager',
     'dojo/cookie',
-    'ioc/dokuwiki/AceManager/DojoEditorPartialFacade',
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, /*toolbarManager,*/ cookie, DojoEditorPartialFacade) {
+    'ioc/dokuwiki/editors/DojoManager/DojoEditorPartialFacade',
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, cookie, DojoEditorPartialFacade) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 

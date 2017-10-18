@@ -7,10 +7,10 @@ define([
     "dijit/_editor/_Plugin",
     "dijit/form/Button",
     "dojo/string", // string.substitute
-    "dojo/i18n!ioc/dokuwiki/AceManager/nls/commands"
+    "dojo/i18n!ioc/dokuwiki/editors/DojoManager/nls/commands"
 ], function (declare, i18n, lang, has, focus, _Plugin, Button, string) {
 
-    var TestPlugin = declare("ioc.dokuwiki.AceManager.plugins.testplugin", _Plugin, {
+    var TestPlugin = declare("ioc.dokuwiki.editors.DojoManager.plugins.testplugin", _Plugin, {
         // summary:
         //		This plugin provides Print capability to the editor.  When
         //		clicked, the document in the editor frame will be printed.
@@ -25,7 +25,7 @@ define([
         _initButton: function () {
             // summary:
             //		Over-ride for creation of the Print button.
-            var strings = i18n.getLocalization("ioc.dokuwiki.AceManager", "commands"),
+            var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands"),
                 editor = this.editor;
             this.button = new Button({
                 label: strings["testplugin"],
@@ -38,7 +38,6 @@ define([
                 onClick: lang.hitch(this, "_addNote")
             });
 
-            console.log("** Inicialitzat TestPlugin");
         },
 
         setEditor: function (/*dijit/Editor*/ editor) {
@@ -63,14 +62,11 @@ define([
         _addNote: function () {
             args = {content: this._getSelectionText() || this.content};
             this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
-
-            console.log("Funciona!");
         },
 
         // ALERTA[Xavi] S'ha de fer a través de la propietat window de l'editor perqué aquest es troba en un iframe
         _getSelectionText: function () {
             var text = this.editor.window.getSelection().toString();
-            console.log("Text:", text);
             return text;
         }
 
@@ -82,8 +78,6 @@ define([
     _Plugin.registry["testplugin"] = function () {
         return new TestPlugin({command: "print"});
     };
-
-    console.log("Plugins:", _Plugin.registry);
 
     return TestPlugin;
 });

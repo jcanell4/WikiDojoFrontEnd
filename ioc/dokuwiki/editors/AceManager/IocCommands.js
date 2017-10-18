@@ -1,7 +1,7 @@
 define([
     "dojo/Stateful",
     "dojo/_base/declare",
-    "ioc/dokuwiki/AceManager/IocContextTable"
+    "ioc/dokuwiki/editors/AceManager/IocContextTable"
 ], function (Stateful, declare, IocContextTable) {
     return declare([Stateful],
         /**

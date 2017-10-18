@@ -1,13 +1,12 @@
 define([
     'dojo/_base/declare',
-    'ioc/dokuwiki/AceManager/IocDojoEditor',
+    'ioc/dokuwiki/editors/DojoManager/IocDojoEditor',
     'dijit/_editor/plugins/AlwaysShowToolbar',
     'dojo/dom',
     'dojo/dom-style',
-    'dojo/Evented',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/AceManager/DojoEditorFacade',
-], function (declare, Editor, AlwaysShowToolbar, dom, style, Evented, geometry, DojoEditorFacade) {
+    'ioc/dokuwiki/editors/DojoManager/DojoEditorFacade',
+], function (declare, Editor, AlwaysShowToolbar, dom, style, geometry, DojoEditorFacade) {
     return declare([DojoEditorFacade], {
 
 

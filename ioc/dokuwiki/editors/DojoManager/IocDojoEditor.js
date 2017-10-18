@@ -1,4 +1,5 @@
 define([
+    'ioc/dokuwiki/editors/AbstractIocEditor',
     'dojo/_base/declare',
     'dijit/Editor',
 
@@ -30,12 +31,12 @@ define([
     "dijit/main", // dijit._scopeName
     "dojo/i18n!dijit/_editor/nls/commands"
 
-], function (declare, Editor,
+], function (AbstractIocEditor, declare, Editor,
              array, /*declare,*/ Deferred, i18n, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
              _Plugin, EnterKeyHandling, html, rangeapi, RichText, dijit) {
-    return declare([Editor], {
+    return declare([AbstractIocEditor, Editor], {
 
 
         constructor: function () {
@@ -118,7 +119,7 @@ define([
 
         // ALERTA[Xavi] Aquesta funció es idéntica a la del editor, sobreescrita només per facilitar la depuració i després es pot eliminar
         addPlugin: function (/*String||Object||Function*/ plugin, /*Integer?*/ index) {
-            console.log(" ** INICI ** ");
+
             // summary:
             //		takes a plugin name as a string or a plugin instance and
             //		adds it to the toolbar and associates it with this editor
@@ -187,7 +188,6 @@ define([
 
 
         onKeyDown: function (e) {
-            console.log("key down");
             // summary:
             //		Handler for onkeydown event.
             // tags:
@@ -269,8 +269,6 @@ define([
             //		Handler for when editor is clicked
             // tags:
             //		protected
-
-            console.log("click");
 
             this.endEditing(true);
             this.inherited(arguments);

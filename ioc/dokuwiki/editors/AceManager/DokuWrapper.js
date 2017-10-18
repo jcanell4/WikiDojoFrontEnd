@@ -1,7 +1,7 @@
 define([
     "dojo/Stateful",
     "dojo/_base/declare",
-    "ioc/dokuwiki/AceManager/patcher",
+    "ioc/dokuwiki/editors/AceManager/patcher",
     'ioc/wiki30/GlobalState'
 ], function (Stateful, declare, patcher, GlobalState) {
     return declare([Stateful],
