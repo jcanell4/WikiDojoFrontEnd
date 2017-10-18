@@ -25,19 +25,20 @@ define([
     'dojo/_base/declare',
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
     'ioc/gui/content/subclasses/LocktimedDocumentSubclass',
-    'ioc/dokuwiki/AceManager/AceFacade',
+    // 'ioc/dokuwiki/AceManager/AceFacade',
+    'ioc/dokuwiki/AceManager/AceEditorPartialFacade',
     'dojo/dom',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/AceManager/toolbarManager',
+    // 'ioc/dokuwiki/AceManager/toolbarManager',
     'dojo/cookie',
-    // 'dojo/_base/lang'
-], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, toolbarManager, cookie /*,lang*/) {
+    'ioc/dokuwiki/AceManager/DojoEditorPartialFacade',
+], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, /*toolbarManager,*/ cookie, DojoEditorPartialFacade) {
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
-        TOOLBAR_ID: 'partial_edit',
-        VERTICAL_MARGIN: 100, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
-        MIN_HEIGHT: 200, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+        // TOOLBAR_ID: 'partial_edit',
+        // VERTICAL_MARGIN: 100, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
+        // MIN_HEIGHT: 200, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
         DRAFT_TYPE: 'structured',
 
@@ -49,7 +50,7 @@ define([
             this.currentElementId = null;
             this.hasChanges = false;
 
-            toolbarManager.setDispatcher(args.dispatcher);
+            // toolbarManager.setDispatcher(args.dispatcher);
         },
 
 
@@ -68,7 +69,7 @@ define([
             }
 
             this.addEditors();
-            this.addToolbars();
+            // this.addToolbars();
 
             this.addEditionListener();
             this.addSelectionListener();
@@ -111,152 +112,152 @@ define([
             }
         },
 
-        addToolbars: function () {
-//            console.log("StructuredDocumentSubclass#addToolbars");
-            var auxId;
+//         addToolbars: function () {
+// //            console.log("StructuredDocumentSubclass#addToolbars");
+//             var auxId;
+//
+//             this.addButtons();
+//
+//             for (var i = 0; i < this.data.chunks.length; i++) {
+//
+//
+//                 if (this.data.chunks[i].text) {
+// //                    console.log("Afegint toolbar per:", this.data.chunks[i].header_id);
+//                     auxId = this.data.id + "_" + this.data.chunks[i].header_id;
+//                     toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
+//                 }
+//             }
+//         },
 
-            this.addButtons();
+        // addButtons: function () {
+        //     var argSave = {
+        //             type: "SaveButton",
+        //             title: "Desar",
+        //             icon: "/iocjslib/ioc/gui/img/save.png"
+        //         },
+        //
+        //         argCancel = {
+        //             type: "BackButton",
+        //             title: "Tornar",
+        //             icon: "/iocjslib/ioc/gui/img/back.png"
+        //         },
+        //
+        //         confEnableAce = {
+        //             type: "EnableAce",
+        //             title: "Activar/Desactivar ACE",
+        //             icon: "/iocjslib/ioc/gui/img/toggle_on.png"
+        //         },
+        //
+        //         confEnableWrapper = {
+        //             type: "EnableWrapper", // we havea new type that links to the function
+        //             title: "Activar/Desactivar embolcall",
+        //             icon: "/iocjslib/ioc/gui/img/wrap.png"
+        //         },
+        //
+        //         argPreview = {
+        //             type: "preview", // we havea new type that links to the function
+        //             title: "Previsualitzar el contingut d'aquest editor",
+        //             icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
+        //         };
+        //
+        //     toolbarManager.addButton(argPreview, this._funcPreview.bind(this.dispatcher), this.TOOLBAR_ID);
+        //     toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
+        //     toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
+        //     toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
+        //     toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
+        // },
 
-            for (var i = 0; i < this.data.chunks.length; i++) {
-
-
-                if (this.data.chunks[i].text) {
-//                    console.log("Afegint toolbar per:", this.data.chunks[i].header_id);
-                    auxId = this.data.id + "_" + this.data.chunks[i].header_id;
-                    toolbarManager.initToolbar('toolbar_' + auxId, 'textarea_' + auxId, this.TOOLBAR_ID);
-                }
-            }
-        },
-
-        addButtons: function () {
-            var argSave = {
-                    type: "SaveButton",
-                    title: "Desar",
-                    icon: "/iocjslib/ioc/gui/img/save.png"
-                },
-
-                argCancel = {
-                    type: "BackButton",
-                    title: "Tornar",
-                    icon: "/iocjslib/ioc/gui/img/back.png"
-                },
-
-                confEnableAce = {
-                    type: "EnableAce",
-                    title: "Activar/Desactivar ACE",
-                    icon: "/iocjslib/ioc/gui/img/toggle_on.png"
-                },
-
-                confEnableWrapper = {
-                    type: "EnableWrapper", // we havea new type that links to the function
-                    title: "Activar/Desactivar embolcall",
-                    icon: "/iocjslib/ioc/gui/img/wrap.png"
-                },
-
-                argPreview = {
-                    type: "preview", // we havea new type that links to the function
-                    title: "Previsualitzar el contingut d'aquest editor",
-                    icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
-                };
-
-            toolbarManager.addButton(argPreview, this._funcPreview.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
-        },
-
-        _funcPreview: function(){
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId(),
-                contentTool = this.getContentCache(id).getMainContentTool(),
-                dataToSend = contentTool.requester.get("dataToSend"),
-                urlBase = contentTool.requester.get("urlBase");
-
-            cookie("IOCForceScriptLoad", 1);
-
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-
-
-
-
-            contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getEditedChunk(chunk)});
-            contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
-            contentTool.requester.sendRequest();
-            contentTool.requester.set("urlBase", urlBase);
-            contentTool.requester.set("dataToSend", dataToSend);
-        },
-
-
-
-
-        // ALERTA[Xavi] this fa referencia al dispatcher
-        _funcSave: function () {
-//            console.log("StructuredDocumentSubclass#_funcSave");
-
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId(),
-                eventManager = this.getEventManager();
-
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-
-
-            //console.log("StructuredDocumentSubclass#_funcSave", id, chunk);
-
-            eventManager.fireEvent(eventManager.eventName.SAVE_PARTIAL, {
-                id: id,
-                chunk: chunk
-            }, id);
-        },
-
-        /**
-         * Activa o desactiva l'editor ACE segons l'estat actual
-         *
-         * @returns {boolean} - Sempre retorna fals.
-         */
-        _funcEnableAce: function () {
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId();
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-            var editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
-
-            editor.toggleEditor();
-
-        },
-
-        _funcCancel: function () {
-            // console.log("StructuredDocumentSubclass#_funcCancel");
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId(),
-                eventManager = this.getEventManager();
-
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-
-            eventManager.fireEvent(eventManager.eventName.CANCEL_PARTIAL, {
-                id: id,
-                chunk: chunk,
-                dataToSend: {keep_draft: false}
-            }, id);
-        },
-
-        /**
-         * Activa o desactiva l'embolcall del text.
-         * @returns {boolean} - Sempre retorna fals
-         */
-        _funcEnableWrapper: function () {
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId(),
-                editor;
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-
-            editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
-            editor.toggleWrap();
-        },
+        // _funcPreview: function(){
+        //     var chunk = this.getGlobalState().getCurrentElementId(),
+        //         id = this.getGlobalState().getCurrentId(),
+        //         contentTool = this.getContentCache(id).getMainContentTool(),
+        //         dataToSend = contentTool.requester.get("dataToSend"),
+        //         urlBase = contentTool.requester.get("urlBase");
+        //
+        //     cookie("IOCForceScriptLoad", 1);
+        //
+        //     chunk = chunk.replace(id + "_", "");
+        //     chunk = chunk.replace("container_", "");
+        //
+        //
+        //
+        //
+        //     contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getEditedChunk(chunk)});
+        //     contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
+        //     contentTool.requester.sendRequest();
+        //     contentTool.requester.set("urlBase", urlBase);
+        //     contentTool.requester.set("dataToSend", dataToSend);
+        // },
+//
+//
+//
+//
+//         // ALERTA[Xavi] this fa referencia al dispatcher
+//         _funcSave: function () {
+// //            console.log("StructuredDocumentSubclass#_funcSave");
+//
+//             var chunk = this.getGlobalState().getCurrentElementId(),
+//                 id = this.getGlobalState().getCurrentId(),
+//                 eventManager = this.getEventManager();
+//
+//             chunk = chunk.replace(id + "_", "");
+//             chunk = chunk.replace("container_", "");
+//
+//
+//             //console.log("StructuredDocumentSubclass#_funcSave", id, chunk);
+//
+//             eventManager.fireEvent(eventManager.eventName.SAVE_PARTIAL, {
+//                 id: id,
+//                 chunk: chunk
+//             }, id);
+//         },
+//
+//         /**
+//          * Activa o desactiva l'editor ACE segons l'estat actual
+//          *
+//          * @returns {boolean} - Sempre retorna fals.
+//          */
+//         _funcEnableAce: function () {
+//             var chunk = this.getGlobalState().getCurrentElementId(),
+//                 id = this.getGlobalState().getCurrentId();
+//             chunk = chunk.replace(id + "_", "");
+//             chunk = chunk.replace("container_", "");
+//             var editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
+//
+//             editor.toggleEditor();
+//
+//         },
+//
+//         _funcCancel: function () {
+//             // console.log("StructuredDocumentSubclass#_funcCancel");
+//             var chunk = this.getGlobalState().getCurrentElementId(),
+//                 id = this.getGlobalState().getCurrentId(),
+//                 eventManager = this.getEventManager();
+//
+//             chunk = chunk.replace(id + "_", "");
+//             chunk = chunk.replace("container_", "");
+//
+//             eventManager.fireEvent(eventManager.eventName.CANCEL_PARTIAL, {
+//                 id: id,
+//                 chunk: chunk,
+//                 dataToSend: {keep_draft: false}
+//             }, id);
+//         },
+//
+//         /**
+//          * Activa o desactiva l'embolcall del text.
+//          * @returns {boolean} - Sempre retorna fals
+//          */
+//         _funcEnableWrapper: function () {
+//             var chunk = this.getGlobalState().getCurrentElementId(),
+//                 id = this.getGlobalState().getCurrentId(),
+//                 editor;
+//             chunk = chunk.replace(id + "_", "");
+//             chunk = chunk.replace("container_", "");
+//
+//             editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
+//             editor.toggleWrap();
+//         },
 
         addEditionListener: function () {
             //console.log("StructuredDocumentSubclass#addEditionListener");
@@ -1038,33 +1039,99 @@ define([
 
         },
 
+        // addEditor: function (header_id, data) {
+        //     var editor = this.createEditor(data.auxId);
+        //
+        //     this.editors[header_id] = {
+        //         editor: editor
+        //     };
+        // },
+        //
+        // // TODO: Copiat a Editor subclass (per generalitzar)
+        // createEditor: function (id) {
+        //     var $textarea = jQuery('textarea_' + id);
+        //
+        //     var editor = new AceFacade({
+        //         xmltags: JSINFO.plugin_aceeditor.xmltags,
+        //         containerId: 'editor_' + id,
+        //         textareaId: 'textarea_' + id,
+        //         theme: JSINFO.plugin_aceeditor.colortheme,
+        //         readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient
+        //         wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+        //         wrapMode: $textarea.attr('wrap') !== 'off',
+        //         mdpage: JSINFO.plugin_aceeditor.mdpage,
+        //         auxId: id
+        //     });
+        //
+        //     editor.on('change', this._checkChanges.bind(this));
+        //
+        //     return editor;
+        // },
+
+
         addEditor: function (header_id, data) {
-            var editor = this.createEditor(data.auxId);
+            // console.log("StructuredDocumentSubclass#addEditor", header_id, data);
+
+            // var editor = this.createEditor(
+            //     {
+            //         id: data.auxId,
+            //         originalContent: data.originalContent || data.text
+            //     });
+
+            var editor = this.createEditor({
+                id: data.auxId,
+                originalContent: data.originalContent || data.text
+            }, "DojoEditor");
 
             this.editors[header_id] = {
                 editor: editor
             };
+
+            editor.on('change', this._checkChanges.bind(this));
         },
 
-        // TODO: Copiat a Editor subclass (per generalitzar)
-        createEditor: function (id) {
-            var $textarea = jQuery('textarea_' + id);
+        // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
+        createEditor: function (config, type) {
+            // console.log("SructuredDocumentSubclass#createEditor", config, type);
+            switch (type) {
+                case "DojoEditor":
+                    return this.createDojoEditor(config);
 
-            var editor = new AceFacade({
+                default:
+                    return this.createAceEditor(config);
+            }
+        },
+
+        // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
+        createDojoEditor: function (config) {
+            return new DojoEditorPartialFacade(
+                {
+                    parentId: 'container_' + config.id,
+                    containerId: 'editor_' + config.id,
+                    textareaId: 'textarea_' + config.id,
+                    dispatcher: this.dispatcher,
+                    originalContent: config.originalContent
+                }
+            );
+        },
+
+        // TODO: Copiat a BasicEditorSubclass (per generalitzar)
+        createAceEditor: function (config) {
+            var $textarea = jQuery('textarea_' + config.id);
+
+            return new AceFacade({
                 xmltags: JSINFO.plugin_aceeditor.xmltags,
-                containerId: 'editor_' + id,
-                textareaId: 'textarea_' + id,
+                containerId: 'editor_' + config.id,
+                textareaId: 'textarea_' + config.id,
                 theme: JSINFO.plugin_aceeditor.colortheme,
-                readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient
+                readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient <-- només canvia això respecte al BasicEditorSubclass#createAceEditor
                 wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                 wrapMode: $textarea.attr('wrap') !== 'off',
                 mdpage: JSINFO.plugin_aceeditor.mdpage,
-                auxId: id
+                auxId: config.id,
+                dispatcher: this.dispatcher,
+                originalContent: config.originalContent
             });
-
-            editor.on('change', this._checkChanges.bind(this));
-
-            return editor;
         },
 
         disableEditor: function (header_id) { // TODO[Xavi] No es fa servir
@@ -1413,6 +1480,9 @@ define([
             return this.editors[header_id].editor;
         },
 
+
+
+        // TODO[Xavi] DELEGAR al AceEditorPartialFacade
         fillEditorContainer: function () {
 
 //            var editorNode = dom.byId(this.id),
@@ -1439,7 +1509,6 @@ define([
                 editors[header_id].editor.setHeight(Math.max(min, Math.min(p, max))); //
 
             }
-
 
         },
 
