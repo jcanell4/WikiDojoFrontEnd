@@ -57,8 +57,6 @@ define([
                 // onClick: lang.hitch(this, "_showCommentDialog")
             });
 
-            // ALERTA[Xavi] En aquest punt ja tenim el text disponible?
-            // this._parse(this.editor.get('value'));
             this.firstRun = true;
 
         },
@@ -219,9 +217,9 @@ define([
                 context._addHandlers(jQuery(this), context);
             });
 
-            if (this.firstRun) {
-                this.firstRun  =false;
-            }
+            // if (this.firstRun) {
+            //     this.firstRun  =false;
+            // }
 
         },
 
