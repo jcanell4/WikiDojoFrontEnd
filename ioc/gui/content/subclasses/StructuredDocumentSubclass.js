@@ -1070,16 +1070,16 @@ define([
         addEditor: function (header_id, data) {
             // console.log("StructuredDocumentSubclass#addEditor", header_id, data);
 
-            // var editor = this.createEditor(
-            //     {
-            //         id: data.auxId,
-            //         originalContent: data.originalContent || data.text
-            //     });
+            var editor = this.createEditor(
+                {
+                    id: data.auxId,
+                    originalContent: data.originalContent || data.text
+                });
 
-            var editor = this.createEditor({
-                id: data.auxId,
-                originalContent: data.originalContent || data.text
-            }, "DojoEditor");
+            // var editor = this.createEditor({
+            //     id: data.auxId,
+            //     originalContent: data.originalContent || data.text
+            // }, "DojoEditor");
 
             this.editors[header_id] = {
                 editor: editor
@@ -1480,32 +1480,11 @@ define([
 
 
 
-        // TODO[Xavi] DELEGAR al AceEditorPartialFacade
         fillEditorContainer: function () {
-
-//            var editorNode = dom.byId(this.id),
-//                viewNode, p,
-//                h = geometry.getContentBox(editorNode).h, //bodyContent
-//                editors = this.getEditors();
-            var editorNode = dom.byId(this.dispatcher.containerNodeId),
-                viewNode, p,
-                h = geometry.getContentBox(editorNode).h, //bodyContent
-                editors = this.getEditors();
-
+            var editors = this.getEditors();
 
             for (var header_id in editors) {
-                jQuery('#view_' + this.id + '_' + header_id).css('display', 'block'); // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
-
-                viewNode = dom.byId('view_' + this.id + '_' + header_id);
-                p = geometry.getContentBox(viewNode).h;
-
-                jQuery('#view_' + this.id + '_' + header_id).css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
-
-                var min = this.MIN_HEIGHT,
-                    max = h - this.VERTICAL_MARGIN;
-
-                editors[header_id].editor.setHeight(Math.max(min, Math.min(p, max))); //
-
+                this.getEditor(header_id).fillEditorContainer();
             }
 
         },

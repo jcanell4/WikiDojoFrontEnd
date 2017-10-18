@@ -154,13 +154,12 @@ define([
         },
 
         setHeight: function (height) {
-            console.log("AceEditorPartialFacade#setHeight", height);
+            // console.log("AceEditorPartialFacade#setHeight", height);
             var min = this.MIN_HEIGHT,
-                contentNode = dom.byId('editor_' + this.id),
+                contentNode = dom.byId(this.dispatcher.containerNodeId),
                 h = geometry.getContentBox(contentNode).h,
                 max = h - this.VERTICAL_MARGIN,
                 normalizedHeight = Math.max(min, Math.min(height, max));
-
 
             var node = dom.byId(this.dokuWrapper.textArea.id);
 
@@ -173,10 +172,26 @@ define([
                 style.set(node, "height", "" + normalizedHeight  + "px");
             }
 
-            this.container.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
+
+            this.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
 
         },
 
+        fillEditorContainer: function() {
+            var viewNode,
+                p,
+                $view =jQuery('#view_' + this.id /*+ '_' + header_id*/);
+
+            $view.css('display', 'block'); // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
+
+            viewNode = dom.byId('view_' + this.id /*+ '_' + header_id*/);
+            p = geometry.getContentBox(viewNode).h;
+
+            $view.css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
+
+            this.setHeight(p);
+
+        }
 
     });
 });

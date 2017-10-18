@@ -33,9 +33,6 @@ define(function() {
           return;
         }
 
-        console.log("States:", states);
-        console.log("Index:", index);
-
         states[index].row = row;
         if (test(states[index])) {
           return states[index];
@@ -57,8 +54,6 @@ define(function() {
       while (state = it()) {
         start_state = state;
       }
-
-        console.log("Start:", start_state, "End:", end_state);
 
       if (!(start_state && end_state)) {
         return;

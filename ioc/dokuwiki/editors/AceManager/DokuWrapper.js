@@ -27,13 +27,13 @@ define([
              */
             aceWrapper: null,
 
-            /**
-             * El contenidor s'estableix automàticament al afegir aquest wrapper a un contenidor
-             *
-             * @type {Container}
-             * @protected
-             */
-            container: null,
+            // /**
+            //  * El contenidor s'estableix automàticament al afegir aquest wrapper a un contenidor
+            //  *
+            //  * @type {Container}
+            //  * @protected
+            //  */
+            // container: null,
 
 
             /**
@@ -414,7 +414,7 @@ define([
              * Comunica la realització dels canvis al contenidor i el embolcall del ace.
              */
             aceOnResize: function () {
-                this.container.on_resize();
+                // this.container.on_resize();
                 this.aceWrapper.resize();
             },
 
@@ -439,25 +439,25 @@ define([
                 this.aceWrapper.focus();
             },
 
-            /**
-             * Estableix el valor d'alçada al contenidor i actualiza el embolcall del ace.
-             *
-             * @param {int} value - Nova alçada
-             */
-            aceSizeCtl: function (value) {
-                this.container.incr_height(value);
-                this.aceWrapper.resize();
-                this.aceWrapper.focus();
-            },
-
-            /**
-             * Cridat automàticament pel container al afegir-li aquest DokuWrapper
-             * @param {Container} container
-             * @protected
-             */
-            setContainer: function (container) {
-                this.container = container;
-            }
+            // /**
+            //  * Estableix el valor d'alçada al contenidor i actualiza el embolcall del ace.
+            //  *
+            //  * @param {int} value - Nova alçada
+            //  */
+            // aceSizeCtl: function (value) {
+            //     this.container.incr_height(value);
+            //     this.aceWrapper.resize();
+            //     this.aceWrapper.focus();
+            // },
+            //
+            // /**
+            //  * Cridat automàticament pel container al afegir-li aquest DokuWrapper
+            //  * @param {Container} container
+            //  * @protected
+            //  */
+            // setContainer: function (container) {
+            //     this.container = container;
+            // }
 
 
         });

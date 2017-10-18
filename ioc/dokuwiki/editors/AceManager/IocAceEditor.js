@@ -94,6 +94,7 @@ define([
              */
             setContainer: function (container) {
                 var value = container || this._default.containerId;
+                console.log(container, value);
                 this.set('editor', ace.edit(value));
                 this.set('session', this.editor.getSession());
 

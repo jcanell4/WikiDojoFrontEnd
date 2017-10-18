@@ -6,7 +6,7 @@ define([
     'ioc/dokuwiki/editors/AceManager/IocRuleSet',
     'ioc/dokuwiki/editors/AceManager/AceWrapper',
     'ioc/dokuwiki/editors/AceManager/DokuWrapper',
-    'ioc/dokuwiki/editors/AceManager/Container2',
+    // 'ioc/dokuwiki/editors/AceManager/Container2',
     'ioc/dokuwiki/editors/AceManager/IocCommands',
     'ioc/dokuwiki/editors/AceManager/patcher',
     'dojo/dom-style',
@@ -15,7 +15,7 @@ define([
     'dojo/dom-geometry',
     'ioc/dokuwiki/editors/AceManager/ace-preview',
     'dojo/cookie',
-], function (declare, AbstractIocFacade, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, Container, IocCommands, patcher,
+], function (declare, AbstractIocFacade, IocAceEditor, IocAceMode, IocRuleSet, AceWrapper, DokuWrapper, /*Container,*/ IocCommands, patcher,
              style, dom, toolbarManager, geometry, acePreview, cookie) {
 
 
@@ -52,10 +52,19 @@ define([
 
                 dokuWrapper = new DokuWrapper(aceWrapper, args.textareaId, args.auxId), //TODO[Xavi] A banda de passar la info del JSINFO per paràmetre, s'ha de tenir en compte que el id del text area ja no serà aquest, si no el que nosaltres volgumen (i.e. multi edició)
 
-                container = new Container(aceWrapper, dokuWrapper),// Comprovar que es el que ha de fer currentEditor!
+                // container = new Container(aceWrapper, dokuWrapper),// Comprovar que es el que ha de fer currentEditor!
 
                 commands,
                 preview;
+
+            this.aceWrapper = aceWrapper;
+            this.dokuWrapper = dokuWrapper;
+            this.iocAceEditor = iocAceEditor;
+            this.id = args.auxId;
+
+
+            this.initContainer();
+
 
             this.dispatcher = args.dispatcher;
             this.data = args.data;
@@ -64,12 +73,8 @@ define([
 
             this.$editor = jQuery('#' + args.containerId);
             this.$textarea = jQuery('#' + args.textareaId);
-            this.container = container;
+            // this.container = container;
 
-            this.aceWrapper = aceWrapper;
-            this.dokuWrapper = dokuWrapper;
-            this.iocAceEditor = iocAceEditor;
-            this.id = args.auxId;
 
             // Inicialitzem l'editor
             iocAceEditor.init();
@@ -126,6 +131,7 @@ define([
 
             this.initDwEditor();
         },
+
 
         //ALERTA[Xav] Aquest mètode lliga el textarea als events originals de la wiki
         initDwEditor: function () {
@@ -208,21 +214,22 @@ define([
 
         enable: function () {
 
-            var selection,
-                container = this.container,
-                ace = container.aceWrapper,
-                doku = container.dokuWrapper;
+            var selection;
+                // container = this.container,
+                // ace = container.aceWrapper,
+                // doku = container.dokuWrapper;
 
-            selection = doku.get_selection();
-            doku.disable();
-            container.set_height(doku.inner_height());
-            container.show();
-            ace.set_value(doku.get_value());
-            ace.resize();
-            ace.focus();
-            ace.set_selection(selection.start, selection.end);
+            selection = this.dokuWrapper.get_selection();
+            this.dokuWrapper.disable();
 
-            doku.set_cookie('aceeditor', 'on');
+            this.set_height(this.dokuWrapper.inner_height());
+            this.show();
+            this.aceWrapper.set_value(this.dokuWrapper.get_value());
+            this.aceWrapper.resize();
+            this.aceWrapper.focus();
+            this.aceWrapper.set_selection(selection.start, selection.end);
+
+            this.dokuWrapper.set_cookie('aceeditor', 'on');
             //dispatcher.getContentCache(currentId).setAceEditorOn(true);
 
             // this.resetOriginalContentState();
@@ -231,19 +238,19 @@ define([
         },
 
         disable: function () {
-            var selection,
-                container = this.container,
-                ace = container.aceWrapper,
-                doku = container.dokuWrapper;
+            var selection;
+                // container = this.container,
+                // ace = container.aceWrapper,
+                // doku = container.dokuWrapper;
 
-            selection = ace.get_selection();
-            doku.set_cookie('aceeditor', 'off');
+            selection = this.aceWrapper.get_selection();
+            this.dokuWrapper.set_cookie('aceeditor', 'off');
 
-            container.hide();
-            doku.enable();
-            doku.set_value(ace.get_value());
-            doku.set_selection(selection.start, selection.end);
-            doku.focus();
+            this.hide();
+            this.dokuWrapper.enable();
+            this.dokuWrapper.set_value(this.aceWrapper.get_value());
+            this.dokuWrapper.set_selection(selection.start, selection.end);
+            this.dokuWrapper.focus();
 
             this.enabled = false;
 
@@ -319,7 +326,7 @@ define([
         },
 
         setHeight: function (height) {
-            console.log("AceEditorFullFacade#setHeight", height);
+            // console.log("AceEditorFullFacade#setHeight", height);
             var min = this.MIN_HEIGHT,
                 contentNode = dom.byId(this.id),
                 h = geometry.getContentBox(contentNode).h,
@@ -338,7 +345,7 @@ define([
                 style.set(node, "height", "" + normalizedHeight  + "px");
             }
 
-            this.container.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
+            this.aceWrapper.resize();
 
         },
 
@@ -485,6 +492,58 @@ define([
 
             this.setValue(this.getOriginalValue());
         },
+
+        // Funcions originalment al Container
+
+        initContainer: function () {
+            console.log("initContainer", this.aceWrapper.containerId);
+
+            var element = jQuery('<div>'),
+                textarea = jQuery(this.dokuWrapper.textArea),
+                wrapper = jQuery('<div>', {
+                    "class": 'ace-doku',
+                    "id": this.aceWrapper.containerId
+                }),
+                prop,
+                properties = ['border', 'border-color', 'border-style', 'border-width', 'border-top',
+                    'border-top-color', 'border-top-style', 'border-top-width', 'border-right',
+                    'border-right-color', 'border-right-style', 'border-right-width', 'border-bottom',
+                    'border-bottom-color', 'border-bottom-style', 'border-bottom-width', 'border-left',
+                    'border-left-color', 'border-left-style', 'border-left-width', 'margin', 'margin-top',
+                    'margin-right', 'margin-bottom', 'margin-left'];
+
+            // Recorre les propietats css del array
+            // les afegeix una per una al wrapper
+            // afegeix al wrapper un element (div) amb classe 'ace-doku' després del textarea
+
+            for (var i = 0, len = properties.length; i < len; i++) {
+                prop = properties[i];
+                wrapper.css(prop, textarea.css(prop));
+            }
+
+            wrapper.append(element).insertAfter(textarea).hide();
+
+            this.$elementContainer = element;
+            this.$wrapper = wrapper;
+            // this.$textArea = textarea;
+        },
+
+        show: function() {
+                var wrapper = this.$wrapper,
+                    element = this.$elementContainer;
+                wrapper.show();
+                element.css('width', wrapper.width() + 'px');
+                return element.css('height', wrapper.height() + 'px');
+            },
+
+            hide: function() {
+                return this.$wrapper.hide();
+            },
+
+            set_height: function (value) {
+                this.$wrapper.css('height', value + 'px');
+                return this.$elementContainer.css('height', this.$wrapper.height() + 'px');
+            }
 
     });
 
