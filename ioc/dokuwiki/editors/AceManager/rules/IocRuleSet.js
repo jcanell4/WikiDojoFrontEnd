@@ -1,6 +1,6 @@
 define([
     'dojo/_base/declare',
-    'ioc/dokuwiki/editors/AceManager/AbstractRuleSet',
+    'ioc/dokuwiki/editors/AceManager/rules/AbstractRuleSet',
     'ace-builds/mode-java',
     'ace-builds/mode-php',
     'ace-builds/mode-html',
