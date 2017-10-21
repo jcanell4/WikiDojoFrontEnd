@@ -56,7 +56,7 @@ define([
         sectok: null,
 
         title: "",
-
+        
         /** @type {InfoStorage} */
         infoStorage: {
             timer: {

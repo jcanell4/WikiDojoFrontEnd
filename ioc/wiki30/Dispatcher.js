@@ -132,6 +132,8 @@ define([
 
             /** @type {InfoManager} Instancia del gestor de infos associat amb aquest dispatcher */
             infoManager: null,
+            
+            requestedState:null,
 
             /**
              * Afegeix al hash de processadors els processadors, les característiques del objecte passat com argument i
@@ -569,6 +571,17 @@ define([
             getWidget: function(id){
                 return registry.byId(id);
             },
+            
+                    
+            getRequestedState: function(){
+                return this.requestedState;
+            },
+
+            setRequestedState: function(value){
+                this.requestedState= value;
+            }
+
+
         });
     return ret;
 });
