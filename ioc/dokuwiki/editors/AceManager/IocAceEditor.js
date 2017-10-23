@@ -448,6 +448,10 @@ define([
 
             },
 
+            resize: function() {
+                this.aceWrapper.resize();
+            },
+
             show: function () {
                 var wrapper = this.$wrapper,
                     element = this.$elementContainer;

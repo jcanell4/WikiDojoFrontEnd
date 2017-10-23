@@ -13,10 +13,10 @@ define([
     'dojo/dom',
     'ioc/dokuwiki/editors/AceManager/toolbarManager',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/editors/AceManager/ace-preview',
+    /*'ioc/dokuwiki/editors/AceManager/ace-preview',*/
     'dojo/cookie',
 ], function (declare, AbstractIocFacade, IocAceEditor, /*IocAceMode,*/ /*IocRuleSet, *//*AceWrapper, DokuWrapper,*/ /*Container,*/ IocCommands, patcher,
-             style, dom, toolbarManager, geometry, acePreview, cookie) {
+             style, dom, toolbarManager, geometry, /*acePreview,*/ cookie) {
 
 
     return declare([AbstractIocFacade], {
@@ -90,10 +90,10 @@ define([
             }.bind(this));
         },
 
-        updateTextarea: function (value) {
-            // Comprovar si el id del textarea seleccionat correspont amb el que te el focus?
-            this.iocAceEditor.dokuWrapper.set_value(value);
-        },
+        // updateTextarea: function (value) {
+        //     // Comprovar si el id del textarea seleccionat correspont amb el que te el focus?
+        //     this.iocAceEditor.dokuWrapper.set_value(value);
+        // },
 
         getValue: function () {
             return this.iocAceEditor.getValue();
@@ -109,60 +109,16 @@ define([
             this.iocAceEditor.setValue(value);
         },
 
-        // getEditorValue: function () {
-        //     return this.iocAceEditor.aceWrapper.get_value();
-        // },
-        //
-        // getTextareaValue: function () {
-        //     return this.iocAceEditor.dokuWrapper.get_value();
-        // },
-
-
-        // setEditorValue: function (value) {
-        //     return this.iocAceEditor.aceWrapper.set_value(value);
-        // },
-        //
-        // setTextareaValue: function (value) {
-        //     return this.iocAceEditor.dokuWrapper.set_value(value);
-        // },
-
         destroy: function () {
-            alert("Es fa servir el destroy del AceEditorFullFacade");
             this.iocAceEditor.destroy();
         },
 
         enable: function () {
             this.iocAceEditor.enable();
-            // var selection = this.iocAceEditor.dokuWrapper.get_selection();
-            // this.iocAceEditor.dokuWrapper.disable();
-            //
-            // this.set_height(this.iocAceEditor.dokuWrapper.inner_height());
-            // this.show();
-            // this.iocAceEditor.aceWrapper.set_value(this.iocAceEditor.dokuWrapper.get_value());
-            // this.iocAceEditor.aceWrapper.resize();
-            // this.iocAceEditor.aceWrapper.focus();
-            // this.iocAceEditor.aceWrapper.set_selection(selection.start, selection.end);
-            //
-            // this.iocAceEditor.dokuWrapper.set_cookie('aceeditor', 'on');
-            //
-            // this.enabled = true;
         },
 
         disable: function () {
             this.iocAceEditor.disable();
-            // var selection;
-            //
-            // selection = this.iocAceEditor.aceWrapper.get_selection();
-            // this.iocAceEditor.dokuWrapper.set_cookie('aceeditor', 'off');
-            //
-            // this.hide();
-            // this.iocAceEditor.dokuWrapper.enable();
-            // this.iocAceEditor.dokuWrapper.set_value(this.iocAceEditor.aceWrapper.get_value());
-            // this.iocAceEditor.dokuWrapper.set_selection(selection.start, selection.end);
-            // this.iocAceEditor.dokuWrapper.focus();
-            //
-            // this.enabled = false;
-
         },
 
         select: function () {
@@ -228,7 +184,12 @@ define([
                 normalizedHeight = Math.max(min, Math.min(height, max));
 
 
-            var node = dom.byId(this.iocAceEditor.dokuWrapper.textArea.id);
+            // var node = dom.byId(this.iocAceEditor.dokuWrapper.textArea.id);
+            // var node = dom.byId(this.iocAceEditor.dokuWrapper.textArea.id);
+            // console.log("node?", node);
+            // console.log("Id??", this.iocAceEditor.dokuWrapper.textArea.id, node.id, this.iocAceEditor.$textarea.get(0).id);
+
+            var node = this.iocAceEditor.$textarea.get(0);
 
             if (node) {
                 style.set(node, "height", "" + normalizedHeight + "px");
@@ -239,7 +200,7 @@ define([
                 style.set(node, "height", "" + normalizedHeight + "px");
             }
 
-            this.iocAceEditor.aceWrapper.resize();
+            this.iocAceEditor.resize();
 
         },
 
@@ -373,33 +334,7 @@ define([
 
         },
 
-        // getOriginalValue: function () {
-        //     alert("Es fa servir gerOriginalValue?");
-        //     return this.originalContent;
-        // },
-        //
-        // resetValue: function () {
-        //     alert("Es fa servir resetValue");
-        //     this.setValue(this.getOriginalValue());
-        // },
 
-
-        // show: function () {
-        //     var wrapper = this.iocAceEditor.$wrapper,
-        //         element = this.iocAceEditor.$elementContainer;
-        //     wrapper.show();
-        //     element.css('width', wrapper.width() + 'px');
-        //     return element.css('height', wrapper.height() + 'px');
-        // },
-        //
-        // hide: function () {
-        //     return this.iocAceEditor.$wrapper.hide();
-        // },
-
-        // set_height: function (value) {
-        //     this.iocAceEditor.$wrapper.css('height', value + 'px');
-        //     return this.iocAceEditor.$elementContainer.css('height', this.iocAceEditor.$wrapper.height() + 'px');
-        // }
 
     });
 
