@@ -14,18 +14,20 @@ define([
         VERTICAL_MARGIN: 100,
         MIN_HEIGHT: 200,
 
-        addToolbars: function () {
+        addToolbars: function (dispatcher) {
             //console.log("StructuredDocumentSubclass#addToolbars");
             // var auxId;
+            toolbarManager.setDispatcher(dispatcher);
 
-            this.addButtons();
+
+            this.addButtons(dispatcher);
 
             this.toolbarId = 'toolbar_' + this.id;
             toolbarManager.initToolbar('toolbar_' + this.id, 'textarea_' + this.id, this.TOOLBAR_ID);
 
         },
 
-        addButtons: function () {
+        addButtons: function (dispatcher) {
             var argSave = {
                     type: "SaveButton",
                     title: "Desar",
@@ -55,11 +57,11 @@ define([
                     icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
                 };
 
-            toolbarManager.addButton(argPreview, this._funcPreview.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(argSave, this._funcSave.bind(this.dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(argCancel, this._funcCancel.bind(this.dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(argPreview, this._funcPreview.bind(dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(argSave, this._funcSave.bind(dispatcher), this.TOOLBAR_ID);
+            toolbarManager.addButton(argCancel, this._funcCancel.bind(dispatcher), this.TOOLBAR_ID);
         },
 
         // ALERTA[Xavi] this fa referencia al dispatcher
@@ -156,12 +158,12 @@ define([
         setHeight: function (height) {
             // console.log("AceEditorPartialFacade#setHeight", height);
             var min = this.MIN_HEIGHT,
-                contentNode = dom.byId(this.dispatcher.containerNodeId),
+                contentNode = dom.byId(this.dispatcher.containerNodeId), // ALERTA! Aquest és l'unic punt en el que cal el this.dispatcher
                 h = geometry.getContentBox(contentNode).h,
                 max = h - this.VERTICAL_MARGIN,
                 normalizedHeight = Math.max(min, Math.min(height, max));
 
-            var node = dom.byId(this.dokuWrapper.textArea.id);
+            var node = dom.byId(this.iocAceEditor.dokuWrapper.textArea.id);
 
             if (node) {
                 style.set(node, "height", "" + normalizedHeight  + "px");
@@ -173,7 +175,7 @@ define([
             }
 
 
-            this.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
+            this.iocAceEditor.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
 
         },
 

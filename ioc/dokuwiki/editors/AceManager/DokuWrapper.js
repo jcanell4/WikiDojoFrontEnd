@@ -283,17 +283,19 @@ define([
             },
 
             get_cookie: function (name) {
+                alerta("Es fa servir get_cookie");
                 return DokuCookie.getValue(name);
             },
 
             get_readonly: function () {
+                alerta("Es fa servir get_readonly");
                 return jQuery(this.textArea).attr('readonly');
             },
 
             /**
              * Retorna la posició inical i final de la selecció al textarea.
              *
-             * @returns {{start: *, end: *}}
+             * @returns {{start: int, end: int}}
              */
             get_selection: function () {
                 var selection;
@@ -320,6 +322,7 @@ define([
              * @returns {boolean}
              */
             get_wrap: function () {
+                alert("Es fa servir get_wrap");
                 return jQuery(this.textArea).attr('wrap') !== 'off';
             },
 
@@ -360,18 +363,14 @@ define([
                 jQuery(this.textArea).val(value);
             },
 
-            text_changed: function () { // TODO[Xavi] No es crida?
-                // TODO[Xavi] Afegit nou:
-                //dispatcher.getChangesManager().addDocumentChanged();
-                //dispatcher.setUnsavedChangesState(true);
-                // summaryCheck() surt de /lib/scripts/edit.js#summaryCheck()
+            text_changed: function () {
                 return summaryCheck();
             },
 
             /**
              * Obté la selecció del embolcall del ace editor.
              *
-             * @returns {selection_class}
+             * @returns {{start: int, end: int}}
              */
             aceGetSelection: function () {
                 return this.aceWrapper.get_selection();

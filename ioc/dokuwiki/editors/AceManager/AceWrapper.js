@@ -345,7 +345,7 @@ define([
              * Duplica al costat el text seleccionat al editor.
              */
             duplicate_selection: function () {
-                this.get('aceWrapper').getEditor().duplicateSelection();
+                this.getEditor().duplicateSelection();
             },
 
             /**

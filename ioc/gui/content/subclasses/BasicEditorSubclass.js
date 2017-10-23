@@ -257,11 +257,13 @@ define([
 
             // Afegeix un editorAce per cada editor actiu
             addEditors: function () {
+                // console.log("BasicEditorSubclass#addEditors@originalContent", this.originalContent);
                 // this.editor = this.createEditor({id : this.id}, "DojoEditor"); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
-                this.editor = this.createEditor({id:this.id}); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
+                this.editor = this.createEditor({id:this.id, originalContent: this.originalContent}); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
             },
 
             createEditor: function(config, type) {
+                // console.log("config:", config);
                 switch (type) {
                     case "DojoEditor":
                         return this.createDojoEditor(config);
@@ -295,6 +297,7 @@ define([
                     mdpage: JSINFO.plugin_aceeditor.mdpage,
                     auxId: config.id,
                     dispatcher: this.dispatcher,
+                    originalContent: config.originalContent
                 });
             },
 

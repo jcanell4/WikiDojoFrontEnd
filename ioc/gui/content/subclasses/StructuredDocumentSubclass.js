@@ -95,11 +95,15 @@ define([
                 auxId = this.data.id + "_" + this.data.chunks[i].header_id;
                 if (this.data.chunks[i].text) {
 
+                    // console.log(this.data.chunks[i].text);
+                    var data = {auxId: auxId, originalContent: this.data.chunks[i].text.editing};
+
                     if (this.editors[this.data.chunks[i].header_id]) {
-                        this.updateEditor(this.data.chunks[i].header_id, {auxId: auxId});
+
+                        this.updateEditor(this.data.chunks[i].header_id, data);
 
                     } else {
-                        this.addEditor(this.data.chunks[i].header_id, {auxId: auxId});
+                        this.addEditor(this.data.chunks[i].header_id, data);
                     }
 
                 } else {
@@ -1117,6 +1121,8 @@ define([
         createAceEditor: function (config) {
             var $textarea = jQuery('textarea_' + config.id);
 
+
+            // console.log("config:", config);
             return new AceFacade({
                 xmltags: JSINFO.plugin_aceeditor.xmltags,
                 containerId: 'editor_' + config.id,

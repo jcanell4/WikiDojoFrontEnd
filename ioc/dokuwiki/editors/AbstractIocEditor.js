@@ -1,25 +1,13 @@
 define([
     'dojo/Stateful',
-    'dojo/_base/declare'
-], function (Stateful, declare) {
+    'dojo/Evented',
+    'dojo/_base/declare',
+], function (Stateful, Evented, declare) {
 
-    return declare([Stateful], {
+    return declare([Stateful, Evented], {
 
-        resetOriginalContentState: function() {
-            throw new Error('Method not implemented')
-        },
+        // Gestió de funcions comunes pels components, plugins i adaptors
 
-        getOriginalValue: function() {
-            throw new Error('Method not implemented')
-        },
-
-        /**
-         * return {boolean}
-         */
-        isChanged: function() {
-            throw new Error('Method not implemented')
-        }
-        
 
     });
 
