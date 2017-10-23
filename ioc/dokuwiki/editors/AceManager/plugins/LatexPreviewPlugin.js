@@ -71,9 +71,6 @@ define([
             };
             text = spec.ace.get_text_range(start, end);
 
-
-            console.log(text);
-
             url = DOKU_BASE + 'lib/plugins/aceeditor/preview.php';
 
 
@@ -117,7 +114,7 @@ define([
         },
 
         init: function () {
-            var preview = new LatexPreviewPlugin({ace: this.editor.aceWrapper}); //ALERTA: Substituir pel editor directament!
+            var preview = new LatexPreviewPlugin({ace: this.editor}); //ALERTA: Substituir pel editor directament!
             this.editor.on('change', preview.trigger);
             this.editor.on('changeCursor', preview.trigger);
         }

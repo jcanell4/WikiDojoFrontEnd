@@ -32,53 +32,53 @@ define([
             },
 
 
-            /**
-             * Retorna la sessió del editor ace.
-             *
-             * @returns {ace.EditSession} - sessió creada per l'editor
-             * @private
-             */
-            getSession: function () {
-                return this.iocAceEditor.get('session');
-            },
+            // /**
+            //  * Retorna la sessió del editor ace.
+            //  *
+            //  * @returns {ace.EditSession} - sessió creada per l'editor
+            //  * @private
+            //  */
+            // getSession: function () {
+            //     return this.iocAceEditor.get('session');
+            // },
 
-            /**
-             * Retorna l'editor ace.
-             *
-             * @returns {ace.Editor}
-             * @private
-             */
-            getEditor: function () {
-                return this.iocAceEditor.get('editor');
-            },
+            // /**
+            //  * Retorna l'editor ace.
+            //  *
+            //  * @returns {ace.Editor}
+            //  * @private
+            //  */
+            // getEditor: function () {
+            //     return this.iocAceEditor.get('editor');
+            // },
 
-            /**
-             * Retorna una posició a partir del offsetset passat com argument.
-             *
-             * @param {int} offset - Offset a partir del cual es calcula la posició
-             * @returns {ace.Range}
-             * @private
-             */
-            offset_to_pos: function (offset) {
-                var row,
-                    row_length,
-                    i,
-                    len,
-                    session = this.getSession();
-
-                for (row = i = 0, len = session.getLength(); 0 <= len ? i < len : i > len; row = 0 <= len ? ++i : --i) {
-                    row_length = session.getLine(row).length + 1;
-                    if (offset < row_length) {
-                        break;
-                    }
-                    offset -= row_length;
-                }
-
-                return {
-                    row:    row,
-                    column: offset
-                };
-            },
+            // /**
+            //  * Retorna una posició a partir del offsetset passat com argument.
+            //  *
+            //  * @param {int} offset - Offset a partir del cual es calcula la posició
+            //  * @returns {ace.Range}
+            //  * @private
+            //  */
+            // offset_to_pos: function (offset) {
+            //     var row,
+            //         row_length,
+            //         i,
+            //         len,
+            //         session = this.getSession();
+            //
+            //     for (row = i = 0, len = session.getLength(); 0 <= len ? i < len : i > len; row = 0 <= len ? ++i : --i) {
+            //         row_length = session.getLine(row).length + 1;
+            //         if (offset < row_length) {
+            //             break;
+            //         }
+            //         offset -= row_length;
+            //     }
+            //
+            //     return {
+            //         row:    row,
+            //         column: offset
+            //     };
+            // },
 
             /**
              * Retorna el offset a partir d'una posició

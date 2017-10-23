@@ -175,7 +175,7 @@ define([
             }
 
 
-            this.iocAceEditor.aceWrapper.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
+            this.iocAceEditor.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
 
         },
 
