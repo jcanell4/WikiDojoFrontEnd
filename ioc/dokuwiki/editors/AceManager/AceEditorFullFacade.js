@@ -8,7 +8,7 @@ define([
     // 'ioc/dokuwiki/editors/AceManager/DokuWrapper',
     // 'ioc/dokuwiki/editors/AceManager/Container2',
     'ioc/dokuwiki/editors/AceManager/IocCommands',
-    'ioc/dokuwiki/editors/AceManager/patcher',
+    // 'ioc/dokuwiki/editors/AceManager/patcher',
     'dojo/dom-style',
     'dojo/dom',
     'ioc/dokuwiki/editors/AceManager/toolbarManager',
@@ -40,7 +40,7 @@ define([
 
             this.dispatcher = args.dispatcher;
 
-            this.iocAceEditor = iocAceEditor;
+            this.editor = iocAceEditor;
             this.id = args.auxId;
 
             // this.$editor = jQuery('#' + args.containerId);
@@ -83,9 +83,9 @@ define([
         },
 
         initEventHandlers: function() {
-            this.iocAceEditor.on('focus', this.select.bind(this));
+            this.editor.on('focus', this.select.bind(this));
 
-            this.iocAceEditor.on('change', function () {
+            this.editor.on('change', function () {
                 this.emit('change', {newContent: this.getValue()});
             }.bind(this));
         },
@@ -96,7 +96,7 @@ define([
         // },
 
         getValue: function () {
-            return this.iocAceEditor.getValue();
+            return this.editor.getValue();
 
             // if (this.enabled) {
             //     return this.getEditorValue();
@@ -106,44 +106,44 @@ define([
         },
 
         setValue: function (value) {
-            this.iocAceEditor.setValue(value);
+            this.editor.setValue(value);
         },
 
         destroy: function () {
-            this.iocAceEditor.destroy();
+            this.editor.destroy();
         },
 
         enable: function () {
-            this.iocAceEditor.enable();
+            this.editor.enable();
         },
 
         disable: function () {
-            this.iocAceEditor.disable();
+            this.editor.disable();
         },
 
         select: function () {
-            console.log("select: restaurando funciones parcheadas");
-            patcher.restoreCachedFunctions(this.id);
+            // patcher.restoreCachedFunctions(this.id);
+            this.editor.restoreCachedFunctions();
         },
 
         lockEditor: function () {
-            this.iocAceEditor.setReadOnly(true);
+            this.editor.setReadOnly(true);
             this.hideToolbar();
         },
 
         unlockEditor: function () {
-            this.iocAceEditor.setReadOnly(false);
+            this.editor.setReadOnly(false);
             this.showToolbar();
         },
 
 
         // ALERTA[Xavi] pendent de determinar si això es necessari aqui, es cridat només per un botó que hauria de connectar directament amb l'editor i no la Facade
         toggleWrap: function () {
-            this.iocAceEditor.toggleWrap();
+            this.editor.toggleWrap();
         },
 
         toggleEditor: function () {
-            this.iocAceEditor.toggleEditor();
+            this.editor.toggleEditor();
 
 
             // if (this.enabled) {
@@ -189,18 +189,18 @@ define([
             // console.log("node?", node);
             // console.log("Id??", this.iocAceEditor.dokuWrapper.textArea.id, node.id, this.iocAceEditor.$textarea.get(0).id);
 
-            var node = this.iocAceEditor.$textarea.get(0);
+            var node = this.editor.$textarea.get(0);
 
             if (node) {
                 style.set(node, "height", "" + normalizedHeight + "px");
             }
 
-            node = dom.byId(this.iocAceEditor.containerId);
+            node = dom.byId(this.editor.containerId);
             if (node) {
                 style.set(node, "height", "" + normalizedHeight + "px");
             }
 
-            this.iocAceEditor.resize();
+            this.editor.resize();
 
         },
 
@@ -209,7 +209,7 @@ define([
             toolbarManager.setDispatcher(dispatcher);
 
 
-            if (this.iocAceEditor.getReadOnly()) {
+            if (this.editor.getReadOnly()) {
                 return;
             }
             this.addButtons(dispatcher);

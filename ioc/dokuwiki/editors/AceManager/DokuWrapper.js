@@ -1,9 +1,121 @@
 define([
     "dojo/Stateful",
     "dojo/_base/declare",
-    "ioc/dokuwiki/editors/AceManager/patcher",
+    // "ioc/dokuwiki/editors/AceManager/patcher",
     'ioc/wiki30/GlobalState'
-], function (Stateful, declare, patcher, GlobalState) {
+], function (Stateful, declare, /*patcher,*/ GlobalState) {
+
+    /**
+     * Funció per aplicar els patch necesaris a les funcions globals del plugin aceeditor i la dokuwiki, conservant un cache
+     * de les funcions originals i les nove per facilitar l'administració de múltiples pestanyes.
+     *
+     * @author Xavier García<xaviergaro.dev@gmail.com>
+     */
+    var patcher = (function () {
+        var originalFunctions = {},
+            cachedFunctions = {},
+
+            /**
+             * Afegeix una funció al objecte dw_editor si existeix alguna amb aquest nom o al objecte window si no s'ha
+             * trobat cap coincidencia amb el nom.
+             *
+             * Aquesta funció no reemplaça l'anterior, si no que s'afegeix a la original de manera que es criden totes.
+             *
+             * @param {string} name - nom de la funció
+             * @param {function} func - funció per afegir
+             * @param {string} id - id corresponent a la pestanya que s'està editant
+             * @returns {function|null} - La referéncia a la funció parxejada
+             */
+            patch = function (name, func, id) {
+                console.log("Patching!");
+                if (!id) {
+                    throw new Error("No s'ha especificat la id per afegir al cache");
+                }
+
+                var obj = (dw_editor && dw_editor[name]) ? dw_editor : window,
+                    orig_func;
+
+                if (originalFunctions[name]) {
+                    orig_func = originalFunctions[name];
+                } else {
+                    orig_func = obj[name];
+                    originalFunctions[name] = orig_func;
+                }
+
+                obj[name] = function () {
+                    var args, aux;
+
+                    if (arguments.length > 0) {
+                        args = [].slice.call(arguments, 0);
+                    } else {
+                        args = []
+                    }
+
+                    aux = [this, orig_func].concat([].slice.call(args));
+
+                    return func.call.apply(func, aux);
+                };
+
+                // Afegim la nova funció al cache
+                if (id) {
+                    cacheFunction(id, name);
+                }
+
+                console.log("Patch end!");
+                return obj[name];
+            },
+
+            cacheFunction = function (id, name) {
+                //console.log("patcher#cacheFunction", id, name);
+                var func = (dw_editor && dw_editor[name]) ? dw_editor[name] : window[name];
+
+                if (!cachedFunctions[id]) {
+                    cachedFunctions[id] = [];
+                }
+                cachedFunctions[id].push({name: name, func: func});
+
+            },
+
+            restoreCachedFunctions = function (id) {
+
+                if (id === this.lastPatchedId) {
+                    return; // No cal restaurar
+                } else {
+                    //console.log("patcher#restoreCachedFunctions", id);
+                }
+
+                if (!cachedFunctions[id]) {
+                    return;
+                }
+
+                var functions = cachedFunctions[id],
+                    name, func;
+
+                for (var i = 0, len = functions.length; i < len; i++) {
+                    name = functions[i]['name'];
+                    func = functions[i]['func'];
+
+                    if (dw_editor && dw_editor[name]) {
+                        dw_editor[name] = func
+                    } else {
+                        window[name] = func;
+                    }
+                }
+
+                this.lastPatchedId = id;
+
+            };
+
+        return {
+            patch: patch,
+
+            restoreCachedFunctions: restoreCachedFunctions
+        }
+    }());
+
+
+
+
     return declare([Stateful],
         /**
          * Embolcall per manipular un textarea.
@@ -25,7 +137,7 @@ define([
              * @type {AceWrapper}
              * @private
              */
-            aceWrapper: null,
+            editor: null,
 
             // /**
             //  * El contenidor s'estableix automàticament al afegir aquest wrapper a un contenidor
@@ -57,12 +169,13 @@ define([
             /**
              * Al constructor passem el textarea que volem embolcallar i el wrapper del editor ace.
              *
-             * @param {AceWrapper} aceWrapper - Embolcall del editor ace enllaçat.
+             * @param {AceWrapper} editor - Embolcall del editor ace enllaçat.
              * @param {string} textArea - Id del textarea que conté el text de la wiki
              */
-            constructor: function (aceWrapper, textArea, id) {
+            constructor: function (editor, textArea, id) {
                 this.setTextArea(textArea);
-                this.setAceWrapper(aceWrapper);
+                // this.setEditor(editor);
+                this.editor = editor;
                 this._init(id);
             },
 
@@ -76,14 +189,15 @@ define([
                     this.setTextArea('wiki__text'); // ALERTA[Xavi] Això ja no es correcte, aquest era el valor per defecte antic
                 }
             },
-
-            /**
-             * @param {AceWrapper} aceWrapper - Embolcall del editor ace que volem enllaçar
-             */
-            setAceWrapper: function (aceWrapper) {
-                this.set('aceWrapper', aceWrapper);
-            },
-
+            //
+            // /**
+            //  * @param {AceWrapper} aceWrapper - Embolcall del editor ace que volem enllaçar
+            //  */
+            // setEditor: function (editor) {
+            //     this.editor = editor;
+            //     this.set('aceWrapper', aceWrapper);
+            // },
+            //
 
             /**
              * Inicialitza l'embolcall aplicant els parxes necessaris per afegir les noves funcions al editor a sobre
@@ -265,7 +379,11 @@ define([
                     }
                 });
 
-                this.doku_submit_handler = this.textArea.form.onsubmit;
+                this.doku_submit_handler = function() {
+                    console.error("Es crida això?")
+                    alert("es crida això?");
+                    this.textArea.form.onsubmit();
+                }
             },
 
             disable: function () {
@@ -373,7 +491,7 @@ define([
              * @returns {{start: int, end: int}}
              */
             aceGetSelection: function () {
-                return this.aceWrapper.get_selection();
+                return this.editor.get_selection();
             },
 
             /**
@@ -384,7 +502,7 @@ define([
              * @returns {string}
              */
             aceGetText: function (start, end) {
-                return this.aceWrapper.get_value().substring(start, end);
+                return this.editor.get_value().substring(start, end);
             },
 
             /**
@@ -393,7 +511,7 @@ define([
              * @returns {string}
              */
             aceGetValue: function () {
-                return this.aceWrapper.get_value();
+                return this.editor.get_value();
             },
 
             /**
@@ -404,9 +522,9 @@ define([
              * @param {string} text - Text a enganxar
              */
             acePasteText: function (start, end, text) {
-                this.aceWrapper.replace(start, end, text);
-                this.aceWrapper.set_selection(start, end);
-                this.aceWrapper.focus();
+                this.editor.replace(start, end, text);
+                this.editor.set_selection(start, end);
+                this.editor.focus();
             },
 
             /**
@@ -414,7 +532,7 @@ define([
              */
             aceOnResize: function () {
                 // this.container.on_resize();
-                this.aceWrapper.resize();
+                this.editor.resize();
             },
 
             /**
@@ -424,8 +542,8 @@ define([
              * @param {int} end - Punt final
              */
             aceSetSelection: function (start, end) {
-                this.aceWrapper.set_selection(start, end);
-                this.aceWrapper.focus();
+                this.editor.set_selection(start, end);
+                this.editor.focus();
             },
 
             /**
@@ -434,29 +552,14 @@ define([
              * @param {string} value -  Els valos vàlids son 'on' i 'off'
              */
             aceSetWrap: function (value) {
-                this.aceWrapper.set_wrap_mode(value);
-                this.aceWrapper.focus();
+                this.editor.set_wrap_mode(value);
+                this.editor.focus();
             },
 
-            // /**
-            //  * Estableix el valor d'alçada al contenidor i actualiza el embolcall del ace.
-            //  *
-            //  * @param {int} value - Nova alçada
-            //  */
-            // aceSizeCtl: function (value) {
-            //     this.container.incr_height(value);
-            //     this.aceWrapper.resize();
-            //     this.aceWrapper.focus();
-            // },
-            //
-            // /**
-            //  * Cridat automàticament pel container al afegir-li aquest DokuWrapper
-            //  * @param {Container} container
-            //  * @protected
-            //  */
-            // setContainer: function (container) {
-            //     this.container = container;
-            // }
+            restoreCachedFunctions: function (id) {
+                patcher.restoreCachedFunctions(id);
+            }
+
 
 
         });

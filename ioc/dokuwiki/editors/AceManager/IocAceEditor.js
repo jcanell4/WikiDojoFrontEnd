@@ -57,6 +57,9 @@ define([
 
             },
 
+            /** @type {Array} conté el llistat de plugins actius **/
+            plugins : null,
+
             /** @type {object} arguments que s'han passat al constructor per configurar-lo */
             _args: {},
 
@@ -186,8 +189,10 @@ define([
             },
 
             initPlugins: function(plugins ) {
+                this.plugins = [];
+
                 if (plugins) {
-                    this.addPlugin(plugins);
+                    this.addPlugins(plugins);
                 }
             },
 
@@ -382,7 +387,10 @@ define([
             },
 
             destroy: function () {
+                console.log("Editor destroyed");
+                this.removePlugins();
                 this.editor.destroy();
+
 
                 // ace.edit(this.args.containerId).destroy()
             },
@@ -505,18 +513,32 @@ define([
                 return this.dokuWrapper.set_value(value);
             },
 
-            addPlugin: function (plugins) {
+            addPlugins: function (plugins) {
+
                 if (Array.isArray((plugins))) {
                     for (var i=0; i<plugins.length; i++) {
                         this.initializePlugin(plugins[i]);
+
                     }
                 } else {
+
                     this.initializePlugin(plugins);
                 }
+
+            },
+
+            removePlugins: function() {
+                for (var i=0; i<this.plugins.length; i++) {
+
+                    this.plugins[i].destroy();
+                }
+
+                this.plugins.length = 0 ;
             },
 
             initializePlugin: function(_plugin) {
                 var plugin = new _plugin();
+                this.plugins.push(plugin);
                 plugin.setEditor(this);
                 plugin.init();
             },
@@ -1124,7 +1146,15 @@ define([
              */
             getCurrentRow: function() {
                 return this.getEditor().getSelectionRange().start.row;
+            },
+
+            // Funcions del DokuWrapper
+
+            restoreCachedFunctions: function () {
+                // patcher.restoreCachedFunctions(this.id);
+                this.dokuWrapper.restoreCachedFunctions(this.id);
             }
+
 
         });
 });

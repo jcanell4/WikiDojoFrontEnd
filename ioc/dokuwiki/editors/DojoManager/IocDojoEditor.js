@@ -123,7 +123,7 @@ define([
          * @param index
          * @override
          */
-        addPlugin: function (/*String||Object||Function*/ plugin, /*Integer?*/ index) {
+        addPlugins: function (/*String||Object||Function*/ plugin, /*Integer?*/ index) {
 
             // summary:
             //		takes a plugin name as a string or a plugin instance and

@@ -11,7 +11,7 @@ define([
          */
         {
             /** @type {AceWrapper} */
-            aceWrapper: null,
+            editor: null,
 
             /** @type {Object[]} */
             contexts: [],

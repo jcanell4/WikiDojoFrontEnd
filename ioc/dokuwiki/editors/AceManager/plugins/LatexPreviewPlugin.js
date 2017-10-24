@@ -106,6 +106,10 @@ define([
         };
     };
 
+
+    // Handler privat per guardar la referència als events escoltats pel plugin i poder eliminar-lo
+    var handler;
+
     // Interficie del plugin
     return declare(null, {
 
@@ -115,8 +119,11 @@ define([
 
         init: function () {
             var preview = new LatexPreviewPlugin({ace: this.editor}); //ALERTA: Substituir pel editor directament!
-            this.editor.on('change', preview.trigger);
-            this.editor.on('changeCursor', preview.trigger);
+            handler = this.editor.on('change, changeCursor', preview.trigger);
+        },
+
+        destroy: function() {
+          handler.remove();
         }
 
     });

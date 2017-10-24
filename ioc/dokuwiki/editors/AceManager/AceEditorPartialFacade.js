@@ -96,9 +96,6 @@ define([
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
 
-
-
-
             contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getEditedChunk(chunk)});
             contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
             contentTool.requester.sendRequest();
@@ -163,19 +160,19 @@ define([
                 max = h - this.VERTICAL_MARGIN,
                 normalizedHeight = Math.max(min, Math.min(height, max));
 
-            var node = dom.byId(this.iocAceEditor.dokuWrapper.textArea.id);
+            var node = dom.byId(this.editor.dokuWrapper.textArea.id);
 
             if (node) {
                 style.set(node, "height", "" + normalizedHeight  + "px");
             }
 
-            node = dom.byId(this.iocAceEditor.containerId);
+            node = dom.byId(this.editor.containerId);
             if (node) {
                 style.set(node, "height", "" + normalizedHeight  + "px");
             }
 
 
-            this.iocAceEditor.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
+            this.editor.resize(); // TODO[Xavi] Important! sense això no s'ajusta la mida del editor
 
         },
 
