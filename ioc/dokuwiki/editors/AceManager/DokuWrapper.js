@@ -126,10 +126,10 @@ define([
          */
         {
             /** @type {boolean} @private */
-            patching: false,
+            patched: false,
 
             /** @type {DOMNode} @private */
-            textArea: null,
+            textarea: null,
 
             /**
              * AceWrapper al que està enllaçat actualment el DokuWrapper
@@ -148,56 +148,35 @@ define([
             // container: null,
 
 
-            /**
-             * Funció que es cridarà al enviar el formulari
-             *
-             * @type {function}
-             * @private
-             */
-            doku_submit_handler: null,
-
-            /** @type {function} @private */
-            doku_get_selection: null,
-
-            /** @type {function} @private */
-            doku_set_selection: null,
-
-            /** @type {selection_class} @private @constructor*/
-            doku_selection_class: null,
+            // /**
+            //  * Funció que es cridarà al enviar el formulari
+            //  *
+            //  * @type {function}
+            //  * @private
+            //  */
+            // doku_submit_handler: null,
+            //
+            // /** @type {function} @private */
+            // doku_get_selection: null,
+            //
+            // /** @type {function} @private */
+            // doku_set_selection: null,
+            //
+            // /** @type {selection_class} @private @constructor*/
+            // doku_selection_class: null,
 
 
             /**
              * Al constructor passem el textarea que volem embolcallar i el wrapper del editor ace.
              *
              * @param {AceWrapper} editor - Embolcall del editor ace enllaçat.
-             * @param {string} textArea - Id del textarea que conté el text de la wiki
+             * @param {string} textarea - Id del textarea que conté el text de la wiki
              */
-            constructor: function (editor, textArea, id) {
-                this.setTextArea(textArea);
-                // this.setEditor(editor);
+            constructor: function (editor, textarea, id) {
+                this.textarea = document.getElementById(textarea);
                 this.editor = editor;
-                this._init(id);
+                this._patch(id);
             },
-
-            /**
-             * @param {string} textArea - Id del text area a establir
-             */
-            setTextArea: function (textArea) {
-                if (textArea) {
-                    this.set('textArea', document.getElementById(textArea));
-                } else {
-                    this.setTextArea('wiki__text'); // ALERTA[Xavi] Això ja no es correcte, aquest era el valor per defecte antic
-                }
-            },
-            //
-            // /**
-            //  * @param {AceWrapper} aceWrapper - Embolcall del editor ace que volem enllaçar
-            //  */
-            // setEditor: function (editor) {
-            //     this.editor = editor;
-            //     this.set('aceWrapper', aceWrapper);
-            // },
-            //
 
             /**
              * Inicialitza l'embolcall aplicant els parxes necessaris per afegir les noves funcions al editor a sobre
@@ -209,10 +188,10 @@ define([
              *
              * @private
              */
-            _init: function (id) {
+            _patch: function (id) {
                 id = id || GlobalState.getCurrentId();
 
-                var self = this,
+                var context = this,
 
                     /**
                      * @param {function} func - Funcio a cridar a continuació
@@ -220,10 +199,10 @@ define([
                      * @private
                      */
                     _patchCurrentHeadlineLevel = function (func, id) {
-                        if (id === self.textArea.id) {
+                        // if (id === context.textarea.id) {
                             // ALERTA[Xavi] això provoca errors quan es treballa amb el textarea i no sembla fer res al AceEditor
-                            // jQuery(self.textArea).val(self.aceGetValue());
-                        }
+                            // jQuery(self.textarea).val(self.aceGetValue());
+                        // }
 
                         return func(id);
                     },
@@ -241,21 +220,23 @@ define([
                         if (!opts) {
                             opts = {};
                         }
-                        if (self.patching && selection.obj.id === self.textArea.id) {
-                            self.acePasteText(selection.start, selection.end, text);
+                        if (context.editor.currentEditor === context.editor.EDITOR.ACE && selection.obj.id === context.textarea.id) {
+                            context.acePasteText(selection.start, selection.end, text);
                             selection.end = selection.start + text.length - (opts.endofs || 0);
                             selection.start += opts.startofs || 0;
                             if (opts.nosel) {
                                 selection.start = selection.end;
                             }
-                            self.aceSetSelection(selection.start, selection.end);
+                            // context.aceSetSelection(selection.start, selection.end);
+                            context.editor.set_selection(selection.start, selection.end);
+                            context.editor.focus();
                         } else {
                             func(selection, text, opts);
                         }
 
-                        var event = new Event('change', {newContent: jQuery(self.textArea).val()});
+                        var event = new Event('change', {newContent: jQuery(context.textarea).val()});
 
-                        self.textArea.dispatchEvent(event);
+                        context.textarea.dispatchEvent(event);
                     },
 
                     /**
@@ -268,8 +249,8 @@ define([
                      */
                     _patchSetWrap = function (func, obj, value) {
                         func(obj, value);
-                        if (obj.id === self.textArea.id) {
-                            self.aceSetWrap(value !== 'off');
+                        if (obj.id === context.textarea.id) {
+                            context.aceSetWrap(value !== 'off');
                         }
                     },
 
@@ -286,8 +267,8 @@ define([
 
                         var id = (typeof obj.attr === "function" ? obj.attr('id') : void 0) || obj;
 
-                        if (self.patching && id === self.textArea.id) {
-                            self.aceSizeCtl(value);
+                        if (context.editor.currentEditor === context.editor.EDITOR.ACE && id === context.textarea.id) {
+                            context.aceSizeCtl(value);
                         }
                     },
 
@@ -303,11 +284,17 @@ define([
                     _patchGetSelection = function (func, obj) {
                         var result, selection;
 
-                        if (self.patching && obj === self.textArea) {
-                            jQuery(self.textArea).val(self.aceGetValue());
-                            result = self.aceGetSelection();
-                            selection = new self.doku_selection_class();
-                            selection.obj = self.textArea;
+                        if (context.editor.currentEditor === context.editor.EDITOR.ACE && obj === context.textarea) {
+                            console.log("Patched get selection");
+                            // jQuery(context.textarea).val(context.aceGetValue());
+                            context.editor.$textarea.val(context.editor.getEditorValue());
+                            result = context.editor.get_selection();
+
+
+                            // this.editor.get_selection()
+
+                            selection = new context.doku_selection_class();
+                            selection.obj = context.textarea;
                             selection.start = result.start;
                             selection.end = result.end;
                             return selection;
@@ -333,8 +320,9 @@ define([
 
                         this.doku_get_text = this.getText;
                         this.getText = function () {
-                            if (self.patching && this.obj === self.textArea) {
-                                return self.aceGetText(this.start, this.end);
+                            if (context.editor.currentEditor === context.editor.EDITOR.ACE && this.obj === context.textarea) {
+                                // return context.aceGetText(this.start, this.end);
+                                return context.editor.getEditorValue().substring(this.start, this.end);
                             } else {
                                 return this.doku_get_text();
                             }
@@ -349,8 +337,10 @@ define([
                      * @private
                      */
                     _patchSetSelection = function (func, selection) {
-                        if (self.patching && selection.obj.id === self.textArea.id) {
-                            self.aceSetSelection(selection.start, selection.end);
+                        if (context.editor.currentEditor === context.editor.EDITOR.ACE && selection.obj.id === context.textarea.id) {
+                            // context.aceSetSelection(selection.start, selection.end);
+                            context.editor.setEditorValue(selection.start, selection.end);
+                            context.editor.focus();
                         } else {
                             if (func) {
                                 func(selection);
@@ -367,47 +357,57 @@ define([
                 this.doku_selection_class = patcher.patch('selection_class', _patchSelectionClass, id);
                 this.doku_set_selection = patcher.patch('setSelection', _patchSetSelection, id);
 
-                jQuery(this.textArea.form).submit(function (event) {
-                    if (this.patching) {
-                        return jQuery(self.textArea).val(self.aceGetValue());
-                    }
-                });
 
-                jQuery(window).resize(function (event) {
-                    if (this.patching) {
-                        return self.aceOnResize();
-                    }
-                });
-
-                this.doku_submit_handler = function() {
-                    console.error("Es crida això?")
-                    alert("es crida això?");
-                    this.textArea.form.onsubmit();
-                }
+                // jQuery(this.textarea.form).submit(function (event) {
+                //     console.log("submit");
+                //     if (context.editor.currentEditor === context.editor.EDITOR.ACE) {
+                //         alert("ALERTA! això no s'estava cridant mai!");
+                //         return jQuery(context.textarea).val(context.aceGetValue());
+                //     }
+                // });
+                //
+                // jQuery(window).resize(function (event) {
+                //     console.log("resize");
+                //     if (context.editor.currentEditor === context.editor.EDITOR.ACE) {
+                //         alert("ALERTA! això no s'estava cridant mai!");
+                //         return context.aceOnResize();
+                //     }
+                // });
+                //
+                // // ALERTA[Xavi] Això sembla que no es fa servir mai
+                // this.doku_submit_handler = function() {
+                //     console.error("es crida això?");
+                //     alert("es crida això?");
+                //     this.textarea.form.onsubmit();
+                // }
             },
 
-            disable: function () {
-                this.patching = true;
-                jQuery(this.textArea).hide();
-            },
+            // disable: function () {
+            //     // this.patched = true;
+            //     this.editor.currentEditor = this.editor.ACE;
+            //     this.editor.$textarea.hide();
+            // },
 
-            enable: function () {
-                this.patching = false;
-                jQuery(this.textArea).show();
-            },
+            // enable: function () {
+            //     // this.patched = false;
+            //     // jQuery(this.textarea).show();
+            //     this.editor.currentEditor = this.editor.EDITOR.TEXT_AREA;
+            //     this.editor.$textarea.show();
+            // },
 
-            focus: function () {
-                jQuery(this.textArea).focus();
-            },
+            // focus: function () {
+            //     this.editor.$textarea.focus()
+            //     // jQuery(this.textarea).focus();
+            // },
 
             get_cookie: function (name) {
-                alerta("Es fa servir get_cookie");
+                alerta("Es fa servir get_cookie"); // NO ES FA SERVIR
                 return DokuCookie.getValue(name);
             },
 
             get_readonly: function () {
-                alerta("Es fa servir get_readonly");
-                return jQuery(this.textArea).attr('readonly');
+                alerta("Es fa servir get_readonly"); // NO ES FA SERVIR
+                return jQuery(this.textarea).attr('readonly');
             },
 
             /**
@@ -417,7 +417,7 @@ define([
              */
             get_selection: function () {
                 var selection;
-                selection = this.doku_get_selection(this.textArea);
+                selection = this.doku_get_selection(this.textarea);
 
                 return {
                     start: selection.start,
@@ -425,14 +425,14 @@ define([
                 };
             },
 
-            /**
-             * Retorna el contingut del editor.
-             *
-             * @returns {String}
-             */
-            get_value: function () {
-                return jQuery(this.textArea).val();
-            },
+            // /**
+            //  * Retorna el contingut del editor.
+            //  *
+            //  * @returns {String}
+            //  */
+            // get_value: function () {
+            //     return jQuery(this.textarea).val();
+            // },
 
             /**
              * Retorna si les paraules es tallan al final de la línia o no.
@@ -441,21 +441,21 @@ define([
              */
             get_wrap: function () {
                 alert("Es fa servir get_wrap");
-                return jQuery(this.textArea).attr('wrap') !== 'off';
+                return jQuery(this.textarea).attr('wrap') !== 'off';
             },
 
-            /**
-             * Retorna la alçada interior del textarea.
-             *
-             * @returns {int}
-             */
-            inner_height: function () {
-                return jQuery(this.textArea).innerHeight();
-            },
+            // /**
+            //  * Retorna la alçada interior del textarea.
+            //  *
+            //  * @returns {int}
+            //  */
+            // inner_height: function () {
+            //     return jQuery(this.textarea).innerHeight();
+            // },
 
-            set_cookie: function (name, value) {
-                DokuCookie.setValue(name, value);
-            },
+            // set_cookie: function (name, value) {
+            //     DokuCookie.setValue(name, value);
+            // },
 
             /**
              * Estableix la selecció entre els punts passats com a inicial i final.
@@ -466,53 +466,53 @@ define([
             set_selection: function (start, end) {
                 var selection;
                 selection = new this.doku_selection_class();
-                selection.obj = this.textArea;
+                selection.obj = this.textarea;
                 selection.start = start;
                 selection.end = end;
                 this.doku_set_selection(selection);
             },
 
-            /**
-             * Estableix el text al textarea.
-             *
-             * @param {string} value
-             */
-            set_value: function (value) {
-                jQuery(this.textArea).val(value);
-            },
+            // /**
+            //  * Estableix el text al textarea.
+            //  *
+            //  * @param {string} value
+            //  */
+            // set_value: function (value) {
+            //     jQuery(this.textarea).val(value);
+            // },
 
-            text_changed: function () {
-                return summaryCheck();
-            },
+            // text_changed: function () {
+            //     return summaryCheck();
+            // },
 
-            /**
-             * Obté la selecció del embolcall del ace editor.
-             *
-             * @returns {{start: int, end: int}}
-             */
-            aceGetSelection: function () {
-                return this.editor.get_selection();
-            },
+            // /**
+            //  * Obté la selecció del embolcall del ace editor.
+            //  *
+            //  * @returns {{start: int, end: int}}
+            //  */
+            // aceGetSelection: function () {
+            //     return this.editor.get_selection();
+            // },
 
-            /**
-             * Obté el text entre la posició inicial i final del embolcall del ace editor.
-             *
-             * @param {int} start - Punt inicial
-             * @param {int} end - Punt final
-             * @returns {string}
-             */
-            aceGetText: function (start, end) {
-                return this.editor.get_value().substring(start, end);
-            },
-
-            /**
-             * Obté el text del embolcall del ace editor.
-             *
-             * @returns {string}
-             */
-            aceGetValue: function () {
-                return this.editor.get_value();
-            },
+            // /**
+            //  * Obté el text entre la posició inicial i final del embolcall del ace editor.
+            //  *
+            //  * @param {int} start - Punt inicial
+            //  * @param {int} end - Punt final
+            //  * @returns {string}
+            //  */
+            // aceGetText: function (start, end) {
+            //     return this.editor.get_value().substring(start, end);
+            // },
+            //
+            // /**
+            //  * Obté el text del embolcall del ace editor.
+            //  *
+            //  * @returns {string}
+            //  */
+            // aceGetValue: function () {
+            //     return this.editor.get_value();
+            // },
 
             /**
              * Enganxa el text entre la posició inicial i final passats com argument.
@@ -527,24 +527,24 @@ define([
                 this.editor.focus();
             },
 
-            /**
-             * Comunica la realització dels canvis al contenidor i el embolcall del ace.
-             */
-            aceOnResize: function () {
-                // this.container.on_resize();
-                this.editor.resize();
-            },
+            // /**
+            //  * Comunica la realització dels canvis al contenidor i el embolcall del ace.
+            //  */
+            // aceOnResize: function () {
+            //     // this.container.on_resize();
+            //     this.editor.resize();
+            // },
 
-            /**
-             * Estableix com a selecció amb els punts inicial i final passats com argument al embolcall del ace.
-             *
-             * @param {int} start - Punt inicial
-             * @param {int} end - Punt final
-             */
-            aceSetSelection: function (start, end) {
-                this.editor.set_selection(start, end);
-                this.editor.focus();
-            },
+            // /**
+            //  * Estableix com a selecció amb els punts inicial i final passats com argument al embolcall del ace.
+            //  *
+            //  * @param {int} start - Punt inicial
+            //  * @param {int} end - Punt final
+            //  */
+            // aceSetSelection: function (start, end) {
+            //     this.editor.set_selection(start, end);
+            //     this.editor.focus();
+            // },
 
             /**
              * Activa o desactiva que es tallin les paraules al final de la línia.
@@ -558,9 +558,19 @@ define([
 
             restoreCachedFunctions: function (id) {
                 patcher.restoreCachedFunctions(id);
-            }
+            },
 
 
-
+            /**
+             * Estableix el valor d'alçada al contenidor i actualiza el embolcall del ace.
+             *
+             * @param {int} value - Nova alçada
+             */
+            aceSizeCtl: function (value) {
+                console.log("Cridat aceSizeCtl");
+                this.editor.incr_height(value);
+                this.editor.resize();
+                this.editor.focus();
+            },
         });
 });

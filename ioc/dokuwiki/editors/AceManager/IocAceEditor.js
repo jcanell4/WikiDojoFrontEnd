@@ -58,7 +58,7 @@ define([
             },
 
             /** @type {Array} conté el llistat de plugins actius **/
-            plugins : null,
+            plugins: null,
 
             /** @type {object} arguments que s'han passat al constructor per configurar-lo */
             _args: {},
@@ -103,7 +103,7 @@ define([
             initContainer: function (id) {
 
                 var element = jQuery('<div>'),
-                    textarea = jQuery(this.dokuWrapper.textArea),
+                    textarea = jQuery(this.dokuWrapper.textarea),
                     wrapper = jQuery('<div>', {
                         "class": 'ace-doku',
                         "id": id
@@ -172,8 +172,10 @@ define([
                     if (this.currentEditor === this.EDITOR.TEXT_AREA) {
                         return;
                     }
-                    this.dokuWrapper.set_value((this.get_value()));
-                    this.dokuWrapper.text_changed();
+                    this.setTextareaValue(this.get_value());
+
+                    summaryCheck(); // ALERTA! Funció propia de la Dokuwiki
+
                     commands.hide_menu(); // ALERTA! es pot moure la subscripcció al propi commands
                     // preview.trigger(); // ALERTA! es pot moure la subscripcció al propi ace-preview
                 });
@@ -188,7 +190,7 @@ define([
 
             },
 
-            initPlugins: function(plugins ) {
+            initPlugins: function (plugins) {
                 this.plugins = [];
 
                 if (plugins) {
@@ -381,13 +383,12 @@ define([
             //     });
             // },
 
-            getText: function () {
-                alert("es fa servir getText");
-                return this.session.getValue();
-            },
+            // getText: function () {
+            //     alert("es fa servir getText");
+            //     return this.session.getValue();
+            // },
 
             destroy: function () {
-                console.log("Editor destroyed");
                 this.removePlugins();
                 this.editor.destroy();
 
@@ -417,60 +418,65 @@ define([
 
             toggleEditor: function () {
                 if (this.currentEditor === this.EDITOR.ACE) {
-                    this.currentEditor = this.EDITOR.TEXT_AREA
-                } else {
                     this.currentEditor = this.EDITOR.TEXT_AREA;
-                }
-
-                if (this.enabled) {
                     this.disable();
                 } else {
+                    this.currentEditor = this.EDITOR.ACE;
                     this.enable();
                 }
+
             },
 
             enable: function () {
-                var selection = this.dokuWrapper.get_selection();
-                this.dokuWrapper.disable();
 
-                this.set_height(this.dokuWrapper.inner_height()); // ALERTA! Set_height no es troba aqui si no al facade!
+                var selection = this.dokuWrapper.get_selection();
+
+                // this.dokuWrapper.disable();
+                this.currentEditor = this.EDITOR.ACE;
+                this.$textarea.hide();
+
+
+                this.set_height(this.$textarea.innerHeight()); // ALERTA! Set_height no es troba aqui si no al facade!
                 this.show(); // ALERTA! no es troba aqui si no al facade!
-                this.set_value(this.dokuWrapper.get_value());
+                this.set_value(this.getTextareaValue());
                 this.resize();
                 this.focus();
                 this.set_selection(selection.start, selection.end);
 
-                this.dokuWrapper.set_cookie('aceeditor', 'on');
+                DokuCookie.setValue('aceeditor', 'on'); // ALERTA[Xavi] Això no ho fem servir, era de la versió anterior
 
-                this.enabled = true; // ALERTA! això es del facade!
+
+                // this.enabled = true; // ALERTA! això es del facade!
             },
 
             disable: function () {
-                var selection;
+                var selection = this.get_selection();
 
-                selection = this.get_selection();
-                this.dokuWrapper.set_cookie('aceeditor', 'off');
+                DokuCookie.setValue('aceeditor', 'off'); // ALERTA[Xavi] Això no ho fem servir, era de la versió anterior
 
                 this.hide();
-                this.dokuWrapper.enable();
-                this.dokuWrapper.set_value(this.get_value());
-                this.dokuWrapper.set_selection(selection.start, selection.end);
-                this.dokuWrapper.focus();
+                // this.dokuWrapper.enable();
+                this.currentEditor = this.EDITOR.TEXT_AREA;
+                this.$textarea.show();
 
-                this.enabled = false;
+
+                this.setTextareaValue(this.get_value());
+                // this.dokuWrapper.set_value(this.get_value());
+                this.dokuWrapper.set_selection(selection.start, selection.end);
+                this.$textarea.focus();
+
+                // this.enabled = false;
 
             },
 
             show: function () {
-                var wrapper = this.$wrapper,
-                    element = this.$elementContainer;
-                wrapper.show();
-                element.css('width', wrapper.width() + 'px');
-                return element.css('height', wrapper.height() + 'px');
+                this.$wrapper.show();
+                this.$elementContainer.css('width', this.$wrapper.width() + 'px');
+                this.$elementContainer.css('height', this.$wrapper.height() + 'px');
             },
 
             hide: function () {
-                return this.$wrapper.hide();
+                this.$wrapper.hide();
             },
 
             set_height: function (value) {
@@ -480,7 +486,7 @@ define([
             },
 
             // Funcions mogudes del Facade
-            getValue: function() {
+            getValue: function () {
                 // console.log("IocAceEditor#getValue");
                 if (this.currentEditor === this.EDITOR.ACE) {
                     return this.getEditorValue();
@@ -494,10 +500,11 @@ define([
             },
 
             getTextareaValue: function () {
-                return this.dokuWrapper.get_value();
+                return this.$textarea.val();
+                // return this.dokuWrapper.get_value();
             },
 
-            setValue: function(value) {
+            setValue: function (value) {
                 if (this.currentEditor === this.EDITOR.ACE) {
                     this.setEditorValue(value);
                 } else {
@@ -506,17 +513,17 @@ define([
             },
 
             setEditorValue: function (value) {
-                return this.set_value(value);
+                this.set_value(value);
             },
 
             setTextareaValue: function (value) {
-                return this.dokuWrapper.set_value(value);
+                this.$textarea.val(value);
             },
 
             addPlugins: function (plugins) {
 
                 if (Array.isArray((plugins))) {
-                    for (var i=0; i<plugins.length; i++) {
+                    for (var i = 0; i < plugins.length; i++) {
                         this.initializePlugin(plugins[i]);
 
                     }
@@ -527,16 +534,16 @@ define([
 
             },
 
-            removePlugins: function() {
-                for (var i=0; i<this.plugins.length; i++) {
+            removePlugins: function () {
+                for (var i = 0; i < this.plugins.length; i++) {
 
                     this.plugins[i].destroy();
                 }
 
-                this.plugins.length = 0 ;
+                this.plugins.length = 0;
             },
 
-            initializePlugin: function(_plugin) {
+            initializePlugin: function (_plugin) {
                 var plugin = new _plugin();
                 this.plugins.push(plugin);
                 plugin.setEditor(this);
@@ -588,7 +595,7 @@ define([
                 }
 
                 return {
-                    row:    row,
+                    row: row,
                     column: offset
                 };
             },
@@ -647,7 +654,7 @@ define([
                 states = [
                     {
                         start: 0,
-                        name:  startState
+                        name: startState
                     }
                 ];
 
@@ -669,7 +676,7 @@ define([
                                 _.last(states).end = lastIndex;
                                 states.push({
                                     start: lastIndex,
-                                    name:  currentState
+                                    name: currentState
                                 });
                             }
                             break;
@@ -681,7 +688,7 @@ define([
                     }
 
                     if (lastIndex === line.length /*|| (previousLastIndex !== -1 && previousLastIndex === lastIndex)*/
-                        || currentIterations>MAX_ITERATIONS
+                        || currentIterations > MAX_ITERATIONS
                     ) {
 
                         break;
@@ -713,7 +720,7 @@ define([
                 states = [
                     {
                         start: 0,
-                        name:  startState
+                        name: startState
                     }
                 ];
 
@@ -728,7 +735,7 @@ define([
                             rule = state[mapping[i]];
 
                             if (!firstMatch && includeFirst) {
-                                firstMatch = match[i+1];
+                                firstMatch = match[i + 1];
                                 includeFirst = false;
                             }
 
@@ -751,7 +758,7 @@ define([
 
                                 states.push({
                                     start: lastIndex,
-                                    name:  currentState
+                                    name: currentState
                                 });
                             }
                             break;
@@ -763,7 +770,7 @@ define([
                     }
 
                     if (lastIndex === line.length /*|| (previousLastIndex !== -1 && previousLastIndex === lastIndex)*/
-                        || currentIterations>MAX_ITERATIONS
+                        || currentIterations > MAX_ITERATIONS
                     ) {
 
                         break;
@@ -819,11 +826,11 @@ define([
                     var column;
                     column = range.start.row === range.end.row ? range.start.column : 0;
                     return html.push(marker.on_render({
-                        left:             Math.round(column * config.characterWidth),
+                        left: Math.round(column * config.characterWidth),
                         top: (range.start.row - config.firstRowScreen) * config.lineHeight,
                         bottom: (range.end.row - config.firstRowScreen + 1) * config.lineHeight,
-                        screen_height:    config.height,
-                        screen_width:     config.width,
+                        screen_height: config.height,
+                        screen_width: config.width,
                         container_height: config.minHeight
                     }));
                 };
@@ -925,7 +932,7 @@ define([
 
                 return {
                     start: this.pos_to_offset(range.start),
-                    end:   this.pos_to_offset(range.end)
+                    end: this.pos_to_offset(range.end)
                 };
             },
 
@@ -1144,7 +1151,7 @@ define([
              *
              * @returns {int} línia a la que es troba el cursor
              */
-            getCurrentRow: function() {
+            getCurrentRow: function () {
                 return this.getEditor().getSelectionRange().start.row;
             },
 
@@ -1153,7 +1160,14 @@ define([
             restoreCachedFunctions: function () {
                 // patcher.restoreCachedFunctions(this.id);
                 this.dokuWrapper.restoreCachedFunctions(this.id);
+            },
+
+            incr_height: function (value) {
+
+                this.$wrapper.css('height', (this.$wrapper.height() + value) + 'px');
+                return this.$elementContainer.css('height', this.$wrapper.height() + 'px');
             }
+
 
 
         });

@@ -15,7 +15,7 @@ define([
     'dojo/dom-geometry',
     /*'ioc/dokuwiki/editors/AceManager/ace-preview',*/
     'dojo/cookie',
-], function (declare, AbstractIocFacade, IocAceEditor, /*IocAceMode,*/ /*IocRuleSet, *//*AceWrapper, DokuWrapper,*/ /*Container,*/ IocCommands, patcher,
+], function (declare, AbstractIocFacade, IocAceEditor, /*IocAceMode,*/ /*IocRuleSet, *//*AceWrapper, DokuWrapper,*/ /*Container,*/ IocCommands, /*patcher,*/
              style, dom, toolbarManager, geometry, /*acePreview,*/ cookie) {
 
 
@@ -39,42 +39,10 @@ define([
             });
 
             this.dispatcher = args.dispatcher;
-
             this.editor = iocAceEditor;
             this.id = args.auxId;
 
-            // this.$editor = jQuery('#' + args.containerId);
-
-            // iocAceEditor.init();
-
-            // console.log("id:", id);
-            // console.log("originalcontent?:",args.originalContent);
-            // var text = this.iocAceEditor.getTextareaValue(); // TODO: Comprovar si aquest text es igual a l'original!
-            // this.iocAceEditor.setEditorValue(text);
-
-            // this.iocAceEditor.setValue(args.originalContent);
-
-            // console.log("Text igual a originalcontent?", text === args.originalContent, text == args.originalContent);
-            // console.log("text:", text);
-            // console.log("original:", args.originalContent);
-
             this.initEventHandlers();
-            // iocAceEditor.on('focus', this.select.bind(this));
-            //
-            // iocAceEditor.on('change', function () {
-            //     this.emit('change', {newContent: this.getValue()});
-            // }.bind(this));
-
-            // jQuery(this.$editor).find('textarea').on('focus', this.select.bind(this));
-
-
-            // jQuery(this.$editor).on('input paste cut keyup', function () {
-            //     console.log("input en el constructor");
-            //     this.emit('change', {newContent: this.getValue()});
-            // }.bind(this));
-
-
-            // this.originalContent = args.originalContent;
 
             this.enable();
 
@@ -90,19 +58,8 @@ define([
             }.bind(this));
         },
 
-        // updateTextarea: function (value) {
-        //     // Comprovar si el id del textarea seleccionat correspont amb el que te el focus?
-        //     this.iocAceEditor.dokuWrapper.set_value(value);
-        // },
-
         getValue: function () {
             return this.editor.getValue();
-
-            // if (this.enabled) {
-            //     return this.getEditorValue();
-            // } else {
-            //     return this.getTextareaValue();
-            // }
         },
 
         setValue: function (value) {
@@ -142,26 +99,19 @@ define([
             this.editor.toggleWrap();
         },
 
+        // ALERTA[Xavi] pendent de determinar si això es necessari aqui, es cridat només per un botó que hauria de connectar directament amb l'editor i no la Facade
         toggleEditor: function () {
             this.editor.toggleEditor();
-
-
-            // if (this.enabled) {
-            //     this.disable();
-            // } else {
-            //     this.enable();
-            // }
-
         },
 
         resetOriginalContentState: function () {
             // console.log("AceEditorFullFacade#resetOriginalContentState", this.id);
-            alert("Es fa servir reseetOriginalContentState");
+            alert("Es fa servir reseetOriginalContentState?");
             this.originalContent = this.getValue();
         },
 
         isChanged: function () {
-            alert("Es fa servir isChanged");
+            alert("Es fa servir isChanged?");
 
             return this.originalContent != this.getValue();
         },
@@ -183,11 +133,6 @@ define([
                 max = h - this.VERTICAL_MARGIN,
                 normalizedHeight = Math.max(min, Math.min(height, max));
 
-
-            // var node = dom.byId(this.iocAceEditor.dokuWrapper.textArea.id);
-            // var node = dom.byId(this.iocAceEditor.dokuWrapper.textArea.id);
-            // console.log("node?", node);
-            // console.log("Id??", this.iocAceEditor.dokuWrapper.textArea.id, node.id, this.iocAceEditor.$textarea.get(0).id);
 
             var node = this.editor.$textarea.get(0);
 
