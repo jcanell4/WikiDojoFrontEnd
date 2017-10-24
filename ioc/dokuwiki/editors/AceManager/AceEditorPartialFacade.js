@@ -160,7 +160,8 @@ define([
                 max = h - this.VERTICAL_MARGIN,
                 normalizedHeight = Math.max(min, Math.min(height, max));
 
-            var node = dom.byId(this.editor.dokuWrapper.textarea.id);
+            // var node = dom.byId(this.editor.dokuWrapper.textarea.id);
+            var node = this.editor.$textarea.get(0);
 
             if (node) {
                 style.set(node, "height", "" + normalizedHeight  + "px");

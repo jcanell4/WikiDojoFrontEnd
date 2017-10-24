@@ -11,107 +11,107 @@ define([
      *
      * @author Xavier García<xaviergaro.dev@gmail.com>
      */
-    var patcher = (function () {
-        var originalFunctions = {},
-            cachedFunctions = {},
-
-            /**
-             * Afegeix una funció al objecte dw_editor si existeix alguna amb aquest nom o al objecte window si no s'ha
-             * trobat cap coincidencia amb el nom.
-             *
-             * Aquesta funció no reemplaça l'anterior, si no que s'afegeix a la original de manera que es criden totes.
-             *
-             * @param {string} name - nom de la funció
-             * @param {function} func - funció per afegir
-             * @param {string} id - id corresponent a la pestanya que s'està editant
-             * @returns {function|null} - La referéncia a la funció parxejada
-             */
-            patch = function (name, func, id) {
-                console.log("Patching!");
-                if (!id) {
-                    throw new Error("No s'ha especificat la id per afegir al cache");
-                }
-
-                var obj = (dw_editor && dw_editor[name]) ? dw_editor : window,
-                    orig_func;
-
-                if (originalFunctions[name]) {
-                    orig_func = originalFunctions[name];
-                } else {
-                    orig_func = obj[name];
-                    originalFunctions[name] = orig_func;
-                }
-
-                obj[name] = function () {
-                    var args, aux;
-
-                    if (arguments.length > 0) {
-                        args = [].slice.call(arguments, 0);
-                    } else {
-                        args = []
-                    }
-
-                    aux = [this, orig_func].concat([].slice.call(args));
-
-                    return func.call.apply(func, aux);
-                };
-
-                // Afegim la nova funció al cache
-                if (id) {
-                    cacheFunction(id, name);
-                }
-
-                console.log("Patch end!");
-                return obj[name];
-            },
-
-            cacheFunction = function (id, name) {
-                //console.log("patcher#cacheFunction", id, name);
-                var func = (dw_editor && dw_editor[name]) ? dw_editor[name] : window[name];
-
-                if (!cachedFunctions[id]) {
-                    cachedFunctions[id] = [];
-                }
-                cachedFunctions[id].push({name: name, func: func});
-
-            },
-
-            restoreCachedFunctions = function (id) {
-
-                if (id === this.lastPatchedId) {
-                    return; // No cal restaurar
-                } else {
-                    //console.log("patcher#restoreCachedFunctions", id);
-                }
-
-                if (!cachedFunctions[id]) {
-                    return;
-                }
-
-                var functions = cachedFunctions[id],
-                    name, func;
-
-                for (var i = 0, len = functions.length; i < len; i++) {
-                    name = functions[i]['name'];
-                    func = functions[i]['func'];
-
-                    if (dw_editor && dw_editor[name]) {
-                        dw_editor[name] = func
-                    } else {
-                        window[name] = func;
-                    }
-                }
-
-                this.lastPatchedId = id;
-
-            };
-
-        return {
-            patch: patch,
-
-            restoreCachedFunctions: restoreCachedFunctions
-        }
-    }());
+    // var patcher = (function () {
+    //     var originalFunctions = {},
+    //         cachedFunctions = {},
+    //
+    //         /**
+    //          * Afegeix una funció al objecte dw_editor si existeix alguna amb aquest nom o al objecte window si no s'ha
+    //          * trobat cap coincidencia amb el nom.
+    //          *
+    //          * Aquesta funció no reemplaça l'anterior, si no que s'afegeix a la original de manera que es criden totes.
+    //          *
+    //          * @param {string} name - nom de la funció
+    //          * @param {function} func - funció per afegir
+    //          * @param {string} id - id corresponent a la pestanya que s'està editant
+    //          * @returns {function|null} - La referéncia a la funció parxejada
+    //          */
+    //         patch = function (name, func, id) {
+    //             console.log("Patching!");
+    //             if (!id) {
+    //                 throw new Error("No s'ha especificat la id per afegir al cache");
+    //             }
+    //
+    //             var obj = (dw_editor && dw_editor[name]) ? dw_editor : window,
+    //                 orig_func;
+    //
+    //             if (originalFunctions[name]) {
+    //                 orig_func = originalFunctions[name];
+    //             } else {
+    //                 orig_func = obj[name];
+    //                 originalFunctions[name] = orig_func;
+    //             }
+    //
+    //             obj[name] = function () {
+    //                 var args, aux;
+    //
+    //                 if (arguments.length > 0) {
+    //                     args = [].slice.call(arguments, 0);
+    //                 } else {
+    //                     args = []
+    //                 }
+    //
+    //                 aux = [this, orig_func].concat([].slice.call(args));
+    //
+    //                 return func.call.apply(func, aux);
+    //             };
+    //
+    //             // Afegim la nova funció al cache
+    //             if (id) {
+    //                 cacheFunction(id, name);
+    //             }
+    //
+    //             console.log("Patch end!");
+    //             return obj[name];
+    //         },
+    //
+    //         cacheFunction = function (id, name) {
+    //             //console.log("patcher#cacheFunction", id, name);
+    //             var func = (dw_editor && dw_editor[name]) ? dw_editor[name] : window[name];
+    //
+    //             if (!cachedFunctions[id]) {
+    //                 cachedFunctions[id] = [];
+    //             }
+    //             cachedFunctions[id].push({name: name, func: func});
+    //
+    //         },
+    //
+    //         restoreCachedFunctions = function (id) {
+    //
+    //             if (id === this.lastPatchedId) {
+    //                 return; // No cal restaurar
+    //             } else {
+    //                 //console.log("patcher#restoreCachedFunctions", id);
+    //             }
+    //
+    //             if (!cachedFunctions[id]) {
+    //                 return;
+    //             }
+    //
+    //             var functions = cachedFunctions[id],
+    //                 name, func;
+    //
+    //             for (var i = 0, len = functions.length; i < len; i++) {
+    //                 name = functions[i]['name'];
+    //                 func = functions[i]['func'];
+    //
+    //                 if (dw_editor && dw_editor[name]) {
+    //                     dw_editor[name] = func
+    //                 } else {
+    //                     window[name] = func;
+    //                 }
+    //             }
+    //
+    //             this.lastPatchedId = id;
+    //
+    //         };
+    //
+    //     return {
+    //         patch: patch,
+    //
+    //         restoreCachedFunctions: restoreCachedFunctions
+    //     }
+    // }());
 
 
 
@@ -166,221 +166,221 @@ define([
             // doku_selection_class: null,
 
 
-            /**
-             * Al constructor passem el textarea que volem embolcallar i el wrapper del editor ace.
-             *
-             * @param {AceWrapper} editor - Embolcall del editor ace enllaçat.
-             * @param {string} textarea - Id del textarea que conté el text de la wiki
-             */
-            constructor: function (editor, textarea, id) {
-                this.textarea = document.getElementById(textarea);
-                this.editor = editor;
-                this._patch(id);
-            },
+            // /**
+            //  * Al constructor passem el textarea que volem embolcallar i el wrapper del editor ace.
+            //  *
+            //  * @param {AceWrapper} editor - Embolcall del editor ace enllaçat.
+            //  * @param {string} textarea - Id del textarea que conté el text de la wiki
+            //  */
+            // constructor: function (editor, textarea, id) {
+                // this.textarea = document.getElementById(textarea);
+                // this.editor = editor;
+                // this._patch(id);
+            // },
 
-            /**
-             * Inicialitza l'embolcall aplicant els parxes necessaris per afegir les noves funcions al editor a sobre
-             * de les que ja existeixen.
-             *
-             * A aquesta funció es troben definides com a funcións privades les que es pasaran al patcher per se afegides,
-             * es per això que totes tenen com a primer paràmetre una funció que es la que serà cridada a continuació o
-             * segons les condicions establertes.
-             *
-             * @private
-             */
-            _patch: function (id) {
-                id = id || GlobalState.getCurrentId();
-
-                var context = this,
-
-                    /**
-                     * @param {function} func - Funcio a cridar a continuació
-                     * @param {string} id - Id del text area
-                     * @private
-                     */
-                    _patchCurrentHeadlineLevel = function (func, id) {
-                        // if (id === context.textarea.id) {
-                            // ALERTA[Xavi] això provoca errors quan es treballa amb el textarea i no sembla fer res al AceEditor
-                            // jQuery(self.textarea).val(self.aceGetValue());
-                        // }
-
-                        return func(id);
-                    },
-
-                    /**
-                     * @param {function} func - Funció que es crida si la selecció es troba al editor de la wiki i
-                     * s'esta parxejant.
-                     *
-                     * @param {selection_class} selection
-                     * @param {string} text
-                     * @param opts
-                     * @private
-                     */
-                    _patchPasteText = function (func, selection, text, opts) {
-                        if (!opts) {
-                            opts = {};
-                        }
-                        if (context.editor.currentEditor === context.editor.EDITOR.ACE && selection.obj.id === context.textarea.id) {
-                            context.acePasteText(selection.start, selection.end, text);
-                            selection.end = selection.start + text.length - (opts.endofs || 0);
-                            selection.start += opts.startofs || 0;
-                            if (opts.nosel) {
-                                selection.start = selection.end;
-                            }
-                            // context.aceSetSelection(selection.start, selection.end);
-                            context.editor.set_selection(selection.start, selection.end);
-                            context.editor.focus();
-                        } else {
-                            func(selection, text, opts);
-                        }
-
-                        var event = new Event('change', {newContent: jQuery(context.textarea).val()});
-
-                        context.textarea.dispatchEvent(event);
-                    },
-
-                    /**
-                     * Activa o desactiva que les paraules es tallin al final de la línia.
-                     *
-                     * @param {function} func - Funció que es crida en qualsevol cas
-                     * @param {Node} obj - Serveix per discriminar si es tracta del editor de la doku o no.
-                     * @param {string} value - Si el valor es 'off' es desactiva
-                     * @private
-                     */
-                    _patchSetWrap = function (func, obj, value) {
-                        func(obj, value);
-                        if (obj.id === context.textarea.id) {
-                            context.aceSetWrap(value !== 'off');
-                        }
-                    },
-
-                    /**
-                     * Estableix la llargada dels marges.
-                     *
-                     * @param {function} func - Funció que es crida en qualsevol cas
-                     * @param {object} obj
-                     * @param {int} value - Llargada dels marges.
-                     * @private
-                     */
-                    _patchSizeCtl = function (func, obj, value) {
-                        func(obj, value);
-
-                        var id = (typeof obj.attr === "function" ? obj.attr('id') : void 0) || obj;
-
-                        if (context.editor.currentEditor === context.editor.EDITOR.ACE && id === context.textarea.id) {
-                            context.aceSizeCtl(value);
-                        }
-                    },
-
-                    /**
-                     * Retorna la informació del text seleccionat al editor formada per l'objecte del que es tracta,
-                     * la posició inicial i la posició final.
-                     *
-                     * @param {function} func - Funciò a cridar en cas de que no s'estigui parxejant
-                     * @param {node} obj - Node a comparar amb el text area de edició.
-                     * @returns {selection_class} - Informació del text seleccionat.
-                     * @private
-                     */
-                    _patchGetSelection = function (func, obj) {
-                        var result, selection;
-
-                        if (context.editor.currentEditor === context.editor.EDITOR.ACE && obj === context.textarea) {
-                            console.log("Patched get selection");
-                            // jQuery(context.textarea).val(context.aceGetValue());
-                            context.editor.$textarea.val(context.editor.getEditorValue());
-                            result = context.editor.get_selection();
-
-
-                            // this.editor.get_selection()
-
-                            selection = new context.doku_selection_class();
-                            selection.obj = context.textarea;
-                            selection.start = result.start;
-                            selection.end = result.end;
-                            return selection;
-
-                        } else {
-                            return func(obj);
-                        }
-                    },
-
-                    /**
-                     * Classe per recuperar el text selecionat, segons de quin objecte es tracti emmagatzemarà les dades
-                     * del editor de la DokuWiki o el ace.
-                     *
-                     * @param {function?} func - No es fa servir, importat del original
-                     * @class selection_class
-                     * @constructor
-                     * @private
-                     */
-                    _patchSelectionClass = function (func) {
-                        if (func) {
-                            func.apply(this);
-                        }
-
-                        this.doku_get_text = this.getText;
-                        this.getText = function () {
-                            if (context.editor.currentEditor === context.editor.EDITOR.ACE && this.obj === context.textarea) {
-                                // return context.aceGetText(this.start, this.end);
-                                return context.editor.getEditorValue().substring(this.start, this.end);
-                            } else {
-                                return this.doku_get_text();
-                            }
-                        };
-                    },
-
-                    /**
-                     * Estableix els punts de selecció inicial i final al editor de la DokuWiki o el ace.
-                     *
-                     * @param func - funció a cridar quan no està activat l'editor ace
-                     * @param {selection_class} selection - selecció actual
-                     * @private
-                     */
-                    _patchSetSelection = function (func, selection) {
-                        if (context.editor.currentEditor === context.editor.EDITOR.ACE && selection.obj.id === context.textarea.id) {
-                            // context.aceSetSelection(selection.start, selection.end);
-                            context.editor.setEditorValue(selection.start, selection.end);
-                            context.editor.focus();
-                        } else {
-                            if (func) {
-                                func(selection);
-                            }
-                        }
-                    };
-
-                patcher.patch('currentHeadlineLevel', _patchCurrentHeadlineLevel, id);
-                patcher.patch('pasteText', _patchPasteText, id);
-                patcher.patch('setWrap', _patchSetWrap, id);
-                patcher.patch('sizeCtl', _patchSizeCtl, id);
-
-                this.doku_get_selection = patcher.patch('getSelection', _patchGetSelection, id);
-                this.doku_selection_class = patcher.patch('selection_class', _patchSelectionClass, id);
-                this.doku_set_selection = patcher.patch('setSelection', _patchSetSelection, id);
-
-
-                // jQuery(this.textarea.form).submit(function (event) {
-                //     console.log("submit");
-                //     if (context.editor.currentEditor === context.editor.EDITOR.ACE) {
-                //         alert("ALERTA! això no s'estava cridant mai!");
-                //         return jQuery(context.textarea).val(context.aceGetValue());
-                //     }
-                // });
-                //
-                // jQuery(window).resize(function (event) {
-                //     console.log("resize");
-                //     if (context.editor.currentEditor === context.editor.EDITOR.ACE) {
-                //         alert("ALERTA! això no s'estava cridant mai!");
-                //         return context.aceOnResize();
-                //     }
-                // });
-                //
-                // // ALERTA[Xavi] Això sembla que no es fa servir mai
-                // this.doku_submit_handler = function() {
-                //     console.error("es crida això?");
-                //     alert("es crida això?");
-                //     this.textarea.form.onsubmit();
-                // }
-            },
+            // /**
+            //  * Inicialitza l'embolcall aplicant els parxes necessaris per afegir les noves funcions al editor a sobre
+            //  * de les que ja existeixen.
+            //  *
+            //  * A aquesta funció es troben definides com a funcións privades les que es pasaran al patcher per se afegides,
+            //  * es per això que totes tenen com a primer paràmetre una funció que es la que serà cridada a continuació o
+            //  * segons les condicions establertes.
+            //  *
+            //  * @private
+            //  */
+            // _patch: function (id) {
+            //     id = id || GlobalState.getCurrentId();
+            //
+            //     var context = this,
+            //
+            //         /**
+            //          * @param {function} func - Funcio a cridar a continuació
+            //          * @param {string} id - Id del text area
+            //          * @private
+            //          */
+            //         _patchCurrentHeadlineLevel = function (func, id) {
+            //             // if (id === context.textarea.id) {
+            //                 // ALERTA[Xavi] això provoca errors quan es treballa amb el textarea i no sembla fer res al AceEditor
+            //                 // jQuery(self.textarea).val(self.aceGetValue());
+            //             // }
+            //
+            //             return func(id);
+            //         },
+            //
+            //         /**
+            //          * @param {function} func - Funció que es crida si la selecció es troba al editor de la wiki i
+            //          * s'esta parxejant.
+            //          *
+            //          * @param {selection_class} selection
+            //          * @param {string} text
+            //          * @param opts
+            //          * @private
+            //          */
+            //         _patchPasteText = function (func, selection, text, opts) {
+            //             if (!opts) {
+            //                 opts = {};
+            //             }
+            //             if (context.editor.currentEditor === context.editor.EDITOR.ACE && selection.obj.id === context.textarea.id) {
+            //                 context.acePasteText(selection.start, selection.end, text);
+            //                 selection.end = selection.start + text.length - (opts.endofs || 0);
+            //                 selection.start += opts.startofs || 0;
+            //                 if (opts.nosel) {
+            //                     selection.start = selection.end;
+            //                 }
+            //                 // context.aceSetSelection(selection.start, selection.end);
+            //                 context.editor.set_selection(selection.start, selection.end);
+            //                 context.editor.focus();
+            //             } else {
+            //                 func(selection, text, opts);
+            //             }
+            //
+            //             var event = new Event('change', {newContent: jQuery(context.textarea).val()});
+            //
+            //             context.textarea.dispatchEvent(event);
+            //         },
+            //
+            //         /**
+            //          * Activa o desactiva que les paraules es tallin al final de la línia.
+            //          *
+            //          * @param {function} func - Funció que es crida en qualsevol cas
+            //          * @param {Node} obj - Serveix per discriminar si es tracta del editor de la doku o no.
+            //          * @param {string} value - Si el valor es 'off' es desactiva
+            //          * @private
+            //          */
+            //         _patchSetWrap = function (func, obj, value) {
+            //             func(obj, value);
+            //             if (obj.id === context.textarea.id) {
+            //                 context.aceSetWrap(value !== 'off');
+            //             }
+            //         },
+            //
+            //         /**
+            //          * Estableix la llargada dels marges.
+            //          *
+            //          * @param {function} func - Funció que es crida en qualsevol cas
+            //          * @param {object} obj
+            //          * @param {int} value - Llargada dels marges.
+            //          * @private
+            //          */
+            //         _patchSizeCtl = function (func, obj, value) {
+            //             func(obj, value);
+            //
+            //             var id = (typeof obj.attr === "function" ? obj.attr('id') : void 0) || obj;
+            //
+            //             if (context.editor.currentEditor === context.editor.EDITOR.ACE && id === context.textarea.id) {
+            //                 context.aceSizeCtl(value);
+            //             }
+            //         },
+            //
+            //         /**
+            //          * Retorna la informació del text seleccionat al editor formada per l'objecte del que es tracta,
+            //          * la posició inicial i la posició final.
+            //          *
+            //          * @param {function} func - Funciò a cridar en cas de que no s'estigui parxejant
+            //          * @param {node} obj - Node a comparar amb el text area de edició.
+            //          * @returns {selection_class} - Informació del text seleccionat.
+            //          * @private
+            //          */
+            //         _patchGetSelection = function (func, obj) {
+            //             var result, selection;
+            //
+            //             if (context.editor.currentEditor === context.editor.EDITOR.ACE && obj === context.textarea) {
+            //                 console.log("Patched get selection");
+            //                 // jQuery(context.textarea).val(context.aceGetValue());
+            //                 context.editor.$textarea.val(context.editor.getEditorValue());
+            //                 result = context.editor.get_selection();
+            //
+            //
+            //                 // this.editor.get_selection()
+            //
+            //                 selection = new context.doku_selection_class();
+            //                 selection.obj = context.textarea;
+            //                 selection.start = result.start;
+            //                 selection.end = result.end;
+            //                 return selection;
+            //
+            //             } else {
+            //                 return func(obj);
+            //             }
+            //         },
+            //
+            //         /**
+            //          * Classe per recuperar el text selecionat, segons de quin objecte es tracti emmagatzemarà les dades
+            //          * del editor de la DokuWiki o el ace.
+            //          *
+            //          * @param {function?} func - No es fa servir, importat del original
+            //          * @class selection_class
+            //          * @constructor
+            //          * @private
+            //          */
+            //         _patchSelectionClass = function (func) {
+            //             if (func) {
+            //                 func.apply(this);
+            //             }
+            //
+            //             this.doku_get_text = this.getText;
+            //             this.getText = function () {
+            //                 if (context.editor.currentEditor === context.editor.EDITOR.ACE && this.obj === context.textarea) {
+            //                     // return context.aceGetText(this.start, this.end);
+            //                     return context.editor.getEditorValue().substring(this.start, this.end);
+            //                 } else {
+            //                     return this.doku_get_text();
+            //                 }
+            //             };
+            //         },
+            //
+            //         /**
+            //          * Estableix els punts de selecció inicial i final al editor de la DokuWiki o el ace.
+            //          *
+            //          * @param func - funció a cridar quan no està activat l'editor ace
+            //          * @param {selection_class} selection - selecció actual
+            //          * @private
+            //          */
+            //         _patchSetSelection = function (func, selection) {
+            //             if (context.editor.currentEditor === context.editor.EDITOR.ACE && selection.obj.id === context.textarea.id) {
+            //                 // context.aceSetSelection(selection.start, selection.end);
+            //                 context.editor.setEditorValue(selection.start, selection.end);
+            //                 context.editor.focus();
+            //             } else {
+            //                 if (func) {
+            //                     func(selection);
+            //                 }
+            //             }
+            //         };
+            //
+            //     patcher.patch('currentHeadlineLevel', _patchCurrentHeadlineLevel, id);
+            //     patcher.patch('pasteText', _patchPasteText, id);
+            //     patcher.patch('setWrap', _patchSetWrap, id);
+            //     patcher.patch('sizeCtl', _patchSizeCtl, id);
+            //
+            //     this.doku_get_selection = patcher.patch('getSelection', _patchGetSelection, id);
+            //     this.doku_selection_class = patcher.patch('selection_class', _patchSelectionClass, id);
+            //     this.doku_set_selection = patcher.patch('setSelection', _patchSetSelection, id);
+            //
+            //
+            //     // jQuery(this.textarea.form).submit(function (event) {
+            //     //     console.log("submit");
+            //     //     if (context.editor.currentEditor === context.editor.EDITOR.ACE) {
+            //     //         alert("ALERTA! això no s'estava cridant mai!");
+            //     //         return jQuery(context.textarea).val(context.aceGetValue());
+            //     //     }
+            //     // });
+            //     //
+            //     // jQuery(window).resize(function (event) {
+            //     //     console.log("resize");
+            //     //     if (context.editor.currentEditor === context.editor.EDITOR.ACE) {
+            //     //         alert("ALERTA! això no s'estava cridant mai!");
+            //     //         return context.aceOnResize();
+            //     //     }
+            //     // });
+            //     //
+            //     // // ALERTA[Xavi] Això sembla que no es fa servir mai
+            //     // this.doku_submit_handler = function() {
+            //     //     console.error("es crida això?");
+            //     //     alert("es crida això?");
+            //     //     this.textarea.form.onsubmit();
+            //     // }
+            // },
 
             // disable: function () {
             //     // this.patched = true;
@@ -400,30 +400,30 @@ define([
             //     // jQuery(this.textarea).focus();
             // },
 
-            get_cookie: function (name) {
-                alerta("Es fa servir get_cookie"); // NO ES FA SERVIR
-                return DokuCookie.getValue(name);
-            },
+            // get_cookie: function (name) {
+            //     alerta("Es fa servir get_cookie"); // NO ES FA SERVIR
+            //     return DokuCookie.getValue(name);
+            // },
+            //
+            // get_readonly: function () {
+            //     alerta("Es fa servir get_readonly"); // NO ES FA SERVIR
+            //     return jQuery(this.textarea).attr('readonly');
+            // },
 
-            get_readonly: function () {
-                alerta("Es fa servir get_readonly"); // NO ES FA SERVIR
-                return jQuery(this.textarea).attr('readonly');
-            },
-
-            /**
-             * Retorna la posició inical i final de la selecció al textarea.
-             *
-             * @returns {{start: int, end: int}}
-             */
-            get_selection: function () {
-                var selection;
-                selection = this.doku_get_selection(this.textarea);
-
-                return {
-                    start: selection.start,
-                    end: selection.end
-                };
-            },
+            // /**
+            //  * Retorna la posició inical i final de la selecció al textarea.
+            //  *
+            //  * @returns {{start: int, end: int}}
+            //  */
+            // getTextareaSelection: function () {
+            //     var selection;
+            //     selection = this.doku_get_selection(this.textarea);
+            //
+            //     return {
+            //         start: selection.start,
+            //         end: selection.end
+            //     };
+            // },
 
             // /**
             //  * Retorna el contingut del editor.
@@ -434,15 +434,15 @@ define([
             //     return jQuery(this.textarea).val();
             // },
 
-            /**
-             * Retorna si les paraules es tallan al final de la línia o no.
-             *
-             * @returns {boolean}
-             */
-            get_wrap: function () {
-                alert("Es fa servir get_wrap");
-                return jQuery(this.textarea).attr('wrap') !== 'off';
-            },
+            // /**
+            //  * Retorna si les paraules es tallan al final de la línia o no.
+            //  *
+            //  * @returns {boolean}
+            //  */
+            // get_wrap: function () {
+            //     alert("Es fa servir get_wrap");
+            //     return jQuery(this.textarea).attr('wrap') !== 'off';
+            // },
 
             // /**
             //  * Retorna la alçada interior del textarea.
@@ -457,20 +457,20 @@ define([
             //     DokuCookie.setValue(name, value);
             // },
 
-            /**
-             * Estableix la selecció entre els punts passats com a inicial i final.
-             *
-             * @param {int} start - Punt inicial
-             * @param {int} end - Punt final
-             */
-            set_selection: function (start, end) {
-                var selection;
-                selection = new this.doku_selection_class();
-                selection.obj = this.textarea;
-                selection.start = start;
-                selection.end = end;
-                this.doku_set_selection(selection);
-            },
+            // /**
+            //  * Estableix la selecció entre els punts passats com a inicial i final.
+            //  *
+            //  * @param {int} start - Punt inicial
+            //  * @param {int} end - Punt final
+            //  */
+            // set_selection: function (start, end) {
+            //     var selection;
+            //     selection = new this.doku_selection_class();
+            //     selection.obj = this.textarea;
+            //     selection.start = start;
+            //     selection.end = end;
+            //     this.doku_set_selection(selection);
+            // },
 
             // /**
             //  * Estableix el text al textarea.
@@ -514,18 +514,18 @@ define([
             //     return this.editor.get_value();
             // },
 
-            /**
-             * Enganxa el text entre la posició inicial i final passats com argument.
-             *
-             * @param {int} start - Punt inicial
-             * @param {int} end - Punt final
-             * @param {string} text - Text a enganxar
-             */
-            acePasteText: function (start, end, text) {
-                this.editor.replace(start, end, text);
-                this.editor.set_selection(start, end);
-                this.editor.focus();
-            },
+            // /**
+            //  * Enganxa el text entre la posició inicial i final passats com argument.
+            //  *
+            //  * @param {int} start - Punt inicial
+            //  * @param {int} end - Punt final
+            //  * @param {string} text - Text a enganxar
+            //  */
+            // acePasteText: function (start, end, text) {
+            //     this.editor.replace(start, end, text);
+            //     this.editor.set_selection(start, end);
+            //     this.editor.focus();
+            // },
 
             // /**
             //  * Comunica la realització dels canvis al contenidor i el embolcall del ace.
@@ -546,31 +546,31 @@ define([
             //     this.editor.focus();
             // },
 
-            /**
-             * Activa o desactiva que es tallin les paraules al final de la línia.
-             *
-             * @param {string} value -  Els valos vàlids son 'on' i 'off'
-             */
-            aceSetWrap: function (value) {
-                this.editor.set_wrap_mode(value);
-                this.editor.focus();
-            },
+            // /**
+            //  * Activa o desactiva que es tallin les paraules al final de la línia.
+            //  *
+            //  * @param {string} value -  Els valos vàlids son 'on' i 'off'
+            //  */
+            // aceSetWrap: function (value) {
+            //     this.editor.set_wrap_mode(value);
+            //     this.editor.focus();
+            // },
 
-            restoreCachedFunctions: function (id) {
-                patcher.restoreCachedFunctions(id);
-            },
+            // restoreCachedFunctions: function (id) {
+            //     patcher.restoreCachedFunctions(id);
+            // },
 
 
-            /**
-             * Estableix el valor d'alçada al contenidor i actualiza el embolcall del ace.
-             *
-             * @param {int} value - Nova alçada
-             */
-            aceSizeCtl: function (value) {
-                console.log("Cridat aceSizeCtl");
-                this.editor.incr_height(value);
-                this.editor.resize();
-                this.editor.focus();
-            },
+            // /**
+            //  * Estableix el valor d'alçada al contenidor i actualiza el embolcall del ace.
+            //  *
+            //  * @param {int} value - Nova alçada
+            //  */
+            // aceSizeCtl: function (value) {
+            //     console.log("Cridat aceSizeCtl");
+            //     this.editor.incr_height(value);
+            //     this.editor.resize();
+            //     this.editor.focus();
+            // },
         });
 });

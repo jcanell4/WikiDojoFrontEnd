@@ -14,6 +14,110 @@ define([
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
 
+    var patcher = (function () {
+        var originalFunctions = {},
+            cachedFunctions = {},
+
+            /**
+             * Afegeix una funció al objecte dw_editor si existeix alguna amb aquest nom o al objecte window si no s'ha
+             * trobat cap coincidencia amb el nom.
+             *
+             * Aquesta funció no reemplaça l'anterior, si no que s'afegeix a la original de manera que es criden totes.
+             *
+             * @param {string} name - nom de la funció
+             * @param {function} func - funció per afegir
+             * @param {string} id - id corresponent a la pestanya que s'està editant
+             * @returns {function|null} - La referéncia a la funció parxejada
+             */
+            patch = function (name, func, id) {
+
+                if (!id) {
+                    throw new Error("No s'ha especificat la id per afegir al cache");
+                }
+
+                var obj = (dw_editor && dw_editor[name]) ? dw_editor : window,
+                    orig_func;
+
+                if (originalFunctions[name]) {
+                    orig_func = originalFunctions[name];
+                } else {
+                    orig_func = obj[name];
+                    originalFunctions[name] = orig_func;
+                }
+
+                obj[name] = function () {
+                    var args, aux;
+
+                    if (arguments.length > 0) {
+                        args = [].slice.call(arguments, 0);
+                    } else {
+                        args = []
+                    }
+
+                    aux = [this, orig_func].concat([].slice.call(args));
+
+                    return func.call.apply(func, aux);
+                };
+
+                // Afegim la nova funció al cache
+                if (id) {
+                    cacheFunction(id, name);
+                }
+
+                return obj[name];
+            },
+
+            cacheFunction = function (id, name) {
+                var func = (dw_editor && dw_editor[name]) ? dw_editor[name] : window[name];
+
+                if (!cachedFunctions[id]) {
+                    cachedFunctions[id] = [];
+                }
+                cachedFunctions[id].push({name: name, func: func});
+
+            },
+
+            restoreCachedFunctions = function (id) {
+
+                if (id === this.lastPatchedId) {
+                    return; // No cal restaurar
+                } else {
+                    //console.log("patcher#restoreCachedFunctions", id);
+                }
+
+                if (!cachedFunctions[id]) {
+                    return;
+                }
+
+                var functions = cachedFunctions[id],
+                    name, func;
+
+                for (var i = 0, len = functions.length; i < len; i++) {
+                    name = functions[i]['name'];
+                    func = functions[i]['func'];
+
+                    if (dw_editor && dw_editor[name]) {
+                        dw_editor[name] = func
+                    } else {
+                        window[name] = func;
+                    }
+                }
+
+                this.lastPatchedId = id;
+
+            };
+
+        return {
+            patch: patch,
+
+            restoreCachedFunctions: restoreCachedFunctions
+        }
+    }());
+
+
+
+
+
     return declare([AbstractIocEditor],
         /**
          * Classe per la gestió del editor ACE adaptat a la DokuWiki 3.0 del IOC. Aquesta classe hereta de Stateful,
@@ -90,20 +194,198 @@ define([
                 args.mode = iocAceMode.getMode();
 
                 // this.aceWrapper = new AceWrapper(this);
-                this.dokuWrapper = new DokuWrapper(this, args.textareaId, args.auxId);//TODO[Xavi] A banda de passar la info del JSINFO per paràmetre, s'ha de tenir en compte que el id del text area ja no serà aquest, si no el que nosaltres volgumen (i.e. multi edició)
+                // this.dokuWrapper = new DokuWrapper(this, args.textareaId, args.auxId);//TODO[Xavi] A banda de passar la info del JSINFO per paràmetre, s'ha de tenir en compte que el id del text area ja no serà aquest, si no el que nosaltres volgumen (i.e. multi edició)
 
                 this.$textarea = jQuery('#' + args.textareaId);
+
+                this._patch(args.auxId);
 
                 this.init(args);
 
             },
 
+            _patch: function (id) {
+                var context = this,
+
+                    /**
+                     * @param {function} func - Funcio a cridar a continuació
+                     * @param {string} id - Id del text area
+                     * @private
+                     */
+                    _patchCurrentHeadlineLevel = function (func, id) {
+                        return func(id);
+                    },
+
+                    /**
+                     * @param {function} func - Funció que es crida si la selecció es troba al editor de la wiki i
+                     * s'esta parxejant.
+                     *
+                     * @param {selection_class} selection
+                     * @param {string} text
+                     * @param opts
+                     * @private
+                     */
+                    _patchPasteText = function (func, selection, text, opts) {
+                        if (!opts) {
+                            opts = {};
+                        }
+
+
+
+                        if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
+                            context.replace(selection.start, selection.end, text);
+                            context.set_selection(selection.start, selection.end);
+                            context.focus();
+
+
+                            selection.end = selection.start + text.length - (opts.endofs || 0);
+                            selection.start += opts.startofs || 0;
+                            if (opts.nosel) {
+                                selection.start = selection.end;
+                            }
+                            // context.aceSetSelection(selection.start, selection.end);
+                            context.set_selection(selection.start, selection.end);
+                            context.focus();
+                        } else {
+                            func(selection, text, opts);
+
+
+                        }
+
+                        context.$textarea.trigger('change', {newContent: context.$textarea.val()});
+                    },
+
+                    /**
+                     * Activa o desactiva que les paraules es tallin al final de la línia.
+                     *
+                     * @param {function} func - Funció que es crida en qualsevol cas
+                     * @param {Node} obj - Serveix per discriminar si es tracta del editor de la doku o no.
+                     * @param {string} value - Si el valor es 'off' es desactiva
+                     * @private
+                     */
+                    _patchSetWrap = function (func, obj, value) {
+                        func(obj, value);
+
+                        if (obj.id === context.$textarea.attr('id')) {
+                            // context.aceSetWrap(value !== 'off');
+                            context.set_wrap_mode(value !== 'off');
+                            context.focus();
+                        }
+                    },
+
+                    /**
+                     * Estableix la llargada dels marges.
+                     *
+                     * @param {function} func - Funció que es crida en qualsevol cas
+                     * @param {object} obj
+                     * @param {int} value - Llargada dels marges.
+                     * @private
+                     */
+                    _patchSizeCtl = function (func, obj, value) {
+                        func(obj, value);
+
+                        var id = (typeof obj.attr === "function" ? obj.attr('id') : void 0) || obj;
+
+                        if (context.currentEditor === context.EDITOR.ACE && id === context.$textarea.attr('id')) {
+                            // context.aceSizeCtl(value);
+                            context.incr_height(value);
+                            context.resize();
+                            context.focus();
+                        }
+                    },
+
+                    /**
+                     * Retorna la informació del text seleccionat al editor formada per l'objecte del que es tracta,
+                     * la posició inicial i la posició final.
+                     *
+                     * @param {function} func - Funciò a cridar en cas de que no s'estigui parxejant
+                     * @param {node} obj - Node a comparar amb el text area de edició.
+                     * @returns {selection_class} - Informació del text seleccionat.
+                     * @private
+                     */
+                    _patchGetSelection = function (func, obj) {
+                        var result, selection;
+
+                        if (context.currentEditor === context.EDITOR.ACE && obj === context.$textarea.get(0)) {
+                            // jQuery(context.textarea).val(context.aceGetValue());
+                            context.$textarea.val(context.getEditorValue());
+                            result = context.get_selection();
+
+
+                            // this.editor.get_selection()
+
+                            selection = new context.doku_selection_class();
+                            selection.obj = context.$textarea.get(0);
+                            selection.start = result.start;
+                            selection.end = result.end;
+                            return selection;
+
+                        } else {
+                            return func(obj);
+                        }
+                    },
+
+                    /**
+                     * Classe per recuperar el text selecionat, segons de quin objecte es tracti emmagatzemarà les dades
+                     * del editor de la DokuWiki o el ace.
+                     *
+                     * @param {function?} func - No es fa servir, importat del original
+                     * @class selection_class
+                     * @constructor
+                     * @private
+                     */
+                    _patchSelectionClass = function (func) {
+                        if (func) {
+                            func.apply(this);
+                        }
+
+                        this.doku_get_text = this.getText; // ALERTA[Xavi] Això no ha estat mai correcte? s'hauria de desar i recuperar del context i no del this!?
+
+                        this.getText = function () {
+                            if (context.currentEditor === context.EDITOR.ACE && this.obj === context.$textarea.get(0)) {
+                                // return context.aceGetText(this.start, this.end);
+
+                                return context.getEditorValue().substring(this.start, this.end);
+                            } else {
+
+                                return this.doku_get_text();
+                            }
+                        };
+                    },
+
+                    /**
+                     * Estableix els punts de selecció inicial i final al editor de la DokuWiki o el ace.
+                     *
+                     * @param func - funció a cridar quan no està activat l'editor ace
+                     * @param {selection_class} selection - selecció actual
+                     * @private
+                     */
+                    _patchSetSelection = function (func, selection) {
+                        if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
+                            context.set_selection(selection.start, selection.end);
+                            context.focus();
+                        } else if (func) {
+                                func(selection);
+                        }
+                    };
+
+                patcher.patch('currentHeadlineLevel', _patchCurrentHeadlineLevel, id);
+                patcher.patch('pasteText', _patchPasteText, id);
+                patcher.patch('setWrap', _patchSetWrap, id);
+                patcher.patch('sizeCtl', _patchSizeCtl, id);
+
+                this.doku_get_selection = patcher.patch('getSelection', _patchGetSelection, id);
+                this.doku_selection_class = patcher.patch('selection_class', _patchSelectionClass, id);
+                this.doku_set_selection = patcher.patch('setSelection', _patchSetSelection, id);
+            },
+
             // Funcions originalment al Container
 
-            initContainer: function (id) {
+            initContainer: function (id, textareaId) {
 
                 var element = jQuery('<div>'),
-                    textarea = jQuery(this.dokuWrapper.textarea),
+                    // textarea = jQuery(this.dokuWrapper.textarea),
+                    textarea = jQuery(document.getElementById(textareaId)),
                     wrapper = jQuery('<div>', {
                         "class": 'ace-doku',
                         "id": id
@@ -140,7 +422,7 @@ define([
                 this.currentEditor = this.EDITOR.ACE;
 
 
-                this.initContainer(args.containerId);
+                this.initContainer(args.containerId, args.textareaId);
                 this.initDwEditor(this.$textarea);
 
                 // this.setContainer(args.containerId);
@@ -418,10 +700,10 @@ define([
 
             toggleEditor: function () {
                 if (this.currentEditor === this.EDITOR.ACE) {
-                    this.currentEditor = this.EDITOR.TEXT_AREA;
+                    // this.currentEditor = this.EDITOR.TEXT_AREA;
                     this.disable();
                 } else {
-                    this.currentEditor = this.EDITOR.ACE;
+                    // this.currentEditor = this.EDITOR.ACE;
                     this.enable();
                 }
 
@@ -429,14 +711,14 @@ define([
 
             enable: function () {
 
-                var selection = this.dokuWrapper.get_selection();
+                var selection = this.getTextareaSelection();
 
                 // this.dokuWrapper.disable();
                 this.currentEditor = this.EDITOR.ACE;
                 this.$textarea.hide();
 
 
-                this.set_height(this.$textarea.innerHeight()); // ALERTA! Set_height no es troba aqui si no al facade!
+                this.set_height(this.$textarea.innerHeight());
                 this.show(); // ALERTA! no es troba aqui si no al facade!
                 this.set_value(this.getTextareaValue());
                 this.resize();
@@ -462,7 +744,8 @@ define([
 
                 this.setTextareaValue(this.get_value());
                 // this.dokuWrapper.set_value(this.get_value());
-                this.dokuWrapper.set_selection(selection.start, selection.end);
+                // this.dokuWrapper.set_selection(selection.start, selection.end);
+                this.setTextareaSelection(selection.start, selection.end);
                 this.$textarea.focus();
 
                 // this.enabled = false;
@@ -480,14 +763,12 @@ define([
             },
 
             set_height: function (value) {
-                // console.log("IocAceEditor#set_height", value);
                 this.$wrapper.css('height', value + 'px');
                 return this.$elementContainer.css('height', this.$wrapper.height() + 'px');
             },
 
             // Funcions mogudes del Facade
             getValue: function () {
-                // console.log("IocAceEditor#getValue");
                 if (this.currentEditor === this.EDITOR.ACE) {
                     return this.getEditorValue();
                 } else {
@@ -937,6 +1218,37 @@ define([
             },
 
             /**
+             * Retorna la posició inical i final de la selecció al textarea.
+             *
+             * @returns {{start: int, end: int}}
+             */
+            getTextareaSelection: function () {
+                var selection = this.doku_get_selection(this.$textarea.get(0));
+
+                return {
+                    start: selection.start,
+                    end: selection.end
+                };
+            },
+
+
+            /**
+             * Estableix la selecció entre els punts passats com a inicial i final.
+             *
+             * @param {int} start - Punt inicial
+             * @param {int} end - Punt final
+             */
+            setTextareaSelection: function (start, end) {
+                var selection;
+                selection = new this.doku_selection_class();
+                selection.obj = this.$textarea.get(0);
+                selection.start = start;
+                selection.end = end;
+                this.doku_set_selection(selection);
+            },
+
+
+            /**
              * Retorna una cadena amb el text que es troba entre el caràcter inicial i final passats com argument.
              *
              * @param {{row: int, column: int}} start - Posició inicial.
@@ -1158,8 +1470,8 @@ define([
             // Funcions del DokuWrapper
 
             restoreCachedFunctions: function () {
-                // patcher.restoreCachedFunctions(this.id);
-                this.dokuWrapper.restoreCachedFunctions(this.id);
+                patcher.restoreCachedFunctions(this.id);
+                // this.dokuWrapper.restoreCachedFunctions(this.id);
             },
 
             incr_height: function (value) {
