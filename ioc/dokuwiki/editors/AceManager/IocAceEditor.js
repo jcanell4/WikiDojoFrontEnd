@@ -2,14 +2,12 @@ define([
     'ioc/dokuwiki/editors/AbstractIocEditor',
     'ioc/dokuwiki/editors/AceManager/rules/IocRuleSet',
     'ioc/dokuwiki/editors/AceManager/modes/IocAceMode',
-    // 'ioc/dokuwiki/editors/AceManager/AceWrapper',
-    'ioc/dokuwiki/editors/AceManager/DokuWrapper',
     'ioc/dokuwiki/editors/AceManager/IocCommands',
     'ioc/dokuwiki/editors/AceManager/plugins/LatexPreviewPlugin',
     'dojo/_base/declare',
     'dojo/_base/lang',
     'ioc/dokuwiki/editors/AceManager/state_handler'
-], function (AbstractIocEditor, IocRuleSet, IocAceMode, /*AceWrapper, */DokuWrapper, IocCommands, LatexPreviewPlugin, declare, lang, state_handler) {
+], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler) {
 
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
@@ -113,9 +111,6 @@ define([
             restoreCachedFunctions: restoreCachedFunctions
         }
     }());
-
-
-
 
 
     return declare([AbstractIocEditor],
@@ -234,7 +229,7 @@ define([
 
                         if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
                             context.replace(selection.start, selection.end, text);
-                            context.set_selection(selection.start, selection.end);
+                            context.setEditorSelection(selection.start, selection.end);
                             context.focus();
 
 
@@ -244,7 +239,7 @@ define([
                                 selection.start = selection.end;
                             }
                             // context.aceSetSelection(selection.start, selection.end);
-                            context.set_selection(selection.start, selection.end);
+                            context.setEditorSelection(selection.start, selection.end);
                             context.focus();
                         } else {
                             func(selection, text, opts);
@@ -309,7 +304,7 @@ define([
                         if (context.currentEditor === context.EDITOR.ACE && obj === context.$textarea.get(0)) {
                             // jQuery(context.textarea).val(context.aceGetValue());
                             context.$textarea.val(context.getEditorValue());
-                            result = context.get_selection();
+                            result = context.getEditorSelection();
 
 
                             // this.editor.get_selection()
@@ -362,7 +357,7 @@ define([
                      */
                     _patchSetSelection = function (func, selection) {
                         if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
-                            context.set_selection(selection.start, selection.end);
+                            context.setEditorSelection(selection.start, selection.end);
                             context.focus();
                         } else if (func) {
                                 func(selection);
@@ -376,7 +371,7 @@ define([
 
                 this.doku_get_selection = patcher.patch('getSelection', _patchGetSelection, id);
                 this.doku_selection_class = patcher.patch('selection_class', _patchSelectionClass, id);
-                this.doku_set_selection = patcher.patch('setSelection', _patchSetSelection, id);
+                this.doku_setEditorSelection = patcher.patch('setSelection', _patchSetSelection, id);
             },
 
             // Funcions originalment al Container
@@ -421,11 +416,9 @@ define([
             init: function (args) {
                 this.currentEditor = this.EDITOR.ACE;
 
-
                 this.initContainer(args.containerId, args.textareaId);
                 this.initDwEditor(this.$textarea);
 
-                // this.setContainer(args.containerId);
                 this.setTheme(args.theme);
                 this.setMode(args.mode);
                 this.setReadOnly(args.readOnly);
@@ -441,8 +434,7 @@ define([
                 });
 
 
-                // ALERTA[Xavi] això s'ha de canviar pel sistema de on/emit
-                // var preview = acePreview({ace: this.aceWrapper});
+                // var preview = acePreview({ace: this.aceWrapper}); // Convertit en plugin
 
                 var commands = new IocCommands(this);
 
@@ -459,12 +451,12 @@ define([
                     summaryCheck(); // ALERTA! Funció propia de la Dokuwiki
 
                     commands.hide_menu(); // ALERTA! es pot moure la subscripcció al propi commands
-                    // preview.trigger(); // ALERTA! es pot moure la subscripcció al propi ace-preview
+                    // preview.trigger(); // Convertit en plugin
                 });
 
                 this.on('changeCursor', function () {
                     commands.hide_menu(); // ALERTA! es pot moure la subscripcció al propi commands
-                    // preview.trigger(); // ALERTA! es pot moure la subscripcció al propi ace-preview
+                    // preview.trigger(); // Convertit en plugin
                 });
 
 
@@ -527,22 +519,6 @@ define([
 
 
             },
-
-            /**
-             * Estableix el contenidor al que s'incrustarà l'editor.
-             *
-             * @param {string?} container - Id del div que contindrá l'editor, si no s'especifica es fa servir el
-             * contenidor per defecte.
-             */
-            // setContainer: function (container) {
-            //
-            //     var value = container || this._default.containerId;
-            //     this.set('editor', ace.edit(value));
-            //     this.set('session', this.editor.getSession());
-            //
-            //
-            //
-            // },
 
             /**
              * Estableix el tema que fará servir l'editor.
@@ -636,40 +612,6 @@ define([
                 this.session.setTabSize(tabSize);
             },
 
-            /**
-             * Afegeix la funció que serà cridada quan hi hagin canvis al document.
-             *
-             * @param {function} args - Funció que es cridada quan hi ha un canvi al document, si no s'especifica es fa
-             * servir el valor per defecte
-             */
-            // setDocumentChangeCallback: function (args) {
-            //     var callback = args || this._default.onDocumentChange;
-            //     this.session.on('change', lang.hitch(this, function (e) {
-            //             if (!this._readOnly) {
-            //                 return callback(e);
-            //             }
-            //         })
-            //     );
-            // },
-
-            /**
-             * Afegeix la funció que serà cridada quan el cursor canvia de posició
-             *
-             * @param {function} args - Funció que es cridada quan el cursor canvia de posició
-             */
-            // setChangeCursorCallback: function (args) {
-            //
-            //     var callback = args || this._default.onCursorChange;
-            //     this.editor.getSelection().on('changeCursor', function (e) {
-            //         return callback(e);
-            //     });
-            // },
-
-            // getText: function () {
-            //     alert("es fa servir getText");
-            //     return this.session.getValue();
-            // },
-
             destroy: function () {
                 this.removePlugins();
                 this.editor.destroy();
@@ -720,10 +662,10 @@ define([
 
                 this.set_height(this.$textarea.innerHeight());
                 this.show(); // ALERTA! no es troba aqui si no al facade!
-                this.set_value(this.getTextareaValue());
+                this.setEditorValue(this.getTextareaValue());
                 this.resize();
                 this.focus();
-                this.set_selection(selection.start, selection.end);
+                this.setEditorSelection(selection.start, selection.end);
 
                 DokuCookie.setValue('aceeditor', 'on'); // ALERTA[Xavi] Això no ho fem servir, era de la versió anterior
 
@@ -732,7 +674,7 @@ define([
             },
 
             disable: function () {
-                var selection = this.get_selection();
+                var selection = this.getEditorSelection();
 
                 DokuCookie.setValue('aceeditor', 'off'); // ALERTA[Xavi] Això no ho fem servir, era de la versió anterior
 
@@ -744,7 +686,7 @@ define([
 
                 this.setTextareaValue(this.get_value());
                 // this.dokuWrapper.set_value(this.get_value());
-                // this.dokuWrapper.set_selection(selection.start, selection.end);
+                // this.dokuWrapper.setEditorSelection(selection.start, selection.end);
                 this.setTextareaSelection(selection.start, selection.end);
                 this.$textarea.focus();
 
@@ -793,8 +735,13 @@ define([
                 }
             },
 
+            /**
+             * Estableix el contingut del editor.
+             *
+             * @param {string} value - Text que s'establirà com a contingut del editor
+             */
             setEditorValue: function (value) {
-                this.set_value(value);
+                this.getSession().setValue(value);
             },
 
             setTextareaValue: function (value) {
@@ -1207,7 +1154,7 @@ define([
              *
              * @returns {{start: int, end: int}} - Caràcter inciial i final sel·leccionats.
              */
-            get_selection: function () {
+            getEditorSelection: function () {
                 var editor = this.getEditor(),
                     range = editor.getSelection().getRange();
 
@@ -1231,7 +1178,6 @@ define([
                 };
             },
 
-
             /**
              * Estableix la selecció entre els punts passats com a inicial i final.
              *
@@ -1244,7 +1190,7 @@ define([
                 selection.obj = this.$textarea.get(0);
                 selection.start = start;
                 selection.end = end;
-                this.doku_set_selection(selection);
+                this.doku_setEditorSelection(selection);
             },
 
 
@@ -1433,20 +1379,12 @@ define([
              * @param {int} start - Caràcter inicial a seleccionar
              * @param {int} end - Caràcter final a seleccionar
              */
-            set_selection: function (start, end) {
+            setEditorSelection: function (start, end) {
                 var editor = this.getEditor(),
                     range = Range.fromPoints(this.offset_to_pos(start), this.offset_to_pos(end));
                 editor.getSelection().setSelectionRange(range);
             },
 
-            /**
-             * Estableix el contingut del editor.
-             *
-             * @param {string} value - Text que s'establirà com a contingut del editor
-             */
-            set_value: function (value) {
-                this.getSession().setValue(value);
-            },
 
             /**
              * Estableix si s'han de tallar les paraules al arribar al final de la línia o no.
@@ -1467,20 +1405,14 @@ define([
                 return this.getEditor().getSelectionRange().start.row;
             },
 
-            // Funcions del DokuWrapper
 
             restoreCachedFunctions: function () {
                 patcher.restoreCachedFunctions(this.id);
-                // this.dokuWrapper.restoreCachedFunctions(this.id);
             },
 
             incr_height: function (value) {
-
                 this.$wrapper.css('height', (this.$wrapper.height() + value) + 'px');
                 return this.$elementContainer.css('height', this.$wrapper.height() + 'px');
             }
-
-
-
         });
 });

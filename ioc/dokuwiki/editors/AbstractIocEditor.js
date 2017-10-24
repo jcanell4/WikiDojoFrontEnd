@@ -4,7 +4,7 @@ define([
     'dojo/_base/declare',
 ], function (Stateful, Evented, declare) {
 
-    return declare([Stateful, Evented], {
+    return declare([Evented], {
 
         // Gestió de funcions comunes pels components, plugins i adaptors
 
