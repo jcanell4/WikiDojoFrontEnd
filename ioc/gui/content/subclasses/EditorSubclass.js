@@ -7,7 +7,7 @@ define([
     "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
     "dojo/io-query",
     'ioc/wiki30/Draft',
-    'ioc/dokuwiki/AceManager/toolbarManager',
+    'ioc/dokuwiki/editors/AceManager/toolbarManager',
 
 ], function (declare, on, lang, LocktimedDocumentSubclass, BasicEditorSubclass, ChangesManagerCentralSubclass, ioQuery, toolbarManager) {
 
