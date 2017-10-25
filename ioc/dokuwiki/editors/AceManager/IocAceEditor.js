@@ -407,6 +407,7 @@ define([
                 this.$elementContainer = element;
                 this.$wrapper = wrapper;
                 // this.$textArea = textarea;
+                this.containerId = id;
 
                 this.editor = ace.edit(id);
                 this.session = this.editor.getSession();

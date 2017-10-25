@@ -126,7 +126,7 @@ define([
         },
 
         setHeight: function (height) {
-            // console.log("AceEditorFullFacade#setHeight", height);
+            console.log("AceEditorFullFacade#setHeight", height);
             var min = this.MIN_HEIGHT,
                 contentNode = dom.byId(this.id),
                 h = geometry.getContentBox(contentNode).h,
