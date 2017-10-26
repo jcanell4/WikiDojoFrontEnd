@@ -37,6 +37,7 @@ define([
 
             constructor: function () {
                 this.forceClose = false;
+
             },
             
             setReadOnly: function (value) {
@@ -256,17 +257,19 @@ define([
             },
 
             // Afegeix un editorAce per cada editor actiu
-            addEditors: function () {
-                // console.log("BasicEditorSubclass#addEditors@originalContent", this.originalContent);
-                // this.editor = this.createEditor({id : this.id}, "DojoEditor"); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
-                this.editor = this.createEditor({id:this.id, originalContent: this.originalContent}); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
+            addEditors: function (editor) {
+                console.log("BasicEditorSubclass#addEditors", this.editorType);
+                // this.editor = this.createEditor({id : this.id}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
+                this.editor = this.createEditor({id:this.id, originalContent: this.originalContent}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
             },
 
             createEditor: function(config, type) {
-                // console.log("config:", config);
+
                 switch (type) {
-                    case "DojoEditor":
+                    case "Dojo":
                         return this.createDojoEditor(config);
+
+                    case "ACE": // fall-through intencionat
 
                     default:
                         return this.createAceEditor(config);

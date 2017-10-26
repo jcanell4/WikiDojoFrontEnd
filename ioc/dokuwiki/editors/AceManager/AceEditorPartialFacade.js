@@ -178,6 +178,7 @@ define([
         },
 
         fillEditorContainer: function() {
+            console.log("fillEditorContainer");
             var viewNode,
                 p,
                 $view =jQuery('#view_' + this.id /*+ '_' + header_id*/);
@@ -186,6 +187,8 @@ define([
 
             viewNode = dom.byId('view_' + this.id /*+ '_' + header_id*/);
             p = geometry.getContentBox(viewNode).h;
+
+            console.log("viewNode", viewNode);
 
             $view.css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
 

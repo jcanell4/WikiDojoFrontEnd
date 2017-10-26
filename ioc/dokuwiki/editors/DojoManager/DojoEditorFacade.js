@@ -21,6 +21,7 @@ define([
         constructor: function (args) {
             // console.log("DojoEditorFacade#constructor", args);
 
+            this.viewId = args.viewId;
             this.dispatcher = args.dispatcher;
 
             this.$textarea = jQuery('#' + args.textareaId);
@@ -62,7 +63,7 @@ define([
             this.editor.on('focus', function () {
                 // console.log('Focus DojoEditor');
                 // console.log("Enviant click fals:", args.parentId);
-                jQuery('#'+args.parentId).trigger('click');
+                jQuery('#'+args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
                 // this.emit('click', {id: args.parentId});
             }.bind(this));
 

@@ -96,7 +96,7 @@ define([
                 if (this.data.chunks[i].text) {
 
                     // console.log(this.data.chunks[i].text);
-                    var data = {auxId: auxId, originalContent: this.data.chunks[i].text.editing};
+                    var data = {auxId: auxId, originalContent: this.data.chunks[i].text.editing, editorType : this.data.editorType};
 
                     if (this.editors[this.data.chunks[i].header_id]) {
 
@@ -1078,12 +1078,12 @@ define([
                 {
                     id: data.auxId,
                     originalContent: data.originalContent || data.text
-                });
+                }, data.editorType);
 
             // var editor = this.createEditor({
             //     id: data.auxId,
             //     originalContent: data.originalContent || data.text
-            // }, "DojoEditor");
+            // }, data.editorType);
 
             this.editors[header_id] = {
                 editor: editor
@@ -1096,8 +1096,10 @@ define([
         createEditor: function (config, type) {
             // console.log("SructuredDocumentSubclass#createEditor", config, type);
             switch (type) {
-                case "DojoEditor":
+                case "Dojo":
                     return this.createDojoEditor(config);
+
+                case "ACE": // fall-through intencionat
 
                 default:
                     return this.createAceEditor(config);
@@ -1109,6 +1111,7 @@ define([
             return new DojoEditorPartialFacade(
                 {
                     parentId: 'container_' + config.id,
+                    viewId: 'view_' + config.id,
                     containerId: 'editor_' + config.id,
                     textareaId: 'textarea_' + config.id,
                     dispatcher: this.dispatcher,

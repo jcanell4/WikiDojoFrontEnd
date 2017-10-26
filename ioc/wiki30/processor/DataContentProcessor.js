@@ -125,6 +125,10 @@ define([
                     args["autosaveTimer"] = content.autosaveTimer;
                 }
 
+                if (dispatcher.getGlobalState().userState) {
+                    args.editorType = dispatcher.getGlobalState().userState['editor'];
+                }
+
                 return contentToolFactory.generate(contentToolFactory.generation.EDITOR, args);
             },
 
