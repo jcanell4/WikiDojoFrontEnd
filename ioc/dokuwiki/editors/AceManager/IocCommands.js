@@ -11,7 +11,7 @@ define([
          */
         {
             /** @type {AceWrapper} */
-            editor: null,
+            aceWrapper: null,
 
             /** @type {Object[]} */
             contexts: [],
@@ -119,7 +119,7 @@ define([
                     if (fallback) {
                         platform = self.aceWrapper.platform();
                         exec = fallback[platform] || fallback;
-                        return typeof exec === "function" ? exec.call(context) : null;
+                        return typeof exec === "function" ? exec.call(self.aceWrapper) : null;
                     }
                 };
             },

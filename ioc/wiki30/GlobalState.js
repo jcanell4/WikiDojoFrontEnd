@@ -470,7 +470,7 @@ define([
         },
 
         updateSessionStorage: function () {
-            console.log("GlobalState#updateSessionStorage", this);
+            // console.log("GlobalState#updateSessionStorage", this);
             // Update del sessionStorage, això és el que es fa ara en recarregar la pàgina
             storageManager.setObject('globalState', this);
         },

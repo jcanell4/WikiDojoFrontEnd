@@ -6,8 +6,9 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/LatexPreviewPlugin',
     'dojo/_base/declare',
     'dojo/_base/lang',
-    'ioc/dokuwiki/editors/AceManager/state_handler'
-], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler) {
+    'ioc/dokuwiki/editors/AceManager/state_handler',
+    'ioc/dokuwiki/editors/AceManager/plugins/IocSoundPlugin',
+], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler, IocSoundPlugin) {
 
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
@@ -124,6 +125,8 @@ define([
          * @author Xavier García<xaviergaro.dev@gmail.com>
          */
         {
+            name : 'IocAceEditor',
+
             EDITOR: {
                 ACE: 0,
                 TEXT_AREA: 1
@@ -152,7 +155,7 @@ define([
                 tabSize: 2,
                 horizontalScrollBar: false,
                 undoManager: new ace.UndoManager(),
-                plugins: [/*IocCommands, */LatexPreviewPlugin]
+                plugins: [LatexPreviewPlugin, IocSoundPlugin]
 
             },
 
@@ -416,6 +419,11 @@ define([
 
             init: function (args) {
                 this.currentEditor = this.EDITOR.ACE;
+                this.dispatcher = args.dispatcher;
+                this.TOOLBAR_ID = args.TOOLBAR_ID;
+
+
+                console.log("Dispatcher a l'editor?", args.dispatcher);
 
                 this.initContainer(args.containerId, args.textareaId);
                 this.initDwEditor(this.$textarea);

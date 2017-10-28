@@ -18,12 +18,9 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-
+                // console.log("UserStateProcessor#process", value);
                 this.inherited(arguments);
-                console.log("UserStateProcessor#process", value);
                 dispatcher.getGlobalState().userState = value;
-                console.log("al globalstate?", dispatcher.getGlobalState().userState);
-
             },
 
             /**

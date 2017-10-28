@@ -30,6 +30,7 @@ define([
                 wrapMode: args.wrapMode,
                 mdpage: args.mdpage,
                 originalContent: args.originalContent
+
             });
 
             this.dispatcher = args.dispatcher;
