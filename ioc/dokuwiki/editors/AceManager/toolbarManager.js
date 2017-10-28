@@ -282,9 +282,6 @@ define([], function () {
 
             config.type = 'format';
 
-            console.log("toolbarManager#addFormatButton", config);
-
-
             if (_existsButtonInToolbar(config.title, type)) {
                 return false;
             } else {

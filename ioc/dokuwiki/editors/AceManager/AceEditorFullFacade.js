@@ -6,11 +6,8 @@ define([
     'dojo/dom-style',
     'dojo/dom',
     'ioc/dokuwiki/editors/AceManager/toolbarManager',
-    'dojo/dom-geometry',
-    /*'ioc/dokuwiki/editors/AceManager/ace-preview',*/
-    'dojo/cookie',
-], function (declare, AbstractIocFacade, IocAceEditor, /*IocAceMode,*/ /*IocRuleSet, *//*AceWrapper, DokuWrapper,*/ /*Container,*/ IocCommands, /*patcher,*/
-             style, dom, toolbarManager, geometry, /*acePreview,*/ cookie) {
+    'dojo/dom-geometry'
+], function (declare, AbstractIocFacade, IocAceEditor, IocCommands, style, dom, toolbarManager, geometry) {
 
 
     return declare([AbstractIocFacade], {
@@ -29,8 +26,9 @@ define([
                 wraplimit: args.wraplimit,
                 wrapMode: args.wrapMode,
                 mdpage: args.mdpage,
-                originalContent: args.originalContent
-
+                originalContent: args.originalContent,
+                dispatcher: args.dispatcher,
+                TOOLBAR_ID: this.TOOLBAR_ID
             });
 
             this.dispatcher = args.dispatcher;
@@ -121,7 +119,7 @@ define([
         },
 
         setHeight: function (height) {
-            console.log("AceEditorFullFacade#setHeight", height);
+            // console.log("AceEditorFullFacade#setHeight", height);
             var min = this.MIN_HEIGHT,
                 contentNode = dom.byId(this.id),
                 h = geometry.getContentBox(contentNode).h,
@@ -181,35 +179,35 @@ define([
                     type: 'EnableWrapper', // we havea new type that links to the function
                     title: 'Activar/Desactivar embolcall',
                     icon: '/iocjslib/ioc/gui/img/wrap.png'
-                },
+                }/*,
 
                 argPreview = {
                     type: "preview", // we havea new type that links to the function
                     title: "Previsualitzar el contingut d'aquest editor",
                     icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
-                };
+                }*/;
 
-            toolbarManager.addButton(argPreview, this._funcPreview.bind(dispatcher), this.TOOLBAR_ID);
+            // toolbarManager.addButton(argPreview, this._funcPreview.bind(dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(argSave, this._funcSave.bind(dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(argCancel, this._funcCancel.bind(dispatcher), this.TOOLBAR_ID);
         },
 
-        _funcPreview: function () {
-            var id = this.getGlobalState().getCurrentId(),
-                contentTool = this.getContentCache(id).getMainContentTool(),
-                dataToSend = contentTool.requester.get("dataToSend"),
-                urlBase = contentTool.requester.get("urlBase");
-
-            cookie("IOCForceScriptLoad", 1);
-
-            contentTool.requester.set("dataToSend", {call: "preview", wikitext: contentTool.getCurrentContent()});
-            contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
-            contentTool.requester.sendRequest();
-            contentTool.requester.set("urlBase", urlBase);
-            contentTool.requester.set("dataToSend", dataToSend);
-        },
+        // _funcPreview: function () {
+        //     var id = this.getGlobalState().getCurrentId(),
+        //         contentTool = this.getContentCache(id).getMainContentTool(),
+        //         dataToSend = contentTool.requester.get("dataToSend"),
+        //         urlBase = contentTool.requester.get("urlBase");
+        //
+        //     cookie("IOCForceScriptLoad", 1);
+        //
+        //     contentTool.requester.set("dataToSend", {call: "preview", wikitext: contentTool.getCurrentContent()});
+        //     contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
+        //     contentTool.requester.sendRequest();
+        //     contentTool.requester.set("urlBase", urlBase);
+        //     contentTool.requester.set("dataToSend", dataToSend);
+        // },
 
         /**
          * Activa o desactiva l'embolcall del text.

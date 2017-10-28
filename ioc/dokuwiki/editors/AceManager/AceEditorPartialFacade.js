@@ -50,14 +50,14 @@ define([
                     type: "EnableWrapper", // we havea new type that links to the function
                     title: "Activar/Desactivar embolcall",
                     icon: "/iocjslib/ioc/gui/img/wrap.png"
-                },
-                argPreview = {
-                    type: "preview", // we havea new type that links to the function
-                    title: "Previsualitzar el contingut d'aquest editor",
-                    icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
                 };
+                // argPreview = {
+                //     type: "preview", // we havea new type that links to the function
+                //     title: "Previsualitzar el contingut d'aquest editor",
+                //     icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
+                // };
 
-            toolbarManager.addButton(argPreview, this._funcPreview.bind(dispatcher), this.TOOLBAR_ID);
+            // toolbarManager.addButton(argPreview, this._funcPreview.bind(dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(argSave, this._funcSave.bind(dispatcher), this.TOOLBAR_ID);
@@ -84,24 +84,24 @@ define([
             }, id);
         },
 
-        _funcPreview: function(){
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId(),
-                contentTool = this.getContentCache(id).getMainContentTool(),
-                dataToSend = contentTool.requester.get("dataToSend"),
-                urlBase = contentTool.requester.get("urlBase");
-
-            cookie("IOCForceScriptLoad", 1);
-
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-
-            contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getEditedChunk(chunk)});
-            contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
-            contentTool.requester.sendRequest();
-            contentTool.requester.set("urlBase", urlBase);
-            contentTool.requester.set("dataToSend", dataToSend);
-        },
+        // _funcPreview: function(){
+        //     var chunk = this.getGlobalState().getCurrentElementId(),
+        //         id = this.getGlobalState().getCurrentId(),
+        //         contentTool = this.getContentCache(id).getMainContentTool(),
+        //         dataToSend = contentTool.requester.get("dataToSend"),
+        //         urlBase = contentTool.requester.get("urlBase");
+        //
+        //     cookie("IOCForceScriptLoad", 1);
+        //
+        //     chunk = chunk.replace(id + "_", "");
+        //     chunk = chunk.replace("container_", "");
+        //
+        //     contentTool.requester.set("dataToSend", {call:"preview", wikitext:contentTool.getEditedChunk(chunk)});
+        //     contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
+        //     contentTool.requester.sendRequest();
+        //     contentTool.requester.set("urlBase", urlBase);
+        //     contentTool.requester.set("dataToSend", dataToSend);
+        // },
 
         /**
          * Activa o desactiva l'editor ACE segons l'estat actual
@@ -178,7 +178,7 @@ define([
         },
 
         fillEditorContainer: function() {
-            console.log("fillEditorContainer");
+            // console.log("fillEditorContainer");
             var viewNode,
                 p,
                 $view =jQuery('#view_' + this.id /*+ '_' + header_id*/);
@@ -188,7 +188,7 @@ define([
             viewNode = dom.byId('view_' + this.id /*+ '_' + header_id*/);
             p = geometry.getContentBox(viewNode).h;
 
-            console.log("viewNode", viewNode);
+            // console.log("viewNode", viewNode);
 
             $view.css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
 

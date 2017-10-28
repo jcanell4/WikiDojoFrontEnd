@@ -258,7 +258,7 @@ define([
 
             // Afegeix un editorAce per cada editor actiu
             addEditors: function (editor) {
-                console.log("BasicEditorSubclass#addEditors", this.editorType);
+                // console.log("BasicEditorSubclass#addEditors", this.editorType);
                 // this.editor = this.createEditor({id : this.id}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
                 this.editor = this.createEditor({id:this.id, originalContent: this.originalContent}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
             },

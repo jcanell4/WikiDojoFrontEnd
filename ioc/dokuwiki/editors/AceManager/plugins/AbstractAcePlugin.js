@@ -1,10 +1,9 @@
 define([
     'dojo/_base/declare',
     'ioc/dokuwiki/editors/_plugins/AbstractIocPlugin',
-    'ioc/dokuwiki/editors/AceManager/toolbarManager'
+    'ioc/dokuwiki/editors/AceManager/toolbarManager',
 ], function (declare, AbstractIocPlugin, toolbarManager) {
 
-    // Interficie del plugin
     return declare([AbstractIocPlugin], {
 
         /**
@@ -22,8 +21,7 @@ define([
                     break;
 
                 default: // Això correspón a tots els botons personalitzats
-                    // toolbarManager.addButton(args, callback.bind(this.editor.dispatcher), this.editor.TOOLBAR_ID); // ALERTA[Xavi] En els botons originals es passa el dispatcher, aqui provarem a passar altre cosa
-                    toolbarManager.addButton(args, callback, this.editor.TOOLBAR_ID);
+                    toolbarManager.addButton(args, callback.bind(this), this.editor.TOOLBAR_ID);
             }
         }
 

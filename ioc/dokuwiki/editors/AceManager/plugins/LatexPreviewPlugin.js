@@ -117,7 +117,7 @@ define([
         },
 
         activate: function() {
-            console.log("LatexPreviewPlugin#activate");
+            // console.log("LatexPreviewPlugin#activate");
             this.inherited(arguments);
             this.addEditorListener('change, changeCursor', this.preview.trigger);
         },

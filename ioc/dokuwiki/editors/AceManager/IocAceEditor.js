@@ -8,7 +8,8 @@ define([
     'dojo/_base/lang',
     'ioc/dokuwiki/editors/AceManager/state_handler',
     'ioc/dokuwiki/editors/AceManager/plugins/IocSoundPlugin',
-], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler, IocSoundPlugin) {
+    'ioc/dokuwiki/editors/AceManager/plugins/DocumentPreviewPlugin',
+], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler, IocSoundPlugin, DocumentPreviewPlugin) {
 
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
@@ -155,7 +156,7 @@ define([
                 tabSize: 2,
                 horizontalScrollBar: false,
                 undoManager: new ace.UndoManager(),
-                plugins: [LatexPreviewPlugin, IocSoundPlugin]
+                plugins: [LatexPreviewPlugin, IocSoundPlugin, DocumentPreviewPlugin]
 
             },
 
@@ -421,9 +422,6 @@ define([
                 this.currentEditor = this.EDITOR.ACE;
                 this.dispatcher = args.dispatcher;
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
-
-
-                console.log("Dispatcher a l'editor?", args.dispatcher);
 
                 this.initContainer(args.containerId, args.textareaId);
                 this.initDwEditor(this.$textarea);
