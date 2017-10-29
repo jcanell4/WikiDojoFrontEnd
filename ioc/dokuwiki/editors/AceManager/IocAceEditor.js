@@ -213,6 +213,8 @@ define([
 
                 this.init(args);
 
+
+
             },
 
             _patch: function (id) {
@@ -507,6 +509,7 @@ define([
 
 
                 this.setValue(args.originalContent);
+                this.originalContent = args.originalContent;
 
             },
 
@@ -1460,6 +1463,14 @@ define([
             incr_height: function (value) {
                 this.$wrapper.css('height', (this.$wrapper.height() + value) + 'px');
                 return this.$elementContainer.css('height', this.$wrapper.height() + 'px');
+            },
+
+            isChanged: function() {
+                return this.originalContent !== this.getValue();
+            },
+
+            resetOriginalContentState: function () {
+                this.originalContent = this.getValue();
             }
         });
 });

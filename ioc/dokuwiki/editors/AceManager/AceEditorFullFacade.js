@@ -105,14 +105,11 @@ define([
 
         resetOriginalContentState: function () {
             // console.log("AceEditorFullFacade#resetOriginalContentState", this.id);
-            alert("Es fa servir reseetOriginalContentState?");
-            this.originalContent = this.getValue();
+            this.editor.resetOriginalContentState();
         },
 
         isChanged: function () {
-            alert("Es fa servir isChanged?");
-
-            return this.originalContent != this.getValue();
+            return this.editor.isChanged();
         },
 
 
@@ -149,118 +146,16 @@ define([
         },
 
 
-        addToolbars: function (dispatcher) {
-            toolbarManager.setDispatcher(dispatcher);
-
+        addToolbars: function () {
 
             if (this.editor.getReadOnly()) {
                 return;
             }
-            this.addButtons(dispatcher);
 
             this.toolbarId = 'toolbar_' + this.id;
             toolbarManager.initToolbar(this.toolbarId, 'textarea_' + this.id, this.TOOLBAR_ID);
         },
 
-        addButtons: function (dispatcher) {
-            /*var argSave = {
-                    type: 'SaveButton',
-                    title: 'Desar',
-                    icon: '/iocjslib/ioc/gui/img/save.png'
-                },*/
-
-                /*argCancel = {
-                    type: 'BackButton',
-                    title: 'Tornar',
-                    icon: '/iocjslib/ioc/gui/img/back.png'
-                }*//*,
-
-                confEnableAce = {
-                    type: 'EnableAce',
-                    title: 'Activar/Desactivar ACE',
-                    icon: '/iocjslib/ioc/gui/img/toggle_on.png'
-                }*//*,
-
-                confEnableWrapper = {
-                    type: 'EnableWrapper', // we havea new type that links to the function
-                    title: 'Activar/Desactivar embolcall',
-                    icon: '/iocjslib/ioc/gui/img/wrap.png'
-                }*//*,
-
-                argPreview = {
-                    type: "preview", // we havea new type that links to the function
-                    title: "Previsualitzar el contingut d'aquest editor",
-                    icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
-                }*/;
-
-            // toolbarManager.addButton(argPreview, this._funcPreview.bind(dispatcher), this.TOOLBAR_ID);
-            // toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(dispatcher), this.TOOLBAR_ID);
-            // toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(dispatcher), this.TOOLBAR_ID);
-            // toolbarManager.addButton(argSave, this._funcSave.bind(dispatcher), this.TOOLBAR_ID);
-            // toolbarManager.addButton(argCancel, this._funcCancel.bind(dispatcher), this.TOOLBAR_ID);
-        },
-
-        // _funcPreview: function () {
-        //     var id = this.getGlobalState().getCurrentId(),
-        //         contentTool = this.getContentCache(id).getMainContentTool(),
-        //         dataToSend = contentTool.requester.get("dataToSend"),
-        //         urlBase = contentTool.requester.get("urlBase");
-        //
-        //     cookie("IOCForceScriptLoad", 1);
-        //
-        //     contentTool.requester.set("dataToSend", {call: "preview", wikitext: contentTool.getCurrentContent()});
-        //     contentTool.requester.set("urlBase", contentTool.requester.get("defaultUrlBase"));
-        //     contentTool.requester.sendRequest();
-        //     contentTool.requester.set("urlBase", urlBase);
-        //     contentTool.requester.set("dataToSend", dataToSend);
-        // },
-
-        // /**
-        //  * Activa o desactiva l'embolcall del text.
-        //  * @returns {boolean} - Sempre retorna fals
-        //  * @protected
-        //  */
-        // _funcEnableWrapper: function () {
-        //     var id = this.getGlobalState().getCurrentId(),
-        //         editor = this.getContentCache(id).getMainContentTool().getEditor();
-        //
-        //     editor.toggleWrap();
-        // },
-
-        // /**
-        //  * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
-        //  *
-        //  * @protected
-        //  */
-        // _funcSave: function () {
-        //     var id = this.getGlobalState().getCurrentId(),
-        //         eventManager = this.getEventManager();
-        //
-        //     eventManager.fireEvent(eventManager.eventName.SAVE, {id: id}, id);
-        // },
-
-        // /**
-        //  * Activa o desactiva l'editor ACE segons l'estat actual
-        //  *
-        //  * @returns {boolean} - Sempre retorna fals.
-        //  * @protected
-        //  */
-        // _funcEnableAce: function () {
-        //     var id = this.getGlobalState().getCurrentId(),
-        //         editor = this.getContentCache(id).getMainContentTool().getEditor();
-        //     editor.toggleEditor();
-        // },
-
-        /**
-         * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
-         * @protected
-         */
-        _funcCancel: function () {
-            var id = this.getGlobalState().getCurrentId(),
-                eventManager = this.getEventManager();
-
-            eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id}, id);
-        },
 
         hideToolbar: function () {
             var $toolbar = jQuery('#' + this.toolbarId);
