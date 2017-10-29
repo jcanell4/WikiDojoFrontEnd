@@ -6,10 +6,10 @@ define([
     'dojo/dom',
     'dojo/dom-style',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/editors/DojoManager/plugins/Test',
-    'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/IocSoundFormatButtonPlugin',
     // 'dojox/editor/plugins/InsertEntity',
-], function (declare, AbstractIocFacade, Editor, AlwaysShowToolbar, dom, style, geometry, Test, CommentsDialog) {
+], function (declare, AbstractIocFacade, Editor, AlwaysShowToolbar, dom, style, geometry/*, CommentsDialog, IocSoundFormatButtonPlugin*/) {
     return declare([AbstractIocFacade], {
 
         editor: null,
@@ -26,7 +26,6 @@ define([
 
             this.$textarea = jQuery('#' + args.textareaId);
 
-
             this.$editor = jQuery('<div>');
             this.$editor.css('height', '99%');
             this.$editor.attr('id', args.containerId);
@@ -35,21 +34,25 @@ define([
 
             this.containerNode = jQuery('#' + args.containerId.replace(/^editor_/, '')).get(0);
 
-
+            // ALERTA[Xavi] Si es passa el valor de l'editor directament com a 'value' no s'executa el parse dels plugins.
             this.editor = new Editor({
                 styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
-                extraPlugins: [Test, CommentsDialog],
-                dispatcher: this.dispatcher
+                // extraPlugins: [CommentsDialog, IocSoundFormatButtonPlugin],
+                dispatcher: this.dispatcher,
                 // extraPlugins: [AlwaysShowToolbar, Test/*, Print*/],
                 // height: "100%"
+                // value: args.originalContent
             }, dom.byId(args.containerId));
 
 
             var text = this.$textarea.val();
             this.setValue(text);
+            // this.setValue(args.originalContent);
+
+            // console.log("Original Content?", args.originalContent);
 
             if (args.originalContent) {
-                this.originalContent = args.originalContent;
+                this.editor.originalContent = args.originalContent;
             } else {
                 this.resetOriginalContentState();
             }

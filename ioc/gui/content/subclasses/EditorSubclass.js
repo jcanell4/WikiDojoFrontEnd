@@ -40,7 +40,7 @@ define([
              * @param args
              */
             constructor: function (args) {
-                this._setOriginalContent(args.originalContent);
+                // this._setOriginalContent(args.originalContent);
                 this.hasChanges = false;
                 this.forceClose = false;
             },
@@ -53,7 +53,8 @@ define([
             isContentChanged: function () {
                 // console.log("EditorSubclass#isContentChanged");
                 var content = this.getCurrentContent(),
-                    diffFromOriginal = this._getOriginalContent() != content,
+                    // diffFromOriginal = this._getOriginalContent() != content,
+                    diffFromOriginal = this.getEditor().isChanged(),
                     diffFromLastCheck = this.isLastCheckedContentChanged();
 
 
@@ -75,7 +76,8 @@ define([
              */
             resetContentChangeState: function () {
                 this.hasChanges = false;
-                this._setOriginalContent(this.getCurrentContent());
+                this.getEditor().resetOriginalContentState();
+                // this._setOriginalContent(this.getCurrentContent());
                 this.onDocumentChangesReset();
             },
 
@@ -267,25 +269,26 @@ define([
                 }
             },
 
-            /**
-             * Retorna el que està establert com a contingut original per fer comprovacions sobre canvis.
-             *
-             * @returns {string} - Contingut original
-             * @private
-             */
-            _getOriginalContent: function () {
-                return this.originalContent;
-            },
-
-            /**
-             * Estableix el contingut passat com paràmetre com a contingut original.
-             *
-             * @param {string} content - Contingut a establir com original
-             * @private
-             */
-            _setOriginalContent: function (content) {
-                this.originalContent = content;
-            },
+            // /**
+            //  * Retorna el que està establert com a contingut original per fer comprovacions sobre canvis.
+            //  *
+            //  * @returns {string} - Contingut original
+            //  * @private
+            //  */
+            // _getOriginalContent: function () {
+            //     return this.originalContent;
+            // },
+            //
+            // /**
+            //  * Estableix el contingut passat com paràmetre com a contingut original.
+            //  *
+            //  * @param {string} content - Contingut a establir com original
+            //  * @private
+            //  */
+            // _setOriginalContent: function (content) {
+            //
+            //     // this.originalContent = content;
+            // },
 
             /**
              * Descarta els canvis al document actual i restaura els originals

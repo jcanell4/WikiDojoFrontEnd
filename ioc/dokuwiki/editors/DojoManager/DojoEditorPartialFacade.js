@@ -9,35 +9,19 @@ define([
 ], function (declare, Editor, AlwaysShowToolbar, dom, style, geometry, DojoEditorFacade) {
     return declare([DojoEditorFacade], {
 
-
-        // fillEditorContainer: function () {
-        //     // var contentNode = this.editor.domNode,
-        //     var contentNode = this.containerNode,
-        //         h = geometry.getContentBox(contentNode).h;
-        //
-        //     // console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
-        //     this.setHeight(h);
-        // },
-
-
         fillEditorContainer: function() {
-            console.log("fillEditorContainer");
             var viewNode,
                 p,
-                // $view =jQuery('#view_' + this.id /*+ '_' + header_id*/);
-                $view =jQuery('#' + this.viewId /*+ '_' + header_id*/);
+                $view =jQuery('#' + this.viewId);
 
             $view.css('display', 'block'); // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
 
-            viewNode = dom.byId(this.viewId /*+ '_' + header_id*/);
+            viewNode = dom.byId(this.viewId);
             p = geometry.getContentBox(viewNode).h;
-
-            console.log("viewNode", viewNode);
 
             $view.css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
 
             this.setHeight(p);
-
         },
 
 
