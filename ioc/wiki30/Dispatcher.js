@@ -367,8 +367,6 @@ define([
             /**
              * Retorna la informació de la pàgina mostrada a la pestanya actual.
              *
-             * TODO[Xavi] No es crida enlloc?
-             *
              * @returns {{ns: string, node: string, action: string}} pagina de la pestanya actual
              */
             getCurrentContent: function () {

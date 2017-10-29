@@ -319,11 +319,11 @@ define([
         },
 
         _compactPages: function (pages) {
-            console.log("Compactant pàgines:", pages);
+            // console.log("Compactant pàgines:", pages);
 
             for (var ns in pages) {
                 if (Object.keys(pages[ns].drafts).length === 0) {
-                    console.log("Esborrant pàgina", ns);
+                    // console.log("Esborrant pàgina", ns);
                     delete (pages[ns]);
                 }
             }

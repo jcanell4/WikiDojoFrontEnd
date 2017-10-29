@@ -18,6 +18,7 @@ define([
 
         constructor: function (args) {
             var iocAceEditor = new IocAceEditor({ // ALERTA! Arriben tots directament del cotenttool
+                id: args.id,
                 containerId: args.containerId,
                 textareaId: args.textareaId,
                 auxId: args.auxId,
@@ -72,8 +73,13 @@ define([
         },
 
         select: function () {
+            // console.log("select");
             // patcher.restoreCachedFunctions(this.id);
             this.editor.restoreCachedFunctions();
+        },
+
+        unselect: function() {
+            console.log("unselect");
         },
 
         lockEditor: function () {

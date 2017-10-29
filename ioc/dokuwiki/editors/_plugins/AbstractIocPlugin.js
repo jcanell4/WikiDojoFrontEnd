@@ -82,7 +82,7 @@ define([
          * Elimina la detecció de tots els events a l'editor.
          */
         removeEditorListeners: function() {
-            console.log("AbstractPlugin#removeEditorListeners");
+            // console.log("AbstractPlugin#removeEditorListeners");
             for (var i=0; i<this.handlers.length; i++) {
                 this.handlers[i].remove();
             }

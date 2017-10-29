@@ -211,6 +211,11 @@ define([
             return this.currentTabId;
         },
 
+        // ALERTA[Xavi] en molts punts s'assigna aquest valor directament
+        setCurrentId: function(id) {
+            this.currentTabId = id;
+        },
+
 
         /**
          * Retorna el magatzem de informació.

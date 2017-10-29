@@ -1110,6 +1110,7 @@ define([
         createDojoEditor: function (config) {
             return new DojoEditorPartialFacade(
                 {
+                    id: this.id,
                     parentId: 'container_' + config.id,
                     viewId: 'view_' + config.id,
                     containerId: 'editor_' + config.id,
@@ -1127,6 +1128,8 @@ define([
 
             // console.log("config:", config);
             return new AceFacade({
+                id: this.id,
+                auxId: config.id,
                 xmltags: JSINFO.plugin_aceeditor.xmltags,
                 containerId: 'editor_' + config.id,
                 textareaId: 'textarea_' + config.id,
@@ -1135,7 +1138,6 @@ define([
                 wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                 wrapMode: $textarea.attr('wrap') !== 'off',
                 mdpage: JSINFO.plugin_aceeditor.mdpage,
-                auxId: config.id,
                 dispatcher: this.dispatcher,
                 originalContent: config.originalContent
             });
@@ -1484,7 +1486,9 @@ define([
         },
 
         getEditor: function (header_id) {
-            return this.editors[header_id].editor;
+            if (header_id && this.editors[header_id]) {
+                return this.editors[header_id].editor;
+            }
         },
 
 

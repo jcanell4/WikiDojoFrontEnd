@@ -68,6 +68,7 @@ define([
             },
 
             cacheFunction = function (id, name) {
+                // console.log("cacheFunction:", id, name);
                 var func = (dw_editor && dw_editor[name]) ? dw_editor[name] : window[name];
 
                 if (!cachedFunctions[id]) {
@@ -192,9 +193,6 @@ define([
 
                 args.mode = iocAceMode.getMode();
 
-                // this.aceWrapper = new AceWrapper(this);
-                // this.dokuWrapper = new DokuWrapper(this, args.textareaId, args.auxId);//TODO[Xavi] A banda de passar la info del JSINFO per paràmetre, s'ha de tenir en compte que el id del text area ja no serà aquest, si no el que nosaltres volgumen (i.e. multi edició)
-
                 this.$textarea = jQuery('#' + args.textareaId);
 
                 this._patch(args.auxId);
@@ -205,6 +203,28 @@ define([
 
             _patch: function (id) {
                 var context = this,
+
+                    _switchContext = function (textareaId) {
+                        var $textarea = jQuery('#' + textareaId);
+                        var docId = $textarea.attr('data-doc-id');
+                        var headerId = $textarea.attr('data-header-id');
+
+
+                        // Establim la selecció actual
+                        context.dispatcher.getGlobalState().setCurrentId(docId);
+
+                        if (headerId) {
+                            context.dispatcher.getGlobalState().setCurrentElement(headerId);
+                        }
+
+                        // Recuperem l'editor actual
+                        if (context.dispatcher.getContentCache(docId) && context.dispatcher.getContentCache(docId).getMainContentTool().getEditor(headerId)) {
+                            context = context.dispatcher.getContentCache(docId).getMainContentTool().getEditor(headerId).editor;
+                        } /*else {
+                            console.log("no hi ha cap editor creat encara"); // ALERTA[Xavi] Això es normal perquè el canvi de contexte pot cridar-se quan encara no s'ha creat l'editor
+                        }*/
+
+                    },
 
                     /**
                      * @param {function} func - Funcio a cridar a continuació
@@ -229,9 +249,9 @@ define([
                             opts = {};
                         }
 
-
-
+                        _switchContext(selection.obj.id);
                         if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
+
                             context.replace(selection.start, selection.end, text);
                             context.setEditorSelection(selection.start, selection.end);
                             context.focus();
@@ -242,13 +262,10 @@ define([
                             if (opts.nosel) {
                                 selection.start = selection.end;
                             }
-                            // context.aceSetSelection(selection.start, selection.end);
                             context.setEditorSelection(selection.start, selection.end);
                             context.focus();
                         } else {
                             func(selection, text, opts);
-
-
                         }
 
                         context.$textarea.trigger('change', {newContent: context.$textarea.val()});
@@ -265,8 +282,9 @@ define([
                     _patchSetWrap = function (func, obj, value) {
                         func(obj, value);
 
+                        _switchContext(obj.id);
+
                         if (obj.id === context.$textarea.attr('id')) {
-                            // context.aceSetWrap(value !== 'off');
                             context.set_wrap_mode(value !== 'off');
                             context.focus();
                         }
@@ -283,10 +301,11 @@ define([
                     _patchSizeCtl = function (func, obj, value) {
                         func(obj, value);
 
+                        _switchContext(obj.id);
+
                         var id = (typeof obj.attr === "function" ? obj.attr('id') : void 0) || obj;
 
                         if (context.currentEditor === context.EDITOR.ACE && id === context.$textarea.attr('id')) {
-                            // context.aceSizeCtl(value);
                             context.incr_height(value);
                             context.resize();
                             context.focus();
@@ -304,6 +323,8 @@ define([
                      */
                     _patchGetSelection = function (func, obj) {
                         var result, selection;
+
+                        _switchContext(obj.id);
 
                         if (context.currentEditor === context.EDITOR.ACE && obj === context.$textarea.get(0)) {
                             // jQuery(context.textarea).val(context.aceGetValue());
@@ -360,6 +381,8 @@ define([
                      * @private
                      */
                     _patchSetSelection = function (func, selection) {
+                        _switchContext(selection.obj.id);
+
                         if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
                             context.setEditorSelection(selection.start, selection.end);
                             context.focus();
@@ -422,6 +445,7 @@ define([
                 this.currentEditor = this.EDITOR.ACE;
                 this.dispatcher = args.dispatcher;
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
+
 
                 this.initContainer(args.containerId, args.textareaId);
                 this.initDwEditor(this.$textarea);
@@ -493,6 +517,7 @@ define([
                 this.editor.getSelection().on('changeCursor', function (e) {
                     this.emit('changeCursor', e)
                 }.bind(this));
+
             },
 
             //ALERTA[Xav] Aquest mètode lliga el textarea als events originals de la wiki
