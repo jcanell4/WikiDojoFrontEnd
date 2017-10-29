@@ -163,29 +163,29 @@ define([
         },
 
         addButtons: function (dispatcher) {
-            var argSave = {
+            /*var argSave = {
                     type: 'SaveButton',
                     title: 'Desar',
                     icon: '/iocjslib/ioc/gui/img/save.png'
-                },
+                },*/
 
-                argCancel = {
+                /*argCancel = {
                     type: 'BackButton',
                     title: 'Tornar',
                     icon: '/iocjslib/ioc/gui/img/back.png'
-                },
+                }*//*,
 
                 confEnableAce = {
                     type: 'EnableAce',
                     title: 'Activar/Desactivar ACE',
                     icon: '/iocjslib/ioc/gui/img/toggle_on.png'
-                },
+                }*//*,
 
                 confEnableWrapper = {
                     type: 'EnableWrapper', // we havea new type that links to the function
                     title: 'Activar/Desactivar embolcall',
                     icon: '/iocjslib/ioc/gui/img/wrap.png'
-                }/*,
+                }*//*,
 
                 argPreview = {
                     type: "preview", // we havea new type that links to the function
@@ -194,10 +194,10 @@ define([
                 }*/;
 
             // toolbarManager.addButton(argPreview, this._funcPreview.bind(dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(argSave, this._funcSave.bind(dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(argCancel, this._funcCancel.bind(dispatcher), this.TOOLBAR_ID);
+            // toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(dispatcher), this.TOOLBAR_ID);
+            // toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(dispatcher), this.TOOLBAR_ID);
+            // toolbarManager.addButton(argSave, this._funcSave.bind(dispatcher), this.TOOLBAR_ID);
+            // toolbarManager.addButton(argCancel, this._funcCancel.bind(dispatcher), this.TOOLBAR_ID);
         },
 
         // _funcPreview: function () {
@@ -215,52 +215,52 @@ define([
         //     contentTool.requester.set("dataToSend", dataToSend);
         // },
 
-        /**
-         * Activa o desactiva l'embolcall del text.
-         * @returns {boolean} - Sempre retorna fals
-         * @protected
-         */
-        _funcEnableWrapper: function () {
-            var id = this.getGlobalState().getCurrentId(),
-                editor = this.getContentCache(id).getMainContentTool().getEditor();
+        // /**
+        //  * Activa o desactiva l'embolcall del text.
+        //  * @returns {boolean} - Sempre retorna fals
+        //  * @protected
+        //  */
+        // _funcEnableWrapper: function () {
+        //     var id = this.getGlobalState().getCurrentId(),
+        //         editor = this.getContentCache(id).getMainContentTool().getEditor();
+        //
+        //     editor.toggleWrap();
+        // },
 
-            editor.toggleWrap();
-        },
+        // /**
+        //  * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
+        //  *
+        //  * @protected
+        //  */
+        // _funcSave: function () {
+        //     var id = this.getGlobalState().getCurrentId(),
+        //         eventManager = this.getEventManager();
+        //
+        //     eventManager.fireEvent(eventManager.eventName.SAVE, {id: id}, id);
+        // },
 
-        /**
-         * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
-         *
-         * @protected
-         */
-        _funcSave: function () {
-            var id = this.getGlobalState().getCurrentId(),
-                eventManager = this.getEventManager();
+        // /**
+        //  * Activa o desactiva l'editor ACE segons l'estat actual
+        //  *
+        //  * @returns {boolean} - Sempre retorna fals.
+        //  * @protected
+        //  */
+        // _funcEnableAce: function () {
+        //     var id = this.getGlobalState().getCurrentId(),
+        //         editor = this.getContentCache(id).getMainContentTool().getEditor();
+        //     editor.toggleEditor();
+        // },
 
-            eventManager.fireEvent(eventManager.eventName.SAVE, {id: id}, id);
-        },
-
-        /**
-         * Activa o desactiva l'editor ACE segons l'estat actual
-         *
-         * @returns {boolean} - Sempre retorna fals.
-         * @protected
-         */
-        _funcEnableAce: function () {
-            var id = this.getGlobalState().getCurrentId(),
-                editor = this.getContentCache(id).getMainContentTool().getEditor();
-            editor.toggleEditor();
-        },
-
-        /**
-         * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
-         * @protected
-         */
-        _funcCancel: function () {
-            var id = this.getGlobalState().getCurrentId(),
-                eventManager = this.getEventManager();
-
-            eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id}, id);
-        },
+        // /**
+        //  * ALERTA[Xavi] Compte, el this fa referencia al dispatcher
+        //  * @protected
+        //  */
+        // _funcCancel: function () {
+        //     var id = this.getGlobalState().getCurrentId(),
+        //         eventManager = this.getEventManager();
+        //
+        //     eventManager.fireEvent(eventManager.eventName.CANCEL, {id: id}, id);
+        // },
 
         hideToolbar: function () {
             var $toolbar = jQuery('#' + this.toolbarId);

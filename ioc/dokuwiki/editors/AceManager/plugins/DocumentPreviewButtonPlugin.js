@@ -13,18 +13,18 @@ define([
                 icon: "/iocjslib/ioc/gui/img/Document-Preview-icon.png"
             };
 
-            this.addButton(args, this._funcPreview);
+            this.addButton(args, this.activate);
         },
 
 
-        _funcPreview: function () {
+        activate: function () {
             switch (this.editor.TOOLBAR_ID) {
                 case 'full-editor':
-                    this._funcPreviewFull();
+                    this._activateFull();
                     break;
 
                 case 'partial_edit':
-                    this._funcPreviewPartial();
+                    this._activatePartial();
                     break;
 
                 default:
@@ -34,7 +34,7 @@ define([
 
 
         // El context és el mateix plugin
-        _funcPreviewFull: function () {
+        _activateFull: function () {
             var dispatcher = this.editor.dispatcher;
             var id = dispatcher.getGlobalState().getCurrentId(),
                 contentTool = dispatcher.getContentCache(id).getMainContentTool(),
@@ -52,7 +52,7 @@ define([
             });
         },
 
-        _funcPreviewPartial: function () {
+        _activatePartial: function () {
             var dispatcher = this.editor.dispatcher;
             var chunk = dispatcher.getGlobalState().getCurrentElementId(),
                 id = dispatcher.getGlobalState().getCurrentId(),

@@ -16,7 +16,7 @@ define([
             };
 
             this.addButton(args);
-        },
+        }
 
     });
 

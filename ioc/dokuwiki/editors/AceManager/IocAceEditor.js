@@ -7,9 +7,15 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'ioc/dokuwiki/editors/AceManager/state_handler',
-    'ioc/dokuwiki/editors/AceManager/plugins/IocSoundPlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/DocumentPreviewPlugin',
-], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler, IocSoundPlugin, DocumentPreviewPlugin) {
+    'ioc/dokuwiki/editors/AceManager/plugins/IocSoundFormatButtonPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/DocumentPreviewButtonPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/WrapTogglePlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/ACETogglePlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/SaveButtonPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/CancelButtonPlugin',
+], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler,
+             IocSoundFormatButtonPlugin, DocumentPreviewButtonPlugin, WrapTogglePlugin, ACETogglePlugin,
+             SaveButtonPlugin, CancelButtonPlugin) {
 
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
@@ -127,7 +133,7 @@ define([
          * @author Xavier García<xaviergaro.dev@gmail.com>
          */
         {
-            name : 'IocAceEditor',
+            name: 'IocAceEditor',
 
             EDITOR: {
                 ACE: 0,
@@ -157,7 +163,15 @@ define([
                 tabSize: 2,
                 horizontalScrollBar: false,
                 undoManager: new ace.UndoManager(),
-                plugins: [LatexPreviewPlugin, IocSoundPlugin, DocumentPreviewPlugin]
+                plugins: [
+                    LatexPreviewPlugin,
+                    IocSoundFormatButtonPlugin,
+                    DocumentPreviewButtonPlugin,
+                    WrapTogglePlugin,
+                    ACETogglePlugin,
+                    SaveButtonPlugin,
+                    CancelButtonPlugin
+                ]
 
             },
 
@@ -220,9 +234,10 @@ define([
                         // Recuperem l'editor actual
                         if (context.dispatcher.getContentCache(docId) && context.dispatcher.getContentCache(docId).getMainContentTool().getEditor(headerId)) {
                             context = context.dispatcher.getContentCache(docId).getMainContentTool().getEditor(headerId).editor;
-                        } /*else {
-                            console.log("no hi ha cap editor creat encara"); // ALERTA[Xavi] Això es normal perquè el canvi de contexte pot cridar-se quan encara no s'ha creat l'editor
-                        }*/
+                        }
+                        /*else {
+                                                   console.log("no hi ha cap editor creat encara"); // ALERTA[Xavi] Això es normal perquè el canvi de contexte pot cridar-se quan encara no s'ha creat l'editor
+                                               }*/
 
                     },
 
@@ -387,7 +402,7 @@ define([
                             context.setEditorSelection(selection.start, selection.end);
                             context.focus();
                         } else if (func) {
-                                func(selection);
+                            func(selection);
                         }
                     };
 

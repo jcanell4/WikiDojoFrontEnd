@@ -28,29 +28,29 @@ define([
         },
 
         addButtons: function (dispatcher) {
-            var argSave = {
+            var /*argSave = {
                     type: "SaveButton",
                     title: "Desar",
                     icon: "/iocjslib/ioc/gui/img/save.png"
-                },
+                },*/
 
                 argCancel = {
                     type: "BackButton",
                     title: "Tornar",
                     icon: "/iocjslib/ioc/gui/img/back.png"
-                },
-
-                confEnableAce = {
-                    type: "EnableAce",
-                    title: "Activar/Desactivar ACE",
-                    icon: "/iocjslib/ioc/gui/img/toggle_on.png"
-                },
-
-                confEnableWrapper = {
-                    type: "EnableWrapper", // we havea new type that links to the function
-                    title: "Activar/Desactivar embolcall",
-                    icon: "/iocjslib/ioc/gui/img/wrap.png"
                 };
+
+                // confEnableAce = {
+                //     type: "EnableAce",
+                //     title: "Activar/Desactivar ACE",
+                //     icon: "/iocjslib/ioc/gui/img/toggle_on.png"
+                // };
+
+                // confEnableWrapper = {
+                //     type: "EnableWrapper", // we havea new type that links to the function
+                //     title: "Activar/Desactivar embolcall",
+                //     icon: "/iocjslib/ioc/gui/img/wrap.png"
+                // };
                 // argPreview = {
                 //     type: "preview", // we havea new type that links to the function
                 //     title: "Previsualitzar el contingut d'aquest editor",
@@ -58,14 +58,14 @@ define([
                 // };
 
             // toolbarManager.addButton(argPreview, this._funcPreview.bind(dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(dispatcher), this.TOOLBAR_ID);
-            toolbarManager.addButton(argSave, this._funcSave.bind(dispatcher), this.TOOLBAR_ID);
+            // toolbarManager.addButton(confEnableWrapper, this._funcEnableWrapper.bind(dispatcher), this.TOOLBAR_ID);
+            // toolbarManager.addButton(confEnableAce, this._funcEnableAce.bind(dispatcher), this.TOOLBAR_ID);
+            // toolbarManager.addButton(argSave, this._funcSave.bind(dispatcher), this.TOOLBAR_ID);
             toolbarManager.addButton(argCancel, this._funcCancel.bind(dispatcher), this.TOOLBAR_ID);
         },
 
         // ALERTA[Xavi] this fa referencia al dispatcher
-        _funcSave: function () {
+      /*  _funcSave: function () {
             // console.log("StructuredDocumentSubclass#_funcSave");
 
             var chunk = this.getGlobalState().getCurrentElementId(),
@@ -82,7 +82,7 @@ define([
                 id: id,
                 chunk: chunk
             }, id);
-        },
+        },*/
 
         // _funcPreview: function(){
         //     var chunk = this.getGlobalState().getCurrentElementId(),
@@ -103,22 +103,22 @@ define([
         //     contentTool.requester.set("dataToSend", dataToSend);
         // },
 
-        /**
-         * Activa o desactiva l'editor ACE segons l'estat actual
-         *
-         * @returns {boolean} - Sempre retorna fals.
-         */
-        _funcEnableAce: function () {
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId();
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-            var editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
-
-            editor.toggleEditor();
-
-        },
-
+        // /**
+        //  * Activa o desactiva l'editor ACE segons l'estat actual
+        //  *
+        //  * @returns {boolean} - Sempre retorna fals.
+        //  */
+        // _funcEnableAce: function () {
+        //     var chunk = this.getGlobalState().getCurrentElementId(),
+        //         id = this.getGlobalState().getCurrentId();
+        //     chunk = chunk.replace(id + "_", "");
+        //     chunk = chunk.replace("container_", "");
+        //     var editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
+        //
+        //     editor.toggleEditor();
+        //
+        // },
+        //
         _funcCancel: function () {
             var chunk = this.getGlobalState().getCurrentElementId(),
                 id = this.getGlobalState().getCurrentId(),
@@ -127,30 +127,26 @@ define([
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
 
-            //this.getEventManager().dispatchEvent(eventManager.eventNameCompound.CANCEL_PARTIAL + id, {
-            //    id: id,
-            //    chunk: chunk
-            //});
             eventManager.fireEvent(eventManager.eventName.CANCEL_PARTIAL, {
                 id: id,
                 chunk: chunk
             }, id);
         },
 
-        /**
-         * Activa o desactiva l'embolcall del text.
-         * @returns {boolean} - Sempre retorna fals
-         */
-        _funcEnableWrapper: function () {
-            var chunk = this.getGlobalState().getCurrentElementId(),
-                id = this.getGlobalState().getCurrentId(),
-                editor;
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-
-            editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
-            editor.toggleWrap();
-        },
+        // /**
+        //  * Activa o desactiva l'embolcall del text.
+        //  * @returns {boolean} - Sempre retorna fals
+        //  */
+        // _funcEnableWrapper: function () {
+        //     var chunk = this.getGlobalState().getCurrentElementId(),
+        //         id = this.getGlobalState().getCurrentId(),
+        //         editor;
+        //     chunk = chunk.replace(id + "_", "");
+        //     chunk = chunk.replace("container_", "");
+        //
+        //     editor = this.getContentCache(id).getMainContentTool().getEditor(chunk);
+        //     editor.toggleWrap();
+        // },
 
         setHeight: function (height) {
             // console.log("AceEditorPartialFacade#setHeight", height);
