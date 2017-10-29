@@ -15,8 +15,7 @@ define([
             this.addButton(args, this.activate);
         },
 
-
-        // ALERTA[Xavi] Això és un però com que la acció la realitza una funció global de la wiki no controlem l'estat activat|desactivat, així que no fem servir la interficie del AbstractIocPlugin per implementar-lo
+        // ALERTA[Xavi] Això és un però com que la acció la realitza una funció global de la wiki no controlem l'estat activat|desactivat, així que no fem servir el Toggle AbstractIocPlugin per implementar-lo
         activate: function () {
             switch (this.editor.TOOLBAR_ID) {
                 case 'full-editor':
