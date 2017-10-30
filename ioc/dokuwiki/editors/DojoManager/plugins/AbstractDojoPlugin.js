@@ -3,29 +3,16 @@ define([
     "dijit/_editor/_Plugin",
 ], function (declare, _Plugin) {
 
-    // ALERTA: Aquests serian els componentes semi-comuns als plugins, com es pot apreciar ni tan sols a a aquest
-    // nivell son necesaris totes les funciones i propietats en tots els casos:
-    //      - Plugins que no necesitan parse, sobren: needsParse i parse
-    //      - Plugins que no inclouen botó, sobra: crida a _initButton i _initButton
 
-
-    var AbstractDojoPlugin = declare(null, [_Plugin], {
+    var AbstractDojoPlugin = declare([_Plugin], {
 
         needsParse: false,
 
-        setEditor: function (/*dijit/Editor*/ editor) {
-            this.editor = editor;
-            this._initButton();
-        },
-
-        _initButton: function () {
-            throw new Error('Method not implemented')
-        },
+        iconClassPrefix: 'dijitIocIcon',
 
         parse: function () {
             throw new Error('Method not implemented')
         }
-
 
     });
 

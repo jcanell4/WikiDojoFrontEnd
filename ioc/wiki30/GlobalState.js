@@ -211,6 +211,11 @@ define([
             return this.currentTabId;
         },
 
+        // ALERTA[Xavi] en molts punts s'assigna aquest valor directament
+        setCurrentId: function(id) {
+            this.currentTabId = id;
+        },
+
 
         /**
          * Retorna el magatzem de informació.
@@ -470,7 +475,7 @@ define([
         },
 
         updateSessionStorage: function () {
-            // console.log("GlobalState#_updateSessionStorage");
+            // console.log("GlobalState#updateSessionStorage", this);
             // Update del sessionStorage, això és el que es fa ara en recarregar la pàgina
             storageManager.setObject('globalState', this);
         },

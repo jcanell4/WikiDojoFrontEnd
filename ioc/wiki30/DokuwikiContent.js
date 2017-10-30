@@ -159,6 +159,10 @@ define([
 
             getMainContentTool: function () {
                 return this.mainContentTool;
+            },
+
+            getCurrentEditor: function () {
+                this.mainContentTool.getEditor()
             }
         });
 

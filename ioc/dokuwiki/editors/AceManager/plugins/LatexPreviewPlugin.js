@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
-], function (declare) {
+    'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin'
+], function (declare, IocPlugin) {
 
     var LatexPreviewPlugin = function (spec) {
         var marker, states_iterator, update;
@@ -107,24 +108,19 @@ define([
     };
 
 
-    // Handler privat per guardar la referència als events escoltats pel plugin i poder eliminar-lo
-    var handler;
-
     // Interficie del plugin
-    return declare(null, {
-
-        setEditor: function (editor) {
-            this.editor = editor;
-        },
+    return declare([IocPlugin], {
 
         init: function () {
-            var preview = new LatexPreviewPlugin({ace: this.editor}); //ALERTA: Substituir pel editor directament!
-            handler = this.editor.on('change, changeCursor', preview.trigger);
+            this.preview = new LatexPreviewPlugin({ace: this.editor});
+            this.activate();
         },
 
-        destroy: function() {
-          handler.remove();
-        }
+        activate: function() {
+            // console.log("LatexPreviewPlugin#activate");
+            this.inherited(arguments);
+            this.addEditorListener('change, changeCursor', this.preview.trigger);
+        },
 
     });
 

@@ -14,7 +14,7 @@ define(function () {
     return function (data) {
         var $container, $viewContainer, $editContainer, $header, $content, $form, $doc, $textArea, text, aux_id, i;
 
-        //console.log("html_partialRenderEngine: ", data);
+        // console.log("html_partialRenderEngine: ", data);
 
         $doc = jQuery('<div>' + data.html + '</div><div class="end-of-document></div>"');
 
@@ -71,7 +71,8 @@ define(function () {
 
             // method="post"
             // accept-charset="utf-8"
-            $textArea = jQuery('<textarea id="textarea_' + aux_id + '" style="width:100%;height:200px" name="wikitext"></textarea>');
+            $textArea = jQuery('<textarea id="textarea_' + aux_id + '" style="width:100%;height:200px" name="wikitext" ' +
+                'data-header-id="'+ data.chunks[i].header_id + '" data-doc-id="'+data.id+'"></textarea>');
             $form.append($textArea);
 
             $form.append('<input name="do" value="save_partial" type="hidden">'); // TODO[Xavi] aquí es on s'ha d'establir el command pel desar parcial <-- crec que no cal per a res

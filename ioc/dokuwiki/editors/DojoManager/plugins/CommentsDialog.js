@@ -1,5 +1,6 @@
 define([
     "dojo/_base/declare", // declare
+    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
     "dojo/i18n", // i18n.getLocalization
     "dojo/_base/lang", // lang.hitch
     "dojo/sniff", // has("chrome") has("opera")
@@ -12,34 +13,21 @@ define([
     "dojo/text!./templates/CommentFragmentReply.html",
     "dojo/i18n!ioc/dokuwiki/editors/DojoManager/nls/commands",
 
-
-
-], function (declare, i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
+], function (declare, AbstractDojoPlugin,
+             i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
 
-
-    var CommentsDialog = declare("ioc.dokuwiki.editors.DojoManager.plugins.commentsdialog", _Plugin, {
-        // summary:
-        //		This plugin provides Print capability to the editor.  When
-        //		clicked, the document in the editor frame will be printed.
-
-        // htmlTemplate: [protected] String
-        //		String used for templating the HTML to insert at the desired point.
-        // htmlTemplate: '<span class="ioc-comment">*</span>' +
-        //     '<note class="ioc-comment">' +
-        //     '<div class="triangle-outer"> </div>' +
-        //     '<div class="triangle-inner"> </div>' +
-        //     '${content}</br>' +
-        //     '<span class="ioc-signature">${signature}</span>' +
-        //     '</note>',
+    var CommentsDialog = declare("ioc.dokuwiki.editors.DojoManager.plugins.commentsdialog", [AbstractDojoPlugin], {
 
         htmlTemplate: template,
         replyTemplate: templateReply,
         needsParse: true,
-        iconClassPrefix: 'dijitIocIcon',
 
-    // @override
+        init : function () {
+            this._initButton();
+        },
+
         _initButton: function () {
 
             var editor = this.editor;
@@ -53,76 +41,11 @@ define([
                 showLabel: false,
                 iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + "Comments",
                 tabIndex: "-1",
-                onClick: lang.hitch(this, "_addNote")
-                // onClick: lang.hitch(this, "_showCommentDialog")
+                onClick: lang.hitch(this, "activate")
             });
 
             this.firstRun = true;
 
-        },
-
-        _showCommentDialog: function () {
-            console.log("S'ha fet click al botó del plugin");
-
-
-            //
-            // var refId = "comments";
-            //
-            // var dialogParams = {
-            //     dispatcher: this.editor.dispatcher,
-            //     id: "commentsDialog",
-            //     // ns: params.ns,
-            //     title: strings['addcommenttitle'],
-            //     // message: strings['addcommentmessage'],
-            //     closable: true
-            // };
-            // var builder = new DialogBuilder(dialogParams),
-            //     dialogManager = this.editor.dispatcher.getDialogManager(),
-            //     dlg;
-            //
-            // dlg = dialogManager.getDialog(refId, builder.getId());
-            //
-            //
-            // if (!dlg) {
-            //     var button = {
-            //         id: refId + '_ok',
-            //         buttonType: 'default',
-            //         description: strings['addcommentbutton'],
-            //         callback: this._addNote.bind(this),
-            //     };
-            //
-            //     console.log("** Afegir aqui la crida al textarea del builder");
-            //     // alert("Afegir textareas al builder, lligats al component");
-            //     // builder.addTextArea() // ALERTA: Comprovar els contextes d'execució del callback
-            //
-            //     builder.addButton(button.buttonType, button);
-            //
-            //
-            //     builder.addForm({
-            //         fields: [
-            //             {
-            //                 type: 'textarea',
-            //                 name: 'comment',
-            //                 properties: ['required']
-            //             }
-            //         ]
-            //     });
-            //
-            //     dlg = builder.build();
-            //     dialogManager.addDialog(refId, dlg);
-            // }
-            //
-            // dlg.show();
-
-        },
-
-        setEditor: function (/*dijit/Editor*/ editor) {
-            // summary:
-            //		Tell the plugin which Editor it is associated with.
-            // editor: Object
-            //		The editor object to attach the print capability to.
-            this.editor = editor;
-            this._initButton();
         },
 
         _addHandlers: function ($node, context) {
@@ -130,40 +53,23 @@ define([
             var $buttons = $node.find('button[data-action]');
             var $removeButtons = $node.find('[data-button="remove"]');
             var $editButtons = $node.find('[data-button="edit"]');
-            // var $saveButons = $node.find('button[data-action-reply="save"]');
-            // var $cancelButtons = $node.find('button[data-action-reply="cancel"]');
 
             $buttons.on('click', function (e) {
-                // alert("Click a un botó");
-
                 var $button = jQuery(this);
                 var func = $button.attr('data-action');
                 context[func].bind(context);
                 context[func]($node);
                 e.preventDefault();
-
             });
 
             $replyNode.on('keypress keydown keyup', function (e) {
                 $replyNode.focus();
-
 
                 if (e.keyCode == 13 || e.charCode == 13) {
                     e.stopPropagation();
                 }
 
             });
-
-            // $replyNode.on('focus', function() {
-            //
-            // });
-            //
-            // $replyNode.on('blur', function() {
-            //
-            // });
-
-
-            // Això només ha de ser disponible en els comentaris propis de l'usuari
 
             $removeButtons.each(function () {
                 var $button = jQuery(this);
@@ -189,7 +95,6 @@ define([
                 if (user == context.editor.dispatcher.getGlobalState().userId) {
                     $button.on('click', context.addEditCommentHandler($commentNode).bind(context));
                 }
-                // ALERTA[Xavi] No cal amargar-la perquè ja es fa al botó anterior.
             });
 
 
@@ -207,7 +112,6 @@ define([
         },
 
         parse: function() {
-
             var $nodes = jQuery(this.editor.iframe).contents().find('.ioc-comment-block');
             var context = this;
 
@@ -217,16 +121,9 @@ define([
                 context._addHandlers(jQuery(this), context);
             });
 
-            // if (this.firstRun) {
-            //     this.firstRun  =false;
-            // }
-
         },
 
-        _addNote: function () {
-
-            // ALERTA[Xavi] Generem el id basat en el temps perquè només necessitem que sigui únic
-
+        activate: function () {
             this.editor.beginEditing();
             var reference = this._getSelectionText();
 
@@ -238,10 +135,9 @@ define([
                 reference = "*"
             }
 
-
             reference += " ("+ref+")";
 
-            args = {
+            var args = {
                 id: "ioc-comment-" + Date.now(),
                 reference: reference,
                 ref: ref,
@@ -251,22 +147,17 @@ define([
                 replyBtnTitle : strings['replyBtnTitle'],
                 replyBtn : strings['replyBtn']
                 // signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
-
             };
 
 
             // Comprovem si es pot insertar en aquest punt
             iframe= document.getElementById('my');
 
-
-
             var htmlCode = string.substitute(this.htmlTemplate, args);
             this.editor.execCommand('inserthtml', htmlCode); //ALERTA[Xavi] S'afegeix la referència per evitar esborrar el text ressaltat
 
             var $node = jQuery(this.editor.iframe).contents().find('#' + args.id);
             $node.find('textarea').focus();
-
-
 
             this._addHandlers($node, this);
 
@@ -309,13 +200,11 @@ define([
 
             var $replyCode = jQuery(string.substitute(this.replyTemplate, args));
 
-
             var user = this.editor.dispatcher.getGlobalState().userId;
             $replyCode.attr('data-user', user);
             $replyList.append($replyCode);
             $textarea.val('');
             $textarea.focus();
-
 
             var $removeButton = $replyCode.find('[data-button="remove"]');
             $removeButton.on('click', this.addRemoveCommentHandler($replyCode));
@@ -324,16 +213,10 @@ define([
 
             $editButton.on('click', this.addEditCommentHandler($replyCode));
 
-            //TODO[Xavi] Al parse afegir la comprovació d'usuari per mostrar o no els botons (i afegir o no els listeners).
-
-
             this.editor.endEditing();
         },
 
-
-
         resolve: function ($node) {
-
             this.editor.beginEditing();
             var $reference = $node.find('.ioc-comment-reference');
 
@@ -347,12 +230,7 @@ define([
 
             $node.remove();
             this.editor.endEditing();
-
         },
-
-
-
-
 
         addEditCommentHandler: function($commentNode) {
             var context = this;
@@ -399,42 +277,19 @@ define([
                 $editNode.css('display', 'none');
                 $viewNode.css('display', 'inherit');
 
-
-
-
                 $content.html($textarea.val().replace(new RegExp('\n', 'g'), '<br>'));
-
                 $commentNode.find('.ioc-comment-main textarea.reply').focus();
-
                 $signature.html('<span>(editat)</span>' + SIG); // TODO[Xavi] Localitzar el "editat"
 
-
                 context.editor.endEditing();
-
             });
 
             $cancelButton.on('click', function() {
-
                 $editNode.css('display', 'none');
                 $viewNode.css('display', 'inherit');
-
                 $commentNode.find('.ioc-comment-main textarea.reply').focus();
-                // context.editor.endEditing();
-                // alert("TODO: Cancel·lar els canvis");
-
-
-                //
                 context.editor.endEditing();
             });
-
-
-
-            // Amaga el text
-            // Mostra un textarea amb 2 botons.
-            // Establir el valor del text area com el contingut del node
-            // Mostrar els botons desar i cancel·lar
-            //  - Desar: amaga el textarea i els botons i estableix el valor del textarea com a text, mostra el text.
-            //  - Cancel·lar: amaga el textarea i mostra el text.
 
 
             return  function() {
@@ -442,21 +297,11 @@ define([
 
                 $editNode.css('display', 'inherit');
                 $viewNode.css('display', 'none');
-                // context.$forcedTextArea = $textarea;
-
-                // TODO[Xavi] Convertir els <BR> en salts de línia
 
                 $textarea.val($content.html().replace(new RegExp('<br>', 'g'), '\n'));
-
-
                 $textarea.focus();
-
-                // $commentNode.remove();
-                // context.editor.beginEditing();
             };
         },
-
-
 
         addRemoveCommentHandler: function ($commentNode) {
             var context = this;
@@ -464,14 +309,14 @@ define([
             return  function() {
                 context.editor.beginEditing();
                 $commentNode.remove();
-                context.endEditing();
+                context.editor.endEditing();
             };
         }
     });
 
-
     // Register this plugin.
     _Plugin.registry["commentsdialog"] = function () {
+        console.log("Registratnt comment");
         return new CommentsDialog({command: "commentsdialog"});
     };
 

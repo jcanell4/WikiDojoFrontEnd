@@ -23,6 +23,7 @@ define(function () {
         $form.attr('id', 'form_' + data.id);
 
         $textarea.attr('id', 'textarea_' + data.id);
+        $textarea.attr('data-doc-id', data.id);
         $textarea.val(data.content);
         $container.append($form);
 

@@ -28,46 +28,6 @@ define([
             process: function (value, dispatcher) {
                 // console.log("HtmlPartialContentProcessor#process", value);
 
-                //
-                ////ALERTA[Xavi] Codi de prova pels notifiers -> INIT
-                //dispatcher.getEventManager().dispatchEvent('notify', {
-                //    id: value.id,
-                //    dataToSend: {
-                //        do: 'init'
-                //    }
-                //});
-
-
-                //ALERTA[Xavi] Codi de prova pels notifiers -> ADD
-                //dispatcher.getEventManager().dispatchEvent('notify', {
-                //    id: value.id,
-                //    dataToSend: {
-                //        do: 'add',
-                //        message: 'hello world',
-                //        to: 'Admin', // ens l'enviem a nosaltres mateixos
-                //        'params': JSON.stringify({
-                //            paramA:'aaa',
-                //            paramB:'bbb'}
-                //        )}
-                //});
-                //
-                ////ALERTA[Xavi] Codi de prova pels notifiers -> GET
-                //dispatcher.getEventManager().dispatchEvent('notify', {
-                //    id: value.id,
-                //    dataToSend: {
-                //        do: 'get'
-                //    }
-                //});
-
-                ////ALERTA[Xavi] Codi de prova pels notifiers -> CLOSE
-                //dispatcher.getEventManager().dispatchEvent('notify', {
-                //    id: value.id,
-                //    dataToSend: {
-                //        do: 'close'
-                //    }
-                //});
-
-
 
                 var changesManager = dispatcher.getChangesManager(),
                     cache = dispatcher.getContentCache(value.id),
@@ -195,6 +155,10 @@ define([
                             contentTool.messageChangesDetected =  value.extra.messageChangesDetected;
                         }
 
+                        if (dispatcher.getGlobalState().userState) {
+                            value.editorType = dispatcher.getGlobalState().userState['editor'];
+                        }
+
                         contentTool.updateDocument(value);
 
                         dispatcher.getGlobalState().getContent(value.id).rev = contentTool.rev; // ALERTA[Xavi] posava content.rev, això no pot ser, es referia contentTool.rev (que a la seva vegada es el mateix que value.rev)?
@@ -306,10 +270,15 @@ define([
                     type: this.type,
                     readonly: content.readonly? content.readonly : false,
                     ignoreLastNSSections : content.ignoreLastNSSections,
+                    editorType : content.editorType
                 };
 
                 if(content.autosaveTimer){
                     args.autosaveTimer = content.autosaveTimer;
+                }
+
+                if (dispatcher.getGlobalState().userState) {
+                    args.editorType = dispatcher.getGlobalState().userState['editor'];
                 }
 
 

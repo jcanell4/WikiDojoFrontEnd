@@ -3,6 +3,9 @@ define([
     'dojo/_base/declare',
     'dijit/Editor',
 
+    'ioc/dokuwiki/editors/_plugins/AbstractIocPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
+    'ioc/dokuwiki/editors/DojoManager/plugins/IocSoundFormatButtonPlugin',
 
     // ALERTA[Xavi] Necessari pel addPlugin (només per depurar)
     "dojo/_base/array", // array.forEach
@@ -32,6 +35,8 @@ define([
     "dojo/i18n!dijit/_editor/nls/commands"
 
 ], function (AbstractIocEditor, declare, Editor,
+             AbstractIocPlugin, CommentsDialog, IocSoundFormatButtonPlugin,
+
              array, /*declare,*/ Deferred, i18n, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
@@ -39,10 +44,16 @@ define([
     return declare([AbstractIocEditor, Editor], {
 
 
-        constructor: function () {
-            this.changeDetectorEnabled = false;
-            this._pluginsToParse = [];
-        },
+            constructor: function () {
+                this.changeDetectorEnabled = false;
+                this._pluginsToParse = [];
+
+                if (arguments[0].extraPlugins) {
+                    arguments[0].extraPlugins = [CommentsDialog, IocSoundFormatButtonPlugin].concat(arguments[0].extraPlugins);
+                } else {
+                    arguments[0].extraPlugins = [CommentsDialog, IocSoundFormatButtonPlugin];
+                }
+            },
 
 
         startup: function () {
@@ -53,7 +64,6 @@ define([
 
 
         _addPluginParser: function (plugin) {
-
             this._pluginsToParse.push(plugin);
         },
 
@@ -63,25 +73,18 @@ define([
             for (var i = 0; i < this._pluginsToParse.length; i++) {
                 this._pluginsToParse[i].parse();
             }
-
-
         },
 
         onDisplayChanged: function () {
             // console.log("IocDojoEditor#onDisplayChanged");
             this.inherited(arguments);
 
-
             if (!this.changeDetectorEnabled) {
                 this._enableChangeDetector();
             }
-
-            // this.onChange(this.get('value'));
-
         },
 
         _enableChangeDetector: function () {
-
             var $editorContainer = jQuery("iframe#" + this.domNode.id + "_iframe").contents().find('#dijitEditorBody');
             var callback = function () {
                 // console.log("IocDojoEditor#onDisplayChanged->callback");
@@ -95,7 +98,6 @@ define([
         },
 
         _checkOriginalContent: function (name, oldValue, newValue) {
-
             // console.log("IocDojoEditor#_checkOriginalContent", newValue);
             if (!this.originalContent) {
                 this.originalContent = newValue;
@@ -112,19 +114,19 @@ define([
         },
 
         isChanged: function () {
-            return this.get('value') != this.originalContent;
+            // console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
+            return this.get('value') !== this.originalContent;
         },
 
-
         /**
-         * Afegeix el parse del plugin si es necessari.
+         * Injecta l'editor i afegeix el parse del plugin si es necessari.
          *
-         * @param plugin
-         * @param index
+         * ALERTA[Xavi] Aquest mètode es practicament idèntic a l'original de dijit.Editor, però si es crida am inherited
+         * es modifica plugin i ja no es pot injectar l'editor ni afegir el parse.
+         *
          * @override
          */
-        addPlugins: function (/*String||Object||Function*/ plugin, /*Integer?*/ index) {
-
+        addPlugin: function (/*String||Object||Function*/ plugin, /*Integer?*/ index) {
             // summary:
             //		takes a plugin name as a string or a plugin instance and
             //		adds it to the toolbar and associates it with this editor
@@ -179,18 +181,27 @@ define([
             } else {
                 this._plugins.push(plugin);
             }
+
+            // ALERTA[Xavi] Codi afegit pels plugins de l'IOC
             plugin.setEditor(this);
+
+            if (plugin.init) {
+                plugin.init();
+            }
+
+            // ALERTA[Xavi] Codi afegit pels plugins de l'IOC
 
             if (lang.isFunction(plugin.setToolbar)) {
                 plugin.setToolbar(this.toolbar);
             }
 
+
             if (plugin.needsParse) {
                 this._addPluginParser(plugin);
+
+
             }
         },
-
-
 
         /**
          * Afegeix el parse dels plugins en executar una ordre.
@@ -215,7 +226,6 @@ define([
                 return r;
             }
         },
-
 
     })
 });

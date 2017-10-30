@@ -9,6 +9,21 @@ define([
 ], function (declare, Editor, AlwaysShowToolbar, dom, style, geometry, DojoEditorFacade) {
     return declare([DojoEditorFacade], {
 
+        fillEditorContainer: function() {
+            var viewNode,
+                p,
+                $view =jQuery('#' + this.viewId);
+
+            $view.css('display', 'block'); // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
+
+            viewNode = dom.byId(this.viewId);
+            p = geometry.getContentBox(viewNode).h;
+
+            $view.css('display', 'none');  // TODO[Xavi] Solució temporal, el block ha de ser visible per calcular l'alçada
+
+            this.setHeight(p);
+        },
+
 
         setHeight: function (height) {
             // console.log("DojoEditorFacade#setHeight", height);

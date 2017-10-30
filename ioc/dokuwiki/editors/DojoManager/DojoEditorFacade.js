@@ -6,10 +6,10 @@ define([
     'dojo/dom',
     'dojo/dom-style',
     'dojo/dom-geometry',
-    'ioc/dokuwiki/editors/DojoManager/plugins/Test',
-    'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/IocSoundFormatButtonPlugin',
     // 'dojox/editor/plugins/InsertEntity',
-], function (declare, AbstractIocFacade, Editor, AlwaysShowToolbar, dom, style, geometry, Test, CommentsDialog) {
+], function (declare, AbstractIocFacade, Editor, AlwaysShowToolbar, dom, style, geometry/*, CommentsDialog, IocSoundFormatButtonPlugin*/) {
     return declare([AbstractIocFacade], {
 
         editor: null,
@@ -21,10 +21,10 @@ define([
         constructor: function (args) {
             // console.log("DojoEditorFacade#constructor", args);
 
+            this.viewId = args.viewId;
             this.dispatcher = args.dispatcher;
 
             this.$textarea = jQuery('#' + args.textareaId);
-
 
             this.$editor = jQuery('<div>');
             this.$editor.css('height', '99%');
@@ -34,21 +34,25 @@ define([
 
             this.containerNode = jQuery('#' + args.containerId.replace(/^editor_/, '')).get(0);
 
-
+            // ALERTA[Xavi] Si es passa el valor de l'editor directament com a 'value' no s'executa el parse dels plugins.
             this.editor = new Editor({
                 styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
-                extraPlugins: [Test, CommentsDialog],
-                dispatcher: this.dispatcher
+                // extraPlugins: [CommentsDialog, IocSoundFormatButtonPlugin],
+                dispatcher: this.dispatcher,
                 // extraPlugins: [AlwaysShowToolbar, Test/*, Print*/],
                 // height: "100%"
+                // value: args.originalContent
             }, dom.byId(args.containerId));
 
 
             var text = this.$textarea.val();
             this.setValue(text);
+            // this.setValue(args.originalContent);
+
+            // console.log("Original Content?", args.originalContent);
 
             if (args.originalContent) {
-                this.originalContent = args.originalContent;
+                this.editor.originalContent = args.originalContent;
             } else {
                 this.resetOriginalContentState();
             }
@@ -62,7 +66,7 @@ define([
             this.editor.on('focus', function () {
                 // console.log('Focus DojoEditor');
                 // console.log("Enviant click fals:", args.parentId);
-                jQuery('#'+args.parentId).trigger('click');
+                jQuery('#'+args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
                 // this.emit('click', {id: args.parentId});
             }.bind(this));
 
