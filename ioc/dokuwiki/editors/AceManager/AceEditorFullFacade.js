@@ -78,10 +78,6 @@ define([
             this.editor.restoreCachedFunctions();
         },
 
-        unselect: function() {
-            console.log("unselect");
-        },
-
         lockEditor: function () {
             this.editor.setReadOnly(true);
             this.hideToolbar();

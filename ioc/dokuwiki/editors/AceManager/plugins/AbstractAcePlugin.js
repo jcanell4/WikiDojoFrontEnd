@@ -13,6 +13,7 @@ define([
          * @param callback
          */
         addButton: function (args, callback) {
+            console.log("AddButton?");
             toolbarManager.setDispatcher(this.editor.dispatcher);
 
             switch (args.type) {

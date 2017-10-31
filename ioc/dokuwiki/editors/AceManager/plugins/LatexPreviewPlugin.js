@@ -113,12 +113,11 @@ define([
 
         init: function () {
             this.preview = new LatexPreviewPlugin({ace: this.editor});
-            this.activate();
+            this.process();
         },
 
-        activate: function() {
-            // console.log("LatexPreviewPlugin#activate");
-            this.inherited(arguments);
+        process: function() {
+            // console.log("LatexPreviewPlugin#process");
             this.addEditorListener('change, changeCursor', this.preview.trigger);
         },
 

@@ -21,10 +21,15 @@ define([
 
         // strings : i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands"),
 
-        init: function() {
+        init: function(args) {
+            console.log("DojoFormatButtonPlugin", args);
+
+            this.htmlTemplate = args.open + "${content}" + args.close;
+
+            this.content = args.sample;
 
             var config = {
-                label: this.strings["iocsoundplugin"], // title
+                label: args.title,
                 ownerDocument: this.editor.ownerDocument,
                 dir: this.editor.dir,
                 lang: this.editor.lang,

@@ -12,18 +12,18 @@ define([
                 icon: '/iocjslib/ioc/gui/img/wrap.png'
             };
 
-            this.addButton(args, this.activate);
+            this.addButton(args, this.process);
         },
 
         // ALERTA[Xavi] Això és un però com que la acció la realitza una funció global de la wiki no controlem l'estat activat|desactivat, així que no fem servir el Toggle AbstractIocPlugin per implementar-lo
-        activate: function () {
+        process: function () {
             switch (this.editor.TOOLBAR_ID) {
                 case 'full-editor':
-                    this._activateFull();
+                    this._processFull();
                     break;
 
                 case 'partial_edit':
-                    this._activatePartial();
+                    this._processPartial();
                     break;
 
                 default:
@@ -32,7 +32,7 @@ define([
         },
 
 
-        _activateFull: function () {
+        _processFull: function () {
             var dispatcher = this.editor.dispatcher;
 
             var id = dispatcher.getGlobalState().getCurrentId(),
@@ -41,7 +41,7 @@ define([
             editor.toggleWrap();
         },
 
-        _activatePartial: function () {
+        _processPartial: function () {
             var dispatcher = this.editor.dispatcher;
 
             var chunk = dispatcher.getGlobalState().getCurrentElementId(),

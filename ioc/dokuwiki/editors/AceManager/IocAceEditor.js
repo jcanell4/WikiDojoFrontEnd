@@ -128,12 +128,13 @@ define([
          * no s'han de modificar les propietats manualment si es fa externament, s'han de cridar els mètodes
          * set(propietat) i get(propietat), de manera que es disparin apropiadament els watch().
          *
-         * @class IocAceEditor
          * @extends dojo.Stateful
          * @author Xavier García<xaviergaro.dev@gmail.com>
          */
         {
-            name: 'IocAceEditor',
+            name: 'IocAceEditor', // ALERTA[Xavi] no se si això es fa servir enlloc
+
+            editorType: 'ACE',
 
             EDITOR: {
                 ACE: 0,
@@ -487,7 +488,10 @@ define([
                 var commands = new IocCommands(this);
 
                 this.initHandlers();
-                this.initPlugins(args.plugins);
+                // this.initPlugins(args.plugins);
+
+                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton']);
+                this.initPlugins(plugins);
 
 
                 this.on('change', function () {
@@ -822,10 +826,11 @@ define([
             },
 
             initializePlugin: function (_plugin) {
+                console.log("IocAceEditor#initializePlugin#_plugin", _plugin);
                 var plugin = new _plugin();
                 this.plugins.push(plugin);
                 plugin.setEditor(this);
-                plugin.init();
+                plugin.init(_plugin.config);
             },
 
 

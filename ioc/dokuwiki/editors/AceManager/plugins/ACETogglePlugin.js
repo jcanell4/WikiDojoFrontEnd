@@ -12,18 +12,18 @@ define([
                 icon: "/iocjslib/ioc/gui/img/toggle_on.png"
             };
 
-            this.addButton(args, this.activate);
+            this.addButton(args, this.process);
         },
 
 
-        activate: function () {
+        process: function () {
             switch (this.editor.TOOLBAR_ID) {
                 case 'full-editor':
-                    this._activateFull();
+                    this._processFull();
                     break;
 
                 case 'partial_edit':
-                    this._activatePartial();
+                    this._processPartial();
                     break;
 
                 default:
@@ -31,7 +31,7 @@ define([
             }
         },
 
-        _activateFull: function () {
+        _processFull: function () {
             var dispatcher = this.editor.dispatcher;
 
             var id = dispatcher.getGlobalState().getCurrentId(),
@@ -40,7 +40,7 @@ define([
 
         },
 
-        _activatePartial: function () {
+        _processPartial: function () {
             var dispatcher = this.editor.dispatcher;
 
             var chunk = dispatcher.getGlobalState().getCurrentElementId(),

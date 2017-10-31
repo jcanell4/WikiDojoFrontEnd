@@ -27,6 +27,10 @@ define([
             throw new Error('Method not implemented');
         },
 
+        process: function() {
+            throw new Error('Method not implemented');
+        },
+
         /**
          * Activació del plugin. Aquí es suscriuen els listeners dels events. Ha d'establir el valor de la propietat
          * enabled a true.
@@ -73,9 +77,14 @@ define([
          *
          * @param {string} events - un o més events separats per comes, per exemple:  'change, click'
          * @param {Function} callback - funció a cridar quan es dispari l'event a l'editor
+         *
+         * @return handler - handler corresponent al listener afegit per permetre la seva eliminació individual
          */
         addEditorListener: function (events, callback) {
-            this.handlers.push (this.editor.on(events, callback));
+            var handler = this.editor.on(events, callback);
+            this.handlers.push (handler);
+            return handler;
+
         },
 
         /**

@@ -43,15 +43,29 @@ define([
              _Plugin, EnterKeyHandling, html, rangeapi, RichText, dijit) {
     return declare([AbstractIocEditor, Editor], {
 
+        editorType : 'Dojo',
+
 
             constructor: function () {
                 this.changeDetectorEnabled = false;
                 this._pluginsToParse = [];
 
+
+                // TODO[Xavi] Recorrer els components i extreure els plugins que s'afegiran a aquest array.
+                // components
+
+                // var plugins = [
+                //     CommentsDialog, IocSoundFormatButtonPlugin
+                // ];
+
+
+                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton']);
+
+
                 if (arguments[0].extraPlugins) {
-                    arguments[0].extraPlugins = [CommentsDialog, IocSoundFormatButtonPlugin].concat(arguments[0].extraPlugins);
+                    arguments[0].extraPlugins = plugins.concat(arguments[0].extraPlugins);
                 } else {
-                    arguments[0].extraPlugins = [CommentsDialog, IocSoundFormatButtonPlugin];
+                    arguments[0].extraPlugins = plugins;
                 }
             },
 
@@ -115,6 +129,13 @@ define([
 
         isChanged: function () {
             // console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
+
+            // if (this.get('value') !== this.originalContent) {
+            //     console.log("|"+this.get('value')+"|");
+            //     console.log("/////////////////////////////");
+            //     console.log("|"+this.originalContent+"|");
+            // }
+
             return this.get('value') !== this.originalContent;
         },
 
@@ -183,10 +204,12 @@ define([
             }
 
             // ALERTA[Xavi] Codi afegit pels plugins de l'IOC
+            console.log(args);
+
             plugin.setEditor(this);
 
             if (plugin.init) {
-                plugin.init();
+                plugin.init(args.ctor.config);
             }
 
             // ALERTA[Xavi] Codi afegit pels plugins de l'IOC

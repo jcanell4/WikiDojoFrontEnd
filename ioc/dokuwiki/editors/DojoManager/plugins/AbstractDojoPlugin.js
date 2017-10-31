@@ -1,17 +1,20 @@
 define([
     "dojo/_base/declare",
     "dijit/_editor/_Plugin",
-], function (declare, _Plugin) {
+    "dijit/form/Button",
+    "dojo/i18n", // i18n.getLocalization
+    "dojo/i18n!ioc/dokuwiki/editors/DojoManager/nls/commands",
+], function (declare, _Plugin, Button, i18n) {
 
 
     var AbstractDojoPlugin = declare([_Plugin], {
 
-        needsParse: false,
+        strings : i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands"),
 
         iconClassPrefix: 'dijitIocIcon',
 
-        parse: function () {
-            throw new Error('Method not implemented')
+        addButton: function(args) {
+            this.button = new Button(args);
         }
 
     });

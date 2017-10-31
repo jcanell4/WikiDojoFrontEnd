@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare", // declare
-    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
-    "dojo/i18n", // i18n.getLocalization
+    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
+    // "dojo/i18n", // i18n.getLocalization
     "dojo/_base/lang", // lang.hitch
     "dojo/sniff", // has("chrome") has("opera")
     "dijit/focus", // focus.focus()
@@ -11,41 +11,36 @@ define([
     'ioc/gui/DialogBuilder',
     "dojo/text!./templates/CommentFragment.html",
     "dojo/text!./templates/CommentFragmentReply.html",
-    "dojo/i18n!ioc/dokuwiki/editors/DojoManager/nls/commands",
 
-], function (declare, AbstractDojoPlugin,
-             i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
+], function (declare, AbstractParseableDojoPlugin,
+             /*i18n,*/ lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
 
-    var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
+    // var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
 
-    var CommentsDialog = declare("ioc.dokuwiki.editors.DojoManager.plugins.commentsdialog", [AbstractDojoPlugin], {
+    var CommentsDialog = declare("ioc.dokuwiki.editors.DojoManager.plugins.commentsdialog", [AbstractParseableDojoPlugin], {
 
         htmlTemplate: template,
         replyTemplate: templateReply,
-        needsParse: true,
+        // needsParse: true,
 
         init : function () {
-            this._initButton();
-        },
+            this.editor.customUndo = true;
 
-        _initButton: function () {
-
-            var editor = this.editor;
-            editor.customUndo = true;
-
-            this.button = new Button({
-                label: strings["commentplugin"],
-                ownerDocument: editor.ownerDocument,
-                dir: editor.dir,
-                lang: editor.lang,
+            var args = {
+                label: this.strings["commentplugin"],
+                ownerDocument: this.editor.ownerDocument,
+                dir: this.editor.dir,
+                lang: this.editor.lang,
                 showLabel: false,
                 iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + "Comments",
                 tabIndex: "-1",
-                onClick: lang.hitch(this, "activate")
-            });
+                onClick: lang.hitch(this, "process")
+            };
+
 
             this.firstRun = true;
 
+            this.addButton(args);
         },
 
         _addHandlers: function ($node, context) {
@@ -123,7 +118,7 @@ define([
 
         },
 
-        activate: function () {
+        process: function () {
             this.editor.beginEditing();
             var reference = this._getSelectionText();
 
@@ -141,17 +136,17 @@ define([
                 id: "ioc-comment-" + Date.now(),
                 reference: reference,
                 ref: ref,
-                resolveBtnTitle: strings['resolveBtnTitle'],
-                resolveBtn : strings['resolveBtn'],
-                textareaPlaceholder : strings['textareaPlaceholder'],
-                replyBtnTitle : strings['replyBtnTitle'],
-                replyBtn : strings['replyBtn']
+                resolveBtnTitle: this.strings['resolveBtnTitle'],
+                resolveBtn : this.strings['resolveBtn'],
+                textareaPlaceholder : this.strings['textareaPlaceholder'],
+                replyBtnTitle : this.strings['replyBtnTitle'],
+                replyBtn : this.strings['replyBtn']
                 // signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
             };
 
 
             // Comprovem si es pot insertar en aquest punt
-            iframe= document.getElementById('my');
+            // iframe= document.getElementById('my');
 
             var htmlCode = string.substitute(this.htmlTemplate, args);
             this.editor.execCommand('inserthtml', htmlCode); //ALERTA[Xavi] S'afegeix la referència per evitar esborrar el text ressaltat

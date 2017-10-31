@@ -37,25 +37,16 @@ define([
             // ALERTA[Xavi] Si es passa el valor de l'editor directament com a 'value' no s'executa el parse dels plugins.
             this.editor = new Editor({
                 styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
-                // extraPlugins: [CommentsDialog, IocSoundFormatButtonPlugin],
                 dispatcher: this.dispatcher,
-                // extraPlugins: [AlwaysShowToolbar, Test/*, Print*/],
-                // height: "100%"
-                // value: args.originalContent
+                components: [], // string[]
+
             }, dom.byId(args.containerId));
 
-
             var text = this.$textarea.val();
-            this.setValue(text);
-            // this.setValue(args.originalContent);
+            this.editor.value = text.replace(/^\s+|\s+$/gm, '');
 
-            // console.log("Original Content?", args.originalContent);
-
-            if (args.originalContent) {
-                this.editor.originalContent = args.originalContent;
-            } else {
-                this.resetOriginalContentState();
-            }
+            var originalContent = args.originalContent.replace(/^\s+|\s+$/gm, '');
+            this.editor.originalContent = originalContent;
 
 
             this.editor.on('change', function (newContent) {
@@ -66,7 +57,7 @@ define([
             this.editor.on('focus', function () {
                 // console.log('Focus DojoEditor');
                 // console.log("Enviant click fals:", args.parentId);
-                jQuery('#'+args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
+                jQuery('#' + args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
                 // this.emit('click', {id: args.parentId});
             }.bind(this));
 
@@ -85,11 +76,11 @@ define([
             this.editor.set('value', value);
         },
 
-        resetOriginalContentState: function() {
+        resetOriginalContentState: function () {
             this.editor.resetOriginalContentState();
         },
 
-        isChanged: function() {
+        isChanged: function () {
             return this.editor.isChanged();
         },
 
@@ -127,25 +118,25 @@ define([
             this.showToolbar();
         },
 
-        hideToolbar:function() {
+        hideToolbar: function () {
             this._originalToolbarDisplayStyle = style.get(this.editor.toolbar.containerNode, "display");
             style.set(this.editor.toolbar.containerNode, "display", "none");
         },
 
-        showToolbar: function() {
+        showToolbar: function () {
             style.set(this.editor.toolbar.containerNode, "display", this._originalToolbarDisplayStyle);
         },
 
         destroy: function () {
-          this.editor.destroy();
+            this.editor.destroy();
         },
 
 
-        getOriginalValue: function() {
+        getOriginalValue: function () {
             return this.editor.getOriginalValue();
         },
 
-        resetValue: function() {
+        resetValue: function () {
             this.setValue(this.getOriginalValue());
         }
     });
