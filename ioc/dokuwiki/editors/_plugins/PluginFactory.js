@@ -6,6 +6,8 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceFormatButtonPlugin',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatButtonPlugin',
 
+    'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
+
 
 
 
@@ -14,7 +16,7 @@ define([
 
 
 
-], function (i18n, EventFactory, AceFormatButtonPlugin, DojoFormatButtonPlugin) {
+], function (i18n, EventFactory, AceFormatButtonPlugin, DojoFormatButtonPlugin, CommentsDialog) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands"); // TODO: Canviar de directori
 
@@ -26,7 +28,8 @@ define([
 
         'Dojo': {
             'IocSoundFormatButton' : DojoFormatButtonPlugin,
-            'TestFormatButton' : DojoFormatButtonPlugin
+            'TestFormatButton' : DojoFormatButtonPlugin,
+            'CommentsDialog' : CommentsDialog
         }
 
     };
@@ -54,6 +57,7 @@ define([
             sample: 'FooBar',
             icon: 'IocSound'
         }
+
     };
 
 

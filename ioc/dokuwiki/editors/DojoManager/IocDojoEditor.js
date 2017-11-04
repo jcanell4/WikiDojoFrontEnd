@@ -59,7 +59,7 @@ define([
                 // ];
 
 
-                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton']);
+                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton', 'CommentsDialog']);
 
 
                 if (arguments[0].extraPlugins) {
@@ -71,18 +71,33 @@ define([
 
 
         startup: function () {
+            console.log("IocDojoEditor#startup");
             this.inherited(arguments);
-            this.watch('value', this._checkOriginalContent);
-            this.runOnce = this.watch('value', this._parsePlugins);
+            // this.runOnce = this.watch('value', function() {
+            //     console.log("Running once!", this._parsePlugins());
+            // });
+            // this.watch('value', this._checkOriginalContent);
+            // alert("wait");
+            // setTimeout(this._parsePlugins.bind(this), 1000);
+            // this._parsePlugins();
+        },
+
+        onLoad: function()  {
+            this.inherited(arguments);
+            console.log("iframe loaded");
+            this._parsePlugins();
         },
 
 
         _addPluginParser: function (plugin) {
+            console.log("IocDojoEditor#_addPluginParser", plugin);
             this._pluginsToParse.push(plugin);
         },
 
         _parsePlugins: function () {
-            this.runOnce.unwatch('value');
+            // console.log("IocDojoEditor#_parsePlugins", this._pluginsToParse[i]);
+            // alert("Parsing plugins!");
+            // this.runOnce.unwatch('value');
 
             for (var i = 0; i < this._pluginsToParse.length; i++) {
                 this._pluginsToParse[i].parse();
@@ -128,7 +143,7 @@ define([
         },
 
         isChanged: function () {
-            // console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
+            console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
 
             // if (this.get('value') !== this.originalContent) {
             //     console.log("|"+this.get('value')+"|");
@@ -148,6 +163,13 @@ define([
          * @override
          */
         addPlugin: function (/*String||Object||Function*/ plugin, /*Integer?*/ index) {
+
+
+            if (plugin.plugin) {
+                var config = plugin.config;
+                plugin = plugin.plugin;
+            }
+
             // summary:
             //		takes a plugin name as a string or a plugin instance and
             //		adds it to the toolbar and associates it with this editor
@@ -204,12 +226,12 @@ define([
             }
 
             // ALERTA[Xavi] Codi afegit pels plugins de l'IOC
-            console.log(args);
+
 
             plugin.setEditor(this);
 
             if (plugin.init) {
-                plugin.init(args.ctor.config);
+                plugin.init(config);
             }
 
             // ALERTA[Xavi] Codi afegit pels plugins de l'IOC
@@ -218,6 +240,7 @@ define([
                 plugin.setToolbar(this.toolbar);
             }
 
+            console.log("Needs parse?", plugin.needsParse);
 
             if (plugin.needsParse) {
                 this._addPluginParser(plugin);

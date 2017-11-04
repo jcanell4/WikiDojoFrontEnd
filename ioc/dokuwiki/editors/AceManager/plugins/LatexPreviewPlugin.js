@@ -90,7 +90,8 @@ define([
                     klass: 'preview',
                     on_render: function (spec) {
                         var attributes, style, vertical_pos;
-                        vertical_pos = spec.top > spec.screen_height - spec.bottom ? "bottom: " + (spec.container_height - spec.top) + "px;" : "top: " + spec.bottom + "px;";
+                        vertical_pos = spec.top > spec.screen_height - spec.bottom ? "bottom: "
+                            + (spec.container_height - spec.top) + "px;" : "top: " + spec.bottom + "px;";
                         style = "left: " + spec.left + "px; " + vertical_pos;
                         attributes = "class=\"ace_preview\" style=\"" + style + "\"";
                         return "<div " + attributes + "><img src=\"" + (encodeURI(data.url)) + "\"/></div>";

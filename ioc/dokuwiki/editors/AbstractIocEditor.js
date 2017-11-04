@@ -28,7 +28,6 @@ define([
 
             console.log("plugins:", plugins);
 
-            alert("stop!");
             return plugins;
         }
 
