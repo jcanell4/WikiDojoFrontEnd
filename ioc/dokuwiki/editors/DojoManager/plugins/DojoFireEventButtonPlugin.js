@@ -28,20 +28,24 @@ define([
         },
 
         _processFull: function () {
-            var id = this._getDocumentId();
+            this.fireEventComponent.fireFull(this.events['full'])
 
-            this.fireEventComponent.fire(this.events['full'], {
-                id: id
-            }, id)
+            // var id = this._getDocumentId();
+            //
+            // this.fireEventComponent.fire(this.events['full'], {
+            //     id: id
+            // }, id)
         },
 
         _processPartial: function () {
-            var id = this._getDocumentId();
+            this.fireEventComponent.firePartial(this.events['partial']);
 
-            this.fireEventComponent.fire(this.events['partial'], {
-                id: id,
-                chunk: this._getChunkId()
-            }, id)
+            // var id = this._getDocumentId();
+            //
+            // this.fireEventComponent.fire(this.events['partial'], {
+            //     id: id,
+            //     chunk: this._getChunkId()
+            // }, id)
         }
 
     });

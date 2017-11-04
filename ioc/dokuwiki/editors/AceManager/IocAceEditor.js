@@ -516,7 +516,7 @@ define([
                     this.addPlugins(plugins);
                 }
 
-                console.log("plugins inicialitzats:", this.plugins);
+                // console.log("plugins inicialitzats:", this.plugins);
             },
 
             initHandlers: function () {
@@ -820,7 +820,7 @@ define([
             },
 
             initializePlugin: function (_plugin) {
-                console.log("IocAceEditor#initializePlugin#_plugin", _plugin);
+                // console.log("IocAceEditor#initializePlugin#_plugin", _plugin);
                 var plugin = new _plugin.plugin();
                 this.plugins.push(plugin);
                 plugin.setEditor(this);

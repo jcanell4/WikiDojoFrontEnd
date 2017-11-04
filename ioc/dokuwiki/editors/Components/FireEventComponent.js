@@ -21,7 +21,33 @@ define([
             // console.log("FireEventComponent#fire", type);
             var eventManager = this.dispatcher.getEventManager();
             eventManager.fireEvent(type, data, docId);
+        },
+
+        fireFull: function(type, data) {
+            var docId = this._getDocumentId();
+
+            if (!data) {
+                data = {};
+            }
+
+            data.id = docId;
+
+            this.fire(type, data, docId);
+        },
+
+        firePartial: function(type, data) {
+            var docId = this._getDocumentId();
+
+            if (!data) {
+                data = {};
+            }
+
+            data.id = docId;
+            data.chunk = this._getChunkId();
+
+            this.fire(type, data, docId);
         }
+
     });
 
 });
