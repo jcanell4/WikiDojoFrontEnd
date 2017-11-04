@@ -6,16 +6,8 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/LatexPreviewPlugin',
     'dojo/_base/declare',
     'dojo/_base/lang',
-    'ioc/dokuwiki/editors/AceManager/state_handler',
-    'ioc/dokuwiki/editors/AceManager/plugins/IocSoundFormatButtonPlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/DocumentPreviewButtonPlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/WrapTogglePlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/ACETogglePlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/SaveButtonPlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/CancelButtonPlugin',
-], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler,
-             IocSoundFormatButtonPlugin, DocumentPreviewButtonPlugin, WrapTogglePlugin, ACETogglePlugin,
-             SaveButtonPlugin, CancelButtonPlugin) {
+    'ioc/dokuwiki/editors/AceManager/state_handler'
+], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler) {
 
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
@@ -165,13 +157,13 @@ define([
                 horizontalScrollBar: false,
                 undoManager: new ace.UndoManager(),
                 plugins: [
-                    LatexPreviewPlugin,
-                    IocSoundFormatButtonPlugin,
-                    DocumentPreviewButtonPlugin,
-                    WrapTogglePlugin,
-                    ACETogglePlugin,
-                    SaveButtonPlugin,
-                    CancelButtonPlugin
+                    // LatexPreviewPlugin,
+                    // IocSoundFormatButtonPlugin,
+                    // DocumentPreviewButtonPlugin,
+                    // WrapTogglePlugin,
+                    // ACETogglePlugin,
+                    // SaveButtonPlugin,
+                    // CancelButtonPlugin
                 ]
 
             },
@@ -490,7 +482,7 @@ define([
                 this.initHandlers();
                 // this.initPlugins(args.plugins);
 
-                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton']);
+                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton', 'CancelButton', 'SaveButton']);
                 this.initPlugins(plugins);
 
 
@@ -523,6 +515,8 @@ define([
                 if (plugins) {
                     this.addPlugins(plugins);
                 }
+
+                console.log("plugins inicialitzats:", this.plugins);
             },
 
             initHandlers: function () {

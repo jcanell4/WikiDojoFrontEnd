@@ -13,7 +13,7 @@ define([
     return declare([AbstractIocFacade], {
 
         editor: null,
-
+        TOOLBAR_ID: "full-editor",
         VERTICAL_MARGIN: 25,
         MIN_HEIGHT: 200,
 
@@ -38,8 +38,8 @@ define([
             this.editor = new Editor({
                 styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
                 dispatcher: this.dispatcher,
-                components: [], // string[]
-
+                components: [], // string[],
+                TOOLBAR_ID: this.TOOLBAR_ID
             }, dom.byId(args.containerId));
 
             var text = this.$textarea.val();

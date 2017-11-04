@@ -22,7 +22,7 @@ define([
                     this._processFull();
                     break;
 
-                case 'partial_edit':
+                case 'partial-editor':
                     this._processPartial();
                     break;
 

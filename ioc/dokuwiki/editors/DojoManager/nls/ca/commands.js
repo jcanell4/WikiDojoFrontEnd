@@ -13,8 +13,8 @@ define(
 
         'iocsoundplugin': 'Plugin de format de so',
         'iocsoundplugin-sample': 'identificador del so:clau',
-        'ioccancel': 'Tornar',
-        'iocsave': 'Desar'
+        'ioccancelplugin': 'Tornar',
+        'iocsaveplugin': 'Desar'
 
 
     })

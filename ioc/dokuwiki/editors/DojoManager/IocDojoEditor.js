@@ -50,7 +50,6 @@ define([
                 this.changeDetectorEnabled = false;
                 this._pluginsToParse = [];
 
-
                 // TODO[Xavi] Recorrer els components i extreure els plugins que s'afegiran a aquest array.
                 // components
 
@@ -59,7 +58,7 @@ define([
                 // ];
 
 
-                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton', 'CommentsDialog']);
+                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton', 'CommentsDialog', 'SaveButton', 'CancelButton']);
 
 
                 if (arguments[0].extraPlugins) {
@@ -69,35 +68,19 @@ define([
                 }
             },
 
-
-        startup: function () {
-            console.log("IocDojoEditor#startup");
-            this.inherited(arguments);
-            // this.runOnce = this.watch('value', function() {
-            //     console.log("Running once!", this._parsePlugins());
-            // });
-            // this.watch('value', this._checkOriginalContent);
-            // alert("wait");
-            // setTimeout(this._parsePlugins.bind(this), 1000);
-            // this._parsePlugins();
-        },
-
         onLoad: function()  {
             this.inherited(arguments);
-            console.log("iframe loaded");
             this._parsePlugins();
         },
 
 
         _addPluginParser: function (plugin) {
-            console.log("IocDojoEditor#_addPluginParser", plugin);
+            // console.log("IocDojoEditor#_addPluginParser", plugin);
             this._pluginsToParse.push(plugin);
         },
 
         _parsePlugins: function () {
             // console.log("IocDojoEditor#_parsePlugins", this._pluginsToParse[i]);
-            // alert("Parsing plugins!");
-            // this.runOnce.unwatch('value');
 
             for (var i = 0; i < this._pluginsToParse.length; i++) {
                 this._pluginsToParse[i].parse();
@@ -126,13 +109,6 @@ define([
             }
         },
 
-        _checkOriginalContent: function (name, oldValue, newValue) {
-            // console.log("IocDojoEditor#_checkOriginalContent", newValue);
-            if (!this.originalContent) {
-                this.originalContent = newValue;
-            }
-        },
-
         resetOriginalContentState: function () {
             // console.log("IocDojoEditor#resetOriginalContentState");
             this.originalContent = this.get('value');
@@ -143,7 +119,7 @@ define([
         },
 
         isChanged: function () {
-            console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
+            // console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
 
             // if (this.get('value') !== this.originalContent) {
             //     console.log("|"+this.get('value')+"|");
@@ -164,7 +140,7 @@ define([
          */
         addPlugin: function (/*String||Object||Function*/ plugin, /*Integer?*/ index) {
 
-
+            // ALERTA[Xavi] Codi propi afegit
             if (plugin.plugin) {
                 var config = plugin.config;
                 plugin = plugin.plugin;
@@ -230,7 +206,7 @@ define([
 
             plugin.setEditor(this);
 
-            if (plugin.init) {
+            if (plugin.init) {// TODO[Xavi] Comprovar si això es pot moure al setEditor del plugin
                 plugin.init(config);
             }
 
@@ -240,8 +216,7 @@ define([
                 plugin.setToolbar(this.toolbar);
             }
 
-            console.log("Needs parse?", plugin.needsParse);
-
+            // TODO[Xavi] Comprovar si això es pot moure al init del plugin
             if (plugin.needsParse) {
                 this._addPluginParser(plugin);
 

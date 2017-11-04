@@ -1,13 +1,14 @@
 define([
     "dojo/_base/declare",
+    "ioc/dokuwiki/editors/_plugins/AbstractIocPlugin",
     "dijit/_editor/_Plugin",
     "dijit/form/Button",
     "dojo/i18n", // i18n.getLocalization
     "dojo/i18n!ioc/dokuwiki/editors/DojoManager/nls/commands",
-], function (declare, _Plugin, Button, i18n) {
+], function (declare, AbstractIocPlugin, _Plugin, Button, i18n) {
 
 
-    var AbstractDojoPlugin = declare([_Plugin], {
+    var AbstractDojoPlugin = declare([_Plugin, AbstractIocPlugin], {
 
         strings : i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands"),
 
@@ -15,6 +16,12 @@ define([
 
         addButton: function(args) {
             this.button = new Button(args);
+        },
+
+        // ALERTA[Xavi] S'ha de fer a través de la propietat window de l'editor perqué aquest es troba en un iframe
+        _getSelectionText: function () {
+            var text = this.editor.window.getSelection().toString();
+            return text;
         }
 
     });

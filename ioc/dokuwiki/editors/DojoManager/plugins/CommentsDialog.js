@@ -44,14 +44,11 @@ define([
         },
 
         _addHandlers: function ($node, context) {
-            console.log("Adding handlers", $node, context);
+            // console.log("Adding handlers", $node, context);
             var $replyNode = $node.find('textarea.reply');
             var $buttons = $node.find('button[data-action]');
             var $removeButtons = $node.find('[data-button="remove"]');
             var $editButtons = $node.find('[data-button="edit"]');
-
-
-            console.log("Trobats botons?", $buttons.length, $replyNode, $removeButtons, $editButtons);
 
             $buttons.on('click', function (e) {
                 var $button = jQuery(this);
@@ -113,9 +110,6 @@ define([
         parse: function() {
             var $nodes = jQuery(this.editor.iframe).contents().find('.ioc-comment-block');
             var context = this;
-
-            console.log("CommentsDialog#parse", $nodes.length);
-
 
             $nodes.each(function() {
                 $nodes.find('.viewComment').css('display', 'inherit');
@@ -318,7 +312,6 @@ define([
 
     // Register this plugin.
     _Plugin.registry["commentsdialog"] = function () {
-        console.log("Registratnt comment");
         return new CommentsDialog({command: "commentsdialog"});
     };
 

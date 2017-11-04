@@ -6,6 +6,7 @@ define([
 
     return declare([AbstractIocPlugin], {
 
+
         /**
          * Permet afegir botons propis de la dokuwiki i botons personalitzats.
          *
@@ -13,7 +14,7 @@ define([
          * @param callback
          */
         addButton: function (args, callback) {
-            console.log("AddButton?");
+
             toolbarManager.setDispatcher(this.editor.dispatcher);
 
             switch (args.type) {

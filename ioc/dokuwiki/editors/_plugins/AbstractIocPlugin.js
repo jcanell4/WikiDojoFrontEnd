@@ -6,7 +6,7 @@ define([
 
     return declare(Evented, {
 
-        constructor: function() {
+        constructor: function () {
             this.handlers = [];
             this.enabled = false;
         },
@@ -27,15 +27,36 @@ define([
             throw new Error('Method not implemented');
         },
 
-        process: function() {
+
+        process: function () {
+            switch (this.editor.TOOLBAR_ID) {
+                case 'full-editor':
+                    this._processFull();
+                    break;
+
+                case 'partial-editor':
+                    this._processPartial();
+                    break;
+
+                default:
+                    console.log(this.editor);
+                    throw new Error("Tipus d'editor no reconegut: " + this.editor.TOOLBAR_ID);
+            }
+        },
+
+        _processFull: function () {
             throw new Error('Method not implemented');
+        },
+
+        _processPartial: function () {
+            this._processFull();
         },
 
         /**
          * Activació del plugin. Aquí es suscriuen els listeners dels events. Ha d'establir el valor de la propietat
          * enabled a true.
          */
-        activate: function() {
+        activate: function () {
             // console.log('AbstractPlugin#activate');
             this.enabled = true;
             // throw new Error('Method not implemented');
@@ -45,7 +66,7 @@ define([
          * Desactivació del plugin. Aquí es desuscriuen els listeners dels events. Ha d'establir el valor de la
          * propietat enabled a false.
          */
-        deactivate: function() {
+        deactivate: function () {
             // console.log('AbstractPlugin#deactivate');
             this.enabled = false;
             // throw new Error('Method not implemented');
@@ -55,7 +76,7 @@ define([
         /**
          * Alterna entra la activació o desactivació.
          */
-        toggle: function() {
+        toggle: function () {
             // console.log("AbstractPlugin#toggle", this.enabled);
             if (this.enabled) {
                 this.deactivate();
@@ -67,7 +88,7 @@ define([
         /**
          * Accions
          */
-        destroy: function() {
+        destroy: function () {
             this.deactivate();
             // throw new Error('Method not implemented');
         },
@@ -82,7 +103,7 @@ define([
          */
         addEditorListener: function (events, callback) {
             var handler = this.editor.on(events, callback);
-            this.handlers.push (handler);
+            this.handlers.push(handler);
             return handler;
 
         },
@@ -90,11 +111,29 @@ define([
         /**
          * Elimina la detecció de tots els events a l'editor.
          */
-        removeEditorListeners: function() {
+        removeEditorListeners: function () {
             // console.log("AbstractPlugin#removeEditorListeners");
-            for (var i=0; i<this.handlers.length; i++) {
+            for (var i = 0; i < this.handlers.length; i++) {
                 this.handlers[i].remove();
             }
+        },
+
+        _getDocumentId: function () {
+            var dispatcher = this.editor.dispatcher,
+                id = dispatcher.getGlobalState().getCurrentId();
+
+            return id;
+        },
+
+        _getChunkId: function () {
+            var dispatcher = this.editor.dispatcher,
+                id = dispatcher.getGlobalState().getCurrentId(),
+                chunk = dispatcher.getGlobalState().getCurrentElementId();
+
+            chunk = chunk.replace(id + "_", "");
+            chunk = chunk.replace("container_", "");
+
+            return chunk;
         }
 
     });

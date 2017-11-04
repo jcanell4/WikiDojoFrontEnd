@@ -34,7 +34,7 @@ define([
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
-        // TOOLBAR_ID: 'partial_edit',
+        // TOOLBAR_ID: 'partial-editor',
         // VERTICAL_MARGIN: 100, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
         // MIN_HEIGHT: 200, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 

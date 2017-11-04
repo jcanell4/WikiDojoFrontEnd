@@ -9,7 +9,7 @@ define([
         // Gestió de funcions comunes pels components, plugins i adaptors
 
         getPlugin : function(name) {
-            console.log("AbstractIocEditor#getPlugin", this.editorType);
+            // console.log("AbstractIocEditor#getPlugin", this.editorType);
             return pluginFactory.getPlugin(name, this.editorType);
         },
 
@@ -17,16 +17,12 @@ define([
             var plugins = [];
 
             for (var i = 0; i<names.length; i++) {
-                console.log("Cercant plugin", names[i]);
                 var plugin = this.getPlugin(names[i]);
 
                 if (plugin) {
                     plugins.push(plugin);
                 }
             }
-
-
-            console.log("plugins:", plugins);
 
             return plugins;
         }
