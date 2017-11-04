@@ -43,7 +43,7 @@ define([
             this.addButton(args);
         },
 
-        _addHandlers: function ($node, context) {
+        _addHandlers: function ($node/*, context*/) {
             // console.log("Adding handlers", $node, context);
             var $replyNode = $node.find('textarea.reply');
             var $buttons = $node.find('button[data-action]');
@@ -114,7 +114,7 @@ define([
             $nodes.each(function() {
                 $nodes.find('.viewComment').css('display', 'inherit');
                 $nodes.find('.editComment').css('display', 'none');
-                context._addHandlers(jQuery(this), context);
+                context._addHandlers(jQuery(this)/*, context*/);
             });
 
         },
@@ -155,7 +155,7 @@ define([
             var $node = jQuery(this.editor.iframe).contents().find('#' + args.id);
             $node.find('textarea').focus();
 
-            this._addHandlers($node, this);
+            this._addHandlers($node/*, this*/);
 
             this.editor.endEditing();
 

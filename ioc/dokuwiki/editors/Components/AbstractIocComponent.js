@@ -21,7 +21,7 @@ define([
             chunk = chunk.replace("container_", "");
 
             return chunk;
-        }
+        },
 
 
     });

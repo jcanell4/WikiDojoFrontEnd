@@ -58,7 +58,14 @@ define([
                 // ];
 
 
-                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton', 'CommentsDialog', 'SaveButton', 'CancelButton']);
+                var plugins = this.getPlugins([
+                    'IocSoundFormatButton',
+                    'TestFormatButton',
+                    'CommentsDialog',
+                    'SaveButton',
+                    'CancelButton',
+                    'DocumentPreviewButton',
+                ]);
 
 
                 if (arguments[0].extraPlugins) {

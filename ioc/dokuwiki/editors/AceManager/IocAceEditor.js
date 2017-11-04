@@ -482,7 +482,7 @@ define([
                 this.initHandlers();
                 // this.initPlugins(args.plugins);
 
-                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton', 'CancelButton', 'SaveButton']);
+                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton', 'CancelButton', 'SaveButton', 'DocumentPreviewButton']);
                 this.initPlugins(plugins);
 
 

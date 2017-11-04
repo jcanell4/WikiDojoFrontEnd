@@ -1615,5 +1615,22 @@ define([
             return dialog;
         },
 
+        getCurrentContent: function() {
+            var chunk = this._getCurrentChunk(),
+                content = this.getEditor(chunk).getValue();
+
+            return content;
+        },
+
+        _getCurrentChunk: function() {
+            var dispatcher = this.dispatcher,
+                id = this.id,
+                chunk = dispatcher.getGlobalState().getCurrentElementId();
+
+            chunk = chunk.replace(id + "_", "");
+            chunk = chunk.replace("container_", "");
+
+            return chunk;
+        }
     })
 });

@@ -14,7 +14,8 @@ define(
         'iocsoundplugin': 'Plugin de format de so',
         'iocsoundplugin-sample': 'identificador del so:clau',
         'ioccancelplugin': 'Tornar',
-        'iocsaveplugin': 'Desar'
+        'iocsaveplugin': 'Desar',
+        'iocdocumentpreviewplugin': 'Previsualització del document'
 
 
     })

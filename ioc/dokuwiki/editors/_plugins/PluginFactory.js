@@ -11,6 +11,8 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceFireEventButtonPlugin',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFireEventButtonPlugin',
 
+    'ioc/dokuwiki/editors/AceManager/plugins/AceDocumentPreviewButtonPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoDocumentPreviewButtonPlugin',
 
 
     // Localització
@@ -18,7 +20,8 @@ define([
 
 
 
-], function (i18n, EventFactory, AceFormatButton, DojoFormatButton, CommentsDialog, AceFireEventButton, DojoFireEventButton) {
+], function (i18n, EventFactory, AceFormatButton, DojoFormatButton, CommentsDialog, AceFireEventButton,
+             DojoFireEventButton, AceDocumentPreviewButton,DojoDocumentPreviewButton) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands"); // TODO: Canviar de directori
 
@@ -28,6 +31,7 @@ define([
             'TestFormatButton' : AceFormatButton,
             'CancelButton' : AceFireEventButton,
             'SaveButton' : AceFireEventButton,
+            'DocumentPreviewButton': AceDocumentPreviewButton,
         },
 
         'Dojo': {
@@ -36,6 +40,7 @@ define([
             'CommentsDialog' : CommentsDialog,
             'CancelButton' : DojoFireEventButton,
             'SaveButton' : DojoFireEventButton,
+            'DocumentPreviewButton': DojoDocumentPreviewButton,
         }
 
     };
@@ -59,6 +64,11 @@ define([
             close: '}}',
             sample: strings["iocsoundplugin-sample"],
             icon: 'IocSound'
+        },
+        'DocumentPreviewButton': {
+            type: 'DocumentPreview',
+            title: strings["iocdocumentpreviewplugin"],
+            icon: 'IocDocumentPreview'
         },
         'TestFormatButton': {
             title: 'Test',
