@@ -17,32 +17,28 @@ define([
 
     // var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
 
-    var CommentsDialog = declare("ioc.dokuwiki.editors.DojoManager.plugins.commentsdialog", [AbstractParseableDojoPlugin], {
+    var CommentsDialog = declare([AbstractParseableDojoPlugin], {
 
         htmlTemplate: template,
         replyTemplate: templateReply,
 
-        init : function () {
+        init : function (args) {
             this.inherited(arguments);
 
             this.editor.customUndo = true;
 
-            var args = {
-                label: this.strings["commentplugin"],
+            var config = {
+                label: args.title,
                 ownerDocument: this.editor.ownerDocument,
                 dir: this.editor.dir,
                 lang: this.editor.lang,
                 showLabel: false,
-                iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + "Comments",
+                iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + args.icon,
                 tabIndex: "-1",
                 onClick: lang.hitch(this, "process")
             };
 
-
-            // this.firstRun = true;
-
-            this.addButton(args);
-
+            this.addButton(config);
         },
 
         _addHandlers: function ($node/*, context*/) {
@@ -140,11 +136,11 @@ define([
                 id: "ioc-comment-" + Date.now(),
                 reference: reference,
                 ref: ref,
-                resolveBtnTitle: this.strings['resolveBtnTitle'],
-                resolveBtn : this.strings['resolveBtn'],
-                textareaPlaceholder : this.strings['textareaPlaceholder'],
-                replyBtnTitle : this.strings['replyBtnTitle'],
-                replyBtn : this.strings['replyBtn']
+                resolveBtnTitle: this.strings['ioc-comment-resolve-title'],
+                resolveBtn : this.strings['ioc-comment-resolve-button'],
+                textareaPlaceholder : this.strings['ioc-comment-textarea-placeholder'],
+                replyBtnTitle : this.strings['ioc-comment-reply-title'],
+                replyBtn : this.strings['ioc-comment-reply-button']
                 // signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
             };
 
@@ -193,8 +189,10 @@ define([
 
             var args = {
                 reply: reply,
-                signature: SIG
+                signature: SIG,
                 // TODO[Xavi] Afegir els noms dels botons esborrar i editar localitzats
+                btnSave: this.strings['ioc-comment-save-button'],
+                btnCancel: this.strings['ioc-comment-cancel-button']
             };
 
             var $replyCode = jQuery(string.substitute(this.replyTemplate, args));

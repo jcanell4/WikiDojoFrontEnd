@@ -4,14 +4,10 @@ define([
     'dijit/Editor',
 
     'ioc/dokuwiki/editors/_plugins/AbstractIocPlugin',
-    // 'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
-    // 'ioc/dokuwiki/editors/DojoManager/plugins/IocSoundFormatButtonPlugin',
 
     // ALERTA[Xavi] Necessari pel addPlugin (només per depurar)
     "dojo/_base/array", // array.forEach
-    // "dojo/_base/declare", // declare
     "dojo/Deferred", // Deferred
-    "dojo/i18n", // i18n.getLocalization
     "dojo/dom-attr", // domAttr.set
     "dojo/dom-class", // domClass.add
     "dojo/dom-geometry",
@@ -32,13 +28,11 @@ define([
     "dijit/_editor/range",
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
-    "dojo/i18n!dijit/_editor/nls/commands"
 
 ], function (AbstractIocEditor, declare, Editor,
              AbstractIocPlugin,
-             /*CommentsDialog, IocSoundFormatButtonPlugin,*/
 
-             array, /*declare,*/ Deferred, i18n, domAttr, domClass, domGeometry, domStyle,
+             array, Deferred, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
              _Plugin, EnterKeyHandling, html, rangeapi, RichText, dijit) {
@@ -51,18 +45,13 @@ define([
                 this.changeDetectorEnabled = false;
                 this._pluginsToParse = [];
 
-                // TODO[Xavi] Recorrer els components i extreure els plugins que s'afegiran a aquest array.
-                // components
 
-                // var plugins = [
-                //     CommentsDialog, IocSoundFormatButtonPlugin
-                // ];
 
 
                 var plugins = this.getPlugins([
                     'IocSoundFormatButton',
                     'TestFormatButton',
-                    'CommentsDialog',
+                    'IocComment',
                     'SaveButton',
                     'CancelButton',
                     'DocumentPreviewButton',

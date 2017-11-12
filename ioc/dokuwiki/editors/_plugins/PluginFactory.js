@@ -6,7 +6,7 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormat',
 
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoComments',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceFireEvent',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFireEvent',
@@ -16,14 +16,14 @@ define([
 
 
     // Localització
-    'dojo/i18n!ioc/dokuwiki/editors/DojoManager/nls/commands'
+    'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
 
 
 
-], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComments, AceFireEvent,
+], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview) {
 
-    var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands"); // TODO: Canviar de directori
+    var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands");
 
     var plugins = {
         'ACE': {
@@ -37,7 +37,7 @@ define([
         'Dojo': {
             'IocSoundFormatButton' : DojoFormat,
             'TestFormatButton' : DojoFormat,
-            'CommentsDialog' : DojoComments,
+            'IocComment' : DojoComment,
             'CancelButton' : DojoFireEvent,
             'SaveButton' : DojoFireEvent,
             'DocumentPreviewButton': DojoDocumentPreview,
@@ -48,26 +48,26 @@ define([
     var config = {
         'CancelButton': {
             type: 'BackButton',
-            title: strings["ioccancelplugin"],
+            title: strings["cancel-button"],
             event: {full: EventFactory.eventName.CANCEL, partial: EventFactory.eventName.CANCEL_PARTIAL},
             icon: 'IocBack'
         },
         'SaveButton': {
             type: 'SaveButton',
-            title: strings["iocsaveplugin"],
+            title: strings["save-button"],
             event: {full: EventFactory.eventName.SAVE, partial: EventFactory.eventName.SAVE_PARTIAL},
             icon: 'IocSave'
         },
         'IocSoundFormatButton': {
-            title: strings["iocsoundplugin"],
+            title: strings["ioc-sound-button"],
             open: '{{soundcloud>',
             close: '}}',
-            sample: strings["iocsoundplugin-sample"],
+            sample: strings["ioc-sound-sample"],
             icon: 'IocSound'
         },
         'DocumentPreviewButton': {
             type: 'DocumentPreview',
-            title: strings["iocdocumentpreviewplugin"],
+            title: strings["document-preview"],
             icon: 'IocDocumentPreview'
         },
         'TestFormatButton': {
@@ -76,7 +76,12 @@ define([
             close: '}}',
             sample: 'FooBar',
             icon: 'IocSound'
-        }
+        },
+        'IocComment': {
+            type: 'IocComment',
+            title: strings["ioc-comment-button"],
+            icon: 'IocComment'
+        },
 
     };
 
