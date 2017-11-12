@@ -3,11 +3,11 @@ define([
     'ioc/dokuwiki/editors/AceManager/rules/IocRuleSet',
     'ioc/dokuwiki/editors/AceManager/modes/IocAceMode',
     'ioc/dokuwiki/editors/AceManager/IocCommands',
-    'ioc/dokuwiki/editors/AceManager/plugins/LatexPreviewPlugin',
+    // 'ioc/dokuwiki/editors/AceManager/plugins/LatexPreviewPlugin',
     'dojo/_base/declare',
     'dojo/_base/lang',
     'ioc/dokuwiki/editors/AceManager/state_handler'
-], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler) {
+], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, /*LatexPreviewPlugin,*/ declare, lang, state_handler) {
 
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;

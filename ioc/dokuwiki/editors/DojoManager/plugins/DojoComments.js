@@ -21,9 +21,10 @@ define([
 
         htmlTemplate: template,
         replyTemplate: templateReply,
-        // needsParse: true,
 
         init : function () {
+            this.inherited(arguments);
+
             this.editor.customUndo = true;
 
             var args = {
@@ -38,9 +39,10 @@ define([
             };
 
 
-            this.firstRun = true;
+            // this.firstRun = true;
 
             this.addButton(args);
+
         },
 
         _addHandlers: function ($node/*, context*/) {
@@ -49,6 +51,7 @@ define([
             var $buttons = $node.find('button[data-action]');
             var $removeButtons = $node.find('[data-button="remove"]');
             var $editButtons = $node.find('[data-button="edit"]');
+            var context = this;
 
             $buttons.on('click', function (e) {
                 var $button = jQuery(this);

@@ -8,6 +8,10 @@ define([
 
         needsParse: true,
 
+        init: function() {
+            this.editor._addPluginParser(this);
+        },
+
         parse: function () {
             throw new Error('Method not implemented')
         }

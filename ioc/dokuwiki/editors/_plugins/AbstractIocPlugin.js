@@ -1,10 +1,11 @@
 define([
     'dojo/_base/declare',
-    'ioc/dokuwiki/editors/Components/AbstractIocComponent'
-], function (declare, AbstractIocComponent) {
+    'dojo/Evented',
+    'ioc/dokuwiki/editors/IdReferencer'
+], function (declare, Evented, IdReferencer) {
 
 
-    return declare(AbstractIocComponent, {
+    return declare([Evented, IdReferencer], {
 
         constructor: function () {
             this.handlers = [];

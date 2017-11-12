@@ -4,8 +4,8 @@ define([
     'dijit/Editor',
 
     'ioc/dokuwiki/editors/_plugins/AbstractIocPlugin',
-    'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
-    'ioc/dokuwiki/editors/DojoManager/plugins/IocSoundFormatButtonPlugin',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/IocSoundFormatButtonPlugin',
 
     // ALERTA[Xavi] Necessari pel addPlugin (només per depurar)
     "dojo/_base/array", // array.forEach
@@ -35,7 +35,8 @@ define([
     "dojo/i18n!dijit/_editor/nls/commands"
 
 ], function (AbstractIocEditor, declare, Editor,
-             AbstractIocPlugin, CommentsDialog, IocSoundFormatButtonPlugin,
+             AbstractIocPlugin,
+             /*CommentsDialog, IocSoundFormatButtonPlugin,*/
 
              array, /*declare,*/ Deferred, i18n, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
@@ -223,12 +224,6 @@ define([
                 plugin.setToolbar(this.toolbar);
             }
 
-            // TODO[Xavi] Comprovar si això es pot moure al init del plugin
-            if (plugin.needsParse) {
-                this._addPluginParser(plugin);
-
-
-            }
         },
 
         /**

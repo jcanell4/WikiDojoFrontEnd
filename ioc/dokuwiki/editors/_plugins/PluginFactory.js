@@ -3,16 +3,16 @@ define([
     'ioc/wiki30/manager/EventFactory',
 
     // Plugins
-    'ioc/dokuwiki/editors/AceManager/plugins/AceFormatButtonPlugin',
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatButtonPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceFormat',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormat',
 
-    'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoComments',
 
-    'ioc/dokuwiki/editors/AceManager/plugins/AceFireEventButtonPlugin',
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFireEventButtonPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceFireEvent',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFireEvent',
 
-    'ioc/dokuwiki/editors/AceManager/plugins/AceDocumentPreviewButtonPlugin',
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoDocumentPreviewButtonPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceDocumentPreview',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoDocumentPreview',
 
 
     // Localització
@@ -20,27 +20,27 @@ define([
 
 
 
-], function (i18n, EventFactory, AceFormatButton, DojoFormatButton, CommentsDialog, AceFireEventButton,
-             DojoFireEventButton, AceDocumentPreviewButton,DojoDocumentPreviewButton) {
+], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComments, AceFireEvent,
+             DojoFireEvent, AceDocumentPreview,DojoDocumentPreview) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands"); // TODO: Canviar de directori
 
     var plugins = {
         'ACE': {
-            'IocSoundFormatButton' : AceFormatButton,
-            'TestFormatButton' : AceFormatButton,
-            'CancelButton' : AceFireEventButton,
-            'SaveButton' : AceFireEventButton,
-            'DocumentPreviewButton': AceDocumentPreviewButton,
+            'IocSoundFormatButton' : AceFormat,
+            'TestFormatButton' : AceFormat,
+            'CancelButton' : AceFireEvent,
+            'SaveButton' : AceFireEvent,
+            'DocumentPreviewButton': AceDocumentPreview,
         },
 
         'Dojo': {
-            'IocSoundFormatButton' : DojoFormatButton,
-            'TestFormatButton' : DojoFormatButton,
-            'CommentsDialog' : CommentsDialog,
-            'CancelButton' : DojoFireEventButton,
-            'SaveButton' : DojoFireEventButton,
-            'DocumentPreviewButton': DojoDocumentPreviewButton,
+            'IocSoundFormatButton' : DojoFormat,
+            'TestFormatButton' : DojoFormat,
+            'CommentsDialog' : DojoComments,
+            'CancelButton' : DojoFireEvent,
+            'SaveButton' : DojoFireEvent,
+            'DocumentPreviewButton': DojoDocumentPreview,
         }
 
     };
