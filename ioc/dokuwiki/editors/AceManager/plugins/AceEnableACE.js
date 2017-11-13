@@ -5,30 +5,14 @@ define([
 
     return declare([AbstractAcePlugin], {
 
-        init: function () {
-            var args = {
-                type: "EnableAce",
-                title: "Activar/Desactivar ACE",
-                icon: "/iocjslib/ioc/gui/img/toggle_on.png"
+        init: function (args) {
+            var config = {
+                type: args.type,
+                title: args.title,
+                icon: "/iocjslib/ioc/gui/img/" + args.icon + ".png"
             };
 
-            this.addButton(args, this.process);
-        },
-
-
-        process: function () {
-            switch (this.editor.TOOLBAR_ID) {
-                case 'full-editor':
-                    this._processFull();
-                    break;
-
-                case 'partial-editor':
-                    this._processPartial();
-                    break;
-
-                default:
-                    throw new Error("Tipus d'editor no reconegut: " + this.editor.TOOLBAR_ID);
-            }
+            this.addButton(config, this.process);
         },
 
         _processFull: function () {

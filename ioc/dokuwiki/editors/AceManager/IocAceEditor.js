@@ -482,7 +482,15 @@ define([
                 this.initHandlers();
                 // this.initPlugins(args.plugins);
 
-                var plugins = this.getPlugins(['IocSoundFormatButton', 'TestFormatButton', 'CancelButton', 'SaveButton', 'DocumentPreviewButton']);
+                var plugins = this.getPlugins([
+                    'IocSoundFormatButton',
+                    'TestFormatButton',
+                    'CancelButton',
+                    'SaveButton',
+                    'DocumentPreviewButton',
+                    'EnableACE',
+                    'EnableWrapper',
+                ]);
                 this.initPlugins(plugins);
 
 
@@ -516,7 +524,7 @@ define([
                     this.addPlugins(plugins);
                 }
 
-                // console.log("plugins inicialitzats:", this.plugins);
+                console.log("plugins inicialitzats:", this.plugins);
             },
 
             initHandlers: function () {

@@ -5,6 +5,8 @@ define(
         'cancel-button': 'Tornar',
         'save-button': 'Desar',
         'document-preview': 'Previsualitzar el document',
+        'enable-ace': 'Activar/Desactivar ACE',
+        'enable-wrapper' : 'Activar/Desactivar embolcall',
 
         // Comments Plugin
         'ioc-comment-button': 'Afegir comentari',

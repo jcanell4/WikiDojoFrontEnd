@@ -5,6 +5,8 @@ define({ root:
         'cancel-button': 'Cancel',
         'save-button': 'Save',
         'document-preview': 'Preview document',
+        'enable-ace': 'Activate/Deactivate ACE',
+        'enable-wrapper': 'Activate/Deactivate wrap',
 
         // Comments Plugin
         'ioc-comment-button': 'Add comment',

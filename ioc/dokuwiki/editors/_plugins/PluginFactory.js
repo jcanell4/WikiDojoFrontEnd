@@ -16,15 +16,17 @@ define([
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTestDropdown',
 
+    'ioc/dokuwiki/editors/AceManager/plugins/AceEnableACE',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceEnableWrapper',
+
     // Localització
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
 
 
 
 ], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent,
-             DojoFireEvent, AceDocumentPreview,DojoDocumentPreview, DojoTestDropdown) {
-
-    console.log("Carrega el testdropdown??", DojoTestDropdown);
+             DojoFireEvent, AceDocumentPreview,DojoDocumentPreview, DojoTestDropdown,
+             AceEnableACE, AceEnableWrapper) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands");
 
@@ -35,6 +37,8 @@ define([
             'CancelButton' : AceFireEvent,
             'SaveButton' : AceFireEvent,
             'DocumentPreviewButton': AceDocumentPreview,
+            'EnableACE': AceEnableACE,
+            'EnableWrapper': AceEnableWrapper
         },
 
         'Dojo': {
@@ -92,6 +96,21 @@ define([
             icon: 'IocComment'
             // category: 'C',
         },
+
+        'EnableACE': {
+            type: 'EnableACE',
+            title: strings["enable-ace"],
+            icon: 'IocEnableACE'
+            // category: 'C',
+        },
+
+        'EnableWrapper': {
+            type: 'EnableWrapper',
+            title: strings["enable-wrapper"],
+            icon: 'IocEnableWrapper'
+            // category: 'C',
+        },
+
 
     };
 
