@@ -14,8 +14,12 @@ define([
 
         iconClassPrefix: 'dijitIocIcon',
 
-        addButton: function(args) {
-            this.button = new Button(args);
+        init: function(args) {
+            this.category = args.category;
+        },
+
+        addButton: function(config) {
+            this.button = new Button(config);
         },
 
         // ALERTA[Xavi] S'ha de fer a través de la propietat window de l'editor perqué aquest es troba en un iframe
@@ -23,6 +27,7 @@ define([
             var text = this.editor.window.getSelection().toString();
             return text;
         }
+
 
     });
 

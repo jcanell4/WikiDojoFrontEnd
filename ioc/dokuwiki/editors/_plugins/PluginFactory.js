@@ -14,6 +14,7 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceDocumentPreview',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoDocumentPreview',
 
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoTestDropdown',
 
     // Localització
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
@@ -21,7 +22,9 @@ define([
 
 
 ], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent,
-             DojoFireEvent, AceDocumentPreview,DojoDocumentPreview) {
+             DojoFireEvent, AceDocumentPreview,DojoDocumentPreview, DojoTestDropdown) {
+
+    console.log("Carrega el testdropdown??", DojoTestDropdown);
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands");
 
@@ -41,6 +44,7 @@ define([
             'CancelButton' : DojoFireEvent,
             'SaveButton' : DojoFireEvent,
             'DocumentPreviewButton': DojoDocumentPreview,
+            'TestDropdown': DojoTestDropdown,
         }
 
     };
@@ -50,25 +54,29 @@ define([
             type: 'BackButton',
             title: strings["cancel-button"],
             event: {full: EventFactory.eventName.CANCEL, partial: EventFactory.eventName.CANCEL_PARTIAL},
-            icon: 'IocBack'
+            icon: 'IocBack',
+            category: 'A'
         },
         'SaveButton': {
             type: 'SaveButton',
             title: strings["save-button"],
             event: {full: EventFactory.eventName.SAVE, partial: EventFactory.eventName.SAVE_PARTIAL},
-            icon: 'IocSave'
+            icon: 'IocSave',
+            category: 'A'
         },
         'IocSoundFormatButton': {
             title: strings["ioc-sound-button"],
             open: '{{soundcloud>',
             close: '}}',
             sample: strings["ioc-sound-sample"],
-            icon: 'IocSound'
+            icon: 'IocSound',
+            category: 'B'
         },
         'DocumentPreviewButton': {
             type: 'DocumentPreview',
             title: strings["document-preview"],
-            icon: 'IocDocumentPreview'
+            icon: 'IocDocumentPreview',
+            category: 'B'
         },
         'TestFormatButton': {
             title: 'Test',
@@ -76,11 +84,13 @@ define([
             close: '}}',
             sample: 'FooBar',
             icon: 'IocSound'
+            // category: 'C',
         },
         'IocComment': {
             type: 'IocComment',
             title: strings["ioc-comment-button"],
             icon: 'IocComment'
+            // category: 'C',
         },
 
     };

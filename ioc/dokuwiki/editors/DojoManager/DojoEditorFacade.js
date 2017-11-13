@@ -50,12 +50,13 @@ define([
 
 
             this.editor.on('change', function (newContent) {
+                console.log("Editor change");
                 this.$textarea.val(newContent);
                 this.emit('change', {newContent: newContent});
             }.bind(this));
 
             this.editor.on('focus', function () {
-                // console.log('Focus DojoEditor');
+                // console.log('Focus DojoEditord');
                 // console.log("Enviant click fals:", args.parentId);
                 jQuery('#' + args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
                 // this.emit('click', {id: args.parentId});

@@ -9,6 +9,8 @@ define([
     var FireEventButton = declare(AbstractDojoPlugin, {
 
         init: function(args) {
+            this.inherited(arguments);
+
             this.fireEventComponent = new FireEventComponent(this.editor.dispatcher);
 
             var config = {

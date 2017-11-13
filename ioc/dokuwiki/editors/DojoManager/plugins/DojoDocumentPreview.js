@@ -9,6 +9,8 @@ define([
     var DocumentPreviewButton = declare(AbstractDojoPlugin, {
 
         init: function(args) {
+            this.inherited(arguments);
+
             this.documentPreviewComponent= new DocumentPreviewComponent(this.editor.dispatcher);
 
             var config = {

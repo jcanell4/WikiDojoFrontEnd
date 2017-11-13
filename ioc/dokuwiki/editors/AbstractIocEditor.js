@@ -25,6 +25,15 @@ define([
             }
 
             return plugins;
+        },
+
+        destroy: function() {
+            // console.log("AbstractIocEditor#destroy");
+            for (var toolbarId in this.toolbars) {
+                this.toolbars[toolbarId].destroy();
+            }
+
+            this.inherited(arguments);
         }
 
     });

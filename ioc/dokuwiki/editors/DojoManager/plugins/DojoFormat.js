@@ -9,6 +9,7 @@ define([
     var FormatButton = declare(AbstractDojoPlugin, {
 
         init: function(args) {
+            this.inherited(arguments);
 
             this.htmlTemplate = args.open + "${content}" + args.close;
 

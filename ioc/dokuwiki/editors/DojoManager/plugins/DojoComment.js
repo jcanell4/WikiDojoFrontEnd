@@ -312,8 +312,8 @@ define([
     });
 
     // Register this plugin.
-    _Plugin.registry["commentsdialog"] = function () {
-        return new CommentsDialog({command: "commentsdialog"});
+    _Plugin.registry["ioc-comment"] = function () {
+        return new CommentsDialog({command: "ioc-comment"});
     };
 
 
