@@ -18,17 +18,38 @@ define([
         },
 
         send: function (urlBase, dataToSend) {
-            var requester = this._getRequester(),
+            var context = this,
+                requester = this._getRequester(),
                 originalDataToSend = requester.get("dataToSend"),
                 originalUrlBase = requester.get("urlBase");
 
             requester.set('dataToSend', dataToSend);
             requester.set('urlBase', urlBase);
 
-            requester.sendRequest().then(function () {
-                requester.set("urlBase", originalUrlBase);
-                requester.set("dataToSend", originalDataToSend)
-            });
+            var promise = requester.sendRequest();
+
+            promise.then(
+                function (data) {
+                    requester.set("urlBase", originalUrlBase);
+                    requester.set("dataToSend", originalDataToSend)
+
+                    context.emit('completed', {
+                        status: 'Success',
+                        data: data
+                    });
+                },
+                function (error) {
+                    requester.set("urlBase", originalUrlBase);
+                    requester.set("dataToSend", originalDataToSend)
+
+                    context.emit('error',
+                        {
+                            status: 'Error',
+                            error: error
+                        });
+                });
+
+            return promise;
         }
 
     });

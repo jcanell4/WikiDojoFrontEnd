@@ -490,6 +490,7 @@ define([
                     'DocumentPreviewButton',
                     'EnableACE',
                     'EnableWrapper',
+                    'LatexPreview'
                 ]);
                 this.initPlugins(plugins);
 
@@ -524,7 +525,7 @@ define([
                     this.addPlugins(plugins);
                 }
 
-                console.log("plugins inicialitzats:", this.plugins);
+                // console.log("plugins inicialitzats:", this.plugins);
             },
 
             initHandlers: function () {
@@ -688,7 +689,6 @@ define([
                 } else {
                     dw_editor.setWrap(textarea, 'off');
                 }
-
             },
 
             toggleWrap: function () {
@@ -704,7 +704,6 @@ define([
                     // this.currentEditor = this.EDITOR.ACE;
                     this.enable();
                 }
-
             },
 
             enable: function () {

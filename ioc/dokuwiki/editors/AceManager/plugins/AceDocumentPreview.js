@@ -8,7 +8,7 @@ define([
 
         init: function (args) {
 
-            console.log("DocumentPreviewButtonPlugin#init", args);
+            // console.log("AceDocumentPreview#init", args);
 
             var config = {
                 type: args.type,
@@ -20,7 +20,6 @@ define([
 
             this.addButton(config, this.process);
         },
-
 
         _processFull:function() {
             this.documentPreviewComponent.send();

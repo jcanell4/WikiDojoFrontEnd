@@ -26,6 +26,8 @@ define(
         'ioc-sound-sample': 'identificador del so:clau',
 
 
+        // Latex Preview Plugin
+        'ioc-latex-preview': 'Previsualització Latex'
 
     })
 );

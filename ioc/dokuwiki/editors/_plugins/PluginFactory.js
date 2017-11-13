@@ -19,6 +19,8 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableACE',
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableWrapper',
 
+    'ioc/dokuwiki/editors/AceManager/plugins/AceLatexPreview',
+
     // Localització
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
 
@@ -26,7 +28,7 @@ define([
 
 ], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview, DojoTestDropdown,
-             AceEnableACE, AceEnableWrapper) {
+             AceEnableACE, AceEnableWrapper, AceLatexPreview) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands");
 
@@ -38,7 +40,8 @@ define([
             'SaveButton' : AceFireEvent,
             'DocumentPreviewButton': AceDocumentPreview,
             'EnableACE': AceEnableACE,
-            'EnableWrapper': AceEnableWrapper
+            'EnableWrapper': AceEnableWrapper,
+            'LatexPreview': AceLatexPreview
         },
 
         'Dojo': {
@@ -110,6 +113,11 @@ define([
             icon: 'IocEnableWrapper'
             // category: 'C',
         },
+
+        'LatexPreview': {
+            type: 'LatexPreview',
+            title: strings["latex-preview"],
+        }
 
 
     };

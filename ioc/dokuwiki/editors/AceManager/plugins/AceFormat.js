@@ -6,8 +6,8 @@ define([
     return declare([AbstractAcePlugin], {
 
         init: function (args) {
+            // console.log("AceFormatButtonPlugin#init", args);
 
-            console.log("AceFormatButtonPlugin#init", args);
             var config = {
                 type: 'format',
                 title: args.title,

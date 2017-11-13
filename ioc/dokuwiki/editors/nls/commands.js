@@ -25,6 +25,8 @@ define({ root:
         'ioc-sound-button': 'Add sound',
         'ioc-sound-sample': 'sound identifier:key',
 
+        // Latex Preview Plugin
+        'ioc-latex-preview': 'Latex preview'
 
     }),
 //end v1.x content

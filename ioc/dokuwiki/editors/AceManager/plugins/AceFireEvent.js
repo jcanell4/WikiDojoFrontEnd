@@ -25,23 +25,10 @@ define([
 
         _processFull: function () {
             this.fireEventComponent.fireFull(this.events['full'])
-
-            // var id = this._getDocumentId();
-            //
-            // this.fireEventComponent.fire(this.events['full'], {
-            //     id: id
-            // }, id)
         },
 
         _processPartial: function () {
             this.fireEventComponent.fireFull(this.events['partial'])
-
-            // var id = this._getDocumentId();
-            //
-            // this.fireEventComponent.fire(this.events['partial'], {
-            //     id: id,
-            //     chunk: this._getChunkId()
-            // }, id)
         }
 
     });
