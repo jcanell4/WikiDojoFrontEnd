@@ -1,21 +1,29 @@
 define([
     'dojo/_base/declare',
-    'ioc/dokuwiki/editors/Components/AjaxComponent'
-], function (declare, AjaxComponent) {
+    'ioc/dokuwiki/editors/Components/AjaxComponent',
+    'ioc/dokuwiki/editors/Renderable',
+], function (declare, AjaxComponent, Renderable) {
 
-    return declare(AjaxComponent, {
+    return declare([AjaxComponent, Renderable], {
 
         send: function (text) {
 
             arguments[0] = DOKU_BASE + 'lib/plugins/aceeditor/preview.php';
             arguments[1] = {text: text};
 
+            var context = this;
+
             var promise = this.inherited(arguments).then(function(data) {
 
-                return {htmlTemplate: '<div ${attributes}><img src="' + (encodeURI(data.url)) + '"/></div>'};
+                return context.render(data);
+
             });
 
             return promise;
+        },
+
+        render: function (data) {
+            return {htmlTemplate: '<div ${attributes}><img src="' + (encodeURI(data.url)) + '"/></div>'};
         }
 
     });

@@ -1,7 +1,7 @@
 define([
     'dojo/_base/declare',
     'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin',
-    'ioc/dokuwiki/editors/_plugins/RenderizablePlugin',
+    'ioc/dokuwiki/editors/Renderable',
     'ioc/dokuwiki/editors/Components/LatexPreviewComponent',
     "dojo/string", // string.substitute
 ], function (declare, AbstractAcePlugin, RenderizablePlugin, LatexPreviewComponent, string) {
@@ -9,8 +9,6 @@ define([
     return declare([AbstractAcePlugin, RenderizablePlugin], {
 
         init: function () {
-            // this.preview = new LatexPreviewPlugin({ace: this.editor});
-
             this.latexPreviewComponent = new LatexPreviewComponent(this.editor.dispatcher);
             this.addEditorListener('change, changeCursor', this.process.bind(this));
             this._update = _.debounce(this._update, 1000).bind(this);
