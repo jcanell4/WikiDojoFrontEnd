@@ -125,6 +125,8 @@ define([
             // No cal afegir el tipus, perquè ja es troba a la estructura
             // S'han de recorre tots els elements de content (del draft) i copiar el contingut a content (de page.drafts) i afegir la data del element seleccionat, la
 
+            page.drafts[draft.type].date = date; // data global del draft
+
             for (var chunk in draft.content) {
                 page.drafts[draft.type][chunk] = {
                     content: draft.content[chunk],
@@ -358,7 +360,8 @@ define([
 
             var dataToSend = {
                 id: this.contentTool.ns,
-                draft: JSON.stringify(this._getLastGeneratedDraft())
+                draft: JSON.stringify(this._getLastGeneratedDraft()),
+                date: this.lastRefresh
             };
 
             return dataToSend;
