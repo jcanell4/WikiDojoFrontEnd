@@ -1,12 +1,13 @@
 define([
     'dojo/_base/declare',
-    'dojo/Evented'
-], function (declare, Evented) {
+    'dojo/Evented',
+    'ioc/dokuwiki/editors/IdReferencer'
+], function (declare, Evented, IdReferencer) {
 
 
-    return declare(Evented, {
+    return declare([Evented, IdReferencer], {
 
-        constructor: function() {
+        constructor: function () {
             this.handlers = [];
             this.enabled = false;
         },
@@ -27,11 +28,36 @@ define([
             throw new Error('Method not implemented');
         },
 
+
+        process: function () {
+            switch (this.editor.TOOLBAR_ID) {
+                case 'full-editor':
+                    this._processFull();
+                    break;
+
+                case 'partial-editor':
+                    this._processPartial();
+                    break;
+
+                default:
+                    console.log(this.editor);
+                    throw new Error("Tipus d'editor no reconegut: " + this.editor.TOOLBAR_ID);
+            }
+        },
+
+        _processFull: function () {
+            throw new Error('Method not implemented');
+        },
+
+        _processPartial: function () {
+            this._processFull();
+        },
+
         /**
          * Activació del plugin. Aquí es suscriuen els listeners dels events. Ha d'establir el valor de la propietat
          * enabled a true.
          */
-        activate: function() {
+        activate: function () {
             // console.log('AbstractPlugin#activate');
             this.enabled = true;
             // throw new Error('Method not implemented');
@@ -41,7 +67,7 @@ define([
          * Desactivació del plugin. Aquí es desuscriuen els listeners dels events. Ha d'establir el valor de la
          * propietat enabled a false.
          */
-        deactivate: function() {
+        deactivate: function () {
             // console.log('AbstractPlugin#deactivate');
             this.enabled = false;
             // throw new Error('Method not implemented');
@@ -51,7 +77,7 @@ define([
         /**
          * Alterna entra la activació o desactivació.
          */
-        toggle: function() {
+        toggle: function () {
             // console.log("AbstractPlugin#toggle", this.enabled);
             if (this.enabled) {
                 this.deactivate();
@@ -63,7 +89,7 @@ define([
         /**
          * Accions
          */
-        destroy: function() {
+        destroy: function () {
             this.deactivate();
             // throw new Error('Method not implemented');
         },
@@ -73,20 +99,27 @@ define([
          *
          * @param {string} events - un o més events separats per comes, per exemple:  'change, click'
          * @param {Function} callback - funció a cridar quan es dispari l'event a l'editor
+         *
+         * @return handler - handler corresponent al listener afegit per permetre la seva eliminació individual
          */
         addEditorListener: function (events, callback) {
-            this.handlers.push (this.editor.on(events, callback));
+            var handler = this.editor.on(events, callback);
+            this.handlers.push(handler);
+            return handler;
+
         },
 
         /**
          * Elimina la detecció de tots els events a l'editor.
          */
-        removeEditorListeners: function() {
+        removeEditorListeners: function () {
             // console.log("AbstractPlugin#removeEditorListeners");
-            for (var i=0; i<this.handlers.length; i++) {
+            for (var i = 0; i < this.handlers.length; i++) {
                 this.handlers[i].remove();
             }
-        }
+        },
+
+
 
     });
 

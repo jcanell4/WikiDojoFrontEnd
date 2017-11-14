@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare", // declare
-    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
-    "dojo/i18n", // i18n.getLocalization
+    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
+    // "dojo/i18n", // i18n.getLocalization
     "dojo/_base/lang", // lang.hitch
     "dojo/sniff", // has("chrome") has("opera")
     "dijit/focus", // focus.focus()
@@ -11,48 +11,43 @@ define([
     'ioc/gui/DialogBuilder',
     "dojo/text!./templates/CommentFragment.html",
     "dojo/text!./templates/CommentFragmentReply.html",
-    "dojo/i18n!ioc/dokuwiki/editors/DojoManager/nls/commands",
 
-], function (declare, AbstractDojoPlugin,
-             i18n, lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
+], function (declare, AbstractParseableDojoPlugin,
+             /*i18n,*/ lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
 
-    var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
+    // var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
 
-    var CommentsDialog = declare("ioc.dokuwiki.editors.DojoManager.plugins.commentsdialog", [AbstractDojoPlugin], {
+    var CommentsDialog = declare([AbstractParseableDojoPlugin], {
 
         htmlTemplate: template,
         replyTemplate: templateReply,
-        needsParse: true,
 
-        init : function () {
-            this._initButton();
-        },
+        init : function (args) {
+            this.inherited(arguments);
 
-        _initButton: function () {
+            this.editor.customUndo = true;
 
-            var editor = this.editor;
-            editor.customUndo = true;
-
-            this.button = new Button({
-                label: strings["commentplugin"],
-                ownerDocument: editor.ownerDocument,
-                dir: editor.dir,
-                lang: editor.lang,
+            var config = {
+                label: args.title,
+                ownerDocument: this.editor.ownerDocument,
+                dir: this.editor.dir,
+                lang: this.editor.lang,
                 showLabel: false,
-                iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + "Comments",
+                iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + args.icon,
                 tabIndex: "-1",
-                onClick: lang.hitch(this, "activate")
-            });
+                onClick: lang.hitch(this, "process")
+            };
 
-            this.firstRun = true;
-
+            this.addButton(config);
         },
 
-        _addHandlers: function ($node, context) {
+        _addHandlers: function ($node/*, context*/) {
+            // console.log("Adding handlers", $node, context);
             var $replyNode = $node.find('textarea.reply');
             var $buttons = $node.find('button[data-action]');
             var $removeButtons = $node.find('[data-button="remove"]');
             var $editButtons = $node.find('[data-button="edit"]');
+            var context = this;
 
             $buttons.on('click', function (e) {
                 var $button = jQuery(this);
@@ -118,12 +113,12 @@ define([
             $nodes.each(function() {
                 $nodes.find('.viewComment').css('display', 'inherit');
                 $nodes.find('.editComment').css('display', 'none');
-                context._addHandlers(jQuery(this), context);
+                context._addHandlers(jQuery(this)/*, context*/);
             });
 
         },
 
-        activate: function () {
+        process: function () {
             this.editor.beginEditing();
             var reference = this._getSelectionText();
 
@@ -141,17 +136,17 @@ define([
                 id: "ioc-comment-" + Date.now(),
                 reference: reference,
                 ref: ref,
-                resolveBtnTitle: strings['resolveBtnTitle'],
-                resolveBtn : strings['resolveBtn'],
-                textareaPlaceholder : strings['textareaPlaceholder'],
-                replyBtnTitle : strings['replyBtnTitle'],
-                replyBtn : strings['replyBtn']
+                resolveBtnTitle: this.strings['ioc-comment-resolve-title'],
+                resolveBtn : this.strings['ioc-comment-resolve-button'],
+                textareaPlaceholder : this.strings['ioc-comment-textarea-placeholder'],
+                replyBtnTitle : this.strings['ioc-comment-reply-title'],
+                replyBtn : this.strings['ioc-comment-reply-button']
                 // signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
             };
 
 
             // Comprovem si es pot insertar en aquest punt
-            iframe= document.getElementById('my');
+            // iframe= document.getElementById('my');
 
             var htmlCode = string.substitute(this.htmlTemplate, args);
             this.editor.execCommand('inserthtml', htmlCode); //ALERTA[Xavi] S'afegeix la referència per evitar esborrar el text ressaltat
@@ -159,7 +154,7 @@ define([
             var $node = jQuery(this.editor.iframe).contents().find('#' + args.id);
             $node.find('textarea').focus();
 
-            this._addHandlers($node, this);
+            this._addHandlers($node/*, this*/);
 
             this.editor.endEditing();
 
@@ -194,8 +189,10 @@ define([
 
             var args = {
                 reply: reply,
-                signature: SIG
+                signature: SIG,
                 // TODO[Xavi] Afegir els noms dels botons esborrar i editar localitzats
+                btnSave: this.strings['ioc-comment-save-button'],
+                btnCancel: this.strings['ioc-comment-cancel-button']
             };
 
             var $replyCode = jQuery(string.substitute(this.replyTemplate, args));
@@ -315,9 +312,8 @@ define([
     });
 
     // Register this plugin.
-    _Plugin.registry["commentsdialog"] = function () {
-        console.log("Registratnt comment");
-        return new CommentsDialog({command: "commentsdialog"});
+    _Plugin.registry["ioc-comment"] = function () {
+        return new CommentsDialog({command: "ioc-comment"});
     };
 
 

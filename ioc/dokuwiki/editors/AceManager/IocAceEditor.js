@@ -3,19 +3,11 @@ define([
     'ioc/dokuwiki/editors/AceManager/rules/IocRuleSet',
     'ioc/dokuwiki/editors/AceManager/modes/IocAceMode',
     'ioc/dokuwiki/editors/AceManager/IocCommands',
-    'ioc/dokuwiki/editors/AceManager/plugins/LatexPreviewPlugin',
+    // 'ioc/dokuwiki/editors/AceManager/plugins/LatexPreviewPlugin',
     'dojo/_base/declare',
     'dojo/_base/lang',
-    'ioc/dokuwiki/editors/AceManager/state_handler',
-    'ioc/dokuwiki/editors/AceManager/plugins/IocSoundFormatButtonPlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/DocumentPreviewButtonPlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/WrapTogglePlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/ACETogglePlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/SaveButtonPlugin',
-    'ioc/dokuwiki/editors/AceManager/plugins/CancelButtonPlugin',
-], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, LatexPreviewPlugin, declare, lang, state_handler,
-             IocSoundFormatButtonPlugin, DocumentPreviewButtonPlugin, WrapTogglePlugin, ACETogglePlugin,
-             SaveButtonPlugin, CancelButtonPlugin) {
+    'ioc/dokuwiki/editors/AceManager/state_handler'
+], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, /*LatexPreviewPlugin,*/ declare, lang, state_handler) {
 
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
@@ -128,12 +120,13 @@ define([
          * no s'han de modificar les propietats manualment si es fa externament, s'han de cridar els mètodes
          * set(propietat) i get(propietat), de manera que es disparin apropiadament els watch().
          *
-         * @class IocAceEditor
          * @extends dojo.Stateful
          * @author Xavier García<xaviergaro.dev@gmail.com>
          */
         {
-            name: 'IocAceEditor',
+            name: 'IocAceEditor', // ALERTA[Xavi] no se si això es fa servir enlloc
+
+            editorType: 'ACE',
 
             EDITOR: {
                 ACE: 0,
@@ -164,13 +157,13 @@ define([
                 horizontalScrollBar: false,
                 undoManager: new ace.UndoManager(),
                 plugins: [
-                    LatexPreviewPlugin,
-                    IocSoundFormatButtonPlugin,
-                    DocumentPreviewButtonPlugin,
-                    WrapTogglePlugin,
-                    ACETogglePlugin,
-                    SaveButtonPlugin,
-                    CancelButtonPlugin
+                    // LatexPreviewPlugin,
+                    // IocSoundFormatButtonPlugin,
+                    // DocumentPreviewButtonPlugin,
+                    // WrapTogglePlugin,
+                    // ACETogglePlugin,
+                    // SaveButtonPlugin,
+                    // CancelButtonPlugin
                 ]
 
             },
@@ -487,7 +480,19 @@ define([
                 var commands = new IocCommands(this);
 
                 this.initHandlers();
-                this.initPlugins(args.plugins);
+                // this.initPlugins(args.plugins);
+
+                var plugins = this.getPlugins([
+                    'IocSoundFormatButton',
+                    'TestFormatButton',
+                    'CancelButton',
+                    'SaveButton',
+                    'DocumentPreviewButton',
+                    'EnableACE',
+                    'EnableWrapper',
+                    'LatexPreview'
+                ]);
+                this.initPlugins(plugins);
 
 
                 this.on('change', function () {
@@ -519,6 +524,8 @@ define([
                 if (plugins) {
                     this.addPlugins(plugins);
                 }
+
+                // console.log("plugins inicialitzats:", this.plugins);
             },
 
             initHandlers: function () {
@@ -682,7 +689,6 @@ define([
                 } else {
                     dw_editor.setWrap(textarea, 'off');
                 }
-
             },
 
             toggleWrap: function () {
@@ -698,7 +704,6 @@ define([
                     // this.currentEditor = this.EDITOR.ACE;
                     this.enable();
                 }
-
             },
 
             enable: function () {
@@ -822,10 +827,11 @@ define([
             },
 
             initializePlugin: function (_plugin) {
-                var plugin = new _plugin();
+                // console.log("IocAceEditor#initializePlugin#_plugin", _plugin);
+                var plugin = new _plugin.plugin();
                 this.plugins.push(plugin);
                 plugin.setEditor(this);
-                plugin.init();
+                plugin.init(_plugin.config);
             },
 
 

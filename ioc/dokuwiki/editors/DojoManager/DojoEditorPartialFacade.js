@@ -9,6 +9,8 @@ define([
 ], function (declare, Editor, AlwaysShowToolbar, dom, style, geometry, DojoEditorFacade) {
     return declare([DojoEditorFacade], {
 
+        TOOLBAR_ID: 'partial-editor',
+
         fillEditorContainer: function() {
             var viewNode,
                 p,
