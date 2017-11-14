@@ -159,7 +159,7 @@ define([
 
             // S'elimina només el tipus corresponent al document
             // TODO[Xavi] això es podria lligar al sistema d'events: this.eventName.SAVE_DRAFT
-            this._removeLocalDraft(this.contentTool.DRAFT_TYPE);
+            // this._removeLocalDraft(this.contentTool.DRAFT_TYPE);
         },
 
         _onSavePartial: function (data) {
