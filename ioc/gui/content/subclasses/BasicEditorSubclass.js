@@ -260,7 +260,8 @@ define([
             addEditors: function (editor) {
                 // console.log("BasicEditorSubclass#addEditors", this.editorType);
                 // this.editor = this.createEditor({id : this.id}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
-                this.editor = this.createEditor({id:this.id, originalContent: this.originalContent}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
+
+                this.editor = this.createEditor({id:this.id, content: this.content.content, originalContent: this.originalContent}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
             },
 
             createEditor: function(config, type) {
@@ -282,12 +283,14 @@ define([
                         containerId:'editor_' + config.id,
                         textareaId:'textarea_' + config.id,
                         dispatcher: this.dispatcher,
-                        originalContent: config.originalContent
+                        content: config.content,
+                        originalContent: config.originalContent,
                     }
                 );
             },
 
             createAceEditor: function (config) {
+
                 var $textarea = jQuery('#textarea_' + config.id); // TODO[Xavi] Només cal per determinar el wrap, si es passa des del servidor no caldria
 
                 return new AceFacade({
@@ -301,6 +304,7 @@ define([
                     mdpage: JSINFO.plugin_aceeditor.mdpage,
                     auxId: config.id,
                     dispatcher: this.dispatcher,
+                    content: config.content,
                     originalContent: config.originalContent
                 });
             },

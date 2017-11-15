@@ -69,26 +69,31 @@ define([
 
             // ALERTA[Xavi] Aqui comprovem si la mida ocupada es superior a 2MB ABANS de desar les dades, no tenim en
             // compte la mida de les dades que seran desades
-            if (elapsedTime >= this.AUTOSAVE_REMOTE || spaceUsed > this.MAX_LOCAL_STORAGE_USED) {
+
+            this._doSaveLocal();
+
+            if (elapsedTime >= this.AUTOSAVE_REMOTE || spaceUsed > this.MAX_LOCAL_STORAGE_USED) { // ALERTA[Xavi]! El local ja no s'esborra en fer save local
                 this._doSaveRemoteServer();
                 ret = 1;
-            } else {
-
-                this._doSaveLocal();
             }
+
+
             return ret;
 
         },
 
         _doSaveLocal: function () {
-            // console.log("Draft#_doSaveLocalStorage");
+            console.log("Draft#_doSaveLocalStorage");
             this.lastRefresh = Date.now();
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
+
+
             var draft = this.contentTool._generateDraftInMemory(),
                 page = this._doGetPage(),
                 date = Date.now();
 
+            this._setLastGeneratedDraft(draft);
 
             // Si existeix la actualitzarem, i si no, la creem
             if (!page) {
@@ -148,20 +153,18 @@ define([
         },
 
         _doSaveRemoteServer: function () {
-            // console.log("Draft#_doSaveRemoteServer");
             this.lastRemoteRefresh = Date.now();
-            this.lastRefresh = this.lastRemoteRefresh;
-
+            // this.lastRefresh = this.lastRemoteRefresh;
             var dataToSend = this._getQueryLock();
+
+
+            console.log("Draft#_doSaveRemoteServer");
 
             this.eventManager.fireEvent(this.eventName.SAVE_DRAFT, {
                 id: this.contentToolId,
                 dataToSend: dataToSend
             });
 
-            // S'elimina només el tipus corresponent al document
-            // TODO[Xavi] això es podria lligar al sistema d'events: this.eventName.SAVE_DRAFT
-            // this._removeLocalDraft(this.contentTool.DRAFT_TYPE);
         },
 
         _onSavePartial: function (data) {
@@ -355,23 +358,32 @@ define([
 
 
         _getQueryLock: function () {
-            //console.log('Draft#_getQueryDraft');
-            this._setLastGeneratedDraft(this.contentTool._generateDraftInMemory());
+            // console.log('Draft#_getQueryLock');
+            // var draft =this.contentTool._generateDraftInMemory();
+
+            var draft = this._getLastGeneratedDraft();
 
             var dataToSend = {
                 id: this.contentTool.ns,
-                draft: JSON.stringify(this._getLastGeneratedDraft()),
+                draft: JSON.stringify(draft),
                 date: this.lastRefresh
             };
+
+            // console.log("DataToSend:", dataToSend);
 
             return dataToSend;
         },
 
         _setLastGeneratedDraft: function (draft) {
-            this.lastGeneratedDraft = draft;
+            // console.log("Draft#_setLastGeneratedDraft", draft);
+
+            if (draft.content !== {}) {
+                this.lastGeneratedDraft = draft;
+            }
         },
 
         _getLastGeneratedDraft: function () {
+            // console.log("lastGeneratedDraft?", this.lastGeneratedDraft);
             return this.lastGeneratedDraft;
         },
 
@@ -429,9 +441,11 @@ define([
         },
 
         recoverLocalDraft: function () {
-            // console.log("Draft#recoverLocalDraft", this._doGetPage());
+
 
             var page = this._doGetPage();
+
+            // console.log("Draft#recoverLocalDraft", page.drafts);
 
             if (page && page.drafts) {
                 return page.drafts;

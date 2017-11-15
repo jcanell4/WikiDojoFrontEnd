@@ -484,7 +484,7 @@ define([
 
                 var plugins = this.getPlugins([
                     'IocSoundFormatButton',
-                    'TestFormatButton',
+                    // 'TestFormatButton',
                     'CancelButton',
                     'SaveButton',
                     'DocumentPreviewButton',
@@ -504,16 +504,15 @@ define([
                     summaryCheck(); // ALERTA! Funció propia de la Dokuwiki
 
                     commands.hide_menu(); // ALERTA! es pot moure la subscripcció al propi commands
-                    // preview.trigger(); // Convertit en plugin
+
                 });
 
                 this.on('changeCursor', function () {
                     commands.hide_menu(); // ALERTA! es pot moure la subscripcció al propi commands
-                    // preview.trigger(); // Convertit en plugin
+
                 });
 
-
-                this.setValue(args.originalContent);
+                this.setValue(args.content);
                 this.originalContent = args.originalContent;
 
             },

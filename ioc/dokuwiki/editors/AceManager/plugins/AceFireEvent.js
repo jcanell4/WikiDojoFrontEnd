@@ -28,7 +28,7 @@ define([
         },
 
         _processPartial: function () {
-            this.fireEventComponent.fireFull(this.events['partial'])
+            this.fireEventComponent.firePartial(this.events['partial'])
         }
 
     });

@@ -220,11 +220,18 @@ define([
 
             var localDrafts = page ? page.drafts : {};
 
+
+
+
+            // TODO[Xavi] Canviar per ---> for (var type in remoteDrafts) { /* CODI */}
+
             console.log("Carregats drafts locals?", localDrafts);
 
-            if (remoteDrafts['full'] && remoteDrafts['full'].date > localDrafts['full'].date) {
-                console.log("El draft remot FULL es més recent que el local per mm:", remoteDrafts['full'].date - localDrafts['full'].date);
-                console.log("TODO: Update el draft local FULL");
+
+
+            if (remoteDrafts['full'] && remoteDrafts['full'].date > (localDrafts['full'] ? localDrafts['full'].date : -1)) {
+                console.log("------ UPDATING FULL -------");
+                // console.log("Fent Update el draft local FULL");
 
                 var draft = {
                     content: remoteDrafts['full']['content'],
@@ -244,9 +251,20 @@ define([
 
             }
 
-            if (localDrafts['structured']) {
-                console.log("El draft remot PARCIAL es més recent que el local");
-                console.log("TODO: Update el draft local PARCIAL");
+
+            if (remoteDrafts['structured'] && remoteDrafts['structured'].date > (localDrafts['structured'] ? localDrafts['structured'].date : -1)) {
+                console.log("------ UPDATING LOCAL -------");
+                // console.log("Fent update el draft local PARCIAL");
+
+                var draft = {
+                    content: remoteDrafts['structured']['content'],
+                    id: ns,
+                    type: 'structured'
+                };
+
+                this._doSaveLocal(draft, remoteDrafts['structured'].date, ns);
+
+            }else {
 
                 if (!remoteDrafts['structured']) {
                     console.log("No havia draft parcial remot, no cal actualitzar")
@@ -383,6 +401,7 @@ define([
         // },
 
         _formatLocalStructuredPage: function (page, draft, date) {
+            console.log("DraftManager#_formatLocalStructuredPage", page,draft, date);
             // Reestructurem la informació
             // No cal afegir el tipus, perquè ja es troba a la estructura
             // S'han de recorre tots els elements de content (del draft) i copiar el contingut a content (de page.drafts) i afegir la data del element seleccionat, la
@@ -390,18 +409,25 @@ define([
             page.drafts[draft.type].date = date; // data global del draft
 
             for (var chunk in draft.content) {
+                console.log("Processant chunk...", chunk);
                 page.drafts[draft.type][chunk] = {
                     content: draft.content[chunk],
                     date: date // TODO: Eliminar i comprovar que no falla res
                 }
             }
 
+            console.log("Afegit a la pàgina:", {
+                content: draft.content[chunk],
+                date: date
+            });
+
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
             return page;
         },
 
         _formatLocalFullPage: function (page, draft, date) {
-            console.log(page, draft, date);
+            // console.log("DraftManager#_formatLocalFullPage", page,draft, date);
+            // console.log(page, draft, date);
             draft.date = date;
 
             page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix

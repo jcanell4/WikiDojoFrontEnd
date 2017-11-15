@@ -54,7 +54,7 @@ define([
 
             var plugins = this.getPlugins([
                 'IocSoundFormatButton',
-                'TestFormatButton',
+                // 'TestFormatButton',
                 'IocComment',
                 'SaveButton',
                 'CancelButton',
