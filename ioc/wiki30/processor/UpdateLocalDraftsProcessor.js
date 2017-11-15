@@ -22,6 +22,9 @@ define([
              */
             process: function (value, dispatcher) {
                 console.log("UpdateLocalDraftsProcessor#process", value);
+
+                dispatcher.getDraftManager().updateLocalDrafts(value.ns, value.drafts);
+
                     // this._processDialog(value, dispatcher);
 
                 // TODO[Xavi]

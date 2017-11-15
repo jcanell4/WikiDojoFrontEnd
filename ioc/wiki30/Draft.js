@@ -130,7 +130,7 @@ define([
             for (var chunk in draft.content) {
                 page.drafts[draft.type][chunk] = {
                     content: draft.content[chunk],
-                    date: date
+                    date: date // TODO: Eliminar i comprovar que no falla res
                 }
             }
 
