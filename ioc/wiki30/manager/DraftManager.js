@@ -56,7 +56,7 @@ define([
             return this.drafts[docNs];
         },
 
-        getLastLocalDraftTime: function (docId, docNs, chunkId) {
+        getLastLocalDraftTime: function (docId, docNs/*, chunkId*/) {
             // console.log("DraftManager#getLastLocalDraftTime", docId, docNs, chunkId);
             var draft = this.getDraft(docId, docNs),
                 drafts = draft.recoverLocalDraft(),
@@ -64,14 +64,16 @@ define([
 
             // S'ha de retornar tant el del local com el del full si existeixen
             for (var type in drafts) {
+                time[type] = drafts[type].date;
 
-                if (type === "structured" && drafts.structured[chunkId] === undefined) {
-                    //console.log("No existeix el chunk, no afegim la data");
-                } else if (type === "full") {
-                    time[type] = drafts[type].date;
-                } else {
-                    time[type] = drafts[type][chunkId].date;
-                }
+
+                // if (type === "structured" && drafts.structured[chunkId] === undefined) {
+                //     //console.log("No existeix el chunk, no afegim la data");
+                // } else if (type === "full") {
+                //     time[type] = drafts[type].date;
+                // } else {
+                //     time[type] = drafts[type][chunkId].date;
+                // }
             }
 
             return time;
@@ -213,20 +215,17 @@ define([
          * @param ns
          * @param remoteDrafts
          */
-        updateLocalDrafts: function (ns, remoteDrafts){
+        updateLocalDrafts: function (ns, remoteDrafts) {
             console.log("DraftManager#updateLocalDrafts", ns, remoteDrafts);
 
-            var page =this._doGetPage(ns);
+            var page = this._doGetPage(ns);
 
             var localDrafts = page ? page.drafts : {};
-
-
 
 
             // TODO[Xavi] Canviar per ---> for (var type in remoteDrafts) { /* CODI */}
 
             console.log("Carregats drafts locals?", localDrafts);
-
 
 
             if (remoteDrafts['full'] && remoteDrafts['full'].date > (localDrafts['full'] ? localDrafts['full'].date : -1)) {
@@ -264,7 +263,7 @@ define([
 
                 this._doSaveLocal(draft, remoteDrafts['structured'].date, ns);
 
-            }else {
+            } else {
 
                 if (!remoteDrafts['structured']) {
                     console.log("No havia draft parcial remot, no cal actualitzar")
@@ -278,13 +277,13 @@ define([
             // console.log("new drafts:", remoteDrafts, "local times:", time);
 
 
-        // if (drafts['full']) {
-        //     this._updateFullLocalDraft();
-        // }
-        //
-        // if (drafts['structured']) {
-        //     this._updateStructuredLocalDraft();
-        // }
+            // if (drafts['full']) {
+            //     this._updateFullLocalDraft();
+            // }
+            //
+            // if (drafts['structured']) {
+            //     this._updateStructuredLocalDraft();
+            // }
 
 
         },
@@ -294,15 +293,13 @@ define([
         // },
 
 
-
-
         _doSaveLocal: function (draft, date, ns) {
             console.log("Draft#_doSaveLocalStorage");
             this.lastRefresh = Date.now();
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
             var page = this._doGetPage(ns);
-                // date = Date.now();
+            // date = Date.now();
 
 
             // Si existeix la actualitzarem, i si no, la creem
@@ -343,9 +340,15 @@ define([
 
         // TODO[Xavi] aquí podem afegir la compresió de dades
         _doSetPage: function (page, ns) {
+
             console.log('Draft#_doSetPage', page, ns);
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = this._doGetUser(userId);
+
+
+            if (userId === 'user_undefined') {
+                return;
+            }
 
             user.pages[ns] = page;
 
@@ -409,17 +412,17 @@ define([
             page.drafts[draft.type].date = date; // data global del draft
 
             for (var chunk in draft.content) {
-                console.log("Processant chunk...", chunk);
+                // console.log("Processant chunk...", chunk);
                 page.drafts[draft.type][chunk] = {
                     content: draft.content[chunk],
                     date: date // TODO: Eliminar i comprovar que no falla res
                 }
             }
 
-            console.log("Afegit a la pàgina:", {
-                content: draft.content[chunk],
-                date: date
-            });
+            // console.log("Afegit a la pàgina:", {
+            //     content: draft.content[chunk],
+            //     date: date
+            // });
 
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
             return page;

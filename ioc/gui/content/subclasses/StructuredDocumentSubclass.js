@@ -1133,10 +1133,22 @@ define([
 
 
         _doEditPartial: function (event) {
-//            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+           console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
-            var dataToSend = this.getQueryEdit(event.chunk),
-                containerId = "container_" + event.id + "_" + event.chunk;
+            var dataToSend = this.getQueryEdit(event.chunk);
+
+
+            if (event.discard_draft) {
+                dataToSend +="&discard_draft=true";
+            }
+
+            console.log("Data to send--->",
+            {
+                id: this.id,
+                    ns: this.ns,
+                dataToSend: dataToSend,
+                standbyId: this.id
+            });
 
             return {
                 id: this.id,
