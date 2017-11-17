@@ -42,8 +42,11 @@ define([
                 TOOLBAR_ID: this.TOOLBAR_ID
             }, dom.byId(args.containerId));
 
+
+
+            alert("ALERTA: S'ha de fer el canvi per distingir entre el content i el originalContent pels esborranys!");
             var text = this.$textarea.val();
-            this.editor.value = text.replace(/^\s+|\s+$/gm, '');
+            this.editor.value = text.replace(/^\s+|\s+$/gm, ''); // <-- this.editor.value = args.content
 
             var originalContent = args.originalContent.replace(/^\s+|\s+$/gm, '');
             this.editor.originalContent = originalContent;

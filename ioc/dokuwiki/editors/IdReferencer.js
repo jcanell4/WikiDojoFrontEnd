@@ -19,6 +19,8 @@ define([
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
 
+            // console.log("Chunk?", chunk, dispatcher.getGlobalState().getCurrentElementId());
+
             return chunk;
         },
 
