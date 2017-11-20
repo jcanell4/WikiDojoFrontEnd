@@ -48,7 +48,7 @@ define([
             },
 
             _showDiffDialog: function (value) {
-                // console.log("DraftProcessor#_showDiffDialog", value);
+                console.log("DraftProcessor#_showDiffDialog", value);
 
                 var data = this._extractData(value),
                     dialogParams;
