@@ -21,6 +21,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                console.log("DraftProcessor#process", value);
                     this._processDialog(value, dispatcher);
             },
 
@@ -181,7 +182,7 @@ define([
             },
 
             _getDraftQuery: function () {
-                // console.log("DraftProcessor#_getDraftQuery", this.query);
+                console.log("DraftProcessor#_getDraftQuery", this.query);
                 var query = this.query;
 
                 if (this.isLocalDraft) {

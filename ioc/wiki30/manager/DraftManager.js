@@ -56,7 +56,7 @@ define([
             return this.drafts[docNs];
         },
 
-        getLastLocalDraftTime: function (docId, docNs, chunkId) {
+        getLastLocalDraftTime: function (docId, docNs/*, chunkId*/) {
             // console.log("DraftManager#getLastLocalDraftTime", docId, docNs, chunkId);
             var draft = this.getDraft(docId, docNs),
                 drafts = draft.recoverLocalDraft(),
@@ -64,14 +64,16 @@ define([
 
             // S'ha de retornar tant el del local com el del full si existeixen
             for (var type in drafts) {
+                time[type] = drafts[type].date;
 
-                if (type === "structured" && drafts.structured[chunkId] === undefined) {
-                    //console.log("No existeix el chunk, no afegim la data");
-                } else if (type === "full") {
-                    time[type] = drafts[type].date;
-                } else {
-                    time[type] = drafts[type][chunkId].date;
-                }
+
+                // if (type === "structured" && drafts.structured[chunkId] === undefined) {
+                //     //console.log("No existeix el chunk, no afegim la data");
+                // } else if (type === "full") {
+                //     time[type] = drafts[type].date;
+                // } else {
+                //     time[type] = drafts[type][chunkId].date;
+                // }
             }
 
             return time;
@@ -194,7 +196,248 @@ define([
             } else {
                 localStorage.setItem(userKey, JSON.stringify(user));
             }
-        }
+        },
+
+        /**
+         * Drafts és un objecte amb l'estructura:
+         *  {
+         *      'full': {
+         *          content: "contingut",
+         *          date: "data en milisegons"
+         *      },
+         *      'structured': {
+         *          content: [
+         *              "capçalera" : "contingut"
+         *          ],
+         *          date: "data en milisegons"
+         *      }
+         * }
+         * @param ns
+         * @param remoteDrafts
+         */
+        updateLocalDrafts: function (ns, remoteDrafts) {
+            console.log("DraftManager#updateLocalDrafts", ns, remoteDrafts);
+
+            var page = this._doGetPage(ns);
+
+            var localDrafts = page ? page.drafts : {};
+
+
+            // TODO[Xavi] Canviar per ---> for (var type in remoteDrafts) { /* CODI */}
+
+            console.log("Carregats drafts locals?", localDrafts);
+
+
+            if (remoteDrafts['full'] && remoteDrafts['full'].date > (localDrafts['full'] ? localDrafts['full'].date : -1)) {
+                console.log("------ UPDATING FULL -------");
+                // console.log("Fent Update el draft local FULL");
+
+                var draft = {
+                    content: remoteDrafts['full']['content'],
+                    id: ns,
+                    type: 'full'
+                };
+
+                this._doSaveLocal(draft, remoteDrafts['full'].date, ns);
+
+
+            } else {
+                if (!remoteDrafts['full']) {
+                    console.log("No havia draft full remot, no cal actualitzar")
+                } else {
+                    console.log("El draft local full es més recent que el draft remot full per mm:", localDrafts['full'].date - remoteDrafts['full'].date)
+                }
+
+            }
+
+
+            if (remoteDrafts['structured'] && remoteDrafts['structured'].date > (localDrafts['structured'] ? localDrafts['structured'].date : -1)) {
+                console.log("------ UPDATING LOCAL -------");
+                // console.log("Fent update el draft local PARCIAL");
+
+                var draft = {
+                    content: remoteDrafts['structured']['content'],
+                    id: ns,
+                    type: 'structured'
+                };
+
+                this._doSaveLocal(draft, remoteDrafts['structured'].date, ns);
+
+            } else {
+
+                if (!remoteDrafts['structured']) {
+                    console.log("No havia draft parcial remot, no cal actualitzar")
+                } else {
+                    console.log("El draft local parcial es més recent que el draft remot parcial per mm:", localDrafts['structured'].date - remoteDrafts['structured'].date)
+                }
+
+            }
+
+
+            // console.log("new drafts:", remoteDrafts, "local times:", time);
+
+
+            // if (drafts['full']) {
+            //     this._updateFullLocalDraft();
+            // }
+            //
+            // if (drafts['structured']) {
+            //     this._updateStructuredLocalDraft();
+            // }
+
+
+        },
+        //
+        // _updateFullLocalDraft: function() {
+        //
+        // },
+
+
+        _doSaveLocal: function (draft, date, ns) {
+            console.log("Draft#_doSaveLocalStorage");
+            this.lastRefresh = Date.now();
+
+            // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
+            var page = this._doGetPage(ns);
+            // date = Date.now();
+
+
+            // Si existeix la actualitzarem, i si no, la creem
+            if (!page) {
+                page = {
+                    ns: ns,
+                    drafts: {}
+                }
+            }
+
+
+            if (!page.drafts[draft.type]) {
+                page.drafts[draft.type] = {};
+            }
+
+            switch (draft.type) {
+                case 'structured':
+                    page = this._formatLocalStructuredPage(page, draft, date);
+                    break;
+
+                case 'full':
+                    page = this._formatLocalFullPage(page, draft, date);
+            }
+
+            this._doSetPage(page, ns);
+
+        },
+
+        // ALERTA[Xavi] Aquest codi es pracicament idéntic al de Draft.js
+
+        _doGetPage: function (ns) {
+            //console.log('Draft#_doGetPage');
+            var pages = this._doGetPages();
+
+            // return pages && pages[this.contentTool.ns] ? pages[this.contentTool.ns] : null;
+            return pages && pages[ns] ? pages[ns] : null;
+        },
+
+        // TODO[Xavi] aquí podem afegir la compresió de dades
+        _doSetPage: function (page, ns) {
+
+            console.log('Draft#_doSetPage', page, ns);
+            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+                user = this._doGetUser(userId);
+
+
+            if (userId === 'user_undefined') {
+                return;
+            }
+
+            user.pages[ns] = page;
+
+            localStorage.setItem(userId, JSON.stringify(user));
+
+
+        },
+
+        _doGetPages: function () {
+            //console.log('Draft#_doGetPages');
+            var user = this._doGetUser();
+
+            return user['pages'] ? user['pages'] : {};
+        },
+
+        _doGetUser: function () {
+            //console.log('Draft#_doGetUser');
+            var userId = 'user_' + this.dispatcher.getGlobalState().userId,
+                user = JSON.parse(localStorage.getItem(userId));
+
+            if (user && user.pages) {
+                return user;
+            } else {
+                return {
+                    pages: {}
+                }
+            }
+        },
+
+        // _doSetPages: function (pages) {
+        //     //console.log('Draft#_doSetPages', pages);
+        //     var userId = 'user_' + this.dispatcher.getGlobalState().userId;
+        //
+        //     this._compactPages(pages);
+        //
+        //     if (Object.keys(pages).length === 0) {
+        //         localStorage.removeItem(userId);
+        //     } else {
+        //         localStorage.setItem(userId, JSON.stringify({pages: pages}));
+        //     }
+        // },
+
+
+        // _compactPages: function (pages) {
+        //     // console.log("Compactant pàgines:", pages);
+        //
+        //     for (var ns in pages) {
+        //         if (Object.keys(pages[ns].drafts).length === 0) {
+        //             // console.log("Esborrant pàgina", ns);
+        //             delete (pages[ns]);
+        //         }
+        //     }
+        // },
+
+        _formatLocalStructuredPage: function (page, draft, date) {
+            console.log("DraftManager#_formatLocalStructuredPage", page,draft, date);
+            // Reestructurem la informació
+            // No cal afegir el tipus, perquè ja es troba a la estructura
+            // S'han de recorre tots els elements de content (del draft) i copiar el contingut a content (de page.drafts) i afegir la data del element seleccionat, la
+
+            page.drafts[draft.type].date = date; // data global del draft
+
+            for (var chunk in draft.content) {
+                // console.log("Processant chunk...", chunk);
+                page.drafts[draft.type][chunk] = {
+                    content: draft.content[chunk],
+                    date: date // TODO: Eliminar i comprovar que no falla res
+                }
+            }
+
+            // console.log("Afegit a la pàgina:", {
+            //     content: draft.content[chunk],
+            //     date: date
+            // });
+
+            // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
+            return page;
+        },
+
+        _formatLocalFullPage: function (page, draft, date) {
+            // console.log("DraftManager#_formatLocalFullPage", page,draft, date);
+            // console.log(page, draft, date);
+            draft.date = date;
+
+            page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
+
+            // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
+            return page;
+        },
 
     });
 

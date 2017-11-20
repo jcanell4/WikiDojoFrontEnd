@@ -34,7 +34,7 @@ define([
 
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
-        // TOOLBAR_ID: 'partial_edit',
+        // TOOLBAR_ID: 'partial-editor',
         // VERTICAL_MARGIN: 100, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
         // MIN_HEIGHT: 200, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
 
@@ -96,7 +96,7 @@ define([
                 if (this.data.chunks[i].text) {
 
                     // console.log(this.data.chunks[i].text);
-                    var data = {auxId: auxId, originalContent: this.data.chunks[i].text.editing, editorType : this.data.editorType};
+                    var data = {auxId: auxId, content: this.data.chunks[i].text.editing, originalContent: this.data.chunks[i].text.editing, editorType : this.data.editorType};
 
                     if (this.editors[this.data.chunks[i].header_id]) {
 
@@ -469,20 +469,21 @@ define([
         },
 
         isContentChangedForChunk: function (chunkId) {
-            // console.log("StructuredDocumentSubclass#isContentChangedForChunk", chunkId, this.data);
-            var index = this.data.dictionary[chunkId],
-                chunk = this.data.chunks[index],
-                $textarea,
-                content;
-
-
-            if (chunk.text) {
-                $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
-                content = $textarea.val();
-                return this._getOriginalContent(chunk.header_id) != content
-            } else {
-                return false;
-            }
+            // console.log("StructuredDocumentSubclass#isContentChangedForChunk", this.getEditor(chunkId).isChanged());
+            // var index = this.data.dictionary[chunkId],
+            //     chunk = this.data.chunks[index],
+            //     $textarea,
+            //     content;
+            //
+            //
+            // if (chunk.text) {
+            //     $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
+            //     content = $textarea.val();
+            //     return this._getOriginalContent(chunk.header_id) != content
+            // } else {
+            //     return false;
+            // }
+            return this.getEditor(chunkId).isChanged();
 
         },
 
@@ -865,6 +866,7 @@ define([
         },
 
         _generateDraftInMemory: function () {
+            // console.log("StructuredDocumentSubclass#_generateDraftInMemory");
             var draft = {
                 type: this.DRAFT_TYPE,
 //                id: this.id,
@@ -874,15 +876,35 @@ define([
 
             var editingChunks = this.getEditingChunks();
 
-            for (var i = 0; i < editingChunks.length; i++) {
 
-                var content = jQuery('#textarea_' + this.id + '_' + editingChunks[i]).val();
+            // console.log("Saved drafts??", this.savedDrafts);
+
+            for (var i = 0; i < editingChunks.length; i++) {
+                // console.log("Chunk:", editingChunks[i]);
+
+                // var content = jQuery('#textarea_' + this.id + '_' + editingChunks[i]).val();
+
+                content = this.getEditor(editingChunks[i]).getValue();
+                // console.log("Content de l'editor:", content);
+
+
+                if (this.savedDrafts[editingChunks[i]]) {
+                    // console.warn("<<< S'ha trobat a savedDrafts el chunk: " + editingChunks[i]);
+                }
+
+                if (!this.savedDrafts[editingChunks[i]] != content) {
+                    // console.warn("<<< El contingut del chunk es igual al contingut del textarea");
+                }
+
 
                 if (!this.savedDrafts[editingChunks[i]] || this.savedDrafts[editingChunks[i]] != content) {
+                    // console.log("<<<< Afegint content al draft:", content);
                     draft.content[editingChunks[i]] = content;
-                    this.savedDrafts[editingChunks[i]] = draft.content[editingChunks[i]];
+                    this.savedDrafts[editingChunks[i]] = content;
                 }
             }
+
+            // console.log("**** DRAFT CREAT ****", draft);
 
             return draft;
         },
@@ -930,6 +952,7 @@ define([
             var editor = this.createEditor(
                 {
                     id: data.auxId,
+                    content: data.content,
                     originalContent: data.originalContent || data.text
                 }, data.editorType);
 
@@ -969,6 +992,7 @@ define([
                     containerId: 'editor_' + config.id,
                     textareaId: 'textarea_' + config.id,
                     dispatcher: this.dispatcher,
+                    content: config.content,
                     originalContent: config.originalContent
                 }
             );
@@ -992,6 +1016,7 @@ define([
                 wrapMode: $textarea.attr('wrap') !== 'off',
                 mdpage: JSINFO.plugin_aceeditor.mdpage,
                 dispatcher: this.dispatcher,
+                content: config.content,
                 originalContent: config.originalContent
             });
         },
@@ -1108,10 +1133,22 @@ define([
 
 
         _doEditPartial: function (event) {
-//            console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+           console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
-            var dataToSend = this.getQueryEdit(event.chunk),
-                containerId = "container_" + event.id + "_" + event.chunk;
+            var dataToSend = this.getQueryEdit(event.chunk);
+
+
+            if (event.discard_draft) {
+                dataToSend +="&discard_draft=true";
+            }
+
+            console.log("Data to send--->",
+            {
+                id: this.id,
+                    ns: this.ns,
+                dataToSend: dataToSend,
+                standbyId: this.id
+            });
 
             return {
                 id: this.id,
@@ -1135,6 +1172,7 @@ define([
             event = this._mixCachedEvent(event);
 
             if (this.isContentChangedForChunk(event.chunk)) {
+
                 var dataToSend = this.getQuerySave(event.chunk),
                     containerId = "container_" + event.id + "_" + event.chunk;
 
@@ -1162,7 +1200,7 @@ define([
                     standbyId: containerId
                 };
             } else {
-                // console.log("*** NO HI HA CANVIS ***");
+                console.log("*** NO HI HA CANVIS ***");
                 ret = {
                     _cancel: true
                 };
@@ -1615,5 +1653,22 @@ define([
             return dialog;
         },
 
+        getCurrentContent: function() {
+            var chunk = this._getCurrentChunk(),
+                content = this.getEditor(chunk).getValue();
+
+            return content;
+        },
+
+        _getCurrentChunk: function() {
+            var dispatcher = this.dispatcher,
+                id = this.id,
+                chunk = dispatcher.getGlobalState().getCurrentElementId();
+
+            chunk = chunk.replace(id + "_", "");
+            chunk = chunk.replace("container_", "");
+
+            return chunk;
+        }
     })
 });

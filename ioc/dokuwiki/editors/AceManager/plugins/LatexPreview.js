@@ -90,7 +90,8 @@ define([
                     klass: 'preview',
                     on_render: function (spec) {
                         var attributes, style, vertical_pos;
-                        vertical_pos = spec.top > spec.screen_height - spec.bottom ? "bottom: " + (spec.container_height - spec.top) + "px;" : "top: " + spec.bottom + "px;";
+                        vertical_pos = spec.top > spec.screen_height - spec.bottom ? "bottom: "
+                            + (spec.container_height - spec.top) + "px;" : "top: " + spec.bottom + "px;";
                         style = "left: " + spec.left + "px; " + vertical_pos;
                         attributes = "class=\"ace_preview\" style=\"" + style + "\"";
                         return "<div " + attributes + "><img src=\"" + (encodeURI(data.url)) + "\"/></div>";
@@ -113,12 +114,11 @@ define([
 
         init: function () {
             this.preview = new LatexPreviewPlugin({ace: this.editor});
-            this.activate();
+            this.process();
         },
 
-        activate: function() {
-            // console.log("LatexPreviewPlugin#activate");
-            this.inherited(arguments);
+        process: function() {
+            // console.log("LatexPreviewPlugin#process");
             this.addEditorListener('change, changeCursor', this.preview.trigger);
         },
 
