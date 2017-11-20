@@ -76,7 +76,7 @@ define([
 
         getDraftChunk: function (chunkId) {
             //console.log("LocktimedDocumentSubclass#getDraftChunk", this.id, chunkId);
-            return this.getDraft().recoverLocalDraft().structured[chunkId].content;
+            return this.getDraft().recoverLocalDraft().structured.content[chunkId];
         },
 
         getReadOnly: function () {

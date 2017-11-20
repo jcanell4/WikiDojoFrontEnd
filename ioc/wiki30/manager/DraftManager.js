@@ -413,10 +413,7 @@ define([
 
             for (var chunk in draft.content) {
                 // console.log("Processant chunk...", chunk);
-                page.drafts[draft.type][chunk] = {
-                    content: draft.content[chunk],
-                    date: date // TODO: Eliminar i comprovar que no falla res
-                }
+                page.drafts[draft.type].content[chunk] = draft.content[chunk]
             }
 
             // console.log("Afegit a la pàgina:", {

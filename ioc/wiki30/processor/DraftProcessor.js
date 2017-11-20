@@ -142,8 +142,8 @@ define([
                         return {content: draft.full.content, date: draft.full.date};
                     case 'partial_document':
                         return {
-                            content: draft.structured[value.selected].content,
-                            date: draft.structured[value.selected].date
+                            content: draft.structured.content[value.selected],
+                            date: draft.structured.date
                         }
                 }
 
