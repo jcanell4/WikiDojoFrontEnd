@@ -56,25 +56,26 @@ define([
             return this.drafts[docNs];
         },
 
-        getLastLocalDraftTime: function (docId, docNs/*, chunkId*/) {
+        getLastLocalDraftTime: function (docId, docNs, chunkId) {
             // console.log("DraftManager#getLastLocalDraftTime", docId, docNs, chunkId);
             var draft = this.getDraft(docId, docNs),
                 drafts = draft.recoverLocalDraft(),
                 time = {};
 
+            // console.log("Drafts?", drafts);
+
             // S'ha de retornar tant el del local com el del full si existeixen
-            for (var type in drafts) {
-                time[type] = drafts[type].date;
 
-
-                // if (type === "structured" && drafts.structured[chunkId] === undefined) {
-                //     //console.log("No existeix el chunk, no afegim la data");
-                // } else if (type === "full") {
-                //     time[type] = drafts[type].date;
-                // } else {
-                //     time[type] = drafts[type][chunkId].date;
-                // }
+            if (drafts.structured && drafts.structured.content[chunkId] !== undefined) {
+                time['structured'] = drafts.structured.date;
+            } else {
+                // console.log("No existeix el chunk, no afegim la data");
             }
+
+            if (drafts.full) {
+                time['full'] = drafts.full.date;
+            }
+
 
             return time;
         },

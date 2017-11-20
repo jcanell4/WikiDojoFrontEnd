@@ -16,21 +16,22 @@ define([
                 this.eventManager = dispatcher.getEventManager();
                 this.draftManager = dispatcher.getDraftManager();
 
-                var dates = this.draftManager.getLastLocalDraftTime(value.id, value.ns);
+                // var dates = this.draftManager.getLastLocalDraftTime(value.id, value.ns);
 
-                if (dates.full > dates.structured) {
+                // if (dates.full < dates.structured) {
+                // // if (dates.full > dates.structured) { // Aquest és el correcte
                     console.log("El full es més recent, es mostra el dialeg");
                     this._showDialog(value, timeout * 1000);
 
-                } else {
-                    console.log("L'estructured es més recent, ignorem el dialeg");
-
-                    var dataToSend={
-                        discard_draft:true,
-                        chunk: value.section_id
-                    };
-                    this.eventManager.fireEvent(this.eventManager.eventName.EDIT_PARTIAL, dataToSend, value.id);
-                }
+                // } else {
+                //     console.log("L'estructured es més recent, ignorem el dialeg");
+                //
+                //     var dataToSend={
+                //         discard_draft:true,
+                //         chunk: value.section_id
+                //     };
+                //     this.eventManager.fireEvent(this.eventManager.eventName.EDIT_PARTIAL, dataToSend, value.id);
+                // }
 
             },
 
@@ -57,7 +58,7 @@ define([
             },
 
             _showDialog: function (value, timeout) {
-               console.log("processDraftSelectionDialog#_showDialog", timeout);
+               // console.log("processDraftSelectionDialog#_showDialog", timeout);
                 //timeout = 5000; // ALERTA[Xavi] modificat per les proves
 
                 var params = {

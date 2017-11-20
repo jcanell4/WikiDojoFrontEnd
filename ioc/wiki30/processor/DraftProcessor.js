@@ -133,7 +133,7 @@ define([
             },
 
             _getDraftLocal: function (value) {
-                // console.log("DraftProcessor#_getDraftLocal", value);
+                console.log("DraftProcessor#_getDraftLocal", value);
                 // console.log("docId:", this.docId);
                 var draft = this.draftManager.getDraft(this.docId, this.docNs).recoverLocalDraft();
 
