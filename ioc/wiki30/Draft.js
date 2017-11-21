@@ -132,11 +132,12 @@ define([
 
             page.drafts[draft.type].date = date; // data global del draft
 
+            if (!page.drafts[draft.type].content) {
+                page.drafts[draft.type].content = {};
+            }
+
             for (var chunk in draft.content) {
-                page.drafts[draft.type][chunk] = {
-                    content: draft.content[chunk],
-                    date: date // TODO: Eliminar i comprovar que no falla res
-                }
+                page.drafts[draft.type].content[chunk] = draft.content[chunk];
             }
 
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
@@ -158,7 +159,7 @@ define([
             var dataToSend = this._getQueryLock();
 
 
-            console.log("Draft#_doSaveRemoteServer");
+            console.log("Draft#_doSaveRemoteServer", dataToSend);
 
             this.eventManager.fireEvent(this.eventName.SAVE_DRAFT, {
                 id: this.contentToolId,

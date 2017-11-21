@@ -48,7 +48,7 @@ define([
             },
 
             _showDiffDialog: function (value) {
-                // console.log("DraftProcessor#_showDiffDialog", value);
+                console.log("DraftProcessor#_showDiffDialog", value);
 
                 var data = this._extractData(value),
                     dialogParams;
@@ -133,7 +133,7 @@ define([
             },
 
             _getDraftLocal: function (value) {
-                // console.log("DraftProcessor#_getDraftLocal", value);
+                console.log("DraftProcessor#_getDraftLocal", value);
                 // console.log("docId:", this.docId);
                 var draft = this.draftManager.getDraft(this.docId, this.docNs).recoverLocalDraft();
 
@@ -142,8 +142,8 @@ define([
                         return {content: draft.full.content, date: draft.full.date};
                     case 'partial_document':
                         return {
-                            content: draft.structured[value.selected].content,
-                            date: draft.structured[value.selected].date
+                            content: draft.structured.content[value.selected],
+                            date: draft.structured.date
                         }
                 }
 
