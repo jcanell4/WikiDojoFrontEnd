@@ -96,7 +96,9 @@ define([
                 if (this.data.chunks[i].text) {
 
                     // console.log(this.data.chunks[i].text);
-                    var data = {auxId: auxId, content: this.data.chunks[i].text.editing, originalContent: this.data.chunks[i].text.originalContent, editorType : this.data.editorType};
+                    var originalContent =  this.data.chunks[i].text.originalContent || this.data.chunks[i].text.editing;
+
+                    var data = {auxId: auxId, content: this.data.chunks[i].text.editing, originalContent: originalContent, editorType : this.data.editorType};
 
                     if (this.editors[this.data.chunks[i].header_id]) {
 
@@ -1010,7 +1012,7 @@ define([
             var $textarea = jQuery('textarea_' + config.id);
 
 
-            // console.log("config:", config);
+            console.log("config:", config);
             return new AceFacade({
                 id: this.id,
                 auxId: config.id,
