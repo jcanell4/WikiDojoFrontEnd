@@ -96,7 +96,9 @@ define([
                 if (this.data.chunks[i].text) {
 
                     // console.log(this.data.chunks[i].text);
-                    var originalContent =  this.data.chunks[i].text.originalContent || this.data.chunks[i].text.editing;
+                    var originalContent =  this.data.chunks[i].text.originalContent /*|| this.data.chunks[i].text.editing*/;
+
+                    // console.log("S'ha trobat original content?", this.data.chunks[i].text.originalContent !== undefined? this.data.chunks[i].text.originalContent.length : false)
 
                     var data = {auxId: auxId, content: this.data.chunks[i].text.editing, originalContent: originalContent, editorType : this.data.editorType};
 
@@ -224,7 +226,7 @@ define([
 
                     if (current) {
                         // TODO: Obtenir el contingut de l'editor
-                        pre += this.getEditor(chunks[i].header_id).getValue()
+                        pre += this.getEditor(chunks[i].header_id).getValue();
                     } else {
                         pre += this.changedChunks[chunks[i].header_id].content
                     }
@@ -246,14 +248,15 @@ define([
                     if (current) {
                         suf += this.getEditor(chunks[i].header_id).getValue();
                     } else {
-                        suf += this.changedChunks[chunks[i].header_id].content
+                        suf += this.changedChunks[chunks[i].header_id].content;
                     }
                 }
                 i++;
             }
             suf += this.data.suf || '';
 
-            text.prefix = pre + "\n";
+            text.prefix = pre;
+            // text.prefix = pre + "\n";
             text.suffix = suf;
             text.wikitext = '';
 
@@ -525,42 +528,43 @@ define([
          * @returns {string} El contingut original rebut del backend
          * @private
          */
-        _getOriginalContent: function (header_id) {
-            // console.log("StructuredDocumentSubclass#_getOriginalContent");
+        // _getOriginalContent: function (header_id) {
+        //     // console.log("StructuredDocumentSubclass#_getOriginalContent");
+        //
+        //     if (this.changedChunks[header_id] && this.changedChunks[header_id].content) {
+        //         // console.log("Trobat el changed chunk!", this.changedChunks[header_id].content)
+        //         return this.changedChunks[header_id].content;
+        //
+        //     } else {
+        //
+        //         var chunk;
+        //         for (var i = 0; i < this.data.chunks.length; i++) {
+        //             chunk = this.data.chunks[i];
+        //
+        //             if (chunk.text && chunk.header_id == header_id) {
+        //
+        //                 // console.log("ChangedChunks:", this.changedChunks, "header_id", header_id);
+        //                 this.changedChunks[header_id].content = chunk.text.editing;
+        //                 return chunk.text.editing;
+        //             }
+        //         }
+        //     }
+        // },
 
-            if (this.changedChunks[header_id] && this.changedChunks[header_id].content) {
-                // console.log("Trobat el changed chunk!", this.changedChunks[header_id].content)
-                return this.changedChunks[header_id].content;
-
-            } else {
-
-                var chunk;
-                for (var i = 0; i < this.data.chunks.length; i++) {
-                    chunk = this.data.chunks[i];
-
-                    if (chunk.text && chunk.header_id == header_id) {
-
-                        // console.log("ChangedChunks:", this.changedChunks, "header_id", header_id);
-                        this.changedChunks[header_id].content = chunk.text.editing;
-                        return chunk.text.editing;
-                    }
-                }
-            }
-        },
-
-        _setOriginalContent: function (header_id, content) {
-            // console.log("StructuredDocumentSubclass#_setOriginalContent", header_id, content);
-            this.changedChunks[header_id] = {};
-            this.changedChunks[header_id].content = content;
-
-
-        },
+        // _setOriginalContent: function (header_id, content) {
+        //     // console.log("StructuredDocumentSubclass#_setOriginalContent", header_id, content);
+        //     this.changedChunks[header_id] = {};
+        //     this.changedChunks[header_id].content = content;
+        //
+        //
+        // },
 
         /**
          * Reinicialitza l'estat del document, eliminant-lo de la llista de modificats
          * @override
          */
         resetContentChangeState: function () {
+            // console.error("StructuredDocumentSubclass#resetContentChangeState");
 
             if (!this.discardChanges) {
                 for (var header_id in this.changedChunks) {
@@ -599,16 +603,14 @@ define([
                 // Això estableix el contingut anterior com a contingut original
                 content.chunks[index].text.originalContent = content.chunks[index].text.editing;
 
-                this._setOriginalContent(content.selected, content.chunks[index].text.editing); // ALERTA[Xavi] Això no s'ha de fer servir
+                // this._setOriginalContent(content.selected, content.chunks[index].text.editing); // ALERTA[Xavi] Això no s'ha de fer servir
 
                 content.chunks[index].text.editing = draft;
                 keepOriginalContent = true;
 
-                console.log("Content con original content:", content.chunks[index]);
-
             } else if (content.chunks[index] && content.chunks[index].text && content.chunks[index].text.originalContent) {
                 // console.log("*** ESBORRANY REMOT ***");
-                this._setOriginalContent(content.selected, content.chunks[index].text.originalContent);
+                // this._setOriginalContent(content.selected, content.chunks[index].text.originalContent);
                 keepOriginalContent = true;
             } else {
                 // console.log("*** NO ES TRACTA D'UN ESBORRANY ***");
@@ -684,6 +686,8 @@ define([
                         if (content.chunks[j].header_id === this.data.chunks[i].header_id) {
                             if (content.chunks[j].text) {
                                 content.chunks[j].text.editing = this.data.chunks[i].text.editing;
+                                console.log("Afegint l'original content a ", content.chunks[j].header_id, this.data.chunks[i].text.originalContent? this.data.chunks[i].text.originalContent.length : false);
+                                content.chunks[j].text.originalContent = this.data.chunks[i].text.originalContent || this.data.chunks[i].text.editing;
                             }
 
                             break;
@@ -700,7 +704,8 @@ define([
          * @private
          */
         _updateChunks: function (content, keepOriginalContent) {
-            // console.log("StructuredDocumentSubclass#_updateChunks", content);
+            // console.log("StructuredDocumentSubclass#_updateChunks", content, this.editingChunks)
+
             var i, chunk;
 
             this.editingChunksCounter = 0;
@@ -764,7 +769,7 @@ define([
          * @param {string[]} headers
          */
         resetChangesForChunks: function (headers) {
-            //console.log("StructuredDcoument#resetChangesForChunks", headers);
+            console.error("StructuredDcoument#resetChangesForChunks", headers);
             if (headers && !Array.isArray(headers)) {
                 headers = [headers];
             } else if (!headers) {
@@ -956,19 +961,14 @@ define([
 
 
         addEditor: function (header_id, data) {
-            console.error("StructuredDocumentSubclass#addEditor", header_id, data);
+            // console.log("StructuredDocumentSubclass#addEditor", header_id, data);
 
             var editor = this.createEditor(
                 {
                     id: data.auxId,
                     content: data.content,
-                    originalContent: data.originalContent || data.text
+                    originalContent: data.originalContent /*|| data.text*/
                 }, data.editorType);
-
-            // var editor = this.createEditor({
-            //     id: data.auxId,
-            //     originalContent: data.originalContent || data.text
-            // }, data.editorType);
 
             this.editors[header_id] = {
                 editor: editor
@@ -1012,7 +1012,7 @@ define([
             var $textarea = jQuery('textarea_' + config.id);
 
 
-            console.log("config:", config);
+            // console.log("config:", config);
             return new AceFacade({
                 id: this.id,
                 auxId: config.id,
@@ -1142,7 +1142,7 @@ define([
 
 
         _doEditPartial: function (event) {
-           console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
+           // console.log("StructuredDocumentSubclass#_doEditPartial", event.id, event);
 
             var dataToSend = this.getQueryEdit(event.chunk);
 
@@ -1151,13 +1151,13 @@ define([
                 dataToSend +="&discard_draft=true";
             }
 
-            console.log("Data to send--->",
-            {
-                id: this.id,
-                    ns: this.ns,
-                dataToSend: dataToSend,
-                standbyId: this.id
-            });
+            // console.log("Data to send--->",
+            // {
+            //     id: this.id,
+            //         ns: this.ns,
+            //     dataToSend: dataToSend,
+            //     standbyId: this.id
+            // });
 
             return {
                 id: this.id,
@@ -1176,7 +1176,7 @@ define([
 
         _doSavePartial: function (event) {
             var ret;
-            // console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
+             // console.log("StructuredDocumentSubclass#_doSavePartial", this.id, event);
 
             event = this._mixCachedEvent(event);
 
@@ -1201,7 +1201,12 @@ define([
                 //    standbyId: containerId
                 //})
 
-                this.hasChanges = false;
+
+                console.log("Quina informació conté l'event?", event);
+                // TODO: Canviar l'originalContent del chunk (o fer reset? està implementat al facade?)
+                // TODO: recomprovar si hi han canvis
+                this.getEditor(event.chunk).resetOriginalContentState();
+                this.isContentChanged();
 
                 ret = {
                     id: this.id,

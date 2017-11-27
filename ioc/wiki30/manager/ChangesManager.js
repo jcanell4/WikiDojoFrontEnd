@@ -97,7 +97,7 @@ define([
                  * @param {string} id - Id del contingut a reiniciatlizar
                  */
                 resetContentChangeState: function (id) {
-                    //console.log("ChangesManager#resetContentChangeState", id);
+                    // console.log("ChangesManager#resetContentChangeState", id);
                     var contentTool;
 
                     delete this.contentsChanged[id];

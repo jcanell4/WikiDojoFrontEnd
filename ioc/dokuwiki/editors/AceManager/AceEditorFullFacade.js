@@ -28,7 +28,7 @@ define([
                 wrapMode: args.wrapMode,
                 mdpage: args.mdpage,
                 content: args.content,
-                originalContent: args.originalContent,
+                originalContent: args.originalContent || args.content,
                 dispatcher: args.dispatcher,
                 TOOLBAR_ID: this.TOOLBAR_ID
             });
