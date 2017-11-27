@@ -96,7 +96,7 @@ define([
                 if (this.data.chunks[i].text) {
 
                     // console.log(this.data.chunks[i].text);
-                    var data = {auxId: auxId, content: this.data.chunks[i].text.editing, originalContent: this.data.chunks[i].text.editing, editorType : this.data.editorType};
+                    var data = {auxId: auxId, content: this.data.chunks[i].text.editing, originalContent: this.data.chunks[i].text.originalContent, editorType : this.data.editorType};
 
                     if (this.editors[this.data.chunks[i].header_id]) {
 
@@ -440,7 +440,8 @@ define([
                     $textarea = jQuery('#textarea_' + this.id + "_" + chunk.header_id);
 
                     content = $textarea.val();
-                    diffFromOriginal = this._getOriginalContent(chunk.header_id) != content;
+                    // diffFromOriginal = this._getOriginalContent(chunk.header_id) != content;
+                    diffFromOriginal = this.getEditor(chunk.header_id).isChanged();
                     diffFromLastCheck = this.isLastCheckedContentChanged(chunk.header_id, content);
 
 
@@ -590,13 +591,18 @@ define([
 
 
                 //console.log("Draft:", draft);
-                //console.log("Content:", content.chunks[index].text.editing);
+                // console.log("Content:", content.chunks[index]);
+
 
                 // Això estableix el contingut anterior com a contingut original
-                this._setOriginalContent(content.selected, content.chunks[index].text.editing);
+                content.chunks[index].text.originalContent = content.chunks[index].text.editing;
+
+                this._setOriginalContent(content.selected, content.chunks[index].text.editing); // ALERTA[Xavi] Això no s'ha de fer servir
 
                 content.chunks[index].text.editing = draft;
                 keepOriginalContent = true;
+
+                console.log("Content con original content:", content.chunks[index]);
 
             } else if (content.chunks[index] && content.chunks[index].text && content.chunks[index].text.originalContent) {
                 // console.log("*** ESBORRANY REMOT ***");
@@ -911,6 +917,7 @@ define([
 
         // Nous mètodes per la gestió d'editors
         updateEditor: function (header_id, data) {
+            console.log("StructuredDocumentSubclass#updateEditor", header_id, data);
             // Com es per la referencia interna del ace al div del editor s'ha de refer, per axiò els eliminem al pre-render
             this.addEditor(header_id, data);
 
@@ -947,7 +954,7 @@ define([
 
 
         addEditor: function (header_id, data) {
-            // console.log("StructuredDocumentSubclass#addEditor", header_id, data);
+            console.error("StructuredDocumentSubclass#addEditor", header_id, data);
 
             var editor = this.createEditor(
                 {
