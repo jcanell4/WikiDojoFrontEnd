@@ -98,12 +98,12 @@ define([
                     },
 
                     argsRequestLink = {
-                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=page"
+                        urlBase: "ajax.php?call=page"
                     },
 
 
                     argsRequestForm = {
-                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=diff",
+                        urlBase: "ajax.php?call=diff",
                         form:    '#revisions_selector_' + content.id
                     },
 

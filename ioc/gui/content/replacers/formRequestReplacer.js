@@ -40,7 +40,7 @@ define([
 
 
             if (dataCall) {
-                params.request.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=" + dataCall;
+                params.request.urlBase = "ajax.php?call=" + dataCall;
             } else {
                 params.request.urlBase = params.urlBase;
             }

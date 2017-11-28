@@ -238,12 +238,12 @@ define([
                     var divNsTree = domConstruct.toDom("<div id='media__tree'></div>");
 
                     self.dialogTree = new ContentTabDokuwikiNsTree({
-                        treeDataSource:               'lib/plugins/ajaxcommand/ajaxrest.php/ns_mediatree_rest/',
+                        treeDataSource:               'ajaxrest.php/ns_mediatree_rest/',
                         onlyDirs:                     true,
                         processOnClickAndOpenOnClick: true
                     }).placeAt(divNsTree);
 
-                    self.dialogTree.set("urlBase", "lib/plugins/ajaxcommand/ajax.php?call=media&do=media");
+                    self.dialogTree.set("urlBase", "ajax.php?call=media&do=media");
 
                     self.dialogTree.getQuery = function () {
                         var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;

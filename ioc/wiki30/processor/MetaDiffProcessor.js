@@ -34,7 +34,7 @@ define([
                     },
 
                     argsRequestForm = {
-                        urlBase: "lib/plugins/ajaxcommand/ajax.php?call=diff", // TODO[Xavi] aquest valor ha d'arribar des de el servidor?
+                        urlBase: "ajax.php?call=diff", // TODO[Xavi] aquest valor ha d'arribar des de el servidor?
                         form:    '#switch_mode_' + metaContent.docId
                         //,standbyTarget: 'topBloc'
                     };

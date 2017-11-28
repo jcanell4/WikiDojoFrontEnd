@@ -151,7 +151,7 @@ define([
                 evt.preventDefault();
                 var source = evt.target || evt.srcElement;
                 this._createRequest();
-                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                this.requester.urlBase = "ajax.php?call=mediadetails";
                 var query = "img="+this.id+"&do=media&tab_details=history&tab_files=files&image="+this.id+"&ns="+this.ns;
                 this.requester.sendForm(source.id, query);
             },
@@ -161,7 +161,7 @@ define([
                 var confirmar=confirm("Suprimiu aquesta entrada?");
                 if (confirmar){ 
                     this._createRequest();
-                    this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                    this.requester.urlBase = "ajax.php?call=mediadetails";
                     var query = "img="+this.id+"&do=media&delete="+this.id+"&image="+this.id+"&ns="+this.ns;
                     this.requester.sendForm(source.id, query); 
                 }
@@ -173,7 +173,7 @@ define([
                 var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
                 var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
                 this._createRequest();
-                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media";
+                this.requester.urlBase = "ajax.php?call=media";
                 var query = 'id=' + this.id + '&ns=' + ns + '&do=media&list='+list+'&sort='+sort+"&versioupload=true";
                 this.requester.sendRequest(query);                
             },

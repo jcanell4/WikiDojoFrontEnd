@@ -40,7 +40,7 @@ define([
 
         var mediaButton = new iocButton({
             "label": params.modifyImageLabel
-            , "urlBase": "lib/plugins/ajaxcommand/ajax.php?call=mediadetails"
+            , "urlBase": "ajax.php?call=mediadetails"
             , "query": 'id='+params.fromId +'&image=' + params.imageId//+'&img='+params.imageId+'&do=media'                   
         });
 
@@ -57,7 +57,7 @@ define([
                 var commandParams = new Array();
                 commandParams["imageId"] = params.imageId;
                 xhr.get({
-                    url: "/dokuwiki_30/lib/plugins/ajaxcommand/ajax.php?call=commandreport",
+                    url: "/dokuwiki_30/ajax.php?call=commandreport",
                     content: commandParams,
                     handleAs: "json",
                     load: function(data) {

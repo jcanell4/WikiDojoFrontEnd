@@ -151,7 +151,7 @@ define([
                          * @protected
                          */
                         _createContentTool: function (content, dispatcher, docId) {
-                            var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                            var urlBase = "ajax.php?call=mediadetails";
                             var urlBase1 = urlBase + "&img=" + docId + "&mediado=diff&do=media&tab_details=history&tab_files=files&image=" + docId + "&ns=" + content.ns;
                             var meta = this._convertMetaData(content),
                                     args = {

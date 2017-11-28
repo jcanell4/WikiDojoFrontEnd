@@ -38,7 +38,7 @@ define([
                             container.clearContainer(value.id);
                             if (dispatcher.getGlobalState().pages["media"]["ns"]) {
                                 this._createRequest();
-                                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=media";
+                                this.requester.urlBase = "ajax.php?call=media";
                                 var elid = value.ns;
                                 var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
                                 var sort = dojo.query('input[type=radio][name=filesort]:checked')[0].value;
@@ -82,7 +82,7 @@ define([
                             dispatcher.getGlobalState().getContent(value.id)["myid"] = value.id;
                         },
                         createContentTool: function (content, dispatcher) {
-                            var urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                            var urlBase = "ajax.php?call=mediadetails";
                             var urlBase1 = urlBase+"&img="+content.id+"&mediado=save&do=media&tab_details=view&tab_files=files&image="+content.id+"&ns="+content.ns;
                             var args = {
                                 id: content.id,

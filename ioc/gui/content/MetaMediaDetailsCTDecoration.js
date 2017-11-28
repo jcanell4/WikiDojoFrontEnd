@@ -135,7 +135,7 @@ define([
                 var arr2 = arr[2].split("=");
                 var rev = arr2[1];
                 this._createRequest();
-                this.requester.urlBase = "lib/plugins/ajaxcommand/ajax.php?call=mediadetails";
+                this.requester.urlBase = "ajax.php?call=mediadetails";
                 var query = "img="+this.docId+"&rev="+rev+"&mediado=diff&do=media&tab_details=history&tab_files=files&image="+this.docId+"&ns="+this.ns;
                 this.requester.sendRequest(query);
             },
