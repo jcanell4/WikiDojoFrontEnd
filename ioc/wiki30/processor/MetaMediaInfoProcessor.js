@@ -44,24 +44,21 @@ define([
                     selectedPane,
                     versioupload = null;
 
-                //dispatcher.removeAllChildrenWidgets(nodeMetaInfo);
-                //contentCache.setCurrentId("metadataPane", null);
-
                 for (m in content.meta) {
                     if (widgetCentral && widgetCentral.id === content.docId) { //esta metainfo pertenece a la pestaña activa
                         currentMetaContent = content.meta[m];
                         //widgetMetaInfo = registry.byId(content.meta[m].id);
-                            if(currentMetaContent.id === "metaMediafileupload"){
-                                if(currentMetaContent.versioupload){
-                                    versioupload = currentMetaContent.versioupload;
-                                }
+                        if(currentMetaContent.id === "metaMediafileupload"){
+                            if(currentMetaContent.versioupload){
+                                versioupload = currentMetaContent.versioupload;
                             }
-                                /*
-         * 20150430 Miguel Angel Lozano
-         * Canvi per fer servir ContentTabDokuWikiNsTree
-         * Amb l'id metaMedia, s'ha de construir l'arbre ContentTabDokuWikiNsTree
-         * Es fa amb una nova funció perquè són diversos passos
-         */
+                        }
+                        /*
+                         * 20150430 Miguel Angel Lozano
+                         * Canvi per fer servir ContentTabDokuWikiNsTree
+                         * Amb l'id metaMedia, s'ha de construir l'arbre ContentTabDokuWikiNsTree
+                         * Es fa amb una nova funció perquè són diversos passos
+                         */
                         if (!registry.byId(currentMetaContent.id)) {
                             //currentMetaContent.dispatcher = dispatcher;
                             //currentMetaContent.docId = content.id;
@@ -91,8 +88,6 @@ define([
                         }
                     }
                 }
-                
-                
                 
                 var nameUpload = document.getElementById("upload__name");
                 var ovwUpload = document.getElementById("dw__ow");
@@ -238,12 +233,12 @@ define([
                     var divNsTree = domConstruct.toDom("<div id='media__tree'></div>");
 
                     self.dialogTree = new ContentTabDokuwikiNsTree({
-                        treeDataSource:               'ajaxrest.php/ns_mediatree_rest/',
+                        treeDataSource:               'lib/exe/ioc_ajaxrest.php/ns_mediatree_rest/',
                         onlyDirs:                     true,
                         processOnClickAndOpenOnClick: true
                     }).placeAt(divNsTree);
 
-                    self.dialogTree.set("urlBase", "ajax.php?call=media&do=media");
+                    self.dialogTree.set("urlBase", "lib/exe/ioc_ajax.php?call=media&do=media");
 
                     self.dialogTree.getQuery = function () {
                         var list = dojo.query('input[type=radio][name=fileoptions]:checked')[0].value;
