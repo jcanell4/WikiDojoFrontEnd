@@ -118,6 +118,16 @@ define([
             }
         },
 
+        _setOwnCurrenElement: function (id) {
+            var currentSelection = this.dispatcher.getGlobalState().getCurrentElement();
+
+            if (currentSelection.id === id && !currentSelection.state) {
+                this._setCurrentElement(null);
+            } else {
+                this._setCurrentElement(id);
+            }
+        },
+
         addEditionListener: function () {
             //console.log("StructuredDocumentSubclass#addEditionListener");
             if (this.rev !== null && this.rev !== undefined && this.rev !== '') {
@@ -136,15 +146,9 @@ define([
 
                     // DUPLICAT en el click!
 
-                    var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
+                    context._setOwnCurrenElement(this.id);
 
-                    console.log("this id??", this.id, currentSelection.id);
 
-                    if (currentSelection.id === this.id && !currentSelection.state) {
-                        context._setCurrentElement(null);
-                    } else {
-                        context._setCurrentElement(this.id);
-                    }
 
                     /////
 
@@ -1085,15 +1089,17 @@ define([
 
                 $container.on('click', function () {
                     // Comprovar si es la secció seleccionada i si el seu state es false (no està en edició)
-                    var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
+                    // var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
+                    //
+                    // console.log("this id??", this.id, currentSelection.id);
+                    //
+                    // if (currentSelection.id === this.id && !currentSelection.state) {
+                    //     context._setCurrentElement(null);
+                    // } else {
+                    //     context._setCurrentElement(this.id);
+                    // }
 
-                    console.log("this id??", this.id, currentSelection.id);
-
-                    if (currentSelection.id === this.id && !currentSelection.state) {
-                        context._setCurrentElement(null);
-                    } else {
-                        context._setCurrentElement(this.id);
-                    }
+                    context._setOwnCurrenElement(this.id);
 
                     return true;
                 });
