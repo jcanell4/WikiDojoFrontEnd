@@ -134,6 +134,24 @@ define([
 
                 jQuery('#container_' + auxId).on('dblclick', function () {
 
+                    // DUPLICAT en el click!
+
+                    var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
+
+                    console.log("this id??", this.id, currentSelection.id);
+
+                    if (currentSelection.id === this.id && !currentSelection.state) {
+                        context._setCurrentElement(null);
+                    } else {
+                        context._setCurrentElement(this.id);
+                    }
+
+                    /////
+
+
+
+
+
 
                     var aux_id = this.id.replace('container_', ''),
                         header_id = aux_id.replace(context.id + "_", '');
@@ -769,7 +787,7 @@ define([
          * @param {string[]} headers
          */
         resetChangesForChunks: function (headers) {
-            console.error("StructuredDcoument#resetChangesForChunks", headers);
+            // console.log("StructuredDcoument#resetChangesForChunks", headers);
             if (headers && !Array.isArray(headers)) {
                 headers = [headers];
             } else if (!headers) {
@@ -1063,9 +1081,13 @@ define([
                 auxId = this.data.id + "_" + this.data.chunks[i].header_id;
                 $container = jQuery('#container_' + auxId);
 
+
+
                 $container.on('click', function () {
                     // Comprovar si es la secció seleccionada i si el seu state es false (no està en edició)
                     var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
+
+                    console.log("this id??", this.id, currentSelection.id);
 
                     if (currentSelection.id === this.id && !currentSelection.state) {
                         context._setCurrentElement(null);
@@ -1106,12 +1128,15 @@ define([
         },
 
         _setCurrentElement: function (element_id) {
+            // console.log("StructuredDocumentSubclass#_setCurrentElement", element_id)
+
 
             if (element_id) {
                 var header_id = element_id.replace('container_' + this.id + '_', '');
 
                 var isEditing = jQuery.inArray(header_id, this.getEditingChunks()) > -1;
 
+                // console.log("element_id??", element_id);
                 this.dispatcher.getGlobalState().setCurrentElement(element_id, isEditing);
                 this._setHighlight(element_id, 'section_selected');
                 this.currentElementId = element_id;

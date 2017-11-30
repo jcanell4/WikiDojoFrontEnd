@@ -161,11 +161,11 @@ define([
         isChanged: function () {
             console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
 
-            if (this.get('value') !== this.originalContent) {
-                console.log("|"+this.get('value')+"|");
-                console.log("/////////////////////////////");
-                console.log("|"+this.originalContent+"|");
-            }
+            // if (this.get('value') !== this.originalContent) {
+            //     console.log("|"+this.get('value')+"|");
+            //     console.log("/////////////////////////////");
+            //     console.log("|"+this.originalContent+"|");
+            // }
 
             return this.get('value').trim() !== this.originalContent.trim();
         },
