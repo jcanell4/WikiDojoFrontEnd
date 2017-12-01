@@ -21,7 +21,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("DraftProcessor#process", value);
+                // console.log("DraftProcessor#process", value);
                     this._processDialog(value, dispatcher);
             },
 
@@ -48,7 +48,7 @@ define([
             },
 
             _showDiffDialog: function (value) {
-                console.log("DraftProcessor#_showDiffDialog", value);
+                // console.log("DraftProcessor#_showDiffDialog", value);
 
                 var data = this._extractData(value),
                     dialogParams;
@@ -133,7 +133,7 @@ define([
             },
 
             _getDraftLocal: function (value) {
-                console.log("DraftProcessor#_getDraftLocal", value);
+                // console.log("DraftProcessor#_getDraftLocal", value);
                 // console.log("docId:", this.docId);
                 var draft = this.draftManager.getDraft(this.docId, this.docNs).recoverLocalDraft();
 
@@ -182,7 +182,7 @@ define([
             },
 
             _getDraftQuery: function () {
-                console.log("DraftProcessor#_getDraftQuery", this.query);
+                // console.log("DraftProcessor#_getDraftQuery", this.query);
                 var query = this.query;
 
                 if (this.isLocalDraft) {
