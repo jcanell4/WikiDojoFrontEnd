@@ -708,7 +708,7 @@ define([
                         if (content.chunks[j].header_id === this.data.chunks[i].header_id) {
                             if (content.chunks[j].text) {
                                 content.chunks[j].text.editing = this.data.chunks[i].text.editing;
-                                console.log("Afegint l'original content a ", content.chunks[j].header_id, this.data.chunks[i].text.originalContent? this.data.chunks[i].text.originalContent.length : false);
+                                // console.log("Afegint l'original content a ", content.chunks[j].header_id, this.data.chunks[i].text.originalContent? this.data.chunks[i].text.originalContent.length : false);
                                 content.chunks[j].text.originalContent = this.data.chunks[i].text.originalContent || this.data.chunks[i].text.editing;
                             }
 
@@ -1233,9 +1233,6 @@ define([
                 //})
 
 
-                console.log("Quina informació conté l'event?", event);
-                // TODO: Canviar l'originalContent del chunk (o fer reset? està implementat al facade?)
-                // TODO: recomprovar si hi han canvis
                 this.getEditor(event.chunk).resetOriginalContentState();
                 this.isContentChanged();
 
@@ -1593,7 +1590,7 @@ define([
         },
 
         _removePartialDraft: function (headerId) {
-            // console.log("StructuredDocumentSubclass#_removePartialDraft", headerId);
+            console.log("StructuredDocumentSubclass#_removePartialDraft", headerId);
             var index = this.data.dictionary[headerId],
                 chunk = this.data.chunks[index];
             this.draftManager.clearDraftChunks(this.id, this.ns, [chunk.header_id]);

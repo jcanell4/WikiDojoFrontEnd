@@ -53,12 +53,20 @@ define([
                 var data = this._extractData(value),
                     dialogParams;
 
-                if (data.document.content ===  data.draft.content) {
-                    alert("El content i el draft son iguals");
+                if (data.document.content === data.draft.content) {
+
+                    this.eventManager.fireEvent(this._getActionType(), { // Això fa referencia al eventManager del dialog
+                        id: value.id,
+                        ns: value.ns,
+                        dataToSend: this._getDocumentQuery() + "&discard_draft=true"
+                    }/*, observable*/);
+
+                    console.warn("El content i el draft son iguals");
+                    return;
                 }
 
 
-                    dialogParams = {
+                dialogParams = {
                         id: 'diff',
                         ns: value.ns,
                         title: 'S\'ha trobat un esborrany',
@@ -140,11 +148,16 @@ define([
                 switch (value.type) {
                     case 'full_document': //falling-through intencionat
                         return {content: draft.full.content, date: draft.full.date};
+
                     case 'partial_document':
-                        return {
-                            content: draft.structured.content[value.selected],
-                            date: draft.structured.date
+
+                        if (draft.structured.content[value.selected]) {
+                            return {
+                                content: draft.structured.content[value.selected],
+                                date: draft.structured.date
+                            }
                         }
+
                 }
 
                 return this.DEFAULT_DRAFT;

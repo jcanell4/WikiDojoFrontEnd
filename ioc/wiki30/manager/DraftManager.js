@@ -66,7 +66,7 @@ define([
 
             // S'ha de retornar tant el del local com el del full si existeixen
 
-            if (drafts.structured && drafts.structured.content[chunkId] !== undefined) {
+            if (drafts.structured && drafts.structured.content && drafts.structured.content[chunkId] !== undefined) {
                 time['structured'] = drafts.structured.date;
             } else {
                 // console.log("No existeix el chunk, no afegim la data");
@@ -106,14 +106,14 @@ define([
         },
 
         _removeDraftInMemory: function (data) {
-            // console.log("DraftManager#_removeDraft", data);
+            console.log("DraftManager#_removeDraft", data);
             delete(this.drafts[data.ns]);
         },
 
         // ALERTA[Xavi] destroy es un booleà que indica si s'ha de destruir el draft desprès d'esborrar-lo del local storage
         clearDraft: function (id, ns, destroy) {
 
-            // console.log("DraftManager#clearDraft", id, ns);
+            console.log("DraftManager#clearDraft", id, ns);
 
             var draft;
 
@@ -254,7 +254,7 @@ define([
 
             if (remoteDrafts['structured'] && remoteDrafts['structured'].date > (localDrafts['structured'] ? localDrafts['structured'].date : -1)) {
                 console.log("------ UPDATING LOCAL -------");
-                // console.log("Fent update el draft local PARCIAL");
+                console.log("Fent update el draft local PARCIAL", remoteDrafts['structured']);
 
                 var draft = {
                     content: remoteDrafts['structured']['content'],
@@ -295,7 +295,7 @@ define([
 
 
         _doSaveLocal: function (draft, date, ns) {
-            console.log("Draft#_doSaveLocalStorage");
+            // console.log("Draft#_doSaveLocalStorage", draft);
             this.lastRefresh = Date.now();
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
@@ -413,7 +413,12 @@ define([
             page.drafts[draft.type].date = date; // data global del draft
 
             for (var chunk in draft.content) {
-                // console.log("Processant chunk...", chunk);
+                console.log("Processant chunk...", chunk);
+
+                if (!page.drafts[draft.type].content) { // ALERTA: això ja hauria d'estar fet previament
+                    page.drafts[draft.type].content = {};
+                }
+
                 page.drafts[draft.type].content[chunk] = draft.content[chunk]
             }
 

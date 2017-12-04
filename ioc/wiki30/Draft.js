@@ -169,9 +169,9 @@ define([
         },
 
         _onSavePartial: function (data) {
-            // console.log("Draft#_onSavePartial", data);
+            console.log("Draft#_onSavePartial", data);
 
-            this.clearDraftChunks(data.dataToSend.section_id);
+            this.clearDraftChunk(data.dataToSend.section_id);
 
             // S'ha de cancelar el refresc de l'esborrany
             this.timers.refresh.cancel();
@@ -200,19 +200,24 @@ define([
         },
 
         clearDraftChunks: function (chunks) {
+            console.log("Draft#clearDraftChunks", chunks);
+
             for (var i = 0; i < chunks.length; i++) {
                 this.clearDraftChunk(chunks[i]);
             }
         },
 
         clearDraftChunk: function (chunkId) {
+            console.log("Draft#clearDraftChunk", chunkId);
             var pages = this._doGetPages();
 
             if (pages[this.contentTool.ns]
                 && pages[this.contentTool.ns].drafts
-                && pages[this.contentTool.ns].drafts['structured']) {
-                delete(pages[this.contentTool.ns].drafts['structured'][chunkId]);
+                && pages[this.contentTool.ns].drafts.structured) {
+                delete(pages[this.contentTool.ns].drafts.structured.content[chunkId]);
 
+            } else {
+                // console.log("No s'ha eliminat el chunk", chunkId, pages[this.contentTool.ns]);
             }
 
             this._doSetPages(pages);
