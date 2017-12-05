@@ -169,7 +169,7 @@ define([
         },
 
         _onSavePartial: function (data) {
-            console.log("Draft#_onSavePartial", data);
+            // console.log("Draft#_onSavePartial", data);
 
             this.clearDraftChunk(data.dataToSend.section_id);
 
@@ -200,7 +200,7 @@ define([
         },
 
         clearDraftChunks: function (chunks) {
-            console.log("Draft#clearDraftChunks", chunks);
+            //console.log("Draft#clearDraftChunks", chunks);
 
             for (var i = 0; i < chunks.length; i++) {
                 this.clearDraftChunk(chunks[i]);
@@ -208,7 +208,7 @@ define([
         },
 
         clearDraftChunk: function (chunkId) {
-            console.log("Draft#clearDraftChunk", chunkId);
+            //console.log("Draft#clearDraftChunk", chunkId);
             var pages = this._doGetPages();
 
             if (pages[this.contentTool.ns]

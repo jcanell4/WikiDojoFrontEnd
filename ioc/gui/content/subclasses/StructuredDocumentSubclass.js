@@ -1085,8 +1085,6 @@ define([
                 auxId = this.data.id + "_" + this.data.chunks[i].header_id;
                 $container = jQuery('#container_' + auxId);
 
-
-
                 $container.on('click', function () {
                     // Comprovar si es la secció seleccionada i si el seu state es false (no està en edició)
                     // var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
@@ -1135,7 +1133,6 @@ define([
 
         _setCurrentElement: function (element_id) {
             // console.log("StructuredDocumentSubclass#_setCurrentElement", element_id)
-
 
             if (element_id) {
                 var header_id = element_id.replace('container_' + this.id + '_', '');
@@ -1590,7 +1587,7 @@ define([
         },
 
         _removePartialDraft: function (headerId) {
-            console.log("StructuredDocumentSubclass#_removePartialDraft", headerId);
+            // console.log("StructuredDocumentSubclass#_removePartialDraft", headerId);
             var index = this.data.dictionary[headerId],
                 chunk = this.data.chunks[index];
             this.draftManager.clearDraftChunks(this.id, this.ns, [chunk.header_id]);

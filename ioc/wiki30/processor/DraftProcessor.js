@@ -66,7 +66,7 @@ define([
                 }
 
 
-                dialogParams = {
+                    dialogParams = {
                         id: 'diff',
                         ns: value.ns,
                         title: 'S\'ha trobat un esborrany',
@@ -148,7 +148,6 @@ define([
                 switch (value.type) {
                     case 'full_document': //falling-through intencionat
                         return {content: draft.full.content, date: draft.full.date};
-
                     case 'partial_document':
 
                         if (draft.structured.content[value.selected]) {
@@ -157,7 +156,6 @@ define([
                                 date: draft.structured.date
                             }
                         }
-
                 }
 
                 return this.DEFAULT_DRAFT;
