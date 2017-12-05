@@ -98,12 +98,12 @@ define([
                     },
 
                     argsRequestLink = {
-                        urlBase: "ajax.php?call=page"
+                        urlBase: "lib/exe/ioc_ajax.php?call=page"
                     },
 
 
                     argsRequestForm = {
-                        urlBase: "ajax.php?call=diff",
+                        urlBase: "lib/exe/ioc_ajax.php?call=diff",
                         form:    '#revisions_selector_' + content.id
                     },
 

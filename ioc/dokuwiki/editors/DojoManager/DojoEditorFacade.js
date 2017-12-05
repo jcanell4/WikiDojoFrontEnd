@@ -44,12 +44,15 @@ define([
 
 
 
-            alert("ALERTA: S'ha de fer el canvi per distingir entre el content i el originalContent pels esborranys!");
-            var text = this.$textarea.val();
-            this.editor.value = text.replace(/^\s+|\s+$/gm, ''); // <-- this.editor.value = args.content
+            // alert("ALERTA: S'ha de fer el canvi per distingir entre el content i el originalContent pels esborranys!");
+            // var text = this.$textarea.val();
+            // this.editor.value = text.replace(/^\s+|\s+$/gm, ''); // <-- this.editor.value = args.content
+            this.editor.value = args.content;
 
-            var originalContent = args.originalContent.replace(/^\s+|\s+$/gm, '');
-            this.editor.originalContent = originalContent;
+            // var originalContent = args.originalContent.replace(/^\s+|\s+$/gm, '');
+
+            console.log("******* Original content?", args.originalContent);
+            this.editor.originalContent = args.originalContent || args.content;
 
 
             this.editor.on('change', function (newContent) {

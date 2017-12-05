@@ -21,7 +21,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("DraftProcessor#process", value);
+                // console.log("DraftProcessor#process", value);
                     this._processDialog(value, dispatcher);
             },
 
@@ -48,13 +48,21 @@ define([
             },
 
             _showDiffDialog: function (value) {
-                console.log("DraftProcessor#_showDiffDialog", value);
+                // console.log("DraftProcessor#_showDiffDialog", value);
 
                 var data = this._extractData(value),
                     dialogParams;
 
-                if (data.document.content ===  data.draft.content) {
-                    alert("El content i el draft son iguals");
+                if (data.document.content === data.draft.content) {
+
+                    this.eventManager.fireEvent(this._getActionType(), { // Això fa referencia al eventManager del dialog
+                        id: value.id,
+                        ns: value.ns,
+                        dataToSend: this._getDocumentQuery() + "&discard_draft=true"
+                    }/*, observable*/);
+
+                    console.warn("El content i el draft son iguals");
+                    return;
                 }
 
 
@@ -133,7 +141,7 @@ define([
             },
 
             _getDraftLocal: function (value) {
-                console.log("DraftProcessor#_getDraftLocal", value);
+                // console.log("DraftProcessor#_getDraftLocal", value);
                 // console.log("docId:", this.docId);
                 var draft = this.draftManager.getDraft(this.docId, this.docNs).recoverLocalDraft();
 
@@ -141,9 +149,12 @@ define([
                     case 'full_document': //falling-through intencionat
                         return {content: draft.full.content, date: draft.full.date};
                     case 'partial_document':
-                        return {
-                            content: draft.structured.content[value.selected],
-                            date: draft.structured.date
+
+                        if (draft.structured.content[value.selected]) {
+                            return {
+                                content: draft.structured.content[value.selected],
+                                date: draft.structured.date
+                            }
                         }
                 }
 
@@ -182,7 +193,7 @@ define([
             },
 
             _getDraftQuery: function () {
-                console.log("DraftProcessor#_getDraftQuery", this.query);
+                // console.log("DraftProcessor#_getDraftQuery", this.query);
                 var query = this.query;
 
                 if (this.isLocalDraft) {

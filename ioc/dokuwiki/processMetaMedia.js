@@ -15,7 +15,7 @@ define([
     var res = function (id, params) {
         var domNode = dom.byId(id);
         var requestMedia = new Request();
-        requestMedia.urlBase = "ajax.php?call=media";
+        requestMedia.urlBase = "lib/exe/ioc_ajax.php?call=media";
         if(eventHandlers[0]){
             eventHandlers[0].remove();
         }

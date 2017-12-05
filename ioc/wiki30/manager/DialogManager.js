@@ -176,7 +176,7 @@ define([
              * @param params
              */
             _getDiffDialog: function (refId, params) {
-                console.log("DialogManager#_getDiffDialog", params);
+                // console.log("DialogManager#_getDiffDialog", params);
                 var dialogBuilder = this._getDefaultDialog(refId, params);
 
                 dialogBuilder.addDiff(params.diff.text1, params.diff.text2, params.diff.text1Label, params.diff.text2Label);

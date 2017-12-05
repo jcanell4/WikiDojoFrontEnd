@@ -40,7 +40,7 @@ define([
 
         var mediaButton = new iocButton({
             "label": params.modifyImageLabel
-            , "urlBase": "ajax.php?call=mediadetails"
+            , "urlBase": "lib/exe/ioc_ajax.php?call=mediadetails"
             , "query": 'id='+params.fromId +'&image=' + params.imageId//+'&img='+params.imageId+'&do=media'                   
         });
 
@@ -49,25 +49,6 @@ define([
         });
 
         mediaButton.placeAt(actionBar);
-
-        /*
-        new iocButton({
-            "label": params.modifyImageLabel
-            , "onClick": function(e) {
-                var commandParams = new Array();
-                commandParams["imageId"] = params.imageId;
-                xhr.get({
-                    url: "/dokuwiki_30/ajax.php?call=commandreport",
-                    content: commandParams,
-                    handleAs: "json",
-                    load: function(data) {
-                        console.log(data);
-                    }
-                });
-                fOnClose();
-            }
-        }).placeAt(actionBar);
-        /**/
 
         new Button({
             "label": params.closeDialogLabel

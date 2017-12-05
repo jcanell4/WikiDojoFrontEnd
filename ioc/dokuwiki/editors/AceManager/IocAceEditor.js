@@ -513,6 +513,8 @@ define([
                 });
 
                 this.setValue(args.content);
+
+                // console.log("IocAceEditor.originalContent", args.originalContent);
                 this.originalContent = args.originalContent;
 
             },
@@ -1471,10 +1473,16 @@ define([
             },
 
             isChanged: function() {
+                //console.log("IocAceEditor#isChanged", this.getValue().length, this.originalContent.length);
+
+                // console.log("|" + this.getValue() + "|");
+                // console.log("|" + this.originalContent + "|");
+
                 return this.originalContent !== this.getValue();
             },
 
             resetOriginalContentState: function () {
+                // console.log("IocAceEditor#resetOriginalContentState");
                 this.originalContent = this.getValue();
             }
         });

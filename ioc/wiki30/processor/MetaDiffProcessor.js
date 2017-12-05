@@ -34,9 +34,8 @@ define([
                     },
 
                     argsRequestForm = {
-                        urlBase: "ajax.php?call=diff", // TODO[Xavi] aquest valor ha d'arribar des de el servidor?
+                        urlBase: "lib/exe/ioc_ajax.php?call=diff", // TODO[Xavi] aquest valor ha d'arribar des de el servidor?
                         form:    '#switch_mode_' + metaContent.docId
-                        //,standbyTarget: 'topBloc'
                     };
 
                 return contentToolFactory.generate(contentToolFactory.generation.META, args)

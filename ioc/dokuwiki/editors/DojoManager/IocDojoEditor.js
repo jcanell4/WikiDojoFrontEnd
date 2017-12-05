@@ -167,7 +167,7 @@ define([
             //     console.log("|"+this.originalContent+"|");
             // }
 
-            return this.get('value') !== this.originalContent;
+            return this.get('value').trim() !== this.originalContent.trim();
         },
 
         /**
