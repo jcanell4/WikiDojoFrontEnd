@@ -513,6 +513,8 @@ define([
                 });
 
                 this.setValue(args.content);
+
+                // console.log("IocAceEditor.originalContent", args.originalContent);
                 this.originalContent = args.originalContent;
 
             },
@@ -567,6 +569,7 @@ define([
 
                 // in Firefox, keypress doesn't send the correct keycodes,
                 // in Opera, the default of keydown can't be prevented
+                //[Josep] Alerta jQuery.browser està deprecated!
                 if (jQuery.browser.opera) {
                     $editor.keypress(window.dw_editor.keyHandler);
                 } else {
@@ -1471,10 +1474,16 @@ define([
             },
 
             isChanged: function() {
+                //console.log("IocAceEditor#isChanged", this.getValue().length, this.originalContent.length);
+
+                // console.log("|" + this.getValue() + "|");
+                // console.log("|" + this.originalContent + "|");
+
                 return this.originalContent !== this.getValue();
             },
 
             resetOriginalContentState: function () {
+                // console.log("IocAceEditor#resetOriginalContentState");
                 this.originalContent = this.getValue();
             }
         });

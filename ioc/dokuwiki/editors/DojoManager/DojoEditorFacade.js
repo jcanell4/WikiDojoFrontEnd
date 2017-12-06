@@ -52,7 +52,7 @@ define([
             // var originalContent = args.originalContent.replace(/^\s+|\s+$/gm, '');
 
             console.log("******* Original content?", args.originalContent);
-            this.editor.originalContent = args.originalContent;
+            this.editor.originalContent = args.originalContent || args.content;
 
 
             this.editor.on('change', function (newContent) {

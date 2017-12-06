@@ -79,6 +79,7 @@ define([
          * @private
          */
         setCurrentElementState: function (state) {
+            // console.log("GlobalState#setCurrentElementState", state);
             if (state) {
                 this.getCurrentContent().currentElementState = state;
             } else {

@@ -118,6 +118,16 @@ define([
             }
         },
 
+        _setOwnCurrenElement: function (id) {
+            var currentSelection = this.dispatcher.getGlobalState().getCurrentElement();
+
+            if (currentSelection.id === id && !currentSelection.state) {
+                this._setCurrentElement(null);
+            } else {
+                this._setCurrentElement(id);
+            }
+        },
+
         addEditionListener: function () {
             //console.log("StructuredDocumentSubclass#addEditionListener");
             if (this.rev !== null && this.rev !== undefined && this.rev !== '') {
@@ -133,6 +143,18 @@ define([
                 auxId = this.data.id + "_" + this.data.chunks[i].header_id;
 
                 jQuery('#container_' + auxId).on('dblclick', function () {
+
+                    // DUPLICAT en el click!
+
+                    context._setOwnCurrenElement(this.id);
+
+
+
+                    /////
+
+
+
+
 
 
                     var aux_id = this.id.replace('container_', ''),
@@ -597,7 +619,8 @@ define([
 
 
                 //console.log("Draft:", draft);
-                //console.log("Content:", content.chunks[index].text.editing);
+                // console.log("Content:", content.chunks[index]);
+
 
 
                 // Això estableix el contingut anterior com a contingut original
@@ -686,7 +709,7 @@ define([
                         if (content.chunks[j].header_id === this.data.chunks[i].header_id) {
                             if (content.chunks[j].text) {
                                 content.chunks[j].text.editing = this.data.chunks[i].text.editing;
-                                console.log("Afegint l'original content a ", content.chunks[j].header_id, this.data.chunks[i].text.originalContent? this.data.chunks[i].text.originalContent.length : false);
+                                // console.log("Afegint l'original content a ", content.chunks[j].header_id, this.data.chunks[i].text.originalContent? this.data.chunks[i].text.originalContent.length : false);
                                 content.chunks[j].text.originalContent = this.data.chunks[i].text.originalContent || this.data.chunks[i].text.editing;
                             }
 
@@ -769,7 +792,7 @@ define([
          * @param {string[]} headers
          */
         resetChangesForChunks: function (headers) {
-            console.error("StructuredDcoument#resetChangesForChunks", headers);
+            // console.log("StructuredDcoument#resetChangesForChunks", headers);
             if (headers && !Array.isArray(headers)) {
                 headers = [headers];
             } else if (!headers) {
@@ -1065,13 +1088,17 @@ define([
 
                 $container.on('click', function () {
                     // Comprovar si es la secció seleccionada i si el seu state es false (no està en edició)
-                    var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
+                    // var currentSelection = context.dispatcher.getGlobalState().getCurrentElement();
+                    //
+                    // console.log("this id??", this.id, currentSelection.id);
+                    //
+                    // if (currentSelection.id === this.id && !currentSelection.state) {
+                    //     context._setCurrentElement(null);
+                    // } else {
+                    //     context._setCurrentElement(this.id);
+                    // }
 
-                    if (currentSelection.id === this.id && !currentSelection.state) {
-                        context._setCurrentElement(null);
-                    } else {
-                        context._setCurrentElement(this.id);
-                    }
+                    context._setOwnCurrenElement(this.id);
 
                     return true;
                 });
@@ -1106,12 +1133,14 @@ define([
         },
 
         _setCurrentElement: function (element_id) {
+            // console.log("StructuredDocumentSubclass#_setCurrentElement", element_id)
 
             if (element_id) {
                 var header_id = element_id.replace('container_' + this.id + '_', '');
 
                 var isEditing = jQuery.inArray(header_id, this.getEditingChunks()) > -1;
 
+                // console.log("element_id??", element_id);
                 this.dispatcher.getGlobalState().setCurrentElement(element_id, isEditing);
                 this._setHighlight(element_id, 'section_selected');
                 this.currentElementId = element_id;
@@ -1202,9 +1231,7 @@ define([
                 //})
 
 
-                console.log("Quina informació conté l'event?", event);
-                // TODO: Canviar l'originalContent del chunk (o fer reset? està implementat al facade?)
-                // TODO: recomprovar si hi han canvis
+
                 this.getEditor(event.chunk).resetOriginalContentState();
                 this.isContentChanged();
 
