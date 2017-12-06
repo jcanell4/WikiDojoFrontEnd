@@ -131,11 +131,10 @@ define([
                     source = source.parentNode;
                 }
                 var arr = source.href.split("&");
-                //var arr = domAttr.get(this, "href").split("?");
                 var arr2 = arr[2].split("=");
                 var rev = arr2[1];
                 this._createRequest();
-                this.requester.urlBase = "ajax.php?call=mediadetails";
+                this.requester.urlBase = "lib/exe/ioc_ajax.php?call=mediadetails";
                 var query = "img="+this.docId+"&rev="+rev+"&mediado=diff&do=media&tab_details=history&tab_files=files&image="+this.docId+"&ns="+this.ns;
                 this.requester.sendRequest(query);
             },
@@ -144,13 +143,6 @@ define([
 
                 require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) {
                     this.requester = new Request();
-
-//                    this.requester.updateSectok = function (sectok) {
-//                        this.sectok = sectok;
-//                    };
-//
-//                    this.requester.sectok = this.requester.dispatcher.getSectok();
-//                    this.requester.dispatcher.toUpdateSectok.push(this.requester);
                 }));
             },
 

@@ -569,6 +569,7 @@ define([
 
                 // in Firefox, keypress doesn't send the correct keycodes,
                 // in Opera, the default of keydown can't be prevented
+                //[Josep] Alerta jQuery.browser està deprecated!
                 if (jQuery.browser.opera) {
                     $editor.keypress(window.dw_editor.keyHandler);
                 } else {
