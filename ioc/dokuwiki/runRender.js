@@ -9,9 +9,6 @@ define([], function () {
             $tocul.css('display', 'none');
         }
 
-
-
-
         jQuery.expr[':'].parents = function (a, i, m) {
             return jQuery(a).parents(m[3]).length < 1;
         };
@@ -21,7 +18,7 @@ define([], function () {
                 var $img = jQuery(this);
                 var width = ($img.attr('width') ? parseInt($img.attr('width')) : $img.width());
                 var height = ($img.attr('height') ? parseInt($img.attr('height')) : $img.height());
-                var widthaux = 0;
+                //var widthaux = 0;
                 if (width > 48 && height > 48) {
                     $img.parents('p').addClass('imgb');
                     var element = jQuery('<div class="imgb"></div>');
@@ -30,9 +27,21 @@ define([], function () {
                     var $anchor = $img.parent();
                     $anchor.appendTo(element);
                     var title = $img.attr('title');
+                    if (title) title = title.replace(/\/[-+]?\w+$/gi, "");
                     if (title) {
-                        title = title.replace(/\/[-+]?\w+$/gi, "");
+                        jQuery('<div class="title">' + title + '</div>').appendTo(element);
                     }
+                    $remove.remove();
+                }
+                else { //[Rafa] La classe 'imga' no existeix encara
+                    $img.parents('p').addClass('imga');
+                    var element = jQuery('<div class="imga"></div>');
+                    var $remove = $img.closest('p');
+                    $remove.before(element);
+                    var $anchor = $img.parent();
+                    $anchor.appendTo(element);
+                    var title = $img.attr('title');
+                    if (title) title = title.replace(/\/[-+]?\w+$/gi, "");
                     if (title) {
                         jQuery('<div class="title">' + title + '</div>').appendTo(element);
                     }
@@ -52,18 +61,10 @@ define([], function () {
                     }
                     jQuery(this).attr('width', widthaux);
                 }
-                //                        var url = $img.attr('src');
-                //                        var patt = new RegExp("w=\\d+", 'g');
-                //                        var patt2 = new RegExp("h=\\d+", 'g');
-                //                        if (patt.test(url)){
-                //                                url=url.replace(patt, "w="+widthaux);
-                //                                jQuery(this).attr('src', url);
-                //                        }
+
                 if (height) {
                     var ratio = parseFloat(width / height);
                     height = parseInt(widthaux / ratio);
-                    //                                url=url.replace(patt2, "h="+height);
-                    //                                jQuery(this).attr('src', url);
                     jQuery(this).attr('height', height);
                 }
             });
