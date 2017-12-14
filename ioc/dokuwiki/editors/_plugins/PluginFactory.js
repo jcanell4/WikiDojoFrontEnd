@@ -14,8 +14,6 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceDocumentPreview',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoDocumentPreview',
 
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoTestDropdown',
-
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableACE',
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableWrapper',
 
@@ -27,7 +25,7 @@ define([
 
 
 ], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent,
-             DojoFireEvent, AceDocumentPreview,DojoDocumentPreview, DojoTestDropdown,
+             DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands");
@@ -51,7 +49,6 @@ define([
             'CancelButton' : DojoFireEvent,
             'SaveButton' : DojoFireEvent,
             'DocumentPreviewButton': DojoDocumentPreview,
-            'TestDropdown': DojoTestDropdown,
         }
 
     };
