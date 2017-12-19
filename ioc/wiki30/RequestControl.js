@@ -131,6 +131,11 @@ define([
                     this.request.sendRequest(data.dataToSend);
                 }
             },
+            
+             addProcessor: function (type, processor) {
+               //llamar al request i añadir el processor
+            },
+
 
             // _sendError: function (message) {
             //     dispatcher.processError(message);
