@@ -997,6 +997,9 @@ define([
                 editor: editor
             };
 
+            console.log("Content Format:", editor.getContentFormat());
+
+
             editor.on('change', this._checkChanges.bind(this));
         },
 
@@ -1025,7 +1028,8 @@ define([
                     textareaId: 'textarea_' + config.id,
                     dispatcher: this.dispatcher,
                     content: config.content,
-                    originalContent: config.originalContent
+                    originalContent: config.originalContent,
+                    contentFormat: this.dispatcher.getGlobalState().userState['contentFormat']
                 }
             );
         },
@@ -1049,7 +1053,8 @@ define([
                 mdpage: JSINFO.plugin_aceeditor.mdpage,
                 dispatcher: this.dispatcher,
                 content: config.content,
-                originalContent: config.originalContent
+                originalContent: config.originalContent,
+                contentFormat: this.dispatcher.getGlobalState().userState['contentFormat']
             });
         },
 

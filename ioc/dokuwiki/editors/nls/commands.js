@@ -26,8 +26,47 @@ define({ root:
         'ioc-sound-sample': 'sound identifier:key',
 
         // Latex Preview Plugin
-        'ioc-latex-preview': 'Latex preview'
+        'ioc-latex-preview': 'Latex preview',
 
+        // Botons Estils IOC
+        'ioc-new-content-button': 'New content',
+        'ioc-new-content-sample': 'Add new content syntax',
+
+        'ioc-insert-figure-button': 'Figure syntax',
+        'ioc-insert-figure-sample': 'Figure syntax',
+
+        'ioc-insert-figure-link-button': 'Link to figure syntax',
+        'ioc-insert-figure-link-sample': 'Link to figure syntax',
+
+        'ioc-insert-table-button': 'Table syntax',
+        'ioc-insert-table-sample': 'Table syntax',
+
+        'ioc-insert-table-link-button': 'Link to table syntax',
+        'ioc-insert-table-link-sample': 'Link to table syntax',
+
+        'ioc-insert-text-button': 'Text syntax',
+        'ioc-insert-text-sample': 'Text syntax',
+
+        'ioc-insert-text-large-button': 'Large text syntax',
+        'ioc-insert-text-large-sample': 'Large text syntax',
+
+        'ioc-insert-example-button': 'Example syntax',
+        'ioc-insert-example-sample': 'Example syntax',
+
+        'ioc-insert-note-button': 'Note syntax',
+        'ioc-insert-note-sample': 'Note syntax',
+
+        'ioc-insert-reference-button': 'Reference syntax',
+        'ioc-insert-reference-sample': 'Reference syntax',
+
+        'ioc-insert-important-button': 'Important syntax',
+        'ioc-insert-important-sample': 'Important syntax',
+
+        'ioc-insert-quote-button': 'Quote syntax',
+        'ioc-insert-quote-sample': 'Quote syntax',
+
+        'ioc-insert-accounting-button': 'Accounting syntax',
+        'ioc-insert-accounting-sample': 'Accounting syntax',
     }),
 //end v1.x content
 

@@ -27,8 +27,48 @@ define(
 
 
         // Latex Preview Plugin
-        'ioc-latex-preview': 'Previsualització Latex'
+        'ioc-latex-preview': 'Previsualització Latex',
 
+        // Botons Estils IOC
+        'ioc-new-content-button': 'Nou contingut',
+        'ioc-new-content-sample': 'Incloure la sintaxis de contingut nou',
+
+        'ioc-insert-figure-button': 'Sintaxis de figura',
+        'ioc-insert-figure-sample': 'Incloure la sintaxis de figura',
+
+        'ioc-insert-figure-link-button': 'Sintaxis d\'enllaç a figura',
+        'ioc-insert-figure-link-sample': 'Incloure la sintaxis d\'enllaç a figura',
+
+        'ioc-insert-table-button': 'Sintaxi de taula',
+        'ioc-insert-table-sample': 'Incloure la sintaxis de taula',
+
+        'ioc-insert-table-link-button': 'Sintaxi d\'enllaç a taula',
+        'ioc-insert-table-link-sample': 'Incloure la sintaxis d\'enllaç a taula',
+
+        'ioc-insert-text-button': 'Sintaxi de text complementari',
+        'ioc-insert-text-sample': 'Incloure la sintaxis de text complementari',
+
+        'ioc-insert-text-large-button': 'Sintaxi de text complementari llarg',
+        'ioc-insert-text-large-sample': 'Incloure la sintaxis de text complementari llarg',
+
+        'ioc-insert-example-button': 'Sintaxi d\'exemple',
+        'ioc-insert-example-sample': 'Incloure la sintaxis d\'exemple',
+
+        'ioc-insert-note-button': 'Sintaxi de nota',
+        'ioc-insert-note-sample': 'Incloure la sintaxis de nota',
+
+        'ioc-insert-reference-button': 'Sintaxi de referència',
+        'ioc-insert-reference-sample': 'Incloure la sintaxis de referència',
+
+        'ioc-insert-important-button': 'Sintaxi de important',
+        'ioc-insert-important-sample': 'Incloure la sintaxis de important',
+
+        'ioc-insert-quote-button': 'Sintaxi de quote',
+        'ioc-insert-quote-sample': 'Incloure la sintaxis de quote',
+
+
+        'ioc-insert-accounting-button': 'Sintaxi d\'assentament contable',
+        'ioc-insert-accounting-sample': 'Incloure la sintaxis d\'un assentament contable',
     })
 );
 

@@ -49,7 +49,7 @@ define([
             editorType: 'Dojo',
 
 
-            constructor: function () {
+            constructor: function (args) {
                 this.changeDetectorEnabled = false;
                 this._pluginsToParse = [];
                 this.toolbars = {};
@@ -63,6 +63,19 @@ define([
                     'CancelButton',
                     'DocumentPreviewButton',
                     // 'TestDropdown'
+                    'NewContent',
+                    'InsertFigureSyntax',
+                    'InsertFigureLinkSyntax',
+                    'InsertTableSyntax',
+                    'InsertTableLinkSyntax',
+                    'InsertTextSyntax',
+                    'InsertTextLargeSyntax',
+                    'InsertExampleSyntax',
+                    'InsertNoteSyntax',
+                    'InsertReferenceSyntax',
+                    'InsertImportantSyntax',
+                    'InsertQuoteSyntax',
+                    'InsertAccountingSyntax',
                 ]);
 
 
@@ -72,6 +85,7 @@ define([
                     arguments[0].extraPlugins = plugins;
                 }
 
+                this.contentFormat = args.contentFormat;
 
                 // console.log("arguments?", arguments[1].id);
                 // this.createToolbars(arguments[1].id);
