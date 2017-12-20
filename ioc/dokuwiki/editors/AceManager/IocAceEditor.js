@@ -191,6 +191,8 @@ define([
                     args = JSON.parse(JSON.stringify(this._default)); // deep clone
                 }
 
+                this.contentFormat = args.contentFormat;
+
 
                 var iocAceMode = new IocAceMode({
                     baseHighlighters: args.langRules || {}, // ALERTA[Xavi] possibilitat d'afegir noves regles per paràmetre. Sense provar!

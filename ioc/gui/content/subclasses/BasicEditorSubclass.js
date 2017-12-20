@@ -264,6 +264,8 @@ define([
                 // this.editor = this.createEditor({id : this.id}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
 
                 this.editor = this.createEditor({id:this.id, content: this.content.content || this.originalContent, originalContent: this.originalContent}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
+
+                console.log("Content Format:", this.editor.getContentFormat());
             },
 
             createEditor: function(config, type) {
@@ -287,6 +289,7 @@ define([
                         dispatcher: this.dispatcher,
                         content: config.content,
                         originalContent: config.originalContent,
+                        contentFormat: this.dispatcher.getGlobalState().userState['contentFormat']
                     }
                 );
             },
@@ -307,7 +310,8 @@ define([
                     auxId: config.id,
                     dispatcher: this.dispatcher,
                     content: config.content,
-                    originalContent: config.originalContent
+                    originalContent: config.originalContent,
+                    contentFormat: this.dispatcher.getGlobalState().userState['contentFormat']
                 });
             },
 
