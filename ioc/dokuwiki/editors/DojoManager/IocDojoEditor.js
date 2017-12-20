@@ -54,14 +54,33 @@ define([
                 this._pluginsToParse = [];
                 this.toolbars = {};
 
+                // Basic plugins
+                arguments[0].plugins = [
+                    this.getPlugin('HTMLBold'),
+                    // 'bold'
+                    this.getPlugin('HTMLItalic'),
+                    this.getPlugin('HTMLUnderline'),
+                    this.getPlugin('HTMLCode'),
+                    this.getPlugin('HTMLStrikethrough'),
+                    this.getPlugin('HTMLHeader1'),
+                    this.getPlugin('HTMLHeader2'),
+                    this.getPlugin('HTMLHeader3'),
+                    this.getPlugin('HTMLHeader4'),
+                    this.getPlugin('HTMLHeader5'),
+                    this.getPlugin('HTMLHeader6'),
+                    this.getPlugin('HTMLLink'),
+                    this.getPlugin('HTMLLinkExternal'),
 
+                    // 'bold', 'italic','underline', /*'code' this.getPlugin('InsertCodeSyntax'),*/'strikethrough', /* Header x4, Enllaç intern,
+                    // Enllaç extern (hi ha plugin de dojo), UL, OL, Linia horitzontal,  Afegir imatge,
+                    // emoticones (plugin de dojo?), caracters especials, inserir signatura*/
+                ];
+
+
+
+
+                // Extra plugins
                 var plugins = this.getPlugins([
-                    'IocSoundFormatButton',
-                    // 'TestFormatButton',
-                    'IocComment',
-                    'SaveButton',
-                    'CancelButton',
-                    'DocumentPreviewButton',
                     // 'TestDropdown'
                     'NewContent',
                     'InsertFigureSyntax',
@@ -76,6 +95,12 @@ define([
                     'InsertImportantSyntax',
                     'InsertQuoteSyntax',
                     'InsertAccountingSyntax',
+                    'IocSoundFormatButton',
+                    // 'TestFormatButton',
+                    'IocComment',
+                    'SaveButton',
+                    'CancelButton',
+                    'DocumentPreviewButton',
                 ]);
 
 
@@ -84,6 +109,8 @@ define([
                 } else {
                     arguments[0].extraPlugins = plugins;
                 }
+
+
 
                 this.contentFormat = args.contentFormat;
 
@@ -353,7 +380,7 @@ define([
                 var config = {
                     toolbarContainerId: toolbarId,
                     icon: 'IocBack', // Temporal
-                    title: 'Desplegable ' + category
+                    title: category
                 };
 
                 var plugin = new DojoToolbarDropdown();

@@ -64,6 +64,24 @@ define([
             'InsertImportantSyntax': DojoFormat,
             'InsertQuoteSyntax': DojoFormat,
             'InsertAccountingSyntax': DojoFormat,
+
+
+            // Botons barra d'eines de dojo bàsics
+            'HTMLBold': DojoFormat,
+            'HTMLItalic': DojoFormat,
+            'HTMLUnderline': DojoFormat,
+            'HTMLCode': DojoFormat,
+            'HTMLStrikethrough' : DojoFormat,
+            'HTMLHeader1' : DojoFormat,
+            'HTMLHeader2' : DojoFormat,
+            'HTMLHeader3' : DojoFormat,
+            'HTMLHeader4' : DojoFormat,
+            'HTMLHeader5' : DojoFormat,
+            'HTMLHeader6' : DojoFormat,
+            'HTMLLink' : DojoFormat,
+            'HTMLLinkExternal' : DojoFormat,
+
+
         }
 
     };
@@ -89,7 +107,7 @@ define([
             close: '}}',
             sample: strings["ioc-sound-sample"],
             icon: 'IocSound',
-            category: 'IOC'
+            category: strings["category-ioc"]
         },
         'DocumentPreviewButton': {
             type: 'DocumentPreview',
@@ -136,8 +154,8 @@ define([
             open: '<newcontent>',
             close: '</newcontent>',
             sample: strings["ioc-new-content-sample"],
-            icon: 'IocNewContent', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocNewContent',
+            category: strings["category-ioc"]
         },
 
         'InsertFigureSyntax': {
@@ -145,8 +163,8 @@ define([
             open: '::figure:\n  :title:\n  :footer:\n',
             close: '\n:::',
             sample: strings["ioc-insert-figure-sample"],
-            icon: 'IocInsertFigureSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertFigureSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertFigureLinkSyntax': {
@@ -154,8 +172,8 @@ define([
             open: ':figure:',
             close: ':',
             sample: strings["ioc-insert-figure-link-sample"],
-            icon: 'IocInsertFigureLinkSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertFigureLinkSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertTableSyntax': {
@@ -163,8 +181,8 @@ define([
             open: '::table:\n  :title:\n  :footer:\n',
             close: '\n:::',
             sample: strings["ioc-insert-table-sample"],
-            icon: 'IocInsertTableSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertTableSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertTableLinkSyntax': {
@@ -172,8 +190,8 @@ define([
             open: ':table:',
             close: ':',
             sample: strings["ioc-insert-table-link-sample"],
-            icon: 'IocInsertTableLinkSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertTableLinkSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertTextSyntax': {
@@ -181,8 +199,8 @@ define([
             open: '::text:\n  :title:\n',
             close: '\n:::',
             sample: strings["ioc-insert-text-sample"],
-            icon: 'IocInsertTextSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertTextSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertTextLargeSyntax': {
@@ -190,8 +208,8 @@ define([
             open: '::text:\n  :title:\n  :large:\n',
             close: '\n:::',
             sample: strings["ioc-insert-text-large-sample"],
-            icon: 'IocInsertTextLargeSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertTextLargeSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertExampleSyntax': {
@@ -199,8 +217,8 @@ define([
             open: '::example:\n  :title:\n',
             close: '\n:::',
             sample: strings["ioc-insert-example-sample"],
-            icon: 'IocInsertExampleSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertExampleSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertNoteSyntax': {
@@ -208,8 +226,8 @@ define([
             open: '::note:\n',
             close: '\n:::',
             sample: strings["ioc-insert-note-sample"],
-            icon: 'IocInsertNoteSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertNoteSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertReferenceSyntax': {
@@ -217,8 +235,8 @@ define([
             open: '::reference:\n',
             close: '\n:::',
             sample: strings["ioc-insert-reference-sample"],
-            icon: 'IocInsertReferenceSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertReferenceSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertImportantSyntax': {
@@ -226,8 +244,8 @@ define([
             open: '::important:\n',
             close: '\n:::',
             sample: strings["ioc-insert-reference-sample"],
-            icon: 'IocInsertImportantSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertImportantSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertQuoteSyntax': {
@@ -235,8 +253,8 @@ define([
             open: '::quote:\n',
             close: '\n:::',
             sample: strings["ioc-insert-quote-sample"],
-            icon: 'IocInsertQuoteSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertQuoteSyntax',
+            category: strings["category-ioc"]
         },
 
         'InsertAccountingSyntax': {
@@ -244,10 +262,122 @@ define([
             open: '::accounting:\n  :title:\n  :footer:\n',
             close: '\n:::',
             sample: strings["ioc-insert-accounting-sample"],
-            icon: 'IocInsertAccountingSyntax', // TODO[Xavi] Afegir icon
-            category: 'IOC'
+            icon: 'IocInsertAccountingSyntax',
+            category: strings["category-ioc"]
         },
 
+
+        'HTMLBold': {
+            title: strings["ioc-insert-bold-button"],
+            open: '<strong>',
+            close: '</strong>',
+            sample: strings["ioc-insert-bold-button"],
+            icon: 'IocBold',
+        },
+
+        'HTMLItalic': {
+            title: strings["ioc-insert-italic-button"],
+            open: '<em>',
+            close: '</em>',
+            sample: strings["ioc-insert-italic-button"],
+            icon: 'IocItalic',
+        },
+
+        'HTMLUnderline': {
+            title: strings["ioc-insert-underline-button"],
+            open: '<ins>',
+            close: '</ins>',
+            sample: strings["ioc-insert-underline-button"],
+            icon: 'IocUnderline',
+        },
+
+        'HTMLCode': {
+            title: strings["ioc-insert-code-button"],
+            open: '<code>',
+            close: '</code>',
+            sample: strings["ioc-insert-code-button"],
+            icon: 'IocCode',
+        },
+
+        'HTMLStrikethrough': {
+            title: strings["ioc-insert-strikethrough-button"],
+            open: '<del>',
+            close: '</del>',
+            sample: strings["ioc-insert-strikethrough-button"],
+            icon: 'IocStrikethrough',
+        },
+
+        'HTMLHeader1': {
+            title: strings["ioc-insert-header1-button"],
+            open: '<h1>',
+            close: '</h1>',
+            sample: strings["ioc-insert-header-sample"],
+            icon: 'IocHeader1',
+            category: strings["category-header"]
+        },
+
+        'HTMLHeader2': {
+            title: strings["ioc-insert-header2-button"],
+            open: '<h2>',
+            close: '</h2>',
+            sample: strings["ioc-insert-header-sample"],
+            icon: 'IocHeader2',
+            category: strings["category-header"]
+        },
+
+        'HTMLHeader3': {
+            title: strings["ioc-insert-header3-button"],
+            open: '<h3>',
+            close: '</h3>',
+            sample: strings["ioc-insert-header-sample"],
+            icon: 'IocHeader3',
+            category: strings["category-header"]
+        },
+
+        'HTMLHeader4': {
+            title: strings["ioc-insert-header4-button"],
+            open: '<h4>',
+            close: '</h4>',
+            sample: strings["ioc-insert-header-sample"],
+            icon: 'IocHeader4',
+            category: strings["category-header"]
+        },
+
+        'HTMLHeader5': {
+            title: strings["ioc-insert-header5-button"],
+            open: '<h5>',
+            close: '</h5>',
+            sample: strings["ioc-insert-header-sample"],
+            icon: 'IocHeader5',
+            category: strings["category-header"]
+        },
+
+        'HTMLHeader6': {
+            title: strings["ioc-insert-header6-button"],
+            open: '<h6>',
+            close: '</h6>',
+            sample: strings["ioc-insert-header-sample"],
+            icon: 'IocHeader6',
+            category: strings["category-header"]
+        },
+
+        'HTMLLink': {
+            title: strings["ioc-insert-link-button"],
+            open: '',
+            close: '',
+            sample: strings["ioc-insert-link-sample"],
+            icon: 'IocLink',
+        },
+
+        'HTMLLinkExternal': {
+            title: strings["ioc-insert-link-external-button"],
+            open: '',
+            close: '',
+            sample: strings["ioc-insert-link-external-sample"],
+            icon: 'IocLinkExternal',
+        },
+
+        
     };
 
 

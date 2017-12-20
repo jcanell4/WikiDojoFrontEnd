@@ -8,6 +8,10 @@ define(
         'enable-ace': 'Activar/Desactivar ACE',
         'enable-wrapper' : 'Activar/Desactivar embolcall',
 
+        // Categories
+        'category-ioc': 'IOC',
+        'category-header': 'Capçalera',
+
         // Comments Plugin
         'ioc-comment-button': 'Afegir comentari',
         // 'replybutton': 'Respon',
@@ -69,6 +73,38 @@ define(
 
         'ioc-insert-accounting-button': 'Sintaxi d\'assentament contable',
         'ioc-insert-accounting-sample': 'Incloure la sintaxis d\'un assentament contable',
+
+
+        // Basic toolbar butons
+
+        'ioc-insert-bold-button' : 'Negreta',
+        'ioc-insert-bold-sample' : 'Negreta',
+        'ioc-insert-italic-button' : 'Cursiva',
+        'ioc-insert-italic-sample' : 'Cursiva',
+        'ioc-insert-underline-button' : 'Subratllat',
+        'ioc-insert-underline-sample' : 'Subratllat',
+        'ioc-insert-code-button' : 'Codi',
+        'ioc-insert-code-sample' : 'Codi',
+        'ioc-insert-strikethrough-button' : 'Text barrat',
+        'ioc-insert-strikethrough-sample' : 'Text barrat',
+        'ioc-insert-link-button' : 'TODO: Enllaç intern',
+        'ioc-insert-link-sample' : 'TODO: Enllaç intern',
+        'ioc-insert-link-external-button' : 'TODO: Enllaç extern',
+        'ioc-insert-link-external-sample' : 'TODO: Enllaç extern',
+
+
+
+        'ioc-insert-header-sample': 'Encapçalament',
+        'ioc-insert-header1-button': 'Sintaxi d\'encapçalament nivell 1',
+        'ioc-insert-header2-button': 'Sintaxi d\'encapçalament nivell 2',
+        'ioc-insert-header3-button': 'Sintaxi d\'encapçalament nivell 3',
+        'ioc-insert-header4-button': 'Sintaxi d\'encapçalament nivell 4',
+        'ioc-insert-header5-button': 'Sintaxi d\'encapçalament nivell 5',
+        'ioc-insert-header6-button': 'Sintaxi d\'encapçalament nivell 6',
+
+
+
+
     })
 );
 
