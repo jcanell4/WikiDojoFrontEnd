@@ -166,7 +166,9 @@ define([
 
 //                values.wikitext = jQuery.trim(text);
                 values.wikitext = text;
-
+                
+                values.contentFormat = this.dispatcher.getGlobalState().userState['editor'];
+                
                 return values;
             },
 
