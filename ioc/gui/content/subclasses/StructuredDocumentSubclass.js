@@ -194,6 +194,8 @@ define([
             
             query += this._generateLastLocalDraftTimesParam(chunkId);
 
+            query +="&contentFormat="+this.dispatcher.getGlobalState().userState['editor'];
+
 
             return query;
         },
@@ -220,7 +222,9 @@ define([
             rebuildText = this._rebuildText(header_id, false);
             // lang.mixin(values, rebuildText);
             this.mixin(values, rebuildText);
-
+            
+            //afegim el format de l'editor
+            values["contentFormat"]=this.dispatcher.getGlobalState().userState['editor'];
             return values;
         },
 
