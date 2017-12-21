@@ -174,6 +174,8 @@ define([
             /** @type {object} arguments que s'han passat al constructor per configurar-lo */
             _args: {},
 
+            contentFormat: 'ACE',
+
             /**
              * Inicialitza l'editor.
              *
@@ -190,9 +192,6 @@ define([
                 } else {
                     args = JSON.parse(JSON.stringify(this._default)); // deep clone
                 }
-
-                this.contentFormat = args.contentFormat;
-
 
                 var iocAceMode = new IocAceMode({
                     baseHighlighters: args.langRules || {}, // ALERTA[Xavi] possibilitat d'afegir noves regles per paràmetre. Sense provar!

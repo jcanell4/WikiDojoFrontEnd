@@ -48,6 +48,7 @@ define([
 
             editorType: 'Dojo',
 
+            contentFormat: 'Dojo',
 
             constructor: function (args) {
                 this.changeDetectorEnabled = false;
@@ -109,10 +110,6 @@ define([
                 } else {
                     arguments[0].extraPlugins = plugins;
                 }
-
-
-
-                this.contentFormat = args.contentFormat;
 
                 // console.log("arguments?", arguments[1].id);
                 // this.createToolbars(arguments[1].id);

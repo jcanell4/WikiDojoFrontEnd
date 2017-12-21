@@ -194,7 +194,8 @@ define([
             
             query += this._generateLastLocalDraftTimesParam(chunkId);
 
-            query +="&contentFormat="+this.dispatcher.getGlobalState().userState['editor'];
+            // query +="&contentFormat="+this.dispatcher.getGlobalState().userState['editor'];
+            query +="&contentFormat="+this.getEditor(chunkId).getContentFormat();
 
 
             return query;
@@ -222,9 +223,10 @@ define([
             rebuildText = this._rebuildText(header_id, false);
             // lang.mixin(values, rebuildText);
             this.mixin(values, rebuildText);
-            
+
             //afegim el format de l'editor
-            values["contentFormat"]=this.dispatcher.getGlobalState().userState['editor'];
+            values["contentFormat"]=this.getEditor(header_id).getContentFormat();
+
             return values;
         },
 
@@ -1001,8 +1003,6 @@ define([
                 editor: editor
             };
 
-            console.log("Content Format:", editor.getContentFormat());
-
 
             editor.on('change', this._checkChanges.bind(this));
         },
@@ -1033,7 +1033,6 @@ define([
                     dispatcher: this.dispatcher,
                     content: config.content,
                     originalContent: config.originalContent,
-                    contentFormat: this.dispatcher.getGlobalState().userState['contentFormat']
                 }
             );
         },
@@ -1058,7 +1057,6 @@ define([
                 dispatcher: this.dispatcher,
                 content: config.content,
                 originalContent: config.originalContent,
-                contentFormat: this.dispatcher.getGlobalState().userState['contentFormat']
             });
         },
 

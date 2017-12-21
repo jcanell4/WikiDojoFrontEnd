@@ -166,9 +166,9 @@ define([
 
 //                values.wikitext = jQuery.trim(text);
                 values.wikitext = text;
-                
-                values.contentFormat = this.dispatcher.getGlobalState().userState['editor'];
-                
+
+                values.contentFormat = this.getEditor().getContentFormat();
+
                 return values;
             },
 
@@ -289,7 +289,6 @@ define([
                         dispatcher: this.dispatcher,
                         content: config.content,
                         originalContent: config.originalContent,
-                        contentFormat: this.dispatcher.getGlobalState().userState['contentFormat']
                     }
                 );
             },
@@ -311,7 +310,6 @@ define([
                     dispatcher: this.dispatcher,
                     content: config.content,
                     originalContent: config.originalContent,
-                    contentFormat: this.dispatcher.getGlobalState().userState['contentFormat']
                 });
             },
 

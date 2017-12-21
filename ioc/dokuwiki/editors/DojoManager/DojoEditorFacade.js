@@ -40,7 +40,6 @@ define([
                 dispatcher: this.dispatcher,
                 components: [], // string[],
                 TOOLBAR_ID: this.TOOLBAR_ID,
-                contentFormat: args.contentFormat
             }, dom.byId(args.containerId));
 
 
