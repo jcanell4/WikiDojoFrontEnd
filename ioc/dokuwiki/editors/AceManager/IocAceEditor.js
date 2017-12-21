@@ -155,7 +155,7 @@ define([
                 wrapLimit: 100,
                 tabSize: 2,
                 horizontalScrollBar: false,
-                undoManager: new ace.UndoManager(),
+                // undoManager: new ace.UndoManager(),
                 plugins: [
                     // LatexPreviewPlugin,
                     // IocSoundFormatButtonPlugin,
@@ -651,7 +651,8 @@ define([
              * @param {ace.UndoManager?} undoManager - El gestor per desfer canvis
              */
             setUndoManager: function (undoManager) {
-                this.session.setUndoManager(undoManager);
+                // console.log("#### Establert el undomanager");
+                this.session.setUndoManager(new ace.UndoManager());
             },
 
             /**
