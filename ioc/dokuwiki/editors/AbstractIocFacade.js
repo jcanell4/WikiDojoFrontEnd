@@ -85,8 +85,11 @@ define([
 
         select: function() {
             throw new Error('Method not implemented');
-        }
+        },
 
+        getContentFormat: function () {
+            return this.editor.getContentFormat();
+        }
     });
 
 });

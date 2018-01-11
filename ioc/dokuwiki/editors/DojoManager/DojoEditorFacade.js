@@ -39,7 +39,7 @@ define([
                 styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
                 dispatcher: this.dispatcher,
                 components: [], // string[],
-                TOOLBAR_ID: this.TOOLBAR_ID
+                TOOLBAR_ID: this.TOOLBAR_ID,
             }, dom.byId(args.containerId));
 
 
@@ -147,5 +147,6 @@ define([
         resetValue: function () {
             this.setValue(this.getOriginalValue());
         }
+
     });
 });

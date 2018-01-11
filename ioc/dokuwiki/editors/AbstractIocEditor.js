@@ -34,6 +34,14 @@ define([
             }
 
             this.inherited(arguments);
+        },
+
+        getContentFormat: function () {
+            if (!this.contentFormat) {
+                throw new Error("ContentFormat no definit");
+            } else {
+                return this.contentFormat;
+            }
         }
 
     });

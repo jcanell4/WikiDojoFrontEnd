@@ -155,7 +155,7 @@ define([
                 wrapLimit: 100,
                 tabSize: 2,
                 horizontalScrollBar: false,
-                undoManager: new ace.UndoManager(),
+                // undoManager: new ace.UndoManager(),
                 plugins: [
                     // LatexPreviewPlugin,
                     // IocSoundFormatButtonPlugin,
@@ -174,6 +174,8 @@ define([
             /** @type {object} arguments que s'han passat al constructor per configurar-lo */
             _args: {},
 
+            contentFormat: 'ACE',
+
             /**
              * Inicialitza l'editor.
              *
@@ -190,7 +192,6 @@ define([
                 } else {
                     args = JSON.parse(JSON.stringify(this._default)); // deep clone
                 }
-
 
                 var iocAceMode = new IocAceMode({
                     baseHighlighters: args.langRules || {}, // ALERTA[Xavi] possibilitat d'afegir noves regles per paràmetre. Sense provar!
@@ -649,7 +650,8 @@ define([
              * @param {ace.UndoManager?} undoManager - El gestor per desfer canvis
              */
             setUndoManager: function (undoManager) {
-                this.session.setUndoManager(undoManager);
+                // console.log("#### Establert el undomanager");
+                this.session.setUndoManager(new ace.UndoManager());
             },
 
             /**
