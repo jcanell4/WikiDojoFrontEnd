@@ -30,7 +30,7 @@ define([
                 content: args.content,
                 originalContent: args.originalContent || args.content,
                 dispatcher: args.dispatcher,
-                TOOLBAR_ID: this.TOOLBAR_ID,
+                TOOLBAR_ID: this.TOOLBAR_ID
             });
 
             this.dispatcher = args.dispatcher;
