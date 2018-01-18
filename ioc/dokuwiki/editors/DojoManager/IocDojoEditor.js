@@ -63,14 +63,22 @@ define([
                     this.getPlugin('HTMLUnderline'),
                     this.getPlugin('HTMLCode'),
                     this.getPlugin('HTMLStrikethrough'),
+                    this.getPlugin('HTMLSuperscript'),
+                    this.getPlugin('HTMLSubscript'),
                     this.getPlugin('HTMLHeader1'),
                     this.getPlugin('HTMLHeader2'),
                     this.getPlugin('HTMLHeader3'),
                     this.getPlugin('HTMLHeader4'),
                     this.getPlugin('HTMLHeader5'),
                     this.getPlugin('HTMLHeader6'),
+                    this.getPlugin('HTMLOrderedList'),
+                    this.getPlugin('HTMLUnorderedList'),
+                    this.getPlugin('HTMLIndent'),
+                    this.getPlugin('HTMLOutdent'),
+
                     this.getPlugin('HTMLLink'),
                     this.getPlugin('HTMLLinkExternal'),
+
 
                     // 'bold', 'italic','underline', /*'code' this.getPlugin('InsertCodeSyntax'),*/'strikethrough', /* Header x4, Enllaç intern,
                     // Enllaç extern (hi ha plugin de dojo), UL, OL, Linia horitzontal,  Afegir imatge,
@@ -404,15 +412,91 @@ define([
                     return r;
                 } else {
                     var r = this.inherited(arguments);
+                    // var r = this.EditorExecCommand.apply(this,arguments);
                     if (this.customUndo) {
                         this._endEditing();
                     }
                     return r;
                 }
-            }
+            },
+        //
+        // EditorExecCommand: function(cmd){
+        //     // summary:
+        //     //		Main handler for executing any commands to the editor, like paste, bold, etc.
+        //     //		Called by plugins, but not meant to be called by end users.
+        //     // tags:
+        //     //		protected
+        //     if(this.customUndo && (cmd == 'undo' || cmd == 'redo')){
+        //
+        //         return this[cmd]();
+        //     }else{
+        //         if(this.customUndo){
+        //             this.endEditing();
+        //             this._beginEditing();
+        //         }
+        //         var r = this.RichTextExecCommand.apply(this,arguments);
+        //         // var r = this.inherited(arguments);
+        //         if(this.customUndo){
+        //             this._endEditing();
+        //         }
+        //         return r;
+        //     }
+        // },
 
 
 
+        // RichTextExecCommand: function(/*String*/ command, argument){
+        //     // summary:
+        //     //		Executes a command in the Rich Text area
+        //     // command:
+        //     //		The command to execute
+        //     // argument:
+        //     //		An optional argument to the command
+        //     // tags:
+        //     //		protected
+        //     var returnValue;
+        //
+        //     //focus() is required for IE to work
+        //     //In addition, focus() makes sure after the execution of
+        //     //the command, the editor receives the focus as expected
+        //     if(this.focused){
+        //         // put focus back in the iframe, unless focus has somehow been shifted out of the editor completely
+        //         this.focus();
+        //     }
+        //
+        //     command = this._normalizeCommand(command, argument);
+        //
+        //     if(argument !== undefined){
+        //         if(command === "heading"){
+        //             throw new Error("unimplemented");
+        //         }else if(command === "formatblock" && (has("ie") || has("trident"))){
+        //             argument = '<' + argument + '>';
+        //         }
+        //     }
+        //
+        //     //Check to see if we have any over-rides for commands, they will be functions on this
+        //     //widget of the form _commandImpl.  If we don't, fall through to the basic native
+        //     //exec command of the browser.
+        //     var implFunc = "_" + command + "Impl";
+        //     if(this[implFunc]){
+        //         returnValue = this[implFunc](argument);
+        //     }else{
+        //         argument = arguments.length > 1 ? argument : null;
+        //         if(argument || command !== "createlink"){
+        //             returnValue = this.document.execCommand(command, false, argument);
+        //         }
+        //     }
+        //
+        //     this.onDisplayChanged();
+        //     return returnValue;
+        // },
+
+        // Alerta[Xavi] Es dispara en més casos, no només quan canvia de posició el cursor, però he fet servir
+        // aquest nom per coincidir amb l'event disparat pel AceEditor.
+        onNormalizedDisplayChanged: function () {
+            this.inherited(arguments);
+            this.emit('changeCursor', {});
         }
-    )
+
+    });
 });

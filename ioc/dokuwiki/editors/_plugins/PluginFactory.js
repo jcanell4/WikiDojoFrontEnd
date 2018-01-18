@@ -5,6 +5,7 @@ define([
     // Plugins
     'ioc/dokuwiki/editors/AceManager/plugins/AceFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormat',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -24,7 +25,7 @@ define([
 
 
 
-], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent,
+], function (i18n, EventFactory, AceFormat, DojoFormat, DojoFormatBlock, DojoComment, AceFireEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview) {
 
@@ -39,7 +40,8 @@ define([
             'DocumentPreviewButton': AceDocumentPreview,
             'EnableACE': AceEnableACE,
             'EnableWrapper': AceEnableWrapper,
-            'LatexPreview': AceLatexPreview
+            'LatexPreview': AceLatexPreview,
+
         },
 
         'Dojo': {
@@ -49,6 +51,7 @@ define([
             'CancelButton' : DojoFireEvent,
             'SaveButton' : DojoFireEvent,
             'DocumentPreviewButton': DojoDocumentPreview,
+            'DojoFormatBlock': DojoFormat,
 
             // Botons del desplegable IOC
             'NewContent': DojoFormat,
@@ -67,11 +70,15 @@ define([
 
 
             // Botons barra d'eines de dojo bàsics
-            'HTMLBold': DojoFormat,
-            'HTMLItalic': DojoFormat,
-            'HTMLUnderline': DojoFormat,
+            'HTMLBold': DojoFormatBlock,
+            'HTMLItalic': DojoFormatBlock,
+            'HTMLUnderline': DojoFormatBlock,
+            'HTMLStrikethrough' : DojoFormatBlock,
+            'HTMLSubscript': DojoFormatBlock,
+            'HTMLSuperscript': DojoFormatBlock,
+
+
             'HTMLCode': DojoFormat,
-            'HTMLStrikethrough' : DojoFormat,
             'HTMLHeader1' : DojoFormat,
             'HTMLHeader2' : DojoFormat,
             'HTMLHeader3' : DojoFormat,
@@ -81,6 +88,10 @@ define([
             'HTMLLink' : DojoFormat,
             'HTMLLinkExternal' : DojoFormat,
 
+            'HTMLUnorderedList': DojoFormatBlock,
+            'HTMLOrderedList': DojoFormatBlock,
+            'HTMLIndent': DojoFormatBlock,
+            'HTMLOutdent': DojoFormatBlock,
 
         }
 
@@ -267,27 +278,35 @@ define([
         },
 
 
+        // 'HTMLBold': {
+        //     title: strings["ioc-insert-bold-button"],
+        //     open: '<b>',
+        //     close: '</b>',
+        //     sample: strings["ioc-insert-bold-button"],
+        //     icon: 'IocBold',
+        // },
         'HTMLBold': {
             title: strings["ioc-insert-bold-button"],
-            open: '<strong>',
-            close: '</strong>',
-            sample: strings["ioc-insert-bold-button"],
+            command: 'bold',
             icon: 'IocBold',
         },
 
+
         'HTMLItalic': {
             title: strings["ioc-insert-italic-button"],
-            open: '<em>',
-            close: '</em>',
-            sample: strings["ioc-insert-italic-button"],
+            // open: '<b>',
+            // close: '</b>',
+            // sample: strings["ioc-insert-italic-button"],
+            command: 'italic',
             icon: 'IocItalic',
         },
 
         'HTMLUnderline': {
             title: strings["ioc-insert-underline-button"],
-            open: '<ins>',
-            close: '</ins>',
-            sample: strings["ioc-insert-underline-button"],
+            // open: '<ins>',
+            // close: '</ins>',
+            // sample: strings["ioc-insert-underline-button"],
+            command: 'underline',
             icon: 'IocUnderline',
         },
 
@@ -301,10 +320,24 @@ define([
 
         'HTMLStrikethrough': {
             title: strings["ioc-insert-strikethrough-button"],
-            open: '<del>',
-            close: '</del>',
-            sample: strings["ioc-insert-strikethrough-button"],
+            // open: '<del>',
+            // close: '</del>',
+            // sample: strings["ioc-insert-strikethrough-button"],
+            command: 'strikethrough',
             icon: 'IocStrikethrough',
+        },
+
+
+        'HTMLSubscript': {
+            title: strings["ioc-insert-subscript-button"],
+            command: 'subscript',
+            icon: 'IocSubscript',
+        },
+
+        'HTMLSuperscript': {
+            title: strings["ioc-insert-superscript-button"],
+            command: 'superscript',
+            icon: 'IocSuperscript',
         },
 
         'HTMLHeader1': {
@@ -360,6 +393,36 @@ define([
             icon: 'IocHeader6',
             category: strings["category-header"]
         },
+
+        'HTMLUnorderedList': {
+            title: strings["ioc-insert-unordered-list-button"],
+            command: 'insertUnorderedList',
+            icon: 'IocUnorderedList',
+        },
+
+        'HTMLOrderedList': {
+            title: strings["ioc-insert-ordered-list-button"],
+            command: 'insertOrderedList',
+            icon: 'IocOrderedList',
+        },
+
+        'HTMLIndent': {
+            title: strings["ioc-insert-indent-button"],
+            command: 'indent',
+            icon: 'IocIndent',
+        },
+
+        'HTMLOutdent': {
+            title: strings["ioc-insert-outdent-button"],
+            command: 'outdent',
+            icon: 'IocOutdent',
+        },
+
+
+
+
+
+
 
         'HTMLLink': {
             title: strings["ioc-insert-link-button"],

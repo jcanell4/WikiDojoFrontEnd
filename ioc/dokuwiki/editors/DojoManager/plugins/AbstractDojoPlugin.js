@@ -10,25 +10,33 @@ define([
 
     var AbstractDojoPlugin = declare([_Plugin, AbstractIocPlugin], {
 
-        strings : i18n.getLocalization("ioc.dokuwiki.editors", "commands"),
+        strings: i18n.getLocalization("ioc.dokuwiki.editors", "commands"),
 
         iconClassPrefix: 'dijitIocIcon',
 
-        init: function(args) {
+        init: function (args) {
             this.category = args.category;
         },
 
-        addButton: function(config) {
+        addButton: function (config) {
             this.button = new Button(config);
         },
 
-        // ALERTA[Xavi] S'ha de fer a través de la propietat window de l'editor perqué aquest es troba en un iframe
         _getSelectionText: function () {
-            var text = this.editor.window.getSelection().toString();
+            var range;
+            var text = '';
+
+            var selection = this.editor.window.getSelection();
+            if (selection.rangeCount > 0) {
+                range = selection.getRangeAt(0);
+                var clonedSelection = range.cloneContents();
+                var div = document.createElement('div');
+                div.appendChild(clonedSelection);
+                text = div.innerHTML;
+            }
             return text;
+
         }
-
-
     });
 
     // ALERTA: això es imprescindible per tots els plugins, s'han d'autoregistrar

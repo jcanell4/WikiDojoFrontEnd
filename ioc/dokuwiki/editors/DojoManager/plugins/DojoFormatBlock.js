@@ -3,17 +3,17 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
+    "dijit/form/ToggleButton",
     "dojo/string"
-], function (declare, AbstractDojoPlugin, lang, _Plugin, string) {
+], function (declare, AbstractDojoPlugin, lang, _Plugin, ToggleButton) {
 
     var FormatButton = declare(AbstractDojoPlugin, {
+
 
         init: function(args) {
             this.inherited(arguments);
 
-            this.htmlTemplate = args.open + "${content}" + args.close;
-
-            this.content = args.sample;
+            this.command = args.command;
 
             var config = {
                 label: args.title,
@@ -26,12 +26,26 @@ define([
                 onClick: lang.hitch(this, "process")
             };
 
+            this.editor.on('changeCursor', this._updateToggle.bind(this));
+
             this.addButton(config);
         },
 
+        _updateToggle: function() {
+            if (!this.editor.document) {
+                // console.log("Encara no està llest el document");
+                return;
+            }
+            this.button.set('checked', this.editor.document.queryCommandState(this.command));
+        },
+
         process: function () {
-            var args = {content: this._getSelectionText() || this.content}
-            this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
+            this.editor.execCommand(this.command);
+        },
+
+
+        addButton: function(config) {
+            this.button = new ToggleButton(config);
         },
 
 
@@ -39,8 +53,8 @@ define([
 
 
     // Register this plugin.
-    _Plugin.registry["insert_format"] = function () {
-        return new FormatButton({command: "insert_format"});
+    _Plugin.registry["insert_format_block"] = function () {
+        return new FormatButton({command: "insert_format_block"});
     };
 
     return FormatButton;
