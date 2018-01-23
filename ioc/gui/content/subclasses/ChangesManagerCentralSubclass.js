@@ -1,8 +1,6 @@
 /**
  * Aquest métode es fa servir juntament amb extend(), els mètodes seràn reemplaçats, es a dir no continua
  * la cadena de crides.
- *
- *
  * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
  *
  * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
@@ -29,11 +27,10 @@ define([
     "dojo/_base/declare",
     "ioc/gui/content/subclasses/AbstractChangesManagerSubclass",
     'ioc/wiki30/manager/StorageManager',
-    'dojo/_base/unload',
+    'dojo/_base/unload'
 ], function (declare, AbstractChangesManagerSubclass, storageManager, unload) {
 
     return declare([AbstractChangesManagerSubclass], {
-
 
         startup: function () {
             this.inherited(arguments);
@@ -59,8 +56,9 @@ define([
         /**
          * Elimina aquest ContentTool del ContainerContentTool en el que es trobi i es destrueix junt amb tots els
          * elements que el composin.
+         * @param {string} idToShow - (no obligatori) indica quina pestanya s'ha de mostrar després
          */
-        removeContentTool: function () {
+        removeContentTool: function (idToShow) {
             this.forceReset();
             this.inherited(arguments);
         },

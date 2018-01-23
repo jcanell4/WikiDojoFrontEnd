@@ -38,7 +38,7 @@ define([
             updateState: function (dispatcher, value) {
 //                console.log("InfoStatusProcessor#updateState", value);
                 if (!value || !value.message) {
-                    console.error("Error detectact, la info que ha arribat no es vàlida", value)
+                    console.error("Error detectact, la info que ha arribat no es vàlida", value);
                     return;
                 }
                 var infoManager = dispatcher.getInfoManager();

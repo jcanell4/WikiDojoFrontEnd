@@ -19,7 +19,6 @@ define([
     return declare("ioc.widgets.SarchUsersPane", [_WidgetBase, _TemplatedMixin, Request, AbstractResponseProcessor], {
 
         templateString: template,
-
         baseClass: "search-users-pane",
         
         process: function(response, dispatcher){
@@ -70,9 +69,7 @@ define([
 
             var searchButton = new Button({
                 label: this.buttonLabel,
-
             }).placeAt(this.buttonContainer);
-
 
             this.addProcessor("array", this);
 
@@ -85,7 +82,8 @@ define([
             var $input = jQuery(this.searchNode);
                 
             this.sendRequest({
-                    filter: $input.val()
+                filter: $input.val(),
+                id: this.ns
             });            
             $input.val('');
         },

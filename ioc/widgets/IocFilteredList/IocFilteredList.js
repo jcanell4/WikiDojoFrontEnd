@@ -22,11 +22,9 @@ define([
         var isRelatedTargetAnItem = function(event){
             var ret = false;
             var relatedTarget = event.relatedTarget || event.originalEvent.explicitOriginalTarget || event.originalTarget;
-            //ret = relatedTarget && (domClass.contains(relatedTarget, 'ioc-filtered-list') || domClass.contains(relatedTarget, 'ioc-filtered-item'));
             ret = relatedTarget && domClass.contains(relatedTarget, 'ioc-filtered-item');
             if(relatedTarget && !ret){
                 relatedTarget = relatedTarget.parentNode;
-                //ret = relatedTarget && (domClass.contains(relatedTarget, 'ioc-filtered-list') || domClass.contains(relatedTarget, 'ioc-filtered-item'));
                 ret = relatedTarget && domClass.contains(relatedTarget, 'ioc-filtered-item');
             }
             return ret;
@@ -35,7 +33,6 @@ define([
 
         return declare([_WidgetBase, _TemplatedMixin], {
             templateString: template,
-
             baseClass: 'ioc-filtered-list',
 
             constructor: function (/*data, field*/) {
@@ -46,26 +43,19 @@ define([
 
             postCreate: function () {
                 this.inherited(arguments);
-
                 this._addListeners();
                 this._fill();
-
             },
 
             _addListeners: function () {
                 var $input = jQuery(this.entryText);
 
-
                 $input.on('change click input', function () {
-//                    console.log("on (change, click or input)");
                     this.filter($input.val());
                 }.bind(this));
 
-
                 $input.on('keydown', function (e) {
                     if (e.which == 13) { // Enter
-//                        console.log("on (Enter)");
-
                         var item;
                         // cas 1: Hi ha almenys un element visible a la llista, es selecciona
                         if (this.candidate) {
@@ -80,57 +70,42 @@ define([
                         e.stopPropagation();
 
                     } else if (e.which === 27) {
-//                       console.log("on (Esc)");
-                       this.filter(null);
+                        this.filter(null);
                         e.preventDefault();
                         e.stopPropagation();
                     }
 
-
                 }.bind(this));
 
                 $input.on('blur', function (e) {
-//                    console.log("on (blur)");
-//                    if (e.relatedTarget && (e.relatedTarget.className.indexOf('ioc-filtered-list') >= 0 || e.relatedTarget.className.indexOf('ioc-filtered-item') >= 0)) {
                     if (isRelatedTargetAnItem(e)) {
-//                        console.log("on (blur.return)");
                         return;
                     } else {
-//                        console.log("on (blur.filter(null))");
                         this.filter(null);
                     }
                 }.bind(this));
 
                 $input.on('focus', function () {
-//                    console.log("on (focus)");
                     this.filter($input.val());
                 }.bind(this));
 
                 this.selectedItemsNode.addEventListener('click', function () {
-//                    console.log("on (selectedItemsNode.click)");
                     $input.focus();
                 });
 
-                // jQuery(this.selectedItemsNode).on('click', function () {
-                //     $input.focus();
-                //
-                // });
-
-
                 var searchButton = new Button({
-                    iconClass: 'ioc-filtered-list-icon search', //ALERTA[Xavi] L'icona es una llanterna, canviar per les nostre spropies classes
+                    iconClass: 'ioc-filtered-list-icon search',
                     showLabel: false
                 }).placeAt(this.buttonContainer);
-
 
                 var $searchButton = jQuery(searchButton.domNode);
 
                 $searchButton.on('click', function () {
 
                     var searchUserWidget = new SearchUsersPane({
+                        ns: this.ns,
                         urlBase: this.searchDataUrl,
                         buttonLabel: this.buttonLabel,
-                        //token: this.token,
                         colNameLabel: 'Nom', // TODO[Xavi] Localitzar
                         colUsernameLabel: 'Nom d\'usuari'// TODO[Xavi] Localitzar
                     });
@@ -138,14 +113,11 @@ define([
                     var dialogParams = {
                         title: "Cerca usuaris per afegir", //TODO[Xavi] Localitzar
                         message: '',
-
                         sections: [
                             // Secció 1: widget de cerca que inclou la taula pel resultat.
                             // searchUserWidget.domNode
-
-                            {widget: searchUserWidget},
+                            {widget: searchUserWidget}
                         ],
-
                         buttons: [
                             {
                                 id: 'add-results',
@@ -153,17 +125,13 @@ define([
                                 buttonType: 'default',
                                 callback: function () {
                                     var items = searchUserWidget.getSelected();
-                                    // console.log("Retornat del widget: ", items);
-
                                     for (var item in items) {
                                         this._itemSelected(items[item]);
                                     }
 
-                                }.bind(this),
-                            },
-
+                                }.bind(this)
+                            }
                         ]
-
                     };
 
                     var dialogManager = dispatcher.getDialogManager();
