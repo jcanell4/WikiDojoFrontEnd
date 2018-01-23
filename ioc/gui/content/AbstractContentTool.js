@@ -6,7 +6,7 @@ define([
     "dojo/dom-style",
     "dojo/dom",
     "ioc/gui/content/renderEngineFactory",
-    "dojo/aspect",
+    "dojo/aspect"
 ], function (declare, ContentPane, EventObserver, EventObservable, domStyle, dom, renderEngineFactory, aspect) {
 
     return declare([ContentPane, EventObservable, EventObserver],
@@ -27,7 +27,6 @@ define([
          */
         {
             /** @typedef {remove: function} Handler */
-
             "-chains-": {
                 onAttach: "after",
                 render: "after"
@@ -35,11 +34,7 @@ define([
 
             /** @private*/
             updating: false,
-
-            /** @private*/
             data: null,
-
-            /** @private */
             decorator: null,
 
             /** @type Dispatcher @private*/
@@ -69,8 +64,6 @@ define([
                 this.data = args.data ? args.data : args.content;
 
                 declare.safeMixin(this, args);
-
-//                console.log("Constructor:", this);
             },
             
             /**
@@ -83,7 +76,6 @@ define([
              */
             onShow: function () {
                 this.onSelect();
-                //console.log("AbstractContentTool#onShow");
             },
 
             /**
@@ -96,15 +88,12 @@ define([
              */
             onHide: function () {
                 this.onUnselect();
-                //console.log("AbstractContentTool#onHide");
             },
-
 
             /**
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
              */
             onSelect: function () {
-                //console.log("AbstractContentTool#onSelect");
                 this.dispatchEvent(this.eventName.CONTENT_SELECTED, {id: this.id});
             },
 
@@ -112,7 +101,6 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat des-seleccionat.
              */
             onUnselect: function () {
-                //console.log("AbstractContentTool#onUnselect");
                 this.dispatchEvent(this.eventName.CONTENT_SELECTED, {id: this.id});
             },
 
@@ -195,7 +183,6 @@ define([
              * @override
              */
             onClose: function () {
-                //console.log("AbstractContentTool#onClose");
                 return true;
             },
 
@@ -279,18 +266,23 @@ define([
             /**
              * Elimina aquest ContentTool del ContainerContentTool en el que es trobi i es destrueix junt amb tots els
              * elements que el composin.
+             * @param {string} idToShow - és el 'id' de la pestanya de la 'versió actual' de la pàgina (s'utilitza amb el botó Revertir)
              */
-            removeContentTool: function () {
+            removeContentTool: function (idToShow) {
                 var parent = this.getContainer();
 
-                if (parent.selectedChildWidget && parent.selectedChildWidget.id == this.id) {
-                    parent.selectedChildWidget = null;
+                if (parent.selectedChildWidget && parent.selectedChildWidget.id === this.id) {
+                    if (idToShow) {
+                        var i = parent.getChildIndex(idToShow);
+                        var childs = parent.getChildren();
+                        parent.selectChild(childs[i]);
+                    }else {
+                        parent.selectedChildWidget = null;
+                    }
                 }
-
 
                 parent.removeChild(this);
                 this.destroyRecursive();
-                // console.log("AbstractContentTool#removeContentTool", this.id);
             },
 
             /**
