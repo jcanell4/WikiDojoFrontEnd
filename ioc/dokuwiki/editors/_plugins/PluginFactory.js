@@ -6,6 +6,7 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatCustom',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -25,7 +26,7 @@ define([
 
 
 
-], function (i18n, EventFactory, AceFormat, DojoFormat, DojoFormatBlock, DojoComment, AceFireEvent,
+], function (i18n, EventFactory, AceFormat, DojoFormat, DojoFormatBlock, DojoFormatCustom, DojoComment, AceFireEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview) {
 
@@ -65,7 +66,7 @@ define([
             'InsertNoteSyntax': DojoFormat,
             'InsertReferenceSyntax': DojoFormat,
             'InsertImportantSyntax': DojoFormat,
-            'InsertQuoteSyntax': DojoFormat,
+            'InsertQuoteSyntax': DojoFormatCustom,
             'InsertAccountingSyntax': DojoFormat,
 
 
@@ -78,7 +79,6 @@ define([
             'HTMLSuperscript': DojoFormatBlock,
 
 
-            'HTMLCode': DojoFormat,
             'HTMLHeader1' : DojoFormat,
             'HTMLHeader2' : DojoFormat,
             'HTMLHeader3' : DojoFormat,
@@ -93,6 +93,9 @@ define([
             'HTMLIndent': DojoFormatBlock,
             'HTMLOutdent': DojoFormatBlock,
 
+
+            'HTMLCode': DojoFormatCustom,
+            'HTMLCodeBlock': DojoFormatCustom,
         }
 
     };
@@ -259,13 +262,23 @@ define([
             category: strings["category-ioc"]
         },
 
+        // 'InsertQuoteSyntax': {
+        //     title: strings["ioc-insert-quote-button"],
+        //     open: '::quote:\n',
+        //     close: '\n:::',
+        //     sample: strings["ioc-insert-quote-sample"],
+        //     icon: 'IocInsertQuoteSyntax',
+        //     category: strings["category-ioc"]
+        // },
+
+
         'InsertQuoteSyntax': {
             title: strings["ioc-insert-quote-button"],
-            open: '::quote:\n',
-            close: '\n:::',
-            sample: strings["ioc-insert-quote-sample"],
+            open: '<blockquote>',
+            close: '</blockquote>',
             icon: 'IocInsertQuoteSyntax',
-            category: strings["category-ioc"]
+            category: strings["category-ioc"],
+            state: 'blockquote'
         },
 
         'InsertAccountingSyntax': {
@@ -308,14 +321,6 @@ define([
             // sample: strings["ioc-insert-underline-button"],
             command: 'underline',
             icon: 'IocUnderline',
-        },
-
-        'HTMLCode': {
-            title: strings["ioc-insert-code-button"],
-            open: '<code>',
-            close: '</code>',
-            sample: strings["ioc-insert-code-button"],
-            icon: 'IocCode',
         },
 
         'HTMLStrikethrough': {
@@ -418,10 +423,26 @@ define([
             icon: 'IocOutdent',
         },
 
+        // TODO[Xavi] Ficar un tipus HTML mono space per diferenciar entre el codi inline i el de block
+
+        'HTMLCode': {
+            title: strings["ioc-insert-code-button"],
+            open: '<code>',
+            close: '</code>',
+            sample: strings["ioc-insert-code-button"],
+            icon: 'IocCode',
+            state: 'code',
+        },
 
 
-
-
+        'HTMLCodeBlock': {
+            title: strings["ioc-insert-code-block-button"],
+            open: '<pre>',
+            close: '</pre>',
+            sample: strings["ioc-insert-code-block-button"],
+            icon: 'IocCode',
+            state: 'pre',
+        },
 
 
         'HTMLLink': {
