@@ -83,16 +83,16 @@ define(
         'ioc-insert-italic-sample' : 'Cursiva',
         'ioc-insert-underline-button' : 'Subratllat',
         'ioc-insert-underline-sample' : 'Subratllat',
-        'ioc-insert-code-button' : 'Codi',
-        'ioc-insert-code-sample' : 'Codi',
+        'ioc-insert-code-button' : 'Codi en línia',
+        'ioc-insert-code-sample' : 'Codi en línia',
+        'ioc-insert-code-block-button' : 'Bloc de codi',
+        'ioc-insert-code-block-sample' : 'Bloc de codi',
         'ioc-insert-strikethrough-button' : 'Text barrat',
         'ioc-insert-strikethrough-sample' : 'Text barrat',
         'ioc-insert-link-button' : 'TODO: Enllaç intern',
         'ioc-insert-link-sample' : 'TODO: Enllaç intern',
         'ioc-insert-link-external-button' : 'TODO: Enllaç extern',
         'ioc-insert-link-external-sample' : 'TODO: Enllaç extern',
-
-
 
         'ioc-insert-header-sample': 'Encapçalament',
         'ioc-insert-header1-button': 'Sintaxi d\'encapçalament nivell 1',

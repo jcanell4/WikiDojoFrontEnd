@@ -19,7 +19,7 @@ define([
             args.open = args.open.replace('>', ' data-block-state="${state}">');
             this.htmlTemplate = args.open + "${content}" + args.close;
 
-            this.content = args.sample;
+            this.content = args.sample || '';
 
             var config = {
                 label: args.title,
@@ -32,49 +32,64 @@ define([
                 onClick: lang.hitch(this, "process")
             };
 
-            this.editor.on('changeCursor', this._updateToggle.bind(this));
+            this.editor.on('changedScope', this._updateToggle.bind(this));
 
             this.addButton(config);
         },
 
         _updateToggle: function(data) {
 
-            console.log("data", data);
+            console.log("DojoFormatCustom#_updateToggle", data);
             if (!this.editor.document) {
                 // console.log("Encara no està llest el document");
                 return;
             }
 
             // TODO[Xavi] Aquí s'ha de comprovar si l'estat del botó es el corresponent
+            var checked = false;
 
+            for (var i=0; i<data.rangeInfos.length; i++) {
+                console.log("Comprovant rangeinfo", data.rangeInfos[i], "el meu state:", this.state, "resultat", data.rangeInfos[i].state === this.state)
+                if (data.rangeInfos[i].state === this.state) {
+                    checked = true;
+                    break;
+                }
+            }
 
-            this.button.set('checked', data.state === this.state);
+            this.button.set('checked', checked);
         },
 
         process: function () {
-            // TODO: Si l'estat de la selecció es = this.state llavors s'ha de treure el block, no afegir-lo
-            //  - S'ha de seleccionar tot el block per eliminar-lo.
+            var info;
 
+            var rangeInfos = this.editor.getScopeInfo();
 
-            var info = this.editor.getRangeInfo();
-            if (info.state === this.state) {
-                console.log("TODO: desfer el format");
+            for (var i=0; i<rangeInfos.length; i++) {
+                console.log("Comprovant rangeinfo", rangeInfos[i], "el meu state:", this.state, "resultat", rangeInfos[i].state === this.state)
+                if (rangeInfos[i].state === this.state) {
+                    info = rangeInfos[i];
+                    break;
+                }
+            }
 
+            if (info) {
+                // Eliminem el block
                 var $node = jQuery(info.node);
-                var $nodeContent= jQuery($node.html());
-                var text = $node.text();
 
-                $nodeContent = $nodeContent.length>0 ? $nodeContent : document.createTextNode(text);
+                if ($node.html() !== $node.text()) {
+                    var $nodeContent = jQuery($node.html());
+                } else {
+                    var text = $node.text();
+                    $nodeContent = document.createTextNode(text);
+                }
 
-                var $paragraph = jQuery('<p>').append($nodeContent);
-                console.log($paragraph);
-
-
-                $node.before($paragraph);
+                $node.before($nodeContent);
                 $node.remove();
 
             } else {
-                var args = {content: this._getSelectionText() || this.content, state : this.state};
+                var content = this._getSelectionText() || this.content;
+
+                var args = {content: content, state : this.state};
                 this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
             }
 

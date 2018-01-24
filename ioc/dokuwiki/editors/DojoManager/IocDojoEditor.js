@@ -497,6 +497,12 @@ define([
             var info = this.getRangeInfo();
 
             this.emit('changeCursor', {node: info.node, state: info.state});
+
+            if (!this.prevRangeInfo || info.node !== this.prevRangeInfo.node) {
+                this.prevRangeInfo = info;
+                var infos = this.getScopeInfo();
+                this.emit('changedScope', {rangeInfos: infos});
+            }
         },
 
         getRangeInfo: function () {
@@ -524,9 +530,55 @@ define([
                     state: state
                 };
             }
-
             return info;
+        },
 
+        getScopeInfo: function() {
+            var infos = [];
+
+            if (this.document) {
+
+                var selection = this.document.getSelection();
+                var currentNode = selection.getRangeAt(0).commonAncestorContainer/*.parentNode*/;
+
+
+
+
+                var parentNodes = jQuery(currentNode).parentsUntil('#dijitEditorBody','[data-block-state]');
+
+                // Si el node actual te state l'afegim
+
+                var $currentNode=jQuery(currentNode);
+                var state =$currentNode.attr('data-block-state');
+                if (state) {
+                    infos.push({
+                        node: currentNode,
+                        state: state
+                    });
+                } else {
+                    console.log("+++No hi ha cap estat?", state, currentNode);
+                    console.log("+++Selection:", selection);
+                    console.log("+++Range:", selection.getRangeAt(0));
+                    console.log("+++Container:", selection.getRangeAt(0).commonAncestorContainer);
+                }
+
+                parentNodes.each(function() {
+                    // Tots els nodes han de tenir l'atribut data-block-state
+                    var state = this.getAttribute('data-block-state');
+
+                    infos.push({
+                        node: this,
+                        state: state
+                    });
+                })
+
+
+            }
+
+            console.log("Generated infos:", infos, "parentNodes", parentNodes);
+
+            return infos;
         }
+
     });
 });

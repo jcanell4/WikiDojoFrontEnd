@@ -82,6 +82,8 @@ define({ root:
         'ioc-insert-underline-sample' : 'Underline',
         'ioc-insert-code-button' : 'Code',
         'ioc-insert-code-sample' : 'Code',
+        'ioc-insert-code-block-button' : 'Code',
+        'ioc-insert-code-block-sample' : 'Code',
         'ioc-insert-strikethrough-button' : 'Strikethrough',
         'ioc-insert-strikethrough-sample' : 'Strikethrough',
         'ioc-insert-link-button' : 'Link',
