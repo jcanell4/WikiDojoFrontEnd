@@ -77,11 +77,6 @@ define([
 
         parse: function() {
             var $toolbarContainer = jQuery('#' + this.toolbarContainerId).detach();
-            // var $toolbarContainer = jQuery('#editor_playground_playground_berr_dropdown_toolbar_A').detach();
-
-            console.log("Carregat la barra A?", $toolbarContainer);
-            console.log("Hi ha dom node?", this.button.dropDown.domNode);
-
             domConstruct.place($toolbarContainer.get(0),this.button.dropDown.domNode);
         },
 

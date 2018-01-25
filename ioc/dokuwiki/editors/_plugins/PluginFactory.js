@@ -11,10 +11,13 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceFireEvent',
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFireEvent',
 
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFireEvent',
     'ioc/dokuwiki/editors/AceManager/plugins/AceDocumentPreview',
+
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoDocumentPreview',
+
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoLinkDialog',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableACE',
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableWrapper',
@@ -27,7 +30,9 @@ define([
 
 
 ], function (i18n, EventFactory, AceFormat, DojoFormat, DojoFormatBlock, DojoFormatCustom, DojoComment, AceFireEvent,
-             DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
+             DojoFireEvent,
+             AceDocumentPreview,DojoDocumentPreview,
+             DojoLinkDialog,
              AceEnableACE, AceEnableWrapper, AceLatexPreview) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands");
@@ -87,7 +92,7 @@ define([
             'HTMLHeader5' : DojoFormat,
             'HTMLHeader6' : DojoFormat,
             'HTMLLink' : DojoFormat,
-            'HTMLLinkExternal' : DojoFormat,
+            'HTMLLinkExternal' : DojoLinkDialog,
 
             'HTMLUnorderedList': DojoFormatBlock,
             'HTMLOrderedList': DojoFormatBlock,

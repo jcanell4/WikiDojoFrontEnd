@@ -229,6 +229,7 @@ define([
          */
         addPlugin: function (/*String||Object||Function*/ plugin, /*Integer?*/ index) {
 
+
             // ALERTA[Xavi] Codi propi afegit
             if (plugin.plugin) {
                 var config = plugin.config;
@@ -251,6 +252,7 @@ define([
             //		something already in this.plugins. Ensures that the new
             //		instance is assigned to this.plugins at that index.
             var args = lang.isString(plugin) ? {name: plugin} : lang.isFunction(plugin) ? {ctor: plugin} : plugin;
+
 
             if (!args.setEditor) {
                 var o = {"args": args, "plugin": null, "editor": this};
@@ -275,6 +277,7 @@ define([
                         }
 
                     } catch (e) {
+                        console.log(e);
                         throw new Error(this.id + ": cannot find plugin [" + args.name + "]");
                     }
                 }
