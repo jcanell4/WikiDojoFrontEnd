@@ -437,8 +437,8 @@ define([
 
         'HTMLCodeBlock': {
             title: strings["ioc-insert-code-block-button"],
-            open: '<pre>',
-            close: '</pre>',
+            open: '<pre><code>',
+            close: '</pre></code>',
             sample: strings["ioc-insert-code-block-button"],
             icon: 'IocCode',
             state: 'pre',
