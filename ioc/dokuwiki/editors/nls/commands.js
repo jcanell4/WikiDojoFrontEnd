@@ -98,6 +98,8 @@ define({ root:
         'ioc-insert-header4-button': 'Header sintax level 4',
         'ioc-insert-header5-button': 'Header sintax level 5',
         'ioc-insert-header6-button': 'Header sintax level 6',
+
+        'ioc-insert-horizontal-rule-button' : 'Horizontal rule',
     }),
 //end v1.x content
 

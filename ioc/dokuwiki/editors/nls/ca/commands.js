@@ -102,6 +102,7 @@ define(
         'ioc-insert-header5-button': 'Sintaxi d\'encapçalament nivell 5',
         'ioc-insert-header6-button': 'Sintaxi d\'encapçalament nivell 6',
 
+        'ioc-insert-horizontal-rule-button' : 'Línia horitzontal',
 
 
 

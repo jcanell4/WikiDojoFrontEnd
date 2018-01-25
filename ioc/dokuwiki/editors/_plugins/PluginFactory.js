@@ -77,6 +77,7 @@ define([
             'HTMLStrikethrough' : DojoFormatBlock,
             'HTMLSubscript': DojoFormatBlock,
             'HTMLSuperscript': DojoFormatBlock,
+            'HTMLHR': DojoFormatBlock,
 
 
             'HTMLHeader1' : DojoFormat,
@@ -459,6 +460,15 @@ define([
             close: '',
             sample: strings["ioc-insert-link-external-sample"],
             icon: 'IocLinkExternal',
+        },
+
+        'HTMLHR': {
+            title: strings["ioc-insert-horizontal-rule-button"],
+            // open: '<b>',
+            // close: '</b>',
+            // sample: strings["ioc-insert-italic-button"],
+            command: 'insertHorizontalRule',
+            icon: 'IocHorizontalRule',
         },
 
         
