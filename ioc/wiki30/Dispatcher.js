@@ -55,6 +55,7 @@ define([
     "ioc/wiki30/processor/ContentToolTimerProcessor",
     "ioc/wiki30/processor/UserStateProcessor",
     "ioc/wiki30/processor/UpdateLocalDraftsProcessor",
+    "ioc/wiki30/processor/UserProfileProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -68,7 +69,7 @@ define([
              LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
              NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
              FormContentProcessor, TabResponseProcessor, RecentsProcessor, MetaFormProcessor, PrintProcessor,
-             ContentTooTimerProcessor, UserStateProcessor, UpdateLocalDraftsProcessor) {
+             ContentTooTimerProcessor, UserStateProcessor, UpdateLocalDraftsProcessor, UserProfileProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -208,6 +209,7 @@ define([
                 this.processors["meta_form"] = new MetaFormProcessor();
                 this.processors["print"] = new PrintProcessor();
                 this.processors["contentTool_timer"] = new ContentTooTimerProcessor();
+                this.processors["user_profile"] = new UserProfileProcessor();
 
             },
 
