@@ -25,7 +25,10 @@ define([
 
             this.inherited(arguments);
 
-            this.htmlTemplate = args.open + "${content}" + args.close;
+            // this.htmlTemplate = "${urlInput} ${textInput} ${targetSelect}";
+            // TODO[Xavi] Com fer la substitució dels atributs a l'args open??
+            // this.htmlTemplate = args.open + "${textInput}" + args.close;
+            this.htmlTemplate = "<a href=\"${urlInput}\" target=\"${targetSelect}\">${textInput}" + args.close;
 
             this.content = args.sample;
 
@@ -62,7 +65,6 @@ define([
         },
 
         _loadDropDown: function(callback){
-            console.log("Hi ha calllback?", callback);
 
                 // Called the first time the button is pressed.  Initialize TooltipDialog.
                 require([

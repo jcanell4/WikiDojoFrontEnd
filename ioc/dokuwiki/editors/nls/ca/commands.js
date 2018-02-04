@@ -91,8 +91,8 @@ define(
         'ioc-insert-strikethrough-sample' : 'Text barrat',
         'ioc-insert-link-button' : 'TODO: Enllaç intern',
         'ioc-insert-link-sample' : 'TODO: Enllaç intern',
-        'ioc-insert-link-external-button' : 'TODO: Enllaç extern',
-        'ioc-insert-link-external-sample' : 'TODO: Enllaç extern',
+        'ioc-insert-link-external-button' : 'Enllaç extern',
+        'ioc-insert-link-external-sample' : 'Enllaç extern',
 
         'ioc-insert-header-sample': 'Encapçalament',
         'ioc-insert-header1-button': 'Sintaxi d\'encapçalament nivell 1',
