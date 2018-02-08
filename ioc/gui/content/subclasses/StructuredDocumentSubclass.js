@@ -194,9 +194,7 @@ define([
             
             query += this._generateLastLocalDraftTimesParam(chunkId);
 
-            // query +="&contentFormat="+this.dispatcher.getGlobalState().userState['editor'];
-            query +="&contentFormat="+this.getEditor(chunkId).getContentFormat();
-
+            query +="&contentFormat="+this.dispatcher.getGlobalState().userState['editor'];
 
             return query;
         },
