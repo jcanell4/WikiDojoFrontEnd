@@ -99,10 +99,11 @@ define([
         },
 
         _addSections: function () {
-            // console.log("CustomDialog#_addSections", this.sections);
+            console.log("CustomDialog#_addSections", this.sections);
             for (var i = 0; i < this.sections.length; i++) {
 
                 if (this.sections[i].widget) {
+                    console.log("Is widget", widget);
                     this.sections[i].widget.placeAt(this.sectionsNode);
                 } else {
                     this.sectionsNode.appendChild(this.sections[i]);

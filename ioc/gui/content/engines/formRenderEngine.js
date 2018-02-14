@@ -95,6 +95,7 @@ define([], function () {
             return $field;
         },
 
+
         renderFieldDefault = function (field) {
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
@@ -105,7 +106,26 @@ define([], function () {
                 $field.append($label)
             }
 
-            $field.append($input);
+
+            if (true) { // TODO[Xavi] Afegir un parámetre a field que retornará del servidor i indiacarà si s'ha de mostrar el botó de l'editor
+
+                var $row = jQuery('<div>');
+                $row.append($input);
+
+                var $editorButton = jQuery('<button class="btn btn-primary">Editor</button>');
+                $editorButton.attr('data-form-editor-button', field.id); // id del camp que al que enllaça l'editor
+
+                $row.append($editorButton);
+                $field.append($row);
+
+
+            } else {
+                $field.append($input);
+            }
+
+
+
+
 
             $input.attr('type', field.type)
                 .attr('name', field.name)

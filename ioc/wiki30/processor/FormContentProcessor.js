@@ -78,6 +78,9 @@ define([
                         form: '#' + content.content.id
                     };
 
+
+                console.log("FormContentProcessor té contenttoolfactory?", contentToolFactory);
+
                 return contentToolFactory.generate(contentToolFactory.generation.FORM, args)
                     //.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm); // Això ja no s'ha de fer servir, ha de funcionar a travésd els botons
             },

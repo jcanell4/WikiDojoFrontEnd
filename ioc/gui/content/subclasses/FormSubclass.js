@@ -1,8 +1,13 @@
 define([
-    "dojo/_base/declare",
-    "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
-    "dojo/dom"
-], function (declare, ChangesManagerCentralSubclass, dom) {
+    'dojo/_base/declare',
+    'ioc/gui/content/contentToolFactory',
+    'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
+    'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
+
+], function (declare, contentToolFactory, ChangesManagerCentralSubclass, AceFacade) {
+
+
+    console.log("ContentToolFactory?", contentToolFactory);
 
     return declare([ChangesManagerCentralSubclass],
         /**
@@ -72,7 +77,7 @@ define([
                     }
                 }
 
- 
+
                 if (changed) {
                     this.onDocumentChanged();
                     this.hasChanges = true;
@@ -112,6 +117,111 @@ define([
 
                 this.setFireEventHandler(this.eventName.SAVE_FORM, this._doSave.bind(this));
                 this.setFireEventHandler(this.eventName.CANCEL, this._doCancelDocument.bind(this));
+
+
+                // Proves[Xavi] Afegeix un listener al botó per llençar un editor
+                var $editorButtons = jQuery('[data-form-editor-button]');
+
+
+                var context = this;
+
+
+                $editorButtons.on('click', function (e) {
+                    e.preventDefault();
+                    var $button = jQuery(this);
+                    var fieldId = $button.attr('data-form-editor-button');
+                    var $field = jQuery('#' + fieldId);
+                    var dialogManager = context.dispatcher.getDialogManager();
+
+                    // Aquestas dades es passan al constructor del widget
+                    // {
+                    //     sourceId: fieldId,
+                    //     sourceContent:$field.val()
+                    // };
+
+
+                    var args = {
+                        id: "auxWidget" + fieldId,
+                        title: content.title,
+                        content: '<textarea id="auxTextArea' + fieldId + '"></textarea>',
+                        dispatcher: this.dispatcher,
+                    };
+
+                    console.log("contenttoolfactory:", contentToolFactory);
+                    var editorWidget = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
+
+                    // var $textarea = jQuery('textarea_' + config.id);
+
+
+                    // console.log("config:", config);
+                    var editor = new AceFacade({
+                        id: this.id,
+                        auxId: config.id,
+                        // xmltags: JSINFO.plugin_aceeditor.xmltags,
+                        // containerId: 'editor_' + config.id,
+                        textareaId: 'auxTextArea' + fieldId,
+                        theme: JSINFO.plugin_aceeditor.colortheme,
+                        // readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient <-- només canvia això respecte al BasicEditorSubclass#createAceEditor
+                        wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+                        // wrapMode: $textarea.attr('wrap') !== 'off',
+                        // mdpage: JSINFO.plugin_aceeditor.mdpage,
+                        dispatcher: this.dispatcher,
+                        content: $field.val(),
+                        originalContent: $field.val(),
+                    });
+
+
+                    // var searchUserWidget = new SearchUsersPane({
+                    //     ns: this.ns,
+                    //     urlBase: this.searchDataUrl,
+                    //     buttonLabel: this.buttonLabel,
+                    //     colNameLabel: 'Nom', // TODO[Xavi] Localitzar
+                    //     colUsernameLabel: 'Nom d\'usuari'// TODO[Xavi] Localitzar
+                    // });
+
+                    var dialogParams = {
+                        title: "Editar camp: " + fieldId, //TODO[Xavi] Localitzar
+                        message: '',
+                        sections: [
+                            // Secció 1: widget de cerca que inclou la taula pel resultat.
+                            // searchUserWidget.domNode
+                            {widget: editorWidget}
+                        ],
+                        buttons: [
+                            {
+                                id: 'accept',
+                                description: 'Desar', // TODO[Xavi] Localitzar
+                                buttonType: 'default',
+                                callback: function () {
+                                    console.log("TODO: Desar els canvis al camp: ", $field);
+                                    //$field.val("TODO: Contingut de l'editor");
+                                    $field.val(editorWidget.content);
+                                    // var items = searchUserWidget.getSelected();
+                                    // for (var item in items) {
+                                    //     this._itemSelected(items[item]);
+                                    // }
+
+                                }.bind(this)
+                            },
+                            {
+                                id: 'cancel',
+                                description: 'Cancel·lar', // TODO[Xavi] Localitzar
+                                buttonType: 'default',
+                                callback: function () {
+                                    // No cal fer res, el comportament per defecte de tots els botons es tancar-lo
+
+
+                                }.bind(this)
+                            }
+                        ]
+                    };
+
+                    var dialog = dialogManager.getDialog(dialogManager.type.DEFAULT, context.ns, dialogParams);
+
+                    dialog.show();
+
+
+                });
 
 
                 this.inherited(arguments);
@@ -170,7 +280,7 @@ define([
 
             getQuerySave: function () {
                 var $form = jQuery('#form_' + this.id);
-                var values = {"id": this.ns, "projectType":this.projectType};
+                var values = {"id": this.ns, "projectType": this.projectType};
 
                 jQuery.each($form.serializeArray(), function (i, field) {
                     values[field.name] = field.value;
@@ -289,8 +399,8 @@ define([
 
                 return currentContent;
             },
-            
-            getProjectType: function() {
+
+            getProjectType: function () {
                 return this.projectType;
             }
         });

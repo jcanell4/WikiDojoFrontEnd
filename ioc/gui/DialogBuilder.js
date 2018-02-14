@@ -74,6 +74,10 @@ define([
         },
 
         addButtons: function(buttons) {
+            if (!buttons) {
+                console.warn("Dialog without buttons");
+                return;
+            }
             for (var i=0; i<buttons.length; i++) {
                 this.addButton(buttons[i].buttonType, buttons[i]);
             }
