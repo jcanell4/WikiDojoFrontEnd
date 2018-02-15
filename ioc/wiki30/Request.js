@@ -230,7 +230,7 @@ define([
                 }
                 
                 //Setting the linkChar value.
-                if (query && typeof query === "string" && query.length > 0) {
+                if (this.method!=="post" && query && typeof query === "string" && query.length > 0) {
                     vUrl += linkChar + query;
                     linkChar = "&";
                 }else if(this.dataToSend) {
@@ -284,7 +284,7 @@ define([
                         configPost.data = this.getPostData();
                         if (this.dataToSend) {
                             for (var attrname in this.dataToSend) {
-                                this.data[attrname] = this.dataToSend[attrname]; 
+                                configPost.data[attrname] = this.dataToSend[attrname]; 
                             }
                         }
                     }else if (this.dataToSend) {
