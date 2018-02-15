@@ -393,6 +393,7 @@ define([
              */
             generate: function (type, args) {
                 args.decorator = this;
+                args.contentToolFactory = this;
                 return new (this.createClass(type))(args);
             },
 

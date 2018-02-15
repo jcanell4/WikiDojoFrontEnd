@@ -103,8 +103,10 @@ define([
             for (var i = 0; i < this.sections.length; i++) {
 
                 if (this.sections[i].widget) {
-                    console.log("Is widget", widget);
+                    console.log("Is widget", this.sections[i].widget);
                     this.sections[i].widget.placeAt(this.sectionsNode);
+                } else if (this.sections[i] instanceof jQuery) {
+                    jQuery(this.sectionsNode).append(this.sections[i]);
                 } else {
                     this.sectionsNode.appendChild(this.sections[i]);
                 }

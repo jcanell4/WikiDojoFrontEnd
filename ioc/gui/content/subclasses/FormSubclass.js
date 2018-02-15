@@ -1,13 +1,10 @@
 define([
     'dojo/_base/declare',
-    'ioc/gui/content/contentToolFactory',
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
     'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
 
-], function (declare, contentToolFactory, ChangesManagerCentralSubclass, AceFacade) {
+], function (declare, ChangesManagerCentralSubclass, AceFacade) {
 
-
-    console.log("ContentToolFactory?", contentToolFactory);
 
     return declare([ChangesManagerCentralSubclass],
         /**
@@ -36,6 +33,8 @@ define([
             constructor: function (args) {
                 this._setOriginalContent(args.originalContent);
                 this.hasChanges = false;
+                console.log("args?", args)
+                this.contentToolFactory = args.contentToolFactory;
             },
 
             /**
@@ -143,33 +142,20 @@ define([
                     var args = {
                         id: "auxWidget" + fieldId,
                         title: content.title,
-                        content: '<textarea id="auxTextArea' + fieldId + '"></textarea>',
+                        //content: '<textarea id="auxTextArea' + fieldId + '"></textarea>',
                         dispatcher: this.dispatcher,
                     };
 
-                    console.log("contenttoolfactory:", contentToolFactory);
-                    var editorWidget = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
+                    console.log("contenttoolfactory:", this.contentToolFactory);
+                    var editorWidget = context.contentToolFactory.generate(context.contentToolFactory.generation.BASE, args);
 
                     // var $textarea = jQuery('textarea_' + config.id);
 
 
                     // console.log("config:", config);
-                    var editor = new AceFacade({
-                        id: this.id,
-                        auxId: config.id,
-                        // xmltags: JSINFO.plugin_aceeditor.xmltags,
-                        // containerId: 'editor_' + config.id,
-                        textareaId: 'auxTextArea' + fieldId,
-                        theme: JSINFO.plugin_aceeditor.colortheme,
-                        // readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient <-- només canvia això respecte al BasicEditorSubclass#createAceEditor
-                        wraplimit: JSINFO.plugin_aceeditor.wraplimit,
-                        // wrapMode: $textarea.attr('wrap') !== 'off',
-                        // mdpage: JSINFO.plugin_aceeditor.mdpage,
-                        dispatcher: this.dispatcher,
-                        content: $field.val(),
-                        originalContent: $field.val(),
-                    });
 
+
+                    console.log("Widget?", editorWidget);
 
                     // var searchUserWidget = new SearchUsersPane({
                     //     ns: this.ns,
@@ -179,13 +165,27 @@ define([
                     //     colUsernameLabel: 'Nom d\'usuari'// TODO[Xavi] Localitzar
                     // });
 
+
+                    var $container = jQuery('<div>');
+                    var $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
+                    var $textarea = jQuery('<textarea id="textarea_' + args.id + '" style="width:100%;height:200px" name="wikitext"></textarea>');
+
+                    $textarea.css('display', 'none');
+                    $container.append($toolbar);
+                    $container.append($textarea);
+
+
+
                     var dialogParams = {
                         title: "Editar camp: " + fieldId, //TODO[Xavi] Localitzar
                         message: '',
                         sections: [
                             // Secció 1: widget de cerca que inclou la taula pel resultat.
                             // searchUserWidget.domNode
+                            $container,
                             {widget: editorWidget}
+
+
                         ],
                         buttons: [
                             {
@@ -195,7 +195,7 @@ define([
                                 callback: function () {
                                     console.log("TODO: Desar els canvis al camp: ", $field);
                                     //$field.val("TODO: Contingut de l'editor");
-                                    $field.val(editorWidget.content);
+                                    $field.val(editor.getValue());
                                     // var items = searchUserWidget.getSelected();
                                     // for (var item in items) {
                                     //     this._itemSelected(items[item]);
@@ -220,8 +220,24 @@ define([
 
                     dialog.show();
 
+                    var editor = new AceFacade({
+                        id: args.id,
+                        auxId: args.id,
+                        // xmltags: JSINFO.plugin_aceeditor.xmltags,
+                        containerId: 'editor_widget_container_' + args.id, // editorWidget.id
+                        textareaId: 'textarea_' + args.id,
+                        theme: JSINFO.plugin_aceeditor.colortheme,
+                        // readOnly: $textarea.attr('readonly'),// TODO[Xavi] cercar altre manera més adient <-- només canvia això respecte al BasicEditorSubclass#createAceEditor
+                        wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+                        // wrapMode: $textarea.attr('wrap') !== 'off',
+                        // mdpage: JSINFO.plugin_aceeditor.mdpage,
+                        dispatcher: context.dispatcher,
+                        content: $field.val(),
+                        originalContent: $field.val(),
+                    });
 
                 });
+
 
 
                 this.inherited(arguments);
