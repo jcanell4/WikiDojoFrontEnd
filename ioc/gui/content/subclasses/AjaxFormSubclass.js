@@ -1,11 +1,7 @@
 define([
     "dojo/_base/declare",
-    "ioc/gui/content/subclasses/RequestSubclass",
-    // "dojo/on",
-    // "dojo/query",
-    // "dojo/dom-form",
-    // "dojo/_base/event",
-], function (declare, RequestSubclass, on, query, domForm, event) {
+    "ioc/gui/content/subclasses/RequestSubclass"
+], function (declare, RequestSubclass) {
 
     return declare([RequestSubclass],
         /**
@@ -25,7 +21,7 @@ define([
 
             /**
              * Afegeix la substitució d'enviament de formularis per una crida ajax
-             *
+             * cuando el tipo que tiene el ContentTool es "revisions", este formulario se crea previamente en ioc/gui/content/engines/revisionRenderEngine.js
              * @override
              */
             postRender: function () {
