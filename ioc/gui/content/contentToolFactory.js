@@ -22,7 +22,6 @@ define([
         "dojo/dom",
         "ioc/gui/content/subclasses/MetaInfoSubclass",
         "ioc/gui/content/subclasses/DocumentSubclass",
-//        "ioc/gui/content/subclasses/ChangesManagerCentralSubclass",
         "ioc/gui/content/subclasses/EditorSubclass",
         "ioc/gui/content/subclasses/BasicEditorSubclass",
         "ioc/gui/content/subclasses/MediaDetailsSubclass",
@@ -32,15 +31,17 @@ define([
         "ioc/gui/content/subclasses/TimedDocumentSubclass",
         "ioc/gui/content/subclasses/NotificationSubclass",
         "ioc/gui/content/subclasses/FormSubclass",
+        "ioc/gui/content/subclasses/ProjectSubclass",
         "ioc/gui/content/subclasses/AjaxFormSubclass",
         "ioc/gui/content/subclasses/AjaxLinkSubclass",
         "ioc/gui/content/subclasses/DokuwikiNSTreeSubclass",
-    ], function (lang, ContentTool, requestReplacerFactory,
-                 dojoQuery, on, dom, MetaInfoSubclass, DocumentSubclass, /*ChangesManagerCentralSubclass,*/
-                 EditorSubclass, BasicEditorSubclass,MediaDetailsSubclass, MetaMediaDetailsSubclass,
-                 StructuredDocumentSubclass, RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass,
-                 AjaxFormSubclass, AjaxLinkSubclass, DokuwikiNSTreeSubclass
-    ) {
+    ], function (lang, ContentTool, requestReplacerFactory, dojoQuery, on, dom,
+                 MetaInfoSubclass, DocumentSubclass, EditorSubclass, BasicEditorSubclass,
+                 MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass,
+                 RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass,
+                 ProjectSubclass, AjaxFormSubclass, AjaxLinkSubclass, DokuwikiNSTreeSubclass
+                ) 
+        {
 
         var patch = function (target, source) {
                 return function () {
@@ -290,6 +291,7 @@ define([
                 DOCUMENT: 'document',
                 EDITOR: 'editor',
                 FORM: 'form',
+                PROJECT: 'project',
                 REQUIRING: 'requiring',
                 MEDIADETAILS: 'mediadetails',
                 METAMEDIADETAILS: 'metamediadetails',
@@ -324,11 +326,9 @@ define([
 
                     case this.decoration.REQUEST:
                         decoration = new RequestContentToolDecoration(args);
-
                         break;
 
                     case this.decoration.REQUEST_LINK:
-
                         args.replacers['link'] = {
                             type: 'link',
                             replacer: requestReplacerFactory.getRequestReplacer('link'),
@@ -340,13 +340,10 @@ define([
                                 continue: args.continue
                             }
                         };
-
                         decoration = new RequestContentToolDecoration(args);
-
                         break;
 
                     case this.decoration.REQUEST_FORM:
-
                         args.replacers['form'] = {
                             type: 'form',
                             replacer: requestReplacerFactory.getRequestReplacer('form'),
@@ -359,22 +356,16 @@ define([
                                 continue: args.continue
                             }
                         };
-
                         decoration = new RequestContentToolDecoration(args);
-
                         break;
 
                     case this.decoration.CONTROL_CHANGES:
-
                         decoration = new ControlChangeContentToolDecoration(args);
-
                         break;
-
 
                     default:
                         console.error('No existeix el tipus de decoració ' + type);
                 }
-
 
                 if (decoration) {
                     return mix(contentTool, decoration);
@@ -397,7 +388,7 @@ define([
             },
 
             // TODO[Xavi] Cap de les classes actuals requereix l'us dels arguments, però espoden afegir
-            createClass: function (type, args) {
+            createClass: function (type) {
                 var GeneratedContentTool = null,
                     base = ContentTool;
 
@@ -435,7 +426,6 @@ define([
                             .createSubclass(TimedDocumentSubclass)
                             .createSubclass(RequestSubclass)
                             .createSubclass(DocumentSubclass)
-                            //.createSubclass(ChangesManagerCentralSubclass)
                             .createSubclass(EditorSubclass);
                         break;
 
@@ -444,6 +434,13 @@ define([
                             .createSubclass(RequestSubclass)
                             .createSubclass(DocumentSubclass)
                             .createSubclass(FormSubclass);
+                        break;
+
+                    case this.generation.PROJECT:
+                        GeneratedContentTool = base
+                            .createSubclass(RequestSubclass)
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(ProjectSubclass);
                         break;
 
                     case this.generation.REQUIRING:

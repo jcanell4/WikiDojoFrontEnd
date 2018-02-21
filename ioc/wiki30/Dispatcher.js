@@ -55,7 +55,8 @@ define([
     "ioc/wiki30/processor/ContentToolTimerProcessor",
     "ioc/wiki30/processor/UserStateProcessor",
     "ioc/wiki30/processor/UpdateLocalDraftsProcessor",
-    "ioc/wiki30/processor/UserProfileProcessor"
+    "ioc/wiki30/processor/UserProfileProcessor",
+    "ioc/wiki30/processor/ProjectContentProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, MediaProcessor,
              MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
@@ -69,7 +70,7 @@ define([
              LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
              NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
              FormContentProcessor, TabResponseProcessor, RecentsProcessor, MetaFormProcessor, PrintProcessor,
-             ContentTooTimerProcessor, UserStateProcessor, UpdateLocalDraftsProcessor, UserProfileProcessor) {
+             ContentTooTimerProcessor, UserStateProcessor, UpdateLocalDraftsProcessor, UserProfileProcessor, ProjectContentProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -169,13 +170,11 @@ define([
                 this.processors["user_state"] = new UserStateProcessor();
                 this.processors["update_local_drafts"] = new UpdateLocalDraftsProcessor();
 
-
                 this.toUpdateSectok = new Array();
                 this.sectokManager = new SectokManager();
                 this.globalState = GlobalState;
                 this.updateViewHandlers = new Array();
                 this.reloadStateHandlers = new Array();
-
 
                 this.infoManager = new InfoManager(this);
                 this.changesManager = new ChangesManager(this);
@@ -201,7 +200,7 @@ define([
                 this.dialogManager= new DialogManager({dispatcher:this});
 
                 this.processors["code"] = new CodeResponseProcessor();
-		        this.processors["controlManager"] = new ControlManagerProcessor();
+		this.processors["controlManager"] = new ControlManagerProcessor();
 
                 // this.processors["shortcuts_tab"] = new ShortcutsTabProcessor();
                 this.processors["tab"] = new TabResponseProcessor();
@@ -210,6 +209,7 @@ define([
                 this.processors["print"] = new PrintProcessor();
                 this.processors["contentTool_timer"] = new ContentTooTimerProcessor();
                 this.processors["user_profile"] = new UserProfileProcessor();
+                this.processors["project"] = new ProjectContentProcessor();
 
             },
 
