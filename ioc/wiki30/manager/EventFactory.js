@@ -22,6 +22,8 @@ define([
             SAVE: 'save',
             SAVE_DRAFT: 'save_draft',
             REMOVE_DRAFT: 'remove_draft',
+            SAVE_PROJECT_DRAFT: 'save_project_draft',
+            REMOVE_PROJECT_DRAFT: 'remove_project_draft',
             CONTENT_SELECTED: 'content_selected',
             CONTENT_UNSELECTED: 'content_unselected',
             DOCUMENT_CHANGES_RESET: 'document_changes_reset',

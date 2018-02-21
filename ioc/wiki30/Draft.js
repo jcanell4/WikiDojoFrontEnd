@@ -47,8 +47,6 @@ define([
 
         _registerObserverToEvents: function () {
             //console.log("Draft#_registerObserverToEvents");
-
-
             this.contentTool.registerObserverToEvent(this, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
             // this.contentTool.registerObserverToEvent(this, this.eventName.CANCEL, this._cancel.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.DESTROY, this.destroy.bind(this));
@@ -61,15 +59,12 @@ define([
         _doSave: function () {
             // console.log('Draft#_doSave');
             var ret = 0;
-            var now = Date.now(),
-                elapsedTime = now - this.lastRemoteRefresh;
-
-
+            var now = Date.now();
+            var elapsedTime = now - this.lastRemoteRefresh;
             var spaceUsed = this._checkLocalStorageSpace();
 
             // ALERTA[Xavi] Aqui comprovem si la mida ocupada es superior a 2MB ABANS de desar les dades, no tenim en
             // compte la mida de les dades que seran desades
-
             this._doSaveLocal();
 
             if (elapsedTime >= this.AUTOSAVE_REMOTE || spaceUsed > this.MAX_LOCAL_STORAGE_USED) { // ALERTA[Xavi]! El local ja no s'esborra en fer save local
@@ -77,18 +72,15 @@ define([
                 ret = 1;
             }
 
-
             return ret;
 
         },
 
         _doSaveLocal: function () {
-            console.log("Draft#_doSaveLocalStorage");
+            //console.log("Draft#_doSaveLocalStorage");
             this.lastRefresh = Date.now();
 
             // Alerta[Xavi] Compte! això permet que qualsevol persona miri el contingut del localStorage i pugui veure els esborranys deixat per altres usuaris
-
-
             var draft = this.contentTool._generateDraftInMemory(),
                 page = this._doGetPage(),
                 date = Date.now();
@@ -100,7 +92,6 @@ define([
                 page = this._createNewPage();
             }
 
-
             if (!page.drafts[draft.type]) {
                 page.drafts[draft.type] = {};
             }
@@ -109,9 +100,12 @@ define([
                 case 'structured':
                     page = this._formatLocalStructuredPage(page, draft, date);
                     break;
-
                 case 'full':
                     page = this._formatLocalFullPage(page, draft, date);
+                    break;
+                case 'project':
+                    page = this._formatProjectPage(page, draft, date);
+                    break;
             }
 
             this._doSetPage(page);
@@ -127,65 +121,59 @@ define([
 
         _formatLocalStructuredPage: function (page, draft, date) {
             // Reestructurem la informació
-            // No cal afegir el tipus, perquè ja es troba a la estructura
-            // S'han de recorre tots els elements de content (del draft) i copiar el contingut a content (de page.drafts) i afegir la data del element seleccionat, la
-
             page.drafts[draft.type].date = date; // data global del draft
 
             if (!page.drafts[draft.type].content) {
                 page.drafts[draft.type].content = {};
             }
 
+            // S'han de recorre tots els elements de content (del draft) i copiar el contingut a content (de page.drafts) i afegir la data del element seleccionat
             for (var chunk in draft.content) {
                 page.drafts[draft.type].content[chunk] = draft.content[chunk];
             }
-
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
             return page;
         },
 
         _formatLocalFullPage: function (page, draft, date) {
             draft.date = date;
-
             page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
-
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
+            return page;
+        },
+
+        _formatProjectPage: function (page, draft, date) {
+            draft.date = date;
+            page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
             return page;
         },
 
         _doSaveRemoteServer: function () {
             this.lastRemoteRefresh = Date.now();
-            // this.lastRefresh = this.lastRemoteRefresh;
             var dataToSend = this._getQueryLock();
-
-
-            console.log("Draft#_doSaveRemoteServer", dataToSend);
-
-            this.eventManager.fireEvent(this.eventName.SAVE_DRAFT, {
-                id: this.contentToolId,
-                dataToSend: dataToSend
-            });
-
+            //console.log("Draft#_doSaveRemoteServer", dataToSend);
+            var data = {id: this.contentToolId,
+                        dataToSend: dataToSend
+                       };
+            if (this.contentTool['projectType']) {
+                this.eventManager.fireEvent(this.eventName.SAVE_PROJECT_DRAFT, data);
+            }else {
+                this.eventManager.fireEvent(this.eventName.SAVE_DRAFT, data);
+            }
         },
 
         _onSavePartial: function (data) {
             // console.log("Draft#_onSavePartial", data);
-
             this.clearDraftChunk(data.dataToSend.section_id);
-
             // S'ha de cancelar el refresc de l'esborrany
             this.timers.refresh.cancel();
 
         },
 
-
         //ALERTA[Xavi] Nomes elimina els draft local
         clearDraft: function () {
             var pages = this._doGetPages();
-
-
             pages[this.contentTool.ns] = this._createNewPage();
-
 
             // if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
             //     if(pages[this.contentTool.ns].drafts['full']){
@@ -201,7 +189,6 @@ define([
 
         clearDraftChunks: function (chunks) {
             //console.log("Draft#clearDraftChunks", chunks);
-
             for (var i = 0; i < chunks.length; i++) {
                 this.clearDraftChunk(chunks[i]);
             }
@@ -234,20 +221,19 @@ define([
 
         },
 
-
         // Només elimina el draft del tipus indicat
         _removeLocalDraft: function (type) {
             // console.log("Draft#_removeLocalDraft", type);
-
             switch (type) {
                 case 'structured':
                     this._removeLocalStructuredDraft();
                     break;
-
                 case 'full':
                     this._removeLocalFullDraft();
                     break;
-
+                case 'project':
+                    this._removeLocalProjectDraft();
+                    break;
                 default:
                     throw new DraftException("No s'ha indicat un tipus de draft vàlid: ", type);
             }
@@ -281,7 +267,6 @@ define([
                 pages[this.contentTool.ns] = {drafts: {}};
             }
 
-
             // ALERTA[Xavi] Al esborrar el complet s'ha d'esborrar també el parcial, així es com funcionen els drafts remots
 
 //             if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
@@ -294,6 +279,16 @@ define([
 //             }
         },
 
+        _removeLocalProjectDraft: function () {
+            var pages = this._doGetPages();
+
+            if (pages[this.contentTool.ns]) {
+                pages[this.contentTool.ns].drafts = {};
+            } else {
+                pages[this.contentTool.ns] = {drafts: {}};
+            }
+            this._doSetPages(pages);
+        },
 
         _doGetPages: function () {
             //console.log('Draft#_doGetPages');
@@ -356,17 +351,12 @@ define([
                 user = this._doGetUser(userId);
 
             user.pages[this.contentTool.ns] = page;
-
             localStorage.setItem(userId, JSON.stringify(user));
-
-
         },
 
 
         _getQueryLock: function () {
             // console.log('Draft#_getQueryLock');
-            // var draft =this.contentTool._generateDraftInMemory();
-
             var draft = this._getLastGeneratedDraft();
 
             var dataToSend = {
@@ -374,8 +364,9 @@ define([
                 draft: JSON.stringify(draft),
                 date: this.lastRefresh
             };
-
-            // console.log("DataToSend:", dataToSend);
+            if (this.contentTool['projectType']) {
+                dataToSend['projectType'] = this.contentTool['projectType'];
+            }
 
             return dataToSend;
         },
@@ -447,10 +438,7 @@ define([
         },
 
         recoverLocalDraft: function () {
-
-
             var page = this._doGetPage();
-
             // console.log("Draft#recoverLocalDraft", page.drafts);
 
             if (page && page.drafts) {
@@ -466,9 +454,7 @@ define([
             for (var i = 0; i < localStorage.length; i++) {
                 spaceUsed += (localStorage[localStorage.key(i)].length * 2) / 1024; // KB
             }
-
-//            console.log("LocalStorage usage: ", spaceUsed.toFixed(2) + " KB");
-
+            //console.log("LocalStorage usage: ", spaceUsed.toFixed(2) + " KB");
             return spaceUsed;
         },
 
