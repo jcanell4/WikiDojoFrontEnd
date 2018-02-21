@@ -230,15 +230,18 @@ define([
                 }
                 
                 //Setting the linkChar value.
+                var dataToSend;
                 if (this.method!=="post" && query && typeof query === "string" && query.length > 0) {
                     vUrl += linkChar + query;
                     linkChar = "&";
                 }else if(this.dataToSend) {
+                    dataToSend={};
+                    dataToSend.concat(this.dataToSend);
                     for (var attrname in query) {
-                        this.dataToSend[attrname] = query[attrname]; 
+                        dataToSend[attrname] = query[attrname]; 
                     }
                 }else{
-                    this.dataToSend = query;
+                    dataToSend = query;
                 }
                 
                 //Setting the sectok value to a correct checking in the server side.
@@ -282,13 +285,13 @@ define([
 
                     if (this.hasPostData()) {
                         configPost.data = this.getPostData();
-                        if (this.dataToSend) {
-                            for (var attrname in this.dataToSend) {
-                                configPost.data[attrname] = this.dataToSend[attrname]; 
+                        if (dataToSend) {
+                            for (var attrname in dataToSend) {
+                                configPost.data[attrname] = dataToSend[attrname]; 
                             }
                         }
-                    }else if (this.dataToSend) {
-                        configPost.data = this.dataToSend;
+                    }else if (dataToSend) {
+                        configPost.data = dataToSend;
                     }
 
                     resp = request.post(vUrl, configPost).then(
