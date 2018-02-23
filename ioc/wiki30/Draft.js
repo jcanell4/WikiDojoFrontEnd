@@ -26,8 +26,8 @@ define([
             this.lastRemoteRefresh = Date.now();
             this.timers = {};
             this.eventManager = this.dispatcher.getEventManager();
+            // this.AUTOSAVE_REMOTE = 10000; //ALERTA[Xavi] per fer proves, canvia el save remot a 10s
             if (this.contentTool.autosaveTimer) {
-                // this.AUTOSAVE_REMOTE = 10000; //ALERTA[Xavi] per fer proves, canvia el save remot a 10s
                 this.AUTOSAVE_REMOTE = this.contentTool.autosaveTimer;
             }
             this._init();
@@ -48,12 +48,10 @@ define([
         _registerObserverToEvents: function () {
             //console.log("Draft#_registerObserverToEvents");
             this.contentTool.registerObserverToEvent(this, this.eventName.DOCUMENT_REFRESHED, this._doRefresh.bind(this));
-            // this.contentTool.registerObserverToEvent(this, this.eventName.CANCEL, this._cancel.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.DESTROY, this.destroy.bind(this));
-            // this.contentTool.registerObserverToEvent(this, this.eventName.SAVE_PARTIAL, this._clearLocalStructured.bind(this));
-            // this.contentTool.registerObserverToEvent(this, this.eventName.SAVE, this._clearLocalAll.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.SAVE_PARTIAL, this._onSavePartial.bind(this));
             this.contentTool.registerObserverToEvent(this, this.eventName.SAVE, this._onSave.bind(this));
+            this.contentTool.registerObserverToEvent(this, this.eventName.SAVE_PROJECT, this._onSave.bind(this));
         },
 
         _doSave: function () {
@@ -71,9 +69,7 @@ define([
                 this._doSaveRemoteServer();
                 ret = 1;
             }
-
             return ret;
-
         },
 
         _doSaveLocal: function () {
@@ -109,14 +105,13 @@ define([
             }
 
             this._doSetPage(page);
-
         },
 
         _createNewPage: function () {
             return {
                 ns: this.contentTool.ns,
                 drafts: {}
-            }
+            };
         },
 
         _formatLocalStructuredPage: function (page, draft, date) {
@@ -162,28 +157,24 @@ define([
             }
         },
 
+        _onSave: function (data) {
+            // console.log("Draft#_onSave");
+            this.clearDraft();
+            // S'ha de cancelar el refresc de l'esborrany
+            this.timers.refresh.cancel();
+        },
+
         _onSavePartial: function (data) {
             // console.log("Draft#_onSavePartial", data);
             this.clearDraftChunk(data.dataToSend.section_id);
             // S'ha de cancelar el refresc de l'esborrany
             this.timers.refresh.cancel();
-
         },
 
-        //ALERTA[Xavi] Nomes elimina els draft local
+        //Nomes elimina els draft local
         clearDraft: function () {
             var pages = this._doGetPages();
             pages[this.contentTool.ns] = this._createNewPage();
-
-            // if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
-            //     if(pages[this.contentTool.ns].drafts['full']){
-            //         delete(pages[this.contentTool.ns].drafts['full']);
-            //     }
-            //     if(pages[this.contentTool.ns].drafts['structured']){
-            //         delete(pages[this.contentTool.ns].drafts['structured']);
-            //     }
-            // }
-
             this._doSetPages(pages);
         },
 
@@ -202,23 +193,10 @@ define([
                 && pages[this.contentTool.ns].drafts
                 && pages[this.contentTool.ns].drafts.structured) {
                 delete(pages[this.contentTool.ns].drafts.structured.content[chunkId]);
-
             } else {
-                // console.log("No s'ha eliminat el chunk", chunkId, pages[this.contentTool.ns]);
+                console.log("No s'ha eliminat el chunk", chunkId, pages[this.contentTool.ns]);
             }
-
             this._doSetPages(pages);
-
-
-        },
-
-        _onSave: function (data) {
-            // console.log("Draft#_onSave");
-            this.clearDraft();
-
-            // S'ha de cancelar el refresc de l'esborrany
-            this.timers.refresh.cancel();
-
         },
 
         // Només elimina el draft del tipus indicat
@@ -237,7 +215,6 @@ define([
                 default:
                     throw new DraftException("No s'ha indicat un tipus de draft vàlid: ", type);
             }
-
         },
 
         _removeLocalStructuredDraft: function () {
@@ -253,7 +230,6 @@ define([
                     }
                 }
             }
-
             this._doSetPages(pages);
         },
 
@@ -266,17 +242,7 @@ define([
             } else {
                 pages[this.contentTool.ns] = {drafts: {}};
             }
-
-            // ALERTA[Xavi] Al esborrar el complet s'ha d'esborrar també el parcial, així es com funcionen els drafts remots
-
-//             if (pages[this.contentTool.ns] && pages[this.contentTool.ns].drafts) {
-//                 delete(pages[this.contentTool.ns].drafts['full']);
-//                 delete(pages[this.contentTool.ns].drafts['structured']);
             this._doSetPages(pages);
-// //                console.log("S'ha esborrat?", pages);
-//             } else {
-//                 console.log("Fallat: ", this.contentTool.ns, pages);
-//             }
         },
 
         _removeLocalProjectDraft: function () {
@@ -307,7 +273,7 @@ define([
             } else {
                 return {
                     pages: {}
-                }
+                };
             }
         },
 
@@ -431,19 +397,16 @@ define([
         _onDestroy: function () {
             // console.log("Draft#_onDestroy", this.contentTool.id, this.contentTool.ns);
             this._cancelTimers();
-//            this.unregisterFromEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.contentTool.id);
-//            this.unregisterFromEvent(this.eventNameCompound.CANCEL + this.contentTool.id);
             this.dispatchEvent(this.eventName.DESTROY, {id: this.contentToolId, ns: this.contentTool.ns});
             this.inherited(arguments);
         },
 
         recoverLocalDraft: function () {
             var page = this._doGetPage();
-            // console.log("Draft#recoverLocalDraft", page.drafts);
 
             if (page && page.drafts) {
                 return page.drafts;
-            } else {
+            }else {
                 return {};
             }
         },
@@ -461,13 +424,13 @@ define([
 
         _cancel: function (event) {
             // console.log('Draft#_cancel', event);
-
             var removeDraft = false;
 
             if (event.dataToSend && typeof event.dataToSend === "string") {
                 var params = this._deparam(event.dataToSend);
                 removeDraft = !params.keep_draft;
-            } else if (event.dataToSend && event.dataToSend.keep_draft !== undefined) {
+            } 
+            else if (event.dataToSend && event.dataToSend.keep_draft !== undefined) {
                 removeDraft = event.dataToSend.keep_draft;
             }
 
