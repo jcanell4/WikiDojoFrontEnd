@@ -106,8 +106,9 @@ define([], function () {
                 $field.append($label)
             }
 
+            $input.on('click', function() {alert("hola")});
 
-            if (true) { // TODO[Xavi] Afegir un parámetre a field que retornará del servidor i indiacarà si s'ha de mostrar el botó de l'editor
+            if (true) { // TODO[Xavi] Afegir un parámetre a field que retornará del servidor i indicarà si s'ha de mostrar el botó de l'editor
 
                 var $row = jQuery('<div>');
                 $row.append($input);

@@ -162,7 +162,14 @@ define([
              */
             startup: function () {
 
-                this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
+                if (this.renderEngines) {
+                    this.renderEngines.unshift(this.type);
+                    this.renderEngine = renderEngineFactory.getRenderEnginePipeline(this.renderEngines);
+                } else {
+                    this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
+                }
+
+
 
                 // Establim els aspectes
 
