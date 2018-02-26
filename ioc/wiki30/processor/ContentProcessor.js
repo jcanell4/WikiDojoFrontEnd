@@ -40,30 +40,22 @@ define([
                 var changesManager = dispatcher.getChangesManager(),
                     confirmation = false,
                     clearDraft = false,
-                    id = value.id,
-                    existContentTool = dispatcher.getContentCache(id)!==undefined;
+                    id = value.id;
 
                 if (value.discard_changes) {
-
                     confirmation = true;
                 } else if (changesManager.isChanged(id)) {
                     confirmation = dispatcher.discardChanges();
-
                     clearDraft=true;
                 } else {
                     confirmation = true;
-                    if(existContentTool){
-
-                        // clearDraft=true;
-                    }
                 }
 
                 if (confirmation) {
-                    if(clearDraft){
+                    if (clearDraft){
                         dispatcher.getDraftManager().clearDraft(value.id, value.ns);
 
-
-                        if(value.hasDraft){
+                        if (value.hasDraft){
                             //console.log("Eliminat esborrany");
                             dispatcher.getEventManager().fireEvent(
                                    dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
