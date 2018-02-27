@@ -74,7 +74,7 @@ define([
             defaultRenderEngine = _getRenderEngine('standard');
         },
 
-        _getRenderEnginePipeline = function (types) {
+        _getRenderEngineMacro= function (types) {
             var engines = [];
 
             for (var i = 0; i<types.length; i++) {
@@ -97,7 +97,7 @@ define([
     return {
         // Retornem només els mètodes exposats del closure
         getRenderEngine: _getRenderEngine,
-        getRenderEnginePipeline: _getRenderEnginePipeline,
+        getRenderEngineMacro: _getRenderEngineMacro,
         addRenderEngine: _addRenderEngine
     };
 });
