@@ -106,25 +106,14 @@ define([], function () {
                 $field.append($label)
             }
 
-            $input.on('click', function() {alert("hola")});
 
-            if (true) { // TODO[Xavi] Afegir un parámetre a field que retornará del servidor i indicarà si s'ha de mostrar el botó de l'editor
-
-                var $row = jQuery('<div>');
-                $row.append($input);
-
-                var $editorButton = jQuery('<button class="btn btn-primary">Editor</button>');
-                $editorButton.attr('data-form-editor-button', field.id); // id del camp que al que enllaça l'editor
-
-                $row.append($editorButton);
-                $field.append($row);
-
-
-            } else {
-                $field.append($input);
+            // TODO[Xavi] Afegir un parámetre a field que retornará del servidor i indicarà si s'ha de mostrar el botó de l'editor
+            if (true) {
+                $input.attr('data-form-editor-button', field.id)
             }
 
 
+            $field.append($input);
 
 
 

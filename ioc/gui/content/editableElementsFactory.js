@@ -1,6 +1,6 @@
 define([
-    'ioc/gui/content/EditableElements/TestEditableElement'
-], function (testEditableElement) {
+    'ioc/gui/content/EditableElements/EditableFormElement'
+], function (EditableFormElement) {
 
     var editableElements = {},
 
@@ -8,20 +8,13 @@ define([
             return editableElements[type] ? new editableElements[type](args) : null;
         },
 
-        /**
-         * Afegeix el motor de render amb el tipus especificat.
-         *
-         * @param {string} type - Nom del tipus de motor de render
-         * @param {function} renderEngine - Funció que actuará com a motor de render
-         * @private
-         */
         _addEditableElement = function (type, editableElement) {
             editableElements[type] = editableElement;
         },
 
         _init = function () {
 
-            _addEditableElement('zoomable-text-field', testEditableElement);
+            _addEditableElement('editable-form-element', EditableFormElement);
         };
 
     _init();
