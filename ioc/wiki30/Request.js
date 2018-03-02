@@ -11,8 +11,9 @@ define([
     "dojo/dom-style",
     "dojo/dom",
     "dojo/Evented",
+    "dojo/io-query",
 ], function (declare, Standby, request, iframe, getDispatcher, Stateful
-    , timing, domConstruct, domGeom, style, dom, Evented) {
+    , timing, domConstruct, domGeom, style, dom, Evented, ioQuery) {
     
     var ret = declare([Stateful, Evented],
         /**
@@ -108,6 +109,14 @@ define([
              */
             getSectok: function () {
                 return this.dispatcher.getSectok(this.sectokId);
+            },
+            
+            getDataToSend: function(){
+                return this.dataToSend;
+            },
+
+            setDataToSend: function(dataToSend){
+                this.dataToSend = dataToSend;
             },
 
             /**
@@ -235,12 +244,16 @@ define([
                     vUrl += linkChar + query;
                     linkChar = "&";
                 }else if(this.dataToSend) {
-                    dataToSend={};
-                    dataToSend.concat(this.dataToSend);
-                    for (var attrname in query) {
-                        dataToSend[attrname] = query[attrname]; 
+                    if(typeof (this.dataToSend)==="string"){
+                        dataToSend = this.dataToSend;
+                    }else{
+                        dataToSend={};
+                        dataToSend.concat(this.dataToSend);
+                        for (var attrname in query) {
+                            dataToSend[attrname] = query[attrname]; 
+                        }
                     }
-                }else{
+                }else if(query){
                     dataToSend = query;
                 }
                 
@@ -285,7 +298,16 @@ define([
 
                     if (this.hasPostData()) {
                         configPost.data = this.getPostData();
-                        if (dataToSend) {
+                        if (typeof (dataToSend)=="string") {
+                            if(typeof (configPost.data)=="string"){
+                                configPost.data.concat(dataToSend);
+                            }else if(configPost.data){
+                                var objectQuery = ioQuery.queryToObject(dataToSend);
+                                configPost.data = Object.assign(configPost.data, objectQuery);
+                            }else{
+                                configPost.data = dataToSend;
+                            }
+                        }else{
                             for (var attrname in dataToSend) {
                                 configPost.data[attrname] = dataToSend[attrname]; 
                             }
