@@ -16,10 +16,11 @@ define([
     "ioc/gui/content/engines/formRenderEngine",
     "ioc/gui/content/engines/htmlRenderEngine",
     "ioc/gui/content/engines/request_formRenderEngine",
+    "ioc/gui/content/engines/testRenderEngine",
 ], function (standardRenderEngine, revisionRenderEngine, html_partialRenderEngine, 
                 dataRenderEngine, requiringRenderEngine, requiring_partialRenderEngine, 
                 notificationRenderEngine, formRenderEngine, htmlRenderEngine,
-                request_formRenderEngine) {
+                request_formRenderEngine, testRenderEngine) {
 
     var /** @type function */
         defaultRenderEngine = null,
@@ -69,7 +70,26 @@ define([
             _addRenderEngine('form', formRenderEngine);
             _addRenderEngine('metainfo', htmlRenderEngine);
             _addRenderEngine('request_form', request_formRenderEngine);
+            _addRenderEngine('test', testRenderEngine);
             defaultRenderEngine = _getRenderEngine('standard');
+        },
+
+        _getRenderEngineMacro= function (types) {
+            var engines = [];
+
+            for (var i = 0; i<types.length; i++) {
+                console.log("Get type!", types[i]);
+                engines.push(_getRenderEngine(types[i]));
+            }
+
+            return function (data, contentTool) {
+                var content = null;
+                for (var i = 0; i<types.length; i++) {
+                    content = engines[i](data, contentTool, content);
+                }
+
+                return content;
+            }
         };
 
     _init();
@@ -77,6 +97,7 @@ define([
     return {
         // Retornem només els mètodes exposats del closure
         getRenderEngine: _getRenderEngine,
+        getRenderEngineMacro: _getRenderEngineMacro,
         addRenderEngine: _addRenderEngine
     };
 });

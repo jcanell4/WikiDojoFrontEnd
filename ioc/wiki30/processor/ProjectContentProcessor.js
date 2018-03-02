@@ -24,7 +24,9 @@ define([
                     originalContent: content.originalContent,
                     projectType: content.extra.projectType,
                     type: this.type,
-                    autosaveTimer: content.autosaveTimer
+                    autosaveTimer: content.autosaveTimer,
+                    renderEngines: ['test']
+
                 };
 
             return contentToolFactory.generate(contentToolFactory.generation.PROJECT, args);
