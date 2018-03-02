@@ -235,10 +235,14 @@ define([
                     vUrl += linkChar + query;
                     linkChar = "&";
                 }else if(this.dataToSend) {
-                    dataToSend={};
-                    dataToSend.concat(this.dataToSend);
-                    for (var attrname in query) {
-                        dataToSend[attrname] = query[attrname]; 
+                    if(typeof (this.dataToSend)==="string"){
+                        dataToSend = this.dataToSend;
+                    }else{
+                        dataToSend={};
+                        dataToSend.concat(this.dataToSend);
+                        for (var attrname in query) {
+                            dataToSend[attrname] = query[attrname]; 
+                        }
                     }
                 }else{
                     dataToSend = query;
@@ -285,7 +289,9 @@ define([
 
                     if (this.hasPostData()) {
                         configPost.data = this.getPostData();
-                        if (dataToSend) {
+                        if (typeof (dataToSend)=="string") {
+                            configPost.data = dataToSend;
+                        }else{
                             for (var attrname in dataToSend) {
                                 configPost.data[attrname] = dataToSend[attrname]; 
                             }
