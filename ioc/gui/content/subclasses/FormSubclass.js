@@ -54,7 +54,7 @@ define([
            // S'han de comprovar que tots els items de currentContent siguin iguals
            for (item in currentContent) {
                if (currentContent[item] !== originalContent[item]) {
-                   //console.log(currentContent[item] + "!==" +  originalContent[item]);
+                   console.log(currentContent[item] + "!==" +  originalContent[item]);
                    changed = true;
                    break;
                } else {
@@ -63,13 +63,14 @@ define([
            }
 
            if (!changed) {
+               console.log(currentContent, originalContent);
                // Si tots son iguals, es comprova que tots els que restin de OriginalContent
                for (item in originalContent) {
-                   if (!checked[item] && originalContent[item] !== currentContent[item]) {
+                   if (!checked[item] && originalContent[item] && originalContent[item] !== currentContent[item]) {
                        //console.log("checked", checked);
                        //console.log("current", currentContent);
                        //console.log("original", originalContent);
-                       //console.log(currentContent[item] + "!==" +  originalContent[item]);
+                       console.log(currentContent[item] + "!==" +  originalContent[item], item);
                        changed = true;
                        break;
                    }
@@ -98,7 +99,7 @@ define([
       },
 
         /**
-         * Es registra als esdeveniments i activa la detecció de canvis, copiar, enganxar i pijar tecles dins
+         * Es registra als esdeveniments i activa la detecció de canvis, copiar, enganxar i pitjar tecles dins
          * del node on es troba quest ContentTool.
          * Realitza l'enregistrament al ChangesManager.
          * @override
@@ -233,7 +234,7 @@ define([
 
         },
 
-  
+
         /**
          * Comunica al ChangesManager que pot haver canvis.
          * @private
@@ -297,10 +298,35 @@ define([
 
             return currentContent;
         },
-        
+
 
             getProjectType: function () {
                 return this.projectType;
+            },
+
+            onClose: function () {
+                // ALERTA[Xavi] Es descarta el retorn
+                console.log("retorn de onclose: ", this.inherited(arguments));
+
+                var confirmation;
+
+                if (this.isContentChanged()) {
+                    console.log("El contingut està canviat??");
+                    confirmation = confirm("S'han produït canvis al document. Vols tancar-lo?");
+                } else {
+                    confirmation = true;
+                }
+
+
+                if (confirmation) {
+                    this.removeState();
+                    this.changesManager.removeContentTool(this.id);
+                }
+
+                return confirmation;
             }
+
         });
+
+
 });        
