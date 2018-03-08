@@ -17,8 +17,11 @@ define([
 
             toolbarManager.setDispatcher(this.editor.dispatcher);
 
+            console.log("Editor toolbar?", this.editor.TOOLBAR_ID);
+
             switch (args.type) {
                 case 'format':
+
                     toolbarManager.addFormatButton(args, this.editor.TOOLBAR_ID);
                     break;
 

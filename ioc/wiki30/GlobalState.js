@@ -214,6 +214,7 @@ define([
 
         // ALERTA[Xavi] en molts punts s'assigna aquest valor directament
         setCurrentId: function(id) {
+            console.error("Establert el currentTabId", id);
             this.currentTabId = id;
         },
 

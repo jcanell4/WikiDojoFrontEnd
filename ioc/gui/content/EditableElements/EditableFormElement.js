@@ -2,7 +2,8 @@ define([
     'dojo/_base/declare',
     'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/gui/content/EditableElements/AbstractEditableElement',
-], function (declare, AceFacade, AbstractEditableElement) {
+    'ioc/dokuwiki/editors/AceManager/toolbarManager',
+], function (declare, AceFacade, AbstractEditableElement, toolbarManager) {
 
 
     var lastFocusedElement;
@@ -11,7 +12,6 @@ define([
 
     return declare([AbstractEditableElement],
         {
-
 
             show: function (shouldDisplay) {
                 var visibility = '';
@@ -70,10 +70,12 @@ define([
                 var args = {
                     id: "auxWidget" + fieldId,
                     title: this.context.title,
-                    dispatcher: this.context.dispatcher
+                    dispatcher: this.context.dispatcher,
                 };
 
                 var editorWidget = this.context.contentToolFactory.generate(this.context.contentToolFactory.generation.BASE, args);
+                var toolbarId = 'DialogToolbar' + (Date.now() + Math.random()); // id única
+
 
                 var $container = jQuery('<div>');
                 var $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
@@ -84,12 +86,26 @@ define([
                 $container.append($textarea);
 
 
+                var saveCallback = function () {
+                    this.$field.val(editor.getValue());
+                    this.setEditionState(false);
+                    toolbarManager.delete(toolbarId);
+                    this.$field.trigger('input');
+                    dialog.onHide();
+
+                }.bind(this);
+
+                var cancelCallback = function () {
+                    this.setEditionState(false);
+                    toolbarManager.delete(toolbarId);
+                    dialog.onHide();
+                }.bind(this);
+
+
                 var dialogParams = {
                     title: "Editar camp: " + fieldId, //TODO[Xavi] Localitzar
                     message: '',
                     sections: [
-                        // Secció 1: widget de cerca que inclou la taula pel resultat.
-                        // searchUserWidget.domNode
                         $container,
                         {widget: editorWidget}
 
@@ -100,20 +116,13 @@ define([
                             id: 'accept',
                             description: 'Desar', // TODO[Xavi] Localitzar
                             buttonType: 'default',
-                            callback: function () {
-                                this.$field.val(editor.getValue());
-                                this.setEditionState(false);
-                            }.bind(this)
+                            callback: saveCallback
                         },
                         {
                             id: 'cancel',
                             description: 'Cancel·lar', // TODO[Xavi] Localitzar
                             buttonType: 'default',
-                            callback: function () {
-                                // No cal fer res, el comportament per defecte de tots els botons es tancar-lo
-                                this.setEditionState(false);
-
-                            }.bind(this)
+                            callback: cancelCallback
                         }
                     ]
                 };
@@ -121,6 +130,8 @@ define([
                 var dialog = dialogManager.getDialog(dialogManager.type.DEFAULT, this.context.ns, dialogParams);
 
                 dialog.show();
+
+                toolbarManager.createToolbar(toolbarId , 'simple');
 
                 var editor = new AceFacade({
                     id: args.id,
@@ -131,9 +142,14 @@ define([
                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                     dispatcher: this.context.dispatcher,
                     content: this.$field.val(),
-                    originalContent: this.$field.val()
+                    originalContent: this.$field.val(),
+                    TOOLBAR_ID: toolbarId ,
+                    plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton'] // Plugins que ha de contenir la toolbar
                 });
 
+
+                editor.editor.on('CancelDialog', cancelCallback);
+                editor.editor.on('SaveDialog', saveCallback);
             },
 
             init: function (args) {
@@ -166,7 +182,7 @@ define([
 
             },
 
-            getHtmlRender:function() {
+            getHtmlRender: function () {
                 return this.$container[0];
             }
 

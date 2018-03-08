@@ -17,6 +17,10 @@ define([
         MIN_HEIGHT: 200,
 
         constructor: function (args) {
+            if (args.TOOLBAR_ID) {
+                this.TOOLBAR_ID = args.TOOLBAR_ID;
+            }
+
             var iocAceEditor = new IocAceEditor({ // ALERTA! Arriben tots directament del cotenttool
                 id: args.id,
                 containerId: args.containerId,
@@ -30,8 +34,15 @@ define([
                 content: args.content,
                 originalContent: args.originalContent || args.content,
                 dispatcher: args.dispatcher,
+                plugins: args.plugins,
                 TOOLBAR_ID: this.TOOLBAR_ID
             });
+
+
+
+
+
+
 
             this.dispatcher = args.dispatcher;
             this.editor = iocAceEditor;

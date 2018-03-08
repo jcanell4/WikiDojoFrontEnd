@@ -15,7 +15,6 @@ define([
     var patcher = (function () {
         var originalFunctions = {},
             cachedFunctions = {},
-
             /**
              * Afegeix una funció al objecte dw_editor si existeix alguna amb aquest nom o al objecte window si no s'ha
              * trobat cap coincidencia amb el nom.
@@ -205,6 +204,9 @@ define([
 
                 this._patch(args.auxId);
 
+
+                console.log("hi ha toolbar id?", args.TOOLBAR_ID, this.TOOLBAR_ID);
+
                 this.init(args);
 
 
@@ -220,7 +222,13 @@ define([
                         var headerId = $textarea.attr('data-header-id');
 
 
-                        // Establim la selecció actual
+                        // ALERTA[Xavi] si no hi ha un docId no es fa canvi de context, no es tracta d'un document de
+                        // la Wiki i per consegüent no es faran servir les seves funcions globals
+                        if (!docId) {
+                            return;
+                        }
+
+
                         context.dispatcher.getGlobalState().setCurrentId(docId);
 
                         if (headerId) {
@@ -483,16 +491,28 @@ define([
                 this.initHandlers();
                 // this.initPlugins(args.plugins);
 
-                var plugins = this.getPlugins([
-                    'IocSoundFormatButton',
-                    // 'TestFormatButton',
-                    'CancelButton',
-                    'SaveButton',
-                    'DocumentPreviewButton',
-                    'EnableACE',
-                    'EnableWrapper',
-                    'LatexPreview'
-                ]);
+
+                var plugins;
+
+                console.log("Arriban els plugins?", args.plugins);
+
+
+                if (args.plugins) {
+                    plugins = this.getPlugins(args.plugins);
+                } else {
+                    plugins = this.getPlugins([
+                        'IocSoundFormatButton',
+                        'CancelButton',
+                        'SaveButton',
+                        'DocumentPreviewButton',
+                        'EnableACE',
+                        'EnableWrapper',
+                        'LatexPreview'
+                    ]);
+                }
+
+                console.log("Plugins obtinguts:", plugins);
+
                 this.initPlugins(plugins);
 
 

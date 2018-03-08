@@ -9,6 +9,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceFireEvent',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceFireDojoEvent', // TODO: Fer versió pel dojo
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFireEvent',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceDocumentPreview',
@@ -24,7 +25,7 @@ define([
 
 
 
-], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent,
+], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview) {
 
@@ -39,7 +40,9 @@ define([
             'DocumentPreviewButton': AceDocumentPreview,
             'EnableACE': AceEnableACE,
             'EnableWrapper': AceEnableWrapper,
-            'LatexPreview': AceLatexPreview
+            'LatexPreview': AceLatexPreview,
+            'CancelDialogEditorButton' : AceFireDojoEvent,
+            'SaveDialogEditorButton' : AceFireDojoEvent,
         },
 
         'Dojo': {
@@ -98,6 +101,20 @@ define([
             type: 'SaveButton',
             title: strings["save-button"],
             event: {full: EventFactory.eventName.SAVE, partial: EventFactory.eventName.SAVE_PARTIAL},
+            icon: 'IocSave',
+            // category: 'A'
+        },
+        'CancelDialogEditorButton': {
+            type: 'CancelDialogEditorButton',
+            title: strings["cancel-button"],
+            event: {type:'CancelDialog', data: {}},
+            icon: 'IocBack',
+            // category: 'A'
+        },
+        'SaveDialogEditorButton': {
+            type: 'SaveDialogEditorButton',
+            title: strings["save-button"],
+            event: {type:'SaveDialog', data: {}},
             icon: 'IocSave',
             // category: 'A'
         },
