@@ -30,7 +30,6 @@ define([
                 context: context,
                 node: $nodes[i]
             });
-
         }
 
         return $content;

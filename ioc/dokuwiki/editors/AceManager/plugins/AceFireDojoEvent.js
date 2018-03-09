@@ -23,7 +23,9 @@ define([
         },
 
 
-        process: function () {
+        process: function (e) {
+            console.log("Event:", window.event);
+            alert ("STOP!");
             console.log("Disparant event", this.event.type, this.event.data);
             this.fireEventComponent.fire(this.event);
         }
