@@ -2,9 +2,6 @@ define([
     "dojo/_base/declare",
 ], function (declare) {
 
-
-    // TODO[Xavi]: Afegir classe abstracta de la que hereti
-
     return declare(null,
         {
             editionState : false,

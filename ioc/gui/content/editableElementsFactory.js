@@ -1,6 +1,6 @@
 define([
-    'ioc/gui/content/EditableElements/EditableFormElement'
-], function (EditableFormElement) {
+    'ioc/gui/content/EditableElements/TestFormElement'
+], function (TestFormElement) {
 
     var editableElements = {},
 
@@ -14,7 +14,7 @@ define([
 
         _init = function () {
 
-            _addEditableElement('editable-form-element', EditableFormElement);
+            _addEditableElement('test', TestFormElement);
         };
 
     _init();

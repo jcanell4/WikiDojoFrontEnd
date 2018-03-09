@@ -8,7 +8,7 @@ define([
 
     var lastFocusedElement;
 
-    // TODO[Xavi]: Afegir classe abstracta de la que hereti
+    // TODO[Xavi]: En lloc d'un dialeg aquesta classe ha de mostrar el widget.
 
     return declare([AbstractEditableElement],
         {

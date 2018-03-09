@@ -5,7 +5,7 @@
 define([
     // 'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/gui/content/editableElementsFactory'
-], function (/*AceFacade, */editableElementsFactory) {
+], function (editableElementsFactory) {
 
 
     // Afegim als camps amb l'atribut data-form-editor-button una icona per ampliar l'editor.
@@ -19,13 +19,16 @@ define([
             $content = jQuery($content);
         }
 
-        var $editorButtons = $content.find('[data-form-editor-button]');
+        // var $editorButtons = $content.find('[data-form-editor-button]');
+
+        // ALERTA[Xavi] per fer aquesta proba s'agafan els nodes de classe 'h2'
+        var $nodes = $content.find('.h2');
 
 
-        for (var i = 0; i < $editorButtons.length; i++) {
-            editableElementsFactory.createElement('editable-form-element', {
+        for (var i = 0; i < $nodes.length; i++) {
+            editableElementsFactory.createElement('test', {
                 context: context,
-                node: $editorButtons[i]
+                node: $nodes[i]
             });
 
         }

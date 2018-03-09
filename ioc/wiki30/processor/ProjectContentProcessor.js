@@ -25,7 +25,7 @@ define([
                     projectType: content.extra.projectType,
                     type: this.type,
                     autosaveTimer: content.autosaveTimer,
-                    renderEngines: ['test']
+                    renderEngines: ['test', 'zoomable_form_element']
 
                 };
 
