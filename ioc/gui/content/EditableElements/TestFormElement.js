@@ -278,21 +278,19 @@ define([
                 console.log("Afegit textarea?", jQuery('#textarea_' + args.id ));
 
                     var saveCallback = function (e) {
-                        this.$node.html(editor.getValue());
+                        this.$node.text(editor.getValue());
                         //toolbarManager.delete(toolbarId);
                         // TODO: Com indicar que s'ha produit canvis al formulari?
                         // this.$node.trigger('input');
                         // dialog.onHide();
                         console.log(e);
                          this.hide();
-                        alert("Stop al save<-- No arriba");
                     }.bind(this);
 
                     var cancelCallback = function (e) {
                         //toolbarManager.delete(toolbarId);
                          this.hide();
                          console.log(e);
-                        alert("Stop al hide<-- No arriba");
                     }.bind(this);
 
 
