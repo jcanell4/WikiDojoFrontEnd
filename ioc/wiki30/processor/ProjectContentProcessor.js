@@ -11,9 +11,93 @@ define([
      * @culpable Rafael
      */
     return declare([FormContentProcessor], {
+
+        process: function (value, dispatcher) {
+            var args = arguments;
+            //Se añade un array (key:value) con los datos originales del formulario
+            //(nota: los datos de este nuevo array se cambiarán si existe un borrador)
+            args[0].content.formValues = args[0].originalContent;
+            
+            //Con la incorporación del array de datos del formulario, llamamos a la secuencia principal
+            //que creará el contentTool y creará la pestaña y mostrará el formulario con los datos originales 
+            //antes de preguntar si existe un borrador
+            var ret = this.inherited(args);
+            
+            this.eventManager = dispatcher.getEventManager();
+            this.draftManager = dispatcher.getDraftManager();
+            this.dialogManager = dispatcher.getDialogManager();
+            var localDraft = this.draftManager.getContentLocalDraft(value.ns);
+            
+            //Si existe un borrador, llamamos a la función que muestra un diálogo para elegir original o borrador
+            if (localDraft.project){
+                args[0].content.formValues = JSON.parse(localDraft.project.content);
+                this._showDiffDialog(value, localDraft.project, args);
+                return;
+            }else {
+                return ret;
+            }
+        },
+        
+        /**
+         * Muestra un diálogo que permite elegir entre editar el original y editar el borrador
+         * @param {object} value : parámetros, datos y estructuras del proyecto
+         * @param {JSON}   draft : es el borrador almacenado en el localStorage
+         * @param {object} args : parámetro para lanzar un inherited sobre FormContentProcessor
+         */
+        _showDiffDialog: function (value, draft, args) {
+
+            var context = this;
+            var data = {
+                document: this._getDocument(value),
+                draft: this._getDraft(draft)
+            };
+
+            var dialogParams = {
+                id: "project_diff",
+                ns: value.ns,
+                title: "S'ha trobat un esborrany",
+                message: "S'ha trobat un esborrany d'aquest formulari del projecte. Vols obrir la versió actual del formulari o l'esborrany?",
+                timeout: value.autosaveTimer * 1000,
+                closable: false,
+                buttons: [
+                    {
+                        id: "open_project",
+                        description: "Editar el formulari original del projecte",
+                        buttonType: 'default',
+                        callback: function(){
+                            context.inherited("process", args);
+                        }
+                    },
+                    {
+                        id: "open_project_draft",
+                        description: "Editar l'esborrany",
+                        buttonType: 'default',
+                        callback: function(){
+                            context.inherited("process", args);
+                        }
+                    }
+                ],
+                diff: {
+                    text1: data.document.content,
+                    text2: data.draft.content,
+                    text1Label: "Document (" + data.document.date + ")",
+                    text2Label: "Esborrany (" + data.draft.date + ")"
+                }
+            };
+
+            var dialog = this.dialogManager.getDialog(this.dialogManager.type.DIFF, value.id, dialogParams);
+            dialog.show();
+        },
+        
+        _getDocument: function (value) {
+            return {content: JSON.stringify(value.originalContent), date: value.originalLastmod};
+        },
+
+        _getDraft: function (draft) {
+            return {content: draft.content, date: draft.date};
+        },
         
         createContentTool: function (content, dispatcher) {
-
             var args = {
                     ns: content.ns,
                     id: content.id,
@@ -24,9 +108,10 @@ define([
                     originalContent: content.originalContent,
                     projectType: content.extra.projectType,
                     type: this.type,
-                    autosaveTimer: content.autosaveTimer
+                    autosaveTimer: content.autosaveTimer,
+                    cancelDialogConfig: content.extra.dialogSaveOrDiscard,
+                    messageChangesDetected: content.extra.messageChangesDetected
                 };
-
             return contentToolFactory.generate(contentToolFactory.generation.PROJECT, args);
         }
 

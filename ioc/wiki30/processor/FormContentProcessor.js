@@ -72,19 +72,14 @@ define([
                         originalContent: content.originalContent,
                         projectType: content.extra.projectType,
                         type: this.type,
-                    },
-                    argsRequestForm = {
-                        urlBase: content.content.action,
-                        form: '#' + content.content.id
                     };
 
                 return contentToolFactory.generate(contentToolFactory.generation.FORM, args)
-                    //.decorate(contentToolFactory.decoration.REQUEST_FORM, argsRequestForm); // Això ja no s'ha de fer servir, ha de funcionar a travésd els botons
             },
 
-            isRefreshableContent: function (oldType, newType) {
-                return false;
-            }
+//            isRefreshableContent: function (oldType, newType) {
+//                return false;
+//            }
 
         });
 });

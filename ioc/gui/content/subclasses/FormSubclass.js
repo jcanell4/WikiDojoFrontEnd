@@ -139,13 +139,12 @@ define([
 
         getCurrentContent: function () {
             // Obtenir tots els valors dels camps? generar diccionary id:valor
-            // FÃ cil pels inputs (Ãºnic cas contemplat)
-            // TODO[Xavi] Afegir comprovaciÃ³ per check/radios i selects
-
+            // Fàcil pels inputs (únic cas contemplat)
+            // TODO[Xavi] Afegir comprovació per check/radios i selects
             var currentContent = {};
 
             jQuery('form[id="form_' + this.id + '"] input').each(function () {
-                if (this.type !== "hidden" & this.type !== "button" && this.type !== "submit" && this.value) { // Alerta[Xavi] Els tipus hidden, submit i button no formen part del les dades
+                if (this.type !== "button" && this.type !== "submit" && this.value) {
                     currentContent[this.id] = this.value;
                 }
             });

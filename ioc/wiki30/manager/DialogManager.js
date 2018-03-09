@@ -135,7 +135,7 @@ define([
                         ns: params.ns,
                         title: title,  //refId,
                         message: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
-                        closable: params.closable || true,// opcional amb default
+                        closable: params.closable && true,
                         sections: params.sections,
                         dispatcher: this.dispatcher
                     },
