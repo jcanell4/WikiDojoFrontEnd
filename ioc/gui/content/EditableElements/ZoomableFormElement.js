@@ -8,8 +8,6 @@ define([
 
     var lastFocusedElement;
 
-    // TODO[Xavi]: En lloc d'un dialeg aquesta classe ha de mostrar el widget.
-
     return declare([AbstractEditableElement],
         {
 

@@ -4,7 +4,7 @@
  */
 define([
     // 'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
-    'ioc/gui/content/editableElements/ZoomableFormElement'
+    'ioc/gui/content/EditableElements/ZoomableFormElement'
 ], function (ZoomableFormElement) {
 
 
