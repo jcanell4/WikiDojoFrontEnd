@@ -68,6 +68,16 @@ define([
                 this.draftManager.clearDraft(this.id, this.ns, true);
             }
 
+            if (dataToSend.close === true) {
+                this.forceReset();  
+                this.forceClose = true;
+                this.container.closeChild(this);
+                return {
+                    id: this.id,
+                    dataToSend: dataToSend
+                };
+            }
+
             return {
                 id: this.id,
                 dataToSend: dataToSend,
