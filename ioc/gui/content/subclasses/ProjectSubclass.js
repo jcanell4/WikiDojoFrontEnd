@@ -49,8 +49,12 @@ define([
         },
 
         _doSave: function (event) {
-            var dataToSend = this.getQuerySave(),
-                containerId = this.id;
+            var dataToSend = {};
+            
+            if (event.dataToSend) {
+                dataToSend = event.dataToSend;
+            }
+            lang.mixin(dataToSend, this.getQuerySave());
 
             if (event.extraDataToSend) {
                 if (typeof event.extraDataToSend === "string") {
@@ -59,11 +63,15 @@ define([
                     lang.mixin(dataToSend, event.extraDataToSend);
                 }
             }
+            
+            if (dataToSend['keep_draft'] === false) {
+                this.draftManager.clearDraft(this.id, this.ns, true);
+            }
 
             return {
                 id: this.id,
                 dataToSend: dataToSend,
-                standbyId: containerId
+                standbyId: this.id
             };
         },
 
@@ -80,7 +88,8 @@ define([
             } 
             else if (data.discard_changes === undefined && this.isContentChanged()) {
                 var cancelDialog = this._generateDiscardDialog();
-                if (cancelDialog) cancelDialog.show();
+                if (cancelDialog) 
+                    cancelDialog.show();
                 this.cachedEvent = event;
                 return {_cancel: true};
             }
@@ -96,6 +105,10 @@ define([
                 this.mixin(dataToSend, extraDataToSend);
             }
             
+            if (dataToSend['keep_draft'] === false) {
+                this.draftManager.clearDraft(this.id, this.ns, true);
+            }
+
             if (dataToSend.close === true) {
                 this.forceReset();  
                 this.forceClose = true; //Cuando sea necesario, un procedimiento podrá cambiar este valor para impedir el cierre de la pestaña
@@ -105,7 +118,7 @@ define([
                     dataToSend: dataToSend
                 };
             }
-            
+
             return {
                 id: this.id,
                 dataToSend: dataToSend,
@@ -116,10 +129,12 @@ define([
         getQuerySave: function () {
             var $form = jQuery('#form_' + this.id);
             var values = {id: this.ns, projectType: this.projectType};
+            
+            var fields = $form.serializeArray();
+            for (var i=0; i < fields.length; i++) {
+                values[fields[i].name] = fields[i].value;
+            }
 
-            jQuery.each($form.serializeArray(), function (field) {
-                values[field.name] = field.value;
-            });
             return values;
         },
 

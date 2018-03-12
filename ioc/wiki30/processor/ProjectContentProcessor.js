@@ -30,7 +30,6 @@ define([
             
             //Si existe un borrador, llamamos a la función que muestra un diálogo para elegir original o borrador
             if (localDraft.project){
-                args[0].content.formValues = JSON.parse(localDraft.project.content);
                 this._showDiffDialog(value, localDraft.project, args);
                 return;
             }else {
@@ -73,6 +72,7 @@ define([
                         description: "Editar l'esborrany",
                         buttonType: 'default',
                         callback: function(){
+                            args[0].content.formValues = JSON.parse(draft.content);
                             context.inherited("process", args);
                         }
                     }
