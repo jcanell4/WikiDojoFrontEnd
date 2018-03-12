@@ -237,7 +237,7 @@ define([
                 case 'structured':
                     page = this._formatLocalStructuredPage(page, draft, date);
                     break;
-
+                case 'project':
                 case 'full':
                     page = this._formatLocalFullPage(page, draft, date);
             }
@@ -301,29 +301,23 @@ define([
             page.drafts[draft.type].date = date; // data global del draft
 
             for (var chunk in draft.content) {
-                // console.log("Processant chunk...", chunk);
-
                 if (!page.drafts[draft.type].content) { // ALERTA: això ja hauria d'estar fet previament
                     page.drafts[draft.type].content = {};
                 }
 
-                page.drafts[draft.type].content[chunk] = draft.content[chunk]
+                page.drafts[draft.type].content[chunk] = draft.content[chunk];
             }
-
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
             return page;
         },
 
         _formatLocalFullPage: function (page, draft, date) {
-            // console.log("DraftManager#_formatLocalFullPage", page,draft, date);
-            // console.log(page, draft, date);
             draft.date = date;
-
             page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
 
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
             return page;
-        },
+        }
 
     });
 
