@@ -28,7 +28,7 @@ define([
                     var self = this;
 
                     this.request.getPostData = function () {
-                        return self.dataToSend;
+                        return self.postData;
                     };
                 }
 
@@ -121,7 +121,7 @@ define([
 
             _sendRequest: function (data) {
                 //console.log('RequestControl#_sendRequest', data);
-                this.dataToSend = data.dataToSend;
+                this.postData = data.dataToSend;
 
                 this.request.setStandbyId(data.standbyId);
 

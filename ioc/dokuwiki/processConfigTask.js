@@ -41,8 +41,8 @@ define([
             requestUpdate.getPostData = function () {
                 return data;
             };
-            requestUpdate.sendRequest(queryString);
             event.stop(e);
+            requestUpdate.sendRequest(queryString);
             handle.remove();
         });
     };
