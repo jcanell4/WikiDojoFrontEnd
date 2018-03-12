@@ -252,8 +252,10 @@ define([
             },
 
             createWidget: function() {
+                    // TODO:Xavi, exposar com id de l'element directament
+                    this.args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
+
                     var args = this.args;
-                    args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
                     var editorWidget = this.context.contentToolFactory.generate(this.context.contentToolFactory.generation.BASE, args);
                     var toolbarId = 'FormToolbar_' + (args.id);
 

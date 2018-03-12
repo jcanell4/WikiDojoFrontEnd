@@ -114,6 +114,8 @@ define([], function () {
 
                     _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
                     jQuery('#' + idContainer).find('textarea').focus();
+
+                    event.preventDefault();
                     func(arguments);
                 });
             };
