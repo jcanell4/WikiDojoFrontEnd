@@ -31,7 +31,9 @@ define([
                     row = pos.row;
                     states = editor.get_line_states_preview(row, true);
                     for (i = _i = 0, _len = states.length; _i < _len; i = ++_i) {
+
                         state = states[i];
+                        console.log("state", state);
                         index = i;
                         if (pos.column <= state.end) {
                             break;

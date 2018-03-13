@@ -1517,7 +1517,7 @@ define([
             },
 
 
- testReadOnlyBlock: function() {
+    testReadOnlyBlock: function() {
 
 
             // TEST[Xavi] Provas per afegir el marcador de només lectura.
@@ -1527,18 +1527,36 @@ define([
             var readonlyRange = new Range(0, 0, 1, 0);
             var markerId = session.addMarker(readonlyRange, "readonly-highlight");
 
-            alert("stop");
-
-            console.log("Int range:", readonlyRange.start.row, readonlyRange.start.column, readonlyRange.end.row, readonlyRange.end.column);
+            var context = this;
 
             editor.keyBinding.addKeyboardHandler({
                 handleKeyboard: function (data, hash, keyString, keyCode, event) {
-                    console.log("cridad el keyboardhandler", readonlyRange.start.row, readonlyRange.start.column, readonlyRange.end.row, readonlyRange.end.column);
+
+                    var cursor = editor.getCursorPosition();
+
+                    //console.log("Info de la posición del cursor");
+                    //console.log(cursor);
+
+
+                    //console.log(session.getTokenAt(cursor.row,cursor.column));
+                    //console.log(session.getTokens(cursor.row));
+
+                    var states = context.get_line_states_preview(cursor.row, true);
+                    //console.log("States:", states);
+
+
                     if (hash === -1 || (keyCode <= 40 && keyCode >= 37)) return false;
 
-                    if (intersects(readonlyRange)) {
+                    if (isReadOnlySection(states, cursor)) {
+                        console.log("Es secció de read only");
                         return {command: "null", passEvent: false};
+                    } else {
+                        console.log("Es secció normal");
                     }
+
+                    // if (intersects(readonlyRange)) {
+                    //     return {command: "null", passEvent: false};
+                    // }
                 }
             });
 
@@ -1559,17 +1577,48 @@ define([
                     return wrapper.call(this, function () {
                         return orig.apply(obj, args);
                     }, args);
-                }
+                };
 
                 return obj[method];
             }
 
-            function intersects(_range) {
-                return editor.getSelectionRange().intersects(_range);
+            // function intersects(_range) {
+            //     return editor.getSelectionRange().intersects(_range);
+            // }
+
+            function isReadOnlySection(states, cursor) {
+                console.log("States:", states);
+                console.log("cursor:", cursor);
+                // per aquest exemple la secció de només lectua és "internallink"
+                var readOnlyState = "internallink";
+
+                for (var i=0; i<states.length; i++) {
+                    if (states[i].name.startsWith(readOnlyState)) {
+                        if (states[i].start === states[i].end) { // és el mateix state per tota la línia
+                            console.log("State per tota la línia");
+                            return true;
+                        } else if (states[i].start<=cursor.column && states[i].end>=cursor.column ) { // El cursor es troba dins d'aquest state
+                            console.log("Cursor dintre de l'estate");
+                            return true;
+                        } else {
+                            console.log("No es troba dintre del range", cursor.column, states[i].start, states[i].end);
+                        }
+                    }
+                }
+
+                console.log("No es readonly");
+
+                return false;
+
             }
 
+
             function preventReadonly(next, args) {
-                if (intersects(readonlyRange)) return;
+                var cursor = editor.getCursorPosition();
+
+                var states = context.get_line_states_preview(cursor.row, true);
+
+                if (isReadOnlySection(states, cursor)) return;
                 next();
             }
 
