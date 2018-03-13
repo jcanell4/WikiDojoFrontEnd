@@ -69,13 +69,13 @@ define([
             }
 
             if (dataToSend.close === true) {
-                this.forceReset();  
+                var ret = {
+                        id: this.id,
+                        dataToSend: dataToSend
+                    };
                 this.forceClose = true;
-                this.container.closeChild(this);
-                return {
-                    id: this.id,
-                    dataToSend: dataToSend
-                };
+                this.removeContentTool();
+                return ret;
             }
 
             return {
