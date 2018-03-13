@@ -24,7 +24,7 @@ define([], function () {
             }
         },
 
-        renderGroup = function (group) {
+        renderGroup = function (group, fvalues) {
             var fields,
                 $group = '',
                 $header,
@@ -51,16 +51,15 @@ define([], function () {
 
                 for (var i = 0; i < fields.length; i++) {
                     switch (group.elements[i].formType) {
-                        case 'row':   $group.append(renderRow(fields[i])); break;
-                        case 'group': $group.append(renderGroup(fields[i])); break;
-                        case 'field': $group.append(renderField(fields[i])); break;
+                        case 'row':   $group.append(renderRow(fields[i], fvalues)); break;
+                        case 'group': $group.append(renderGroup(fields[i], fvalues)); break;
+                        case 'field': $group.append(renderField(fields[i], fvalues)); break;
                     }
                 }
 
                 if (group.id) {
                     $group.attr('id', group.id);
                 }
-
                 $group.addClass('form-group col-xs-' + cols); // input-group o form-group?
             }
 
@@ -68,26 +67,26 @@ define([], function () {
 
         },
 
-        renderField = function (field) {
+        renderField = function (field, fvalues) {
             var $field,
                 cols = field.columns || 12;
 
             switch (field.type) {
                 case 'textarea':
-                    $field = renderFieldTextarea(field);
+                    $field = renderFieldTextarea(field, fvalues);
                     break;
 
                 case 'select':
-                    $field = renderFieldSelect(field);
+                    $field = renderFieldSelect(field, fvalues);
                     break;
                     
                 case 'checkbox': // TODO[Xavi] No s'ajusta correctament l'amplada
                 case 'radio':
-                    $field = renderFieldCheckbox(field);
+                    $field = renderFieldCheckbox(field, fvalues);
                     break;
 
                 default:
-                    $field = renderFieldDefault(field);
+                    $field = renderFieldDefault(field, fvalues);
             }
 
             $field.addClass('col-xs-' + cols);
@@ -95,8 +94,7 @@ define([], function () {
             return $field;
         },
 
-
-        renderFieldDefault = function (field) {
+        renderFieldDefault = function (field, fvalues) {
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
                 $input = jQuery('<input>');
@@ -119,7 +117,8 @@ define([], function () {
 
             $input.attr('type', field.type)
                 .attr('name', field.name)
-                .val(field.value)
+                //.val(field.value)
+                .val(fvalues[field.name])
                 .addClass('form-control')
                 .attr('title', field.label);
 
@@ -134,7 +133,7 @@ define([], function () {
             return $field;
         },
 
-        renderFieldSelect = function (field) {
+        renderFieldSelect = function (field, fvalues) {
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
                 $select = jQuery('<select>');
@@ -146,7 +145,8 @@ define([], function () {
 
             $select.attr('type', field.type)
                 .attr('name', field.name)
-                .val(field.value)
+                //.val(field.value)
+                .val(fvalues[field.name])
                 .addClass('form-control');
 
             if (field.id) {
@@ -178,7 +178,7 @@ define([], function () {
             }
         },
 
-        renderFieldTextarea = function (field) {
+        renderFieldTextarea = function (field, fvalues) {
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
                 $textarea = jQuery('<textarea>');
@@ -189,7 +189,8 @@ define([], function () {
                 .append($textarea);
 
             $textarea.attr('name', field.name)
-                .val(field.value)
+                //.val(field.value)
+                .val(fvalues[field.name])
                 .addClass('form-control')
                 .attr('title', field.label);
 
@@ -205,7 +206,7 @@ define([], function () {
         },
 
 
-        renderFieldCheckbox = function (field) {
+        renderFieldCheckbox = function (field, fvalues) {
             var $field = jQuery('<div>'),
                 $group = jQuery('<div>'),
                 $span = jQuery('<span>'),
@@ -229,7 +230,8 @@ define([], function () {
 
             $input.attr('type', field.type)
                 .attr('name', field.name)
-                .val(field.value);
+                //.val(field.value);
+                .val(fvalues[field.name]);
 
             if (field.id) {
                 $input.attr('id', field.id);
@@ -249,7 +251,7 @@ define([], function () {
             }
         },
 
-        renderRow = function (row) {
+        renderRow = function (row, fvalues) {
             var $row = jQuery('<div>'),
                 $header,
                 $title;
@@ -275,9 +277,9 @@ define([], function () {
 
             for (var i = 0; i < row.elements.length; i++) {
                 switch (row.elements[i].formType) {
-                    case 'row':   $row.append(renderRow(row.elements[i])); break;
-                    case 'group': $row.append(renderGroup(row.elements[i])); break;
-                    case 'field': $row.append(renderField(row.elements[i])); break;
+                    case 'row':   $row.append(renderRow(row.elements[i], fvalues)); break;
+                    case 'group': $row.append(renderGroup(row.elements[i], fvalues)); break;
+                    case 'field': $row.append(renderField(row.elements[i], fvalues)); break;
                 }
             }
 
@@ -296,7 +298,6 @@ define([], function () {
             //    .val('Enviar')
             //    .attr('name', 'submit')
             //    .addClass('form-control btn btn-default');
-
             return $button;
         };
 
@@ -314,14 +315,12 @@ define([], function () {
 
         for (var i = 0; i < data.elements.length; i++) {
             switch (data.elements[i].formType) {
-                case 'row':   $form.append(renderRow(data.elements[i])); break;
-                case 'group': $form.append(renderGroup(data.elements[i])); break;
-                case 'field': $form.append(renderField(data.elements[i])); break;
+                case 'row':   $form.append(renderRow(data.elements[i], data.formValues)); break;
+                case 'group': $form.append(renderGroup(data.elements[i], data.formValues)); break;
+                case 'field': $form.append(renderField(data.elements[i], data.formValues)); break;
             }
         }
-
         //$form.append(renderSubmitButton());
-
         return $doc;
     };
 });

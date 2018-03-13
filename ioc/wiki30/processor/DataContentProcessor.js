@@ -40,22 +40,17 @@ define([
                 var ret;
                 if (value.recover_draft) {
                     var draftContent;
-                    if (value.recover_draft.recover_local === true) {
+                    if (value.recover_draft.recover_local_draft === true) {
                         console.log("** Recuperant draft local **");
                         draftContent = this._getLocalDraftContent(value, dispatcher);
-                    } else if (value.recover_draft.recover_draft === true && value.draft != null) {
+                    } else if (value.recover_draft.recover_draft === true && value.draft !== null) {
                         console.log("** Recuperant draft remot **");
-
                         draftContent = value.draft.content;
 
                     } else {
                         console.log("** Document original, no hi ha draft **");
                         // No s'ha demanat recuperar cap draft, o no s'ha enviat el draft per recuperar
                     }
-//
-//                    $form.find('textarea').html(draftContent);
-//                    value.content = jQuery('<div>').append($form.clone()).html();
-
 
                     value.originalContent = value.content;
                     value.content = draftContent;
