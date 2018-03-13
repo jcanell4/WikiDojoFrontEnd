@@ -54,6 +54,7 @@ define([
 
             this.addToolbars(args.dispatcher);
 
+            this.editor.testReadOnlyBlock();
         },
 
         initEventHandlers: function() {

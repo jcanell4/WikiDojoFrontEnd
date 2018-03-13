@@ -458,6 +458,10 @@ define([
                 this.editor = ace.edit(id);
                 this.session = this.editor.getSession();
 
+
+
+
+
             },
 
             init: function (args) {
@@ -537,6 +541,9 @@ define([
 
                 // console.log("IocAceEditor.originalContent", args.originalContent);
                 this.originalContent = args.originalContent;
+
+
+
 
             },
 
@@ -1507,6 +1514,69 @@ define([
             resetOriginalContentState: function () {
                 // console.log("IocAceEditor#resetOriginalContentState");
                 this.originalContent = this.getValue();
+            },
+
+
+ testReadOnlyBlock: function() {
+
+
+            // TEST[Xavi] Provas per afegir el marcador de només lectura.
+
+            var editor = this.editor;
+            var session = this.session;
+            var readonlyRange = new Range(0, 0, 1, 0);
+            var markerId = session.addMarker(readonlyRange, "readonly-highlight");
+
+            alert("stop");
+
+            console.log("Int range:", readonlyRange.start.row, readonlyRange.start.column, readonlyRange.end.row, readonlyRange.end.column);
+
+            editor.keyBinding.addKeyboardHandler({
+                handleKeyboard: function (data, hash, keyString, keyCode, event) {
+                    console.log("cridad el keyboardhandler", readonlyRange.start.row, readonlyRange.start.column, readonlyRange.end.row, readonlyRange.end.column);
+                    if (hash === -1 || (keyCode <= 40 && keyCode >= 37)) return false;
+
+                    if (intersects(readonlyRange)) {
+                        return {command: "null", passEvent: false};
+                    }
+                }
+            });
+
+            before(editor, 'onPaste', preventReadonly);
+            before(editor, 'onCut', preventReadonly);
+
+            readonlyRange.start = session.doc.createAnchor(readonlyRange.start);
+            readonlyRange.end = session.doc.createAnchor(readonlyRange.end);
+            readonlyRange.end.$insertRight = true;
+
+            console.log("Anchors range:", readonlyRange.start.row, readonlyRange.start.column, readonlyRange.end.row, readonlyRange.end.column);
+
+
+            function before(obj, method, wrapper) {
+                var orig = obj[method];
+                obj[method] = function () {
+                    var args = Array.prototype.slice.call(arguments);
+                    return wrapper.call(this, function () {
+                        return orig.apply(obj, args);
+                    }, args);
+                }
+
+                return obj[method];
             }
+
+            function intersects(_range) {
+                return editor.getSelectionRange().intersects(_range);
+            }
+
+            function preventReadonly(next, args) {
+                if (intersects(readonlyRange)) return;
+                next();
+            }
+
+
+            // FI TEST READONLY
+        }
+
         });
+
 });
