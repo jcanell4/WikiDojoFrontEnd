@@ -33,7 +33,6 @@ define([
                     for (i = _i = 0, _len = states.length; _i < _len; i = ++_i) {
 
                         state = states[i];
-                        console.log("state", state);
                         index = i;
                         if (pos.column <= state.end) {
                             break;

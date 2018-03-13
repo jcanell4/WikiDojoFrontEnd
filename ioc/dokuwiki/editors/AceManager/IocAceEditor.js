@@ -1524,8 +1524,8 @@ define([
 
             var editor = this.editor;
             var session = this.session;
-            var readonlyRange = new Range(0, 0, 1, 0);
-            var markerId = session.addMarker(readonlyRange, "readonly-highlight");
+            // var readonlyRange = new Range(0, 0, 1, 0);
+            // var markerId = session.addMarker(readonlyRange, "readonly-highlight");
 
             var context = this;
 
@@ -1563,11 +1563,11 @@ define([
             before(editor, 'onPaste', preventReadonly);
             before(editor, 'onCut', preventReadonly);
 
-            readonlyRange.start = session.doc.createAnchor(readonlyRange.start);
-            readonlyRange.end = session.doc.createAnchor(readonlyRange.end);
-            readonlyRange.end.$insertRight = true;
+            // readonlyRange.start = session.doc.createAnchor(readonlyRange.start);
+            // readonlyRange.end = session.doc.createAnchor(readonlyRange.end);
+            // readonlyRange.end.$insertRight = true;
 
-            console.log("Anchors range:", readonlyRange.start.row, readonlyRange.start.column, readonlyRange.end.row, readonlyRange.end.column);
+            // console.log("Anchors range:", readonlyRange.start.row, readonlyRange.start.column, readonlyRange.end.row, readonlyRange.end.column);
 
 
             function before(obj, method, wrapper) {
@@ -1588,17 +1588,19 @@ define([
 
             function isReadOnlySection(states, cursor) {
                 console.log("States:", states);
+                console.log("Llargaria linia:", session.getLine(cursor.row).length);
                 console.log("cursor:", cursor);
-                // per aquest exemple la secció de només lectua és "internallink"
-                var readOnlyState = "internallink";
+
+                // per aquest exemple la secció de només lectua és "readonly"
+                var readOnlyState = "readonly";
 
                 for (var i=0; i<states.length; i++) {
                     if (states[i].name.startsWith(readOnlyState)) {
-                        if (states[i].start === states[i].end) { // és el mateix state per tota la línia
-                            console.log("State per tota la línia");
+                        if (states[i].start === states[i].end &&  cursor.column>states[i].start) {
+                            console.log("L'estat s'obre però no es tanca en aquesta línia");
                             return true;
-                        } else if (states[i].start<=cursor.column && states[i].end>=cursor.column ) { // El cursor es troba dins d'aquest state
-                            console.log("Cursor dintre de l'estate");
+                        } else if (states[i].start<cursor.column && states[i].end>=cursor.column ) { // El cursor es troba dins d'aquest state
+                            console.log("Cursor dintre de l'state");
                             return true;
                         } else {
                             console.log("No es troba dintre del range", cursor.column, states[i].start, states[i].end);
@@ -1624,6 +1626,169 @@ define([
 
 
             // FI TEST READONLY
+
+
+            // TEST CLICK
+
+        // var Range = require("ace/range").Range, markerId
+
+        var previousMarker;
+
+        var handler = function(e){
+            var editor = e.editor;
+
+
+            var pos = editor.getCursorPosition();
+            // var token = editor.session.getTokenAt(pos.row, pos.column);
+            //if (/\readonly\b/.test(token.type))
+            //    console.log(token.value, 'is readonly')
+            //var cursor = editor.getCursorPosition();
+
+            var states = context.get_line_states_preview(pos.row, true);
+
+            editor.session.removeMarker(previousMarker);
+            
+            if (!isReadOnlySection(states, pos)) {
+
+                return;
+            }
+
+
+            // add highlight for the clicked token
+            // var range = new Range(pos.row, token.start,
+            //     pos.row, token.start + token.value.length);
+
+            // TODO: obtenir el rang real del contingut de l'etiqueta:
+            // Posició inicial: Cercar a les línies anteriors fins que:
+            //      - la línia no tingui l'estat "readonly"
+            //      - la línia tingui l'estat "readonly" amb un start diferent de 0.
+            // Posició final: Cercar a les línies següents fins que:
+            //      - No restin més línies
+            //      - La línia no tingui l'estat "readonly"
+            //      - La línia tingui un estat "readonly" amb un end diferent de 0.
+
+
+            var rowStart = pos.row;
+            var rowEnd = pos.row;
+            var colStart=pos.column;
+            var colEnd = pos.column;
+
+
+            // comprovació per les línies següents
+            for (var i=pos.row; i<session.getLength(); i++) {
+                parse = parseState("readonly", i, pos); // TODO[Xavi] això ha d'estar parametritzat
+
+                if (!parse) {
+                    break;
+                } else {
+                    rowEnd = i;
+                    if (i===pos.row) {
+                        colStart = parse.start;
+                    }
+
+                    if (parse.end === 0) {
+                        colEnd = session.getLine(i).length;
+                    } else if (parse.end !==session.getLine(i).length) {
+                        console.log("parse end i longitud de línia?", parse.end, session.getLine(i).length);
+                        colEnd = parse.end;
+                        break;
+                    } else {
+                        colEnd = parse.end;
+                    }
+                }
+            }
+
+
+            // comprovació per les línies anteriors
+            for (i=pos.row-1; i>0; i--) {
+                parse = parseState("readonly", i, pos, true);
+
+                if (!parse) {
+                    break;
+                } else {
+                    rowStart = i;
+                    colStart = parse.start;
+
+                    if (parse.start>0) {
+                        break;
+                    }
+                }
+            }
+
+            // la columna final serà la corresponent a la posició end si s'ha trobat o la última columna de la última linia amb l'state.
+
+
+            var range = new Range(rowStart, colStart,  rowEnd, colEnd);
+
+
+            console.log(range);
+
+            previousMarker = editor.session.addMarker(range, 'readonly-highlight');
+
+            //editor.selection.setRange(range);
+
+            // TODO[Xavi] aquí es cridaria al callback enviant el range i el contingut (per poder deslligar-lo del editor)
+            alert("Click a secció readonly, contingut:\n\n" + editor.session.getTextRange(range));
+        };
+
+        var parseState = function (state, row, cursor, backwards) {
+            var states = context.get_line_states_preview(row, true);
+
+
+            // si es backwards compta cap enderrera
+            var i, expr, inc;
+
+            // TODO[Xavi]si la posició del cursor es la mateixa fila s'ha de comprovar la posició per fer la cerca cap endavant o cap enrrere
+
+
+
+
+
+            if (backwards) {
+                i = states.length-1;
+                expr = function(a) {return a>=0};
+                inc = -1;
+            } else {
+                i= 0;
+                expr = function(a) {return a<states.length};
+                inc = 1;
+            }
+
+
+            for (; expr(i); i+=inc) {
+                console.log(i, "Comprovant state", states[i]);
+
+                if (states[i].name.startsWith(state)) {
+                    if (states[i].start === states[i].end &&  (row !== cursor.row || cursor.column>states[i].start)) {
+                        console.log(row, "L'estat s'obre però no es tanca en aquesta línia", states[i]);
+                        return {start: states[i].start, end: session.getLine(row).length}
+                    } else if (row === cursor.row && states[i].start<cursor.column && states[i].end>=cursor.column ) { // El cursor es troba dins d'aquest state
+                        console.log(row, "mateixa fila dins del rang", states[i]);
+                        return {start: states[i].start, end: states[i].end}
+                    } else if (row !== cursor.row) {
+                        console.log(row, "no es la mateixa fila", cursor.row);
+                        return {start: states[i].start, end: states[i].end}
+
+                    }
+                }
+            }
+
+            return null; // No s'ha trobat l'estat a aquesta línia
+
+        };
+
+
+
+
+
+
+        editor.on("click", handler)
+
+
+
+
+        // FI TEST CLICK
+
         }
 
         });

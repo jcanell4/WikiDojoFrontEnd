@@ -109,6 +109,11 @@ define([
                 ['inline', ["</quiz>", "keyword"]],
                 ['inline', ["!!!!", "keyword.operator"]],
 
+                // Test readonly
+                ['container', ["readonly", "<readonly>", "readonly"]],
+                ['rule', ["readonly-start", ".+?(?=</readonly>)/m", "keyword.invalid"]],
+                ['rule', ["readonly-start", "</readonly>", "readonly", "start"]],
+
             ],
 
             /**
