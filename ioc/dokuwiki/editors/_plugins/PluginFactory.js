@@ -20,6 +20,8 @@ define([
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceLatexPreview',
 
+    'ioc/dokuwiki/editors/AceManager/plugins/AceTestReadonlyPlugin', // Test readonly
+
     // Localització
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
 
@@ -27,7 +29,7 @@ define([
 
 ], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
-             AceEnableACE, AceEnableWrapper, AceLatexPreview) {
+             AceEnableACE, AceEnableWrapper, AceLatexPreview, AceTestReadonlyPlugin) {
 
     var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands");
 
@@ -43,6 +45,7 @@ define([
             'LatexPreview': AceLatexPreview,
             'CancelDialogEditorButton' : AceFireDojoEvent,
             'SaveDialogEditorButton' : AceFireDojoEvent,
+            'TestReadonlyPlugin': AceTestReadonlyPlugin
         },
 
         'Dojo': {

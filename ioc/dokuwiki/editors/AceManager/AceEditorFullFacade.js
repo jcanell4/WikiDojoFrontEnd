@@ -53,8 +53,6 @@ define([
             this.enable();
 
             this.addToolbars(args.dispatcher);
-
-            this.editor.testReadOnlyBlock();
         },
 
         initEventHandlers: function() {

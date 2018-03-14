@@ -110,9 +110,8 @@ define([
                 ['inline', ["!!!!", "keyword.operator"]],
 
                 // Test readonly
-                ['container', ["readonly", "<readonly>", "readonly"]],
-                ['rule', ["readonly-start", ".+?(?=</readonly>)/m", "keyword.invalid"]],
-                ['rule', ["readonly-start", "</readonly>", "readonly", "start"]],
+                ['container', ["readonly", "<readonly>", "keyword.operator.readonly"]],
+                ['rule', ["readonly-start", "</readonly>", "keyword.operator.readonly", "start"]],
 
             ],
 
