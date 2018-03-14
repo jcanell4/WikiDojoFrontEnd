@@ -1,8 +1,9 @@
 define([
     'dojo/_base/declare',
     'ioc/gui/CustomDialog',
-    'ioc/gui/jsdifflib/jsdifflib-amd'
-], function (declare, CustomDialog, jsdifflib) {
+    'ioc/gui/jsdifflib/jsdifflib-amd',
+    'ioc/functions/jsProjectDiff'
+], function (declare, CustomDialog, jsdifflib, jsProjectDiff) {
 
     var DialogBuilderException = function (message) {
         this.message = message;
@@ -47,20 +48,30 @@ define([
 
 
         addCancelDialogButton: function (description) {
-            return this.addButton(this.buttonType.CANCEL, description)
+            return this.addButton(this.buttonType.CANCEL, description);
         },
 
         addDiff: function (text1, text2, text1Label, text2Label) {
-//            console.log('DialogBuilder#addDiff');
-
             var node = document.createElement('div'),
                 diffNode = jsdifflib.getDiff(text1, text2, text1Label, text2Label);
 
             node.className = 'diff-dialog-diff';
             node.appendChild(diffNode);
 
-
             this.setWidth(700);
+            this._addSection(node);
+
+            return this;
+        },
+
+        addProjectDiff: function (form1, form2, label1, label2) {
+            var node = document.createElement('div');
+            var diffNode = jsProjectDiff.getDiff(form1, form2, label1, label2);
+
+            node.className = 'diff-dialog-diff';
+            node.innerHTML = diffNode;
+
+            this.setWidth(800);
             this._addSection(node);
 
             return this;

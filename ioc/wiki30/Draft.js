@@ -138,9 +138,7 @@ define([
         },
 
         _formatProjectPage: function (page, draft, date) {
-            draft.date = date;
-            page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
-            return page;
+            return this._formatLocalFullPage(page, draft, date);
         },
 
         _doSaveRemoteServer: function () {
@@ -246,14 +244,7 @@ define([
         },
 
         _removeLocalProjectDraft: function () {
-            var pages = this._doGetPages();
-
-            if (pages[this.contentTool.ns]) {
-                pages[this.contentTool.ns].drafts = {};
-            } else {
-                pages[this.contentTool.ns] = {drafts: {}};
-            }
-            this._doSetPages(pages);
+            this._removeLocalFullDraft();
         },
 
         _doGetPages: function () {
