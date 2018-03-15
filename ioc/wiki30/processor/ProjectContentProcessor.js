@@ -45,12 +45,15 @@ define([
          */
         _showDiffDialog: function (value, draft, args) {
 
-            var context = this;
+            //var contentTool = this.draftManager.drafts[value.ns].contentTool;
             var data = {
                 document: this._getDocument(value),
                 draft: this._getDraft(draft)
             };
-
+            var dataDocum = this._convertUnixDate(data.document.date);
+            var dataDraft = this._convertUnixDate(data.draft.date);
+            
+            var context = this;
             var dialogParams = {
                 id: "project_diff",
                 ns: value.ns,
@@ -64,7 +67,7 @@ define([
                         description: "Editar el formulari original del projecte",
                         buttonType: 'default',
                         callback: function(){
-                            context.inherited("process", args);
+                            context.contentTool.updateDocument(args[0]);
                         }
                     },
                     {
@@ -73,15 +76,15 @@ define([
                         buttonType: 'default',
                         callback: function(){
                             args[0].content.formValues = JSON.parse(draft.content);
-                            context.inherited("process", args);
+                            context.contentTool.updateDocument(args[0]);
                         }
                     }
                 ],
                 diff: {
                     formDocum: data.document.content,
                     formDraft: data.draft.content,
-                    labelDocum: "Document (" + data.document.date + ")",
-                    labelDraft: "Esborrany (" + data.draft.date + ")"
+                    labelDocum: "Formulari original (" + dataDocum + ")",
+                    labelDraft: "Esborrany (" + dataDraft + ")"
                 }
             };
 
@@ -95,6 +98,19 @@ define([
 
         _getDraft: function (draft) {
             return {content: draft.content, date: draft.date};
+        },
+        
+        _convertUnixDate: function (fecha) {
+            var p = 13 - fecha.toString().length; //He detectado fechas con menos dígitos de lo normal
+            if (p > 0) {
+                var mul = 1;
+                for (var i=0; i<p; i++) {
+                    mul *= 10;
+                }
+                fecha *= mul;
+            }
+            var d = new Date(fecha);
+            return d.getDate() + "-" + (d.getMonth()+1) + "-" + d.getFullYear();
         },
         
         createContentTool: function (content, dispatcher) {
@@ -113,7 +129,8 @@ define([
                     messageChangesDetected: content.extra.messageChangesDetected,
                     renderEngines: ['test', 'zoomable_form_element']
                 };
-            return contentToolFactory.generate(contentToolFactory.generation.PROJECT, args);
+            this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT, args);    
+            return this.contentTool;
         }
 
     });
