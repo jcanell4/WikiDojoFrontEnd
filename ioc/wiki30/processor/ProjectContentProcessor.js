@@ -78,14 +78,14 @@ define([
                     }
                 ],
                 diff: {
-                    text1: data.document.content,
-                    text2: data.draft.content,
-                    text1Label: "Document (" + data.document.date + ")",
-                    text2Label: "Esborrany (" + data.draft.date + ")"
+                    formDocum: data.document.content,
+                    formDraft: data.draft.content,
+                    labelDocum: "Document (" + data.document.date + ")",
+                    labelDraft: "Esborrany (" + data.draft.date + ")"
                 }
             };
 
-            var dialog = this.dialogManager.getDialog(this.dialogManager.type.DIFF, value.id, dialogParams);
+            var dialog = this.dialogManager.getDialog(this.dialogManager.type.PROJECT_DIFF, value.id, dialogParams);
             dialog.show();
         },
         
