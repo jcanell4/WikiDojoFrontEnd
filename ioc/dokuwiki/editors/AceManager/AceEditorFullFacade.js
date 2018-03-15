@@ -53,7 +53,6 @@ define([
             this.enable();
 
             this.addToolbars(args.dispatcher);
-
         },
 
         initEventHandlers: function() {

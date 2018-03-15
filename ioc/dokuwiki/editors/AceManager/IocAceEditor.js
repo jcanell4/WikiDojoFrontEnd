@@ -6,8 +6,9 @@ define([
     // 'ioc/dokuwiki/editors/AceManager/plugins/LatexPreviewPlugin',
     'dojo/_base/declare',
     'dojo/_base/lang',
-    'ioc/dokuwiki/editors/AceManager/state_handler'
-], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, /*LatexPreviewPlugin,*/ declare, lang, state_handler) {
+    'ioc/dokuwiki/editors/AceManager/state_handler',
+    'ioc/dokuwiki/editors/AceManager/AceEditorReadonlyBlocksManager'
+], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, /*LatexPreviewPlugin,*/ declare, lang, state_handler, AceEditorReadonlyBlocksManager) {
 
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
@@ -208,7 +209,6 @@ define([
                 console.log("hi ha toolbar id?", args.TOOLBAR_ID, this.TOOLBAR_ID);
 
                 this.init(args);
-
 
 
             },
@@ -458,13 +458,14 @@ define([
                 this.editor = ace.edit(id);
                 this.session = this.editor.getSession();
 
+
             },
 
             init: function (args) {
                 this.currentEditor = this.EDITOR.ACE;
                 this.dispatcher = args.dispatcher;
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
-
+                this.readOnlyBlocksManager = new AceEditorReadonlyBlocksManager(this);
 
                 this.initContainer(args.containerId, args.textareaId);
                 this.initDwEditor(this.$textarea);
@@ -494,8 +495,6 @@ define([
 
                 var plugins;
 
-                console.log("Arriban els plugins?", args.plugins);
-
 
                 if (args.plugins) {
                     plugins = this.getPlugins(args.plugins);
@@ -507,13 +506,18 @@ define([
                         'DocumentPreviewButton',
                         'EnableACE',
                         'EnableWrapper',
-                        'LatexPreview'
+                        'LatexPreview',
+                        'TestReadonlyPlugin'
                     ]);
                 }
 
                 console.log("Plugins obtinguts:", plugins);
 
                 this.initPlugins(plugins);
+
+
+                // ALERTA[Xavi] això s'ha de cridar desprès d'inicialitzar els plugins, ja que aquests poden afegir nous estas de només lectura
+                this.readOnlyBlocksManager.enableReadonlyBlocks();
 
 
                 this.on('change', function () {
@@ -1495,7 +1499,7 @@ define([
                 return this.$elementContainer.css('height', this.$wrapper.height() + 'px');
             },
 
-            isChanged: function() {
+            isChanged: function () {
                 //console.log("IocAceEditor#isChanged", this.getValue().length, this.originalContent.length);
 
                 // console.log("|" + this.getValue() + "|");
@@ -1507,6 +1511,14 @@ define([
             resetOriginalContentState: function () {
                 // console.log("IocAceEditor#resetOriginalContentState");
                 this.originalContent = this.getValue();
+            },
+
+
+            addReadonlyBlock: function(state, callback) {
+                this.readOnlyBlocksManager.addReadonlyBlock(state, callback);
             }
+
         });
+
+
 });
