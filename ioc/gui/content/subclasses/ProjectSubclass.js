@@ -73,8 +73,10 @@ define([
                         id: this.id,
                         dataToSend: dataToSend
                     };
+                this.forceReset();      
                 this.forceClose = true;
-                this.removeContentTool();
+                //this.removeContentTool();
+                this.container.closeChild(this);
                 return ret;
             }
 
@@ -169,9 +171,10 @@ define([
         
         onClose: function() {
             var ret = this.inherited(arguments);
+            var hasChanges = this.isContentChanged();
             if (ret===undefined) ret = true;
 
-            if (ret && !this.forceClose) {
+            if (ret && hasChanges && !this.forceClose) {
                 var eventManager = this.dispatcher.getEventManager();
                 eventManager.fireEvent(eventManager.eventName.CANCEL_PROJECT, {
                     id: this.id,
@@ -186,7 +189,7 @@ define([
 
                 ret = false; //Si es dispara l'event no es tanca la pestanya
             }
-            ret = ret && !this.isContentChanged();
+            ret = ret && !hasChanges;
             return ret || this.forceClose;
         },
         
