@@ -45,14 +45,15 @@ define([
          */
         _showDiffDialog: function (value, draft, args) {
 
-            var contentTool = this.draftManager.drafts[value.ns].contentTool;
+            //var contentTool = this.draftManager.drafts[value.ns].contentTool;
             var data = {
                 document: this._getDocument(value),
                 draft: this._getDraft(draft)
             };
             var dataDocum = this._convertUnixDate(data.document.date);
             var dataDraft = this._convertUnixDate(data.draft.date);
-
+            
+            var context = this;
             var dialogParams = {
                 id: "project_diff",
                 ns: value.ns,
@@ -66,7 +67,7 @@ define([
                         description: "Editar el formulari original del projecte",
                         buttonType: 'default',
                         callback: function(){
-                            contentTool.updateDocument(args[0]);
+                            context.contentTool.updateDocument(args[0]);
                         }
                     },
                     {
@@ -75,7 +76,7 @@ define([
                         buttonType: 'default',
                         callback: function(){
                             args[0].content.formValues = JSON.parse(draft.content);
-                            contentTool.updateDocument(args[0]);
+                            context.contentTool.updateDocument(args[0]);
                         }
                     }
                 ],
@@ -127,7 +128,8 @@ define([
                     cancelDialogConfig: content.extra.dialogSaveOrDiscard,
                     messageChangesDetected: content.extra.messageChangesDetected
                 };
-            return contentToolFactory.generate(contentToolFactory.generation.PROJECT, args);
+            this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT, args);    
+            return this.contentTool;
         }
 
     });
