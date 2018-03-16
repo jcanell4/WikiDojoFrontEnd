@@ -26,20 +26,19 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                // console.log("HtmlPartialContentProcessor#process", value);
-
 
                 var changesManager = dispatcher.getChangesManager(),
                     cache = dispatcher.getContentCache(value.id),
                     confirmation = false,
                     clearDraft = 0,             //0 = no eliminar, 1 = eliminar parcial, 2 = eliminar tot
-                    contentTool, ret;
+                    contentTool, draft, ret;
 
+                draft = dispatcher.getDraftManager().getContentLocalDraft(value.ns);
+                if (JSON.stringify(draft) !== "{}") { //jQuery.isEmptyObject(draft)
+                    dispatcher.getInfoManager().setExtraInfo({priority:0, message:LANG.template['ioc-template'].has_draft});
+                }
                 if (cache) {
                     contentTool = cache.getMainContentTool();
-
-//                    console.log("S'ha trobat el cache:", cache);
-//                    console.log("Això és una revisió?", value.rev);
                 }
 
                 // TODO[Xavi] Refactoritzar, massa condicionals
@@ -52,13 +51,9 @@ define([
 
                     // TODO[Xavi] Quan s'ha guardat el isChanged retorna false, s'ha de forçar una comprovació de canvis, però aquest mètode hauria de ser privat
                     contentTool._checkChanges();
-                    //console.log("is changed?", changesManager.isChanged(value.id) );
-
-                    
-                    //console.log("Ja hi ha un contenttol del mateix tipus");
                     
                     //S'ha cancel·lat
-                    if(value.cancel){
+                    if (value.cancel){
 
                         if (value['discard_changes_partial']) {
                             confirmation = true;
@@ -70,62 +65,20 @@ define([
                             confirmation = true;
                         }
                         clearDraft=1;
-                    }else if(!value.selected && !value.cancel){
+                    }
+                    else if(!value.selected && !value.cancel){
                         if (changesManager.isChanged(value.id)){
                             confirmation = dispatcher.discardChanges();
                         } else {
                             confirmation = true;
                         }
                         clearDraft=2;
-                    }else{
+                    }
+                    else{
                         confirmation = true;
                     }
 
-//                    if (changesManager.isChanged(value.id) && value.cancel) {
-//                        if (contentTool.isAnyChunkChanged(value.cancel)) {
-//                            confirmation = dispatcher.discardChanges();
-//                        } else {
-//                            confirmation = true;
-//                        }
-//
-//                        if (confirmation) {
-//                            dispatcher.getDraftManager().clearDraftChunks(value.id, value.cancel);
-//                            //console.log("Eliminats chunks dels esborranys locals:", value.cancel);
-//                            // TODO[Xavi] S'hauria d'afegir un command per eliminar també els esborranys remots
-//                            //dispatcher.getEventManager().dispatchEvent(
-//                            //    dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
-//                            //        id: value.id,
-//                            //        dataToSend: {
-//                            //            id: value.ns,
-//                            //            type:'structured'
-//                            //        },
-//                            //        standbyId: dispatcher.containerNodeId
-//                            //    }
-//                            //);
-//                            dispatcher.getEventManager().fireEvent(
-//                                dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
-//                                    id: value.id,
-//                                    dataToSend: {
-//                                        id: value.ns,
-//                                        type:'structured',
-//                                        section_id:value.cancel
-//                                    },
-//                                    standbyId: dispatcher.containerNodeId
-//                                },
-//                                value.id
-//                            );
-//
-//                        }
-//
-//                    } else if (changesManager.isChanged(value.id) && !value.selected && !value.cancel) {
-//                        confirmation = dispatcher.discardChanges();
-//
-//                    } else {
-//                        confirmation = true;
-//                    }
-
                     contentTool.rev = value.rev;
-
 
                     if (confirmation) {
                         if(clearDraft===1){
@@ -147,7 +100,6 @@ define([
                         //HardCODED RAFA
                         value.editing = {readonly:value.readonly};  //HardCODED RAFA
 
-
                         // Alerta[Xavi] la informació del dialog només s'ha d'afegir quan s'edita el primer chunk
                         if (!contentTool.cancelDialogConfig && value.extra) {
                             contentTool.cancelDialogConfig = value.extra.dialogSaveOrDiscard;
@@ -165,7 +117,6 @@ define([
                     }
                 } else {
                     // No hi ha tipus previ de contenttool, o el tipus del contenttol era diferent
-                    
                     if(contentTool && contentTool.type == "requiring_partial"){
                         //Cal aturar la cancelació automàtica en tancar el contentTool!
                         contentTool.stopTimer();
@@ -175,7 +126,6 @@ define([
                     if (value.timer) {
                         this._initTimer(value, dispatcher);
                     }
-                    
                     return ret;
                 }
 
@@ -184,7 +134,6 @@ define([
                 if (contentCache && contentCache.rev !== value.rev) {
                     dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
                 }
-
 
                 if (value.timer) {
                     this._initTimer(value, dispatcher);
@@ -257,8 +206,6 @@ define([
              * @override
              */
             createContentTool: function (content, dispatcher) {
-//                console.log("Content:", content);
-
                 var args = {
                     ns: content.ns,
                     id: content.id,
@@ -281,31 +228,8 @@ define([
                     args.editorType = dispatcher.getGlobalState().userState['editor'];
                 }
 
-
-                
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
             },
-
-            ///**
-            // * Crea el llistat pel control de canvis per chunks.
-            // * @param chunks
-            // * @returns {{}}
-            // * @private
-            // */
-            //_generateEmptyChangedChunks: function (chunks) {
-            //    var chunk,
-            //        changedChunks = {};
-            //
-            //    for (var i = 0; i < chunks.length; i++) {
-            //        chunk = chunks[i];
-            //        changedChunks[chunk.header_id] = {};
-            //        changedChunks[chunk.header_id].changed = false;
-            //        changedChunks[chunk.header_id].content = chunk.editing;
-            //
-            //    }
-            //
-            //    return changedChunks;
-            //}
 
             // ALERTA[Xavi] Adaptat del DataContentProcessor
             _initTimer: function(params, dispatcher){
@@ -316,7 +240,6 @@ define([
                 paramsOnExpire.timeout = params.timer.timeout;
                 contentTool.initTimer({
                     onExpire: function(ptimer){
-
                         // ALERTA[Xavi] Si no existeix el ptimer retornem sense fer res, sembla que no es cancel·la el timer si es torna manualment
                         if (!ptimer) {
                             return;
@@ -351,16 +274,10 @@ define([
                     },
                     paramsOnExpire: paramsOnExpire
                 });
+                
                 contentTool.startTimer(params.timer.timeout);
-//                //SI hi ha cancel·lació parcial => finalitza el timer
-//                contentTool.registerObserverToEvent(contentTool, contentTool.eventName.CANCEL_PARTIAL, function(event){
-//                    this.stopTimer();
-//                }.bind(contentTool));
-            },
+            }
 
-
-
-        })
-
+        });
 
 });
