@@ -14,12 +14,13 @@ define([
     "ioc/gui/content/engines/requiring_partialRenderEngine",
     "ioc/gui/content/engines/notificationRenderEngine",
     "ioc/gui/content/engines/formRenderEngine",
+    "ioc/gui/content/engines/viewFormRenderEngine",
     "ioc/gui/content/engines/htmlRenderEngine",
-    "ioc/gui/content/engines/request_formRenderEngine",
+    "ioc/gui/content/engines/request_formRenderEngine"
 ], function (standardRenderEngine, revisionRenderEngine, html_partialRenderEngine, 
                 dataRenderEngine, requiringRenderEngine, requiring_partialRenderEngine, 
-                notificationRenderEngine, formRenderEngine, htmlRenderEngine,
-                request_formRenderEngine) {
+                notificationRenderEngine, formRenderEngine, viewFormRenderEngine,
+                htmlRenderEngine, request_formRenderEngine) {
 
     var /** @type function */
         defaultRenderEngine = null,
@@ -67,6 +68,7 @@ define([
             _addRenderEngine('requiring', requiringRenderEngine);
             _addRenderEngine('requiring_partial', requiring_partialRenderEngine);
             _addRenderEngine('form', formRenderEngine);
+            _addRenderEngine('view_form', viewFormRenderEngine);
             _addRenderEngine('metainfo', htmlRenderEngine);
             _addRenderEngine('request_form', request_formRenderEngine);
             defaultRenderEngine = _getRenderEngine('standard');
