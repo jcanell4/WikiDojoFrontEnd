@@ -23,8 +23,8 @@ define([
             // this.addButton(config);
 
             this.previousMarker = null;
-            //this.editor.addReadonlyBlock('readonly', this.readonlyCallback.bind(this));
-            this.editor.addReadonlyBlock('readonly');
+            this.editor.addReadonlyBlock('readonly', this.readonlyCallback.bind(this));
+            //this.editor.addReadonlyBlock('readonly');
         },
 
         readonlyCallback: function(range, blockContent) {
