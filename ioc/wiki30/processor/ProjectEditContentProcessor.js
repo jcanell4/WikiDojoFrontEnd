@@ -45,7 +45,6 @@ define([
          */
         _showDiffDialog: function (value, draft, args) {
 
-            //var contentTool = this.draftManager.drafts[value.ns].contentTool;
             var data = {
                 document: this._getDocument(value),
                 draft: this._getDraft(draft)
@@ -128,7 +127,7 @@ define([
                     cancelDialogConfig: content.extra.dialogSaveOrDiscard,
                     messageChangesDetected: content.extra.messageChangesDetected
                 };
-            this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT, args);    
+            this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_EDIT, args);    
             return this.contentTool;
         }
 
