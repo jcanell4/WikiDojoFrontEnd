@@ -34,7 +34,7 @@ define([
         "ioc/gui/content/subclasses/ProjectSubclass",
         "ioc/gui/content/subclasses/AjaxFormSubclass",
         "ioc/gui/content/subclasses/AjaxLinkSubclass",
-        "ioc/gui/content/subclasses/DokuwikiNSTreeSubclass",
+        "ioc/gui/content/subclasses/DokuwikiNSTreeSubclass"
     ], function (lang, ContentTool, requestReplacerFactory, dojoQuery, on, dom,
                  MetaInfoSubclass, DocumentSubclass, EditorSubclass, BasicEditorSubclass,
                  MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass,
@@ -47,7 +47,7 @@ define([
                 return function () {
                     source.apply(this, arguments);
                     return target.apply(this, arguments);
-                }
+                };
             },
 
             mix = function (target, source) {
@@ -186,7 +186,7 @@ define([
 
                     }
 
-                }
+                };
             };
 
 
@@ -291,7 +291,8 @@ define([
                 DOCUMENT: 'document',
                 EDITOR: 'editor',
                 FORM: 'form',
-                PROJECT: 'project',
+                PROJECT_EDIT: 'project_edit',
+                PROJECT_VIEW: 'project_view',
                 REQUIRING: 'requiring',
                 MEDIADETAILS: 'mediadetails',
                 METAMEDIADETAILS: 'metamediadetails',
@@ -436,11 +437,14 @@ define([
                             .createSubclass(FormSubclass);
                         break;
 
-                    case this.generation.PROJECT:
+                    case this.generation.PROJECT_EDIT:
                         GeneratedContentTool = base
-                            .createSubclass(RequestSubclass)
-                            .createSubclass(DocumentSubclass)
                             .createSubclass(ProjectSubclass);
+                        break;
+
+                    case this.generation.PROJECT_VIEW:
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass);
                         break;
 
                     case this.generation.REQUIRING:
@@ -531,6 +535,6 @@ define([
                 //    //}
                 //}
             }
-        }
+        };
     }
 );
