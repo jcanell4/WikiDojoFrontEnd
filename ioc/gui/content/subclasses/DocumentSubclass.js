@@ -2,14 +2,12 @@ define([
     "dojo/_base/declare",
     "ioc/wiki30/DokuwikiContent",
     "ioc/gui/content/subclasses/LocktimedDocumentSubclass",
-    "dijit/registry",
-
-], function (declare, DokuwikiContent, LocktimedDocumentSubclass,registry) {
+    "dijit/registry"
+], function (declare, DokuwikiContent, LocktimedDocumentSubclass, registry) {
 
     return declare([LocktimedDocumentSubclass],
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
-         *
          *
          * @class DocumentSubclass
          * @author Xavier García <xaviergaro.dev@gmail.com>
@@ -22,6 +20,7 @@ define([
                 // TODO[Xavi] Això no funciona, el content no te dades si no html
                 this.inherited(arguments);
                 this.updateTitle(this);
+                this.dispatcher.updateFromState();
             },
 
             /**
