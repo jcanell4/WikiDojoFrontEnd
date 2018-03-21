@@ -16,6 +16,13 @@ define([
 
         process: function (value, dispatcher) {
             var args = arguments;
+            
+            //Si hay draft añadimos un mensaje
+            var draft = dispatcher.getDraftManager().getContentLocalDraft(value.ns);
+            if (!jQuery.isEmptyObject(draft)) {
+                dispatcher.getInfoManager().setExtraInfo({priority:0, message:LANG.template['ioc-template'].has_draft});
+            }
+            
             //Se añade un array (key:value) con los datos originales del formulario
             args[0].content.formValues = args[0].originalContent;
             
@@ -23,7 +30,7 @@ define([
             //que creará el contentTool y la pestaña y mostrará el pseudoformulario con los datos originales 
             return this.inherited(args);
         },
-        
+
         createContentTool: function (content, dispatcher) {
             var args = {
                     ns: content.ns,
@@ -37,7 +44,7 @@ define([
                     type: this.type,
                     autosaveTimer: content.autosaveTimer
                 };
-            this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT, args);    
+            this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_VIEW, args);    
             return this.contentTool;
         }
 
