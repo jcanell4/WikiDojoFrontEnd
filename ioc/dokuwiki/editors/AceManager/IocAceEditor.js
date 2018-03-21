@@ -27,7 +27,7 @@ define([
              * @param {string} id - id corresponent a la pestanya que s'està editant
              * @returns {function|null} - La referéncia a la funció parxejada
              */
-            patch = function (name, func, id) {
+            patch = function (name, func, id, editor) {
 
                 if (!id) {
                     throw new Error("No s'ha especificat la id per afegir al cache");
@@ -177,6 +177,13 @@ define([
             contentFormat: 'ACE',
 
             /**
+             * Aquests plugins es carregaran per tots els editors
+             */
+            defaultPlugins: [
+                'ReadonlyBlocksToggle'
+            ],
+
+            /**
              * Inicialitza l'editor.
              *
              * @param args - un objecte amb la configuració personalitzada per l'editor. Es farà servir la configuració
@@ -270,6 +277,12 @@ define([
 
                         _switchContext(selection.obj.id);
                         if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
+
+                            // ALERTA[Xavi] això no es pot aplicar al textarea perquè la posició del cursor al textarea no està sincornitzada amb l'editor, només s'actualitza quan es fa el canvi de mode ACE/textarea
+                            if (context.readOnlyBlocksManager.isReadonlySection()) {
+                                console.warn("Secció de només lectura!");
+                                return;
+                            }
 
                             context.replace(selection.start, selection.end, text);
                             context.setEditorSelection(selection.start, selection.end);
@@ -494,27 +507,30 @@ define([
 
 
                 var plugins;
+                var pluginNames = this.defaultPlugins;
 
 
                 if (args.plugins) {
-                    plugins = this.getPlugins(args.plugins);
+                    pluginNames = pluginNames.concat(args.plugins);
+                    plugins = this.getPlugins(pluginNames);
+
                 } else {
-                    plugins = this.getPlugins([
-                        'IocSoundFormatButton',
-                        'CancelButton',
-                        'SaveButton',
-                        'DocumentPreviewButton',
-                        'EnableACE',
-                        'EnableWrapper',
-                        'LatexPreview',
-                        'TestReadonlyPlugin'
-                    ]);
+                    pluginNames = pluginNames.concat(
+                        [
+                            'IocSoundFormatButton',
+                            'CancelButton',
+                            'SaveButton',
+                            'DocumentPreviewButton',
+                            'EnableACE',
+                            'EnableWrapper',
+                            'LatexPreview',
+                            'TestReadonlyPlugin',
+                        ]
+                    );
+                    plugins = this.getPlugins(pluginNames)
                 }
 
-                console.log("Plugins obtinguts:", plugins);
-
                 this.initPlugins(plugins);
-
 
                 // ALERTA[Xavi] això s'ha de cridar desprès d'inicialitzar els plugins, ja que aquests poden afegir nous estas de només lectura
                 this.readOnlyBlocksManager.enableReadonlyBlocks();

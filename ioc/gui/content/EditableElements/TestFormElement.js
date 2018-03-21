@@ -41,7 +41,7 @@ define([
                     this.hide();
 
 
-                this.$node.on('click', this.show.bind(this));
+                this.$node.on('dblclick', this.show.bind(this));
 
 
             },
@@ -125,7 +125,7 @@ define([
                         originalContent: this.$node.text(),
                         TOOLBAR_ID: toolbarId,
                         ignorePatching: true,
-                        plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton'] // Plugins que ha de contenir la toolbar
+                        plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar
                     });
 
 
