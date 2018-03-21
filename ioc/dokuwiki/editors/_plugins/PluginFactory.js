@@ -32,7 +32,7 @@ define([
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin) {
 
-    var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands");
+    var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands") || {};
 
     var plugins = {
         'ACE': {

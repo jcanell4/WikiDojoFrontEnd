@@ -32,6 +32,69 @@ define([
             });
         }
 
+
+        // ALERTA[Xavi] Test per les taules, afegim una taula al final del contingut
+
+        var tableHTML ="<table data-editable-element=\"table\">" +
+            "<tr>" +
+            "<th readonly>Key</th>"+
+            "<th>Value1</th>"+
+            "<th>Value2</th>"+
+            "</tr>"+
+            "<tr>" +
+            "<th>Primera clau</th>"+
+            "<td>AAA</td>"+
+            "<td>42.3</td>"+
+            "</tr>"+
+            "<tr>" +
+            "<th>Segona clau</th>"+
+            "<td>BBB</td>"+
+            "<td>19.8</td>"+
+            "</tr>"+
+            "<tr>" +
+            "<th>Tercera clau</th>"+
+            "<td>CCC</td>"+
+            "<td>3.1416</td>"+
+            "</tr>"+
+            "<tr>" +
+            "<th>Tercera clau</th>"+
+            "<td>CCC</td>"+
+            "<td>3.1416</td>"+
+            "</tr>"+
+            "<tr>" +
+            "<th>Tercera clau</th>"+
+            "<td>CCC</td>"+
+            "<td>3.1416</td>"+
+            "</tr>"+
+            "<tr>" +
+            "<th>Tercera clau</th>"+
+            "<td>CCC</td>"+
+            "<td>3.1416</td>"+
+            "</tr>"+
+            "<tr>" +
+            "<th>Tercera clau</th>"+
+            "<td>CCC</td>"+
+            "<td>3.1416</td>"+
+            "</tr>"+
+            "</table>";
+
+        $content.append(tableHTML);
+
+
+
+
+        // ALERTA[Xavi] indicant el tipus com a valor de la propietat es pot fer servir el mateix bucle per a totes
+        $nodes = $content.find('[data-editable-element]');
+
+        for (var i = 0; i < $nodes.length; i++) {
+            var type = jQuery($nodes[i]).attr('data-editable-element');
+            editableElementsFactory.createElement(type, {
+                context: context,
+                node: $nodes[i]
+            });
+        }
+
+
         return $content;
     }
 });

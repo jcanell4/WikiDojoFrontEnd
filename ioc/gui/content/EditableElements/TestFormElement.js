@@ -7,63 +7,6 @@ define([
 
     return declare([AbstractEditableElement],
         {
-            constructor: function(args) {
-
-                this.init(args);
-
-
-            },
-
-            init: function (args) {
-                this.context = args.context;
-                this.$node = jQuery(args.node);
-                this.args = args;
-
-
-
-
-                this._replaceNodeContent(args);
-
-
-            },
-
-            _replaceNodeContent: function(args) {
-                    this.$container = jQuery('<div>');
-
-                    this.$node.before(this.$container);
-                    this.$container.append(this.$node);
-
-
-                    // Alerta[Xavi] Aquesta es l'ancla on s'ha de ficar el widget que correspongui
-
-                    this.$editableNode = jQuery('<div></div>');
-                    this.$container.append(this.$editableNode);
-                    this.hide();
-
-
-                this.$node.on('dblclick', this.show.bind(this));
-
-
-            },
-
-            hide: function() {
-
-                console.log("TestFormElement#hide");
-                this.setEditionState(false);
-                this.$node.css('display', 'block');
-                this.$editableNode.css('display', 'none');
-            },
-
-            show: function() {
-                if (!this.widgetInitialized) {
-                    this.createWidget()
-                }
-
-                console.log("TestFormElement#show");
-                this.setEditionState(true);
-                this.$node.css('display', 'none');
-                this.$editableNode.css('display', 'block');
-            },
 
             createWidget: function() {
                     // TODO:Xavi, exposar com id de l'element directament
