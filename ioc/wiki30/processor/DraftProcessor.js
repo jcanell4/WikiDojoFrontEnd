@@ -1,6 +1,6 @@
 define([
     'dojo/_base/declare',
-    'ioc/wiki30/processor/AbstractResponseProcessor',
+    'ioc/wiki30/processor/AbstractResponseProcessor'
 ], function (declare, AbstractResponseProcessor) {
     return declare([AbstractResponseProcessor],
         // TODO[Xavi] Refactoritzar això i fer servir el mateix sistema pels DraftSelection i el draftProcessor <-- Fer servir el DraftProcessor DRAFT CONFLICT PROCESSOR com a base, perquè s'ha de fer servir el dispatcher
@@ -66,42 +66,42 @@ define([
                 }
 
 
-                    dialogParams = {
-                        id: 'diff',
-                        ns: value.ns,
-                        title: 'S\'ha trobat un esborrany',
-                        message: 'S\'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o el esborrany trobat?',
-                        timeout: value.timeout * 1000,
-                        buttons: [
-                            {
-                                id: 'open_document',
-                                description: 'Obrir el document',
-                                buttonType: 'request_control',
-                                extra: {
-                                    ns: value.ns,
-                                    eventType: this._getActionType(),
-                                    dataToSend: this._getDocumentQuery(),
-                                }
-
-                            },
-                            {
-                                id: 'open_draft',
-                                description: "Obrir l'esborrany",
-                                buttonType: 'request_control',
-                                extra: {
-                                    ns: value.ns,
-                                    eventType: this._getActionType(),
-                                    dataToSend: this._getDraftQuery()
-                                }
+                dialogParams = {
+                    id: 'diff',
+                    ns: value.ns,
+                    title: 'S\'ha trobat un esborrany',
+                    message: 'S\'ha trobat un esborrany per aquest document. Vols obrir la versió actual del document o el esborrany trobat?',
+                    timeout: value.timeout * 1000,
+                    buttons: [
+                        {
+                            id: 'open_document',
+                            description: 'Obrir el document',
+                            buttonType: 'request_control',
+                            extra: {
+                                ns: value.ns,
+                                eventType: this._getActionType(),
+                                dataToSend: this._getDocumentQuery()
                             }
-                        ],
-                        diff: {
-                            text1: data.document.content,
-                            text2: data.draft.content,
-                            text1Label: 'Document (' + data.document.date + ')',
-                            text2Label: 'Esborrany (' + data.draft.date + ')'
+
+                        },
+                        {
+                            id: 'open_draft',
+                            description: "Obrir l'esborrany",
+                            buttonType: 'request_control',
+                            extra: {
+                                ns: value.ns,
+                                eventType: this._getActionType(),
+                                dataToSend: this._getDraftQuery()
+                            }
                         }
-                    };
+                    ],
+                    diff: {
+                        text1: data.document.content,
+                        text2: data.draft.content,
+                        text1Label: 'Document (' + data.document.date + ')',
+                        text2Label: 'Esborrany (' + data.draft.date + ')'
+                    }
+                };
 
                 var dialog = this.dialogManager.getDialog(this.dialogManager.type.LOCKED_DIFF, this.docId, dialogParams);
                 dialog.show();
@@ -109,7 +109,6 @@ define([
 
             _extractData: function (value) {
                 // console.log("DraftProcessor#_extractData", value);
-
                 return {
                     document: this._getDocument(value.params),
                     draft: this._getDraft(value.params),
@@ -118,18 +117,7 @@ define([
             },
 
             _getDocument: function (value) {
-//                switch (value.type) {
-//                    case 'full_document':
-//////                        var currentContent = jQuery(value.content).find('textarea').val();
-////                        var currentContent = value.content;
-//                        return {content: value.content, date: value.lastmod};
-//
-//                    case 'partial_document':
-//                        return {content: value.content, date: value.lastmod};
-//                }
-
                 return {content: value.content, date: value.lastmod};
-
             },
 
             _getDraft: function (value) {
@@ -154,7 +142,7 @@ define([
                             return {
                                 content: draft.structured.content[value.selected],
                                 date: draft.structured.date
-                            }
+                            };
                         }
                 }
 
@@ -175,7 +163,6 @@ define([
                 // console.log("DraftProcessor#_buildQuery", value);
                 var query = '';
 
-
                 switch (value.params.type) {
                     case 'full_document':
                         query += 'id=' + value.ns + (value.rev ? '&rev=' + value.rev : '');
@@ -185,7 +172,7 @@ define([
                         query += 'id=' + value.ns
                             + (value.rev ? '&rev=' + value.rev : '')
                             + '&section_id=' + value.params.selected
-                            + '&editing_chunks=' + value.params.editing_chunks
+                            + '&editing_chunks=' + value.params.editing_chunks;
                 }
 
                 // console.log("Query built: ", query);
@@ -197,7 +184,7 @@ define([
                 var query = this.query;
 
                 if (this.isLocalDraft) {
-                    query += '&recover_local=true';
+                    query += '&recover_local_draft=true';
                 }
 
                 return query + '&recover_draft=true';
@@ -208,14 +195,15 @@ define([
             },
 
             _setActionType: function (value) {
-
-
                 switch (value.params.type) {
                     case 'full_document':
                         this.documentType = this.eventManager.eventName.EDIT;
                         break;
                     case 'partial_document':
                         this.documentType = this.eventManager.eventName.EDIT_PARTIAL;
+                        break;
+                    case 'project':
+                        this.documentType = this.eventManager.eventName.EDIT_PROJECT;
                         break;
                 }
             },

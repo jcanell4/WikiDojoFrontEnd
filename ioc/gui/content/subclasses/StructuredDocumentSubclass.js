@@ -617,7 +617,7 @@ define([
             index = content.dictionary[content.selected];
 
 
-            if (content.recover_local === true) {
+            if (content.recover_local_draft === true) {
                 // console.log("*** ESBORRANY LOCAL***");
                 draft = this.getDraftChunk(content.selected);
 

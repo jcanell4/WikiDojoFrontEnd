@@ -32,7 +32,7 @@ define([
         postAttach: function () {
             this.inherited(arguments);
             this.setFireEventHandler(this.eventName.SAVE_PROJECT, this._doSave.bind(this));
-            this.setFireEventHandler(this.eventName.CANCEL, this._doCancelDocument.bind(this));
+            this.setFireEventHandler(this.eventName.CANCEL_PROJECT, this._doCancelProjectForm.bind(this));
             
             this.lockDocument(); //pendiente de renombrar a algo así como initDraft()
         },
@@ -49,8 +49,12 @@ define([
         },
 
         _doSave: function (event) {
-            var dataToSend = this.getQuerySave(),
-                containerId = this.id;
+            var dataToSend = {};
+            
+            if (event.dataToSend) {
+                dataToSend = event.dataToSend;
+            }
+            lang.mixin(dataToSend, this.getQuerySave());
 
             if (event.extraDataToSend) {
                 if (typeof event.extraDataToSend === "string") {
@@ -59,24 +63,72 @@ define([
                     lang.mixin(dataToSend, event.extraDataToSend);
                 }
             }
+            
+            if (dataToSend['keep_draft'] === false) {
+                this.draftManager.clearDraft(this.id, this.ns, true);
+            }
+
+            if (dataToSend.close === true) {
+                var ret = {
+                        id: this.id,
+                        dataToSend: dataToSend
+                    };
+                this.forceReset();      
+                this.forceClose = true;
+                //this.removeContentTool();
+                this.container.closeChild(this);
+                return ret;
+            }
 
             return {
                 id: this.id,
                 dataToSend: dataToSend,
-                standbyId: containerId
+                standbyId: this.id
             };
         },
 
-        _doCancelDocument: function (event) {
-            var containerId = this.id,
-                dataToSend = this.getQueryCancel(this.id);
+        _doCancelProjectForm: function (event) {
+            var extraDataToSend;
+            var dataToSend = this.getQueryCancel();
+            var containerId = this.id;
+            var data = this._getDataFromEvent(event);
+            var isAuto = (typeof event.extraDataToSend === "string" && event.extraDataToSend.indexOf('auto=true') >= 0);
+
+            if (data.discard_changes || isAuto) {
+                dataToSend = this.getQueryForceCancel();
+                this.mixin(dataToSend, this.cachedEvent.dataToSend);
+            } 
+            else if (data.discard_changes === undefined && this.isContentChanged()) {
+                var cancelDialog = this._generateDiscardDialog();
+                if (cancelDialog) 
+                    cancelDialog.show();
+                this.cachedEvent = event;
+                return {_cancel: true};
+            }
+
+            this.mixin(dataToSend, data);
 
             if (event.extraDataToSend) {
                 if (typeof event.extraDataToSend === "string") {
-                    dataToSend += "&" + event.extraDataToSend;
+                    extraDataToSend = ioQuery.queryToObject(event.extraDataToSend);
                 } else {
-                    dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
+                    extraDataToSend = event.extraDataToSend;
                 }
+                this.mixin(dataToSend, extraDataToSend);
+            }
+            
+            if (dataToSend['keep_draft'] === false) {
+                this.draftManager.clearDraft(this.id, this.ns, true);
+            }
+
+            if (dataToSend.close === true) {
+                this.forceReset();  
+                this.forceClose = true; //Cuando sea necesario, un procedimiento podrá cambiar este valor para impedir el cierre de la pestaña
+                this.container.closeChild(this);
+                return {
+                    id: this.id,
+                    dataToSend: dataToSend
+                };
             }
 
             return {
@@ -88,18 +140,26 @@ define([
 
         getQuerySave: function () {
             var $form = jQuery('#form_' + this.id);
-            var values = {"id": this.ns, "projectType":this.projectType};
+            var values = {id: this.ns, projectType: this.projectType};
+            
+            var fields = $form.serializeArray();
+            for (var i=0; i < fields.length; i++) {
+                values[fields[i].name] = fields[i].value;
+            }
 
-            jQuery.each($form.serializeArray(), function (i,field) {
-                values[field.name] = field.value;
-            });
             return values;
         },
 
         getQueryCancel: function () {
-            return 'do=cancel&id=' + this.ns;
+            return {id: this.ns};
         },
 
+        getQueryForceCancel: function () {
+            var query = this.getQueryCancel();
+            query.discard_changes = true;
+            if (this.rev) query.rev = this.rev;
+            return query;
+        },
 
         _getDataFromEvent: function (event) {
             if (event.dataToSend) {
@@ -107,8 +167,43 @@ define([
             } else {
                 return event;
             }
-        }
+        },
         
+        onClose: function() {
+            var ret = this.inherited(arguments);
+            var hasChanges = this.isContentChanged();
+            if (ret===undefined) ret = true;
+
+            if (ret && hasChanges && !this.forceClose) {
+                var eventManager = this.dispatcher.getEventManager();
+                eventManager.fireEvent(eventManager.eventName.CANCEL_PROJECT, {
+                    id: this.id,
+                    name: eventManager.eventName.CANCEL_PROJECT,
+                    dataToSend: {
+                        projectType: this.projectType,
+                        no_response: true,
+                        keep_draft: false,
+                        close: true
+                    }
+                }, this.id);
+
+                ret = false; //Si es dispara l'event no es tanca la pestanya
+            }
+            ret = ret && !hasChanges;
+            return ret || this.forceClose;
+        },
+        
+        /**
+         * @override DocumentSubclass
+         * @param {object} content : parámetros, datos y estructura del formulario
+         */
+        updateDocument: function (content) {
+            this.setData(content.content);
+            this.updateTitle();
+            this.render();
+            this.addDocument();
+        }
+
     });
     
 });
