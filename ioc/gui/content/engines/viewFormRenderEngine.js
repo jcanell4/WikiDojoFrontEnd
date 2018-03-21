@@ -209,7 +209,6 @@ define([], function () {
             $form = jQuery('<div>');
 
         $form.attr('id', 'project_view_' + data.id);
-        // Si fem servir 'container' la amplada màxima es ~1200px
         $doc.addClass('container-fluid ioc-bootstrap').append($form);
         data.elements.sort(comparePriority);
 
@@ -222,4 +221,5 @@ define([], function () {
         }
         return $doc;
     };
+    
 });
