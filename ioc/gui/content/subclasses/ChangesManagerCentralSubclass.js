@@ -50,7 +50,18 @@ define([
                 }
             }.bind(this));
         },
-
+        
+        postRender(){
+            this.inherited(arguments);
+            this._checkChanges();  
+        },
+        
+        // TODO[Xavi] Actualment no fa res especial
+        _checkChanges: function () {
+            if (this.changesManager) {
+                this.changesManager.updateContentChangeState(this.id);
+            }
+        },
         /**
          * Elimina aquest ContentTool del ContainerContentTool en el que es trobi i es destrueix junt amb tots els
          * elements que el composin.

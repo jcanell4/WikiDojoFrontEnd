@@ -83,7 +83,7 @@ define([
             }
 
             this.fillEditorContainer();
-            this._checkChanges();
+//            this._checkChanges();
 
         },
 

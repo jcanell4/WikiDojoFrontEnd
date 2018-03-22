@@ -265,7 +265,8 @@ define([
                 //console.log('EditorSubclass#_checkChanges');
                 // Si el document està bloquejat mai hi hauran canvis
                 if (!this.locked) {
-                    this.changesManager.updateContentChangeState(this.id);
+                    //this.changesManager.updateContentChangeState(this.id);
+                    this.inherited(arguments);
                 }
             },
 

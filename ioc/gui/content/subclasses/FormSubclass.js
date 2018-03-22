@@ -86,17 +86,16 @@ define([
             this.registerToChangesManager();
             jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this)); // Alerta[Xavi] Comprovar si el domNode es suficient per detectar els canvis del formulari
             this.inherited(arguments);
-            this.onDocumentChanged();
         },
 
   
-        /**
-         * Comunica al ChangesManager que pot haver canvis.
-         * @private
-         */
-        _checkChanges: function () {
-            this.changesManager.updateContentChangeState(this.id);
-        },
+//        /**
+//         * Comunica al ChangesManager que pot haver canvis.
+//         * @private
+//         */
+//        _checkChanges: function () {
+//            this.changesManager.updateContentChangeState(this.id);
+//        },
 
         /**
          * Retorna el que estÃ  establert com a contingut original per fer comprovacions sobre canvis.
