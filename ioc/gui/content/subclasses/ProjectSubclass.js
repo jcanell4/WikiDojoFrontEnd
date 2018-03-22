@@ -89,13 +89,13 @@ define([
 
         _doCancelProjectForm: function (event) {
             var extraDataToSend;
-            var dataToSend = this.getQueryCancel();
+            var dataToSend = this._getQueryCancel();
             var containerId = this.id;
             var data = this._getDataFromEvent(event);
             var isAuto = (typeof event.extraDataToSend === "string" && event.extraDataToSend.indexOf('auto=true') >= 0);
 
             if (data.discard_changes || isAuto) {
-                dataToSend = this.getQueryForceCancel();
+                dataToSend = this._getQueryForceCancel();
                 this.mixin(dataToSend, this.cachedEvent.dataToSend);
             } 
             else if (data.discard_changes === undefined && this.isContentChanged()) {
@@ -150,12 +150,12 @@ define([
             return values;
         },
 
-        getQueryCancel: function () {
+        _getQueryCancel: function () {
             return {id: this.ns};
         },
 
-        getQueryForceCancel: function () {
-            var query = this.getQueryCancel();
+        _getQueryForceCancel: function () {
+            var query = this._getQueryCancel();
             query.discard_changes = true;
             if (this.rev) query.rev = this.rev;
             return query;
@@ -202,6 +202,10 @@ define([
             this.updateTitle();
             this.render();
             this.addDocument();
+        },
+
+        getProjectType: function() {
+            return this.projectType;
         }
 
     });

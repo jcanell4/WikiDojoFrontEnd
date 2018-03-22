@@ -26,7 +26,7 @@ define([
 
 
                     console.log("Tecla:", keyCode, keyString, hash);
-                    if (/*hash === -1 || */(keyCode && keyCode <= 40 && keyCode >= 37)) {
+                    if (/*hash === -1 || */(keyCode && keyCode <= 40 && keyCode >= 33)) {
                         console.log("Es permet:", keyCode, keyString, hash);
                         return false;
                     } else {

@@ -45,7 +45,6 @@ define([
          */
         _showDiffDialog: function (value, draft, args) {
 
-            //var contentTool = this.draftManager.drafts[value.ns].contentTool;
             var data = {
                 document: this._getDocument(value),
                 draft: this._getDraft(draft)
@@ -129,7 +128,7 @@ define([
                     messageChangesDetected: content.extra.messageChangesDetected,
                     renderEngines: ['test', 'zoomable_form_element']
                 };
-            this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT, args);    
+            this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_EDIT, args);    
             return this.contentTool;
         }
 
