@@ -6,7 +6,7 @@ define([
     "dojox/grid/cells/dijit",
     "dojo/store/Memory",
     "dojo/data/ObjectStore",
-    "dijit/form/Button"
+    "dijit/form/Button",
 ], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button) {
 
     return declare([AbstractEditableElement],
@@ -16,36 +16,19 @@ define([
             // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
             createWidget: function () {
 
-
-                console.log("Generada Taula Editable per:", this.$node);
-
-                // TODO: parsejar la taula (html->json)
-
-
                 var tableData = this.htmlToJson(this.$node);
                 console.log("Taula parsejada:", tableData);
-
-
-                // Generar el grid widget amb la informació parsejada
-                // En desar els canvis de la taula actualizar el contingut del node (json->html)
-
-
-                // TODO:Xavi, exposar com id de l'element directament
+                this.columns = tableData.columns;
                 this.args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
 
                 var args = this.args;
 
                 var $container = jQuery('<div id="grid_container"></div>');
-                // $container.css('height','100%');
-                // $container.css('background-color','pink');
                 this.$editableNode.css('display', 'block'); // S'ha de fer visible abans de crear el grid o l'alçada es 0.
 
 
                 var $toolbar= jQuery('<div id="toolbar_container"></div>');
                 $container.append($toolbar);
-
-                // TODO: Afegir contenidor amb els botons
-
 
                 this.$editableNode.append($container);
 
@@ -63,11 +46,8 @@ define([
 
                 var objectStore = new Memory({data: tableData.rows});
                 this.dataStore = new ObjectStore({objectStore: objectStore});
-                this.backupData = jQuery.extend(true, {}, tableData);
+                this.backupData = jQuery.extend(true, {}, tableData.rows);
 
-
-
-                //	create the grid.
                 var grid = new DataGrid({
                     store: this.dataStore,
                     structure: gridLayout,
@@ -75,42 +55,75 @@ define([
                     height: (tableData.rows.length * 45)+'px', // la alçada de cada fila
                 });
 
+
+                this.grid = grid;
+
+
                 grid.placeAt($container[0]);
                 grid.startup();
 
+
+
+                console.log("current data:", objectStore.data);
 
                 // AFEGIR Buttons
                 var context = this;
 
 
                 var addKeyButton = new Button({
-                    label: "Afegir clau!",
+                    label: "Afegir clau",
 
                     onClick: function () {
-                        alert("TODO: afegir clau");
+
+                        var key = prompt("TODO: Afegir un diàleg com cal. Introdueix la clau:");
+
+                        context.dataStore.newItem({
+                            id: objectStore.data.length,
+                            col0: key,
+                            col1: '',
+                            col2: '',
+                        });
+
+                        // ALERTA[Xavi] Un cop es desa ja no es pot fer revert, hem d'implementar el nostre propi revert
+                        context.dataStore.save();
                     }
                 });
-                addKeyButton.placeAt($toolbar[0])
+                addKeyButton.placeAt($toolbar[0]);
                 addKeyButton.startup();
 
 
                 var removeKeyButton = new Button({
-                    label: "Eliminar clau!",
+                    label: "Eliminar clau",
 
                     onClick: function () {
-                        alert("TODO: remove clau");
+
+                        var selected = context.grid.selection.getSelected();
+
+
+                        var confirmation = confirm("Segur que vols eliminar les files seleccionades? (" + selected.length + ")");
+
+                        if (!confirmation) {
+                            return;
+                        }
+
+                        for (var i=0; i<selected.length; i++) {
+                            context.dataStore.deleteItem(selected[i]);
+                        }
+
+                        context.dataStore.save();
+
+
                     }
                 });
                 removeKeyButton.placeAt($toolbar[0]);
                 removeKeyButton.startup();
 
                 var saveKeyButton = new Button({
-                    label: "Desar!",
+                    label: "Desar",
 
                     onClick: function () {
-                        // TODO! actualitzar el backupData
 
-                        alert("TODO: clicked desar");
+                        context.save();
                         context.hide();
                     }
                 });
@@ -118,42 +131,10 @@ define([
                 saveKeyButton.startup();
 
                 var cancelKeyButton = new Button({
-                    label: "Cancel·lar!",
+                    label: "Cancel·lar",
 
                     onClick: function () {
-
-                        console.log("Datastore?", grid.store);
-                        console.log("Original data?", context.backupData);
-
-                        // TEST1: Eliminar els elements d'un en un
-                        // Primer eliminem tots els elements del store
-                        // var removeIds = [];
-                        //
-                        // for (var i in grid.store.objectStore.data) {
-                        //     console.log("Eborrant id", grid.store.objectStore.data[i].id);
-                        //     removeIds.push(grid.store.objectStore.data[i].id);
-                        // }
-                        //
-                        // for (i = 0; i<removeIds.length; i++) {
-                        //     grid.store.objectStore.remove(removeIds[i]);
-                        // }
-                        //
-                        //
-                        // console.log("Esborrats?", grid.store);
-                        //
-                        // alert("stop");
-                        // // A continuació afegim les files
-                        // for (i=0; i<context.backupData.rows.length; i++) {
-                        //     grid.store.objectStore.add(context.backupData.rows[i]);
-                        // }
-
-                        // TEST2: Reemplaçar l'store <-- cap efecte al grid
-                        var objectStore = new Memory({data: context.backupData.rows});
-                        context.dataStore = new ObjectStore({objectStore: objectStore});
-
-                        grid.setStore(context.dataStore);
-
-
+                        context.revert();
                         context.hide();
 
                     }
@@ -163,20 +144,46 @@ define([
 
 
 
-
-
-
-
-
-
-
-
-
-
                 //     editor.editor.on('CancelDialog', cancelCallback);
                 //     editor.editor.on('SaveDialog', saveCallback);
 
                 this.widgetInitialized = true;
+            },
+
+
+            revert: function() {
+                console.log("Revert!");
+                var data = jQuery.extend(true, {}, this.backupData);
+                // var objectStore = new Memory({data: data});
+                // this.dataStore = new ObjectStore({objectStore: objectStore});
+                var store = this.dataStore;
+
+                store.fetch({query:{id:"*"}, onComplete: function(results){
+                    results.forEach(function(i) {
+                        store.deleteItem(i);
+
+                    })
+
+                }});
+
+                for (var i in data) {
+                    this.dataStore.newItem(data[i]);
+                }
+
+                this.dataStore.save();
+                this.grid.update();
+
+            },
+            save: function() {
+                this.backupData = jQuery.extend(true, {}, this.dataStore.objectStore.data);
+
+                console.log(this.backupData);
+                console.log("Save!");
+
+                this.jsonToHTML(this.backupData);
+
+                this.dataStore.save();
+
             },
 
             htmlToJson: function ($table) {
@@ -214,7 +221,45 @@ define([
                 }
 
                 return data;
-            }
+            },
+
+
+            jsonToHTML: function(data) {
+                console.log(data);
+              var $table = this.$node.find('tbody');
+              $table.html("");
+
+              console.log(data);
+
+
+              var cols = this.columns.length;
+
+              for (var i in data) {
+
+                  var $row =jQuery("<tr>");
+
+                  for (var j=0; j<cols; j++) {
+                        var $col;
+                      if (!this.columns[j].editable) {
+                          $col = jQuery('<th>');
+                      } else {
+                          $col = jQuery('<td>');
+                      }
+                      $col.text(data[i]["col"+j]);
+
+                      $row.append($col);
+                  }
+
+                  $table.append($row);
+              }
+            },
+
+            show: function () {
+                this.inherited(arguments);
+
+                this.grid.update();
+
+            },
 
         });
 
