@@ -1,37 +1,51 @@
 define([
     "dojo/_base/declare", // declare
-    "ioc/wiki30/processor/AbstractResponseProcessor"
-], function (declare, AbstractResponseProcessor) {
-    /**
-     * @class InfoStatusProcessor
-     * @extends AbstractResponseProcessor
-     * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier Garcia <xaviergaro.dev@gmail.com>
-     */
-    var ret = declare([AbstractResponseProcessor], {
+    "ioc/wiki30/processor/StateUpdaterProcessor",
 
-        type: "info",
-
-        process: function (value, dispatcher) {
-            this._processInfo(value, dispatcher);
-            this.inherited(arguments);
-        },
-        
+], function (declare, StateUpdaterProcessor) {
+    var ret = declare([StateUpdaterProcessor],
         /**
-         * @param {object} value = {(int)duration, (string)id, (string)message, (datetime)timestamp, (string)type}
+         * @class InfoStatusProcessor
+         * @extends StateUpdaterProcessor
+         * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier Garcia <xaviergaro.dev@gmail.com>
          */
-        _processInfo: function (value, dispatcher) {
-            if (!value || !value.message) {
-                console.error("Error detectact, la info que ha arribat no es vàlida", value);
-                return;
+        {
+            type: "info",
+
+            process: function (value, dispatcher) {
+                this._processInfo(value, dispatcher);
+                this.inherited(arguments);
+            },
+
+            /**
+             * @param {Info} info
+             * @param {Dispatcher} dispatcher
+             *
+             * @private
+             */
+            _processInfo: function (info, dispatcher) {
+                // console.log("InfoStatusProcessor#_processInfo (no fa res)", info);
+            },
+
+            /**
+             * Estableix el valor de la info GloblaState al del valor passat com argument.
+             *
+             * @param {Dispatcher} dispatcher
+             * @param {Info} value
+             *
+             * @override
+             */
+            updateState: function (dispatcher, value) {
+//                console.log("InfoStatusProcessor#updateState", value);
+                if (!value || !value.message) {
+                    console.error("Error detectact, la info que ha arribat no es vàlida", value);
+                    return;
+                }
+                var infoManager = dispatcher.getInfoManager();
+                infoManager.setInfo(value);                
             }
 
-            var infoManager = dispatcher.getInfoManager();
-            infoManager.setInfo(value);                
-        }
-
-    });
-        
+        });
     return ret;
-    
 });
 

@@ -109,7 +109,7 @@ define([
             jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this)); // Alerta[Xavi] Comprovar si el domNode es suficient per detectar els canvis del formulari
 
             this.inherited(arguments);
-            this.onDocumentChanged();
+
         },
 
 
@@ -174,8 +174,7 @@ define([
             });
 
             return currentContent;
-        }
-        
+        },
     });
     
 });

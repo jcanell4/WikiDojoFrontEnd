@@ -23,11 +23,10 @@ define([
              * @typedef {{timer:{global:int?,document:{string:int?}}, currentInfo:{global:Info?,document:{string:Info?}}, storedInfo:{global:Info?, document:{string:Info?}}}} InfoStorage
              */
             {
+                /** @type: {Dispatcher} */
                 dispatcher: null,
 
                 EMPTY_INFO: {type: "", message: "", duration: -1, timestamp: ""},
-                
-                EXTRA_INFO: {}, //{priority: 0|1, message: ""}
 
                 constructor: function (dispatcher) {
                     this.dispatcher = dispatcher;
@@ -152,16 +151,7 @@ define([
                     return this.dispatcher.getGlobalState().getInfoStorage();
                 },
 
-                /**
-                 * Almacena un mensaje extra para ser añadido posteriormente
-                 * @param {object} einfo {priority: 0|1, message: ""}
-                 */
-                setExtraInfo: function(einfo) {
-                    if (typeof einfo === "object" && einfo.priority!==undefined && einfo.message != "") {
-                        this.EXTRA_INFO = einfo; 
-                    }
-                },
-                
+
                 /**
                  * Estableix una informació. Segons el tipus s'activarà el temporitzador corresponent i es cancel·laran
                  * els previs i es mostrarà on correspongui, es a dir activa automàticament el refresc.
@@ -169,18 +159,6 @@ define([
                  * @param {Info} info - info a mostrar
                  */
                 setInfo: function (info) {
-                    if (this.EXTRA_INFO.message) {
-                        if (typeof info.message === "string") {
-                            info.message = info.message.split();
-                        }
-                        if (this.EXTRA_INFO.priority===0)
-                            info.message.push(this.EXTRA_INFO.message);
-                        else
-                            info.message.unshift(this.EXTRA_INFO.message);
-
-                        this.EXTRA_INFO = {};
-                    }
-                    
                     this._cancelInfoTimer(info);
 
                     if (info.duration && info.duration > 0) {
@@ -305,12 +283,12 @@ define([
                     var currentInfo = {type: "error", message: "No hi ha cap missatge per mostrar"};
 
                     if (id && id.length > 0) {
-                        currentInfo = this._getInfoStorage().currentInfo.document[id];
+                        currentInfo = this._getInfoStorage().currentInfo.document[id]
 
                     } else {
                         currentInfo = this._getInfoStorage().currentInfo.global;
                     }
-                    return currentInfo;
+                    return currentInfo
                 },
 
                 /**
