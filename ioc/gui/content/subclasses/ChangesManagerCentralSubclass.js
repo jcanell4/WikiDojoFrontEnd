@@ -26,8 +26,8 @@
 define([
     "dojo/_base/declare",
     "ioc/gui/content/subclasses/AbstractChangesManagerSubclass",
-    'ioc/wiki30/manager/StorageManager',
-    'dojo/_base/unload'
+    "ioc/wiki30/manager/StorageManager",
+    "dojo/_base/unload"
 ], function (declare, AbstractChangesManagerSubclass, storageManager, unload) {
 
     return declare([AbstractChangesManagerSubclass], {
@@ -38,21 +38,29 @@ define([
             var storedChangedPages = storageManager.getObject('changedPages', storageManager.type.LOCAL),
                 userId = this.dispatcher.getGlobalState().userId;
 
-
             if (userId && storedChangedPages && storedChangedPages.userId !== userId) {
                 // Estem loginats i la informació guardada pertany a un altre usuari, la descartem
                 this.resetChangedPagesState();
             }
 
             unload.addOnWindowUnload(function(){
-                // console.log("Unloading page", this.hasChanges);
                 if (this.hasChanges) {
                     this.hasChanges = false;
                     this.updateChangedPagesState();
                 }
             }.bind(this));
         },
-
+        
+        postRender(){
+            this.inherited(arguments);
+            this._checkChanges();  
+        },
+        
+        _checkChanges: function () {
+            if (this.changesManager) {
+                this.changesManager.updateContentChangeState(this.id);
+            }
+        },
         /**
          * Elimina aquest ContentTool del ContainerContentTool en el que es trobi i es destrueix junt amb tots els
          * elements que el composin.
@@ -64,13 +72,10 @@ define([
         },
 
         /**
-         * Accio a realitzar quan hi han canvis al document.
-         *
+         * Accio a realitzar quan hi ha canvis al document.
          * @protected
          */
         onDocumentChanged: function () {
-            // console.log('ChangesManagerCentralSubclass#onDocumentChanged', this.hasChanges);
-//            this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_CHANGED + this.id, {id: this.id});
             this.dispatchEvent(this.eventName.DOCUMENT_CHANGED, {id: this.id}, true); //La línia de dalt equival ara, al true
 
             if (this.controlButton) {
@@ -78,24 +83,17 @@ define([
             }
 
             this.updateChangedPagesState();
-
-
         },
 
         onDocumentRefreshed: function () {
-            // console.log('ChangesManagerCentralSubclass#onDocumentRefreshed', this.id);
-//            this.eventManager.dispatchEvent(this.eventNameCompound.DOCUMENT_REFRESHED + this.id, {id: this.id});
             this.dispatchEvent(this.eventName.DOCUMENT_REFRESHED, {id: this.id}, true); //La línia de dalt equival ara, al true
-
         },
 
         /**
          * Acció a realitzar quan es reinicialitza el document.
-         *
          * @protected
          */
         onDocumentChangesReset: function () {
-            // console.log("ChangesManagerCentralSubclass#onDocumentChangesReset");
             this.dispatchEvent(this.eventName.DOCUMENT_CHANGES_RESET, {id: this.id});
 
             if (this.controlButton) {
@@ -118,88 +116,29 @@ define([
          * @returns {boolean}
          */
         onClose: function () {
-            // console.log("ChangesManagerCentralSubclass#onClose");
             var confirmation = this.inherited(arguments);
-
-//            if (confirmation && this.changesManager.isChanged(this.id)) {
-//                confirmation = this.dispatcher.discardChanges();
-//            }
-//
-//            if (confirmation) {
-//                this.removeState();
-//                this.changesManager.removeContentTool(this.id);
-//            }
-
             return confirmation;
         },
 
         _generateDiscardDialog: function () {
-            // console.log("ChangesManagerCentralSubclass#_generateDiscardDialog", this.id, this.cancelDialogConfig);
             var dialog = this.dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + this.id, this.cancelDialogConfig);
-
-            // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId,
-            //     {
-            //         id: docId,
-            //         message: "Vols desar els canvis?",
-            //         closable: false,
-            //         buttons: [
-            //             {
-            //                 id: 'no-desar',
-            //                 description: 'No desar',
-            //                 buttonType: 'fire_event',
-            //
-            //                 extra: [{
-            //                     eventType : 'cancel_partial',
-            //                     data: {discardChanges: true},
-            //                     observable: docId
-            //                 }
-            //                 ]
-            //
-            //             },
-            //             {
-            //                 id: 'desar',
-            //                 description: 'Desar el document',
-            //                 buttonType: 'fire_event',
-            //
-            //                 extra: [ {
-            //                     eventType : 'save_partial',
-            //                     data: {},
-            //                     observable: docId
-            //                 },{
-            //                     eventType : 'cancel_partial',
-            //                     data: {discardChanges: true},
-            //                     observable: docId
-            //                 }
-            //                 ]
-            //             }
-            //         ]
-            //
-            //     });
-            //
-            // console.log("Params pel dialog:", params);
-
-            // var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
             return dialog;
         },
 
         _mixCachedEvent: function (event, expectedDataToSendType) {
-            // console.log("ChangesManagerCentralSubclass#_mixCachedEvent", event, this.cachedEvent);
             var mixedEvent;
 
             if (!this.cachedEvent) {
                 return event;
             }
 
-
             var cachedDataToSend = this.cachedEvent.dataToSend,
                 eventDataToSend = event.dataToSend;
-
 
             var mixedDataToSend = this.mixData(cachedDataToSend, eventDataToSend, expectedDataToSendType);
 
             var cachedExtraDataToSend = this.cachedEvent.extraDataToSend,
                 eventExtraDataToSend = event.extraDataToSend;
-
 
             var mixedExtraDataToSend = this.mixData(cachedExtraDataToSend, eventExtraDataToSend, expectedDataToSendType);
 
@@ -207,14 +146,11 @@ define([
             this.mixin(mixedEvent, this.cachedEvent)
             this.mixin(mixedEvent, event);
 
-
             mixedEvent.dataToSend = mixedDataToSend;
             mixedEvent.extraDataToSend = mixedExtraDataToSend;
 
             this.cachedEvent = null;
 
-
-            // console.log("### Nou Event generat:", mixedEvent);
             return mixedEvent;
         },
 
@@ -237,30 +173,24 @@ define([
 
             switch (expectedType) {
                 case 'string':
-
                     if (!data) {
                         convertedData = '';
                     } else {
                         convertedData = jQuery.param(data);
                     }
-
                     break;
 
                 case 'object':
-
                     if (!data) {
                         convertedData = '{}';
                     } else {
                         convertedData = this._stringToObject(data);
                     }
-
                     break;
 
                 default:
                     console.error("El tipus " + expectedType + " no es troba definit");
-
             }
-
 
             return convertedData;
         },
@@ -365,7 +295,6 @@ define([
         },
 
         /**
-         *
          * @param {string|object} data
          * @param {string} property
          * @returns {*}
@@ -392,8 +321,6 @@ define([
                 value = Number(value)
             }
 
-            // console.log("---- retornant:", value);
-
             return value;
         },
 
@@ -406,52 +333,34 @@ define([
         },
 
         updateChangedPagesState: function () {
-            // console.log("ChangesManagerCentralSubclass#updateChangedPagesState", this.hasChanges);
 
             var storedChangedPages = storageManager.getObject('changedPages', storageManager.type.LOCAL);
 
-
             // El documet és den només lectura: RETURN
-
             if (this.getReadOnly()) {
                 return;
             }
 
-
-            // El storage no existeix i hi han canvis: Crear nou storage
+            // El storage no existeix i hi ha canvis: Crear nou storage buit
             if (!storedChangedPages && this.hasChanges) {
-                // console.log("Storage no existeix i però hi ha canvis. Creem un storage buit", storedChangedPages);
-
                 storedChangedPages = {
                     userId: this.dispatcher.getGlobalState().userId,
                     pages: {}
                 }
             }
 
-            // alert("Next 1");
-
             // El storage no existeix i no hi han canvis: RETURN
             if (!storedChangedPages && !this.hasChanges) {
-                // console.log("RETORN: L'estorage no existeix i no hi han canvis, sortim");
                 return;
             }
 
-
-
             //El storage existeix i hi han canvis: AFEGIR
-
             if (this.hasChanges) {
-                // console.log("Afegint document", this.id);
                 storedChangedPages['pages'][this.id] = true;
             } else {
-
                 // El storage no existeix i no hi han canvis: ELIMINAR
-                // console.log("Eliminant document:", this.id);
                 delete storedChangedPages['pages'][this.id];
             }
-
-            // alert("Next 2");
-
 
             if (Object.keys(storedChangedPages.pages).length > 0) {
                 // console.log("Desant els canvis");
@@ -461,19 +370,16 @@ define([
             } else {
                 this.resetChangedPagesState();
             }
-
-
         },
 
         onDestroy: function () {
-            // console.log("ChangesManagerCentralSubclass#onDestroy", this.hasChanges);
-
             if (this.hasChanges) {
                 this.hasChanges = false;
                 this.updateChangedPagesState();
             }
-
             this.inherited(arguments);
         }
+        
     });
+    
 });

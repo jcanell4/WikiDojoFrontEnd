@@ -291,7 +291,8 @@ define([
                 DOCUMENT: 'document',
                 EDITOR: 'editor',
                 FORM: 'form',
-                PROJECT: 'project',
+                PROJECT_EDIT: 'project_edit',
+                PROJECT_VIEW: 'project_view',
                 REQUIRING: 'requiring',
                 MEDIADETAILS: 'mediadetails',
                 METAMEDIADETAILS: 'metamediadetails',
@@ -437,11 +438,14 @@ define([
                             .createSubclass(FormSubclass);
                         break;
 
-                    case this.generation.PROJECT:
+                    case this.generation.PROJECT_EDIT:
                         GeneratedContentTool = base
-                            .createSubclass(RequestSubclass)
-                            .createSubclass(DocumentSubclass)
                             .createSubclass(ProjectSubclass);
+                        break;
+
+                    case this.generation.PROJECT_VIEW:
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass);
                         break;
 
                     case this.generation.REQUIRING:

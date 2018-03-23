@@ -56,21 +56,23 @@ define([
     "ioc/wiki30/processor/UserStateProcessor",
     "ioc/wiki30/processor/UpdateLocalDraftsProcessor",
     "ioc/wiki30/processor/UserProfileProcessor",
-    "ioc/wiki30/processor/ProjectContentProcessor"
+    "ioc/wiki30/processor/ProjectEditContentProcessor",
+    "ioc/wiki30/processor/ProjectViewContentProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
-             AlertProcessor, MediaProcessor,
-             MetaInfoProcessor, MetaMediaInfoProcessor, MediaDetailsProcessor, MetaMediaDetailsInfoProcessor,
-             DataContentProcessor, ErrorProcessor, InfoStatusProcessor,
-             LoginProcessor, SectokProcessor, TitleProcessor,
-             RemoveAllContentTabProcessor, RemoveContentTabProcessor,
-             CommandProcessor, AdminTaskProcessor, JsInfoProcessor,
-             InfoManager, ChangesManager,
-             RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
-             DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
-             LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager, LockManager, DraftManager,
-             NotifyManager, DialogManager, RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
-             FormContentProcessor, TabResponseProcessor, RecentsProcessor, MetaFormProcessor, PrintProcessor,
-             ContentTooTimerProcessor, UserStateProcessor, UpdateLocalDraftsProcessor, UserProfileProcessor, ProjectContentProcessor) {
+             AlertProcessor, MediaProcessor, MetaInfoProcessor, MetaMediaInfoProcessor,
+             MediaDetailsProcessor, MetaMediaDetailsInfoProcessor, DataContentProcessor,
+             ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor,
+             TitleProcessor, RemoveAllContentTabProcessor, RemoveContentTabProcessor,
+             CommandProcessor, AdminTaskProcessor, JsInfoProcessor, InfoManager,
+             ChangesManager, RevisionsProcessor, ExtraContentStateProcessor,
+             ExtraMetaInfoProcessor, DokuwikiContent, DiffContentProcessor,
+             MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
+             LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager,
+             LockManager, DraftManager, NotifyManager, DialogManager, RequiringContentProcessor,
+             CodeResponseProcessor, ControlManagerProcessor, FormContentProcessor,
+             TabResponseProcessor, RecentsProcessor, MetaFormProcessor, PrintProcessor,
+             ContentToolTimerProcessor, UserStateProcessor, UpdateLocalDraftsProcessor,
+             UserProfileProcessor, ProjectEditContentProcessor, ProjectViewContentProcessor) {
     /**
      * @typedef {object} DijitWidget widget
      * @typedef {object} DijitContainer contenidor
@@ -200,17 +202,17 @@ define([
                 this.dialogManager= new DialogManager({dispatcher:this});
 
                 this.processors["code"] = new CodeResponseProcessor();
-		this.processors["controlManager"] = new ControlManagerProcessor();
+                this.processors["controlManager"] = new ControlManagerProcessor();
 
                 // this.processors["shortcuts_tab"] = new ShortcutsTabProcessor();
                 this.processors["tab"] = new TabResponseProcessor();
                 this.processors["recents"] = new RecentsProcessor();
                 this.processors["meta_form"] = new MetaFormProcessor();
                 this.processors["print"] = new PrintProcessor();
-                this.processors["contentTool_timer"] = new ContentTooTimerProcessor();
+                this.processors["contentTool_timer"] = new ContentToolTimerProcessor();
                 this.processors["user_profile"] = new UserProfileProcessor();
-                this.processors["project"] = new ProjectContentProcessor();
-
+                this.processors["project_edit"] = new ProjectEditContentProcessor();
+                this.processors["project_view"] = new ProjectViewContentProcessor();
             },
 
             /**

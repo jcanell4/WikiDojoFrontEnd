@@ -2,38 +2,27 @@ define([
     'dojo/_base/declare',
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
     'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
-
 ], function (declare, ChangesManagerCentralSubclass, AceFacade) {
+    /**
+     * Aquesta classe no s'ha de instanciar directament, s'ha de fer a travÃ©s del contentToolFactory.
+     * S'ha deixat com un fitxer independent per facilitar la seva edició
+     * i no es garanteix que sigui accesible en el futur.
+     *
+     * @class FormSubclass
+     * @extends ChangesManagerCentralSubclass
+     * @private
+     * @see contentToolFactory.generate()
+     */
+    return declare([ChangesManagerCentralSubclass], {
 
-
-
-    return declare([ChangesManagerCentralSubclass],
         /**
-         * Aquesta classe no s'ha de instanciar directament, s'ha de fer a travÃ©s del contentToolFactory.
-         *
-         * S'ha deixat com un fitxer independent per facilitar la seva ediciÃ³
-         * i no es garanteix que sigui accesible en el futur.
-         *
-         * Aquesta classe s'espera que es mescli amb un DocumentContentTool per afegir-li les funcions de ediciÃ³ de documents
-         * amb un ACE-Editor.
-         *
-         * @class FormSubclass
-         * @extends DocumentSubclass, AbstractChangesManagerCentral
-         * @author Xavier GarcÃ­a <xaviergaro.dev@gmail.com>
-         * @private
-         * @see contentToolFactory.generate()
+         * El contingut original inicial s'ha de passar a través del constructor 
+         * dins dels arguments com a propietat originalContent.
+         * @param args
          */
-        {
-            /**
-             * El contingut original inicial s'ha de passar a travÃ¨s del constructor dins dels arguments com la
-             * propietat originalContent.
-             *
-             * @param args
-             */
             constructor: function (args) {
                 this._setOriginalContent(args.originalContent);
                 this.hasChanges = false;
-                //console.log("args?", args)
                 this.contentToolFactory = args.contentToolFactory;
         },
 
@@ -50,7 +39,6 @@ define([
                originalContent = this._getOriginalContent(),
                changed = false;
 
-
            // S'han de comprovar que tots els items de currentContent siguin iguals
            for (item in currentContent) {
                if (currentContent[item] !== originalContent[item]) {
@@ -66,17 +54,13 @@ define([
                console.log(currentContent, originalContent);
                // Si tots son iguals, es comprova que tots els que restin de OriginalContent
                for (item in originalContent) {
-                   if (!checked[item] && originalContent[item] && originalContent[item] !== currentContent[item]) {
-                       //console.log("checked", checked);
-                       //console.log("current", currentContent);
-                       //console.log("original", originalContent);
+                    if (!checked[item] && originalContent[item] !== currentContent[item]) {
                        console.log(currentContent[item] + "!==" +  originalContent[item], item);
                        changed = true;
                        break;
                    }
                }
            }
-
 
            if (changed) {
                this.onDocumentChanged();
@@ -107,18 +91,7 @@ define([
         postAttach: function () {
             this.registerToChangesManager();
             jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this)); // Alerta[Xavi] Comprovar si el domNode es suficient per detectar els canvis del formulari
-
             this.inherited(arguments);
-
-        },
-
-
-        /**
-         * Comunica al ChangesManager que pot haver canvis.
-         * @private
-         */
-        _checkChanges: function () {
-            this.changesManager.updateContentChangeState(this.id);
         },
 
         /**
@@ -174,7 +147,8 @@ define([
             });
 
             return currentContent;
-        },
+        }
+        
     });
     
 });

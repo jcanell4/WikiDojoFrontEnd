@@ -113,8 +113,6 @@ define([], function () {
 
             $field.append($input);
 
-
-
             $input.attr('type', field.type)
                 .attr('name', field.name)
                 //.val(field.value)

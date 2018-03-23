@@ -36,7 +36,6 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("ContentProcessor#process", value);
 
                 var changesManager = dispatcher.getChangesManager(),
                     confirmation = false,
