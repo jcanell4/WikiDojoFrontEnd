@@ -57,30 +57,27 @@ define([
     "ioc/wiki30/processor/UpdateLocalDraftsProcessor",
     "ioc/wiki30/processor/UserProfileProcessor",
     "ioc/wiki30/processor/ProjectEditContentProcessor",
-    "ioc/wiki30/processor/ProjectViewContentProcessor"
+    "ioc/wiki30/processor/ProjectViewContentProcessor",
+    "ioc/wiki30/processor/ProjectDiffContentProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, MediaProcessor, MetaInfoProcessor, MetaMediaInfoProcessor,
              MediaDetailsProcessor, MetaMediaDetailsInfoProcessor, DataContentProcessor,
              ErrorProcessor, InfoStatusProcessor, LoginProcessor, SectokProcessor,
              TitleProcessor, RemoveAllContentTabProcessor, RemoveContentTabProcessor,
-             CommandProcessor, AdminTaskProcessor, JsInfoProcessor, InfoManager,
-             ChangesManager, RevisionsProcessor, ExtraContentStateProcessor,
-             ExtraMetaInfoProcessor, DokuwikiContent, DiffContentProcessor,
-             MetaDiffProcessor, DraftProcessor, HtmlPartialContentProcessor,
-             LockDataProcessor, TreeProcessor, NotificationProcessor, EventManager,
-             LockManager, DraftManager, NotifyManager, DialogManager, RequiringContentProcessor,
-             CodeResponseProcessor, ControlManagerProcessor, FormContentProcessor,
-             TabResponseProcessor, RecentsProcessor, MetaFormProcessor, PrintProcessor,
-             ContentToolTimerProcessor, UserStateProcessor, UpdateLocalDraftsProcessor,
-             UserProfileProcessor, ProjectEditContentProcessor, ProjectViewContentProcessor) {
-    /**
-     * @typedef {object} DijitWidget widget
-     * @typedef {object} DijitContainer contenidor
-     */
+             CommandProcessor, AdminTaskProcessor, JsInfoProcessor, InfoManager, ChangesManager,
+             RevisionsProcessor, ExtraContentStateProcessor, ExtraMetaInfoProcessor,
+             DokuwikiContent, DiffContentProcessor, MetaDiffProcessor, DraftProcessor,
+             HtmlPartialContentProcessor, LockDataProcessor, TreeProcessor, NotificationProcessor,
+             EventManager, LockManager, DraftManager, NotifyManager, DialogManager,
+             RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
+             FormContentProcessor, TabResponseProcessor, RecentsProcessor, MetaFormProcessor,
+             PrintProcessor, ContentToolTimerProcessor, UserStateProcessor,
+             UpdateLocalDraftsProcessor, UserProfileProcessor,
+             ProjectEditContentProcessor, ProjectViewContentProcessor, ProjectDiffContentProcessor) {
 
-
+    /** @typedef {object} DijitWidget widget */
+    /** @typedef {object} DijitContainer contenidor */
     /** @typedef {{id: string, ns: string, title: string, content: string}} Content */
-
     /** @typedef {{id: string, ns: string, title: string, content: string, editor: {Editor}, editing: *}} EditorContent */
 
     var ret = declare(null,
@@ -213,6 +210,7 @@ define([
                 this.processors["user_profile"] = new UserProfileProcessor();
                 this.processors["project_edit"] = new ProjectEditContentProcessor();
                 this.processors["project_view"] = new ProjectViewContentProcessor();
+                this.processors["project_diff"] = new ProjectDiffContentProcessor();
             },
 
             /**
@@ -237,7 +235,6 @@ define([
              * TODO[Xavi] Buida, no fa res. Es crida enlloc?
              */
             startup: function () {
-                /*TO DO. Set the globalState to different components*/
             },
 
             /**
@@ -416,23 +413,18 @@ define([
             },
 
             /**
-             * Processa la resposta passada com argument.
-             *z
-             * TODO[Xavi] no es fa servir la resposta en lloc.
+             * Processa les respostes passades com argument.
              *
              * @param {Array.<{type: string, value: *}>|{type: string, value: *}} response resposta per processar.
-             *
-             * @returns {number} sempre es 0
+             * @returns {number} TODO[Xavi] no es fa servir la resposta en lloc.
              */
             processResponse: function (response, processors) {
-                //console.log("Dispatcher#processResponse:", response);
                 var req = this;
 
                 if (Array.isArray(response)) {
                     array.some(response, function (responseItem) {
-
                         var result = req._processResponse(responseItem, processors);
-                        return result != 0; // Surt del bucle quan es true
+                        return result !== 0; // Surt del bucle quan es true
                     });
 
                 } else {
@@ -441,7 +433,6 @@ define([
 
                 this.updateFromState();
                 return 0;
-
             },
 
             /**
@@ -565,17 +556,6 @@ define([
                 return this.dialogManager;
             },
 
-            // TODO[Xavi] Esborrar, ja no son necessaries
-            // setNotifierContainer: function(notifierContainer) {
-            //     var notifyManager = this.getNotifyManager();
-            //     notifyManager.setNotifierContainer(notifierContainer);
-            // },
-            //
-            // setWarningContainer: function(warningContainer) {
-            //     var notifyManager = this.getNotifyManager();
-            //     notifyManager.setWarningContainer(warningContainer);
-            // }
-            
             getWidget: function(id){
                 return registry.byId(id);
             },
@@ -589,7 +569,7 @@ define([
                 this.requestedState= value;
             }
 
-
         });
+        
     return ret;
 });

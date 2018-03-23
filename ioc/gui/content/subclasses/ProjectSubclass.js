@@ -54,7 +54,7 @@ define([
             if (event.dataToSend) {
                 dataToSend = event.dataToSend;
             }
-            lang.mixin(dataToSend, this.getQuerySave());
+            lang.mixin(dataToSend, this._getQuerySave());
 
             if (event.extraDataToSend) {
                 if (typeof event.extraDataToSend === "string") {
@@ -138,7 +138,7 @@ define([
             };
         },
 
-        getQuerySave: function () {
+        _getQuerySave: function () {
             var $form = jQuery('#form_' + this.id);
             var values = {id: this.ns, projectType: this.projectType};
             

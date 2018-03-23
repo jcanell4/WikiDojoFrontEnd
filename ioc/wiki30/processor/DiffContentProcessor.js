@@ -38,7 +38,7 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                dispatcher.getGlobalState().getContent(value.id)["action"] = "diff";
+                dispatcher.getGlobalState().getContent(value.id)["action"] = this.type;
                 dispatcher.getGlobalState().getContent(value.id)["rev1"] = value.rev1;
                 dispatcher.getGlobalState().getContent(value.id)["rev2"] = value.rev2;
 
