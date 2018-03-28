@@ -12,6 +12,11 @@ define([
     return declare([AbstractEditableElement],
         {
 
+            init: function() {
+                this.inherited(arguments);
+                this._createIcon();
+                // this.defaultDisplay = 'table';
+            },
 
             // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
             createWidget: function () {
@@ -39,7 +44,7 @@ define([
                         width: width + "%",
                         editable: true,
                         type: cells._Widget,
-                        styles: 'text-align: right;'
+                        styles: 'text-align: left;',
                     },
                     cells: tableData.columns
                 }];
@@ -120,7 +125,6 @@ define([
 
                 var saveKeyButton = new Button({
                     label: "Desar",
-
                     onClick: function () {
 
                         context.save();
@@ -258,8 +262,62 @@ define([
                 this.inherited(arguments);
 
                 this.grid.update();
+                this.$icon.css('display', 'none');
 
             },
+
+            hide: function() {
+                this.inherited(arguments);
+
+                if (this.$icon) {
+                    this.$icon.css('display', 'block');
+                }
+
+
+            },
+
+            _createIcon: function () {
+
+                // Afegim un contenidor per l'icona i l'input
+                this.$container = jQuery('<div>');
+                this.$container.css('position', 'relative');
+
+                this.$node.before(this.$container);
+                this.$container.append(this.$node);
+
+                this.$icon = jQuery('<img src="/iocjslib/ioc/gui/img/edit.png" alt="" height="16" width="16">');
+                this.$icon.css('position', 'absolute');
+                this.$icon.css('top', '2px');
+                this.$icon.css('right', '2px');
+                this.$icon.css('display', 'block');
+                this.$icon.css('cursor', 'pointer');
+                this.$node.before(this.$icon);
+
+                //
+                //
+                // this.$node.on('mouseover', function() {
+                //     console.log("mouseover");
+                //     this.$icon.css('display', 'block'); // TODO: Comprovar que no sigui ja en edició
+                // }.bind(this));
+                //
+                // this.$node.on('mouseout', function() {
+                //     console.log("mouseout");
+                //     this.$icon.css('display', 'none');
+                // }.bind(this));
+                //
+                //
+                //
+                // this.$icon.on('mouseover', function () {
+                //     this.hover = true;
+                // }.bind(this));
+                //
+                // this.$icon.on('mouseout', function () {
+                //     this.hover = false;
+                // }.bind(this));
+
+                this.$icon.on('click', this.show.bind(this));
+            },
+
 
         });
 

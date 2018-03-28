@@ -9,8 +9,6 @@ define([
             constructor: function (args) {
 
                 this.init(args);
-
-
             },
 
             init: function (args) {
@@ -18,7 +16,11 @@ define([
                 this.$node = jQuery(args.node);
                 this.args = args;
 
+                this.defaultDisplay = this.$node.css('display');
+
                 this._replaceNodeContent(args);
+
+
             },
 
             _replaceNodeContent: function (args) {
@@ -43,7 +45,9 @@ define([
 
                 console.log("AbstractEditableElement#hide");
                 this.setEditionState(false);
-                this.$node.css('display', 'block');
+
+                console.log("Restaurant display:", this.defaultDisplay);
+                this.$node.css('display', this.defaultDisplay);
                 this.$editableNode.css('display', 'none');
             },
 
