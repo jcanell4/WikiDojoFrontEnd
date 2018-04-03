@@ -42,16 +42,18 @@ define([], function () {
                 fiTH = "</th>",
                 inTR = "<tr>",
                 inTD = "<td class='",
+                inTH = "<th class='",
                 fiTR = "</tr>",
                 fiTD = "</td>",
+                fiTH = "</th>",
                 clCH = " itemProjectChanged'>";
                 
             taula = inTB + inTHl + titleL + fiTH + inTHr + titleR + fiTH;
             for (item in arrL) {
                 ch = (arrL[item] !== arrR[item]) ? clCH : "'>";
-                taula += inTR + inTD + colorL + ch + item + fiTD;
+                taula += inTR + inTH + colorL + ch + item +": " + fiTH;
                 taula += inTD + colorL + ch + arrL[item] + fiTD;
-                taula += inTD + colorR + ch + item + fiTD;
+                taula += inTH + colorR + ch + item + ": " + fiTH;
                 taula += inTD + colorR + ch + arrR[item] + fiTD + fiTR;
             }
             taula += fiTB;
