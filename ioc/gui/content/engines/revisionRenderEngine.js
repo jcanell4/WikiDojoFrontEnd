@@ -34,11 +34,12 @@ define(function () {
             return revision['sum'] ? 'Resum: ' + revision['sum'] : 'No hi ha cap resum per la revisió del ' + revision['date'];
         },
 
-        _generateHtmlForDiff = function (revision) {
+        _generateHtmlForDiff = function (revision, call_diff) {
             var html = '',
-                linkDiff = '?id=' + revision['id'] + '?id=' + revision['ns']+ "&rev=" + revision['rev'] + "&difftype=sidebyside";
+                linkDiff = "?id=" + revision['id'] + "&rev=" + revision['rev'] + "&difftype=sidebyside";
 
-            html += '<td><a href="' + linkDiff + '" data-call="diff">';
+            //html += '<td><a href="' + linkDiff + '" data-call="diff">';
+            html += '<td><a href="' + linkDiff + '" data-call="' + call_diff + '">';
             html += '<img width="15" height="11" alt="Mostra diferències amb la versió actual"';
             html += 'title="Mostra diferències entre la revisió del ' + revision['date'];
             html += ' i la versió actual" src="/iocjslib/ioc/gui/img/diff.png" />';
@@ -83,38 +84,43 @@ define(function () {
             linkTime,
             sortable = [],
             linkCurrent,
-            data_call_items;
+            call_view,
+            call_diff = "diff";
 
         html += '<form id="revisions_selector_' + id + '" action="'+ data.urlBase+'" method="post">';
         html += '<input name="id" value="' + ns + '" type="hidden">';
         html += '<table class="meta-revisions">';
         html += '<tr><th colspan="5" style="text-align: center"><input type="submit" name="submit" value="comparar revisions"/></th></tr>'; // TODO[Xavi]no funciona, surt fora de la taula, perquè?
 
-        // Comprovem si existeix el actual i si es així l'eliminem de la llista de revisions
+        // Comprovem si existeix l'actual i si es així l'eliminem de la llista de revisions
         if (data[data.current]) {
             delete data[data.current];
         }
         delete(data.current);
 
-        linkCurrent = '?id=' + data.docId;
+        linkCurrent = '?id=' + ns;
 
         if (data.position && data.position > -1) {
-            var lessButton = _generatePreviousButton(id, data.docId, Math.max(-1, data.position - data.amount));
+            var lessButton = _generatePreviousButton(id, ns, Math.max(-1, data.position - data.amount));
         }
 
         if (data.show_more_button) {
-            var moreButton = _generateNextButton(id, data.docId, Math.max(0, data.position) + data.amount);
+            var moreButton = _generateNextButton(id, ns, Math.max(0, data.position) + data.amount);
         }
         var page = Math.floor(Math.max(data.position, 0) / data.amount) + 1;
 
-        data_call_items = data.data_call_items;
+        call_view = data.call_view;
+        if (data.call_diff) {
+            call_diff = data.call_diff;
+        }
 
         delete(data.position);
         delete(data.amount);
         delete(data.show_more_button);
         delete(data.docId);
         delete(data.urlBase);
-        delete(data.data_call_items);
+        delete(data.call_view);
+        delete(data.call_diff);
 
         // extreiem cada objecte i l'afegim a un array per poder ordenar-los
         for (var j in data) {
@@ -142,15 +148,15 @@ define(function () {
 
             html += '<tr>';
             html += _generateHtmlForCheckRevision(sortable[i]['rev']);
-            if (data_call_items) {
-                html += '<td><a href="' + linkRev + '" data-call="' + data_call_items + '" title="' + 'Obrir la revisió del ' + sortable[i]['date'] + '">';
+            if (call_view) {
+                html += '<td><a href="' + linkRev + '" data-call="' + call_view + '" title="' + 'Obrir la revisió del ' + sortable[i]['date'] + '">';
             }else {
                 html += '<td><a href="' + linkRev + '" title="' + 'Obrir la revisió del ' + sortable[i]['date'] + '">';
             }
             html += linkTime;
             html += '</a></td>';
             html += '<td>' + sortable[i]['user'] + '</td>';
-            html += _generateHtmlForDiff(sortable[i]);
+            html += _generateHtmlForDiff(sortable[i], call_diff);
             html += _generateHtmlForSummary(sortable[i]);
             html += '</tr>';
         }

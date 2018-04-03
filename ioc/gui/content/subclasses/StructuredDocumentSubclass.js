@@ -471,7 +471,12 @@ define([
 
                     content = $textarea.val();
                     // diffFromOriginal = this._getOriginalContent(chunk.header_id) != content;
-                    diffFromOriginal = this.getEditor(chunk.header_id).isChanged();
+                    var editor = this.getEditor(chunk.header_id);
+                    if(editor){
+                        diffFromOriginal = editor.isChanged();
+                    }else{
+                        diffFromOriginal=false;
+                    }
                     diffFromLastCheck = this.isLastCheckedContentChanged(chunk.header_id, content);
 
 

@@ -1,0 +1,91 @@
+define([
+    "dojo/_base/declare",
+    "ioc/wiki30/processor/DiffContentProcessor",
+    "ioc/gui/content/contentToolFactory",
+    'ioc/functions/jsProjectDiff'
+], function (declare, DiffContentProcessor, contentToolFactory, jsProjectDiff) {
+    /**
+     * Aquesta classe s'encarrega de processar els continguts per documents de tipus Html, generar els ContentTool
+     * apropiat i afegir-lo al contenidor adequat.
+     *
+     * @class ProjectDiffContentProcessor
+     * @extends DiffContentProcessor
+     * @culpable Rafael Claver
+     */
+    return declare([DiffContentProcessor], {
+
+        type: "project_diff",
+
+        /**
+         * Processa el valor rebut com argument com a contingut Html per mostrar un document en mode Html
+         *
+         * @param {Content} value - Valor per processar
+         * @param {Dispatcher} dispatcher - Dispatcher al que està lligat aquest document.
+         * @override
+         */
+        process: function (value, dispatcher) {
+            return this.inherited(arguments);
+        },
+
+        /**
+         * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument, i afegeix
+         * el valor de la acció a "view".
+         *
+         * @param {Dispatcher} dispatcher - Dispatcher al que està lligat aquest process
+         * @param {Content} value - Valor per processar
+         * @override
+         */
+        updateState: function (dispatcher, value) {
+            this.inherited(arguments);
+            dispatcher.getGlobalState().getContent(value.id)["action"] = this.type;
+            dispatcher.getGlobalState().getContent(value.id)["rev1"] = value.rev1;
+            dispatcher.getGlobalState().getContent(value.id)["rev2"] = value.rev2;
+        },
+
+        /**
+         * Genera un ContentTool decorat adecuadament per funcionar com document de només lectura.
+         *
+         * @param {Content} content - Contingut a partir del qual es generarà el ContentTool
+         * @param {Dispatcher} dispatcher - Dispatcher al que estarà lligat el ContentTool
+         * @returns {ContentTool} ContentTool decorat com a tipus document.
+         * @protected
+         * @override
+         */
+        createContentTool: function (content, dispatcher) {
+            var diff, rev;
+            var rev1, rev2, label1, label2;
+            if (content.rev1) {
+                rev1 = JSON.stringify(content.content);
+                rev2 = JSON.stringify(content.rev1);
+                label1 = "Projecte original (" + content.date + ")";
+                label2 = "Revisió (" + content.date_rev1 + ")";
+                rev = content.date + " - " + content.date_rev1;
+            }else if (content.rev2) {
+                rev1 = JSON.stringify(content.rev1);
+                rev2 = JSON.stringify(content.rev2);
+                label1 = "Revisió (" + content.date_rev1 + ")";
+                label2 = "Revisió (" + content.date_rev2 + ")";
+                rev = content.date_rev1 + " - " + content.date_rev2;
+            }else {
+                return;
+            }
+            
+            diff = jsProjectDiff.getDiff(rev1, rev2, label1, label2);
+            var args = {
+                    ns:          content.ns,
+                    id:          content.id,
+                    title:       content.title + " - Diferència",
+                    type:        this.type,
+                    projectType: content.extra.projectType,
+                    content:     diff,
+                    rev:         rev,
+                    closable:    true,
+                    dispatcher:  dispatcher
+                };
+
+            return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
+        }
+
+    });
+    
+});
