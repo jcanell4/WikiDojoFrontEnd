@@ -16,10 +16,7 @@ define([
          */
         {
 
-            //blackList: ['html_partial'],
-
-            blackList: ['html_partial'],
-
+            blackList: ['html_partial', 'project_diff'],
             type: null,
 
             /**

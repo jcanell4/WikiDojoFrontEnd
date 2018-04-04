@@ -13,7 +13,7 @@ define([
      * @culpable Rafael Claver
      */
     return declare([DiffContentProcessor], {
-
+        
         type: "project_diff",
 
         /**
@@ -38,8 +38,9 @@ define([
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
             dispatcher.getGlobalState().getContent(value.id)["action"] = this.type;
-            dispatcher.getGlobalState().getContent(value.id)["rev1"] = value.rev1;
-            dispatcher.getGlobalState().getContent(value.id)["rev2"] = value.rev2;
+            dispatcher.getGlobalState().getContent(value.id)["projectType"] = value.extra.projectType;
+            dispatcher.getGlobalState().getContent(value.id)["rev1"] = value.date;
+            dispatcher.getGlobalState().getContent(value.id)["rev2"] = value.date_rev1;
         },
 
         /**
@@ -54,23 +55,15 @@ define([
         createContentTool: function (content, dispatcher) {
             var diff, rev;
             var rev1, rev2, label1, label2;
-            if (content.rev1) {
-                rev1 = JSON.stringify(content.content);
-                rev2 = JSON.stringify(content.rev1);
-                label1 = "Projecte original (" + content.date + ")";
-                label2 = "Revisió (" + content.date_rev1 + ")";
-                rev = content.date + " - " + content.date_rev1;
-            }else if (content.rev2) {
-                rev1 = JSON.stringify(content.rev1);
-                rev2 = JSON.stringify(content.rev2);
-                label1 = "Revisió (" + content.date_rev1 + ")";
-                label2 = "Revisió (" + content.date_rev2 + ")";
-                rev = content.date_rev1 + " - " + content.date_rev2;
-            }else {
-                return;
-            }
+            rev1 = JSON.stringify(content.content);
+            rev2 = JSON.stringify(content.rev1);
+            label1 = (content.revTrev) ? "Revisió" : "Projecte original";
+            label1 += " (" + this._convertUnixDate(content.date, true) + ")";
+            label2 = "Revisió (" + this._convertUnixDate(content.date_rev1, true) + ")";
             
             diff = jsProjectDiff.getDiff(rev1, rev2, label1, label2);
+            rev = this._convertUnixDate(content.date) + " - " + this._convertUnixDate(content.date_rev1);
+            
             var args = {
                     ns:          content.ns,
                     id:          content.id,
@@ -84,8 +77,24 @@ define([
                 };
 
             return contentToolFactory.generate(contentToolFactory.generation.DOCUMENT, args);
-        }
+        },
 
+        _convertUnixDate: function (fecha, hora) {
+            var p = 13 - fecha.toString().length; //He detectado fechas con menos dígitos de lo normal
+            if (p > 0) {
+                var mul = 1;
+                for (var i=0; i<p; i++) {
+                    mul *= 10;
+                }
+                fecha *= mul;
+            }
+            var d = new Date(fecha);
+            var ret = d.getDate() + "." + (d.getMonth()+1) + "." + d.getFullYear();
+            if (hora) 
+                ret += " - " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+            return ret;
+        }
+        
     });
     
 });
