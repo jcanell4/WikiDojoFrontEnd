@@ -107,7 +107,6 @@ define([
            }
 
            if (!changed) {
-               console.log(currentContent, originalContent);
                // Si tots son iguals, es comprova que tots els que restin de OriginalContent
                for (item in originalContent) {
                     if (!checked[item] && originalContent[item] !== currentContent[item]) {

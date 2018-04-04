@@ -199,6 +199,7 @@ define([
                 console.log("Save!");
 
                 this.jsonToHTML(this.backupData);
+                this.update();
 
                 this.dataStore.save();
 
@@ -243,7 +244,6 @@ define([
 
 
             jsonToHTML: function(data) {
-                console.log(data);
               var $table = this.$node.find('tbody');
               $table.html("");
 
@@ -335,6 +335,22 @@ define([
 
             update: function() {
                 console.log("TODO: Passar la informació del store al camp ocult com a JSON");
+                var data = [];
+
+                for (var item in this.backupData) {
+                    var newItem = {};
+
+                    for(var i=0; i<this.columns.length; i++) {
+                        console.log(this.columns[i]);
+                        newItem[this.columns[i].name] = this.backupData[item][this.columns[i].field]
+                    }
+
+                    data.push(newItem);
+                }
+
+                this.$field.val(JSON.stringify(data));
+                console.log("Rebuild item:", data);
+
             }
         });
 
