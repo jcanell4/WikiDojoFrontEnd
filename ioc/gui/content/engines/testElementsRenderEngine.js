@@ -12,7 +12,7 @@ define([
 
 
     return function (data, context, $content) {
-        //console.log($content);
+        console.log("Informació del content tool: ", context);
 
         // ALERTA[Xavi] si no arriba un objecte jquery suposem que es tracta d'objectes DOM o HTML i fem la conversió.
         if (!$content instanceof jQuery) {
@@ -25,13 +25,18 @@ define([
         var $nodes = $content.find('.h2');
 
 
+        // ALERTA: Determinem si es editable o no inicialment basant-nos en el tipus de content tool
+
+
+
         for (var i = 0; i < $nodes.length; i++) {
             editableElementsFactory.createElement('test', {
                 context: context,
-                node: $nodes[i]
+                node: $nodes[i],
+                name: "nom-de-prova",
+                formId: $content.find('form').attr('id')
             });
         }
-
 
         // ALERTA[Xavi] Test per les taules, afegim una taula al final del contingut
 
@@ -88,11 +93,14 @@ define([
         // ALERTA[Xavi] indicant el tipus com a valor de la propietat es pot fer servir el mateix bucle per a totes
         $nodes = $content.find('[data-editable-element]');
 
+        // alert("Editable? " +editable);
         for (var i = 0; i < $nodes.length; i++) {
             var type = jQuery($nodes[i]).attr('data-editable-element');
             editableElementsFactory.createElement(type, {
                 context: context,
-                node: $nodes[i]
+                node: $nodes[i],
+                name: "nom-de-prova",
+                formId: $content.find('form').attr('id')
             });
         }
 

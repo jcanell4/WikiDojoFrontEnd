@@ -9,7 +9,8 @@ define([
         {
 
             createWidget: function() {
-                    // TODO:Xavi, exposar com id de l'element directament
+                    // TODO[Xavi]: exposar com id de l'element directament
+                    // TODO[Xavi]: generar un element ocult amb aquesta informació
                     this.args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
 
                     var args = this.args;
@@ -76,6 +77,10 @@ define([
                     editor.editor.on('SaveDialog', saveCallback);
 
                 this.widgetInitialized = true;
+            },
+
+            update: function() {
+                console.log("Update: no fem res, això és un elemnt de prova");
             }
 
 

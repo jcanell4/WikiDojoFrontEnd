@@ -43,6 +43,7 @@ define([
             },
 
             registerObserverToEvent: function (observer, event, callback) {
+                console.log("RegisteredObserverToEvent:", observer, event);
                 if(!observer.id){
                     observer.id = (new Date()).getTime();
                 }
@@ -90,7 +91,7 @@ define([
             },
             
             fireEvent: function(eventName, dataEventBase, preventGlobalProp){
-                // console.log("EventObservable#fireEvent: ", eventName, dataEventBase);
+                console.log("EventObservable#fireEvent: ", eventName, dataEventBase);
                 var eventData,
                         fireEventFunc = this.fireEvents[eventName];
                 if(fireEventFunc){

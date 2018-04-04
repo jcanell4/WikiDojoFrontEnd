@@ -12,10 +12,16 @@ define([
     return declare([AbstractEditableElement],
         {
 
-            init: function() {
+            init: function(args) {
+                console.log("args", args)
                 this.inherited(arguments);
                 this._createIcon();
                 // this.defaultDisplay = 'table';
+            },
+
+            _replaceNodeContent: function (args) {
+
+                this.inherited(arguments);
             },
 
             // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
@@ -29,6 +35,14 @@ define([
                 var args = this.args;
 
                 var $container = jQuery('<div id="grid_container"></div>');
+                this.$field = jQuery('<input type="hidden" name="' + args.name + '"/>');
+
+                if (args.formId) {
+                    this.$field.attr('form', args.formId);
+                }
+
+                $container.append(this.$field);
+
                 this.$editableNode.css('display', 'block'); // S'ha de fer visible abans de crear el grid o l'alçada es 0.
 
 
@@ -319,6 +333,9 @@ define([
             },
 
 
+            update: function() {
+                console.log("TODO: Passar la informació del store al camp ocult com a JSON");
+            }
         });
 
 

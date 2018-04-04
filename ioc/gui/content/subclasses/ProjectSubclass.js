@@ -50,7 +50,10 @@ define([
 
         _doSave: function (event) {
             var dataToSend = {};
-            
+
+            this._updateEditableElements();
+
+
             if (event.dataToSend) {
                 dataToSend = event.dataToSend;
             }

@@ -126,7 +126,8 @@ define([
                     autosaveTimer: content.autosaveTimer,
                     cancelDialogConfig: content.extra.dialogSaveOrDiscard,
                     messageChangesDetected: content.extra.messageChangesDetected,
-                    renderEngines: ['test', 'zoomable_form_element']
+                    renderEngines: ['test', 'zoomable_form_element'],
+                    editable: true, // Activa el mode d'edició automàtica pels EditableElements
                 };
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_EDIT, args);    
             return this.contentTool;

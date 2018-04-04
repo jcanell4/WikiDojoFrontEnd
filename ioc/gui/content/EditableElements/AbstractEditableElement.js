@@ -20,6 +20,11 @@ define([
 
                 this._replaceNodeContent(args);
 
+                // Comproven que el contenttool accepti elements actualitzables (només el form subclass els accepta)
+                if (this.context._registerEditableElement) {
+                    // console.log("context?", this.context);
+                    this.context._registerEditableElement(this);
+                }
 
             },
 
@@ -34,10 +39,15 @@ define([
 
                 this.$editableNode = jQuery('<div></div>');
                 this.$container.append(this.$editableNode);
+
+
                 this.hide();
 
-
                 this.$node.on('dblclick', this.show.bind(this));
+
+                if (args.editable) {
+                    jQuery(args.context.domNode).on('postrender',this.show.bind(this));
+                }
 
             },
 

@@ -20,10 +20,66 @@ define([
          * dins dels arguments com a propietat originalContent.
          * @param args
          */
-            constructor: function (args) {
-                this._setOriginalContent(args.originalContent);
-                this.hasChanges = false;
-                this.contentToolFactory = args.contentToolFactory;
+        constructor: function (args) {
+            this._setOriginalContent(args.originalContent);
+            this.hasChanges = false;
+            this.contentToolFactory = args.contentToolFactory;
+
+            this.editableElements = [];
+
+            // TEST!
+            // var a = {update: function() {console.log("TEST Update A OK")}};
+            // var b = {update: function() {console.log("TEST Update B OK")}};
+            // var c = {update: function() {console.log("TEST Update C OK")}};
+            // var d = {update: function() {console.log("TEST Update D OK")}};
+            // this.registerEditableElement(a);
+            // this.registerEditableElement(b);
+            // this.registerEditableElement(c);
+            // this.registerEditableElement(d);
+            // console.log("Elements registrats:", this.editableElements);
+            // this.unregisterUpdatableElement(a);
+            // console.log("Elements registrats:", this.updatableElements);
+            // this.unregisterUpdatableElement(b);
+            // console.log("Elements registrats:", this.updatableElements);
+            // this.unregisterUpdatableElement(c);
+            // console.log("Elements registrats:", this.updatableElements);
+            // this.unregisterUpdatableElement(d);
+            // console.log("Elements registrats:", this.updatableElements);
+
+
+        },
+
+        _registerEditableElement: function(element) {
+                if (!element.update) {
+                    console.error("L'element no és updatable", element)
+                } else {
+                    this.editableElements.push(element);
+                }
+        },
+
+        _unregisterEditableElement: function(element) {
+            this.editableElements = _.without(this.editableElements, element); // Alerta! biblioteca Underscore
+
+        },
+
+        _enableEditableElements: function() {
+            for (var i=0; i<this.editableElements.length; i++) {
+                this.editableElements[i].show();
+            }
+        },
+
+        _disableEditableElements: function() {
+            for (var i=0; i<this.editableElements.length; i++) {
+                this.editableElements[i].hide();
+            }
+        },
+
+        startup: function() {
+            this.inherited(arguments);
+
+            if (this.editable) {
+                this._enableEditableElements();
+            }
         },
 
        /**
@@ -92,6 +148,8 @@ define([
             this.registerToChangesManager();
             jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this)); // Alerta[Xavi] Comprovar si el domNode es suficient per detectar els canvis del formulari
             this.inherited(arguments);
+
+//            alert("event manager?");
         },
 
         /**
@@ -134,7 +192,19 @@ define([
             this.lastCheckedContent = content;
         },
 
+        _updateEditableElements: function() {
+            for (var i = 0; i<this.editableElements.length; i++) {
+                this.editableElements[i].update();
+            }
+        },
+
         getCurrentContent: function () {
+
+
+
+
+
+
             // Obtenir tots els valors dels camps? generar diccionary id:valor
             // Fàcil pels inputs (únic cas contemplat)
             // TODO[Xavi] Afegir comprovació per check/radios i selects
