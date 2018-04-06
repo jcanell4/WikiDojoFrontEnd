@@ -12,6 +12,8 @@ define([
      */
     return declare([FormContentProcessor], {
 
+        type: "project_edit",
+
         process: function (value, dispatcher) {
             var args = arguments;
             //Se añade un array (key:value) con los datos originales del formulario

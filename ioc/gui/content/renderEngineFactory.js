@@ -43,8 +43,6 @@ define([
             // TODO[Xavi] afegir el canvi a les funcions:
             // after.content;
             // before.content;
-
-
             return renderEngines[type] ? renderEngines[type] : defaultRenderEngine;
         },
 
@@ -68,7 +66,8 @@ define([
             _addRenderEngine('requiring', requiringRenderEngine);
             _addRenderEngine('requiring_partial', requiring_partialRenderEngine);
             _addRenderEngine('form', formRenderEngine);
-            _addRenderEngine('view_form', viewFormRenderEngine);
+            _addRenderEngine('project_edit', formRenderEngine);
+            _addRenderEngine('project_view', viewFormRenderEngine);
             _addRenderEngine('metainfo', htmlRenderEngine);
             _addRenderEngine('request_form', request_formRenderEngine);
             defaultRenderEngine = _getRenderEngine('standard');
