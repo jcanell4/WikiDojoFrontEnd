@@ -76,7 +76,10 @@ define([
 
         startup: function() {
             this.inherited(arguments);
+        },
 
+        postRender: function() {
+            this.inherited(arguments);
             if (this.editable) {
                 this._enableEditableElements();
             }

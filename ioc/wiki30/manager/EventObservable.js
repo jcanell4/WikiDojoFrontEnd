@@ -43,7 +43,7 @@ define([
             },
 
             registerObserverToEvent: function (observer, event, callback) {
-                console.log("RegisteredObserverToEvent:", observer, event);
+                // console.log("RegisteredObserverToEvent:", observer, event);
                 if(!observer.id){
                     observer.id = (new Date()).getTime();
                 }

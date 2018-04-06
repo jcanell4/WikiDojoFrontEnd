@@ -14,6 +14,7 @@ define([
     return function (data, context, $content) {
         //console.log($content);
 
+        return $content;
         // ALERTA[Xavi] si no arriba un objecte jquery suposem que es tracta d'objectes DOM o HTML i fem la conversió.
         if (!$content instanceof jQuery) {
             $content = jQuery($content);

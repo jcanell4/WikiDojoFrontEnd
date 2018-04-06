@@ -35,6 +35,11 @@ define([
                 var args = this.args;
 
                 var $container = jQuery('<div id="grid_container"></div>');
+
+                // Movem l'estil de la taula al contenidor;
+                this.$container.parent().addClass(this.$node[0].className);
+                this.$node.removeClass(this.$node[0].className);
+
                 this.$field = jQuery('<input type="hidden" name="' + args.name + '"/>');
 
                 if (args.formId) {
@@ -46,7 +51,7 @@ define([
                 this.$editableNode.css('display', 'block'); // S'ha de fer visible abans de crear el grid o l'alçada es 0.
 
 
-                var $toolbar= jQuery('<div id="toolbar_container"></div>');
+                var $toolbar= jQuery('<div></div>');
                 $container.append($toolbar);
 
                 this.$editableNode.append($container);
@@ -71,7 +76,8 @@ define([
                     store: this.dataStore,
                     structure: gridLayout,
                     escapeHTMLInData: false,
-                    height: (tableData.rows.length * 45)+'px', // la alçada de cada fila
+                    //height: "500px"
+                    height: (tableData.rows.length * 30)+'px', // la alçada de cada fila
                 });
 
 
@@ -325,6 +331,7 @@ define([
                 //     this.hover = true;
                 // }.bind(this));
                 //
+                // this.$icon.on('mouseout', function () {
                 // this.$icon.on('mouseout', function () {
                 //     this.hover = false;
                 // }.bind(this));
