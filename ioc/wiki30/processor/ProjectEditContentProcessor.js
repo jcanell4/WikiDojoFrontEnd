@@ -1,8 +1,9 @@
 define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/FormContentProcessor",
+    "dijit/registry",
     "ioc/gui/content/contentToolFactory"
-], function (declare, FormContentProcessor, contentToolFactory) {
+], function (declare, FormContentProcessor, registry, contentToolFactory) {
     /**
      * Aquesta classe s'encarrega de processar les dades i generar un formulari de projecte editable.
      *
@@ -30,6 +31,9 @@ define([
             this.dialogManager = dispatcher.getDialogManager();
             var localDraft = this.draftManager.getContentLocalDraft(value.ns);
             
+            if (value.timer) {
+                this._initTimer(value, dispatcher);
+            }
             //Si existe un borrador, llamamos a la función que muestra un diálogo para elegir original o borrador
             if (localDraft.project){
                 this._showDiffDialog(value, localDraft.project, args);
@@ -131,6 +135,43 @@ define([
                 };
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_EDIT, args);    
             return this.contentTool;
+        },
+
+        _initTimer: function (params, dispatcher) {
+            var contentTool = registry.byId(params.id);
+            var paramsOnExpire = params.timer.dialogOnExpire;
+            paramsOnExpire.contentTool = contentTool;
+            paramsOnExpire.closable = false;
+            paramsOnExpire.timeout = params.timer.timeout;
+            contentTool.initTimer({
+                onExpire: function (ptimer) {
+                    // a) Si hi ha canvis:
+                    if (ptimer.contentTool.isContentChanged()) {
+                        // 1) enviar demanda de bloqueig
+                        ptimer.contentTool.fireEvent(ptimer.contentTool.eventName.REFRESH_EDITION);
+                        // 2) Mostrar diàleg no closable informant que s'ha sobrepassat el temps
+                        //    de bloqueig sense cap activitat. 
+                        //    Es pregunta si es guarden els canvis o bé es cancel·la l'edició.
+                        //    Avisa que si no es contesta el en X temps, es calcel·laran els canvis.
+                        //    La cancel·lació s'envia forçant la cancel·lació 
+                        //    dels canvis + un alerta informant del fet
+                        ptimer.id = ptimer.contentTool.id;
+                        var dialog = dispatcher.getDialogManager().getDialog('lock_expiring'
+                                        , "lockExpiring_" + ptimer.contentTool.id
+                                        , ptimer);
+                        ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
+                        dialog.show();
+                    // b) Si no hi ha canvis, es cancel·la sense avís previ, però a més
+                    //    de l'html s'envia també una alerta informant del fet
+                    } else {
+                        ptimer.contentTool.fireEvent(
+                            ptimer.cancelContentEvent,
+                            ptimer.cancelEventParams);
+                    }
+                },
+                paramsOnExpire: paramsOnExpire
+            });
+            contentTool.startTimer(params.timer.timeout);
         }
 
     });

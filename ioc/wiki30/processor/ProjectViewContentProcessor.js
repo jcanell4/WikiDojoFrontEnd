@@ -35,6 +35,7 @@ define([
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
             dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
+            dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
         },
 
         createContentTool: function (content, dispatcher) {

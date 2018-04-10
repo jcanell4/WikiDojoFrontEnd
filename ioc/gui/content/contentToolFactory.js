@@ -440,6 +440,7 @@ define([
 
                     case this.generation.PROJECT_EDIT:
                         GeneratedContentTool = base
+                            .createSubclass(TimedDocumentSubclass)
                             .createSubclass(ProjectSubclass);
                         break;
 
