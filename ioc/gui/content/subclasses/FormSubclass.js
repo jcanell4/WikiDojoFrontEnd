@@ -49,41 +49,41 @@ define([
 
         },
 
-        _registerEditableElement: function(element) {
-                if (!element.update) {
-                    console.error("L'element no és updatable", element)
-                } else {
-                    this.editableElements.push(element);
-                }
-        },
+        // _registerEditableElement: function(element) {
+        //         if (!element.update) {
+        //             console.error("L'element no és updatable", element)
+        //         } else {
+        //             this.editableElements.push(element);
+        //         }
+        // },
+        //
+        // _unregisterEditableElement: function(element) {
+        //     this.editableElements = _.without(this.editableElements, element); // Alerta! biblioteca Underscore
+        //
+        // },
+        //
+        // _enableEditableElements: function() {
+        //     for (var i=0; i<this.editableElements.length; i++) {
+        //         this.editableElements[i].show();
+        //     }
+        // },
+        //
+        // _disableEditableElements: function() {
+        //     for (var i=0; i<this.editableElements.length; i++) {
+        //         this.editableElements[i].hide();
+        //     }
+        // },
 
-        _unregisterEditableElement: function(element) {
-            this.editableElements = _.without(this.editableElements, element); // Alerta! biblioteca Underscore
-
-        },
-
-        _enableEditableElements: function() {
-            for (var i=0; i<this.editableElements.length; i++) {
-                this.editableElements[i].show();
-            }
-        },
-
-        _disableEditableElements: function() {
-            for (var i=0; i<this.editableElements.length; i++) {
-                this.editableElements[i].hide();
-            }
-        },
-
-        startup: function() {
-            this.inherited(arguments);
-        },
-
-        postRender: function() {
-            this.inherited(arguments);
-            if (this.editable) {
-                this._enableEditableElements();
-            }
-        },
+        // startup: function() {
+        //     this.inherited(arguments);
+        // },
+        //
+        // postRender: function() {
+        //     this.inherited(arguments);
+            // if (this.editable) {
+            //     this._enableEditableElements();
+            // }
+        // },
 
        /**
         * Retorna cert si el contingut actual i el contingut original sÃ³n diferents o fals si sÃ³n iguals.
@@ -194,11 +194,18 @@ define([
             this.lastCheckedContent = content;
         },
 
-        _updateEditableElements: function() {
-            for (var i = 0; i<this.editableElements.length; i++) {
-                this.editableElements[i].update();
-            }
-        },
+        // _preSave: function(event) {
+        //     this.inherited(arguments);
+        //
+        //     this._updateEditableElements();
+        // },
+        //
+        // _updateEditableElements: function() {
+        //     console.error("Des d'on es crida això??");
+        //     for (var i = 0; i<this.editableElements.length; i++) {
+        //         this.editableElements[i].update();
+        //     }
+        // },
 
         getCurrentContent: function () {
 

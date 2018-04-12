@@ -35,11 +35,13 @@ define([
         "ioc/gui/content/subclasses/AjaxFormSubclass",
         "ioc/gui/content/subclasses/AjaxLinkSubclass",
         "ioc/gui/content/subclasses/DokuwikiNSTreeSubclass",
+        "ioc/gui/content/subclasses/EditableElementsContainerSubclass",
     ], function (lang, ContentTool, requestReplacerFactory, dojoQuery, on, dom,
                  MetaInfoSubclass, DocumentSubclass, EditorSubclass, BasicEditorSubclass,
                  MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass,
                  RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass,
-                 ProjectSubclass, AjaxFormSubclass, AjaxLinkSubclass, DokuwikiNSTreeSubclass
+                 ProjectSubclass, AjaxFormSubclass, AjaxLinkSubclass, DokuwikiNSTreeSubclass,
+                 EditableElementsContainerSubclass
                 ) 
         {
 
@@ -442,6 +444,7 @@ define([
                     case this.generation.PROJECT_EDIT:
                         GeneratedContentTool = base
                             .createSubclass(TimedDocumentSubclass)
+                            .createSubclass(EditableElementsContainerSubclass)
                             .createSubclass(ProjectSubclass);
                         break;
 

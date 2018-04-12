@@ -48,11 +48,14 @@ define([
             return changed;
         },
 
+        _preSave: function(event) {
+            this.inherited(arguments);
+        },
+
         _doSave: function (event) {
+            this._preSave(event);
+
             var dataToSend = {};
-
-            this._updateEditableElements();
-
 
             if (event.dataToSend) {
                 dataToSend = event.dataToSend;
