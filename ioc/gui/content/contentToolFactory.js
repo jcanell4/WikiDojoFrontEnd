@@ -100,7 +100,7 @@ define([
                             control.reset(context);
                         });
                     },
-
+                    
                     _getResetableControls = function () {
                         return args.controlsToCheck.filter(function (control) {
                             return control.reset ? true : false;
@@ -169,8 +169,8 @@ define([
 
                 return {
                     /**
-                     * S'afegeixen tota la llista de controls a comprovar als nodes i events que corresponguin. Si no hi ha
-                     * un node especifica es fa servir el node pare d'aquest ContentTool.
+                     * S'afegeixen tota la llista de controls a comprovar als nodes i events que corresponguin.
+                     * Si no hi ha un node específic es fa servir el node pare d'aquest ContentTool.
                      */
                     postAttach: function () {
                         //console.log("ControlChangeContentToolDecoration#postAttach", this.id);
@@ -179,13 +179,14 @@ define([
                     },
 
                     postRender: function () {
-                        //console.log("ControlChangeContentToolDecoration#postRender", this.id);
                         var controls = lang.hitch(this, _getVolatileControls)();
                         lang.hitch(this, _addListenersToControl)(controls);
                         lang.hitch(this, _resetcontrols)();
+                        //on(dom.byId(this.id), "input[type='submit']:click", lang.hitch(this, _resetcontrols)); //los 2 modelos de 'on' son equivalentes
+                        on(dom.byId("revisions_selector_"+this.docId), "submit", lang.hitch(this, _resetcontrols));
 
                     }
-
+                    
                 };
             };
 
@@ -440,6 +441,7 @@ define([
 
                     case this.generation.PROJECT_EDIT:
                         GeneratedContentTool = base
+                            .createSubclass(TimedDocumentSubclass)
                             .createSubclass(ProjectSubclass);
                         break;
 

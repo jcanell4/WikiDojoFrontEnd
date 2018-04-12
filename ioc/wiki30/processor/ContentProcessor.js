@@ -16,10 +16,7 @@ define([
          */
         {
 
-            //blackList: ['html_partial'],
-
-            blackList: ['html_partial'],
-
+            blackList: ['html_partial', 'project_diff', 'project_view'],
             type: null,
 
             /**
@@ -87,7 +84,6 @@ define([
                 this.addContent(content, dispatcher, container);
 
                 this.inherited("process", args);
-
             },
 
             /**
@@ -95,12 +91,9 @@ define([
              *
              * @param {Dispatcher} dispatcher
              * @param {Content} value
-             *
              * @override
              */
-            updateState: function (dispatcher, value) {
-
-            },
+            updateState: function (dispatcher, value) {},
 
             /**
              * Aquest mètode ha de ser implementat obligatoriament per les subclasses per generar el tipus de
@@ -126,7 +119,6 @@ define([
              * @protected
              */
             addContent: function (content, dispatcher, container) {
-                //console.log("ContentProcessor#addContent", content);
                 var oldContentTool = registry.byId(content.id),
                     contentTool,
                     position = 0,
@@ -144,14 +136,10 @@ define([
                     if (oldContentTool) {
                         position = container.getChildIndex(oldContentTool.id);
                         oldContentTool.removeContentTool();
-
                     }
-
                     contentTool = this.createContentTool(content, dispatcher);
                     container.addChild(contentTool, position);
                 }
-
-
             },
 
             /** @protected */
@@ -160,16 +148,10 @@ define([
             },
 
             isRefreshableContent: function (oldType, newType) {
-                // console.log("ContentProcessor#isRefreshableContent", oldType);
-                //return oldType === this.type && this.blackList.indexOf(this.type) === -1; TODO[Xavi] es pot reduir a això
-
                 if ((oldType === this.type && this.blackList.indexOf(this.type) === -1) ||
                     (newType && newType === oldType)) {
-                    //console.log('ContentProcessor#isRefreshableContent', true);
                     return true;
                 }
-                //console.log('ContentProcessor#isRefreshableContent', false);
-
                 return false;
             },
 

@@ -12,7 +12,7 @@ define([
      */
     return declare([FormContentProcessor], {
         
-        type: "view_form",
+        type: "project_view",
 
         process: function (value, dispatcher) {
             var args = arguments;
@@ -25,10 +25,17 @@ define([
             
             //Se añade un array (key:value) con los datos originales del formulario
             args[0].content.formValues = args[0].originalContent;
+            args[0].isRevision = (value.extra.rev) ? true : false;
             
             //Con la incorporación del array de datos del formulario, llamamos a la secuencia principal
             //que creará el contentTool y la pestaña y mostrará el pseudoformulario con los datos originales 
             return this.inherited(args);
+        },
+
+        updateState: function (dispatcher, value) {
+            this.inherited(arguments);
+            dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
+            dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
         },
 
         createContentTool: function (content, dispatcher) {
@@ -42,6 +49,7 @@ define([
                     originalContent: content.originalContent,
                     projectType: content.extra.projectType,
                     type: this.type,
+                    isRevision: content.isRevision,
                     autosaveTimer: content.autosaveTimer,
                     renderEngines: ['test', 'zoomable_form_element']
                 };
