@@ -69,10 +69,9 @@ define([
             }
 
             if (dataToSend.close === true) {
-                var ret = {
-                        id: this.id,
-                        dataToSend: dataToSend
-                    };
+                var ret = {id: this.id,
+                           dataToSend: dataToSend
+                          };
                 this.forceReset();      
                 this.forceClose = true;
                 //this.removeContentTool();
@@ -96,7 +95,8 @@ define([
 
             if (data.discard_changes || isAuto) {
                 dataToSend = this._getQueryForceCancel();
-                this.mixin(dataToSend, this.cachedEvent.dataToSend);
+                if (this.cachedEvent && this.cachedEvent.dataToSend)
+                    this.mixin(dataToSend, this.cachedEvent.dataToSend);
             } 
             else if (data.discard_changes === undefined && this.isContentChanged()) {
                 var cancelDialog = this._generateDiscardDialog();
@@ -151,7 +151,7 @@ define([
         },
 
         _getQueryCancel: function () {
-            return {id: this.ns};
+            return {id: this.ns, projectType: this.projectType};
         },
 
         _getQueryForceCancel: function () {

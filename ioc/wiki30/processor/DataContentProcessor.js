@@ -83,8 +83,6 @@ define([
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
                 dispatcher.getGlobalState().getContent(value.id).readonly = value.editing ? value.editing.readonly : false;
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
-
-//                console.log("al updatestate del data content processor es posa la rev??", dispatcher.getGlobalState().getContent(value.id));
             },
 
             /**
@@ -175,8 +173,10 @@ define([
                     paramsOnExpire: paramsOnExpire
                 });
                 contentTool.startTimer(params.timer.timeout);
-            },
+            }
 
+            /**
+             * Funció ANULADA, pendent d'eliminar. Ara està a ChangesManagerCentralSubClass
             _generateDiscardDialog: function (docId, dispatcher, params) {
                 // ALERTA[Xavi]Exemple de la estructura que arriba del servidor
                 // {
@@ -217,10 +217,9 @@ define([
                 //
                 // });
 
-                //console.log("Params pel dialog:", params);
-
                 var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
                 return dialog;
             }
+            */
         });
 });

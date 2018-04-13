@@ -25,7 +25,14 @@ define([
             
             //Se añade un array (key:value) con los datos originales del formulario
             args[0].content.formValues = args[0].originalContent;
-            args[0].isRevision = (value.extra.rev) ? true : false;
+            //Se copian ciertos valores del 'paquete extra'
+            if (value.extra) {
+                args[0].isRevision = (value.extra.rev) ? true : false;
+                if (value.extra.discard_changes)
+                    args[0].discard_changes = value.extra.discard_changes;
+                if (value.extra.hasDraft)
+                    args[0].hasDraft = value.extra.hasDraft;
+            }
             
             //Con la incorporación del array de datos del formulario, llamamos a la secuencia principal
             //que creará el contentTool y la pestaña y mostrará el pseudoformulario con los datos originales 
@@ -34,8 +41,10 @@ define([
 
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
-            dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
-            dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
+            if (value.extra) {
+                dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
+                dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
+            }
         },
 
         createContentTool: function (content, dispatcher) {
