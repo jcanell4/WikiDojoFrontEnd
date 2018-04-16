@@ -12,7 +12,7 @@ define([
 
 
     return function (data, context, $content) {
-        console.log("Informació del content tool: ", context);
+        // console.log("Informació del content tool: ", context);
 
         // ALERTA[Xavi] si no arriba un objecte jquery suposem que es tracta d'objectes DOM o HTML i fem la conversió.
         if (!$content instanceof jQuery) {

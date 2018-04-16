@@ -194,25 +194,7 @@ define([
             this.lastCheckedContent = content;
         },
 
-        // _preSave: function(event) {
-        //     this.inherited(arguments);
-        //
-        //     this._updateEditableElements();
-        // },
-        //
-        // _updateEditableElements: function() {
-        //     console.error("Des d'on es crida això??");
-        //     for (var i = 0; i<this.editableElements.length; i++) {
-        //         this.editableElements[i].update();
-        //     }
-        // },
-
         getCurrentContent: function () {
-
-
-
-
-
 
             // Obtenir tots els valors dels camps? generar diccionary id:valor
             // Fàcil pels inputs (únic cas contemplat)

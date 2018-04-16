@@ -57,12 +57,12 @@ define([
         _preSave: function(event) {
             this.inherited(arguments);
 
-            this._updateEditableElements();
+            this._saveEditableElements();
         },
 
-        _updateEditableElements: function() {
+        _saveEditableElements: function() {
             for (var i = 0; i<this.editableElements.length; i++) {
-                this.editableElements[i].update();
+                this.editableElements[i].save();
             }
         },
 

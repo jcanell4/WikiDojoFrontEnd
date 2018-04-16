@@ -2,6 +2,8 @@
  * Aquest motor de render espera que el format de les dades sigui string i retorna el mateix contingut
  * o un missatge d'error si no era un string.
  *
+ * ALERTA[Xavi] Aquest mòdul sembla que està obsolet, es continua fer servint?
+ *
  * @module standardEngineFactory
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */

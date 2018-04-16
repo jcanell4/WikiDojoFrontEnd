@@ -239,7 +239,7 @@ define([], function () {
          * @param {string} type - tipus de barra d'eines
          */
         initToolbar: function (toolbarId, wikiTextId, type) {
-            console.log('toolbarManager#initToolbar', type);
+            // console.log('toolbarManager#initToolbar', type);
             initToolbar(toolbarId, wikiTextId, this.getToolbar(type));
 
             var $toolbar = jQuery('#' + toolbarId);

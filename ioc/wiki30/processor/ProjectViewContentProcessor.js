@@ -51,7 +51,7 @@ define([
                     type: this.type,
                     isRevision: content.isRevision,
                     autosaveTimer: content.autosaveTimer,
-                    renderEngines: ['test', 'zoomable_form_element']
+                    //renderEngines: ['test', 'zoomable_form_element']
                 };
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_VIEW, args);    
             return this.contentTool;

@@ -8,7 +8,7 @@ define([
 
         init: function (args) {
 
-            console.log("FireDomEventButtonPlugin#init", args);
+            // console.log("FireDomEventButtonPlugin#init", args);
 
             var config = {
                 type: args.type,

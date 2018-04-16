@@ -52,11 +52,9 @@ define([
             },
 
             hide: function () {
-
-                console.log("AbstractEditableElement#hide");
+                // console.log("AbstractEditableElement#hide");
                 this.setEditionState(false);
 
-                console.log("Restaurant display:", this.defaultDisplay);
                 this.$node.css('display', this.defaultDisplay);
                 this.$editableNode.css('display', 'none');
             },
@@ -66,7 +64,7 @@ define([
                     this.createWidget()
                 }
 
-                console.log("AbstractEditableElement#show");
+                // console.log("AbstractEditableElement#show");
                 this.setEditionState(true);
                 this.$node.css('display', 'none');
                 this.$editableNode.css('display', 'block');
@@ -78,7 +76,17 @@ define([
 
             createWidget: function(){
                 throw new Error("El mètode createWidget s'ha d'implementar a la subclasse");
+            },
+
+            save: function() {
+                throw new Error("La funció save ha de ser implementada per la subclasse");
+            },
+
+            update: function() {
+                throw new Error("La funció update ha de ser implementada per la subclasse");
             }
+
+
         });
 
 });

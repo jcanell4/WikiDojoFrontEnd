@@ -23,14 +23,11 @@ define([
             this.enabled = true;
             this.editor.readOnlyBlocksManager.enabled = this.enabled;
 
-            console.log("Readonly activat:", this.enabled);
         },
 
         process: function() {
             this.enabled = !this.enabled;
             this.editor.readOnlyBlocksManager.enabled = this.enabled;
-
-            console.log("Readonly activat:", this.enabled);
         }
 
 

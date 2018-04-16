@@ -7,16 +7,20 @@ define([
     "dojo/store/Memory",
     "dojo/data/ObjectStore",
     "dijit/form/Button",
-], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button) {
+    "dojox/grid/_Events",
+], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents) {
 
     return declare([AbstractEditableElement],
         {
 
             init: function(args) {
-                console.log("args", args)
+                // console.log("args", args)
                 this.inherited(arguments);
                 this._createIcon();
                 // this.defaultDisplay = 'table';
+
+
+
             },
 
             _replaceNodeContent: function (args) {
@@ -28,7 +32,6 @@ define([
             createWidget: function () {
 
                 var tableData = this.htmlToJson(this.$node);
-                console.log("Taula parsejada:", tableData);
                 this.columns = tableData.columns;
                 this.args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
 
@@ -37,6 +40,7 @@ define([
                 var $container = jQuery('<div id="grid_container"></div>');
 
                 // Movem l'estil de la taula al contenidor;
+                this.$container.parent().addClass('element-container');
                 this.$container.parent().addClass(this.$node[0].className);
                 this.$node.removeClass(this.$node[0].className);
 
@@ -84,12 +88,14 @@ define([
                 this.grid = grid;
 
 
+                // grid.onApplyCellEdit = function(inValue, inRowIndex, inFieldIndex) {
+                //     console.log("Canvis detectats: ", inValue, inRowIndex, inFieldIndex);
+                // };
+
+
+
                 grid.placeAt($container[0]);
                 grid.startup();
-
-
-
-                console.log("current data:", objectStore.data);
 
                 // AFEGIR Buttons
                 var context = this;
@@ -176,7 +182,7 @@ define([
 
 
             revert: function() {
-                console.log("Revert!");
+                // console.log("Revert!");
                 var data = jQuery.extend(true, {}, this.backupData);
                 // var objectStore = new Memory({data: data});
                 // this.dataStore = new ObjectStore({objectStore: objectStore});
@@ -201,8 +207,8 @@ define([
             save: function() {
                 this.backupData = jQuery.extend(true, {}, this.dataStore.objectStore.data);
 
-                console.log(this.backupData);
-                console.log("Save!");
+                // console.log(this.backupData);
+                // console.log("Save!");
 
                 this.jsonToHTML(this.backupData);
                 this.update();
@@ -253,7 +259,7 @@ define([
               var $table = this.$node.find('tbody');
               $table.html("");
 
-              console.log(data);
+              // console.log(data);
 
 
               var cols = this.columns.length;
@@ -341,14 +347,13 @@ define([
 
 
             update: function() {
-                console.log("TODO: Passar la informació del store al camp ocult com a JSON");
                 var data = [];
 
                 for (var item in this.backupData) {
                     var newItem = {};
 
                     for(var i=0; i<this.columns.length; i++) {
-                        console.log(this.columns[i]);
+                        // console.log(this.columns[i]);
                         newItem[this.columns[i].name] = this.backupData[item][this.columns[i].field]
                     }
 
@@ -356,7 +361,7 @@ define([
                 }
 
                 this.$field.val(JSON.stringify(data));
-                console.log("Rebuild item:", data);
+                // console.log("Rebuilt item:", data);
 
             }
         });

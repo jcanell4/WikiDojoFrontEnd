@@ -51,7 +51,7 @@ define([
             }.bind(this));
         },
         
-        postRender(){
+        postRender: function(){
             this.inherited(arguments);
             this._checkChanges();  
         },

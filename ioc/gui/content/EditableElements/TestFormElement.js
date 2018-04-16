@@ -19,32 +19,20 @@ define([
 
 
                     var $container = jQuery('<div id="container_' +args.id+'">');
-                    // var $editor = jQuery('<div id="editor_' +args.id+'">');
                     var $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
                     var $textarea = jQuery('<textarea id="textarea_' + args.id + '" style="width:100%;height:200px" name="foobar"></textarea>');
-
-                    console.log("Afegit textarea?", $textarea);
 
                     $textarea.css('display', 'none');
                     $container.append($toolbar);
                     $container.append($textarea);
-                    // $container.append($editor);
                     $container.append(editorWidget);
-
-
 
                     this.$editableNode.append($container);
 
-                console.log("Afegit textarea?", jQuery('#textarea_' + args.id ));
-
                     var saveCallback = function (e) {
                         this.$node.text(editor.getValue());
-                        //toolbarManager.delete(toolbarId);
-                        // TODO: Com indicar que s'ha produit canvis al formulari?
-                        // this.$node.trigger('input');
-                        // dialog.onHide();
                         console.log(e);
-                         this.hide();
+                        this.hide();
                     }.bind(this);
 
                     var cancelCallback = function (e) {
@@ -52,7 +40,6 @@ define([
                          this.hide();
                          console.log(e);
                     }.bind(this);
-
 
 
                     toolbarManager.createToolbar(toolbarId , 'simple');
@@ -72,7 +59,6 @@ define([
                         plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar
                     });
 
-
                     editor.editor.on('CancelDialog', cancelCallback);
                     editor.editor.on('SaveDialog', saveCallback);
 
@@ -81,8 +67,11 @@ define([
 
             update: function() {
                 console.log("Update: no fem res, això és un elemnt de prova");
-            }
+            },
 
+            save: function() {
+                console.log("Update: no fem res, això és un elemnt de prova");
+            }
 
         });
 

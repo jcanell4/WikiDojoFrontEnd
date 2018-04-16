@@ -213,8 +213,6 @@ define([
                 this._patch(args.auxId);
 
 
-                console.log("hi ha toolbar id?", args.TOOLBAR_ID, this.TOOLBAR_ID);
-
                 this.init(args);
 
 
