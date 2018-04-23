@@ -278,7 +278,12 @@ define([
             },
 
             renderFieldTable: function (field, fvalues) {
-                var data = JSON.parse(field.value);
+                var data;
+                if(typeof field.value ==="string"){ 
+                    data = JSON.parse(field.value);
+                }else{
+                    data = field.value;
+                }
 
 
                 var $table = jQuery('<table></table>');
