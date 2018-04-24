@@ -101,7 +101,7 @@ define([
                 var context = this;
 
 
-                var addKeyButton = new Button({
+                var  Button = new Button({
                     label: "Afegir clau",
 
                     onClick: function () {
