@@ -64,7 +64,7 @@ define([
                 }
             }
             
-            if (dataToSend['keep_draft'] === false) {
+            if (this.getPropertyValueFromData(dataToSend, 'keep_draft') === false) {
                 this.draftManager.clearDraft(this.id, this.ns, true);
             }
 
@@ -117,7 +117,7 @@ define([
                 this.mixin(dataToSend, extraDataToSend);
             }
             
-            if (dataToSend['keep_draft'] === false) {
+            if (this.getPropertyValueFromData(dataToSend, 'keep_draft') === false) {
                 this.draftManager.clearDraft(this.id, this.ns, true);
             }
 
