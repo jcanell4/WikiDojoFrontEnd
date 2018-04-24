@@ -58,7 +58,8 @@ define([
     "ioc/wiki30/processor/UserProfileProcessor",
     "ioc/wiki30/processor/ProjectEditContentProcessor",
     "ioc/wiki30/processor/ProjectViewContentProcessor",
-    "ioc/wiki30/processor/ProjectDiffContentProcessor"
+    "ioc/wiki30/processor/ProjectDiffContentProcessor",
+    "ioc/wiki30/processor/ProjectRequireContentProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, MediaProcessor, MetaInfoProcessor, MetaMediaInfoProcessor,
              MediaDetailsProcessor, MetaMediaDetailsInfoProcessor, DataContentProcessor,
@@ -72,8 +73,8 @@ define([
              RequiringContentProcessor, CodeResponseProcessor, ControlManagerProcessor,
              FormContentProcessor, TabResponseProcessor, RecentsProcessor, MetaFormProcessor,
              PrintProcessor, ContentToolTimerProcessor, UserStateProcessor,
-             UpdateLocalDraftsProcessor, UserProfileProcessor,
-             ProjectEditContentProcessor, ProjectViewContentProcessor, ProjectDiffContentProcessor) {
+             UpdateLocalDraftsProcessor, UserProfileProcessor, ProjectEditContentProcessor,
+             ProjectViewContentProcessor, ProjectDiffContentProcessor, ProjectRequireContentProcessor) {
 
     /** @typedef {object} DijitWidget widget */
     /** @typedef {object} DijitContainer contenidor */
@@ -211,6 +212,7 @@ define([
                 this.processors["project_edit"] = new ProjectEditContentProcessor();
                 this.processors["project_view"] = new ProjectViewContentProcessor();
                 this.processors["project_diff"] = new ProjectDiffContentProcessor();
+                this.processors["project_require"] = new ProjectRequireContentProcessor();
             },
 
             /**

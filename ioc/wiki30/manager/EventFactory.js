@@ -19,6 +19,7 @@ define([
             EDIT: 'edit',
             EDIT_PARTIAL: 'edit_partial',
             EDIT_PROJECT: 'edit_project',
+            VIEW_PROJECT: 'view_project',
             FREE_DOCUMENT: 'free_document',
             LOCK_DOCUMENT: 'lock_document',
             MEDIA_DETAIL: 'media_detail',
@@ -39,7 +40,6 @@ define([
         getEventNameList:function(){
             return this.eventName;
         }
-        
     };
     return ret;
 });

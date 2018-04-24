@@ -18,6 +18,7 @@ define([
                 LOCK_EXPIRING: 'lock_expiring',
                 DIFF: 'diff',
                 PROJECT_DIFF: 'project_diff',
+                REQUIRE: 'require',
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
                 LOCK_WARNING: 'lock_warning',
@@ -67,6 +68,10 @@ define([
 
                     case this.type.PROJECT_DIFF:
                         dialogBuilder = this._getProjectDiffDialog(refId, params);
+                        break;
+
+                    case this.type.REQUIRE:
+                        dialogBuilder = this._getRequireDialog(refId, params);
                         break;
 
                     case this.type.LOCK_EXPIRING:
@@ -171,7 +176,7 @@ define([
                         id: this.id,
                         dataToSend: dataToSend
                     }, observable);
-                }
+                };
             },
 
             /**
@@ -187,9 +192,21 @@ define([
             },
             
             _getProjectDiffDialog: function (refId, params) {
-                // console.log("DialogManager#_getDiffDialog", params);
                 var dialogBuilder = this._getDefaultDialog(refId, params);
                 dialogBuilder.addProjectDiff(params.diff.formDocum, params.diff.formDraft, params.diff.labelDocum, params.diff.labelDraft);
+                return dialogBuilder;
+            },
+            
+            /**
+             * Mostra un diàleg de requeriment
+             * @param {type} refId
+             * @param {obj} params {dialogParams:{id, ns, title, message, timeout}, buttons:[{}]}
+             * @returns {DialogManager.DialogBuilder}
+             */
+            _getRequireDialog: function (refId, params) {
+                this._checkLockedParams(params.dialogParams);
+                var dialogBuilder = new DialogBuilder(params.dialogParams);
+                dialogBuilder.addButtons(params.buttons);
                 return dialogBuilder;
             },
             

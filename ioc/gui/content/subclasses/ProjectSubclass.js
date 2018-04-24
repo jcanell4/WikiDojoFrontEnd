@@ -98,7 +98,7 @@ define([
                 if (this.cachedEvent && this.cachedEvent.dataToSend)
                     this.mixin(dataToSend, this.cachedEvent.dataToSend);
             } 
-            else if (data.discard_changes === undefined && this.isContentChanged()) {
+            else if (data.discard_changes === undefined && this.isContentChanged("_doCancelProjectForm")) {
                 var cancelDialog = this._generateDiscardDialog();
                 if (cancelDialog) 
                     cancelDialog.show();
@@ -151,7 +151,11 @@ define([
         },
 
         _getQueryCancel: function () {
-            return {id: this.ns, projectType: this.projectType};
+            return {
+                id: this.ns, 
+                projectType: this.projectType,
+                leaveResource: true
+            };
         },
 
         _getQueryForceCancel: function () {
@@ -171,7 +175,7 @@ define([
         
         onClose: function() {
             var ret = this.inherited(arguments);
-            var hasChanges = this.isContentChanged();
+            var hasChanges = this.isContentChanged("onClose");
             if (ret===undefined) ret = true;
 
             if (ret && hasChanges && !this.forceClose) {
@@ -193,17 +197,6 @@ define([
             return ret || this.forceClose;
         },
         
-        /**
-         * @override DocumentSubclass
-         * @param {object} content : parámetros, datos y estructura del formulario
-         */
-        updateDocument: function (content) {
-            this.setData(content.content);
-            this.updateTitle();
-            this.render();
-            this.addDocument();
-        },
-
         getProjectType: function() {
             return this.projectType;
         }

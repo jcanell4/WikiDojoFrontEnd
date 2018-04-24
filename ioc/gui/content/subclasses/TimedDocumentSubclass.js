@@ -3,11 +3,6 @@ define([
     'ioc/wiki30/Timer'
 ], function (declare, Timer) {
 
-//    var TimedDocumentSubclassException = function (message) {
-//        this.message = message;
-//        this.name = "TimedDocumentSubclassException"
-//    };
-
     return declare([], {
 
         constructor: function (args) {
@@ -19,19 +14,19 @@ define([
         },
         
         initTimer: function(timerParams){
-            //console.log("TimedDocumentSubclass#initTimer", timerParams);
+            console.log("TimedDocumentSubclass#initTimer", timerParams);
             this.timer.init(timerParams);  
         },
 
         startTimer: function (timeout, timerParams) {
-            //console.log("TimedDocumentSubclass#startTimer", timeout);
+            console.log("TimedDocumentSubclass#startTimer", timeout);
             if(this.timer){
                 this.timer.start(timeout, timerParams);
             }
         },
 
         refreshTimer: function (timeout, timerParams) {
-            //console.log("TimedDocumentSubclass#refreshTimer", timeout);
+            console.log("TimedDocumentSubclass#refreshTimer", timeout);
             if(this.timer){
                 this.timer.refresh(timeout, timerParams);
             }

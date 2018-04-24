@@ -27,8 +27,8 @@ define([
                     args[0].hasDraft = value.extra.hasDraft;
             }
             
-            //Con la incorporación del array de datos del formulario, llamamos a la secuencia principal
-            //que creará el contentTool y creará la pestaña y mostrará el formulario con los datos originales 
+            //Con la incorporación del array de datos del formulario y los valores extra, llamamos a la secuencia principal
+            //que creará el contentTool, creará la pestaña y mostrará el formulario con los datos originales 
             //antes de preguntar si existe un borrador
             var ret = this.inherited(args);
             
@@ -162,14 +162,15 @@ define([
                         //    La cancel·lació s'envia forçant la cancel·lació 
                         //    dels canvis + un alerta informant del fet
                         ptimer.id = ptimer.contentTool.id;
-                        var dialog = dispatcher.getDialogManager().getDialog('lock_expiring'
+                        var dialogManager = dispatcher.getDialogManager();
+                        var dialog = dialogManager.getDialog(dialogManager.type.LOCK_EXPIRING
                                         , "lockExpiring_" + ptimer.contentTool.id
                                         , ptimer);
                         ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
                         dialog.show();
                     // b) Si no hi ha canvis, es cancel·la sense avís previ, però a més
                     //    de l'html s'envia també una alerta informant del fet
-                    } else {
+                    }else {
                         ptimer.contentTool.fireEvent(
                             ptimer.cancelContentEvent,
                             ptimer.cancelEventParams);
@@ -179,7 +180,7 @@ define([
             });
             contentTool.startTimer(params.timer.timeout);
             //Añade un mensaje de tiempo
-            dispatcher.getInfoManager().setExtraInfo({priority: 0, message: "temps d'inactivitat: "+(params.timer.timeout/1000)+" segons"});
+            dispatcher.getInfoManager().setExtraInfo({priority: 0, message: "temps d'inactivitat permès: "+(paramsOnExpire.timeout/1000)+" segons"});
         }
 
     });

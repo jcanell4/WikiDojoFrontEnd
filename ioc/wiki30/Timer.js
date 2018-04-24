@@ -10,12 +10,11 @@ define([
 
     return declare(null, {
 
-        // args conté un objecte que obligatoriament ha de contenir la duració del temporitzador
         /**
-         *
-         * @param {{onExpire: function}} args
+         * @param {{onExpire: function}} args conté un objecte que obligatoriament ha de contenir la duració del temporitzador
          */
         constructor: function (args) {
+            console.log('Timer#constructor:args = ', args);
             if(args){
                 this.init(args);
             }
@@ -27,7 +26,7 @@ define([
         },
         
         start: function (timeout, params) {
-            //console.log('Timer#start', timeout, params);
+            console.log('Timer#start', timeout, params);
             this.expired = false;
             if(params){
                 this.paramsOnExpire=params;
@@ -38,18 +37,19 @@ define([
         },
 
         _onExpire: function (params) {
-            //console.log("Timer#_onExpire", params);
+            console.log("Timer#_onExpire", params);
             if(this.expired){
                 return;
             }
             this.expired = true;
-            this.onExpire(params)
+            this.onExpire(params);
         },
 
         /**
          * Aquest mètode s'ha de sobrescribir al constructor
          */
         onExpire: function () {
+            console.log("Timer#onExpire:this = ", this);
             throw new TimerException("onExpire function not defined");
         },
 
