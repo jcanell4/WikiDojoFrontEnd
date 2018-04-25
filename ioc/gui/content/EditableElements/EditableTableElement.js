@@ -12,6 +12,7 @@ define([
 
     return declare([AbstractEditableElement],
         {
+            defaultRow : null,
 
             init: function(args) {
                 // console.log("args", args)
@@ -24,6 +25,18 @@ define([
             },
 
             _replaceNodeContent: function (args) {
+
+
+                var defaultRow = jQuery(args.node).attr('defaultRow');
+
+                if (defaultRow && defaultRow.length>0) {
+                    var defaultRowObject =JSON.parse(defaultRow);
+                    this.defaultRow = [];
+
+                    for (var col in defaultRowObject) {
+                        this.defaultRow. push(defaultRowObject[col]);
+                    }
+                }
 
                 this.inherited(arguments);
             },
@@ -108,13 +121,17 @@ define([
 
                         var key = prompt("TODO: Afegir un diàleg com cal. Introdueix la clau:");
 
-                        // TODO: el nombre de columnes s'ha d'obterni del defaultrow que arriba del servidor
-                        context.dataStore.newItem({
+                        var data = {
                             id: objectStore.data.length,
-                            col0: key,
-                            col1: '',
-                            col2: '',
-                        });
+                            col0: key
+                        };
+
+                        for (var i=1; i<context.defaultRow.length; i++) {
+                            data['col'+i] = context.defaultRow[i];
+                        }
+
+
+                        context.dataStore.newItem(data);
 
                         // ALERTA[Xavi] Un cop es desa ja no es pot fer revert, hem d'implementar el nostre propi revert
                         context.dataStore.save();

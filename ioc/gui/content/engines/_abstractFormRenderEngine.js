@@ -335,7 +335,11 @@ define([
 
             addPropsToInput: function (props, $input) {
                 for (var prop in props) {
-                    $input.attr(prop, props[prop]);
+                    if (typeof props[prop] === 'object') {
+                        $input.attr(prop, JSON.stringify(props[prop]));
+                    } else {
+                        $input.attr(prop, props[prop]);
+                    }
                 }
             },
 
