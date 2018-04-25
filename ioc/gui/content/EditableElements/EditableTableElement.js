@@ -101,13 +101,14 @@ define([
                 var context = this;
 
 
-                var  Button = new Button({
+                var  addKeyButton = new Button({
                     label: "Afegir clau",
 
                     onClick: function () {
 
                         var key = prompt("TODO: Afegir un diàleg com cal. Introdueix la clau:");
 
+                        // TODO: el nombre de columnes s'ha d'obterni del defaultrow que arriba del servidor
                         context.dataStore.newItem({
                             id: objectStore.data.length,
                             col0: key,
