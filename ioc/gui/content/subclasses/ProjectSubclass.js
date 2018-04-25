@@ -98,7 +98,7 @@ define([
                 if (this.cachedEvent && this.cachedEvent.dataToSend)
                     this.mixin(dataToSend, this.cachedEvent.dataToSend);
             } 
-            else if (data.discard_changes === undefined && this.isContentChanged("_doCancelProjectForm")) {
+            else if (data.discard_changes === undefined && this.isContentChanged()) {
                 var cancelDialog = this._generateDiscardDialog();
                 if (cancelDialog) 
                     cancelDialog.show();
@@ -175,7 +175,7 @@ define([
         
         onClose: function() {
             var ret = this.inherited(arguments);
-            var hasChanges = this.isContentChanged("onClose");
+            var hasChanges = this.isContentChanged();
             if (ret===undefined) ret = true;
 
             if (ret && hasChanges && !this.forceClose) {

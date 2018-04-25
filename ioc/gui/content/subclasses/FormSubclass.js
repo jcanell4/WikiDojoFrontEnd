@@ -28,7 +28,7 @@ define([
          * Retorna cert si el contingut actual i el contingut original sÃ³n diferents o fals si sÃ³n iguals.
          * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
          */
-        isContentChanged: function (pare) {
+        isContentChanged: function () {
 
             var checked = {},
                 item,
@@ -59,8 +59,6 @@ define([
             if (changed) {
                 this.onDocumentChanged();
                 this.hasChanges = true;
-            } else {
-                console.log("FormSubClass:isContentChanged cridar per: " + pare + ". **El contingut no ha canviat**");
             }
 
             return changed;

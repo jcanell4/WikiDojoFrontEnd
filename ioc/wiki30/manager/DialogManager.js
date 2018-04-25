@@ -21,7 +21,7 @@ define([
                 REQUIRE: 'require',
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
-                LOCK_WARNING: 'lock_warning',
+                LOCK_WARNING: 'lock_warning'
             },
 
             constructor: function (args) {

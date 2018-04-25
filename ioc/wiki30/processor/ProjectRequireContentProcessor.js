@@ -6,10 +6,8 @@ define([
     'ioc/gui/DialogBuilder'
 ], function (declare, registry, ContentProcessor, contentToolFactory, DialogBuilder) {
     /**
-     * Aquesta classe s'encarrega de gestionar un bloqueix d'edició.
-     *
-     * @class ProjectRequireContentProcessor
-     * @extends FormContentProcessor
+     * @class ProjectRequireContentProcessor: gestiona la resposta a la petició d'edició d'un formulari de projecte que està bloquejat
+     * @extends ContentProcessor
      * @culpable Rafael Claver
      */
     return declare([ContentProcessor], {
@@ -30,10 +28,10 @@ define([
             args[0].content.formValues = args[0].originalContent;
             if (value.extra)
                 args[0].isRevision = (value.extra.rev) ? true : false;
+
             var ret = this.inherited(args);
             var contentTool = registry.byId(value.id);
             
-            console.log("ProjectRequireContentProcessor#process: value.action =", value.action);
             if (value.action === "dialog"){
                 value.timer.onExpire = function(params){
                         dispatcher.getEventManager().fireEvent(value.timer.eventOnExpire, params);
@@ -47,7 +45,7 @@ define([
                 this._processTimerDialog(value, contentTool, dispatcher);
             }
             else if (value.action === "refresh"){
-                console.log("ProjectRequireContentProcessor#process: Refrescant timer durant " + (value.timer.timeout/1000) + " s");
+                //console.log("ProjectRequireContentProcessor#process: Refrescant timer durant " + (value.timer.timeout/1000) + " s");
                 contentTool.refreshTimer(value.timer.timeout, value.timer.paramsOnExpire);
             }
 
@@ -84,15 +82,13 @@ define([
                     locked: true,
                     readonly: true
                     /*
-                    isRevision: content.isRevision,
                     autosaveTimer: content.autosaveTimer,
-                    rev: content.rev || '',*/
+                    */
                 };
             return contentToolFactory.generate(contentToolFactory.generation.PROJECT_REQUIRE, args);
         },
 
         _initTimer: function(timer, contentTool){
-            console.log("ProjectRequireContentProcessor#_initTimer: timer =", timer);
             if (timer.onCancel){
                 contentTool.initTimer({
                         onExpire: timer.onExpire,
@@ -182,10 +178,11 @@ define([
             dialog.show();
         },
         */
+
         isRefreshableContent: function (oldType) {
-            console.log("ProjectRequireContentProcessor#isRefreshableContent:oldType = " +oldType + ". this.type =", this.type);
             return (oldType === this.type);
         }
+        
     });
     
 });
