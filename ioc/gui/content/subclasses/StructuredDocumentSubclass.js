@@ -1,26 +1,3 @@
-/**
- * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
- *
- * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
- * en el futur.
- *
- * Aquesta classe hereta del AbstractChangesManagerCentralSubclass de manera que afegeix automàticament les
- * funcionalitats comunes dels documents editables de la pestanya central que son:
- *
- *      - Canviar el color de la pestanya a vermell quan hi han canvis
- *      - Canviar el color de la pestanya a negre quan els canvis es restableixin
- *      - Disparar els esdeveniment document_changed i document_changes_reset quan calgui
- *      - Demanar confirmació abans de tancar si s'han realitzat canvis
- *
- * Les crides a aquests mètodes es faran desde la clase decorada.
- *
- * @class StructuredDocumentSubclass
- * @extends AbstractChangesManagerCentralSubclass
- * @author Xavier García <xaviergaro.dev@gmail.com>
- * @private
- * @abstract
- */
-
 define([
     'dojo/_base/declare',
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
@@ -31,7 +8,28 @@ define([
     'dojo/cookie',
     'ioc/dokuwiki/editors/DojoManager/DojoEditorPartialFacade',
 ], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, cookie, DojoEditorPartialFacade) {
-
+    /**
+     * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
+     *
+     * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
+     * en el futur.
+     *
+     * Aquesta classe hereta del AbstractChangesManagerCentralSubclass de manera que afegeix automàticament les
+     * funcionalitats comunes dels documents editables de la pestanya central que son:
+     *
+     *      - Canviar el color de la pestanya a vermell quan hi han canvis
+     *      - Canviar el color de la pestanya a negre quan els canvis es restableixin
+     *      - Disparar els esdeveniment document_changed i document_changes_reset quan calgui
+     *      - Demanar confirmació abans de tancar si s'han realitzat canvis
+     *
+     * Les crides a aquests mètodes es faran desde la clase decorada.
+     *
+     * @class StructuredDocumentSubclass
+     * @extends AbstractChangesManagerCentralSubclass
+     * @author Xavier García <xaviergaro.dev@gmail.com>
+     * @private
+     * @abstract
+     */
     return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
 
         // TOOLBAR_ID: 'partial-editor',
@@ -425,9 +423,6 @@ define([
             this.setFireEventHandler(this.eventName.CANCEL, this._doCancelDocument.bind(this));
             //this.eventManager.registerObserverToLocalEvent(this, this.eventNameCompound.CANCEL, this._doCancelDocument.bind(this));
             //this.registerObserverToEvent(this, this.eventNameCompound.CANCEL, this._doCancelDocument.bind(this));
-
-            this.updateTitle(this.data);
-            // this._checkChanges();
         },
 
 
@@ -653,8 +648,6 @@ define([
 
             this._updateChunks(content, keepOriginalContent);
             this._updateStructure(content);
-            this.updateTitle(content);
-
 
             if (content.locked) {
                 this.lockEditors();
@@ -683,21 +676,6 @@ define([
 
         hasEditors: function () {
             return (Object.keys(this.editors).length > 0);
-        },
-
-        /**
-         * TODO[Xavi] Generalitzar, compartit per tots els editors de documents que suportin control de versions (duplicat a DocumentSubclass)
-         *
-         * @param content
-         */
-        updateTitle: function (content) {
-            var title = content.title;
-
-            if (content.rev) {
-                title += " - Revisió (" + content.rev + ")";
-            }
-
-            this.controlButton.set("label", title); // controlButton es una propietat heretada de Dijit.ContentPane
         },
 
         /**

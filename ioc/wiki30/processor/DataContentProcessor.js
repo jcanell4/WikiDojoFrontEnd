@@ -29,15 +29,13 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //console.log("DataContentProcessor#process", value);
-//                var $form = jQuery(value.htmlForm),
-//                    draftContent;
-//
-//                // Reemplaçem el contingut del content amb el del draft
-//
-//                console.log("value:",value);
-
                 var ret;
+                
+                var draft = dispatcher.getDraftManager().getContentLocalDraft(value.ns);
+                if (!jQuery.isEmptyObject(draft)) {
+                    dispatcher.getInfoManager().setExtraInfo({priority:0, message:LANG.template['ioc-template'].has_draft});
+                }
+                
                 if (value.recover_draft) {
                     var draftContent;
                     if (value.recover_draft.recover_local_draft === true) {
@@ -55,7 +53,6 @@ define([
                     value.originalContent = value.content;
                     value.content = draftContent;
                 }
-
 
                 if (value.rev) {
                     dispatcher.getGlobalState().getContent(value.id).rev = value.rev;

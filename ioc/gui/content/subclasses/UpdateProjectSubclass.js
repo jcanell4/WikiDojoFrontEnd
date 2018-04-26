@@ -17,7 +17,6 @@ define([
          */
         updateDocument: function (content) {
             this.setData(content.content);
-            this.updateTitle();
             this.render();
             this.addDocument();
         }
