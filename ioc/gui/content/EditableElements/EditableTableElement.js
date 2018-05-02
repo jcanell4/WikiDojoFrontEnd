@@ -27,15 +27,10 @@ define([
             _replaceNodeContent: function (args) {
 
 
-                var defaultRow = jQuery(args.node).attr('defaultRow');
-
-                if (defaultRow && defaultRow.length>0) {
-                    var defaultRowObject =JSON.parse(defaultRow);
-                    this.defaultRow = [];
-
-                    for (var col in defaultRowObject) {
-                        this.defaultRow. push(defaultRowObject[col]);
-                    }
+                if (args.defaultRow) {
+                    this.defaultRow = args.defaultRow;
+                } else {
+                    this.defaultRow = {};
                 }
 
                 this.inherited(arguments);

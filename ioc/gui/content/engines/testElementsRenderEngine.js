@@ -10,6 +10,27 @@ define([
 
     // Afegim als camps amb l'atribut data-form-editor-button una icona per ampliar l'editor.
 
+    var searchElement = function (id, data) {
+
+        // console.log("Cercant:", id, data);
+        var element;
+
+        if (Array.isArray(data)) {
+            for (var i = 0; i < data.length; i++) {
+                element = searchElement(id, data[i]);
+                if (element.id === id) {
+                    break;
+                }
+            }
+        } else if (data.elements) {
+            element = searchElement(id, data.elements);
+        } else {
+            element = data;
+        }
+        return element;
+
+    };
+
 
     return function (data, context, $content) {
         // console.log("Informació del content tool: ", context);
@@ -26,7 +47,6 @@ define([
 
 
         // ALERTA: Determinem si es editable o no inicialment basant-nos en el tipus de content tool
-
 
 
         for (var i = 0; i < $nodes.length; i++) {
@@ -95,16 +115,43 @@ define([
 
         // alert("Editable? " +editable);
         for (var i = 0; i < $nodes.length; i++) {
+            console.log("tenim accés a les dades?", data);
+
+            var id = jQuery($nodes[i]).attr('id');
+            var element = searchElement(id, data);
+
+            console.log("Element trobat?", element);
+
+
             var type = jQuery($nodes[i]).attr('data-editable-element');
-            editableElementsFactory.createElement(type, {
-                context: context,
-                node: $nodes[i],
-                name: "nom-de-prova",
-                formId: $content.find('form').attr('id')
-            });
+
+            var config;
+            if (element) {
+                config = element.config;
+            } else {
+                config = {};
+            }
+
+
+            config.context = context;
+            config.node = $nodes[i];
+            config.name = id;
+            config.formId = $content.find('form').attr('id');
+
+            editableElementsFactory.createElement(type, config);
+
+
+            // editableElementsFactory.createElement(type, {
+            //     context: context,
+            //     node: $nodes[i],
+            //     name: "nom-de-prova",
+            //     formId: $content.find('form').attr('id'),
+            // });
         }
 
 
         return $content;
     }
+
+
 });

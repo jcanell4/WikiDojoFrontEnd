@@ -20,7 +20,7 @@ define([
 
                     var $container = jQuery('<div id="container_' +args.id+'">');
                     var $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
-                    var $textarea = jQuery('<textarea id="textarea_' + args.id + '" style="width:100%;height:200px" name="foobar"></textarea>');
+                    var $textarea = jQuery('<textarea id="textarea_' + args.id + '" style="width:100%;height:200px"></textarea>');
 
                     $textarea.css('display', 'none');
                     $container.append($toolbar);

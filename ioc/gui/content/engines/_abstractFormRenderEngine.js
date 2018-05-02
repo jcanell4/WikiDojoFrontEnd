@@ -287,6 +287,8 @@ define([
 
 
                 var $table = jQuery('<table></table>');
+                $table.attr('id', field.id);
+
                 var $header = jQuery('<thead></thead>');
                 var $body = jQuery('<tbody></tbody>');
 
