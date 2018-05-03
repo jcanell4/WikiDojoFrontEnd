@@ -1,5 +1,4 @@
 define([
-    // 'ioc/gui/content/EditableElements/TestFormElement',
     'ioc/gui/content/EditableElements/EditableTableElement',
     'ioc/gui/content/EditableElements/EditableTextareaElement'
 ], function (/*TestFormElement, */EditableTableElement, EditableTextareaElement) {
@@ -15,8 +14,6 @@ define([
         },
 
         _init = function () {
-
-            // _addEditableElement('test', TestFormElement);
             _addEditableElement('table', EditableTableElement);
             _addEditableElement('textarea', EditableTextareaElement);
         };
