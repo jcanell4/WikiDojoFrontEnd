@@ -25,9 +25,9 @@ define([
                     var states = that.editor.get_line_states_preview(cursor.row, true);
 
 
-                    console.log("Tecla:", keyCode, keyString, hash);
+                    // console.log("Tecla:", keyCode, keyString, hash);
                     if (/*hash === -1 || */(keyCode && keyCode <= 40 && keyCode >= 33)) {
-                        console.log("Es permet:", keyCode, keyString, hash);
+                        // console.log("Es permet:", keyCode, keyString, hash);
                         return false;
                     } else {
                     }
@@ -156,7 +156,6 @@ define([
 
         isReadonlySection: function (states, cursor) {
 
-            console.log("Es troba activat?", this.enabled);
             if (!this.enabled) {
 
                 return false;
@@ -176,15 +175,13 @@ define([
                     if (states[j].name.startsWith(state)
                         && ((states[j].start === states[j].end && cursor.column > states[j].start)
                             || (states[j].start <= cursor.column && states[j].end >= cursor.column ))) {
-                        console.log("Es readonly");
                         return true;
                     }
 
-                    console.log(states[j].name);
+                    // console.log(states[j].name);
                 }
             }
 
-            console.log("NO es readonly");
             return false;
 
         },

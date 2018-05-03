@@ -101,7 +101,7 @@ define([
            // S'han de comprovar que tots els items de currentContent siguin iguals
            for (item in currentContent) {
                if (currentContent[item] !== originalContent[item]) {
-                   console.log(currentContent[item] + "!==" +  originalContent[item]);
+                   // console.log(currentContent[item] + "!==" +  originalContent[item]);
                    changed = true;
                    break;
                } else {

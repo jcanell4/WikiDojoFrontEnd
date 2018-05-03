@@ -1,5 +1,4 @@
 define([
-    'dojo/i18n', // i18n.getLocalization
     'ioc/wiki30/manager/EventFactory',
 
     // Plugins
@@ -28,11 +27,10 @@ define([
 
 
 
-], function (i18n, EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent, AceFireDojoEvent,
+], function (EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
-             AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin) {
+             AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin, localization) {
 
-    var strings = i18n.getLocalization("ioc.dokuwiki.editors", "commands") || {};
 
     var plugins = {
         'ACE': {
@@ -97,43 +95,43 @@ define([
     var config = {
         'CancelButton': {
             type: 'BackButton',
-            title: strings["cancel-button"],
+            title: localization["cancel-button"],
             event: {full: EventFactory.eventName.CANCEL, partial: EventFactory.eventName.CANCEL_PARTIAL},
             icon: 'IocBack',
             // category: 'A'
         },
         'SaveButton': {
             type: 'SaveButton',
-            title: strings["save-button"],
+            title: localization["save-button"],
             event: {full: EventFactory.eventName.SAVE, partial: EventFactory.eventName.SAVE_PARTIAL},
             icon: 'IocSave',
             // category: 'A'
         },
         'CancelDialogEditorButton': {
             type: 'CancelDialogEditorButton',
-            title: strings["cancel-button"],
+            title: localization["cancel-button"],
             event: {type:'CancelDialog', data: {}},
             icon: 'IocBack',
             // category: 'A'
         },
         'SaveDialogEditorButton': {
             type: 'SaveDialogEditorButton',
-            title: strings["save-button"],
+            title: localization["save-button"],
             event: {type:'SaveDialog', data: {}},
             icon: 'IocSave',
             // category: 'A'
         },
         'IocSoundFormatButton': {
-            title: strings["ioc-sound-button"],
+            title: localization["ioc-sound-button"],
             open: '{{soundcloud>',
             close: '}}',
-            sample: strings["ioc-sound-sample"],
+            sample: localization["ioc-sound-sample"],
             icon: 'IocSound',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
         'DocumentPreviewButton': {
             type: 'DocumentPreview',
-            title: strings["document-preview"],
+            title: localization["document-preview"],
             icon: 'IocDocumentPreview',
             // category: 'B'
         },
@@ -147,261 +145,261 @@ define([
         // },
         'IocComment': {
             type: 'IocComment',
-            title: strings["ioc-comment-button"],
+            title: localization["ioc-comment-button"],
             icon: 'IocComment'
             // category: 'C',
         },
 
         'EnableACE': {
             type: 'EnableACE',
-            title: strings["enable-ace"],
+            title: localization["enable-ace"],
             icon: 'IocEnableACE'
             // category: 'C',
         },
 
         'EnableWrapper': {
             type: 'EnableWrapper',
-            title: strings["enable-wrapper"],
+            title: localization["enable-wrapper"],
             icon: 'IocEnableWrapper'
             // category: 'C',
         },
 
         'LatexPreview': {
             type: 'LatexPreview',
-            title: strings["latex-preview"],
+            title: localization["latex-preview"],
         },
 
         'NewContent': {
-            title: strings["ioc-new-content-button"],
+            title: localization["ioc-new-content-button"],
             open: '<newcontent>',
             close: '</newcontent>',
-            sample: strings["ioc-new-content-sample"],
+            sample: localization["ioc-new-content-sample"],
             icon: 'IocNewContent',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertFigureSyntax': {
-            title: strings["ioc-insert-figure-button"],
+            title: localization["ioc-insert-figure-button"],
             open: '::figure:\n  :title:\n  :footer:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-figure-sample"],
+            sample: localization["ioc-insert-figure-sample"],
             icon: 'IocInsertFigureSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertFigureLinkSyntax': {
-            title: strings["ioc-insert-figure-link-button"],
+            title: localization["ioc-insert-figure-link-button"],
             open: ':figure:',
             close: ':',
-            sample: strings["ioc-insert-figure-link-sample"],
+            sample: localization["ioc-insert-figure-link-sample"],
             icon: 'IocInsertFigureLinkSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertTableSyntax': {
-            title: strings["ioc-insert-table-button"],
+            title: localization["ioc-insert-table-button"],
             open: '::table:\n  :title:\n  :footer:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-table-sample"],
+            sample: localization["ioc-insert-table-sample"],
             icon: 'IocInsertTableSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertTableLinkSyntax': {
-            title: strings["ioc-insert-table-link-button"],
+            title: localization["ioc-insert-table-link-button"],
             open: ':table:',
             close: ':',
-            sample: strings["ioc-insert-table-link-sample"],
+            sample: localization["ioc-insert-table-link-sample"],
             icon: 'IocInsertTableLinkSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertTextSyntax': {
-            title: strings["ioc-insert-text-button"],
+            title: localization["ioc-insert-text-button"],
             open: '::text:\n  :title:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-text-sample"],
+            sample: localization["ioc-insert-text-sample"],
             icon: 'IocInsertTextSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertTextLargeSyntax': {
-            title: strings["ioc-insert-text-large-button"],
+            title: localization["ioc-insert-text-large-button"],
             open: '::text:\n  :title:\n  :large:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-text-large-sample"],
+            sample: localization["ioc-insert-text-large-sample"],
             icon: 'IocInsertTextLargeSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertExampleSyntax': {
-            title: strings["ioc-insert-example-button"],
+            title: localization["ioc-insert-example-button"],
             open: '::example:\n  :title:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-example-sample"],
+            sample: localization["ioc-insert-example-sample"],
             icon: 'IocInsertExampleSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertNoteSyntax': {
-            title: strings["ioc-insert-note-button"],
+            title: localization["ioc-insert-note-button"],
             open: '::note:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-note-sample"],
+            sample: localization["ioc-insert-note-sample"],
             icon: 'IocInsertNoteSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertReferenceSyntax': {
-            title: strings["ioc-insert-reference-button"],
+            title: localization["ioc-insert-reference-button"],
             open: '::reference:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-reference-sample"],
+            sample: localization["ioc-insert-reference-sample"],
             icon: 'IocInsertReferenceSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertImportantSyntax': {
-            title: strings["ioc-insert-important-button"],
+            title: localization["ioc-insert-important-button"],
             open: '::important:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-reference-sample"],
+            sample: localization["ioc-insert-reference-sample"],
             icon: 'IocInsertImportantSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertQuoteSyntax': {
-            title: strings["ioc-insert-quote-button"],
+            title: localization["ioc-insert-quote-button"],
             open: '::quote:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-quote-sample"],
+            sample: localization["ioc-insert-quote-sample"],
             icon: 'IocInsertQuoteSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertAccountingSyntax': {
-            title: strings["ioc-insert-accounting-button"],
+            title: localization["ioc-insert-accounting-button"],
             open: '::accounting:\n  :title:\n  :footer:\n',
             close: '\n:::',
-            sample: strings["ioc-insert-accounting-sample"],
+            sample: localization["ioc-insert-accounting-sample"],
             icon: 'IocInsertAccountingSyntax',
-            category: strings["category-ioc"]
+            category: localization["category-ioc"]
         },
 
 
         'HTMLBold': {
-            title: strings["ioc-insert-bold-button"],
+            title: localization["ioc-insert-bold-button"],
             open: '<strong>',
             close: '</strong>',
-            sample: strings["ioc-insert-bold-button"],
+            sample: localization["ioc-insert-bold-button"],
             icon: 'IocBold',
         },
 
         'HTMLItalic': {
-            title: strings["ioc-insert-italic-button"],
+            title: localization["ioc-insert-italic-button"],
             open: '<em>',
             close: '</em>',
-            sample: strings["ioc-insert-italic-button"],
+            sample: localization["ioc-insert-italic-button"],
             icon: 'IocItalic',
         },
 
         'HTMLUnderline': {
-            title: strings["ioc-insert-underline-button"],
+            title: localization["ioc-insert-underline-button"],
             open: '<ins>',
             close: '</ins>',
-            sample: strings["ioc-insert-underline-button"],
+            sample: localization["ioc-insert-underline-button"],
             icon: 'IocUnderline',
         },
 
         'HTMLCode': {
-            title: strings["ioc-insert-code-button"],
+            title: localization["ioc-insert-code-button"],
             open: '<code>',
             close: '</code>',
-            sample: strings["ioc-insert-code-button"],
+            sample: localization["ioc-insert-code-button"],
             icon: 'IocCode',
         },
 
         'HTMLStrikethrough': {
-            title: strings["ioc-insert-strikethrough-button"],
+            title: localization["ioc-insert-strikethrough-button"],
             open: '<del>',
             close: '</del>',
-            sample: strings["ioc-insert-strikethrough-button"],
+            sample: localization["ioc-insert-strikethrough-button"],
             icon: 'IocStrikethrough',
         },
 
         'HTMLHeader1': {
-            title: strings["ioc-insert-header1-button"],
+            title: localization["ioc-insert-header1-button"],
             open: '<h1>',
             close: '</h1>',
-            sample: strings["ioc-insert-header-sample"],
+            sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader1',
-            category: strings["category-header"]
+            category: localization["category-header"]
         },
 
         'HTMLHeader2': {
-            title: strings["ioc-insert-header2-button"],
+            title: localization["ioc-insert-header2-button"],
             open: '<h2>',
             close: '</h2>',
-            sample: strings["ioc-insert-header-sample"],
+            sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader2',
-            category: strings["category-header"]
+            category: localization["category-header"]
         },
 
         'HTMLHeader3': {
-            title: strings["ioc-insert-header3-button"],
+            title: localization["ioc-insert-header3-button"],
             open: '<h3>',
             close: '</h3>',
-            sample: strings["ioc-insert-header-sample"],
+            sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader3',
-            category: strings["category-header"]
+            category: localization["category-header"]
         },
 
         'HTMLHeader4': {
-            title: strings["ioc-insert-header4-button"],
+            title: localization["ioc-insert-header4-button"],
             open: '<h4>',
             close: '</h4>',
-            sample: strings["ioc-insert-header-sample"],
+            sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader4',
-            category: strings["category-header"]
+            category: localization["category-header"]
         },
 
         'HTMLHeader5': {
-            title: strings["ioc-insert-header5-button"],
+            title: localization["ioc-insert-header5-button"],
             open: '<h5>',
             close: '</h5>',
-            sample: strings["ioc-insert-header-sample"],
+            sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader5',
-            category: strings["category-header"]
+            category: localization["category-header"]
         },
 
         'HTMLHeader6': {
-            title: strings["ioc-insert-header6-button"],
+            title: localization["ioc-insert-header6-button"],
             open: '<h6>',
             close: '</h6>',
-            sample: strings["ioc-insert-header-sample"],
+            sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader6',
-            category: strings["category-header"]
+            category: localization["category-header"]
         },
 
         'HTMLLink': {
-            title: strings["ioc-insert-link-button"],
+            title: localization["ioc-insert-link-button"],
             open: '',
             close: '',
-            sample: strings["ioc-insert-link-sample"],
+            sample: localization["ioc-insert-link-sample"],
             icon: 'IocLink',
         },
 
         'HTMLLinkExternal': {
-            title: strings["ioc-insert-link-external-button"],
+            title: localization["ioc-insert-link-external-button"],
             open: '',
             close: '',
-            sample: strings["ioc-insert-link-external-sample"],
+            sample: localization["ioc-insert-link-external-sample"],
             icon: 'IocLinkExternal',
         },
 
         'ReadonlyBlocksToggle': {
-            type: strings["ioc-readonly-toggle"],
-            title: strings["ioc-readonly-toggle"],
+            type: localization["ioc-readonly-toggle"],
+            title: localization["ioc-readonly-toggle"],
             icon: 'IocReadonly'
             // category: 'C',
         },

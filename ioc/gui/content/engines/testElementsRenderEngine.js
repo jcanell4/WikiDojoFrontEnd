@@ -43,20 +43,42 @@ define([
         // var $editorButtons = $content.find('[data-form-editor-button]');
 
         // ALERTA[Xavi] per fer aquesta proba s'agafan els nodes de classe 'h2'
-        var $nodes = $content.find('.h2');
-
-
-        // ALERTA: Determinem si es editable o no inicialment basant-nos en el tipus de content tool
-
-
-        for (var i = 0; i < $nodes.length; i++) {
-            editableElementsFactory.createElement('test', {
-                context: context,
-                node: $nodes[i],
-                name: "nom-de-prova",
-                formId: $content.find('form').attr('id')
-            });
-        }
+        // var $nodes = $content.find('.h2');
+        //
+        //
+        // // ALERTA: Determinem si es editable o no inicialment basant-nos en el tipus de content tool
+        //
+        // var formId = $content.find('form').attr('id');
+        //
+        //
+        //
+        // for (var i = 0; i < $nodes.length; i++) {
+        //     var config;
+        //
+        //     var id = jQuery($nodes[i]).attr('id');
+        //     if (element) {
+        //         config = element.config;
+        //     } else {
+        //         config = {};
+        //     }
+        //
+        //
+        //     config.context = context;
+        //     config.node = $nodes[i];
+        //     config.name = id;
+        //     config.formId = formId;
+        //
+        //     editableElementsFactory.createElement(type, config);
+        //
+        //
+        //
+        //     // editableElementsFactory.createElement('test', {
+        //     //     context: context,
+        //     //     node: $nodes[i],
+        //     //     name: "nom-de-prova",
+        //     //     formId: $content.find('form').attr('id')
+        //     // });
+        // }
 
         // ALERTA[Xavi] Test per les taules, afegim una taula al final del contingut
 
@@ -111,16 +133,14 @@ define([
 
 
         // ALERTA[Xavi] indicant el tipus com a valor de la propietat es pot fer servir el mateix bucle per a totes
-        $nodes = $content.find('[data-editable-element]');
+        var $nodes = $content.find('[data-editable-element]');
+        var formId = $content.find('form').attr('id');
 
         // alert("Editable? " +editable);
         for (var i = 0; i < $nodes.length; i++) {
-            console.log("tenim accés a les dades?", data);
 
             var id = jQuery($nodes[i]).attr('id');
             var element = searchElement(id, data);
-
-            console.log("Element trobat?", element);
 
 
             var type = jQuery($nodes[i]).attr('data-editable-element');
@@ -136,17 +156,11 @@ define([
             config.context = context;
             config.node = $nodes[i];
             config.name = id;
-            config.formId = $content.find('form').attr('id');
+            config.formId = formId;
 
             editableElementsFactory.createElement(type, config);
 
 
-            // editableElementsFactory.createElement(type, {
-            //     context: context,
-            //     node: $nodes[i],
-            //     name: "nom-de-prova",
-            //     formId: $content.find('form').attr('id'),
-            // });
         }
 
 
