@@ -178,7 +178,7 @@ define([
             var hasChanges = this.isContentChanged();
             if (ret===undefined) ret = true;
 
-            if (ret && hasChanges && !this.forceClose) {
+            if (ret && !this.forceClose) {
                 var eventManager = this.dispatcher.getEventManager();
                 eventManager.fireEvent(eventManager.eventName.CANCEL_PROJECT, {
                     id: this.id,
