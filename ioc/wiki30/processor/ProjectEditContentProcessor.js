@@ -20,9 +20,15 @@ define([
             //Se añade un array (key:value) con los datos originales del formulario
             //(nota: los datos de este nuevo array se cambiarán si existe un borrador)
             args[0].content.formValues = args[0].originalContent;
+
+            //Se copian ciertos valores del 'paquete extra'
+            if (value.extra) {
+                if (value.extra.hasDraft)
+                    args[0].hasDraft = value.extra.hasDraft;
+            }
             
-            //Con la incorporación del array de datos del formulario, llamamos a la secuencia principal
-            //que creará el contentTool y creará la pestaña y mostrará el formulario con los datos originales 
+            //Con la incorporación del array de datos del formulario y los valores extra, llamamos a la secuencia principal
+            //que creará el contentTool, creará la pestaña y mostrará el formulario con los datos originales 
             //antes de preguntar si existe un borrador
             var ret = this.inherited(args);
             
@@ -98,7 +104,7 @@ define([
         },
         
         _getDocument: function (value) {
-            return {content: JSON.stringify(value.originalContent), date: value.originalLastmod};
+            return {content: JSON.stringify(value.originalContent), date: value.extra.originalLastmod};
         },
 
         _getDraft: function (draft) {
@@ -114,8 +120,8 @@ define([
                 }
                 fecha *= mul;
             }
-            var d = new Date(fecha);
-            return d.getDate() + "-" + (d.getMonth()+1) + "-" + d.getFullYear();
+            var d = new Date(parseInt(fecha));
+            return d.getDate() + "." + (d.getMonth()+1) + "." + d.getFullYear();
         },
         
         createContentTool: function (content, dispatcher) {
@@ -158,14 +164,15 @@ define([
                         //    La cancel·lació s'envia forçant la cancel·lació 
                         //    dels canvis + un alerta informant del fet
                         ptimer.id = ptimer.contentTool.id;
-                        var dialog = dispatcher.getDialogManager().getDialog('lock_expiring'
+                        var dialogManager = dispatcher.getDialogManager();
+                        var dialog = dialogManager.getDialog(dialogManager.type.LOCK_EXPIRING
                                         , "lockExpiring_" + ptimer.contentTool.id
                                         , ptimer);
                         ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
                         dialog.show();
                     // b) Si no hi ha canvis, es cancel·la sense avís previ, però a més
                     //    de l'html s'envia també una alerta informant del fet
-                    } else {
+                    }else {
                         ptimer.contentTool.fireEvent(
                             ptimer.cancelContentEvent,
                             ptimer.cancelEventParams);
@@ -174,6 +181,8 @@ define([
                 paramsOnExpire: paramsOnExpire
             });
             contentTool.startTimer(params.timer.timeout);
+            //Añade un mensaje de tiempo
+            dispatcher.getInfoManager().setExtraInfo({priority: 0, message: "temps d'inactivitat permès: "+(paramsOnExpire.timeout/1000)+" segons"});
         }
 
     });

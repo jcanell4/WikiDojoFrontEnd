@@ -32,6 +32,7 @@ define([
         "ioc/gui/content/subclasses/NotificationSubclass",
         "ioc/gui/content/subclasses/FormSubclass",
         "ioc/gui/content/subclasses/ProjectSubclass",
+        "ioc/gui/content/subclasses/UpdateProjectSubclass",
         "ioc/gui/content/subclasses/AjaxFormSubclass",
         "ioc/gui/content/subclasses/AjaxLinkSubclass",
         "ioc/gui/content/subclasses/DokuwikiNSTreeSubclass",
@@ -40,9 +41,8 @@ define([
                  MetaInfoSubclass, DocumentSubclass, EditorSubclass, BasicEditorSubclass,
                  MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass,
                  RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass,
-                 ProjectSubclass, AjaxFormSubclass, AjaxLinkSubclass, DokuwikiNSTreeSubclass,
-                 EditableElementsContainerSubclass
-                ) 
+                 ProjectSubclass, UpdateProjectSubclass, AjaxFormSubclass, AjaxLinkSubclass, 
+                 DokuwikiNSTreeSubclass, EditableElementsContainerSubclass ) 
         {
 
         var patch = function (target, source) {
@@ -89,7 +89,6 @@ define([
                     args.controlsToCheck = [];
                 }
 
-
                 if (!Array.isArray(args.controlsToCheck)) {
                     args.controlsToCheck = [args.controlsToCheck];
                 }
@@ -107,7 +106,6 @@ define([
                         return args.controlsToCheck.filter(function (control) {
                             return control.reset ? true : false;
                         });
-
                     },
 
                     _getVolatileControls = function () {
@@ -226,52 +224,37 @@ define([
                         var replacer = replacers[type],
                             params = replacer.params;
 
-
                         params.request = requester;
 
                         handler = lang.hitch(this, replacer.replacer)(params);
 
                         if (params.volatile) {
-
                             this.addListenerHandler(handler);
-
                         } else {
                             //console.log("eliminant replacer:", type);
                             delete(replacers[type]);
-
                         }
                     }
                 };
 
             // si no existeix el requester es genera un de nou
             (function () {
-
                 if (!requester) {
                     require(["ioc/wiki30/Request"], lang.hitch(this, function (Request) { // TODO[Xavi] comprovar si cal el hitch, no es fa servir el this per a res
                         requester = new Request();
-
-//                        requester.updateSectok = function (sectok) {
-//                            this.sectok = sectok;
-//                        };
-//
-//                        requester.sectok = requester.dispatcher.getSectok();
-//                        requester.dispatcher.toUpdateSectok.push(requester);
                     }));
                 }
             })();
 
 
             return {
-
                 /**
                  * Aquest métode realitza la renderització de els dades i la substitució dels enllaços per crides AJAX.
                  * @protected
                  */
                 postRender: function () {
-                    //console.log("RequestContentToolDecoration#postRender", this.id);
                     lang.hitch(this, _replaceContent)(requester, replacers);
                 }
-
             };
 
         };
@@ -296,6 +279,7 @@ define([
                 FORM: 'form',
                 PROJECT_EDIT: 'project_edit',
                 PROJECT_VIEW: 'project_view',
+                PROJECT_REQUIRE: 'project_require',
                 REQUIRING: 'requiring',
                 MEDIADETAILS: 'mediadetails',
                 METAMEDIADETAILS: 'metamediadetails',
@@ -405,7 +389,6 @@ define([
                     case this.generation.META:
                         GeneratedContentTool = base
                             .createSubclass(MetaInfoSubclass);
-                            // .createSubclass(AjaxFormSubclass);
                         break;
 
                     case this.generation.META_REVISIONS:
@@ -445,12 +428,20 @@ define([
                         GeneratedContentTool = base
                             .createSubclass(TimedDocumentSubclass)
                             .createSubclass(EditableElementsContainerSubclass)
-                            .createSubclass(ProjectSubclass);
+                            .createSubclass(ProjectSubclass)
+                            .createSubclass(UpdateProjectSubclass);
                         break;
 
                     case this.generation.PROJECT_VIEW:
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass);
+                        break;
+
+                    case this.generation.PROJECT_REQUIRE:
+                        GeneratedContentTool = base
+                            .createSubclass(TimedDocumentSubclass)
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(UpdateProjectSubclass);
                         break;
 
                     case this.generation.REQUIRING:
@@ -467,7 +458,6 @@ define([
                             .createSubclass(RequestSubclass)
                             .createSubclass(DocumentSubclass)
                             .createSubclass(StructuredDocumentSubclass);
-
                         break;
 
                     case this.generation.MEDIADETAILS:
@@ -475,6 +465,7 @@ define([
                             .createSubclass(DocumentSubclass)
                             .createSubclass(MediaDetailsSubclass);
                         break;
+                        
                     case this.generation.METAMEDIADETAILS:
                         GeneratedContentTool = base
                             .createSubclass(MetaInfoSubclass)
@@ -488,7 +479,6 @@ define([
                         break;
 
                     case this.generation.RECENTS:
-                        // console.log("contentToolFactory#createClass: RECENTS");
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass)
                             .createSubclass(AjaxLinkSubclass)
@@ -496,30 +486,22 @@ define([
                         break;
 
                     case this.generation.META_DOKUWIKI_NS_TREE:
-                        //console.log("contentToolFactory#createClass: DokuwikiNSTreeContentTool");
                         GeneratedContentTool = base
                              .createSubclass(MetaInfoSubclass) 
                             .createSubclass(DokuwikiNSTreeSubclass);
                         break;
 
-
-
-
                     default:
                         console.error('No existeix el tipus de ContentTool: ' + type);
                 }
 
-
                 return GeneratedContentTool;
-
 
                 ///**
                 // * Builder que ens permet construir la classe personalitzada
                 // */
                 //return {
-                //
                 //    classes: [],
-                //
                 //    decorateClass: function (klass) {
                 //        var self = this;
                 //
@@ -530,10 +512,8 @@ define([
                 //        } else {
                 //            this.classes.push({});
                 //        }
-                //
                 //        return this;
                 //    },
-                //
                 //
                 //    //// fora, retorna
                 //    //build: function () {

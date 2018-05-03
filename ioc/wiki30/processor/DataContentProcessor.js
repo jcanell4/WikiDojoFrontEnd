@@ -29,15 +29,13 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                //console.log("DataContentProcessor#process", value);
-//                var $form = jQuery(value.htmlForm),
-//                    draftContent;
-//
-//                // Reemplaçem el contingut del content amb el del draft
-//
-//                console.log("value:",value);
-
                 var ret;
+                
+                var draft = dispatcher.getDraftManager().getContentLocalDraft(value.ns);
+                if (!jQuery.isEmptyObject(draft)) {
+                    dispatcher.getInfoManager().setExtraInfo({priority:0, message:LANG.template['ioc-template'].has_draft});
+                }
+                
                 if (value.recover_draft) {
                     var draftContent;
                     if (value.recover_draft.recover_local_draft === true) {
@@ -55,7 +53,6 @@ define([
                     value.originalContent = value.content;
                     value.content = draftContent;
                 }
-
 
                 if (value.rev) {
                     dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
@@ -83,8 +80,6 @@ define([
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
                 dispatcher.getGlobalState().getContent(value.id).readonly = value.editing ? value.editing.readonly : false;
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
-
-//                console.log("al updatestate del data content processor es posa la rev??", dispatcher.getGlobalState().getContent(value.id));
             },
 
             /**
@@ -175,8 +170,10 @@ define([
                     paramsOnExpire: paramsOnExpire
                 });
                 contentTool.startTimer(params.timer.timeout);
-            },
+            }
 
+            /**
+             * Funció ANULADA, pendent d'eliminar. Ara està a ChangesManagerCentralSubClass
             _generateDiscardDialog: function (docId, dispatcher, params) {
                 // ALERTA[Xavi]Exemple de la estructura que arriba del servidor
                 // {
@@ -217,10 +214,9 @@ define([
                 //
                 // });
 
-                //console.log("Params pel dialog:", params);
-
                 var dialog = dispatcher.getDialogManager().getDialog('default', 'save_or_cancel_' + docId, params);
                 return dialog;
             }
+            */
         });
 });
