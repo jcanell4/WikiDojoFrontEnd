@@ -70,15 +70,14 @@ define([
                 }
             }
             
-            if (dataToSend['keep_draft'] === false) {
+            if (this.getPropertyValueFromData(dataToSend, 'keep_draft') === false) {
                 this.draftManager.clearDraft(this.id, this.ns, true);
             }
 
             if (dataToSend.close === true) {
-                var ret = {
-                        id: this.id,
-                        dataToSend: dataToSend
-                    };
+                var ret = {id: this.id,
+                           dataToSend: dataToSend
+                          };
                 this.forceReset();      
                 this.forceClose = true;
                 //this.removeContentTool();
@@ -102,7 +101,8 @@ define([
 
             if (data.discard_changes || isAuto) {
                 dataToSend = this._getQueryForceCancel();
-                this.mixin(dataToSend, this.cachedEvent.dataToSend);
+                if (this.cachedEvent && this.cachedEvent.dataToSend)
+                    this.mixin(dataToSend, this.cachedEvent.dataToSend);
             } 
             else if (data.discard_changes === undefined && this.isContentChanged()) {
                 var cancelDialog = this._generateDiscardDialog();
@@ -123,7 +123,7 @@ define([
                 this.mixin(dataToSend, extraDataToSend);
             }
             
-            if (dataToSend['keep_draft'] === false) {
+            if (this.getPropertyValueFromData(dataToSend, 'keep_draft') === false) {
                 this.draftManager.clearDraft(this.id, this.ns, true);
             }
 
@@ -157,7 +157,11 @@ define([
         },
 
         _getQueryCancel: function () {
-            return {id: this.ns};
+            return {
+                id: this.ns, 
+                projectType: this.projectType,
+                leaveResource: true
+            };
         },
 
         _getQueryForceCancel: function () {
@@ -199,17 +203,6 @@ define([
             return ret || this.forceClose;
         },
         
-        /**
-         * @override DocumentSubclass
-         * @param {object} content : parámetros, datos y estructura del formulario
-         */
-        updateDocument: function (content) {
-            this.setData(content.content);
-            this.updateTitle();
-            this.render();
-            this.addDocument();
-        },
-
         getProjectType: function() {
             return this.projectType;
         }
