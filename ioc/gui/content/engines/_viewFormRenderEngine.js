@@ -10,16 +10,16 @@ define([
                 var $field = jQuery('<div>'),
                     $label = jQuery('<label>'),
                     $data = jQuery('<span>');
+                if (field.type !== 'hidden') {
+                    $label.html(field.label);
+                    $field.append($label)
+                        .append($data);
 
-                $label.html(field.label);
-                $field.append($label)
-                    .append($data);
-
-                $data.attr('name', field.name)
-                    .html(fvalues[field.name])
-                    .addClass('view-field')
-                    .attr('title', field.label);
-
+                    $data.attr('name', field.name)
+                        .html(fvalues[field.name])
+                        .addClass('view-field')
+                        .attr('title', field.label);
+                }
                 return $field;
             },
 
