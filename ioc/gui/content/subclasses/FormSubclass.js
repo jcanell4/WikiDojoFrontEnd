@@ -176,8 +176,10 @@ define([
         },
 
         isLastCheckedContentChanged: function () {
+            console.log("isLastCheckedContentChanged?");
             var content = this.getCurrentContent(),
-                result = this._getLastCheckedContent() !== content;
+                // result = this._getLastCheckedContent() !== content;
+                result = this.compareContents(content, this._getLastCheckedContent());
 
             if (result) {
                 this._setLastCheckedContent(content);
@@ -201,13 +203,36 @@ define([
             // TODO[Xavi] Afegir comprovació per check/radios i selects
             var currentContent = {};
 
-            jQuery('form[id="form_' + this.id + '"] input').each(function () {
+            jQuery('form[id="form_' + this.id + '"] :input').each(function () {
                 if (this.type !== "button" && this.type !== "submit" && this.value) {
-                    currentContent[this.id] = this.value;
+                    currentContent[this.id] = this.value; // ALERTA[Xavi] this.id fa referencia al id de l'element, no del formulari
                 }
             });
 
             return currentContent;
+        },
+
+        compareContents: function(contentA, contentB) {
+            if (Object.keys(contentA).length !== Object.keys(contentB).length) {
+                console.log("Nombre d'items en contentA y contentB diferent:", Object.keys(contentA).length , Object.keys(contentB).length );
+                return true;
+            }
+
+            for (var key in contentA ) {
+
+                if (!key in contentB) {
+                    console.log("No existeix la clau al contentB", key);
+                    return true;
+                }
+
+                if (contentA[key] !== contentB[key]) {
+                    console.log("El contingut es diferent",contentA[key],contentB[key] );
+                    return true;
+                }
+
+            }
+
+            return false;
         }
         
     });

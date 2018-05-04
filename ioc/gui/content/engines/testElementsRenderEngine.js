@@ -148,6 +148,7 @@ define([
             var config;
             if (element) {
                 config = element.config;
+                config.data = element;
             } else {
                 config = {};
             }

@@ -92,6 +92,18 @@ define([
 
     };
 
+
+
+    // Atributs de configucarió:
+    //  type: tipus de botó, es el identificador que fa servir la toolbar. En el cas dels botons ace es el suffix de la funció global.
+    //  title: titol del botó.
+    //  event: {full|partial} nom dels events de l'EventManager que són llençants per aquests botons.
+    //  event: {type, data} events propis sense cap funcionalitat lligada. TODO[Xavi] pendent de canviar per customEvent
+
+    //  icon: classe css corresponent a aquest botó (es troben tots a un atlas, si es volen afegir s'ha de modificar el fitxer amb el css i afegir la nova icona al fitxer)
+    //  open/close: correspondencia del codi wiki per la apertura i tancament d'una etiqueta.
+    //  category: grup al que pertany una icona, tots els botons amb la mateixa categoria s'afegeixen al mateix botó desplegable.
+
     var config = {
         'CancelButton': {
             type: 'BackButton',

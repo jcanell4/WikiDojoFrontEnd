@@ -20,10 +20,6 @@ define([
                 var $container = jQuery('<div id="container_' + args.id + '">');
                 // this.$node.before($container);
 
-                var editor;
-
-
-
 
 
 
@@ -58,7 +54,13 @@ define([
                 this.$editableNode.append($container);
 
                 var saveCallback = function (e) {
-                    this.$node.text(editor.getValue());
+                    this.originalContent = editor.getValue();
+
+                    // TODO[Xavi] comprovar si s'ha de renderitzar al server
+                    // if (config)
+
+
+                    this.$node.text(this.originalContent);
                     this.hide();
                     // console.log(e);
                     // this.$container.hide();
@@ -68,14 +70,17 @@ define([
                 var cancelCallback = function (e) {
                     //toolbarManager.delete(toolbarId);
 
-                    this.$textarea.val(this.$node.text());
-                    editor.setValue(this.$node.text());
+                    this.$textarea.val(this.originalContent);
+                    editor.setValue(this.originalContent);
 
                     this.hide();
 
                 }.bind(this);
 
                 toolbarManager.createToolbar(toolbarId, 'simple');
+
+
+                this.originalContent = this.args.data.value;
 
                 var editor = new AceFacade({
                     id: args.id,
@@ -86,7 +91,7 @@ define([
                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
                     dispatcher: this.context.dispatcher,
                     content: this.$textarea.val(),
-                    originalContent: this.$textarea.val(),
+                    originalContent: this.originalContent,
                     TOOLBAR_ID: toolbarId,
                     ignorePatching: true,
                     plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar

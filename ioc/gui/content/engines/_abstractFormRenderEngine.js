@@ -278,6 +278,8 @@ define([
             },
 
             renderFieldTable: function (field, fvalues) {
+                console.log(field, fvalues);
+
                 var data;
                 if(typeof field.value ==="string"){ 
                     data = JSON.parse(field.value);
@@ -296,7 +298,11 @@ define([
                 var $row = jQuery('<tr></tr>');
                 var first = true;
 
-                for (var key in data[0]) {
+
+                var defaultRow = field.config.defaultRow;
+
+                // for (var key in data[0]) {
+                for (var key in defaultRow) {
                     var $col = jQuery('<th>' + key + '</th>');
 
                     // ALERTA[Xavi]! Posem la primera fila com a readonly manualment.

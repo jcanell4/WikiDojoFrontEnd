@@ -52,7 +52,7 @@ define([
                 this.$container.parent().addClass(this.$node[0].className);
                 this.$node.removeClass(this.$node[0].className);
 
-                this.$field = jQuery('<input type="hidden" name="' + args.name + '"/>');
+                this.$field = jQuery('<input type="hidden" name="' + args.name + '" id="\' + args.name + \'"/>');
 
                 if (args.formId) {
                     this.$field.attr('form', args.formId);
@@ -84,12 +84,15 @@ define([
                 this.dataStore = new ObjectStore({objectStore: objectStore});
                 this.backupData = jQuery.extend(true, {}, tableData.rows);
 
+
+                var height = Math.max(500, (tableData.rows.length * 30));
+
                 var grid = new DataGrid({
                     store: this.dataStore,
                     structure: gridLayout,
                     escapeHTMLInData: false,
                     //height: "500px"
-                    height: (tableData.rows.length * 30)+'px', // la alçada de cada fila
+                    height: height +'px', // la alçada de cada fila
                 });
 
 
@@ -127,6 +130,9 @@ define([
 
 
                         context.dataStore.newItem(data);
+
+                        console.log("Afegides noves dades", context.dataStore);
+
 
                         // ALERTA[Xavi] Un cop es desa ja no es pot fer revert, hem d'implementar el nostre propi revert
                         context.dataStore.save();
