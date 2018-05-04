@@ -162,7 +162,18 @@ define([
              */
             startup: function () {
 
-                this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
+                if (!this.defaultRenderEngineType){
+                    this.defaultRenderEngineType = this.type;
+                }
+
+                if (this.renderEngines) {
+                    this.renderEngines.unshift(this.defaultRenderEngineType);
+                    this.renderEngine = renderEngineFactory.getRenderEngineMacro(this.renderEngines);
+                } else {
+                    this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
+                }
+
+
 
                 // Establim els aspectes
 
@@ -174,6 +185,20 @@ define([
                     this.render();
                 }
 
+            },
+
+            /**
+             * Afegeix un nou tipus de render engine i regenera el RenderEngine.
+             * @param type
+             */
+            addRenderEngineType: function(type) {
+                this.renderEngines.push(type);
+                this.renderEngine = renderEngineFactory.getRenderEngineMacro(this.renderEngines);
+            },
+
+            setDefaultRenderEngine: function (type) {
+                this.defaultRenderEngineType = type;
+                this.renderEngines[0] = type; // El primer element sempre es el render engine per defecte original.
             },
 
             /**

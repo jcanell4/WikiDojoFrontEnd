@@ -19,6 +19,7 @@ define([
 
             switch (args.type) {
                 case 'format':
+
                     toolbarManager.addFormatButton(args, this.editor.TOOLBAR_ID);
                     break;
 

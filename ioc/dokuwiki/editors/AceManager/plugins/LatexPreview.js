@@ -1,4 +1,4 @@
-define([
+    define([
     'dojo/_base/declare',
     'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin'
 ], function (declare, IocPlugin) {

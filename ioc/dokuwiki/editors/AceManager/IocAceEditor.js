@@ -6,8 +6,9 @@ define([
     // 'ioc/dokuwiki/editors/AceManager/plugins/LatexPreviewPlugin',
     'dojo/_base/declare',
     'dojo/_base/lang',
-    'ioc/dokuwiki/editors/AceManager/state_handler'
-], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, /*LatexPreviewPlugin,*/ declare, lang, state_handler) {
+    'ioc/dokuwiki/editors/AceManager/state_handler',
+    'ioc/dokuwiki/editors/AceManager/AceEditorReadonlyBlocksManager'
+], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, /*LatexPreviewPlugin,*/ declare, lang, state_handler, AceEditorReadonlyBlocksManager) {
 
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
@@ -15,7 +16,6 @@ define([
     var patcher = (function () {
         var originalFunctions = {},
             cachedFunctions = {},
-
             /**
              * Afegeix una funció al objecte dw_editor si existeix alguna amb aquest nom o al objecte window si no s'ha
              * trobat cap coincidencia amb el nom.
@@ -27,7 +27,7 @@ define([
              * @param {string} id - id corresponent a la pestanya que s'està editant
              * @returns {function|null} - La referéncia a la funció parxejada
              */
-            patch = function (name, func, id) {
+            patch = function (name, func, id, editor) {
 
                 if (!id) {
                     throw new Error("No s'ha especificat la id per afegir al cache");
@@ -177,6 +177,13 @@ define([
             contentFormat: 'ACE',
 
             /**
+             * Aquests plugins es carregaran per tots els editors
+             */
+            defaultPlugins: [
+                'ReadonlyBlocksToggle'
+            ],
+
+            /**
              * Inicialitza l'editor.
              *
              * @param args - un objecte amb la configuració personalitzada per l'editor. Es farà servir la configuració
@@ -205,8 +212,8 @@ define([
 
                 this._patch(args.auxId);
 
-                this.init(args);
 
+                this.init(args);
 
 
             },
@@ -220,7 +227,13 @@ define([
                         var headerId = $textarea.attr('data-header-id');
 
 
-                        // Establim la selecció actual
+                        // ALERTA[Xavi] si no hi ha un docId no es fa canvi de context, no es tracta d'un document de
+                        // la Wiki i per consegüent no es faran servir les seves funcions globals
+                        if (!docId) {
+                            return;
+                        }
+
+
                         context.dispatcher.getGlobalState().setCurrentId(docId);
 
                         if (headerId) {
@@ -262,6 +275,12 @@ define([
 
                         _switchContext(selection.obj.id);
                         if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
+
+                            // ALERTA[Xavi] això no es pot aplicar al textarea perquè la posició del cursor al textarea no està sincornitzada amb l'editor, només s'actualitza quan es fa el canvi de mode ACE/textarea
+                            if (context.readOnlyBlocksManager.isReadonlySection()) {
+                                console.warn("Secció de només lectura!");
+                                return;
+                            }
 
                             context.replace(selection.start, selection.end, text);
                             context.setEditorSelection(selection.start, selection.end);
@@ -450,13 +469,14 @@ define([
                 this.editor = ace.edit(id);
                 this.session = this.editor.getSession();
 
+
             },
 
             init: function (args) {
                 this.currentEditor = this.EDITOR.ACE;
                 this.dispatcher = args.dispatcher;
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
-
+                this.readOnlyBlocksManager = new AceEditorReadonlyBlocksManager(this);
 
                 this.initContainer(args.containerId, args.textareaId);
                 this.initDwEditor(this.$textarea);
@@ -483,17 +503,35 @@ define([
                 this.initHandlers();
                 // this.initPlugins(args.plugins);
 
-                var plugins = this.getPlugins([
-                    'IocSoundFormatButton',
-                    // 'TestFormatButton',
-                    'CancelButton',
-                    'SaveButton',
-                    'DocumentPreviewButton',
-                    'EnableACE',
-                    'EnableWrapper',
-                    'LatexPreview'
-                ]);
+
+                var plugins;
+                var pluginNames = this.defaultPlugins;
+
+
+                if (args.plugins) {
+                    pluginNames = pluginNames.concat(args.plugins);
+                    plugins = this.getPlugins(pluginNames);
+
+                } else {
+                    pluginNames = pluginNames.concat(
+                        [
+                            'IocSoundFormatButton',
+                            'CancelButton',
+                            'SaveButton',
+                            'DocumentPreviewButton',
+                            'EnableACE',
+                            'EnableWrapper',
+                            'LatexPreview',
+                            'TestReadonlyPlugin',
+                        ]
+                    );
+                    plugins = this.getPlugins(pluginNames)
+                }
+
                 this.initPlugins(plugins);
+
+                // ALERTA[Xavi] això s'ha de cridar desprès d'inicialitzar els plugins, ja que aquests poden afegir nous estas de només lectura
+                this.readOnlyBlocksManager.enableReadonlyBlocks();
 
 
                 this.on('change', function () {
@@ -1475,7 +1513,7 @@ define([
                 return this.$elementContainer.css('height', this.$wrapper.height() + 'px');
             },
 
-            isChanged: function() {
+            isChanged: function () {
                 //console.log("IocAceEditor#isChanged", this.getValue().length, this.originalContent.length);
 
                 // console.log("|" + this.getValue() + "|");
@@ -1487,6 +1525,14 @@ define([
             resetOriginalContentState: function () {
                 // console.log("IocAceEditor#resetOriginalContentState");
                 this.originalContent = this.getValue();
+            },
+
+
+            addReadonlyBlock: function(state, callback) {
+                this.readOnlyBlocksManager.addReadonlyBlock(state, callback);
             }
+
         });
+
+
 });

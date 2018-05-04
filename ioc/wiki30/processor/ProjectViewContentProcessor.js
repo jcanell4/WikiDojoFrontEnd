@@ -59,7 +59,8 @@ define([
                     projectType: content.extra.projectType,
                     type: this.type,
                     isRevision: content.isRevision,
-                    autosaveTimer: content.autosaveTimer
+                    autosaveTimer: content.autosaveTimer,
+                    //renderEngines: ['test', 'zoomable_form_element']
                 };
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_VIEW, args);    
             return this.contentTool;

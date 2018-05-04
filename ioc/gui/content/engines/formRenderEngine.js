@@ -2,6 +2,8 @@
  * Aquest motor de render espera que el format de les dades sigui string i retorna el mateix contingut
  * o un missatge d'error si no era un string.
  *
+ * ALERTA[Xavi] Aquest mòdul sembla que està obsolet, es continua fer servint?
+ *
  * @module standardEngineFactory
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
@@ -68,10 +70,16 @@ define([], function () {
         },
 
         renderField = function (field, fvalues) {
+            console.log("RenderField:", field, fvalues);
             var $field,
                 cols = field.columns || 12;
 
             switch (field.type) {
+                case 'editableObject':
+                    $field = renderFieldEditableObject(field, fvalues);
+                    break;
+                //break;
+
                 case 'textarea':
                     $field = renderFieldTextarea(field, fvalues);
                     break;
@@ -79,7 +87,9 @@ define([], function () {
                 case 'select':
                     $field = renderFieldSelect(field, fvalues);
                     break;
-                    
+
+
+
                 case 'checkbox': // TODO[Xavi] No s'ajusta correctament l'amplada
                 case 'radio':
                     $field = renderFieldCheckbox(field, fvalues);
@@ -102,7 +112,16 @@ define([], function () {
             if (field.type !== 'hidden') {
                 $label.html(field.label);
                 $field.append($label)
+
+                // TODO[Xavi] Afegir un parámetre a field que retornará del servidor i indicarà si s'ha de mostrar el botó de l'editor
+                if (true) {
+                    $input.attr('data-form-editor-button', field.id)
+                }
             }
+
+
+
+
 
             $field.append($input);
 
@@ -235,6 +254,82 @@ define([], function () {
             return $field;
         },
 
+
+        renderFieldEditableObject = function (field, fvalues) {
+            console.log("renderEditableElement:", field, field.props.editableClass);
+            var $field;
+
+            switch (field.props['data-editable-element']) {
+                case 'table':
+                    $field = renderFieldTable(field, fvalues);
+                    // alert("Table!");
+                    break;
+
+                default:
+                    alert("error, editable-element no identificat:" + field.props['data-editable-element']);
+                    // $field = renderFieldDefault(field, fvalues);
+            }
+
+
+            if (field.id) {
+                $field.attr('id', field.id);
+            }
+
+
+
+            return $field;
+        },
+
+        renderFieldTable = function(field, fvalues) {
+            var data = JSON.parse(field.value);
+
+
+            var $table = jQuery('<table></table>');
+            var $header =jQuery('<thead></thead>');
+            var $body = jQuery('<tbody></tbody>');
+
+            // Agafem les claus de la primera fila per afegir la capñalera
+            var $row = jQuery('<tr></tr>');
+            var first = true;
+
+            for (var key in data[0]) {
+                var $col = jQuery('<th>' + key + '</th>');
+
+                // ALERTA[Xavi]! Posem la primera fila com a readonly manualment.
+                if (first) {
+                    first = false;
+                    $row.attr('readonly', true);
+                }
+                $row.append($col);
+            }
+
+            $header.append($row);
+            $table.append($header);
+
+
+            // Afegim les files
+            for (var i=0; i<data.length; i++) {
+                $row = jQuery('<tr></tr>');
+
+                for (key in data[i]) {
+                    $col = jQuery('<td>' + data[i][key] + '</td>');
+                    $row.append($col);
+                }
+
+                $body.append($row);
+
+            }
+
+
+            $table.append($body);
+
+
+            if (field.props) {
+                addPropsToInput(field.props, $table);
+            }
+
+            return $table;
+        },
 
         addPropsToInput = function (props, $input) {
             for (var prop in props) {

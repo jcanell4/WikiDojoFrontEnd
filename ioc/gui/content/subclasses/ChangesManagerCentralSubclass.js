@@ -51,12 +51,11 @@ define([
             }.bind(this));
         },
         
-        postRender(){
+        postRender: function(){
             this.inherited(arguments);
             this._checkChanges();  
         },
         
-        // TODO[Xavi] Actualment no fa res especial
         _checkChanges: function () {
             if (this.changesManager) {
                 this.changesManager.updateContentChangeState(this.id);

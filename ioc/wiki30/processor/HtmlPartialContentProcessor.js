@@ -65,16 +65,14 @@ define([
                             confirmation = true;
                         }
                         clearDraft=1;
-                    }
-                    else if(!value.selected && !value.cancel){
+                    }else if(!value.selected && !value.cancel){
                         if (changesManager.isChanged(value.id)){
                             confirmation = dispatcher.discardChanges();
                         } else {
                             confirmation = true;
                         }
                         clearDraft=2;
-                    }
-                    else{
+                    }else{
                         confirmation = true;
                     }
 
@@ -228,6 +226,8 @@ define([
                     args.editorType = dispatcher.getGlobalState().userState['editor'];
                 }
 
+
+                
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
             },
 

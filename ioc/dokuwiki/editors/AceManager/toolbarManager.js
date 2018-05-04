@@ -54,6 +54,27 @@ define([], function () {
             toolbars[type] = baseToolbar.slice(); // Clonem la font
         },
 
+        _createToolbarSimple = function(type) {
+            if (toolbars[type]) {
+                return;
+            }
+
+
+            toolbars[type] = baseToolbar.slice();
+            var filteredToolbar = [];
+
+            for (var i=0; i<toolbars[type].length; i++) {
+                if (toolbars[type][i].type === "format" || toolbars[type][i].type === "formatln") {
+                    filteredToolbar.push(toolbars[type][i]);
+                }
+            }
+
+            // Eliminem l'últim botó que correspón als comentaris
+            filteredToolbar.pop();
+
+            toolbars[type] = filteredToolbar;
+        },
+
         /**
          * Retorna cert o fals segons si ja existeix o no un botó amb aquest title a la barra d'eines especificada.
          *
@@ -93,6 +114,8 @@ define([], function () {
 
                     _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
                     jQuery('#' + idContainer).find('textarea').focus();
+
+                    event.preventDefault();
                     func(arguments);
                 });
             };
@@ -216,7 +239,7 @@ define([], function () {
          * @param {string} type - tipus de barra d'eines
          */
         initToolbar: function (toolbarId, wikiTextId, type) {
-            //console.log('toolbarManager#initToolbar', type);
+            // console.log('toolbarManager#initToolbar', type);
             initToolbar(toolbarId, wikiTextId, this.getToolbar(type));
 
             var $toolbar = jQuery('#' + toolbarId);
@@ -260,6 +283,7 @@ define([], function () {
             config.type += '_' + type;
             //console.log(toolbarManager#addButton);
             if (_existsButtonInToolbar(config.title, type)) {
+                console.error("Ja Existeix el botó", config.title, type);
                 return false;
             } else {
                 _createButtonInToolbar(config, func, type);
@@ -298,6 +322,29 @@ define([], function () {
          */
         setDispatcher: function (dispatcher) {
             _dispatcher = dispatcher;
+        },
+
+        createToolbar: function(type, base) {
+
+            switch (base) {
+                case 'document':
+                    _createToolbar(type);
+                    break;
+
+                case 'simple':
+                    _createToolbarSimple(type);
+                    break;
+
+                default:
+                    toolbars[type] = [];
+
+            }
+
+        },
+
+        delete: function (type) {
+            delete toolbars[type];
         }
+
     }
 });

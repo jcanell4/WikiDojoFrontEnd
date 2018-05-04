@@ -35,13 +35,14 @@ define([
         "ioc/gui/content/subclasses/UpdateProjectSubclass",
         "ioc/gui/content/subclasses/AjaxFormSubclass",
         "ioc/gui/content/subclasses/AjaxLinkSubclass",
-        "ioc/gui/content/subclasses/DokuwikiNSTreeSubclass"
+        "ioc/gui/content/subclasses/DokuwikiNSTreeSubclass",
+        "ioc/gui/content/subclasses/EditableElementsContainerSubclass",
     ], function (lang, ContentTool, requestReplacerFactory, dojoQuery, on, dom,
                  MetaInfoSubclass, DocumentSubclass, EditorSubclass, BasicEditorSubclass,
                  MediaDetailsSubclass, MetaMediaDetailsSubclass, StructuredDocumentSubclass,
                  RequestSubclass, TimedDocumentSubclass, NotificationSubclass, FormSubclass,
                  ProjectSubclass, UpdateProjectSubclass, AjaxFormSubclass, AjaxLinkSubclass, 
-                 DokuwikiNSTreeSubclass ) 
+                 DokuwikiNSTreeSubclass, EditableElementsContainerSubclass ) 
         {
 
         var patch = function (target, source) {
@@ -371,6 +372,7 @@ define([
              */
             generate: function (type, args) {
                 args.decorator = this;
+                args.contentToolFactory = this;
                 return new (this.createClass(type))(args);
             },
 
@@ -425,6 +427,7 @@ define([
                     case this.generation.PROJECT_EDIT:
                         GeneratedContentTool = base
                             .createSubclass(TimedDocumentSubclass)
+                            .createSubclass(EditableElementsContainerSubclass)
                             .createSubclass(ProjectSubclass)
                             .createSubclass(UpdateProjectSubclass);
                         break;
