@@ -4,7 +4,7 @@
 define([], function () {
 
         var URL_BASE = 'ioc/widgets/',// URL per defecte
-            RETRY_TIMER = 100
+            RETRY_TIMER = 100;
 
 
         createAMDWidget = function (data, id) {

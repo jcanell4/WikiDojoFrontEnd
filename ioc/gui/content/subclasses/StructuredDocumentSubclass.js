@@ -81,7 +81,6 @@ define([
             }
 
             this.fillEditorContainer();
-//            this._checkChanges();
 
         },
 
