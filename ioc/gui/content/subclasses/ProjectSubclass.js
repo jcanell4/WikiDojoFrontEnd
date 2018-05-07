@@ -123,7 +123,7 @@ define([
                 this.mixin(dataToSend, extraDataToSend);
             }
             
-            if (this.getPropertyValueFromData(dataToSend, 'keep_draft') === false) {
+            if (this.getPropertyValueFromData(dataToSend, 'keep_draft') == false) {
                 this.draftManager.clearDraft(this.id, this.ns, true);
             }
 

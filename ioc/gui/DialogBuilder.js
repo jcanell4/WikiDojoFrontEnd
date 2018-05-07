@@ -254,8 +254,8 @@ define([
                     callback.push(this._generateFireEventCallback(params.extra[i].eventType, params.extra[i].data, params.extra[i].observable));
                 }
 
-            } else {
-                callback = this._generateFireEventCallback(params.extra[i].eventType, params.extra[i].data, params.extra[i].observable);
+            } else {                
+                callback = this._generateFireEventCallback(params.extra.eventType, params.extra.data, params.extra.observable);
             }
 
             button.callback = callback;
