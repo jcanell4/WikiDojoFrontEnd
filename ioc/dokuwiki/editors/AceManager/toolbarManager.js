@@ -240,7 +240,7 @@ define([], function () {
          */
         initToolbar: function (toolbarId, wikiTextId, type) {
             // console.log('toolbarManager#initToolbar', type);
-            initToolbar(toolbarId, wikiTextId, this.getToolbar(type));
+            this._initToolbar(toolbarId, wikiTextId, this.getToolbar(type));
 
             var $toolbar = jQuery('#' + toolbarId);
             $toolbar.attr('role', 'toolbar');
@@ -262,6 +262,81 @@ define([], function () {
 
 
         },
+
+        /**
+         * Create a toolbar (la versió original es troba a scripts/toolbar.js)
+         *
+         * @param  string tbid       ID of the element where to insert the toolbar
+         * @param  string edid       ID of the editor textarea
+         * @param  array  tb         Associative array defining the buttons
+         * @param  bool   allowblock Allow buttons creating multiline content
+         * @author Andreas Gohr <andi@splitbrain.org>
+         */
+        _initToolbar:
+        function initToolbar(tbid,edid,tb, allowblock){
+            var $toolbar, $edit;
+            if (typeof tbid == 'string') {
+                $toolbar = jQuery('#' + tbid);
+            } else {
+                $toolbar = jQuery(tbid);
+            }
+
+            $edit = jQuery('#' + edid);
+
+            if ($toolbar.length == 0 || $edit.length == 0 || $edit.attr('readOnly')) {
+                return;
+            }
+
+            if (typeof allowblock === 'undefined') {
+                allowblock = true;
+            }
+
+            //empty the toolbar area:
+            $toolbar.html('');
+
+            jQuery.each(tb, function (k, val) {
+                if (!tb.hasOwnProperty(k) || (!allowblock && val.block === true)) {
+                    return;
+                }
+                var actionFunc, $btn;
+
+                // create new button (jQuery object)
+                $btn = jQuery(createToolButton(val.icon, val.title, val.key, val.id,
+                    val['class']));
+
+                // type is a tb function -> assign it as onclick
+                actionFunc = 'tb_'+val.type;
+                if( jQuery.isFunction(window[actionFunc]) ){
+
+                    // ALERTA[Xavi] ens assegurem que s'evita l'enviament del formulari en fer click a aquest botó
+                    $btn.bind('click', function(e) {
+                        e.preventDefault();
+                        window[actionFunc]($btn,val,edid);
+                    });
+
+                    // $btn.bind('click', bind(window[actionFunc],$btn,val,edid) );
+                    $toolbar.append($btn);
+                    return;
+                }
+
+                // type is a init function -> execute it
+                actionFunc = 'addBtnAction'+val.type.charAt(0).toUpperCase()+val.type.substring(1);
+                if( jQuery.isFunction(window[actionFunc]) ){
+                    var pickerid = window[actionFunc]($btn, val, edid);
+                    if(pickerid !== ''){
+                        $toolbar.append($btn);
+                        $btn.attr('aria-controls', pickerid);
+                        if (actionFunc === 'addBtnActionPicker') {
+                            $btn.attr('aria-haspopup', 'true');
+                        }
+                    }
+                    return;
+                }
+
+                alert('unknown toolbar type: '+val.type+'  '+actionFunc);
+            });
+        },
+
 
         /**
          * Afegeix un botó amb la configuració passada com argument que cridarà a la funció per la barra d'eines
