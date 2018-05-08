@@ -27,6 +27,8 @@ define([
 
             this.editableElements = [];
 
+            this.externalContent = {};
+
             // TEST!
             // var a = {update: function() {console.log("TEST Update A OK")}};
             // var b = {update: function() {console.log("TEST Update B OK")}};
@@ -202,12 +204,17 @@ define([
             // Fàcil pels inputs (únic cas contemplat)
             // TODO[Xavi] Afegir comprovació per check/radios i selects
             var currentContent = {};
+            var $form = jQuery('form[id="form_' + this.id + '"]');
+            var $input = $form.find('input[type="text"], input[type="hidden"], input[type="string"], textarea');
 
-            jQuery('form[id="form_' + this.id + '"] :input').each(function () {
+            $input.each(function () {
+                console.log("Obtenin contingut:", this.name, this.value);
                 if (this.type !== "button" && this.type !== "submit" && this.value) {
-                    currentContent[this.id] = this.value; // ALERTA[Xavi] this.id fa referencia al id de l'element, no del formulari
+                    currentContent[this.name] = this.value; // ALERTA[Xavi] this.id fa referencia al id de l'element, no del formulari
                 }
             });
+
+            console.log(currentContent);
 
             return currentContent;
         },
@@ -233,8 +240,13 @@ define([
             }
 
             return false;
+        },
+
+        setExternalContent : function (id, content) {
+            this.externalContent[id] = content;
         }
-        
+
+
     });
     
 });

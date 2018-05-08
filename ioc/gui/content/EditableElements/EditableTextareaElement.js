@@ -53,29 +53,27 @@ define([
 
                 this.$editableNode.append($container);
 
-                var saveCallback = function (e) {
-                    this.originalContent = editor.getValue();
-
-                    // TODO[Xavi] comprovar si s'ha de renderitzar al server
-                    // if (config)
-
-
-                    this.$node.text(this.originalContent);
-                    this.hide();
-                    // console.log(e);
-                    // this.$container.hide();
-
-                }.bind(this);
-
-                var cancelCallback = function (e) {
-                    //toolbarManager.delete(toolbarId);
-
-                    this.$textarea.val(this.originalContent);
-                    editor.setValue(this.originalContent);
-
-                    this.hide();
-
-                }.bind(this);
+                // var saveCallback = function (e) {
+                //     this.originalContent = editor.getValue();
+                //
+                //
+                //
+                //     this.$node.text(this.originalContent);
+                //     this.hide();
+                //     // console.log(e);
+                //     // this.$container.hide();
+                //
+                // }.bind(this);
+                //
+                // var cancelCallback = function (e) {
+                //     //toolbarManager.delete(toolbarId);
+                //
+                //     this.$textarea.val(this.originalContent);
+                //     editor.setValue(this.originalContent);
+                //
+                //     this.hide();
+                //
+                // }.bind(this);
 
                 toolbarManager.createToolbar(toolbarId, 'simple');
 
@@ -94,13 +92,26 @@ define([
                     originalContent: this.originalContent,
                     TOOLBAR_ID: toolbarId,
                     ignorePatching: true,
-                    plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar
+                    // plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar
                 });
 
                 this.editor = editor;
 
-                this.editor.editor.on('CancelDialog', cancelCallback);
-                this.editor.editor.on('SaveDialog', saveCallback);
+                var context = this;
+
+                this.editor.on('change', function(e) {
+                    console.log(e);
+                    context.originalContent = e.newContent;
+                    context.$node.text(e.newContent);
+                    // TODO[Xavi] comprovar si s'ha de renderitzar al server
+                    // if (config)
+
+
+
+                    // alert("Canvis!");
+                });
+                // this.editor.editor.on('CancelDialog', cancelCallback);
+                // this.editor.editor.on('SaveDialog', saveCallback);
 
                 this.widgetInitialized = true;
             },

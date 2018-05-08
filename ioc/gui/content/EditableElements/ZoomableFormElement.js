@@ -89,6 +89,7 @@ define([
                     this.setEditionState(false);
                     toolbarManager.delete(toolbarId);
                     this.$field.trigger('input');
+                    // TODO: Netejar contenttool
                     dialog.onHide();
 
                 }.bind(this);
@@ -96,6 +97,7 @@ define([
                 var cancelCallback = function () {
                     this.setEditionState(false);
                     toolbarManager.delete(toolbarId);
+                    // TODO: Netejar contenttool
                     dialog.onHide();
                 }.bind(this);
 

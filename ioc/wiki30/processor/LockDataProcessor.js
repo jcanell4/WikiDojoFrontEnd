@@ -31,7 +31,7 @@ define([
              * @private
              */
             _process: function (data, dispatcher) {
-                //console.log("LockDataProcessor#_process", data);
+                console.log("LockDataProcessor#_process", data);
                 //[JOSEP]: AIXÒ ja no serveix per res! dispatcher.getLockManager().update(data); //arriba en segons
                 //[JOSEP]: Ara es treballa amb TimedDocumentSubclass
                 var cTool = registry.byId(data.id);
