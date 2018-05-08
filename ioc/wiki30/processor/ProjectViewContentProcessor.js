@@ -25,6 +25,7 @@ define([
             
             //Se añade un array (key:value) con los datos originales del formulario
             args[0].content.formValues = args[0].originalContent;
+            
             //Se copian ciertos valores del 'paquete extra'
             if (value.extra) {
                 args[0].isRevision = (value.extra.rev) ? true : false;
@@ -39,9 +40,10 @@ define([
             var ret = this.inherited(args);
 
             //Si existe un borrador, llamamos a la función que muestra un diálogo para elegir original o borrador
-            if (localDraft.project){
+            if (localDraft.project && value.extra.edit){
+                this.eventManager = dispatcher.getEventManager();
                 this.dialogManager = dispatcher.getDialogManager();
-                this._showDiffDialog(value, localDraft.project, args);
+                this._showDiffDialog(value, localDraft.project);
                 return;
             }else {
                 return ret;
@@ -68,8 +70,7 @@ define([
                     projectType: content.extra.projectType,
                     type: this.type,
                     isRevision: content.isRevision,
-                    autosaveTimer: content.autosaveTimer,
-                    //renderEngines: ['test', 'zoomable_form_element']
+                    autosaveTimer: content.autosaveTimer
                 };
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_VIEW, args);    
             return this.contentTool;
@@ -81,7 +82,7 @@ define([
          * @param {JSON}   draft : es el borrador almacenado en el localStorage
          * @param {object} args : parámetro para lanzar un inherited sobre FormContentProcessor
          */
-        _showDiffDialog: function (value, draft, args) {
+        _showDiffDialog: function (value, draft) {
 
             var data = {
                 document: this._getDocument(value),
@@ -89,31 +90,33 @@ define([
             };
             var dataDocum = this._convertUnixDate(data.document.date);
             var dataDraft = this._convertUnixDate(data.draft.date);
-            
-            var context = this;
+            var query = "id="+value.ns + "&projectType="+value.extra.projectType + (value.rev ? "&rev="+value.rev : "");
+
             var dialogParams = {
                 id: value.id,
                 ns: value.ns,
                 title: "S'ha trobat un esborrany del projecte",
                 message: "S'ha trobat un esborrany del projecte. Vols obrir la versió actual del formulari o l'esborrany?",
-                timeout: value.autosaveTimer * 1000,
                 closable: false,
                 buttons: [
                     {
                         id: "open_project",
                         description: "Editar el formulari original del projecte",
-                        buttonType: 'default',
-                        callback: function(){
-                            context.contentTool.updateDocument(args[0]);
+                        buttonType: 'request_control',
+                        extra: {
+                            ns: value.ns,
+                            eventType: this._getProjectEvent(),
+                            dataToSend: this._getProjectQuery(query)
                         }
                     },
                     {
                         id: "open_project_draft",
                         description: "Editar l'esborrany",
-                        buttonType: 'default',
-                        callback: function(){
-                            args[0].content.formValues = JSON.parse(draft.content);
-                            context.contentTool.updateDocument(args[0]);
+                        buttonType: 'request_control',
+                        extra: {
+                            ns: value.ns,
+                            eventType: this._getProjectEvent(),
+                            dataToSend: this._getProjectDraftQuery(query)
                         }
                     }
                 ],
@@ -127,6 +130,18 @@ define([
 
             var dialog = this.dialogManager.getDialog(this.dialogManager.type.PROJECT_DIFF, value.id, dialogParams);
             dialog.show();
+        },
+        
+        _getProjectDraftQuery: function (query) {
+            return query + "&recover_draft=true&recover_local_draft=true";
+        },
+
+        _getProjectQuery: function (query) {
+            return query + "&recover_draft=false";
+        },
+        
+        _getProjectEvent: function () {
+            return this.eventManager.eventName.EDIT_PROJECT;
         },
         
         _getDocument: function (value) {

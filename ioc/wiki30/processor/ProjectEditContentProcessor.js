@@ -23,8 +23,15 @@ define([
 
             //Se copian ciertos valores del 'paquete extra'
             if (value.extra) {
-                if (value.extra.hasDraft)
+                if (value.extra.hasDraft) {
                     args[0].hasDraft = value.extra.hasDraft;
+                }
+                this.draftManager = dispatcher.getDraftManager();
+                var localDraft = this.draftManager.getContentLocalDraft(value.ns);
+                if (value.extra.recover_draft) {
+                    //si se pide, sustituimos los datos del formulario por los datos guardados en el draft local
+                    args[0].content.formValues = JSON.parse(localDraft.project.content);
+                }
             }
             
             //Con la incorporación del array de datos del formulario y los valores extra, llamamos a la secuencia principal
@@ -32,9 +39,8 @@ define([
             //antes de preguntar si existe un borrador
             var ret = this.inherited(args);
             
-            this.eventManager = dispatcher.getEventManager(); //¿¿¿ Es necesario ???
-            
             //ahora está en ProjectViewContentProcessor
+            //this.eventManager = dispatcher.getEventManager();
             //this.dialogManager = dispatcher.getDialogManager();
             //this.draftManager = dispatcher.getDraftManager();
             //var localDraft = this.draftManager.getContentLocalDraft(value.ns);
@@ -145,7 +151,7 @@ define([
                     cancelDialogConfig: content.extra.dialogSaveOrDiscard,
                     messageChangesDetected: content.extra.messageChangesDetected,
                     renderEngines: ['test', 'zoomable_form_element'],
-                    editable: true, // Activa el mode d'edició automàtica pels EditableElements
+                    editable: true // Activa el mode d'edició automàtica pels EditableElements
                 };
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_EDIT, args);    
             return this.contentTool;
