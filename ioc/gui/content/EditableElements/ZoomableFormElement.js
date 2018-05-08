@@ -89,7 +89,9 @@ define([
                     this.setEditionState(false);
                     toolbarManager.delete(toolbarId);
                     this.$field.trigger('input');
-                    // TODO: Netejar contenttool
+
+                    this.clearExternalContent(); // Esborrant
+
                     dialog.onHide();
 
                 }.bind(this);
@@ -97,10 +99,21 @@ define([
                 var cancelCallback = function () {
                     this.setEditionState(false);
                     toolbarManager.delete(toolbarId);
-                    // TODO: Netejar contenttool
+
+                    this.clearExternalContent(); // Esborrant
+
                     dialog.onHide();
                 }.bind(this);
 
+                var changeCallback = function(e) {
+
+                    if (editor.isChanged()) {
+                        this.setExternalContent(e.newContent);
+                    } else {
+                        this.clearExternalContent();
+                    }
+
+                }.bind(this);
 
                 var dialogParams = {
                     title: "Editar camp: " + fieldId, //TODO[Xavi] Localitzar
@@ -150,6 +163,8 @@ define([
 
                 editor.editor.on('CancelDialog', cancelCallback);
                 editor.editor.on('SaveDialog', saveCallback);
+                editor.on('change', changeCallback);
+
             },
 
             init: function (args) {
@@ -182,8 +197,15 @@ define([
 
             },
 
-            getHtmlRender: function () {
-                return this.$container[0];
+            setExternalContent: function (content) {
+                console.log("!!!!  set external content  !!!", content);
+
+                this.context.setExternalContent(this.$field.attr('name'), content);
+            },
+
+            clearExternalContent: function() {
+                console.log("!!!!  clear external content  !!!");
+                this.context.setExternalContent(this.$field.attr('name'));
             }
 
         });

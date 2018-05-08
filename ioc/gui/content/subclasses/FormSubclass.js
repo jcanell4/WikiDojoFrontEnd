@@ -134,7 +134,10 @@ define([
 
            // S'han de comprovar que tots els items de currentContent siguin iguals
            for (item in currentContent) {
-               if (!this.compareItems(currentContent[item], originalContent[item])) {
+
+               var auxCurrentContent = this.externalContent[item] || currentContent[item];
+
+               if (!this.compareItems(auxCurrentContent, originalContent[item])) {
                // if (currentContent[item] !== originalContent[item]) {
                    // console.log(currentContent[item] + "!==" +  originalContent[item]);
                    changed = true;
@@ -148,8 +151,10 @@ define([
                // Si tots son iguals, es comprova que tots els que restin de OriginalContent
                for (item in originalContent) {
                     // if (!checked[item] && originalContent[item] !== currentContent[item]) {
-                   if (!checked[item] && !this.compareItems(originalContent[item],currentContent[item])) {
-                       console.log(currentContent[item] + "!==" +  originalContent[item], item);
+                   auxCurrentContent = this.externalContent[item] || currentContent[item];
+
+                   if (!checked[item] && !this.compareItems(originalContent[item],auxCurrentContent)) {
+                       console.log(auxCurrentContent + "!==" +  originalContent[item], item);
                        changed = true;
                        break;
                    }
@@ -292,6 +297,7 @@ define([
                 this.externalContent[name] = content;
             }
 
+            this.forceCheckChanges();
         },
 
         forceCheckChanges: function() {
