@@ -87,6 +87,38 @@ define([
             // }
         // },
 
+
+        compareItems: function (itemA, itemB) {
+
+            if (!itemA
+                || itemA === {}
+                || (itemA.length !== undefined && itemA.length ===0)
+                || itemA === '{}'
+                || itemA === '[]'
+            ) {
+                itemA = null;
+            }
+
+            if (!itemB
+                || itemB === {}
+                || (itemB.length !== undefined && itemB.length ===0)
+                || itemB === '{}'
+                || itemB === '[]'
+
+            ) {
+                itemB = null;
+            }
+
+
+            if (itemA !== itemB) {
+                console.warn("Comparant:", itemA, itemB, itemA === itemB);
+            }
+
+
+
+            return itemA === itemB;
+        },
+
        /**
         * Retorna cert si el contingut actual i el contingut original sÃ³n diferents o fals si sÃ³n iguals.
         *
@@ -102,7 +134,8 @@ define([
 
            // S'han de comprovar que tots els items de currentContent siguin iguals
            for (item in currentContent) {
-               if (currentContent[item] !== originalContent[item]) {
+               if (!this.compareItems(currentContent[item], originalContent[item])) {
+               // if (currentContent[item] !== originalContent[item]) {
                    // console.log(currentContent[item] + "!==" +  originalContent[item]);
                    changed = true;
                    break;
@@ -114,7 +147,8 @@ define([
            if (!changed) {
                // Si tots son iguals, es comprova que tots els que restin de OriginalContent
                for (item in originalContent) {
-                    if (!checked[item] && originalContent[item] !== currentContent[item]) {
+                    // if (!checked[item] && originalContent[item] !== currentContent[item]) {
+                   if (!checked[item] && !this.compareItems(originalContent[item],currentContent[item])) {
                        console.log(currentContent[item] + "!==" +  originalContent[item], item);
                        changed = true;
                        break;
@@ -207,14 +241,19 @@ define([
             var $form = jQuery('form[id="form_' + this.id + '"]');
             var $input = $form.find('input[type="text"], input[type="hidden"], input[type="string"], textarea');
 
+            var context = this;
+
             $input.each(function () {
-                console.log("Obtenin contingut:", this.name, this.value);
-                if (this.type !== "button" && this.type !== "submit" && this.value) {
-                    currentContent[this.name] = this.value; // ALERTA[Xavi] this.id fa referencia al id de l'element, no del formulari
+                if (this.value && this.name) {
+
+                    if (context.externalContent[this.name]) {
+                        currentContent[this.name] = context.externalContent[name]
+                    } else {
+                        currentContent[this.name] = this.value; // ALERTA[Xavi] this.id fa referencia al id de l'element, no del formulari
+                    }
+
                 }
             });
-
-            console.log(currentContent);
 
             return currentContent;
         },
@@ -242,8 +281,21 @@ define([
             return false;
         },
 
-        setExternalContent : function (id, content) {
-            this.externalContent[id] = content;
+        // Si es passa com a content un valor null o de mida 0 s'elimina la clau del externalContent
+        setExternalContent : function (name, content) {
+            if (content === undefined
+                || content === null
+                || (content.length!==undefined && content.length === 0)
+            ) {
+                delete(this.externalContent[name]);
+            } else {
+                this.externalContent[name] = content;
+            }
+
+        },
+
+        forceCheckChanges: function() {
+            this._checkChanges();
         }
 
 

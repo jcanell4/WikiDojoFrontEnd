@@ -100,16 +100,9 @@ define([
                 var context = this;
 
                 this.editor.on('change', function(e) {
-                    console.log(e);
                     context.originalContent = e.newContent;
-                    context.$node.text(e.newContent);
-                    // TODO[Xavi] comprovar si s'ha de renderitzar al server
-                    // if (config)
-
-
-
-                    // alert("Canvis!");
                 });
+
                 // this.editor.editor.on('CancelDialog', cancelCallback);
                 // this.editor.editor.on('SaveDialog', saveCallback);
 

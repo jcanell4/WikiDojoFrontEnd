@@ -8,6 +8,7 @@ define([
     "dojo/data/ObjectStore",
     "dijit/form/Button",
     "dojox/grid/_Events",
+
 ], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents) {
 
     return declare([AbstractEditableElement],
@@ -96,6 +97,12 @@ define([
                 });
 
 
+                // grid.onApplyCellEdit = function(inValue,inRowIndex,inFieldIndex) {
+                //     this.inherited(arguments);
+                //     console.log("Canvis aplicats a la cel·la");
+                // };
+
+
                 this.grid = grid;
 
 
@@ -112,12 +119,23 @@ define([
                 var context = this;
 
 
+                grid.on("ApplyCellEdit", function(e) {
+                    console.log("Canvis detectats: ", e);
+                    context.update();
+                });
+
+
+
                 var  addKeyButton = new Button({
                     label: "Afegir clau",
 
                     onClick: function () {
 
                         var key = prompt("TODO: Afegir un diàleg com cal. Introdueix la clau:");
+
+                        if (key.length === 0) {
+                            return;
+                        }
 
                         var data = {
                             id: objectStore.data.length,
@@ -136,6 +154,7 @@ define([
 
                         // ALERTA[Xavi] Un cop es desa ja no es pot fer revert, hem d'implementar el nostre propi revert
                         context.dataStore.save();
+                        context.update();
                     }
                 });
                 addKeyButton.placeAt($toolbar[0]);
@@ -161,6 +180,7 @@ define([
                         }
 
                         context.dataStore.save();
+                        context.update();
 
 
                     }
@@ -168,33 +188,31 @@ define([
                 removeKeyButton.placeAt($toolbar[0]);
                 removeKeyButton.startup();
 
-                var saveKeyButton = new Button({
-                    label: "Desar",
-                    onClick: function () {
+                // var saveKeyButton = new Button({
+                //     label: "Desar",
+                //     onClick: function () {
+                //
+                //         context.save();
+                //         context.hide();
+                //     }
+                // });
+                // saveKeyButton.placeAt($toolbar[0]);
+                // saveKeyButton.startup();
+                //
+                // var cancelKeyButton = new Button({
+                //     label: "Cancel·lar",
+                //
+                //     onClick: function () {
+                //         context.revert();
+                //         context.hide();
+                //
+                //     }
+                // });
+                // cancelKeyButton.placeAt($toolbar[0]);
+                // cancelKeyButton.startup();
 
-                        context.save();
-                        context.hide();
-                    }
-                });
-                saveKeyButton.placeAt($toolbar[0]);
-                saveKeyButton.startup();
-
-                var cancelKeyButton = new Button({
-                    label: "Cancel·lar",
-
-                    onClick: function () {
-                        context.revert();
-                        context.hide();
-
-                    }
-                });
-                cancelKeyButton.placeAt($toolbar[0]);
-                cancelKeyButton.startup();
 
 
-
-                //     editor.editor.on('CancelDialog', cancelCallback);
-                //     editor.editor.on('SaveDialog', saveCallback);
 
                 this.widgetInitialized = true;
             },
@@ -326,19 +344,43 @@ define([
             update: function() {
                 var data = [];
 
-                for (var item in this.backupData) {
+                console.log("****", this.dataStore, "****");
+                console.log("****", this.dataStore.objectStore.data, "****");
+                // console.log("****", this.dataStore.query(), "****");
+
+                // for (var item in this.backupData) {
+                //     var newItem = {};
+                //
+                //     for(var i=0; i<this.columns.length; i++) {
+                //         // console.log(this.columns[i]);
+                //         newItem[this.columns[i].name] = this.backupData[item][this.columns[i].field]
+                //     }
+                //
+                //     data.push(newItem);
+                // }
+
+                var updatedData = this.dataStore.objectStore.data;
+
+                for (var i=0; i<updatedData.length; i++) {
                     var newItem = {};
 
-                    for(var i=0; i<this.columns.length; i++) {
-                        // console.log(this.columns[i]);
-                        newItem[this.columns[i].name] = this.backupData[item][this.columns[i].field]
+                    for(var j=0; j<this.columns.length; j++) {
+                        // console.log(this.columns[j],updatedData[i]);
+                        newItem[this.columns[j].name] = updatedData[i][this.columns[j].field];
                     }
 
                     data.push(newItem);
                 }
 
+
+
+
                 this.$field.val(JSON.stringify(data));
-                // console.log("Rebuilt item:", data);
+
+                if (this.context.forceCheckChanges) {
+                    this.context.forceCheckChanges();
+                }
+                console.log("Rebuilt item:", data);
 
             }
         });
