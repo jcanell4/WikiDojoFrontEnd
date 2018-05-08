@@ -301,21 +301,18 @@ define([
          */
         getPropertyValueFromData: function (data, property) {
             var value;
-            // console.log("ChangesManagerCentralSubclass#checkPropertyValue", data, property);
             if (typeof data === 'string') {
                 data = this._stringToObject(data);
             }
-
             if (typeof data !== 'object') {
                 return null;
             }
 
             value = data[property];
 
-
-            if (value === 'true') {
+            if (value === 'true' || value === true) {
                 value = true;
-            } else if (value === 'false') {
+            } else if (value === 'false' || value === false) {
                 value = false;
             } else if (!isNaN(value)) {
                 value = Number(value)
