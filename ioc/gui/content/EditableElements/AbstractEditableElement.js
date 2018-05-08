@@ -88,11 +88,13 @@ define([
                 throw new Error("El mètode createWidget s'ha d'implementar a la subclasse");
             },
 
-            save: function() {
+            // Desa el contingut de l'element al camp lligat, cridat automàticament quan es desa el formulari
+            saveToField: function() {
                 throw new Error("La funció save ha de ser implementada per la subclasse");
             },
 
-            update: function() {
+            // Actualitza el contingut intern de l'element
+            updateField: function() {
                 throw new Error("La funció update ha de ser implementada per la subclasse");
             },
 
@@ -138,7 +140,6 @@ define([
 
                 this.$icon.on('click', this.show.bind(this));
             },
-
 
         });
 

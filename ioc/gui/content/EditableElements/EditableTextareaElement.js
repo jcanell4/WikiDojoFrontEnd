@@ -92,6 +92,7 @@ define([
                     originalContent: this.originalContent,
                     TOOLBAR_ID: toolbarId,
                     ignorePatching: true,
+                    plugins: [],
                     // plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar
                 });
 
@@ -144,13 +145,14 @@ define([
             },
 
 
-            update: function () {
-                console.log("Update: no fem res, això és un elemnt de prova");
+
+            updateField: function () {
+                // No fem res, la sincronització es automàtica
 
             },
 
-            save: function () {
-                console.log("Update: no fem res, això és un elemnt de prova");
+            saveToField: function () {
+                // No fem res, la sincronització es automàtica
             },
 
             show: function() {

@@ -53,7 +53,7 @@ define([
                 this.$container.parent().addClass(this.$node[0].className);
                 this.$node.removeClass(this.$node[0].className);
 
-                this.$field = jQuery('<input type="hidden" name="' + args.name + '" id="\' + args.name + \'"/>');
+                this.$field = jQuery('<input type="hidden" name="' + args.name + '" id="' + args.name + '"/>');
 
                 if (args.formId) {
                     this.$field.attr('form', args.formId);
@@ -121,7 +121,7 @@ define([
 
                 grid.on("ApplyCellEdit", function(e) {
                     console.log("Canvis detectats: ", e);
-                    context.update();
+                    context.updateField();
                 });
 
 
@@ -133,7 +133,7 @@ define([
 
                         var key = prompt("TODO: Afegir un diàleg com cal. Introdueix la clau:");
 
-                        if (key.length === 0) {
+                        if (!key || key.length === 0) {
                             return;
                         }
 
@@ -154,7 +154,7 @@ define([
 
                         // ALERTA[Xavi] Un cop es desa ja no es pot fer revert, hem d'implementar el nostre propi revert
                         context.dataStore.save();
-                        context.update();
+                        context.updateField();
                     }
                 });
                 addKeyButton.placeAt($toolbar[0]);
@@ -180,7 +180,7 @@ define([
                         }
 
                         context.dataStore.save();
-                        context.update();
+                        context.updateField();
 
 
                     }
@@ -241,14 +241,14 @@ define([
                 this.grid.update();
 
             },
-            save: function() {
+            saveToField: function() {
                 this.backupData = jQuery.extend(true, {}, this.dataStore.objectStore.data);
 
                 // console.log(this.backupData);
                 // console.log("Save!");
 
                 this.jsonToHTML(this.backupData);
-                this.update();
+                this.updateField();
 
                 this.dataStore.save();
 
@@ -341,23 +341,8 @@ define([
 
 
 
-            update: function() {
+            updateField: function() {
                 var data = [];
-
-                console.log("****", this.dataStore, "****");
-                console.log("****", this.dataStore.objectStore.data, "****");
-                // console.log("****", this.dataStore.query(), "****");
-
-                // for (var item in this.backupData) {
-                //     var newItem = {};
-                //
-                //     for(var i=0; i<this.columns.length; i++) {
-                //         // console.log(this.columns[i]);
-                //         newItem[this.columns[i].name] = this.backupData[item][this.columns[i].field]
-                //     }
-                //
-                //     data.push(newItem);
-                // }
 
                 var updatedData = this.dataStore.objectStore.data;
 
@@ -372,9 +357,6 @@ define([
                     data.push(newItem);
                 }
 
-
-
-
                 this.$field.val(JSON.stringify(data));
 
                 if (this.context.forceCheckChanges) {
@@ -382,7 +364,13 @@ define([
                 }
                 console.log("Rebuilt item:", data);
 
+            },
+
+            restoreFromField: function() {
+                console.log("Contingut del field: " , this.$field.val());
+                alert("TODO: implementar");
             }
+
         });
 
 

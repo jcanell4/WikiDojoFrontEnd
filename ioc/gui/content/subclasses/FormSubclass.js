@@ -29,64 +29,8 @@ define([
 
             this.externalContent = {};
 
-            // TEST!
-            // var a = {update: function() {console.log("TEST Update A OK")}};
-            // var b = {update: function() {console.log("TEST Update B OK")}};
-            // var c = {update: function() {console.log("TEST Update C OK")}};
-            // var d = {update: function() {console.log("TEST Update D OK")}};
-            // this.registerEditableElement(a);
-            // this.registerEditableElement(b);
-            // this.registerEditableElement(c);
-            // this.registerEditableElement(d);
-            // console.log("Elements registrats:", this.editableElements);
-            // this.unregisterUpdatableElement(a);
-            // console.log("Elements registrats:", this.updatableElements);
-            // this.unregisterUpdatableElement(b);
-            // console.log("Elements registrats:", this.updatableElements);
-            // this.unregisterUpdatableElement(c);
-            // console.log("Elements registrats:", this.updatableElements);
-            // this.unregisterUpdatableElement(d);
-            // console.log("Elements registrats:", this.updatableElements);
-
 
         },
-
-        // _registerEditableElement: function(element) {
-        //         if (!element.update) {
-        //             console.error("L'element no és updatable", element)
-        //         } else {
-        //             this.editableElements.push(element);
-        //         }
-        // },
-        //
-        // _unregisterEditableElement: function(element) {
-        //     this.editableElements = _.without(this.editableElements, element); // Alerta! biblioteca Underscore
-        //
-        // },
-        //
-        // _enableEditableElements: function() {
-        //     for (var i=0; i<this.editableElements.length; i++) {
-        //         this.editableElements[i].show();
-        //     }
-        // },
-        //
-        // _disableEditableElements: function() {
-        //     for (var i=0; i<this.editableElements.length; i++) {
-        //         this.editableElements[i].hide();
-        //     }
-        // },
-
-        // startup: function() {
-        //     this.inherited(arguments);
-        // },
-        //
-        // postRender: function() {
-        //     this.inherited(arguments);
-            // if (this.editable) {
-            //     this._enableEditableElements();
-            // }
-        // },
-
 
         compareItems: function (itemA, itemB) {
 

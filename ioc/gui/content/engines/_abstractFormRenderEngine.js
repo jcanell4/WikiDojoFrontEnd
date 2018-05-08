@@ -278,14 +278,23 @@ define([
             },
 
             renderFieldTable: function (field, fvalues) {
-                console.log(field, fvalues);
+                console.log("***********************")
+                console.log("Render Table:", field, fvalues);
 
                 var data;
-                if(typeof field.value ==="string"){ 
-                    data = JSON.parse(field.value);
+                var value = fvalues[field.name] || field.value;
+
+                if(typeof value ==="string"){
+                    data = JSON.parse(value);
                 }else{
-                    data = field.value;
+                    data = value;
                 }
+
+                // if(typeof field.value ==="string"){
+                //     data = JSON.parse(field.value);
+                // }else{
+                //     data = field.value;
+                // }
 
 
                 var $table = jQuery('<table></table>');
@@ -338,6 +347,7 @@ define([
                     this.addPropsToInput(field.props, $table);
                 }
 
+                console.log("***********************")
                 return $table;
             },
 

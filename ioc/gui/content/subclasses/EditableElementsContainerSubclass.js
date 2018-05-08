@@ -23,7 +23,7 @@ define([
         },
 
         _registerEditableElement: function (element) {
-            if (!element.update) {
+            if (!element.updateField) {
                 console.error("L'element no és updatable", element)
             } else {
                 this.editableElements.push(element);
@@ -62,9 +62,19 @@ define([
 
         _saveEditableElements: function() {
             for (var i = 0; i<this.editableElements.length; i++) {
-                this.editableElements[i].save();
+                this.editableElements[i].saveToField();
             }
         },
+
+        postUpdateDocument: function(content) {
+            this.inherited(arguments);
+
+            for (var i = 0; i<this.editableElements.length; i++) {
+                this.editableElements[i].restoreFromField();
+            }
+
+            console.log("EditableElementsContainerSubclass#updateDocument", this.editableElements, this.data);
+        }
 
     });
 
