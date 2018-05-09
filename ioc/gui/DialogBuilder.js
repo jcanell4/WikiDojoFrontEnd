@@ -28,8 +28,8 @@ define([
             if (args.content) {
                 throw new DialogBuilderException("No es pot afegir una propietat 'content' a aquests dialegs");
             }
-
-            this.params.width = 400;
+            this.params.width = args.width || 400;
+            // this.params.height = args.height || 400;
 
             if (!this.params.sections) {
                 this.params.sections = [];
@@ -80,6 +80,13 @@ define([
         setWidth: function (value) {
             if (this.params.width < value) {
                 this.params.width = value;
+            }
+            return this;
+        },
+
+        setHeight: function(value) {
+            if (this.params.height < value) {
+                this.params.height = value;
             }
             return this;
         },
@@ -211,7 +218,31 @@ define([
 
 
         build: function () {
-            // console.log('DialogBuilder#build', this.params);
+            console.log('DialogBuilder#build', this.params);
+            // if (this.params.height) {
+            //     this.params['style'] = 'height:' + this.params.height+'px';
+            // }
+
+            var style = '';
+
+            if (this.params.height) {
+                style += 'height:'+this.params.height+"px;"
+            }
+
+            if (this.params.width) {
+                style += 'width:'+this.params.width+"px";
+            }
+
+            // this.params['style'] = 'height:800px;width:800px';
+            this.params['style'] = style;
+
+            console.log("style:", style);
+
+            delete (this.params.height);
+            delete (this.params.width);
+
+
+
             return new CustomDialog(this.params);
         },
 

@@ -56,6 +56,7 @@ define([
             _getDialog: function (type, refId, params) {
                 // console.log("DialogManager#getDialog", type, refId, params);
 
+
                 var dialogBuilder = null,
                     dialog;
 
@@ -148,7 +149,9 @@ define([
                         message: params.message, // Pot contenir HTML: <br>, <b>, <i>, etc.
                         closable: params.closable && true,
                         sections: params.sections,
-                        dispatcher: this.dispatcher
+                        dispatcher: this.dispatcher,
+                        height: params.height,
+                        width: params.width
                     },
                     dialogBuilder = new DialogBuilder(dialogParams);
 

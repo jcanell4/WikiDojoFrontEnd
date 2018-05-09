@@ -8,6 +8,10 @@ define([
 
     var lastFocusedElement;
 
+    var DIALOG_DEFAULT_HEIGHT = 800;
+    var DIALOG_DEFAULT_WIDTH = 800;
+
+
     return declare([AbstractEditableElement],
         {
 
@@ -137,12 +141,15 @@ define([
                             buttonType: 'default',
                             callback: cancelCallback
                         }
-                    ]
+                    ],
+                    height: DIALOG_DEFAULT_HEIGHT,
+                    width: DIALOG_DEFAULT_WIDTH
                 };
 
                 var dialog = dialogManager.getDialog(dialogManager.type.DEFAULT, this.context.ns, dialogParams);
 
                 dialog.show();
+                dialog.resize();
 
                 toolbarManager.createToolbar(toolbarId , 'simple');
 
@@ -161,6 +168,8 @@ define([
                     plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton'] // Plugins que ha de contenir la toolbar
                 });
 
+                console.log("Quina informació tenim?", this);
+                editor.setHeight(DIALOG_DEFAULT_HEIGHT - 137); //137 es la diferencia entre l'alçada de l'editor i el contenidor tenint en compte la toolbar i la barra inferior de botons
 
                 editor.editor.on('CancelDialog', cancelCallback);
                 editor.editor.on('SaveDialog', saveCallback);
