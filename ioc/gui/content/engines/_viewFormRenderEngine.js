@@ -55,6 +55,17 @@ define([
                     .addClass('view-textarea')
                     .attr('title', field.label);
 
+                if (field.rows) {
+                    var padding = 6;
+                    var border = 1;
+                    var lineheight = 20;
+                    var height = (padding+border)*2 + lineheight * field.rows;
+
+                    $textarea.css('height', height);
+                }
+
+
+
                 return $field;
             },
 

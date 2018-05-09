@@ -86,14 +86,22 @@ define([
                 this.backupData = jQuery.extend(true, {}, tableData.rows);
 
 
-                var height = Math.max(500, (tableData.rows.length * 30));
+                //var height = Math.max(500, (tableData.rows.length * 30));
+
+                var rows = tableData.rows.length;
+
+                if (this.args.data.rows) {
+                    rows = Math.max(this.args.data.rows, rows);
+                }
+
+                var height = 36 + (rows * 24);
 
                 var grid = new DataGrid({
                     store: this.dataStore,
                     structure: gridLayout,
                     escapeHTMLInData: false,
                     //height: "500px"
-                    height: height +'px', // la alçada de cada fila
+                    height: height +'px' // la alçada de cada fila
                 });
 
 

@@ -72,7 +72,7 @@ define([
             },
 
             renderField: function (field, fvalues) {
-                // console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
+                console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
                 var $field,
                     cols = field.columns || 12;
 
@@ -101,6 +101,8 @@ define([
                 }
 
                 $field.addClass('col-xs-' + cols);
+
+                // Padding 6px, border 1px, line height 20px
 
                 return $field;
             },
@@ -206,6 +208,11 @@ define([
                     $textarea.attr('id', field.id);
                 }
 
+                if (field.rows) {
+                    $textarea.attr('rows', field.rows);
+                }
+
+
                 if (field.props) {
                     this.addPropsToInput(field.props, $textarea);
                 }
@@ -278,8 +285,6 @@ define([
             },
 
             renderFieldTable: function (field, fvalues) {
-                console.log("***********************")
-                console.log("Render Table:", field, fvalues);
 
                 var data;
                 var value = fvalues[field.name] || field.value;
@@ -347,7 +352,6 @@ define([
                     this.addPropsToInput(field.props, $table);
                 }
 
-                console.log("***********************")
                 return $table;
             },
 
