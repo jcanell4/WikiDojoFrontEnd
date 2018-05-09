@@ -213,7 +213,7 @@ define([
 
 
 
-
+                this.updateField();
                 this.widgetInitialized = true;
             },
 
