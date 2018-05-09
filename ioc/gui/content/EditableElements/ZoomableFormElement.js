@@ -153,6 +153,7 @@ define([
                     textareaId: 'textarea_' + args.id,
                     theme: JSINFO.plugin_aceeditor.colortheme,
                     wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+                    wrapMode: true,
                     dispatcher: this.context.dispatcher,
                     content: this.$field.val(),
                     originalContent: this.$field.val(),

@@ -86,7 +86,8 @@ define([
                     containerId: 'editor_' + editorWidget.id,
                     textareaId: 'textarea_' + args.id,
                     theme: JSINFO.plugin_aceeditor.colortheme,
-                    wraplimit: JSINFO.plugin_aceeditor.wraplimit,
+                    wraplimit: JSINFO.plugin_aceeditor.wraplimit, // TODO: determinar el lmit correcte
+                    wrapMode: true,
                     dispatcher: this.context.dispatcher,
                     content: this.$textarea.val(),
                     originalContent: this.originalContent,
