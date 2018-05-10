@@ -34,13 +34,11 @@ define([
             // type: el tipus de dialog pot ser Custom o Diff en aquests moments, si no es passen els argumetns necessaris es llença excepció
 
             getDialog: function (type, refId, params) {
-                console.log("DialogManager#getDialog", type, refId);
                 var dlg=null;
                 if(!params){
                     var id = refId;
                     refId = type;
                     if(this._existsDialog(refId, id)){
-                        console.warn("Existeix el dialog");
                         dlg = this._getExistingDialog(refId, id);
                     }
                 }else{
