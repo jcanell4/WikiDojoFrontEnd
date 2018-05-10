@@ -252,7 +252,8 @@ define([
                 for (var i = 0; i < params.extra.length; i++) {
                     callback.push(this._generateFireEventCallback(params.extra[i].eventType, params.extra[i].data, params.extra[i].observable));
                 }
-            }else {
+
+            } else {                
                 callback = this._generateFireEventCallback(params.extra.eventType, params.extra.data, params.extra.observable);
             }
 
