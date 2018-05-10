@@ -23,8 +23,15 @@ define([
 
             //Se copian ciertos valores del 'paquete extra'
             if (value.extra) {
-                if (value.extra.hasDraft)
+                if (value.extra.hasDraft) {
                     args[0].hasDraft = value.extra.hasDraft;
+                }
+                this.draftManager = dispatcher.getDraftManager();
+                var localDraft = this.draftManager.getContentLocalDraft(value.ns);
+                if (value.extra.recover_draft) {
+                    //si se pide, sustituimos los datos del formulario por los datos guardados en el draft local
+                    args[0].content.formValues = JSON.parse(localDraft.project.content);
+                }
             }
             
             //Con la incorporación del array de datos del formulario y los valores extra, llamamos a la secuencia principal
@@ -32,97 +39,102 @@ define([
             //antes de preguntar si existe un borrador
             var ret = this.inherited(args);
             
-            this.eventManager = dispatcher.getEventManager();
-            this.draftManager = dispatcher.getDraftManager();
-            this.dialogManager = dispatcher.getDialogManager();
-            var localDraft = this.draftManager.getContentLocalDraft(value.ns);
+            //ahora está en ProjectViewContentProcessor
+            //this.eventManager = dispatcher.getEventManager();
+            //this.dialogManager = dispatcher.getDialogManager();
+            //this.draftManager = dispatcher.getDraftManager();
+            //var localDraft = this.draftManager.getContentLocalDraft(value.ns);
+            
+            //ahora está en ProjectViewContentProcessor
+            //Si existe un borrador, llamamos a la función que muestra un diálogo para elegir original o borrador
+            //if (localDraft.project){
+            //    this._showDiffDialog(value, localDraft.project, args);
+            //    return;
+            //}else {
+            //    return ret;
+            //}
             
             if (value.timer) {
                 this._initTimer(value, dispatcher);
             }
-            //Si existe un borrador, llamamos a la función que muestra un diálogo para elegir original o borrador
-            if (localDraft.project){
-                this._showDiffDialog(value, localDraft.project, args);
-                return;
-            }else {
-                return ret;
-            }
+            return ret;
         },
         
-        /**
-         * Muestra un diálogo que permite elegir entre editar el original y editar el borrador
-         * @param {object} value : parámetros, datos y estructuras del proyecto
-         * @param {JSON}   draft : es el borrador almacenado en el localStorage
-         * @param {object} args : parámetro para lanzar un inherited sobre FormContentProcessor
-         */
-        _showDiffDialog: function (value, draft, args) {
-
-            var data = {
-                document: this._getDocument(value),
-                draft: this._getDraft(draft)
-            };
-            var dataDocum = this._convertUnixDate(data.document.date);
-            var dataDraft = this._convertUnixDate(data.draft.date);
-            
-            var context = this;
-            var dialogParams = {
-                id: "project_diff",
-                ns: value.ns,
-                title: "S'ha trobat un esborrany",
-                message: "S'ha trobat un esborrany d'aquest formulari del projecte. Vols obrir la versió actual del formulari o l'esborrany?",
-                timeout: value.autosaveTimer * 1000,
-                closable: false,
-                buttons: [
-                    {
-                        id: "open_project",
-                        description: "Editar el formulari original del projecte",
-                        buttonType: 'default',
-                        callback: function(){
-                            context.contentTool.updateDocument(args[0]);
-                        }
-                    },
-                    {
-                        id: "open_project_draft",
-                        description: "Editar l'esborrany",
-                        buttonType: 'default',
-                        callback: function(){
-                            args[0].content.formValues = JSON.parse(draft.content);
-                            context.contentTool.updateDocument(args[0]);
-                        }
-                    }
-                ],
-                diff: {
-                    formDocum: data.document.content,
-                    formDraft: data.draft.content,
-                    labelDocum: "Formulari original (" + dataDocum + ")",
-                    labelDraft: "Esborrany (" + dataDraft + ")"
-                }
-            };
-
-            var dialog = this.dialogManager.getDialog(this.dialogManager.type.PROJECT_DIFF, value.id, dialogParams);
-            dialog.show();
-        },
-        
-        _getDocument: function (value) {
-            return {content: JSON.stringify(value.originalContent), date: value.extra.originalLastmod};
-        },
-
-        _getDraft: function (draft) {
-            return {content: draft.content, date: draft.date};
-        },
-        
-        _convertUnixDate: function (fecha) {
-            var p = 13 - fecha.toString().length; //He detectado fechas con menos dígitos de lo normal
-            if (p > 0) {
-                var mul = 1;
-                for (var i=0; i<p; i++) {
-                    mul *= 10;
-                }
-                fecha *= mul;
-            }
-            var d = new Date(parseInt(fecha));
-            return d.getDate() + "." + (d.getMonth()+1) + "." + d.getFullYear();
-        },
+        //ahora está en ProjectViewContentProcessor
+//        /**
+//         * Muestra un diálogo que permite elegir entre editar el original y editar el borrador
+//         * @param {object} value : parámetros, datos y estructuras del proyecto
+//         * @param {JSON}   draft : es el borrador almacenado en el localStorage
+//         * @param {object} args : parámetro para lanzar un inherited sobre FormContentProcessor
+//         */
+//        _showDiffDialog: function (value, draft, args) {
+//
+//            var data = {
+//                document: this._getDocument(value),
+//                draft: this._getDraft(draft)
+//            };
+//            var dataDocum = this._convertUnixDate(data.document.date);
+//            var dataDraft = this._convertUnixDate(data.draft.date);
+//            
+//            var context = this;
+//            var dialogParams = {
+//                id: "project_diff",
+//                ns: value.ns,
+//                title: "S'ha trobat un esborrany del projecte",
+//                message: "S'ha trobat un esborrany del projecte. Vols obrir la versió actual del formulari o l'esborrany?",
+//                timeout: value.autosaveTimer * 1000,
+//                closable: false,
+//                buttons: [
+//                    {
+//                        id: "open_project",
+//                        description: "Editar el formulari original del projecte",
+//                        buttonType: 'default',
+//                        callback: function(){
+//                            context.contentTool.updateDocument(args[0]);
+//                        }
+//                    },
+//                    {
+//                        id: "open_project_draft",
+//                        description: "Editar l'esborrany",
+//                        buttonType: 'default',
+//                        callback: function(){
+//                            args[0].content.formValues = JSON.parse(draft.content);
+//                            context.contentTool.updateDocument(args[0]);
+//                        }
+//                    }
+//                ],
+//                diff: {
+//                    formDocum: data.document.content,
+//                    formDraft: data.draft.content,
+//                    labelDocum: "Formulari original (" + dataDocum + ")",
+//                    labelDraft: "Esborrany (" + dataDraft + ")"
+//                }
+//            };
+//
+//            var dialog = this.dialogManager.getDialog(this.dialogManager.type.PROJECT_DIFF, value.id, dialogParams);
+//            dialog.show();
+//        },
+//        
+//        _getDocument: function (value) {
+//            return {content: JSON.stringify(value.originalContent), date: value.extra.originalLastmod};
+//        },
+//
+//        _getDraft: function (draft) {
+//            return {content: draft.content, date: draft.date};
+//        },
+//        
+//        _convertUnixDate: function (fecha) {
+//            var p = 13 - fecha.toString().length; //He detectado fechas con menos dígitos de lo normal
+//            if (p > 0) {
+//                var mul = 1;
+//                for (var i=0; i<p; i++) {
+//                    mul *= 10;
+//                }
+//                fecha *= mul;
+//            }
+//            var d = new Date(parseInt(fecha));
+//            return d.getDate() + "." + (d.getMonth()+1) + "." + d.getFullYear();
+//        },
         
         createContentTool: function (content, dispatcher) {
             var args = {
@@ -139,7 +151,7 @@ define([
                     cancelDialogConfig: content.extra.dialogSaveOrDiscard,
                     messageChangesDetected: content.extra.messageChangesDetected,
                     renderEngines: ['test', 'zoomable_form_element'],
-                    editable: true, // Activa el mode d'edició automàtica pels EditableElements
+                    editable: true // Activa el mode d'edició automàtica pels EditableElements
                 };
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_EDIT, args);    
             return this.contentTool;

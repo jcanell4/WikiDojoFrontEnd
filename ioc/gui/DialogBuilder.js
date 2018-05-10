@@ -274,10 +274,9 @@ define([
         _createEventButton: function(params) {
             var button = {
                     id: params.id,
-                    description: params.description,
+                    description: params.description
                 },
                 callback;
-
 
             if (Array.isArray(params.extra)) {
                 callback = [];
@@ -285,12 +284,11 @@ define([
                     callback.push(this._generateFireEventCallback(params.extra[i].eventType, params.extra[i].data, params.extra[i].observable));
                 }
 
-            } else {
-                callback = this._generateFireEventCallback(params.extra[i].eventType, params.extra[i].data, params.extra[i].observable);
+            } else {                
+                callback = this._generateFireEventCallback(params.extra.eventType, params.extra.data, params.extra.observable);
             }
 
             button.callback = callback;
-
             return button;
 
         },
@@ -300,7 +298,7 @@ define([
                 id:params.id,
                 description: params.description || 'Cancel·lar',
                 callback: this._generateCancelCallback()
-            }
+            };
         },
 
         _createDefaultButton: function (params) {
@@ -323,7 +321,7 @@ define([
                     ns: this.ns,
                     dataToSend: dataToSend
                 }, observable);
-            }
+            };
         },
 
         _generateFireEventCallback: function (event, data, observable) {
@@ -350,17 +348,16 @@ define([
                 }
 
                 // console.log("Click:", event, data);
-
                 // console.log("dades afegides a l'event:", data);
                 this.eventManager.fireEventFromObservable(event, data, observable); // Això fa referencia al eventManager del dialog
-            }
+            };
 
         },
 
         _generateCancelCallback: function () {
             return function () {
                 this.remove();
-            }
+            };
         },
 
         addSection: function (node) {
@@ -379,7 +376,7 @@ define([
 
         _addInitFunction: function (func) {
             this.params.initFunctions.push(func);
-        },
+        }
 
     });
 
