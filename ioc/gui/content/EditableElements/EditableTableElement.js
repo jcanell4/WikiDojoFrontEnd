@@ -91,7 +91,9 @@ define([
                 var rows = tableData.rows.length;
 
                 if (this.args.data.rows) {
-                    rows = Math.max(this.args.data.rows, rows);
+                    // rows = Math.max(this.args.data.rows, rows);
+                    rows = this.args.data.rows;
+
                 }
 
                 var height = 36 + (rows * 24);
