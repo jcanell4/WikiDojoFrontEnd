@@ -137,6 +137,9 @@ define([
                 };
             }
 
+
+            this.fireEvent('post_cancel_project', {id: this.id, extraDataToSend: {}});
+
             return {
                 id: this.id,
                 dataToSend: dataToSend,

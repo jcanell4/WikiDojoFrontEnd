@@ -2,7 +2,7 @@ define([
     'dojo/_base/declare',
     'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/gui/content/EditableElements/AbstractEditableElement',
-    'ioc/dokuwiki/editors/AceManager/toolbarManager',
+    'ioc/dokuwiki/editors/AceManager/toolbarManager'
 ], function (declare, AceFacade, AbstractEditableElement, toolbarManager) {
 
 
@@ -176,11 +176,9 @@ define([
                 editor.on('change', changeCallback);
 
 
-                if (this.context.timer) {
-                    this.context.timer.on("Expired", function() {
-                        saveCallback();
-                    });
-                }
+
+                this.context.setFireEventHandler('post_cancel_project', cancelCallback);
+
 
             },
 

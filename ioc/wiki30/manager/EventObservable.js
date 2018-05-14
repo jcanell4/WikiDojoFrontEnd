@@ -91,7 +91,7 @@ define([
             },
             
             fireEvent: function(eventName, dataEventBase, preventGlobalProp){
-                // console.log("EventObservable#fireEvent: ", eventName, dataEventBase);
+                console.log("EventObservable#fireEvent: ", eventName, dataEventBase);
                 var eventData,
                         fireEventFunc = this.fireEvents[eventName];
                 if(fireEventFunc){
@@ -101,9 +101,13 @@ define([
                     }
                 }else if(dataEventBase){
                     eventData = dataEventBase;
-                }else{
+                }
+
+
+                if (!eventData) {
                     eventData={};
                 }
+
                 this.dispatchEvent(eventName, eventData, !preventGlobalProp);
             },
             
