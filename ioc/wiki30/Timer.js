@@ -1,6 +1,7 @@
 define([
-    'dojo/_base/declare'
-], function (declare) {
+    'dojo/_base/declare',
+    'dojo/Evented'
+], function (declare, Evented) {
 
     var TimerException = function (message) {
         this.message = message;
@@ -8,7 +9,7 @@ define([
         console.error(this);
     };
 
-    return declare(null, {
+    return declare([Evented], {
 
         /**
          * @param {{onExpire: function}} args conté un objecte que obligatoriament ha de contenir la duració del temporitzador
@@ -41,6 +42,7 @@ define([
             }
             this.expired = true;
             this.onExpire(params);
+            this.emit("Expired");
         },
 
         /**

@@ -175,6 +175,13 @@ define([
                 editor.editor.on('SaveDialog', saveCallback);
                 editor.on('change', changeCallback);
 
+
+                if (this.context.timer) {
+                    this.context.timer.on("Expired", function() {
+                        saveCallback();
+                    });
+                }
+
             },
 
             init: function (args) {
@@ -204,6 +211,8 @@ define([
                     }
 
                 }.bind(this));
+
+
 
             },
 
