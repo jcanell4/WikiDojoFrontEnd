@@ -104,6 +104,8 @@ define([
                     var ret = this.getIconClassOrig(item, opened);
                     if (item.type === "p") {
                         ret = (opened && self.expandProject) ? "dijitIconConnector" : "dijitIconPackage";
+                    }else if (item.type === "po") {
+                        ret = (opened && self.expandProject) ? "dijitIconBookmark" : "dijitIconChart";
                     }
                     return ret;
                 };
