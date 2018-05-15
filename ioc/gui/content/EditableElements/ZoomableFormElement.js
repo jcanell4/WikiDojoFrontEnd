@@ -28,7 +28,6 @@ define([
 
                 if (this.$icon) {
 
-                    console.log("Visibility?", visibility);
                     this.$icon.css('display', visibility);
                 }
 
@@ -47,7 +46,16 @@ define([
                 this.$icon.css('position', 'absolute');
                 this.$icon.css('top', '2px');
                 this.$icon.css('left', '2px');
-                this.$icon.css('display', 'none');
+
+
+                console.log("this.args??", this.args);
+
+                if (!this.args.alwaysDisplayIcon) {
+                    this.$icon.css('display', 'none');
+                }
+
+
+                this.$icon.css('z-index', '1000');
                 this.$field.before(this.$icon);
 
                 this.$icon.on('mouseover', function () {
@@ -59,6 +67,8 @@ define([
                 }.bind(this));
 
                 this.$icon.on('click', this._zoom.bind(this));
+
+                console.log("Afegida icona de zoom pel node:", this.$field);
             },
 
             _zoom: function (event) {
@@ -89,20 +99,43 @@ define([
 
 
                 var saveCallback = function () {
-                    this.$field.val(editor.getValue());
+                    var value =editor.getValue();
+
+
+                    if (this.args.saveCallback) {
+                        this.args.saveCallback(value);
+
+
+                    } else {
+                        // Aquest es el comportament per defecte, vàlid quan es treballa amb elements HTML
+                        this.$field.val(value);
+                        this.$field.trigger('input');
+                    }
+
                     this.setEditionState(false);
                     toolbarManager.delete(toolbarId);
-                    this.$field.trigger('input');
+
+                    // this.$field.val(editor.getValue());
+                    // this.setEditionState(false);
+                    // toolbarManager.delete(toolbarId);
+                    // this.$field.trigger('input');
 
                     this.clearExternalContent(); // Esborrant
 
                     dialog.onHide();
+                    console.log("Desant al node el nou contingut", editor.getValue(), this.$field, this.$field.val());
 
                 }.bind(this);
 
                 var cancelCallback = function () {
                     this.setEditionState(false);
                     toolbarManager.delete(toolbarId);
+
+
+                    // això només es crida si es passa un cancelCallback com argument al constructor.
+                    if (this.args.cancelCallback) {
+                        this.args.cancelCallback();
+                    }
 
                     this.clearExternalContent(); // Esborrant
 
@@ -185,6 +218,7 @@ define([
             init: function (args) {
                 this.context = args.context;
                 this.$field = jQuery(args.node);
+                this.args = args;
 
 
                 this._createIcon();

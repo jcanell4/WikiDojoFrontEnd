@@ -3,13 +3,11 @@
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
 define([
-    // 'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
+
     'ioc/gui/content/EditableElements/ZoomableFormElement'
 ], function (ZoomableFormElement) {
 
-
     // Afegim als camps amb l'atribut data-form-editor-button una icona per ampliar l'editor.
-
 
     return function (data, context, $content) {
         //console.log($content);

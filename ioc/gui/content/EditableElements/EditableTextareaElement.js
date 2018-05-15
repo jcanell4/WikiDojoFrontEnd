@@ -3,7 +3,8 @@ define([
     'ioc/gui/content/EditableElements/AbstractEditableElement',
     'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/dokuwiki/editors/AceManager/toolbarManager',
-], function (declare, AbstractEditableElement, AceFacade, toolbarManager) {
+    'ioc/gui/content/EditableElements/ZoomableFormElement'
+], function (declare, AbstractEditableElement, AceFacade, toolbarManager, ZoomableFormElement) {
 
     return declare([AbstractEditableElement],
         {
@@ -109,6 +110,17 @@ define([
                 // this.editor.editor.on('SaveDialog', saveCallback);
 
                 this.widgetInitialized = true;
+
+                var saveCallback = function(value) {
+                    context.editor.setValue(value);
+                };
+
+                new ZoomableFormElement({
+                    context: this.context,
+                    node: this.$textarea.get(0),
+                    alwaysDisplayIcon: true,
+                    saveCallback: saveCallback
+                });
             },
 
             _replaceNodeContent: function (args) {
