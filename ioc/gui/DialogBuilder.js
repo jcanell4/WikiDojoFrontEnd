@@ -218,7 +218,7 @@ define([
 
 
         build: function () {
-            console.log('DialogBuilder#build', this.params);
+            // console.log('DialogBuilder#build', this.params);
             // if (this.params.height) {
             //     this.params['style'] = 'height:' + this.params.height+'px';
             // }

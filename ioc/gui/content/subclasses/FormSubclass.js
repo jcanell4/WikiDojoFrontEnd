@@ -53,13 +53,6 @@ define([
                 itemB = null;
             }
 
-
-            if (itemA !== itemB) {
-                console.warn("Comparant:", itemA, itemB, itemA === itemB);
-            }
-
-
-
             return itemA === itemB;
         },
 

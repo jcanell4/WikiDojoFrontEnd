@@ -70,7 +70,6 @@ define([
 
 
                 if (group.rows) {
-                    console.log("Detectat rows", group);
                     var padding = 6;
                     var border = 1;
                     var lineheight = 20;

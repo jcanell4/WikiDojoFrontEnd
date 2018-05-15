@@ -16,7 +16,7 @@ define([
                 icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
             };
 
-            this.event = args.event;
+            this.event = args.customEvent;
             this.fireEventComponent = new FireDojoEventComponent(this.editor);
 
             this.addButton(config, this.process);
