@@ -23,6 +23,7 @@ define([
             },
 
             renderGroup: function (group, fvalues) {
+                // console.log("_abstractFormRenderEngine#RenderGroup:", group, fvalues);
                 var fields,
                     $group = '',
                     $header,
@@ -67,12 +68,23 @@ define([
                     $group.addClass('form-group col-xs-' + cols); // input-group o form-group?
                 }
 
+
+                if (group.rows) {
+                    console.log("Detectat rows", group);
+                    var padding = 6;
+                    var border = 1;
+                    var lineheight = 20;
+                    var height = (padding+border)*2 + lineheight * group.rows;
+
+                    $group.css('min-height', height);
+                }
+
                 return $group;
 
             },
 
             renderField: function (field, fvalues) {
-                console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
+                // console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
                 var $field,
                     cols = field.columns || 12;
 
