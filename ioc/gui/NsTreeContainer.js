@@ -39,10 +39,8 @@ define([
             fromRoot:   undefined,
             
             /** @override */
-//            model.store.target = this.treeDataSource 
-//                                                    + sectok 
-//                                                    + "/"
-//                                                    + this.parameters;
+            //model.store.target = this.treeDataSource + sectok + "/" + this.parameters;
+
             buildRendering: function () {
                 this.inherited(arguments);
                 var vid   = this.id;
@@ -67,14 +65,14 @@ define([
                         })),
 
                         getRoot: function (onItem) {
-//                            console.log(vid +": "+ this.store.target);
                             this.store.get(root).then(onItem);
                         },
 
                         mayHaveChildren: function (object) {
                             return object.type === "d" ||
                                    (object.type === "p" && self.expandProject) ||
-                                   object.type === "pd";
+                                   object.type === "pd" ||
+                                   object.type === "po";
                         },
 
                         getLabel: function (object) {
