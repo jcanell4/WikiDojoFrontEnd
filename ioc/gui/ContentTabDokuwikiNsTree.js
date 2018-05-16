@@ -30,27 +30,24 @@ define([
                 this.tree.onClick = function(item, node){                    
                     oc(arguments);
                     if (!nsTree.preventProcessClick){
-                    nsTree.item = item;
-                    if(nsTree.updateQuery){
-                        nsTree.query = nsTree.updateQuery(item);
-                    }else{
-                        var projectType = (item.projectType) ? "&projectType="+item.projectType : "";
-                        var nsProject = (item.nsProject) ? "&nsProject="+item.nsProject : "";
-                        nsTree.query = "id="+item.id+projectType+nsProject;
-                    }
+                        nsTree.item = item;
+                        if(nsTree.updateQuery){
+                            nsTree.query = nsTree.updateQuery(item);
+                        }else{
+                            nsTree.query = "id="+item.id;
+                        }
 
-                    /* Inici fragment nou */
-                    if (nsTree.typeDictionary && nsTree.typeDictionary[item.type]) {
-                        var type = nsTree.typeDictionary[item.type];
-                        nsTree.urlBase = type.urlBase;
-
+                        if (nsTree.typeDictionary && nsTree.typeDictionary[item.type]) {
+                            var type = nsTree.typeDictionary[item.type];
+                            nsTree.urlBase = type.urlBase;
                             for (var i=0; i<type.params.length; i++) {
                                 nsTree.query += '&' + type.params[i] + '=' + item[type.params[i]];
                             }
-                        /* Fi fragment nou */
-                        } else if (nsTree.urlBaseTyped[nsTree.item.type]) {
+                        }
+                        else if (nsTree.urlBaseTyped[nsTree.item.type]) {
                             nsTree.urlBase = nsTree.urlBaseTyped[nsTree.item.type];
-                        }else {
+                        }
+                        else {
                             nsTree.urlBase = nsTree.urlBaseTyped["*"];
                         }
 
