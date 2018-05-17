@@ -118,8 +118,14 @@ define([
 
         getProcessOnClickAndOpenOnClick: function(parm) {
             var ret;
-            if (typeof this.processOnClickAndOpenOnClick === "function" && parm) 
+            if (typeof this.processOnClickAndOpenOnClick === "function" && parm) {
                 ret = this.processOnClickAndOpenOnClick(parm);
+            }else if(Array.isArray(this.processOnClickAndOpenOnClick)){
+                ret = false;
+                for(var i=0; !ret && i<this.processOnClickAndOpenOnClick.length; i++){
+                    ret = parm===this.processOnClickAndOpenOnClick[i];
+                }
+            }
             else
                 ret = this.processOnClickAndOpenOnClick;
             return ret;
