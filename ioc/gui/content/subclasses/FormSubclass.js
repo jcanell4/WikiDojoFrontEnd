@@ -73,8 +73,9 @@ define([
            for (item in currentContent) {
 
                var auxCurrentContent = this.externalContent[item] || currentContent[item];
+               var auxOriginalContent = originalContent[item];
 
-               if (!this.compareItems(auxCurrentContent, originalContent[item])) {
+               if (!this.compareItems(auxCurrentContent, auxOriginalContent)) {
                // if (currentContent[item] !== originalContent[item]) {
                    // console.log(currentContent[item] + "!==" +  originalContent[item]);
                    changed = true;

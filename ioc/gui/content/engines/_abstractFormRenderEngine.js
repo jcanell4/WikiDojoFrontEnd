@@ -68,7 +68,12 @@ define([
                     $group.addClass('form-group col-xs-' + cols); // input-group o form-group?
                 }
 
-
+                //[JOSEP]: Canviar el paràmetres fixats en el codi pels valors reals
+                /*var fs = $group.css("font-size");
+                 *var lh = $group.css("lie-height");
+                 *var TestDivLineHeight = $("#TestDiv")
+        .css("font-size", "12px").css("line-height", "1.25").text("x").height()
+                 */
                 if (group.rows) {
                     var padding = 6;
                     var border = 1;
@@ -128,7 +133,7 @@ define([
                     $field.append($label);
 
                     // TODO[Xavi] Afegir un parámetre a field que retornará del servidor i indicarà si s'ha de mostrar el botó de l'editor
-                    if (true) {
+                    if (field.config && field.config.formEditorButton) {
                         $input.attr('data-form-editor-button', field.id)
                     }
                 }
