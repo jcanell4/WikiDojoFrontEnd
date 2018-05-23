@@ -103,7 +103,7 @@ define(
         'ioc-insert-header6-button': 'Sintaxi d\'encapçalament nivell 6',
 
 
-        'ioc-readonly-toggle': 'Activa/Desactiva blocs de només lectura'
+        'ioc-readonly-toggle': 'Activa/Desactiva blocs de només lectura',
 
         'ioc-table-editor':  'Editor de taules'
     })
