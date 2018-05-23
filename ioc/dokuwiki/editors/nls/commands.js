@@ -97,7 +97,8 @@ define({ root:
         'ioc-insert-header5-button': 'Header sintax level 5',
         'ioc-insert-header6-button': 'Header sintax level 6',
 
-        'ioc-readonly-toggle': 'Toggle readonly blocks'
+        'ioc-readonly-toggle': 'Toggle readonly blocks',
+        'ioc-table-editor':  'Table editor'
     }),
 //end v1.x content
 

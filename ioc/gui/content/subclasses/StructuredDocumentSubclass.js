@@ -952,7 +952,8 @@ define([
         //     var $textarea = jQuery('textarea_' + id);
         //
         //     var editor = new AceFacade({
-        //         xmltags: JSINFO.plugin_aceeditor.xmltags,
+        //         xmltags: JSINFO.
+        // plugin_aceeditor.xmltags,
         //         containerId: 'editor_' + id,
         //         textareaId: 'textarea_' + id,
         //         theme: JSINFO.plugin_aceeditor.colortheme,

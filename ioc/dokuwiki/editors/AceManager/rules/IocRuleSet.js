@@ -113,6 +113,9 @@ define([
                 ['container', ["readonly", "<readonly>", "keyword.operator.readonly"]],
                 ['rule', ["readonly-start", "</readonly>", "keyword.operator.readonly", "start"]],
 
+                ['container', ["edittable", "<edittable>", "keyword.operator.edittable"]],
+                ['rule', ["edittable-start", "</edittable>", "keyword.operator.edittable", "start"]],
+
             ],
 
             /**

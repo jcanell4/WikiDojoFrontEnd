@@ -105,7 +105,7 @@ define(
 
         'ioc-readonly-toggle': 'Activa/Desactiva blocs de només lectura'
 
-
+        'ioc-table-editor':  'Editor de taules'
     })
 );
 
