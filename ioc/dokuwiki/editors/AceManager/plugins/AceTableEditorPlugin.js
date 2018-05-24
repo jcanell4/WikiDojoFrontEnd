@@ -10,8 +10,11 @@ define([
     "dojo/dom-construct",
     "dojo/_base/lang",
     'dojo/data/ItemFileWriteStore',
-    'dijit/Dialog'
-], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog) {
+    'dijit/Dialog',
+    'dojo/_base/array',
+    "dojox/grid/EnhancedGrid",
+    "dojox/grid/enhanced/plugins/Selector"
+], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector) {
 
     return declare([AbstractAcePlugin], {
 
@@ -202,11 +205,155 @@ define([
 
             // var height = 36 + (rows * 24);
 
+
+            var $container = jQuery('<div>');
+
+            var $toolbar = jQuery('<div>');
+            $container.append($toolbar);
+
+
+            var $addCol = jQuery('<button>Test Add Column</button>');
+            $toolbar.append($addCol);
+
+            var $addRow = jQuery('<button>Test Add Row</button>');
+            $toolbar.append($addRow);
+
+
+            var $removeCol = jQuery('<button>Test Remove Column</button>');
+            $toolbar.append($removeCol);
+
+            var $removeRow = jQuery('<button>Test Remove Row</button>');
+            $toolbar.append($removeRow);
+
+
+            $addCol.on('click', function (e) {
+                // Test: substituim el layout per un amb una columna extra
+
+
+                //
+                //
+                // var layout = [[
+                //     {'name': 'Column 1', 'field': 'id', 'width': '100px'},
+                //     {'name': 'Column 2', 'field': 'col2', 'width': '100px'},
+                //     {'name': 'Column 3', 'field': 'col3', 'width': '200px'},
+                //     {'name': 'Column 4', 'field': 'col4', 'width': '150px'},
+                //     {'name': 'Column 5', 'field': 'col5', 'width': '50px'}
+                // ]];
+
+                var counter = layout[0].length + 1;
+
+
+                var header = prompt("Introdueix el nom de la columna");
+
+                layout[0].push({'name': header, 'field': 'col' + counter, 'width': '50px'});
+
+
+                grid.setStructure(layout);
+                console.log("Afegint columna");
+            });
+
+
+            $removeCol.on('click', function (e) {
+                // Test: substituim el layout per un amb una columna extra
+
+
+
+                //
+                //
+                // var layout = [[
+                //     {'name': 'Column 1', 'field': 'id', 'width': '100px'},
+                //     {'name': 'Column 2', 'field': 'col2', 'width': '100px'},
+                //     {'name': 'Column 3', 'field': 'col3', 'width': '200px'},
+                //     {'name': 'Column 4', 'field': 'col4', 'width': '150px'},
+                //     {'name': 'Column 5', 'field': 'col5', 'width': '50px'}
+                // ]];
+
+                var counter = layout[0].length + 1;
+
+
+                var items = grid.selection.getSelected('col', false);
+
+                console.log("items seleccionats:", items);
+
+                var selectedCol = grid.focus.cell.field;
+
+                var newLayout = [];
+                for (var i = 0; i < layout[0].length; i++) {
+                    if (layout[0][i].field !== selectedCol) {
+                        newLayout.push(layout[0][i]);
+                    }
+                }
+
+
+                layout = [newLayout];
+
+                grid.setStructure(layout);
+                console.log("Eliminada columna");
+            });
+
+            var itemsCount = 0;
+
+            $addRow.on('click', function (e) {
+
+                // ALERTA![xavi] El id ha de ser únic, fem servir un comptador extern que l'augmenti independentment de
+                // la mida actual de la taula ja que en esborrar-se elements els ids es duplicarian
+                var data = {
+                    id: ++itemsCount,
+                    // col0: key
+                };
+
+                store.newItem(data);
+
+                console.log("Added Row");
+            });
+
+            $removeRow.on('click', function (e) {
+
+                // var row = grid.selection.getSelected()[0];
+                // console.log("Fila seleccionada?", row);
+                //
+                //
+                // var id = row.id[0];
+                //
+                // store.fetch({
+                //         query: {id: id}, onComplete: function (items) {
+                //             store.deleteItem(items[0]);
+                //         }
+                //     }
+                // );
+
+
+                // var items = grid.selection.getSelected();
+                var items = grid.selection.getSelected('row', false);
+
+                console.log("Remove Row", items);
+
+                if (items.length) {
+                    /* Iterate through the list of selected items.
+                    The current item is available in the variable
+                    'selectedItem' within the following function: */
+                    array.forEach(items, function (selectedItem) {
+                        if (selectedItem !== null) {
+                            /* Iterate through the list of attributes of each item.
+                            The current attribute is available in the variable
+                            'attribute' within the following function: */
+
+                            store.deleteItem(selectedItem);
+
+
+                        }
+                    });
+                }
+
+
+            });
+
+
             var dialogParams = {
                 title: "Edició de taula", //TODO[Xavi] Localitzar
                 message: '',
-                sections:[
-                    // $container
+                sections: [
+                    $container
                     // {widget: grid}
 
                 ],
@@ -240,13 +387,14 @@ define([
                 items: []
             };
             var data_list = [
-                { col1: "normal", col2: false, col3: 'But are not followed by two hexadecimal', col4: 29.91},
-                { col1: "important", col2: false, col3: 'Because a % sign always indicates', col4: 9.33},
-                { col1: "important", col2: false, col3: 'Signs can be selectively', col4: 19.34}
+                {col1: "normal", col2: false, col3: 'But are not followed by two hexadecimal', col4: 29.91},
+                {col1: "important", col2: false, col3: 'Because a % sign always indicates', col4: 9.33},
+                {col1: "important", col2: false, col3: 'Signs can be selectively', col4: 19.34}
             ];
-            var rows = 60;
-            for(var i = 0, l = data_list.length; i < rows; i++){
-                data.items.push(lang.mixin({ id: i+1 }, data_list[i%l]));
+            var rows = 10;
+            for (var i = 0, l = data_list.length; i < rows; i++) {
+                ++itemsCount;
+                data.items.push(lang.mixin({id: i + 1}, data_list[i % l]));
             }
             var store = new ItemFileWriteStore({data: data});
 
@@ -259,17 +407,44 @@ define([
             ]];
 
             /*create a new grid*/
-            var grid = new DataGrid({
+            // var grid = new DataGrid({
+            //     id: 'grid',
+            //     store: store,
+            //     structure: layout,
+            //     rowSelector: '20px',
+            //     height: '500px',
+            //     selectionMode: 'multiple'
+            // });
+
+            var grid = new EnhancedGrid({
                 id: 'grid',
                 store: store,
                 structure: layout,
                 rowSelector: '20px',
-                height: '500px'
+                height: '500px',
+                canSort: function () {
+                    return true;
+                },
+                plugins: {
+                    selector: {
+                        'cell': 'multi', // Alerta la selecció múltiple amb ctrl no funciona a firefox
+                        'col': 'multi',
+                        'row': 'multi'
+                    }
+                },
+                // selectionMode: 'multiple'
             });
 
-            domConstruct.place(grid.domNode,dialog.containerNode,'first');
+
+            domConstruct.place(grid.domNode, dialog.containerNode);
 
             grid.startup();
+
+            grid.setupSelectorConfig(
+
+            );
+
+
 
             grid.resize();
             dialog.resize();
