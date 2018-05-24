@@ -182,13 +182,12 @@ define([
                     docId: metaContent.docId,
                     fromRoot: metaContent.fromRoot,
                     expandProject: true,
-                    processOnClickAndOpenOnClick: false,
+                    processOnClickAndOpenOnClick: metaContent.processOnClickAndOpenOnClick,
                     openOnClick: true,
                     typeDictionary: metaContent.typeDictionary,
                     treeDataSource: metaContent.treeDataSource,
                     urlBase: metaContent.urlBase
-                    // action: metaContent.action,
-                }
+                };
 
                 return contentToolFactory.generate(contentToolFactory.generation.META_DOKUWIKI_NS_TREE, args);
 

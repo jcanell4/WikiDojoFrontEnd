@@ -70,15 +70,15 @@ define([
 
                 //[JOSEP]: Canviar el paràmetres fixats en el codi pels valors reals
                 /*var fs = $group.css("font-size");
-                 *var lh = $group.css("lie-height");
-                 *var TestDivLineHeight = $("#TestDiv")
-        .css("font-size", "12px").css("line-height", "1.25").text("x").height()
+                 *var lh = $group.css("line-height");
+                 *var lineheight = jQuery("<div>").css("font-size", fs).css("line-height", lh).text("x").height()
                  */
                 if (group.rows) {
                     var padding = 6;
                     var border = 1;
                     var lineheight = 20;
                     var height = (padding+border)*2 + lineheight * group.rows;
+                    
 
                     $group.css('min-height', height);
                 }
@@ -88,7 +88,7 @@ define([
             },
 
             renderField: function (field, fvalues) {
-                // console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
+                //console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
                 var $field,
                     cols = field.columns || 12;
 
