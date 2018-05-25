@@ -13,8 +13,10 @@ define([
     'dijit/Dialog',
     'dojo/_base/array',
     "dojox/grid/EnhancedGrid",
-    "dojox/grid/enhanced/plugins/Selector"
-], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector) {
+    "dojox/grid/enhanced/plugins/Selector",
+    "dojox/grid/enhanced/plugins/CellMerge"
+
+], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, CellMerge) {
 
     return declare([AbstractAcePlugin], {
 
@@ -365,12 +367,37 @@ define([
 
 
                 // var items = grid.selection.getSelected();
-                console.log(grid.selection);
-                var items = grid.selection.getSelected('cell', true);
+                console.log("Cel·les seleccionades:", selection['cells']);
+                console.log("Layout", layout);
 
-                console.log("Merge Cells", items);
 
-                // if (items.length) {
+                // La fusió de cel·les consisteix en:
+                // - modificar la cel·la corresponent a la cantonada superior esquerra afegint rowspan i colspan corresponent a la extensió
+                // - eliminar totes les altres cel·les seleccionades.
+
+
+
+
+
+
+
+
+                // var items = grid.getSelected('cell', true);
+                // console.log("Merge Cells (funciona el getSelected??)", items);
+
+
+                // Per fer un unmerge s'ha de fer sobre el handle, o amb getMergedCells es poden desfer tots els merges
+
+                // var row = 2; // tercera fila
+                // var startCol = 1; // segona columna
+                //     var endCol = 2; // tercera columna
+                // var contentCol = startCol; // Contingut de la primera cel·la fusionada
+                //
+                //
+                //
+                // var handleMeger1 = grid.mergeCells(row, startCol, endCol, contentCol);
+                //
+                // // if (items.length) {
                 //     /* Iterate through the list of selected items.
                 //     The current item is available in the variable
                 //     'selectedItem' within the following function: */
@@ -441,10 +468,10 @@ define([
 
             /*set up layout*/
             var layout = [[
-                {'name': 'Column 1', 'field': 'id', 'width': '100px'},
-                {'name': 'Column 2', 'field': 'col2', 'width': '100px'},
-                {'name': 'Column 3', 'field': 'col3', 'width': '200px'},
-                {'name': 'Column 4', 'field': 'col4', 'width': '150px'}
+                {'name': 'Column 1', 'field': 'id', 'width': '100px', editable: true},
+                {'name': 'Column 2', 'field': 'col2', 'width': '100px', editable: true},
+                {'name': 'Column 3', 'field': 'col3', 'width': '200px', editable: true},
+                {'name': 'Column 4', 'field': 'col4', 'width': '150px', editable: true}
             ]];
 
             /*create a new grid*/
@@ -464,14 +491,15 @@ define([
                 rowSelector: '20px',
                 height: '500px',
                 canSort: function () {
-                    return true;
+                    return false;
                 },
                 plugins: {
                     selector: {
                         'cell': 'multi', // Alerta la selecció múltiple amb ctrl no funciona a firefox
                         'col': 'multi',
                         'row': 'multi'
-                    }
+                    },
+                    // cellMerge: true // Pel plugin, no permet fer merge de files
                 },
                 selectionMode: 'multiple'
             });
@@ -502,7 +530,7 @@ define([
 
                 $removeCol.prop('disabled', selection.cols.length===0);
                 $removeRow.prop('disabled', selection.rows.length===0);
-                $mergeCells.prop('disabled', selection.cells.length===0);
+                $mergeCells.prop('disabled', selection.cells.length<=1);
 
 
                 console.log(selection);
@@ -512,6 +540,10 @@ define([
             var handle2 = dojo.connect(grid, "onEndSelect", func);
 
 
+
+
+            // ALERTA[Xavi] Arreglos d'estil forçats a la taula, no es poden arreglar mitjançant CSS
+            jQuery('[dojoattachpoint="viewsHeaderNode"]').css('height', '24px');
 
         }
 
