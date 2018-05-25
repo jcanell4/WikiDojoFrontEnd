@@ -226,6 +226,12 @@ define([
             $toolbar.append($removeRow);
 
 
+            var $mergeCells = jQuery('<button>Test Merge Cells</button>');
+            $toolbar.append($mergeCells);
+
+
+
+
             $addCol.on('click', function (e) {
                 // Test: substituim el layout per un amb una columna extra
 
@@ -254,32 +260,21 @@ define([
 
 
             $removeCol.on('click', function (e) {
-                // Test: substituim el layout per un amb una columna extra
-
-
-
-                //
-                //
-                // var layout = [[
-                //     {'name': 'Column 1', 'field': 'id', 'width': '100px'},
-                //     {'name': 'Column 2', 'field': 'col2', 'width': '100px'},
-                //     {'name': 'Column 3', 'field': 'col3', 'width': '200px'},
-                //     {'name': 'Column 4', 'field': 'col4', 'width': '150px'},
-                //     {'name': 'Column 5', 'field': 'col5', 'width': '50px'}
-                // ]];
-
-                var counter = layout[0].length + 1;
-
 
                 var items = grid.selection.getSelected('col', false);
 
                 console.log("items seleccionats:", items);
 
-                var selectedCol = grid.focus.cell.field;
+                var removeCols = [];
+                for (var col in selection['cols']) {
+                    removeCols.push(selection['cols'][col].col);
+                }
+
 
                 var newLayout = [];
                 for (var i = 0; i < layout[0].length; i++) {
-                    if (layout[0][i].field !== selectedCol) {
+
+                    if (removeCols.indexOf(i) === -1) {
                         newLayout.push(layout[0][i]);
                     }
                 }
@@ -288,7 +283,7 @@ define([
                 layout = [newLayout];
 
                 grid.setStructure(layout);
-                console.log("Eliminada columna");
+                console.log("Eliminades les columnes", removeCols);
             });
 
             var itemsCount = 0;
@@ -328,6 +323,9 @@ define([
 
                 console.log("Remove Row", items);
 
+
+
+
                 if (items.length) {
                     /* Iterate through the list of selected items.
                     The current item is available in the variable
@@ -345,9 +343,52 @@ define([
                     });
                 }
 
+                grid.selection.clear();
 
             });
 
+
+            $mergeCells.on('click', function (e) {
+
+                // var row = grid.selection.getSelected()[0];
+                // console.log("Fila seleccionada?", row);
+                //
+                //
+                // var id = row.id[0];
+                //
+                // store.fetch({
+                //         query: {id: id}, onComplete: function (items) {
+                //             store.deleteItem(items[0]);
+                //         }
+                //     }
+                // );
+
+
+                // var items = grid.selection.getSelected();
+                console.log(grid.selection);
+                var items = grid.selection.getSelected('cell', true);
+
+                console.log("Merge Cells", items);
+
+                // if (items.length) {
+                //     /* Iterate through the list of selected items.
+                //     The current item is available in the variable
+                //     'selectedItem' within the following function: */
+                //     array.forEach(items, function (selectedItem) {
+                //         if (selectedItem !== null) {
+                //             /* Iterate through the list of attributes of each item.
+                //             The current attribute is available in the variable
+                //             'attribute' within the following function: */
+                //
+                //             store.deleteItem(selectedItem);
+                //
+                //
+                //         }
+                //     });
+                // }
+
+
+            });
 
             var dialogParams = {
                 title: "Edició de taula", //TODO[Xavi] Localitzar
@@ -432,7 +473,7 @@ define([
                         'row': 'multi'
                     }
                 },
-                // selectionMode: 'multiple'
+                selectionMode: 'multiple'
             });
 
 
@@ -440,14 +481,38 @@ define([
 
             grid.startup();
 
-            grid.setupSelectorConfig(
-
-            );
 
 
 
             grid.resize();
             dialog.resize();
+
+
+            var selection = {};
+
+
+            // Test selections
+            var func = function(type, startPoint, endPoint, selected){
+
+                selection = {
+                    cells : selected["cell"],
+                    cols : selected["col"],
+                    rows : selected["row"]
+                }
+
+                $removeCol.prop('disabled', selection.cols.length===0);
+                $removeRow.prop('disabled', selection.rows.length===0);
+                $mergeCells.prop('disabled', selection.cells.length===0);
+
+
+                console.log(selection);
+            }
+
+            var handle1 =dojo.connect(grid, "onEndDeselect", func);
+            var handle2 = dojo.connect(grid, "onEndSelect", func);
+
+
+
         }
 
     });
