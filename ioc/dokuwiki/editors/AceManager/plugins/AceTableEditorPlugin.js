@@ -14,8 +14,7 @@ define([
     'dojo/_base/array',
     "dojox/grid/EnhancedGrid",
     "dojox/grid/enhanced/plugins/Selector",
-    "dojox/grid/enhanced/plugins/CellMerge"
-
+    "ioc/dokuwiki/editors/AceManager/plugins/IocCellMerge"
 ], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, CellMerge) {
 
     return declare([AbstractAcePlugin], {
@@ -175,9 +174,19 @@ define([
                 // dialog.onHide();
                 // console.log("Desant al node el nou contingut", editor.getValue(), this.$field, this.$field.val());
 
-                console.log("Dialeg desat");
 
-                console.log("data?", store.data);
+                // Aquestes son les dades necessaries per recrear la taula
+                console.log("Layout:", layout);
+
+
+
+                store.fetch({
+                        query: {}, onComplete: function (items) {
+                        console.log("Dades:", items);
+                        }
+                    }
+                );
+
             }.bind(this);
 
             var cancelCallback = function () {
@@ -232,8 +241,6 @@ define([
             $toolbar.append($mergeCells);
 
 
-
-
             $addCol.on('click', function (e) {
                 // Test: substituim el layout per un amb una columna extra
 
@@ -270,22 +277,36 @@ define([
                 var removeCols = [];
                 for (var col in selection['cols']) {
                     removeCols.push(selection['cols'][col].col);
+
+
+                    grid.layout.setColumnVisibility(/* int */ selection['cols'][col].col, /* bool */ false)
+
                 }
 
+                console.log("TODO: Afegir l'index a la llista d'elements 'elimintats'");
 
-                var newLayout = [];
-                for (var i = 0; i < layout[0].length; i++) {
+                alert("TODO: Afegir l'element amagat com a columna amagada");
 
-                    if (removeCols.indexOf(i) === -1) {
-                        newLayout.push(layout[0][i]);
-                    }
-                }
-
-
-                layout = [newLayout];
-
-                grid.setStructure(layout);
+                //
+                // var newLayout = [];
+                // for (var i = 0; i < layout[0].length; i++) {
+                //
+                //     if (removeCols.indexOf(i) === -1) {
+                //         newLayout.push(layout[0][i]);
+                //     }
+                // }
+                //
+                //
+                // layout = [newLayout];
+                //
+                // grid.setStructure(layout);
+                //
+                //
                 console.log("Eliminades les columnes", removeCols);
+
+
+
+
             });
 
             var itemsCount = 0;
@@ -324,8 +345,6 @@ define([
                 var items = grid.selection.getSelected('row', false);
 
                 console.log("Remove Row", items);
-
-
 
 
                 if (items.length) {
@@ -376,12 +395,6 @@ define([
                 // - eliminar totes les altres cel·les seleccionades.
 
 
-
-
-
-
-
-
                 // var items = grid.getSelected('cell', true);
                 // console.log("Merge Cells (funciona el getSelected??)", items);
 
@@ -393,10 +406,49 @@ define([
                 //     var endCol = 2; // tercera columna
                 // var contentCol = startCol; // Contingut de la primera cel·la fusionada
                 //
-                //
-                //
-                // var handleMeger1 = grid.mergeCells(row, startCol, endCol, contentCol);
-                //
+
+
+                var first = true;
+                var startCol, endCol, contentCol, currentCol, currentRow;
+
+                var rows = [];
+
+                for (var i = 0; i < selection['cells'].length; i++) {
+                    currentCol = selection['cells'][i].col;
+                    currentRow = selection['cells'][i].row;
+
+
+                    if (rows.indexOf(currentRow) === -1) {
+                        rows.push(currentRow);
+                    }
+
+                    if (first) {
+                        startCol = currentCol;
+                        endCol = currentCol;
+
+                        first = false;
+                    } else {
+                        if (currentCol < startCol) {
+                            startCol = currentCol;
+                        } else if (currentCol > endCol) {
+                            endCol = currentCol;
+                        }
+                    }
+                }
+
+                contentCol = startCol;
+
+
+                console.log(rows, startCol, endCol, contentCol);
+
+
+                for (var i = 0; i < rows.length; i++) {
+
+                    console.log("Fent merge de la línia", rows[i]);
+                    var handleMeger1 = grid.mergeCells(rows[i], startCol, endCol, contentCol); // Alerta, s'ha de desar aquest handler per poder defer-ho
+                }
+
+
                 // // if (items.length) {
                 //     /* Iterate through the list of selected items.
                 //     The current item is available in the variable
@@ -499,7 +551,7 @@ define([
                         'col': 'multi',
                         'row': 'multi'
                     },
-                    // cellMerge: true // Pel plugin, no permet fer merge de files
+                    cellMerge: true // Pel plugin, no permet fer merge de files
                 },
                 selectionMode: 'multiple'
             });
@@ -510,8 +562,6 @@ define([
             grid.startup();
 
 
-
-
             grid.resize();
             dialog.resize();
 
@@ -520,26 +570,24 @@ define([
 
 
             // Test selections
-            var func = function(type, startPoint, endPoint, selected){
+            var func = function (type, startPoint, endPoint, selected) {
 
                 selection = {
-                    cells : selected["cell"],
-                    cols : selected["col"],
-                    rows : selected["row"]
-                }
+                    cells: selected["cell"],
+                    cols: selected["col"],
+                    rows: selected["row"]
+                };
 
-                $removeCol.prop('disabled', selection.cols.length===0);
-                $removeRow.prop('disabled', selection.rows.length===0);
-                $mergeCells.prop('disabled', selection.cells.length<=1);
+                $removeCol.prop('disabled', selection.cols.length === 0);
+                $removeRow.prop('disabled', selection.rows.length === 0);
+                $mergeCells.prop('disabled', selection.cells.length <= 1);
 
 
                 console.log(selection);
-            }
+            };
 
-            var handle1 =dojo.connect(grid, "onEndDeselect", func);
+            var handle1 = dojo.connect(grid, "onEndDeselect", func);
             var handle2 = dojo.connect(grid, "onEndSelect", func);
-
-
 
 
             // ALERTA[Xavi] Arreglos d'estil forçats a la taula, no es poden arreglar mitjançant CSS
