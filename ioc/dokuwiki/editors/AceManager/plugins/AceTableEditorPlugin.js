@@ -18,31 +18,15 @@ define([
 ], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, CellMerge) {
 
     // TODO[Xavi] Afegir com a paràmetre al constructor o als arguments d'inicialització
-    var MAX_EXTRA_COLUMNS = 100;
+    var MAX_EXTRA_COLUMNS = 50;
 
 
     return declare([AbstractAcePlugin], {
 
         init: function (args) {
 
-            // ALERTA[Xavi] En aquest cas no cal afegir cap botó, però es podria afegir un botó per inserir un bloc, obrir un dialeg, etc.
-
-            console.log("AceTableEditorPlugin#init", args);
-
-            // var config = {
-            //     type: 'format',
-            //     title: args.title,
-            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-            //     open: args.open,
-            //     sample: args.sample,
-            //     close: args.close
-            // };
-            //
-            // this.addButton(config);
-
             this.previousMarker = null;
             this.editor.addReadonlyBlock('edittable', this.editTableCallback.bind(this));
-            //this.editor.addReadonlyBlock('readonly');
 
 
             var config = {
@@ -81,7 +65,6 @@ define([
                 editor = dispatcher.getContentCache(id).getMainContentTool().getEditor().editor;
             // editor.toggleEditor();
 
-            console.log("Editor?", editor);
 
             editor.session.insert(editor.getCursorPosition(), "\n<edittable></edittable>")
         },
@@ -103,21 +86,12 @@ define([
 
 
         editTableCallback: function (range, blockContent) {
-            console.log(range);
+            // console.log(range);
             this.editor.getSession().removeMarker(this.previousMarker);
             this.previousMarker = this.editor.getSession().addMarker(range, 'edittable-highlight');
-            //editor.selection.setRange(range);
-
-            // blockContent = "<edittable>12345</edittable>";
-
-            // console.error("Click a secció table-editor, contingut:\n\n" + blockContent);
-
 
             // Eliminem el principi i el final
             var dokuwikiContent = blockContent.substring(11, blockContent.length - 12);
-            console.log("dokuwikiContent:", dokuwikiContent);
-
-            // TODO: Parsejar el codi wiki per convertir-lo en dades
 
             this._showDialog(dokuwikiContent, range);
 
@@ -135,21 +109,10 @@ define([
 
                 store.fetch({
                         query: {}, onComplete: function (items) {
-                            console.log("Dades:", items);
-                            console.log("Layout:", layout);
-                            console.log("Columnes eliminades", removedColumns);
-                            console.log("Merged cells", mergeHandlers);
-
-
-                            var row = context.editor.getCurrentRow();
-
                             var dokuwikiTable = context.parseData(items, layout, removedColumns, mergeHandlers);
-
                             dokuwikiTable.unshift('<edittable>');
                             dokuwikiTable.push('</edittable>');
-
                             context.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
-
                         }
                     }
                 );
@@ -158,17 +121,12 @@ define([
 
             var cancelCallback = function () {
 
-
-                console.log("Dialeg cancel·lat");
-
-
                 dialog.onHide();
             }.bind(this);
 
 
             var DIALOG_DEFAULT_HEIGHT = 800,
                 DIALOG_DEFAULT_WIDTH = 800;
-
 
 
             var $container = jQuery('<div>');
@@ -199,15 +157,14 @@ define([
 
             $addCol.on('click', function (e) {
 
-                if (context.numberOfColumns === maxColumns) {
+                if (context.numberOfColumns === context.maxColumns) {
                     return;
                 }
 
-                context.numberOfColumns++;
-
                 grid.layout.setColumnVisibility(context.numberOfColumns, /* bool */ true);
 
-                console.log("Afegint columna");
+                context.numberOfColumns++;
+
                 grid.selection.clear();
             });
 
@@ -218,31 +175,10 @@ define([
 
                 var items = grid.selection.getSelected('col', false);
 
-                console.log("items seleccionats:", items);
-
                 for (var col in selection['cols']) {
                     removedColumns.push(selection['cols'][col].col);
                     grid.layout.setColumnVisibility(/* int */ selection['cols'][col].col, /* bool */ false)
                 }
-
-
-                //
-                // var newLayout = [];
-                // for (var i = 0; i < layout[0].length; i++) {
-                //
-                //     if (removeCols.indexOf(i) === -1) {
-                //         newLayout.push(layout[0][i]);
-                //     }
-                // }
-                //
-                //
-                // layout = [newLayout];
-                //
-                // grid.setStructure(layout);
-                //
-                //
-                console.log("Eliminades les columnes");
-
 
                 grid.selection.clear();
             });
@@ -258,46 +194,24 @@ define([
                     // col0: key
                 };
 
+                for (var i=0; i<this.numberOfColumns; i++) {
+                    data['col'+(i+1)] = '';
+                }
+
                 store.newItem(data);
 
-                console.log("Added Row");
             });
 
             $removeRow.on('click', function (e) {
 
-                // var row = grid.selection.getSelected()[0];
-                // console.log("Fila seleccionada?", row);
-                //
-                //
-                // var id = row.id[0];
-                //
-                // store.fetch({
-                //         query: {id: id}, onComplete: function (items) {
-                //             store.deleteItem(items[0]);
-                //         }
-                //     }
-                // );
-
-
-                // var items = grid.selection.getSelected();
                 var items = grid.selection.getSelected('row', false);
 
-                console.log("Remove Row", items);
 
 
                 if (items.length) {
-                    /* Iterate through the list of selected items.
-                    The current item is available in the variable
-                    'selectedItem' within the following function: */
                     array.forEach(items, function (selectedItem) {
                         if (selectedItem !== null) {
-                            /* Iterate through the list of attributes of each item.
-                            The current attribute is available in the variable
-                            'attribute' within the following function: */
-
                             store.deleteItem(selectedItem);
-
-
                         }
                     });
                 }
@@ -325,8 +239,8 @@ define([
 
 
                 // var items = grid.selection.getSelected();
-                console.log("Cel·les seleccionades:", selection['cells']);
-                console.log("Layout", layout);
+                // console.log("Cel·les seleccionades:", selection['cells']);
+                // console.log("Layout", layout);
 
 
                 // La fusió de cel·les consisteix en:
@@ -377,13 +291,12 @@ define([
 
                 contentCol = startCol;
 
-
+                // ALERTA[Xavi] Aquesta mateixa información ens serveix per marcar les cel·les fusionades
                 console.log(rows, startCol, endCol, contentCol);
 
 
                 for (var i = 0; i < rows.length; i++) {
 
-                    console.log("Fent merge de la línia", rows[i]);
                     mergeHandlers.push(grid.mergeCells(rows[i], startCol, endCol, contentCol)); // Alerta, s'ha de desar aquest handler per poder defer-ho
                 }
 
@@ -463,15 +376,13 @@ define([
             // ]];
 
 
-            this.numberOfColumns = layout.length;
-            var maxColumns = layout.length + MAX_EXTRA_COLUMNS;
 
 
             // TODO: Aquí es crean les columnes buides per poder afegir noves columnes.
-            for (var i = this.numberOfColumns; i < maxColumns; i++) {
+            for (var i = this.numberOfColumns+1; i < this.maxColumns; i++) {
                 layout.push({
-                    'name': 'Columna ' + (i + 1),
-                    'field': 'col' + (i + 1),
+                    'name': 'Columna '+i,
+                    'field': 'col' + i,
                     'width': '100px',
                     editable: true
                 });
@@ -501,12 +412,13 @@ define([
             domConstruct.place(grid.domNode, dialog.containerNode);
 
 
-            // Amagem les columnes buides
-            for (var i = this.numberOfColumns; i < maxColumns; i++) {
-                grid.layout.setColumnVisibility(/* int */ i, /* bool */ false);
-            }
 
             grid.startup();
+
+            // Amagem les columnes buides
+            for (var i = this.numberOfColumns; i < this.maxColumns-1; i++) {
+                grid.layout.setColumnVisibility(/* int */ i, /* bool */ false);
+            }
 
 
             grid.resize();
@@ -530,7 +442,7 @@ define([
                 $mergeCells.prop('disabled', selection.cells.length <= 1);
 
 
-                console.log(selection);
+                // console.log(selection);
             };
 
             var handle1 = dojo.connect(grid, "onEndDeselect", func);
@@ -544,72 +456,66 @@ define([
 
         parseData: function (items, layout, removedColumns, mergeHandlers) {
 
-            console.log(items, layout, removedColumns, mergeHandlers);
+            // console.log(items, layout, removedColumns, mergeHandlers);
 
             var lines = [];
 
             var header = ""
             var first = true;
 
+            console.log(layout, this.numberOfColumns);
+
             // Construim la capçalera //
-            for (var i=0; i<this.numberOfColumns; i++) {
-                if (removedColumns.indexOf(i)!==-1) {
+            for (var i = 0; i < this.numberOfColumns; i++) {
+                if (removedColumns.indexOf(i) !== -1) {
                     continue; // Columna eliminada
                 }
 
                 if (first) {
                     first = false;
                 } else {
-                    header +=" ";
+                    header += " ";
                 }
 
-                header+="^ "+ layout[i].name;
-
+                header += "^ " + layout[i].name;
 
 
             }
 
-            header +=" ^";
+            header += " ^";
 
             lines.push(header);
-            for(var i=0; i<items.length; i++) {
+            for (var i = 0; i < items.length; i++) {
                 var line = "";
 
                 var first = true;
 
-                for (var j=0; j<this.numberOfColumns;j++) {
-                    if (removedColumns.indexOf(j)!==-1) {
+
+                for (var j = 1; j <= this.numberOfColumns; j++) {
+                    if (removedColumns.indexOf(j) !== -1) {
                         continue; // Columna eliminada
                     }
 
                     if (first) {
                         first = false;
                     } else {
-                        line+=" ";
+                        line += " ";
                     }
 
-                    console.log("Contingut de la columna?", items[i]['col'+(j+1)]);
-                    var cellContent = items[i]['col'+(j+1)];
+                    var cellContent = items[i]['col' + j ];
                     if (cellContent === 'undefined' || cellContent === undefined || cellContent === null) {
                         cellContent = '';
                     }
 
-                    line+="| "+ cellContent;
+                    line += "| " + cellContent;
 
                 }
-                line +=" |";
+                line += " |";
                 lines.push(line);
             }
 
 
-
             return lines;
-
-
-
-
-
-
 
 
             /*return [
@@ -622,17 +528,9 @@ define([
 
 
         parseContentData: function (content) {
-            console.log("**** CONTENT:", content)
 
             var lines = content.split("\n");
-
-            console.log("Lines:", lines);
-
             var parsedData = this.parseContentLines(lines);
-
-
-            console.log("Contingut parsejat", parsedData);
-
 
             return {
                 data: {
@@ -690,9 +588,6 @@ define([
                 id: id
             };
 
-            // TODO[Xavi]: en cas de detectar-se més d'un | consecutio s'ha d'aplicar un merge d'aquestes cel·les, es pot passar com informació extra a del row ja que només es mostraran a la taula les columnes amb el format "colx"
-            console.log("Tokens:", tokens);
-
 
             var mergeOpen = false;
 
@@ -723,9 +618,15 @@ define([
                     }
                 }
 
-                console.log("Contingut del token?", tokens[i]);
+                // console.log("Contingut del token?", tokens[i]);
                 row['col' + (cols + 1)] = tokens[i].trim();
                 cols++;
+            }
+
+
+            // Afegim els camps buits a l'store
+            for (var i = tokens.length; i < this.maxColumns; i++) {
+                row['col' + (cols + 1)] = '';
             }
 
             // if (mergeOpen && !row.merge) {
@@ -733,7 +634,6 @@ define([
             //     row.merge.push({start: mergeOpen, close: cols});
             // }
 
-            console.log("row:", row);
 
             return row;
         },
@@ -742,9 +642,6 @@ define([
         parseHeader: function (line) {
             var tokens = line.split('^');
             var layout = [];
-
-            // TODO[Xavi]: en cas de detectar-se més d'un | consecutio s'ha d'aplicar un merge d'aquestes cel·les, es pot passar com informació extra a del row ja que només es mostraran a la taula les columnes amb el format "colx"
-            console.log("Tokens header:", tokens);
 
 
             var cols = 0;
@@ -764,10 +661,16 @@ define([
                 });
                 cols++;
             }
-            console.log("columns:", layout);
+
+            // S'inicialitza aquí perquè abans no sabem la mida real del layout
+            this.numberOfColumns = layout.length;
+            this.maxColumns = layout.length + MAX_EXTRA_COLUMNS;
+
 
             return layout;
-        }
+        },
+
+
     });
 
 });

@@ -64,7 +64,7 @@ define([
             var colStart = cursor.column;
             var colEnd = cursor.column;
 
-            console.log("Cursor:", rowStart, rowEnd, colStart, colEnd);
+            // console.log("Cursor:", rowStart, rowEnd, colStart, colEnd);
 
 
             var currentReadonlyState = null;
@@ -73,12 +73,12 @@ define([
 
                 // comprovació per les línies següents
                 for (var i = cursor.row; i < session.getLength(); i++) {
-                    console.log("comprovant línia (endavant):", i, "Fins a:",session.getLength());
+                    // console.log("comprovant línia (endavant):", i, "Fins a:",session.getLength());
                     parse = this.parseState(state, i, cursor); // TODO[Xavi] això ha d'estar parametritzat
 
 
                     if (!parse) {
-                        console.log("El resultat ha estat null, parem de cercar endavant", parse);
+                        // console.log("El resultat ha estat null, parem de cercar endavant", parse);
                         break;
                     } else {
                         rowEnd = i;
@@ -107,7 +107,7 @@ define([
                     parse = this.parseState(state, i, cursor, true);
 
                     if (!parse) {
-                        console.log("El resultat ha estat null, parem de cercar endarrere", parse);
+                        // console.log("El resultat ha estat null, parem de cercar endarrere", parse);
                         break;
                     } else {
                         rowStart = i;
@@ -224,10 +224,9 @@ define([
 
 
             for (; expr(i); i += inc) {
-                console.log("Comprovant state", states[i]);
+                // console.log("Comprovant state", states[i]);
 
                 if (states[i].name.startsWith(state)) {
-                    console.log("OOOK l'estat comença per ", state, states[i]);
 
                     // if (states[i].start === states[i].end && (row !== cursor.row || cursor.column > states[i].start)) {
                     //     console.log(row, "L'estat s'obre però no es tanca en aquesta línia", states[i]);
@@ -241,7 +240,7 @@ define([
 
                     // }
                 } else {
-                    console.log("----- fi de la cerca, l'estat no comença", state, states[i]);
+                    // console.log("----- fi de la cerca, l'estat no comença", state, states[i]);
                 }
             }
 
