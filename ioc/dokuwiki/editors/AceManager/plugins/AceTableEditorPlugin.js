@@ -17,6 +17,10 @@ define([
     "ioc/dokuwiki/editors/AceManager/plugins/IocCellMerge"
 ], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, CellMerge) {
 
+    // TODO[Xavi] Afegir com a paràmetre al constructor o als arguments d'inicialització
+    var MAX_EXTRA_COLUMNS = 100;
+
+
     return declare([AbstractAcePlugin], {
 
         init: function (args) {
@@ -74,7 +78,7 @@ define([
             var dispatcher = this.editor.dispatcher;
 
             var id = dispatcher.getGlobalState().getCurrentId(),
-                editor = dispatcher.getContentCache(id).getMainContentTool().getEditor().editor.editor;
+                editor = dispatcher.getContentCache(id).getMainContentTool().getEditor().editor;
             // editor.toggleEditor();
 
             console.log("Editor?", editor);
@@ -89,7 +93,7 @@ define([
                 id = dispatcher.getGlobalState().getCurrentId();
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
-            var editor = dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk).editor;
+            var editor = dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
 
             // editor.toggleEditor();
 
@@ -100,18 +104,18 @@ define([
 
         editTableCallback: function (range, blockContent) {
             console.log(range);
-            this.editor.session.removeMarker(this.previousMarker);
-            this.previousMarker = this.editor.session.addMarker(range, 'edittable-highlight');
+            this.editor.getSession().removeMarker(this.previousMarker);
+            this.previousMarker = this.editor.getSession().addMarker(range, 'edittable-highlight');
             //editor.selection.setRange(range);
 
-            blockContent = "<edittable>12345</edittable>";
+            // blockContent = "<edittable>12345</edittable>";
 
-            console.log("Click a secció table-editor, contingut:\n\n" + blockContent);
+            // console.error("Click a secció table-editor, contingut:\n\n" + blockContent);
 
 
             // Eliminem el principi i el final
             var dokuwikiContent = blockContent.substring(11, blockContent.length - 12);
-            console.log("dokuwikiContent", dokuwikiContent);
+            console.log("dokuwikiContent:", dokuwikiContent);
 
             // TODO: Parsejar el codi wiki per convertir-lo en dades
 
@@ -176,13 +180,27 @@ define([
 
 
                 // Aquestes son les dades necessaries per recrear la taula
-                console.log("Layout:", layout);
+                // console.log("Layout:", layout);
 
-
+                var context = this;
 
                 store.fetch({
                         query: {}, onComplete: function (items) {
-                        console.log("Dades:", items);
+                            console.log("Dades:", items);
+                            console.log("Layout:", layout);
+                            console.log("Columnes eliminades", removedColumns);
+                            console.log("Merged cells", mergeHandlers);
+
+
+                            var row = context.editor.getCurrentRow();
+
+                            var dokuwikiTable = context.parseData(items, layout, removedColumns, mergeHandlers);
+
+                            dokuwikiTable.unshift('<edittable>');
+                            dokuwikiTable.push('</edittable>');
+
+                        context.editor.replace_lines(row, row, dokuwikiTable);
+
                         }
                     }
                 );
@@ -241,7 +259,14 @@ define([
             $toolbar.append($mergeCells);
 
 
+            var numberOfColumns = 0;
+
             $addCol.on('click', function (e) {
+
+                if (numberOfColumns === maxColumns) {
+                    return;
+                }
+
                 // Test: substituim el layout per un amb una columna extra
 
 
@@ -255,18 +280,26 @@ define([
                 //     {'name': 'Column 5', 'field': 'col5', 'width': '50px'}
                 // ]];
 
-                var counter = layout[0].length + 1;
+                ++numberOfColumns;
 
 
-                var header = prompt("Introdueix el nom de la columna");
+                console.log("Number of columns?", numberOfColumns);
+                grid.layout.setColumnVisibility(numberOfColumns, /* bool */ true);
 
-                layout[0].push({'name': header, 'field': 'col' + counter, 'width': '50px'});
+                // TODO: Cercar la manera de canviar el nom de la columna
+
+                // var header = prompt("Introdueix el nom de la columna");
+                //
+                // layout[0].push({'name': header, 'field': 'col' + counter, 'width': '50px'});
 
 
-                grid.setStructure(layout);
+                // grid.setStructure(layout);
                 console.log("Afegint columna");
+                grid.selection.clear();
             });
 
+
+            var removedColumns = [];
 
             $removeCol.on('click', function (e) {
 
@@ -274,18 +307,11 @@ define([
 
                 console.log("items seleccionats:", items);
 
-                var removeCols = [];
                 for (var col in selection['cols']) {
-                    removeCols.push(selection['cols'][col].col);
-
-
+                    removedColumns.push(selection['cols'][col].col);
                     grid.layout.setColumnVisibility(/* int */ selection['cols'][col].col, /* bool */ false)
-
                 }
 
-                console.log("TODO: Afegir l'index a la llista d'elements 'elimintats'");
-
-                alert("TODO: Afegir l'element amagat com a columna amagada");
 
                 //
                 // var newLayout = [];
@@ -302,11 +328,10 @@ define([
                 // grid.setStructure(layout);
                 //
                 //
-                console.log("Eliminades les columnes", removeCols);
+                console.log("Eliminades les columnes");
 
 
-
-
+                grid.selection.clear();
             });
 
             var itemsCount = 0;
@@ -368,6 +393,7 @@ define([
 
             });
 
+            var mergeHandlers = [];
 
             $mergeCells.on('click', function (e) {
 
@@ -445,7 +471,7 @@ define([
                 for (var i = 0; i < rows.length; i++) {
 
                     console.log("Fent merge de la línia", rows[i]);
-                    var handleMeger1 = grid.mergeCells(rows[i], startCol, endCol, contentCol); // Alerta, s'ha de desar aquest handler per poder defer-ho
+                    mergeHandlers.push(grid.mergeCells(rows[i], startCol, endCol, contentCol)); // Alerta, s'ha de desar aquest handler per poder defer-ho
                 }
 
 
@@ -519,6 +545,9 @@ define([
             var store = new ItemFileWriteStore({data: data});
 
             /*set up layout*/
+
+            // TODO: Aquí s'ha d'afegir el layout generat a partir del codi wiki, això es només de proves
+
             var layout = [[
                 {'name': 'Column 1', 'field': 'id', 'width': '100px', editable: true},
                 {'name': 'Column 2', 'field': 'col2', 'width': '100px', editable: true},
@@ -526,15 +555,15 @@ define([
                 {'name': 'Column 4', 'field': 'col4', 'width': '150px', editable: true}
             ]];
 
-            /*create a new grid*/
-            // var grid = new DataGrid({
-            //     id: 'grid',
-            //     store: store,
-            //     structure: layout,
-            //     rowSelector: '20px',
-            //     height: '500px',
-            //     selectionMode: 'multiple'
-            // });
+
+            numberOfColumns = layout[0].length;
+            var maxColumns = layout[0].length + MAX_EXTRA_COLUMNS;
+
+
+            // TODO: Aquí es crean les columnes buides per poder afegir noves columnes.
+            for (var i = numberOfColumns; i < maxColumns; i++) {
+                layout[0].push({'name': 'Buida', 'field': 'col' + (i + 1), 'width': '100px', editable: true});
+            }
 
             var grid = new EnhancedGrid({
                 id: 'grid',
@@ -558,6 +587,12 @@ define([
 
 
             domConstruct.place(grid.domNode, dialog.containerNode);
+
+
+            // Amagem les columnes buides
+            for (var i = numberOfColumns; i < maxColumns; i++) {
+                grid.layout.setColumnVisibility(/* int */ i, /* bool */ false);
+            }
 
             grid.startup();
 
@@ -593,6 +628,16 @@ define([
             // ALERTA[Xavi] Arreglos d'estil forçats a la taula, no es poden arreglar mitjançant CSS
             jQuery('[dojoattachpoint="viewsHeaderNode"]').css('height', '24px');
 
+        },
+
+        parseData : function (items, layout, removedColumns, mergeHandlers) {
+
+            return [
+                "^ Heading 1 ^ Heading 2 ^ Heading 3 ^",
+                "| Row 1 Col 1 | Row 1 Col 2 | Row 1 Col 3 |",
+                "| Row 2 Col 1 | some colspan (note the double pipe) ||",
+                "| Row 3 Col 1 | Row 3 Col 2 | Row 3 Col 3 |"
+                ];
         }
 
     });
