@@ -14,8 +14,8 @@ define([
     'dojo/_base/array',
     "dojox/grid/EnhancedGrid",
     "dojox/grid/enhanced/plugins/Selector",
-    "ioc/dokuwiki/editors/AceManager/plugins/IocCellMerge"
-], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, CellMerge) {
+    // "ioc/dokuwiki/editors/AceManager/plugins/IocCellMerge"
+], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector/*, CellMerge*/) {
 
     // TODO[Xavi] Afegir com a paràmetre al constructor o als arguments d'inicialització
     var MAX_EXTRA_COLUMNS = 50;
@@ -194,8 +194,8 @@ define([
                     // col0: key
                 };
 
-                for (var i=0; i<this.numberOfColumns; i++) {
-                    data['col'+(i+1)] = '';
+                for (var i = 0; i < this.numberOfColumns; i++) {
+                    data['col' + (i + 1)] = '';
                 }
 
                 store.newItem(data);
@@ -205,7 +205,6 @@ define([
             $removeRow.on('click', function (e) {
 
                 var items = grid.selection.getSelected('row', false);
-
 
 
                 if (items.length) {
@@ -224,45 +223,8 @@ define([
 
             $mergeCells.on('click', function (e) {
 
-                // var row = grid.selection.getSelected()[0];
-                // console.log("Fila seleccionada?", row);
-                //
-                //
-                // var id = row.id[0];
-                //
-                // store.fetch({
-                //         query: {id: id}, onComplete: function (items) {
-                //             store.deleteItem(items[0]);
-                //         }
-                //     }
-                // );
-
-
-                // var items = grid.selection.getSelected();
-                // console.log("Cel·les seleccionades:", selection['cells']);
-                // console.log("Layout", layout);
-
-
-                // La fusió de cel·les consisteix en:
-                // - modificar la cel·la corresponent a la cantonada superior esquerra afegint rowspan i colspan corresponent a la extensió
-                // - eliminar totes les altres cel·les seleccionades.
-
-
-                // var items = grid.getSelected('cell', true);
-                // console.log("Merge Cells (funciona el getSelected??)", items);
-
-
-                // Per fer un unmerge s'ha de fer sobre el handle, o amb getMergedCells es poden desfer tots els merges
-
-                // var row = 2; // tercera fila
-                // var startCol = 1; // segona columna
-                //     var endCol = 2; // tercera columna
-                // var contentCol = startCol; // Contingut de la primera cel·la fusionada
-                //
-
-
                 var first = true;
-                var startCol, endCol, contentCol, currentCol, currentRow;
+                var startCol, endCol, startRow, endRow, currentCol, currentRow;
 
                 var rows = [];
 
@@ -277,28 +239,91 @@ define([
 
                     if (first) {
                         startCol = currentCol;
+                        startRow = currentRow;
                         endCol = currentCol;
+                        endRow = currentRow;
 
                         first = false;
+
                     } else {
                         if (currentCol < startCol) {
                             startCol = currentCol;
                         } else if (currentCol > endCol) {
                             endCol = currentCol;
                         }
+
+                        if (currentRow < startRow) {
+                            startRow = currentRow;
+                        } else if (currentRow > endRow) {
+                            endRow = currentRow;
+                        }
                     }
                 }
 
-                contentCol = startCol;
 
                 // ALERTA[Xavi] Aquesta mateixa información ens serveix per marcar les cel·les fusionades
-                console.log(rows, startCol, endCol, contentCol);
+                console.log("Merge Info:", startRow, endRow, startCol, endCol);
 
 
-                for (var i = 0; i < rows.length; i++) {
+                // Hem de treballar amb el llistat complet de files per que no hi ha correspondencia directa entre cel·les i files/columnes de dades al store
+                store.fetch({
+                        query: {}, onComplete: function (items) {
 
-                    mergeHandlers.push(grid.mergeCells(rows[i], startCol, endCol, contentCol)); // Alerta, s'ha de desar aquest handler per poder defer-ho
-                }
+
+                            console.log("items:", items);
+
+                            var first = true;
+                            for (var i = startRow; i <= endRow; i++) {
+                                console.log("Comprovant fila:", i);
+                                for (var j = startCol; j <= endCol; j++) {
+                                    if (first) { // El primer element es el que conté el contingut del merge
+                                        first = false;
+                                        console.log("Primera cel·la, s'ignora el merge");
+                                        continue;
+                                    }
+
+
+                                    console.log(i,j);
+
+                                    if (!items[i].merge) {
+                                        items[i].merge = {
+                                            h: [],
+                                            v: []
+                                        }
+                                    }
+
+
+
+                                    if (i===startRow) { // Merge horitzonal
+                                        console.log("Merge horitzontal", i, startRow)
+                                        items[i].merge.h.push(j);
+                                        items[i]['col'+(j+1)] = ["<<<"];
+
+                                    } else { // Merge vertical
+                                        console.log("Merger vertical", i, startRow)
+                                        items[i].merge.v.push(j);
+                                        items[i]['col'+(j+1)] = ["^^^"];
+                                    }
+
+
+                                    // 2- Desar la informació dintre de l'element de l'store (dificil, s'ha de fer un fetch/query)
+
+                                }
+
+                                console.log("Item actualitzat:", items[i]);
+                            }
+
+
+                            grid.setQuery({'id': '*'}); // Reresca el grid amb les dades actualitzades
+                        }
+                    }
+                );
+
+
+                // for (var i = 0; i < rows.length; i++) {
+
+                // mergeHandlers.push(grid.mergeCells(rows[i], startCol, endCol, contentCol)); // Alerta, s'ha de desar aquest handler per poder defer-ho
+                // }
 
 
                 // // if (items.length) {
@@ -376,12 +401,10 @@ define([
             // ]];
 
 
-
-
             // TODO: Aquí es crean les columnes buides per poder afegir noves columnes.
-            for (var i = this.numberOfColumns+1; i < this.maxColumns; i++) {
+            for (var i = this.numberOfColumns + 1; i < this.maxColumns; i++) {
                 layout.push({
-                    'name': 'Columna '+i,
+                    'name': 'Columna ' + i,
                     'field': 'col' + i,
                     'width': '100px',
                     editable: true
@@ -403,7 +426,7 @@ define([
                         'col': 'multi',
                         'row': 'multi'
                     },
-                    cellMerge: true // Pel plugin, no permet fer merge de files
+                    // cellMerge: true // Pel plugin, no permet fer merge de files
                 },
                 selectionMode: 'multiple'
             });
@@ -412,11 +435,10 @@ define([
             domConstruct.place(grid.domNode, dialog.containerNode);
 
 
-
             grid.startup();
 
             // Amagem les columnes buides
-            for (var i = this.numberOfColumns; i < this.maxColumns-1; i++) {
+            for (var i = this.numberOfColumns; i < this.maxColumns - 1; i++) {
                 grid.layout.setColumnVisibility(/* int */ i, /* bool */ false);
             }
 
@@ -431,6 +453,7 @@ define([
             // Test selections
             var func = function (type, startPoint, endPoint, selected) {
 
+                console.log("func selections:", type, startPoint, endPoint, selected)
                 selection = {
                     cells: selected["cell"],
                     cols: selected["col"],
@@ -454,9 +477,9 @@ define([
 
         },
 
-        parseData: function (items, layout, removedColumns, mergeHandlers) {
+        parseData: function (items, layout, removedColumns) {
 
-            // console.log(items, layout, removedColumns, mergeHandlers);
+            // console.log(items, layout, removedColumns);
 
             var lines = [];
 
@@ -489,12 +512,16 @@ define([
                 var line = "";
 
                 var first = true;
-
+                var addSpaceOnFinishLine;
 
                 for (var j = 1; j <= this.numberOfColumns; j++) {
                     if (removedColumns.indexOf(j) !== -1) {
                         continue; // Columna eliminada
                     }
+
+                    addSpaceOnFinishLine = true;
+
+                    console.log("Merge per row:", i, items[i].merge)
 
                     if (first) {
                         first = false;
@@ -502,7 +529,20 @@ define([
                         line += " ";
                     }
 
-                    var cellContent = items[i]['col' + j ];
+
+                    if (items[i].merge && items[i].merge.h.indexOf(j - 1) !== -1) {
+                        addSpaceOnFinishLine = false;
+                        line += "|";
+                        continue;
+                    } else if (items[i].merge && items[i].merge.v.indexOf(j - 1) !== -1) {
+                        //merged = true;
+                        line += "| :::";
+                         continue;
+                    }
+
+
+
+                    var cellContent = items[i]['col' + j];
                     if (cellContent === 'undefined' || cellContent === undefined || cellContent === null) {
                         cellContent = '';
                     }
@@ -510,7 +550,13 @@ define([
                     line += "| " + cellContent;
 
                 }
-                line += " |";
+
+                if (addSpaceOnFinishLine) {
+                    line += " |";
+                } else {
+                    line += "|";
+                }
+
                 lines.push(line);
             }
 
@@ -604,7 +650,10 @@ define([
                         //     if (mergeOpen) { // Tanquem el merge
                         //
                         //         if (!row.merge) {
-                        //             row.merge = [];
+                        //             row.merge = {
+                        //                 h: [],
+                        //                 v: []
+                        //             }
                         //         }
                         //
                         //         row.merge.push({start: mergeOpen, close: cols});
@@ -614,7 +663,7 @@ define([
                         //         // Obrim el merge
                         //         mergeOpen = cols;
                         //     }
-                        //
+
                     }
                 }
 
