@@ -419,13 +419,10 @@ define([
             // category: 'C',
         },
 
-        'TableEditorInsert': {
+        'TableEditor': {
             type: localization["ioc-table-editor"],
             title: localization["ioc-table-editor"],
-            icon: 'IocReadonly',
-            open: '<edittable>',
-            close: '</editttable>',
-            // category: 'C',
+            icon: 'IocTable',
         },
     };
 
