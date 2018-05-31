@@ -7,7 +7,7 @@ define([
     'dojo/dom-construct',
     'ioc/wiki30/manager/EventObservable',
     'ioc/wiki30/manager/EventObserver',
-    'dijit/form/Button',
+    'dijit/form/Button'
 ], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable, EventObserver, Button) {
 
     return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin, EventObservable, EventObserver], {
@@ -41,7 +41,7 @@ define([
         },
 
         _initTimer: function () {
-//            console.log("CustomDialog#_initTimer", this.timeout);
+            //console.log("CustomDialog#_initTimer", this.timeout);
             if (!this.timeout) {
                 return;
             }
@@ -54,7 +54,7 @@ define([
             this.registerObserverToEvent(this, this.eventName.DESTROY, function () {
                 //console.log("Clear!");
                 clearInterval(timerId);
-            })
+            });
         },
 
         _initFunctions: function () {
@@ -79,13 +79,12 @@ define([
         _createDialogShowCallback: function (dialog) {
             return function () {
                 dialog.show();
-            }
+            };
         },
 
         _initNextCallbacks: function () {
             //console.log("CustomDialog#_initNextCallbacks", this.nextCallbacks);
             // llença tota la seqüencia de funcions d'inicialització afegides
-
             for (var event in this.nextCallbacks) {
                 // Es tracta d'un array
                 for (var i = 0; i < this.nextCallbacks[event].length; i++) {
@@ -99,16 +98,19 @@ define([
         },
 
         _addSections: function () {
-            console.log("CustomDialog#_addSections", this.sections);
+            //console.log("CustomDialog#_addSections", this.sections);
             for (var i = 0; i < this.sections.length; i++) {
-
+                var divSection = domConstruct.create("div", {class:"sectionNode"});
+                var divContent = domConstruct.create("div", {class:"content"});
+                divSection.append(divContent);
+                this.sectionsNode.append(divSection);
+                
                 if (this.sections[i].widget) {
-                    console.log("Is widget", this.sections[i].widget);
-                    this.sections[i].widget.placeAt(this.sectionsNode);
+                    this.sections[i].widget.placeAt(divContent);
                 } else if (this.sections[i] instanceof jQuery) {
-                    jQuery(this.sectionsNode).append(this.sections[i]);
+                    jQuery(divContent).append(this.sections[i]);
                 } else {
-                    this.sectionsNode.appendChild(this.sections[i]);
+                    divContent.appendChild(this.sections[i]);
                 }
 
                 jQuery(this.sectionsNode.lastChild).animate({scrollTop: (0)}); // En cas de que es mostri una barra de desplaçament sempre es mostrarà el principi de la secció
@@ -119,12 +121,11 @@ define([
             if (!this.buttons) {
                 return;
             }
-
-//            //this.buttonsNode.appendChild(this._createButtons());
-        this._createButtons();
-//            for(var i=0; i<bts.length; i++){
-//                this.addChild(bts[i]);
-//            }
+            //this.buttonsNode.appendChild(this._createButtons());
+            this._createButtons();
+            //for(var i=0; i<bts.length; i++){
+            //  this.addChild(bts[i]);
+            //}
         },
 
         _createButtons: function () {
@@ -167,9 +168,7 @@ define([
 
             for (var i = 0; i < this.buttons.length; i++) {
                 buttonId = this._getButtonId(this.buttons[i].id);
-//                $button = jQuery('#' + buttonId);
-
-//                console.log("botó:", buttonId);
+                //$button = jQuery('#' + buttonId);
 
                 if (Array.isArray(this.buttons[i].callback)) {
                     this.buttons[i].widget._callbackDlg = [];
@@ -185,7 +184,7 @@ define([
                             this._callbackDlg[j].call(context);
                         }
                         this._removeDlg();
-//                        $button.on('click', this.buttons[i].callback[j].bind(this));
+                        //$button.on('click', this.buttons[i].callback[j].bind(this));
                     };
                 } else if(this.buttons[i].callback){
                     this.buttons[i].widget._callbackDlg = this.buttons[i].callback.bind(this);
@@ -193,7 +192,7 @@ define([
                     this.buttons[i].widget.onClick = function(){
                         this._callbackDlg();
                         this._removeDlg();
-//                        $button.on('click', this.buttons[i].callback.bind(this));
+                        //$button.on('click', this.buttons[i].callback.bind(this));
                     };                    
                 } else {
                     var oc = this.buttons[i].widget.onClick.bind(this.buttons[i].widget);
@@ -205,10 +204,9 @@ define([
                         this._removeDlg();
                     };                    
                 }
-//
-//                $button.on('click', function () {
-//                    this.remove(); // Al fer click en un boto sempre es tanca el dialeg
-//                }.bind(this));
+                //$button.on('click', function () {
+                //  this.remove(); // Al fer click en un boto sempre es tanca el dialeg
+                //}.bind(this));
             }
         },
 
@@ -226,7 +224,7 @@ define([
             // console.log("CustomDialog#onHide");
             this.inherited(arguments);
             this.dispatchEvent(this.eventName.CANCEL, {id: this.id, refId: this.refId});
-            this.remove()
+            this.remove();
         },
 
         // Correspn al docId o algun altre tipus d'identificador únic amb el que volem agrupar dialegs
