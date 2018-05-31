@@ -80,7 +80,6 @@ define([
          * Muestra un diálogo que permite elegir entre editar el original y editar el borrador
          * @param {object} value : parámetros, datos y estructuras del proyecto
          * @param {JSON}   draft : es el borrador almacenado en el localStorage
-         * @param {object} args : parámetro para lanzar un inherited sobre FormContentProcessor
          */
         _showDiffDialog: function (value, draft) {
 
