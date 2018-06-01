@@ -152,15 +152,19 @@ define([
         },
         
         _convertUnixDate: function (fecha) {
-            var p = 13 - fecha.toString().length; //He detectado fechas con menos dígitos de lo normal
-            if (p > 0) {
-                var mul = 1;
-                for (var i=0; i<p; i++) {
-                    mul *= 10;
+            if (fecha) {
+                var p = 13 - fecha.toString().length; //He detectado fechas con menos dígitos de lo normal
+                if (p > 0) {
+                    var mul = 1;
+                    for (var i=0; i<p; i++) {
+                        mul *= 10;
+                    }
+                    fecha *= mul;
                 }
-                fecha *= mul;
+                var d = new Date(parseInt(fecha));
+            }else {
+                var d = new Date();
             }
-            var d = new Date(parseInt(fecha));
             return d.getDate() + "." + (d.getMonth()+1) + "." + d.getFullYear();
         }
 
