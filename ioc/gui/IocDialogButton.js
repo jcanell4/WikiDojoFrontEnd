@@ -239,11 +239,10 @@ define([
             var separacio = (w.value.EspaiNoms !== '') ? ':' : '';
             
             if (w.value.NouProjecte) {
-                query = 'call=project' + 
-                        '&do=create' + 
+                query = params.call_project + 
                         '&id=' + w.value.EspaiNoms + separacio + w.value.NouProjecte +
-                        '&projectType=' + w.value.SelectProjecte,
-                        '&nsParent=' + params.ns,
+                        '&projectType=' + w.value.SelectProjecte +
+                        '&nsParent=' + params.ns +
                         '&projectTypeParent=' + params.projectType;
             }
             else if (w.value.NouDocument) {
@@ -258,15 +257,15 @@ define([
                     var item = this._getItemComboBox(w, "SelectTemplate");
                     var nsTemplate = item ? "&template="+item.path : "";
                 */
-                query = 'call=project' + 
-                        '&do=new_page' + 
+                query = params.call_document + 
                         '&id=' + w.value.EspaiNoms + separacio + w.value.NouDocument +
+                        '&projectType=' + params.projectType +
                         nsTemplate;
             }
             else if (w.value.NovaCarpeta) {
-                query = 'call=new_page' + 
-                        '&do=new_folder' + 
-                        '&id=' + w.value.EspaiNoms + separacio + w.value.NovaCarpeta;
+                query = params.call_folder + 
+                        '&id=' + w.value.EspaiNoms + separacio + w.value.NovaCarpeta +
+                        '&projectType=' + params.projectType;
             }
             if (query) {
                 w.action = query;
