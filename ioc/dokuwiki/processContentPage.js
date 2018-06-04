@@ -7,8 +7,10 @@ define([
     ,"ioc/dokuwiki/runQuiz" 
     ,"ioc/wiki30/Request"
     ,"dojo/dom-attr"
+    ,"dojo/dom-class"
+    ,"dojo/query"
 ], function(on, dom, event, listHeadings, runRender, runQuiz,
-                Request, att){
+                Request, att, domClass, domQuery){
 
     var request = new Request();
     return function (id, params) {
@@ -53,6 +55,36 @@ define([
         };
         on(domNode, 'a[class=wikilink1]:click', onClickWikiLink);
         on(domNode, 'a[class=wikilink2]:click', onClickWikiLink);
+        
+        on(domNode, "a[data-container-id-referred]:click", function(){
+            var containerId = att.get(this, "data-container-id-referred");
+            var node = dom.byId(containerId);
+            if(domClass.contains(node, 'imploded')){
+                domQuery("[data-container-id='"+containerId+"']", domNode).forEach(function(nodeItem){
+                    domClass.replace(nodeItem, "exploded", "imploded");
+                });
+                domClass.replace(node, "exploded", "imploded");
+            }else{
+                domQuery("[data-container-id='"+containerId+"']", domNode).forEach(function(nodeItem){
+                    domClass.replace(nodeItem, "imploded", "exploded");
+                });
+                domClass.replace(node, "imploded", "exploded");                    
+            }
+        });
+        on(domNode, "a.hiddenContainer[data-container-type]:click", function(){
+            var containerId = att.get(this, "id");
+                if(domClass.contains(this, 'imploded')){
+                    domQuery("[data-container-id='"+containerId+"']", domNode).forEach(function(nodeItem){
+                        domClass.replace(nodeItem, "exploded", "imploded");
+                    });
+                    domClass.replace(this, "exploded", "imploded");
+                }else{
+                    domQuery("[data-container-id='"+containerId+"']", domNode).forEach(function(nodeItem){
+                        domClass.replace(nodeItem, "imploded", "exploded");
+                    });
+                    domClass.replace(this, "imploded", "exploded");
+                }
+        });
     };
 });
 
