@@ -180,6 +180,10 @@ define([
 
         },
 
+        getCurrentRow: function() {
+            return this.editor.getCurrentRow();
+        }
+
 
 
     });

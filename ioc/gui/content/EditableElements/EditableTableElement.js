@@ -81,6 +81,8 @@ define([
                     cells: tableData.columns
                 }];
 
+                console.log("Contingut de rows??", tableData.rows);
+
                 var objectStore = new Memory({data: tableData.rows});
                 this.dataStore = new ObjectStore({objectStore: objectStore});
                 this.backupData = jQuery.extend(true, {}, tableData.rows);

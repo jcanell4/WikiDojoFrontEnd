@@ -91,7 +91,7 @@ define([
             },
             
             fireEvent: function(eventName, dataEventBase, preventGlobalProp){
-                console.log("EventObservable#fireEvent: ", eventName, dataEventBase);
+                // console.log("EventObservable#fireEvent: ", eventName, dataEventBase);
                 var eventData,
                         fireEventFunc = this.fireEvents[eventName];
                 if(fireEventFunc){

@@ -358,7 +358,7 @@ define([], function () {
             config.type += '_' + type;
             //console.log(toolbarManager#addButton);
             if (_existsButtonInToolbar(config.title, type)) {
-                console.error("Ja Existeix el botó", config.title, type);
+                // console.error("Ja Existeix el botó", config.title, type);
                 return false;
             } else {
                 _createButtonInToolbar(config, func, type);

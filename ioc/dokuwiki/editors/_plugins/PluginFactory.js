@@ -22,6 +22,8 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceReadonlyBlocksToggle', // Test readonly
     'ioc/dokuwiki/editors/AceManager/plugins/AceTestReadonlyPlugin', // Test readonly
 
+    'ioc/dokuwiki/editors/AceManager/plugins/AceTableEditorPlugin',
+
     // Localització
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
 
@@ -29,7 +31,7 @@ define([
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
-             AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin, localization) {
+             AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin, AceTableEditor, localization) {
 
 
     var plugins = {
@@ -45,7 +47,8 @@ define([
             'CancelDialogEditorButton' : AceFireDojoEvent,
             'SaveDialogEditorButton' : AceFireDojoEvent,
             'TestReadonlyPlugin': AceTestReadonlyPlugin,
-            'ReadonlyBlocksToggle': AceReadonlyBlocksToggle
+            'ReadonlyBlocksToggle': AceReadonlyBlocksToggle,
+            'TableEditor': AceTableEditor
         },
 
         'Dojo': {
@@ -414,6 +417,12 @@ define([
             title: localization["ioc-readonly-toggle"],
             icon: 'IocReadonly'
             // category: 'C',
+        },
+
+        'TableEditor': {
+            type: localization["ioc-table-editor"],
+            title: localization["ioc-table-editor"],
+            icon: 'IocTable',
         },
     };
 
