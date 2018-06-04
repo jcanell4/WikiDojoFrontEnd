@@ -70,7 +70,7 @@ define([
                         return object.type === "d" ||
                                (object.type === "p" && self.expandProject) ||
                                object.type === "pd" ||
-                               object.type === "po";
+                               (object.type === "po" && self.expandProject);
                     },
 
                     getLabel: function (object) {
@@ -120,7 +120,7 @@ define([
             var ret;
             if (typeof this.processOnClickAndOpenOnClick === "function" && parm) {
                 ret = this.processOnClickAndOpenOnClick(parm);
-            }else if(Array.isArray(this.processOnClickAndOpenOnClick)){
+            }else if(Array.isArray(this.processOnClickAndOpenOnClick) && parm){
                 ret = false;
                 for(var i=0; !ret && i<this.processOnClickAndOpenOnClick.length; i++){
                     ret = parm===this.processOnClickAndOpenOnClick[i];
