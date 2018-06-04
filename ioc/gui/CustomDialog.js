@@ -102,8 +102,8 @@ define([
             for (var i = 0; i < this.sections.length; i++) {
                 var divSection = domConstruct.create("div", {class:"sectionNode"});
                 var divContent = domConstruct.create("div", {class:"content"});
-                divSection.append(divContent);
-                this.sectionsNode.append(divSection);
+                divSection.appendChild(divContent);
+                this.sectionsNode.appendChild(divSection);
                 
                 if (this.sections[i].widget) {
                     this.sections[i].widget.placeAt(divContent);
