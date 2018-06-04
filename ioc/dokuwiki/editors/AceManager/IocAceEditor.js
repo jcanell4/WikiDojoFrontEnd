@@ -523,6 +523,7 @@ define([
                             'EnableWrapper',
                             'LatexPreview',
                             'TestReadonlyPlugin',
+                            'TableEditor'
                         ]
                     );
                     plugins = this.getPlugins(pluginNames)

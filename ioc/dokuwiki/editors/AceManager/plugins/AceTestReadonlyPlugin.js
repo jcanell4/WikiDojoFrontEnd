@@ -23,11 +23,11 @@ define([
             // this.addButton(config);
 
             this.previousMarker = null;
-            this.editor.addReadonlyBlock('readonly', this.readonlyCallback.bind(this));
+            this.editor.addReadonlyBlock('readonly', this.editTableCallback.bind(this));
             //this.editor.addReadonlyBlock('readonly');
         },
 
-        readonlyCallback: function(range, blockContent) {
+        editTableCallback: function(range, blockContent) {
             console.log(range);
             this.editor.session.removeMarker(this.previousMarker);
             this.previousMarker = this.editor.session.addMarker(range, 'readonly-highlight');

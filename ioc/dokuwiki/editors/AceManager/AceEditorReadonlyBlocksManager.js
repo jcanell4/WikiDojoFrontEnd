@@ -64,15 +64,21 @@ define([
             var colStart = cursor.column;
             var colEnd = cursor.column;
 
+            // console.log("Cursor:", rowStart, rowEnd, colStart, colEnd);
+
+
             var currentReadonlyState = null;
 
             for (var state in this.readOnlyStates) {
 
                 // comprovació per les línies següents
                 for (var i = cursor.row; i < session.getLength(); i++) {
+                    // console.log("comprovant línia (endavant):", i, "Fins a:",session.getLength());
                     parse = this.parseState(state, i, cursor); // TODO[Xavi] això ha d'estar parametritzat
 
+
                     if (!parse) {
+                        // console.log("El resultat ha estat null, parem de cercar endavant", parse);
                         break;
                     } else {
                         rowEnd = i;
@@ -83,9 +89,12 @@ define([
 
                         if (parse.end === 0) {
                             colEnd = session.getLine(i).length;
-                        } else if (parse.end !== session.getLine(i).length) {
-                            colEnd = parse.end;
-                            break;
+
+                            // } else if (parse.end !== session.getLine(i).length) {
+                        //     colEnd = parse.end;
+                        //
+                        //
+                        //     break;
                         } else {
                             colEnd = parse.end;
                         }
@@ -94,17 +103,19 @@ define([
 
                 // comprovació per les línies anteriors
                 for (i = cursor.row - 1; i > 0; i--) {
+                    // console.log("comprovant línia (enderrere):", i);
                     parse = this.parseState(state, i, cursor, true);
 
                     if (!parse) {
+                        // console.log("El resultat ha estat null, parem de cercar endarrere", parse);
                         break;
                     } else {
                         rowStart = i;
                         colStart = parse.start;
 
-                        if (parse.start > 0) {
-                            break;
-                        }
+                        // if (parse.start > 0) {
+                        //     break;
+                        // }
                     }
                 }
 
@@ -187,6 +198,7 @@ define([
         },
 
         parseState: function (state, row, cursor, backwards) {
+            // console.log("Comprovant", state, row, cursor, backwards);
             var states = this.editor.get_line_states_preview(row, true);
             var session = this.editor.session;
 
@@ -207,22 +219,28 @@ define([
                 inc = 1;
             }
 
+            var ret = {};
+
+
 
             for (; expr(i); i += inc) {
-                //console.log(i, "Comprovant state", states[i]);
+                // console.log("Comprovant state", states[i]);
 
                 if (states[i].name.startsWith(state)) {
-                    if (states[i].start === states[i].end && (row !== cursor.row || cursor.column > states[i].start)) {
-                        //console.log(row, "L'estat s'obre però no es tanca en aquesta línia", states[i]);
-                        return {start: states[i].start, end: session.getLine(row).length}
-                    } else if (row === cursor.row && states[i].start < cursor.column && states[i].end >= cursor.column) { // El cursor es troba dins d'aquest state
-                        //console.log(row, "mateixa fila dins del rang", states[i]);
-                        return {start: states[i].start, end: states[i].end}
-                    } else if (row !== cursor.row) {
-                        //console.log(row, "no es la mateixa fila", cursor.row);
-                        return {start: states[i].start, end: states[i].end}
 
-                    }
+                    // if (states[i].start === states[i].end && (row !== cursor.row || cursor.column > states[i].start)) {
+                    //     console.log(row, "L'estat s'obre però no es tanca en aquesta línia", states[i]);
+                    //     return {start: states[i].start, end: session.getLine(row).length}
+                    // } else if (row === cursor.row && states[i].start < cursor.column && states[i].end >= cursor.column) { // El cursor es troba dins d'aquest state
+                    //     console.log(row, "mateixa fila dins del rang", states[i]);
+                        return {start: states[i].start, end: states[i].end}
+                    // } else if (row !== cursor.row) {
+                    //     console.log(row, "no es la mateixa fila", cursor.row);
+                    //     return {start: states[i].start, end: states[i].end}
+
+                    // }
+                } else {
+                    // console.log("----- fi de la cerca, l'estat no comença", state, states[i]);
                 }
             }
 
