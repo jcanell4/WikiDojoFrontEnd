@@ -258,14 +258,14 @@ define([
                     var item = this._getItemComboBox(w, "SelectTemplate");
                     var nsTemplate = item ? "&template="+item.path : "";
                 */
-                query = 'call=new_page' + 
-                        '&do=new' + 
+                query = 'call=project' + 
+                        '&do=new_page' + 
                         '&id=' + w.value.EspaiNoms + separacio + w.value.NouDocument +
                         nsTemplate;
             }
             else if (w.value.NovaCarpeta) {
                 query = 'call=new_page' + 
-                        '&do=new' + 
+                        '&do=new_folder' + 
                         '&id=' + w.value.EspaiNoms + separacio + w.value.NovaCarpeta;
             }
             if (query) {
