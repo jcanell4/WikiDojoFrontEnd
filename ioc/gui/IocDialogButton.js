@@ -258,13 +258,16 @@ define([
                     var nsTemplate = item ? "&template="+item.path : "";
                 */
                 query = params.call_document + 
-                        '&id=' + w.value.EspaiNoms + separacio + w.value.NouDocument +
+                        '&id=' + params.ns +
+                        '&espai=' + w.value.EspaiNoms +
+                        '&new_page=' + w.value.EspaiNoms + separacio + w.value.NouDocument +
                         '&projectType=' + params.projectType +
                         nsTemplate;
             }
             else if (w.value.NovaCarpeta) {
                 query = params.call_folder + 
-                        '&id=' + w.value.EspaiNoms + separacio + w.value.NovaCarpeta +
+                        '&id=' + params.ns +
+                        '&new_folder=' + w.value.EspaiNoms + separacio + w.value.NovaCarpeta +
                         '&projectType=' + params.projectType;
             }
             if (query) {
