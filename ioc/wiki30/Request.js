@@ -248,7 +248,9 @@ define([
                         dataToSend = this.dataToSend;
                     }else{
                         dataToSend={};
-                        dataToSend.concat(this.dataToSend);
+                        for (var attrname in this.dataToSend) {
+                            dataToSend[attrname] = this.dataToSend[attrname]; 
+                        }
                         for (var attrname in query) {
                             dataToSend[attrname] = query[attrname]; 
                         }
