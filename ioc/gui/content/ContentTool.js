@@ -50,8 +50,8 @@ define([
             onResize: function (args) {
                 if (this._toolBars && args.changeSize) {
                     // cambiamos la posición de los div's de IocContentPane
-                    var posH = ((args.changeSize.h-4) < 4) ? 4 : (args.changeSize.h-4);
-                    var posW = ((args.changeSize.w-36) < 0) ? 0 : (args.changeSize.w-36);    
+                    var posH = ((args.changeSize.h-14) < 14) ? 14 : (args.changeSize.h-14);
+                    var posW = ((args.changeSize.w-36) < 0) ? 0 : (args.changeSize.w-36);
                     for (var key in this._toolBars) {
                         switch (key) {
                             case 'topRight':
