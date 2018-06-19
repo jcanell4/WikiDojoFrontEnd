@@ -8,19 +8,19 @@ define([
     "dojo/data/ObjectStore",
     "dijit/form/Button",
     "dojox/grid/_Events",
+    "dijit/form/Textarea"
 
-], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents) {
+], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, dijitTextarea) {
 
     return declare([AbstractEditableElement],
         {
-            defaultRow : null,
+            defaultRow: null,
 
-            init: function(args) {
-                // console.log("args", args)
+            init: function (args) {
+                console.log("EditableTableElement#init", args);
                 this.inherited(arguments);
 
                 // this.defaultDisplay = 'table';
-
 
 
             },
@@ -48,6 +48,7 @@ define([
 
                 var $container = jQuery('<div id="grid_container"></div>');
 
+
                 // Movem l'estil de la taula al contenidor;
                 this.$container.parent().addClass('element-container');
                 this.$container.parent().addClass(this.$node[0].className);
@@ -64,22 +65,31 @@ define([
                 this.$editableNode.css('display', 'block'); // S'ha de fer visible abans de crear el grid o l'alçada es 0.
 
 
-                var $toolbar= jQuery('<div></div>');
+                var $toolbar = jQuery('<div></div>');
                 $container.append($toolbar);
 
                 this.$editableNode.append($container);
 
-                var width = 100/tableData.columns.length;
+                var width = 100 / tableData.columns.length;
 
                 var gridLayout = [{
                     defaultCell: {
                         width: width + "%",
                         editable: true,
+                        // cellType: dojox.grid.cells.Select,
+                        // options: ['aaa', 'bbb', 'ccc'],
                         type: cells._Widget,
+                        //widgetClass: dijitTextarea,
                         styles: 'text-align: left;',
                     },
                     cells: tableData.columns
                 }];
+
+
+                this.setupCells(gridLayout[0]);
+
+
+                console.log("Contingut del layout?", gridLayout);
 
                 console.log("Contingut de rows??", tableData.rows);
 
@@ -105,7 +115,7 @@ define([
                     structure: gridLayout,
                     escapeHTMLInData: false,
                     //height: "500px"
-                    height: height +'px' // la alçada de cada fila
+                    height: height + 'px' // la alçada de cada fila
                 });
 
 
@@ -123,7 +133,6 @@ define([
                 // };
 
 
-
                 grid.placeAt($container[0]);
                 grid.startup();
 
@@ -131,14 +140,13 @@ define([
                 var context = this;
 
 
-                grid.on("ApplyCellEdit", function(e) {
+                grid.on("ApplyCellEdit", function (e) {
                     console.log("Canvis detectats: ", e);
                     context.updateField();
                 });
 
 
-
-                var  addKeyButton = new Button({
+                var addKeyButton = new Button({
                     label: "Afegir clau",
 
                     onClick: function () {
@@ -154,8 +162,8 @@ define([
                             col0: key
                         };
 
-                        for (var i=1; i<context.defaultRow.length; i++) {
-                            data['col'+i] = context.defaultRow[i];
+                        for (var i = 1; i < context.defaultRow.length; i++) {
+                            data['col' + i] = context.defaultRow[i];
                         }
 
 
@@ -187,7 +195,7 @@ define([
                             return;
                         }
 
-                        for (var i=0; i<selected.length; i++) {
+                        for (var i = 0; i < selected.length; i++) {
                             context.dataStore.deleteItem(selected[i]);
                         }
 
@@ -224,26 +232,65 @@ define([
                 // cancelKeyButton.startup();
 
 
-
                 this.updateField();
                 this.widgetInitialized = true;
             },
 
+            // Copia els paràmetres de configuració a la cel·la
+            setupCells: function (layout) {
 
-            revert: function() {
+                console.log("***Cel·las?", layout.cells);
+                for (var i in layout.cells) {
+                    var cell = layout.cells[i];
+
+                    if (this.args.fields[cell.name]) {
+
+                        var field = this.args.fields[cell.name];
+
+                        // Els cellType estan definits com propietats a dojox/grid/cells/_Base.js
+
+                        switch (field['type']) {
+                            case 'select':
+                                cell.type = dojox.grid.cells.Select;
+                                cell.options = field['options'] || ['Error. No options added to default view'];
+                                break;
+
+                            case 'textarea':
+                                cell.type = cells._Widget;
+                                cell.widgetClass = dijitTextarea;
+                                break;
+
+                            case 'bool':
+                                cell.type = dojox.grid.cells.Bool;
+                                break;
+
+                            default:
+                                cell.type = cells._Widget;
+                        }
+
+                        console.log("actualitzat", cell.name);
+
+                    }
+                }
+            },
+
+
+            revert: function () {
                 // console.log("Revert!");
                 var data = jQuery.extend(true, {}, this.backupData);
                 // var objectStore = new Memory({data: data});
                 // this.dataStore = new ObjectStore({objectStore: objectStore});
                 var store = this.dataStore;
 
-                store.fetch({query:{id:"*"}, onComplete: function(results){
-                    results.forEach(function(i) {
-                        store.deleteItem(i);
+                store.fetch({
+                    query: {id: "*"}, onComplete: function (results) {
+                        results.forEach(function (i) {
+                            store.deleteItem(i);
 
-                    })
+                        })
 
-                }});
+                    }
+                });
 
                 for (var i in data) {
                     this.dataStore.newItem(data[i]);
@@ -253,7 +300,7 @@ define([
                 this.grid.update();
 
             },
-            saveToField: function() {
+            saveToField: function () {
                 this.backupData = jQuery.extend(true, {}, this.dataStore.objectStore.data);
 
                 // console.log(this.backupData);
@@ -304,33 +351,33 @@ define([
             },
 
 
-            jsonToHTML: function(data) {
-              var $table = this.$node.find('tbody');
-              $table.html("");
+            jsonToHTML: function (data) {
+                var $table = this.$node.find('tbody');
+                $table.html("");
 
-              // console.log(data);
+                // console.log(data);
 
 
-              var cols = this.columns.length;
+                var cols = this.columns.length;
 
-              for (var i in data) {
+                for (var i in data) {
 
-                  var $row =jQuery("<tr>");
+                    var $row = jQuery("<tr>");
 
-                  for (var j=0; j<cols; j++) {
+                    for (var j = 0; j < cols; j++) {
                         var $col;
-                      if (!this.columns[j].editable) {
-                          $col = jQuery('<th>');
-                      } else {
-                          $col = jQuery('<td>');
-                      }
-                      $col.text(data[i]["col"+j]);
+                        if (!this.columns[j].editable) {
+                            $col = jQuery('<th>');
+                        } else {
+                            $col = jQuery('<td>');
+                        }
+                        $col.text(data[i]["col" + j]);
 
-                      $row.append($col);
-                  }
+                        $row.append($col);
+                    }
 
-                  $table.append($row);
-              }
+                    $table.append($row);
+                }
             },
 
             show: function () {
@@ -341,7 +388,7 @@ define([
 
             },
 
-            hide: function() {
+            hide: function () {
                 this.inherited(arguments);
 
                 if (this.$icon) {
@@ -352,16 +399,15 @@ define([
             },
 
 
-
-            updateField: function() {
+            updateField: function () {
                 var data = [];
 
                 var updatedData = this.dataStore.objectStore.data;
 
-                for (var i=0; i<updatedData.length; i++) {
+                for (var i = 0; i < updatedData.length; i++) {
                     var newItem = {};
 
-                    for(var j=0; j<this.columns.length; j++) {
+                    for (var j = 0; j < this.columns.length; j++) {
                         // console.log(this.columns[j],updatedData[i]);
                         newItem[this.columns[j].name] = updatedData[i][this.columns[j].field];
                     }
@@ -378,8 +424,8 @@ define([
 
             },
 
-            restoreFromField: function() {
-                console.log("Contingut del field: " , this.$field.val());
+            restoreFromField: function () {
+                console.log("Contingut del field: ", this.$field.val());
                 alert("TODO: implementar");
             }
 
