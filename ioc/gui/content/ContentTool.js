@@ -1,24 +1,20 @@
 define([
     "dojo/_base/declare",
+    "dojo/dom-style",
     "ioc/gui/content/AbstractContentTool"
-], function (declare, AbstractContentTool) {
-
+], function (declare, domStyle, AbstractContentTool) {
+    /**
+     * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
+     * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
+     * en el futur.
+     *
+     * @class ContentTool
+     * @extends AbstractContentTool
+     * @author Xavier García <xaviergaro.dev@gmail.com>
+     * @private
+     * @see contentToolFactory.generate()
+     */
     return declare([AbstractContentTool],
-
-        /**
-         * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
-         *
-         * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
-         * en el futur.
-         *
-         *
-         *
-         * @class ContentTool
-         * @extends AbstractContentTool
-         * @author Xavier García <xaviergaro.dev@gmail.com>
-         * @private
-         * @see contentToolFactory.generate()
-         */
         {
             /**
              * Dispara l'esdeveniment que indica que el ContentToool esta a punt de destruir-se
@@ -52,7 +48,25 @@ define([
              * @see resize()
              */
             onResize: function (args) {
-                //console.log("ContentTool#onResize");
+                if (this._toolBars && args.changeSize) {
+                    // cambiamos la posición de los div's de IocContentPane
+                    var posH = ((args.changeSize.h-4) < 4) ? 4 : (args.changeSize.h-4);
+                    var posW = ((args.changeSize.w-36) < 0) ? 0 : (args.changeSize.w-36);    
+                    for (var key in this._toolBars) {
+                        switch (key) {
+                            case 'topRight':
+                                domStyle.set(this._toolBars[key], "left", posW+"px");
+                                break;
+                            case 'bottomLeft': 
+                                domStyle.set(this._toolBars[key], "top", posH+"px");
+                                break;
+                            case 'bottomRight': 
+                                domStyle.set(this._toolBars[key], "top", posH+"px");
+                                domStyle.set(this._toolBars[key], "left", posW+"px");
+                                break;
+                        }
+                    }
+                }
             },
 
             /**

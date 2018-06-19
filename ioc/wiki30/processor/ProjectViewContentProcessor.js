@@ -80,7 +80,6 @@ define([
          * Muestra un diálogo que permite elegir entre editar el original y editar el borrador
          * @param {object} value : parámetros, datos y estructuras del proyecto
          * @param {JSON}   draft : es el borrador almacenado en el localStorage
-         * @param {object} args : parámetro para lanzar un inherited sobre FormContentProcessor
          */
         _showDiffDialog: function (value, draft) {
 
@@ -153,15 +152,19 @@ define([
         },
         
         _convertUnixDate: function (fecha) {
-            var p = 13 - fecha.toString().length; //He detectado fechas con menos dígitos de lo normal
-            if (p > 0) {
-                var mul = 1;
-                for (var i=0; i<p; i++) {
-                    mul *= 10;
+            if (fecha) {
+                var p = 13 - fecha.toString().length; //He detectado fechas con menos dígitos de lo normal
+                if (p > 0) {
+                    var mul = 1;
+                    for (var i=0; i<p; i++) {
+                        mul *= 10;
+                    }
+                    fecha *= mul;
                 }
-                fecha *= mul;
+                var d = new Date(parseInt(fecha));
+            }else {
+                var d = new Date();
             }
-            var d = new Date(parseInt(fecha));
             return d.getDate() + "." + (d.getMonth()+1) + "." + d.getFullYear();
         }
 

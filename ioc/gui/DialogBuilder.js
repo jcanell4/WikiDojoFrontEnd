@@ -1,8 +1,8 @@
 define([
-    'dojo/_base/declare',
-    'ioc/gui/CustomDialog',
-    'ioc/gui/jsdifflib/jsdifflib-amd',
-    'ioc/functions/jsProjectDiff'
+    "dojo/_base/declare",
+    "ioc/gui/CustomDialog",
+    "ioc/gui/jsdifflib/jsdifflib-amd",
+    "ioc/functions/jsProjectDiff"
 ], function (declare, CustomDialog, jsdifflib, jsProjectDiff) {
 
     var DialogBuilderException = function (message) {
@@ -149,8 +149,6 @@ define([
         },
 
         addNextDialog: function (event, dialog) {
-            //console.log("DialogBuilder#addNextDialog", event);
-
             if (!dialog) {
                 throw new DialogBuilderException('No s\'ha passat cap dialeg');
             }
@@ -180,10 +178,10 @@ define([
 
             var callback = function () {
                 var dts;
-//                this.eventManager.fireEvent(eventTriggered, { // Això fa referencia al eventManager del dialog
-//                    id: this.id,
-//                    dataToSend: dataToSend
-//                }, observable);
+                //this.eventManager.fireEvent(eventTriggered, { // Això fa referencia al eventManager del dialog
+                //    id: this.id,
+                //    dataToSend: dataToSend
+                //}, observable);
                 if(dataToSend){
                     if(typeof dataToSend === "string"){
                         dts = {
@@ -216,36 +214,24 @@ define([
             return this;
         },
 
-
         build: function () {
-            // console.log('DialogBuilder#build', this.params);
-            // if (this.params.height) {
-            //     this.params['style'] = 'height:' + this.params.height+'px';
-            // }
-
             var style = '';
 
             if (this.params.height) {
-                style += 'height:'+this.params.height+"px;"
+                style += 'height:'+this.params.height+"px;";
             }
 
             if (this.params.width) {
                 style += 'width:'+this.params.width+"px";
             }
 
-            // this.params['style'] = 'height:800px;width:800px';
             this.params['style'] = style;
-
-            console.log("style:", style);
 
             delete (this.params.height);
             delete (this.params.width);
 
-
-
             return new CustomDialog(this.params);
         },
-
 
         _createRequestButton: function (params) {
             var button = {
@@ -254,15 +240,13 @@ define([
                 },
                 callback;
 
-
             if (Array.isArray(params.extra)) {
                 callback = [];
                 for (var i = 0; i < params.extra.length; i++) {
                     callback.push(this._generateRequestControlCallback(params.extra[i].eventType, params.extra[i].dataToSend));
                 }
-
-
-            } else {
+            }
+            else {
                 callback = this._generateRequestControlCallback(params.extra.eventType, params.extra.dataToSend);
             }
 
@@ -328,26 +312,18 @@ define([
             if (!data.id) {
                 if (typeof observable === "string") {
                     data.id = observable;
-
-                } else {
+                }else {
                     data.id = observable.id;
                 }
             }
 
-            // console.log("DialogBuilder#_generateFireEventCallback", event, data, observable);
-
             return function () {
-                // console.log("Click:", event, data);
-
                 // ALERTA[Xavi] Això permet afegir dades extras a l'event que s'obtenen des del dialog
                 if (this.extraData) {
                     for(var item in this.extraData) {
                         data[item] = this.extraData[item];
                     }
                 }
-
-                // console.log("Click:", event, data);
-                // console.log("dades afegides a l'event:", data);
                 this.eventManager.fireEventFromObservable(event, data, observable); // Això fa referencia al eventManager del dialog
             };
 
@@ -380,4 +356,3 @@ define([
     });
 
 });
-

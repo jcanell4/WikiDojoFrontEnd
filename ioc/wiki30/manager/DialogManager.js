@@ -18,6 +18,7 @@ define([
                 LOCK_EXPIRING: 'lock_expiring',
                 DIFF: 'diff',
                 PROJECT_DIFF: 'project_diff',
+                PROJECT_NEW_ELEMENT: 'project_new_element',
                 REQUIRE: 'require',
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
@@ -69,6 +70,10 @@ define([
 
                     case this.type.PROJECT_DIFF:
                         dialogBuilder = this._getProjectDiffDialog(refId, params);
+                        break;
+
+                    case this.type.PROJECT_NEW_ELEMENT:
+                        dialogBuilder = this._getProjectNewElementDialog(refId, params);
                         break;
 
                     case this.type.REQUIRE:
@@ -135,10 +140,7 @@ define([
              */
             _getDefaultDialog: function (refId, params) {
                 var title = params.title;
-
-                if (params.id) {
-                    title += ": " + params.id;
-                }
+                //if (params.id) title += ": " + params.id;
 
                 var dialogParams = {
                         id: 'dialog_' + refId + '_' + params.id,
@@ -188,7 +190,6 @@ define([
              * @param params
              */
             _getDiffDialog: function (refId, params) {
-                // console.log("DialogManager#_getDiffDialog", params);
                 var dialogBuilder = this._getDefaultDialog(refId, params);
                 dialogBuilder.addDiff(params.diff.text1, params.diff.text2, params.diff.text1Label, params.diff.text2Label);
                 return dialogBuilder;
@@ -197,6 +198,11 @@ define([
             _getProjectDiffDialog: function (refId, params) {
                 var dialogBuilder = this._getDefaultDialog(refId, params);
                 dialogBuilder.addProjectDiff(params.diff.formDocum, params.diff.formDraft, params.diff.labelDocum, params.diff.labelDraft);
+                return dialogBuilder;
+            },
+            
+            _getProjectNewElementDialog: function (refId, params) {
+                var dialogBuilder = this._getDefaultDialog(refId, params);
                 return dialogBuilder;
             },
             

@@ -1,30 +1,28 @@
 define([
     "dojo/_base/declare",
-    "dijit/layout/ContentPane",
+    "ioc/gui/IocContentPane", /*"dijit/layout/ContentPane",*/
     "ioc/wiki30/manager/EventObserver",
     "ioc/wiki30/manager/EventObservable",
     "dojo/dom-style",
     "dojo/dom",
     "ioc/gui/content/renderEngineFactory",
     "dojo/aspect"
-], function (declare, ContentPane, EventObserver, EventObservable, domStyle, dom, renderEngineFactory, aspect) {
-
-    return declare([ContentPane, EventObservable, EventObserver],
-
-        /**
-         * Aquesta classe no s'ha de instanciar, es fa servir com a base per afegir tota la funcionalitat bàsica del
-         * ContentTool que no ha de ser modificada.
-         *
-         * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
-         * en el futur.
-         *
-         * @class AbstractContentTool
-         * @extends ContentPane, EventObserver
-         * @author Xavier García <xaviergaro.dev@gmail.com>
-         * @private
-         * @abstract
-         * @see contentToolFactory.generate()
-         */
+], function (declare, IocContentPane, EventObserver, EventObservable, domStyle, dom, renderEngineFactory, aspect) {
+    /**
+     * Aquesta classe no s'ha de instanciar, es fa servir com a base per afegir tota la funcionalitat bàsica del
+     * ContentTool que no ha de ser modificada.
+     *
+     * S'ha deixat com un fitxer independent per facilitar la seva edició i no pot comptarse amb que sigui accesible
+     * en el futur.
+     *
+     * @class AbstractContentTool
+     * @extends ContentPane, EventObserver
+     * @author Xavier García <xaviergaro.dev@gmail.com>
+     * @private
+     * @abstract
+     * @see contentToolFactory.generate()
+     */
+    return declare([IocContentPane, EventObservable, EventObserver],
         {
             /** @typedef {remove: function} Handler */
             "-chains-": {
