@@ -24,7 +24,7 @@ define([
 
             this.previousMarker = null;
             this.editor.addReadonlyBlock('readonly', this.editTableCallback.bind(this));
-            //this.editor.addReadonlyBlock('readonly');
+            this.editor.addReadonlyBlock('protectedcontent');
         },
 
         editTableCallback: function(range, blockContent) {
