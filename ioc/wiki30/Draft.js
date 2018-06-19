@@ -192,7 +192,7 @@ define([
                 && pages[this.contentTool.ns].drafts.structured) {
                 delete(pages[this.contentTool.ns].drafts.structured.content[chunkId]);
             } else {
-                console.log("No s'ha eliminat el chunk", chunkId, pages[this.contentTool.ns]);
+                //console.log("No s'ha eliminat el chunk", chunkId, pages[this.contentTool.ns]);
             }
             this._doSetPages(pages);
         },

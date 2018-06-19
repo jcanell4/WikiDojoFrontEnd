@@ -30,7 +30,7 @@ define([
             this.previousMarker = null;
             this.editor.addReadonlyBlock('edittable', this.editTableCallback.bind(this));
 
-            console.log("AceTableEditorPlugin->args", args);
+            //console.log("AceTableEditorPlugin->args", args);
 
             var config = {
                 type: args.type,
@@ -95,7 +95,7 @@ define([
             // editor.session.insert(editor.getCursorPosition(), "\n<edittable></edittable>")
 
 
-            console.log(editor);
+            //console.log(editor);
 
             var pos = {row: editor.getCurrentRow(), col: 0};
             var range = {start :  pos, end: pos};
@@ -319,7 +319,7 @@ define([
                         query: {}, onComplete: function (items) {
 
 
-                            console.log("items:", items);
+                            //console.log("items:", items);
 
                             var first = true;
                             for (var i = startRow; i <= endRow; i++) {

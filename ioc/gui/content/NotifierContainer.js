@@ -63,7 +63,7 @@ define([
 
 
             removeNotification: function (id) { //ALERTA[Xavi] la crida a aquest mètode destrueix la notificació
-                console.log("NotifierContainer#removeNotification", id, this.notifications);
+                //console.log("NotifierContainer#removeNotification", id, this.notifications);
 
                 if (!this.isNotificationRead(id)) {
                     this.notifyManager.decreaseNotificationCounter(this.name);
@@ -75,7 +75,7 @@ define([
             },
 
             removeAllNotifications: function (resetCounter) {
-                console.log("NotifierContainer#removeAllNotifications", this.notifications);
+                //console.log("NotifierContainer#removeAllNotifications", this.notifications);
 
                 this.clearing = true;
 
@@ -91,7 +91,7 @@ define([
 
 
             _destroyNotification: function (data) { //ALERTA[Xavi] la crida a aquest mètode només elimina la notificació de la llista
-                console.log("NotifierContainer#_destroyNotification", data);
+                //console.log("NotifierContainer#_destroyNotification", data);
                 if (!this.clearing) {
                     this.notifyManager.deleteNotification(data.id);
                 }

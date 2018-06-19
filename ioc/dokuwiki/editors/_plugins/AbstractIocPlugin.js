@@ -40,7 +40,7 @@ define([
                     break;
 
                 default:
-                    console.log(this.editor);
+                    //console.log(this.editor);
                     throw new Error("Tipus d'editor no reconegut: " + this.editor.TOOLBAR_ID);
             }
         },

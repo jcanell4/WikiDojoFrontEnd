@@ -178,7 +178,7 @@ StateHandler.prototype = {
             }
 
             if (DEBUG) {
-                console.log("KeyboardStateMapper#find", binding);
+                //console.log("KeyboardStateMapper#find", binding);
             }
             return true;
         });
@@ -212,7 +212,7 @@ StateHandler.prototype = {
 
         r = this.$find(data, buffer, symbolicName, hashId, key, keyId);
         if (DEBUG) {
-            console.log("KeyboardStateMapper#match", buffer, symbolicName, r);
+            //console.log("KeyboardStateMapper#match", buffer, symbolicName, r);
         }
 
         return r;

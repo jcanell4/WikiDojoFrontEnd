@@ -74,7 +74,7 @@ define([
 			"major": majorColumnIndex
 		});
 
-        console.log("IocCellMerge#mergeCells", item);
+                //console.log("IocCellMerge#mergeCells", item);
 
 		if(item){
 			this._updateRows(item);

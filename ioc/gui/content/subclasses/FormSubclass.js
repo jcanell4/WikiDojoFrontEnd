@@ -1,7 +1,7 @@
 define([
     'dojo/_base/declare',
     'ioc/gui/content/subclasses/ChangesManagerCentralSubclass',
-    'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
+    'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade'
 ], function (declare, ChangesManagerCentralSubclass, AceFacade) {
     /**
      * Aquesta classe no s'ha de instanciar directament, s'ha de fer a travÃ©s del contentToolFactory.
@@ -92,7 +92,7 @@ define([
                    auxCurrentContent = this.externalContent[item] || currentContent[item];
 
                    if (!checked[item] && !this.compareItems(originalContent[item],auxCurrentContent)) {
-                       console.log(auxCurrentContent + "!==" +  originalContent[item], item);
+                        //console.log(auxCurrentContent + "!==" +  originalContent[item], item);
                        changed = true;
                        break;
                    }
@@ -102,8 +102,8 @@ define([
            if (changed) {
                this.onDocumentChanged();
                this.hasChanges = true;
-           } else {
-               console.log(" **El contingut no ha canviat**");
+           //} else {
+                //console.log(" **El contingut no ha canviat**");
            }
 
            return changed;
@@ -155,7 +155,7 @@ define([
         },
 
         isLastCheckedContentChanged: function () {
-            console.log("isLastCheckedContentChanged?");
+            //console.log("isLastCheckedContentChanged?");
             var content = this.getCurrentContent(),
                 // result = this._getLastCheckedContent() !== content;
                 result = this.compareContents(content, this._getLastCheckedContent());
@@ -190,7 +190,7 @@ define([
                 if (this.value && this.name) {
 
                     if (context.externalContent[this.name]) {
-                        currentContent[this.name] = context.externalContent[name]
+                        currentContent[this.name] = context.externalContent[name];
                     } else {
                         currentContent[this.name] = this.value; // ALERTA[Xavi] this.id fa referencia al id de l'element, no del formulari
                     }
@@ -203,19 +203,19 @@ define([
 
         compareContents: function(contentA, contentB) {
             if (Object.keys(contentA).length !== Object.keys(contentB).length) {
-                console.log("Nombre d'items en contentA y contentB diferent:", Object.keys(contentA).length , Object.keys(contentB).length );
+                //console.log("Nombre d'items en contentA y contentB diferent:", Object.keys(contentA).length , Object.keys(contentB).length );
                 return true;
             }
 
             for (var key in contentA ) {
 
                 if (!key in contentB) {
-                    console.log("No existeix la clau al contentB", key);
+                    //console.log("No existeix la clau al contentB", key);
                     return true;
                 }
 
                 if (contentA[key] !== contentB[key]) {
-                    console.log("El contingut es diferent",contentA[key],contentB[key] );
+                    //console.log("El contingut es diferent",contentA[key],contentB[key] );
                     return true;
                 }
 

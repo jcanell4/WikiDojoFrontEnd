@@ -189,14 +189,14 @@ define([
          * @param remoteDrafts
          */
         updateLocalDrafts: function (ns, remoteDrafts) {
-            console.log("DraftManager#updateLocalDrafts", ns, remoteDrafts);
+            //console.log("DraftManager#updateLocalDrafts", ns, remoteDrafts);
             var page = this._doGetPage(ns);
             var localDrafts = page ? page.drafts : {};
-            console.log("Carregats drafts locals?", localDrafts);
+            //console.log("Carregats drafts locals?", localDrafts);
             
             for (var type in remoteDrafts) {
                 if (remoteDrafts[type] && remoteDrafts[type].date > (localDrafts[type] ? localDrafts[type].date : -1)) {
-                    console.log("------ UPDATING " + type + " DRAFT -------");
+                    //console.log("------ UPDATING " + type + " DRAFT -------");
                     var draft = {
                         content: remoteDrafts[type]['content'],
                         id: ns,
@@ -206,9 +206,9 @@ define([
                 }
                 else {
                     if (!remoteDrafts[type]) {
-                        console.log("No havia draft " + type + " remot, no cal actualitzar");
+                        //console.log("No havia draft " + type + " remot, no cal actualitzar");
                     }else {
-                        console.log("El draft " + type + " local es més recent que el draft " + type + " remot per mm:", localDrafts[type].date - remoteDrafts[type].date);
+                        //console.log("El draft " + type + " local es més recent que el draft " + type + " remot per mm:", localDrafts[type].date - remoteDrafts[type].date);
                     }
                 }
             }
@@ -258,7 +258,7 @@ define([
         // TODO[Xavi] aquí podem afegir la compresió de dades
         _doSetPage: function (page, ns) {
 
-            console.log('Draft#_doSetPage', page, ns);
+            //console.log('Draft#_doSetPage', page, ns);
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = this._doGetUser(userId);
 
@@ -293,7 +293,7 @@ define([
         },
 
         _formatLocalStructuredPage: function (page, draft, date) {
-            console.log("DraftManager#_formatLocalStructuredPage", page,draft, date);
+            //console.log("DraftManager#_formatLocalStructuredPage", page,draft, date);
             // Reestructurem la informació
             // No cal afegir el tipus, perquè ja es troba a la estructura
             // S'han de recorre tots els elements de content (del draft) i copiar el contingut a content (de page.drafts) i afegir la data del element seleccionat, la

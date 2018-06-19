@@ -20,7 +20,7 @@ define([
 
                 // if (dates.full < dates.structured) {
                 // // if (dates.full > dates.structured) { // Aquest és el correcte
-                    console.log("El full es més recent, es mostra el dialeg");
+                    //console.log("El full es més recent, es mostra el dialeg");
                     this._showDialog(value, timeout * 1000);
 
                 // } else {

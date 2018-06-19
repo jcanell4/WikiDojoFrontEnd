@@ -47,8 +47,7 @@ define([
                 this.$icon.css('top', '2px');
                 this.$icon.css('left', '2px');
 
-
-                console.log("this.args??", this.args);
+                //console.log("this.args??", this.args);
 
                 if (!this.args.alwaysDisplayIcon) {
                     this.$icon.css('display', 'none');
@@ -67,8 +66,7 @@ define([
                 }.bind(this));
 
                 this.$icon.on('click', this._zoom.bind(this));
-
-                console.log("Afegida icona de zoom pel node:", this.$field);
+                //console.log("Afegida icona de zoom pel node:", this.$field);
             },
 
             _zoom: function (event) {
@@ -123,7 +121,7 @@ define([
                     this.clearExternalContent(); // Esborrant
 
                     dialog.onHide();
-                    console.log("Desant al node el nou contingut", editor.getValue(), this.$field, this.$field.val());
+                    //console.log("Desant al node el nou contingut", editor.getValue(), this.$field, this.$field.val());
 
                 }.bind(this);
 
@@ -201,7 +199,7 @@ define([
                     plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton'] // Plugins que ha de contenir la toolbar
                 });
 
-                console.log("Quina informació tenim?", this);
+                //console.log("Quina informació tenim?", this);
                 editor.setHeight(DIALOG_DEFAULT_HEIGHT - 137); //137 es la diferencia entre l'alçada de l'editor i el contenidor tenint en compte la toolbar i la barra inferior de botons
 
                 editor.editor.on('CancelDialog', cancelCallback);
@@ -225,7 +223,7 @@ define([
 
 
                 this.$field.on('focus', function () {
-                    console.log("Focused!");
+                    //console.log("Focused!");
 
                     if (lastFocusedElement) {
                         lastFocusedElement.show(false);
@@ -249,13 +247,13 @@ define([
             },
 
             setExternalContent: function (content) {
-                console.log("!!!!  set external content  !!!", content);
+                //console.log("!!!!  set external content  !!!", content);
 
                 this.context.setExternalContent(this.$field.attr('name'), content);
             },
 
             clearExternalContent: function() {
-                console.log("!!!!  clear external content  !!!");
+                //console.log("!!!!  clear external content  !!!");
                 this.context.setExternalContent(this.$field.attr('name'));
             }
 

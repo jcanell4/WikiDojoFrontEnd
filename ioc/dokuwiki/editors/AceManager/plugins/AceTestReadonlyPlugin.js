@@ -28,7 +28,7 @@ define([
         },
 
         editTableCallback: function(range, blockContent) {
-            console.log(range);
+            //console.log(range);
             this.editor.session.removeMarker(this.previousMarker);
             this.previousMarker = this.editor.session.addMarker(range, 'readonly-highlight');
             //editor.selection.setRange(range);

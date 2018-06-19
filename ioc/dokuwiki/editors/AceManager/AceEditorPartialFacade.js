@@ -15,7 +15,7 @@ define([
         MIN_HEIGHT: 200,
 
         setHeight: function (height) {
-            console.log("AceEditorPartialFacade#setHeight", height);
+            //console.log("AceEditorPartialFacade#setHeight", height);
             var min = this.MIN_HEIGHT,
                 contentNode = dom.byId(this.dispatcher.containerNodeId),
                 h = geometry.getContentBox(contentNode).h,

@@ -53,12 +53,12 @@ define([
 
             // var originalContent = args.originalContent.replace(/^\s+|\s+$/gm, '');
 
-            console.log("******* Original content?", args.originalContent);
+            //console.log("******* Original content?", args.originalContent);
             this.editor.originalContent = args.originalContent || args.content;
 
 
             this.editor.on('change', function (newContent) {
-                console.log("Editor change");
+                //console.log("Editor change");
                 this.$textarea.val(newContent);
                 this.emit('change', {newContent: newContent});
             }.bind(this));

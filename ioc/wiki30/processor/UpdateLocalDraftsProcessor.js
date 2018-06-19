@@ -19,10 +19,9 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("UpdateLocalDraftsProcessor#process", value);
-
+                //console.log("UpdateLocalDraftsProcessor#process", value);
                 dispatcher.getDraftManager().updateLocalDrafts(value.ns, value.drafts);
-            },
+            }
 
         });
 });

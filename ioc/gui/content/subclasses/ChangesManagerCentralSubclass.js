@@ -57,7 +57,7 @@ define([
         },
         
         _checkChanges: function () {
-            console.log("ChangesManagerCentralSubclass#_checkChanges");
+            //console.log("ChangesManagerCentralSubclass#_checkChanges");
             if (this.changesManager) {
                 this.changesManager.updateContentChangeState(this.id);
             }

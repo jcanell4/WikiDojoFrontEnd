@@ -24,7 +24,7 @@ define([
         init: function (args) {
             this.inherited(arguments);
 
-            console.log("DojoToolbarDropdown#init", args);
+            //console.log("DojoToolbarDropdown#init", args);
             // this.inherited(arguments);
             //
             // this.editor.customUndo = true;
@@ -55,7 +55,7 @@ define([
 
 
         addButton: function (config) {
-            console.log("DojoToolbarDropdown#addButton", config);
+            //console.log("DojoToolbarDropdown#addButton", config);
 
             this.dropDown = new ContentPane({className:'floating-toolbar'});
             this.dropDown.startup();
@@ -79,8 +79,8 @@ define([
             var $toolbarContainer = jQuery('#' + this.toolbarContainerId).detach();
             // var $toolbarContainer = jQuery('#editor_playground_playground_berr_dropdown_toolbar_A').detach();
 
-            console.log("Carregat la barra A?", $toolbarContainer);
-            console.log("Hi ha dom node?", this.button.dropDown.domNode);
+            //console.log("Carregat la barra A?", $toolbarContainer);
+            //console.log("Hi ha dom node?", this.button.dropDown.domNode);
 
             domConstruct.place($toolbarContainer.get(0),this.button.dropDown.domNode);
         },

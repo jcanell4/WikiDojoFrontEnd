@@ -277,7 +277,7 @@ define([
         },
 
         removeNotification: function (id, mailbox) {
-            console.log("RemoveNotification", id);
+            //console.log("RemoveNotification", id);
             this.mailboxes[mailbox].removeNotification(id);
 
             // TODO: El compatador ha de ser propi per cada bustia

@@ -72,8 +72,7 @@ define([
             for (var i = 0; i<this.editableElements.length; i++) {
                 this.editableElements[i].restoreFromField();
             }
-
-            console.log("EditableElementsContainerSubclass#updateDocument", this.editableElements, this.data);
+            //console.log("EditableElementsContainerSubclass#updateDocument", this.editableElements, this.data);
         }
 
     });

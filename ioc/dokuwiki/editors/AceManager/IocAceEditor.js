@@ -245,8 +245,8 @@ define([
                             context = context.dispatcher.getContentCache(docId).getMainContentTool().getEditor(headerId).editor;
                         }
                         /*else {
-                                                   console.log("no hi ha cap editor creat encara"); // ALERTA[Xavi] Això es normal perquè el canvi de contexte pot cridar-se quan encara no s'ha creat l'editor
-                                               }*/
+                            //console.log("no hi ha cap editor creat encara"); // ALERTA[Xavi] Això es normal perquè el canvi de contexte pot cridar-se quan encara no s'ha creat l'editor
+                        }*/
 
                     },
 

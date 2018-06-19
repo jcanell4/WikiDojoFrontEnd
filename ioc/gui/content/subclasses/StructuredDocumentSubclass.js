@@ -142,17 +142,7 @@ define([
                 jQuery('#container_' + auxId).on('dblclick', function () {
 
                     // DUPLICAT en el click!
-
                     context._setOwnCurrenElement(this.id);
-
-
-
-                    /////
-
-
-
-
-
 
                     var aux_id = this.id.replace('container_', ''),
                         header_id = aux_id.replace(context.id + "_", '');
@@ -160,12 +150,11 @@ define([
                     if (jQuery.inArray(header_id, context.editingChunks) === -1) {
 
                         //console.log("contex id: ", context.id, "chunk:", section_id);
-
                         context.fireEvent(context.eventName.EDIT_PARTIAL, {
                             id: context.id,
                             chunk: header_id
                         });
-                    } else {
+                    //} else {
                         //console.log("Ja s'està editant ", header_id);
                     }
 
@@ -175,7 +164,7 @@ define([
 
 
         getQueryEdit: function (chunkId) {
-//            console.log("StructuredDocumentSubclass#getQueryEdit", chunkId);
+            //console.log("StructuredDocumentSubclass#getQueryEdit", chunkId);
             var query = 'do=edit_partial'
                 + '&section_id=' + chunkId
                 + '&editing_chunks=' + this.getEditingChunks().toString()
@@ -185,7 +174,7 @@ define([
                 + '&summary=[' + this.title + ']'
                 + '&range=-';
             if (this.type == "requiring_partial") {
-                query += "&to_require=true"
+                query += "&to_require=true";
             }
 
             
@@ -251,7 +240,7 @@ define([
                         // TODO: Obtenir el contingut de l'editor
                         pre += this.getEditor(chunks[i].header_id).getValue();
                     } else {
-                        pre += this.changedChunks[chunks[i].header_id].content
+                        pre += this.changedChunks[chunks[i].header_id].content;
                     }
 
                 }
@@ -309,11 +298,11 @@ define([
                 + '&editing_chunks=' + this.getEditingChunks().join(',');
 
             if (this.type == "requiring_partial") {
-                ret += "&to_require=true"
+                ret += "&to_require=true";
             }
 
             if (!this.required) {
-                ret += "&unlock=false"
+                ret += "&unlock=false";
             }
             return ret;
         },
@@ -933,7 +922,7 @@ define([
 
         // Nous mètodes per la gestió d'editors
         updateEditor: function (header_id, data) {
-            console.log("StructuredDocumentSubclass#updateEditor", header_id, data);
+            //console.log("StructuredDocumentSubclass#updateEditor", header_id, data);
             // Com es per la referencia interna del ace al div del editor s'ha de refer, per axiò els eliminem al pre-render
             this.addEditor(header_id, data);
 
@@ -1229,7 +1218,7 @@ define([
                     standbyId: containerId
                 };
             } else {
-                console.log("*** NO HI HA CANVIS ***");
+                //console.log("*** NO HI HA CANVIS ***");
                 ret = {
                     _cancel: true
                 };

@@ -70,7 +70,7 @@ define([], function () {
         },
 
         renderField = function (field, fvalues) {
-            console.log("RenderField:", field, fvalues);
+            //console.log("RenderField:", field, fvalues);
             var $field,
                 cols = field.columns || 12;
 
@@ -256,7 +256,7 @@ define([], function () {
 
 
         renderFieldEditableObject = function (field, fvalues) {
-            console.log("renderEditableElement:", field, field.props.editableClass);
+            //console.log("renderEditableElement:", field, field.props.editableClass);
             var $field;
 
             switch (field.props['data-editable-element']) {

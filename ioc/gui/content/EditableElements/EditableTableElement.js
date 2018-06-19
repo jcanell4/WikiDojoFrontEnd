@@ -18,15 +18,10 @@ define([
             init: function(args) {
                 // console.log("args", args)
                 this.inherited(arguments);
-
                 // this.defaultDisplay = 'table';
-
-
-
             },
 
             _replaceNodeContent: function (args) {
-
 
                 if (args.defaultRow) {
                     this.defaultRow = args.defaultRow;
@@ -81,7 +76,7 @@ define([
                     cells: tableData.columns
                 }];
 
-                console.log("Contingut de rows??", tableData.rows);
+                //console.log("Contingut de rows??", tableData.rows);
 
                 var objectStore = new Memory({data: tableData.rows});
                 this.dataStore = new ObjectStore({objectStore: objectStore});
@@ -108,20 +103,16 @@ define([
                     height: height +'px' // la alçada de cada fila
                 });
 
-
                 // grid.onApplyCellEdit = function(inValue,inRowIndex,inFieldIndex) {
                 //     this.inherited(arguments);
                 //     console.log("Canvis aplicats a la cel·la");
                 // };
 
-
                 this.grid = grid;
-
 
                 // grid.onApplyCellEdit = function(inValue, inRowIndex, inFieldIndex) {
                 //     console.log("Canvis detectats: ", inValue, inRowIndex, inFieldIndex);
                 // };
-
 
 
                 grid.placeAt($container[0]);
@@ -132,7 +123,7 @@ define([
 
 
                 grid.on("ApplyCellEdit", function(e) {
-                    console.log("Canvis detectats: ", e);
+                    //console.log("Canvis detectats: ", e);
                     context.updateField();
                 });
 
@@ -161,8 +152,7 @@ define([
 
                         context.dataStore.newItem(data);
 
-                        console.log("Afegides noves dades", context.dataStore);
-
+                        //console.log("Afegides noves dades", context.dataStore);
 
                         // ALERTA[Xavi] Un cop es desa ja no es pot fer revert, hem d'implementar el nostre propi revert
                         context.dataStore.save();
@@ -309,8 +299,6 @@ define([
               $table.html("");
 
               // console.log(data);
-
-
               var cols = this.columns.length;
 
               for (var i in data) {
@@ -374,12 +362,12 @@ define([
                 if (this.context.forceCheckChanges) {
                     this.context.forceCheckChanges();
                 }
-                console.log("Rebuilt item:", data);
+                //console.log("Rebuilt item:", data);
 
             },
 
             restoreFromField: function() {
-                console.log("Contingut del field: " , this.$field.val());
+                //console.log("Contingut del field: " , this.$field.val());
                 alert("TODO: implementar");
             }
 

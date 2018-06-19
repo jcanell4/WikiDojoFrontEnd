@@ -67,7 +67,7 @@ define([
         },
 
         createContentTool: function (content, dispatcher) {
-            console.log("ProjectRequireContentProcessor#createContentTool: content.id =", content.id);
+            //console.log("ProjectRequireContentProcessor#createContentTool: content.id =", content.id);
             var args = {
                     ns: content.ns,
                     id: content.id,

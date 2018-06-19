@@ -10,7 +10,7 @@ define([
     return declare([Toolbar], {
 
         constructor: function() {
-            console.log("Creada toolbar");
+            //console.log("Creada toolbar");
         }
     });
 

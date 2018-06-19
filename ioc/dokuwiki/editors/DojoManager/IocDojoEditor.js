@@ -180,7 +180,7 @@ define([
             _enableChangeDetector: function () {
                 var $editorContainer = jQuery("iframe#" + this.domNode.id + "_iframe").contents().find('#dijitEditorBody');
                 var callback = function () {
-                    console.log("IocDojoEditor#onDisplayChanged->callback");
+                    //console.log("IocDojoEditor#onDisplayChanged->callback");
                     this.emit('change', {newValue: this.get('value')});
                 }.bind(this);
 
@@ -200,7 +200,7 @@ define([
             },
 
             isChanged: function () {
-                console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
+                //console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
 
                 // if (this.get('value') !== this.originalContent) {
                 //     console.log("|" + this.get('value') + "|");
@@ -342,7 +342,7 @@ define([
 
                 // var toolbarId = this.id + '_' + category;
                 var toolbarId = this.id + '_dropdown_toolbar_' + category;
-                console.log("Creada toolbar:", category, toolbarId);
+                //console.log("Creada toolbar:", category, toolbarId);
 
 
                 var $toolbar = jQuery('<div></div>');
