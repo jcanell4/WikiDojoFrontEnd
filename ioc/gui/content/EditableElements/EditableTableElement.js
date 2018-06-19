@@ -19,7 +19,7 @@ define([
             init: function (args) {
                 console.log("EditableTableElement#init", args);
                 this.inherited(arguments);
-
+                this.fieldToCol = {};
                 // this.defaultDisplay = 'table';
 
 
@@ -162,10 +162,20 @@ define([
                             col0: key
                         };
 
-                        for (var i = 1; i < context.defaultRow.length; i++) {
-                            data['col' + i] = context.defaultRow[i];
+
+
+
+
+                        console.log("Context defaultrow?", context.defaultRow);
+                        for (var name in context.defaultRow) {
+                            if (name === 'key') {
+                                continue;
+                            }
+                            data[context.fieldToCol[name]] = context.defaultRow[name];
+
                         }
 
+                        console.log("Que hi ha al data en afegir-lo?", data);
 
                         context.dataStore.newItem(data);
 
@@ -326,14 +336,19 @@ define([
 
                 // La primera columna són les capçáleres
                 for (var i = 0; i < $columns.length; i++) {
-                    data.columns.push({
+
+                    var fieldData = {
                         name: jQuery($columns[i]).text(),
                         field: 'col' + i,
                         editable: jQuery($columns[i]).attr('readonly') === undefined,
                         //formatter:,
                         //constraint:,
 
-                    });
+                    };
+
+                    data.columns.push(fieldData);
+
+                    this.fieldToCol[fieldData.name] = fieldData.field;
                 }
 
                 // Extraiem les dades de la resta de files
