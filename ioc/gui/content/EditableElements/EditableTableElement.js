@@ -8,9 +8,10 @@ define([
     "dojo/data/ObjectStore",
     "dijit/form/Button",
     "dojox/grid/_Events",
-    "dijit/form/Textarea"
+    // "dijit/form/Textarea"
+    "ioc/gui/content/EditableElements/ZoomableCell"
 
-], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, dijitTextarea) {
+], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, ZoomableCell) {
 
     return declare([AbstractEditableElement],
         {
@@ -80,7 +81,7 @@ define([
                         // options: ['aaa', 'bbb', 'ccc'],
                         type: cells._Widget,
                         //widgetClass: dijitTextarea,
-                        styles: 'text-align: left;',
+                        styles: 'text-align: left;'
                     },
                     cells: tableData.columns
                 }];
@@ -115,8 +116,33 @@ define([
                     structure: gridLayout,
                     escapeHTMLInData: false,
                     //height: "500px"
-                    height: height + 'px' // la alçada de cada fila
+                    height: height + 'px', // la alçada de cada fila
+
+
                 });
+
+                // Sobreescrita de _EditManager.js
+                grid.edit.apply= function(){
+
+                    console.log("Focused element:", document.activeElement);
+                    if (jQuery(document.activeElement).hasClass('ace_text-input')) {
+                        console.log("És un dialeg, no fem res");
+                        return;
+                    }
+
+                    // summary:
+                    //		Apply a grid edit
+                    if(this.isEditing() && this._isValidInput()){
+                        this.grid.beginUpdate();
+                        this.editorApply();
+                        this.applyRowEdit();
+                        this.info = {};
+                        this.grid.endUpdate();
+                        this.grid.focus.focusGrid();
+                        this._doCatchBoomerang();
+                    }
+                }
+
 
 
                 // grid.onApplyCellEdit = function(inValue,inRowIndex,inFieldIndex) {
@@ -218,29 +244,6 @@ define([
                 removeKeyButton.placeAt($toolbar[0]);
                 removeKeyButton.startup();
 
-                // var saveKeyButton = new Button({
-                //     label: "Desar",
-                //     onClick: function () {
-                //
-                //         context.save();
-                //         context.hide();
-                //     }
-                // });
-                // saveKeyButton.placeAt($toolbar[0]);
-                // saveKeyButton.startup();
-                //
-                // var cancelKeyButton = new Button({
-                //     label: "Cancel·lar",
-                //
-                //     onClick: function () {
-                //         context.revert();
-                //         context.hide();
-                //
-                //     }
-                // });
-                // cancelKeyButton.placeAt($toolbar[0]);
-                // cancelKeyButton.startup();
-
 
                 this.updateField();
                 this.widgetInitialized = true;
@@ -267,7 +270,7 @@ define([
 
                             case 'textarea':
                                 cell.type = cells._Widget;
-                                cell.widgetClass = dijitTextarea;
+                                cell.widgetClass = ZoomableCell;
                                 break;
 
                             case 'bool':
@@ -277,6 +280,9 @@ define([
                             default:
                                 cell.type = cells._Widget;
                         }
+
+
+                        //cell.commitOnBlur = false;
 
                         console.log("actualitzat", cell.name);
 
