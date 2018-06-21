@@ -115,9 +115,12 @@ define([
                 ['container', ["readonly", "<readonly>", "keyword.operator.readonly"]],
                 ['rule', ["readonly-start", "</readonly>", "keyword.operator.readonly", "start"]],
 
-                ['container', ["protectedcontent", ":###", "keyword.operator.readonly"]],
-                ['rule', ["protectedcontent-start", "^(.+\n)(?=.*\n?###:)", "markup.protected"]],
-                ['rule', ["protectedcontent-start", "###:", "keyword.operator.readonly", "start"]],
+                ['format', ["markkey", "@@", "@@"]],
+//                ['base', ["(:###)(.+?)(###:)", ["keyword.operator", "markup.underline", "keyword.operator"]]],
+                ['container', ["protectedcontent", "(:###)(.*?)$", ["keyword.operator.protectedcontent", "markup.protectedcontent"]]],
+//                //['rule', ["protectedcontent-start", "^(.+\n)(?=.*\n?###:)", "markup.underline"]],
+                ['rule', ["protectedcontent-start", "^(.*?)(###:)", ["markup.protectedcontent", "keyword.operator.protectedcontent"], "start"]],
+                ['rule', ["protectedcontent-start", "^(.+?)$", "markup.protectedcontent"]],
 
                 ['container', ["edittable", "<edittable>", "keyword.operator.edittable"]],
                 ['rule', ["edittable-start", "</edittable>", "keyword.operator.edittable", "start"]],
