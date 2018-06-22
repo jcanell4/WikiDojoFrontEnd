@@ -53,7 +53,7 @@ define([
             },
 
             _getDialog: function (type, refId, params) {
-                // console.log("DialogManager#getDialog", type, refId, params);
+                console.log("DialogManager#getDialog", type, refId, params);
 
 
                 var dialogBuilder = null,
@@ -139,6 +139,7 @@ define([
              * @param params
              */
             _getDefaultDialog: function (refId, params) {
+                console.log("_getDefaultDialog", params);
                 var title = params.title;
                 //if (params.id) title += ": " + params.id;
 
@@ -151,9 +152,9 @@ define([
                         sections: params.sections,
                         dispatcher: this.dispatcher,
                         height: params.height,
-                        width: params.width
-                    },
-                    dialogBuilder = new DialogBuilder(dialogParams);
+                        width: params.width,
+                        single: params.single
+                    }, dialogBuilder = new DialogBuilder(dialogParams);
 
                 dialogBuilder.addButtons(params.buttons);
 

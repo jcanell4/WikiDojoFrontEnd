@@ -248,7 +248,10 @@ define([
             // Copia els paràmetres de configuració a la cel·la
             setupCells: function (layout) {
 
-                console.log("***Cel·las?", layout.cells);
+                if (!this.args.fields) {
+                    return;
+                }
+
                 for (var i in layout.cells) {
                     var cell = layout.cells[i];
 

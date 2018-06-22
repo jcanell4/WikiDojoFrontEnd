@@ -98,28 +98,78 @@ define([
         },
 
         _addSections: function () {
-            //console.log("CustomDialog#_addSections", this.sections);
+
+            if (this.single === true) {
+                this._addSectionSingleColumn()
+            } else {
+                this._addSectionsTwoColumns()
+            }
+
+            console.log("CustomDialog#_addSections", this.sections, this.single);
+
+        },
+
+
+        _addSectionSingleColumn: function() {
+            for (var i = 0; i < this.sections.length; i++) {
+                var divSection = domConstruct.create("div", {class:""});
+
+                this.sectionsNode.appendChild(divSection);
+
+                this._addSectionToNode(this.sections[i], divSection);
+                // if (this.sections[i].widget) {
+                //     this.sections[i].widget.placeAt(divSection);
+                // } else if (this.sections[i] instanceof jQuery) {
+                //     jQuery(divSection).append(this.sections[i]);
+                // } else {
+                //     divSection.appendChild(this.sections[i]);
+                // }
+
+            }
+
+            jQuery(this.sectionsNode.lastChild).animate({scrollTop: (0)}); // En cas de que es mostri una barra de desplaçament sempre es mostrarà el principi de la secció
+        },
+
+
+        _addSectionsTwoColumns: function() {
             for (var i = 0; i < this.sections.length; i++) {
                 var divSection = domConstruct.create("div", {class:"sectionNode"});
                 var divContent = domConstruct.create("div", {class:"content"});
                 divSection.appendChild(divContent);
                 this.sectionsNode.appendChild(divSection);
-                
-                if (this.sections[i].widget) {
-                    this.sections[i].widget.placeAt(divContent);
-                } else if (this.sections[i] instanceof jQuery) {
-                    jQuery(divContent).append(this.sections[i]);
-                } else {
-                    divContent.appendChild(this.sections[i]);
-                }
 
-                jQuery(this.sectionsNode.lastChild).animate({scrollTop: (0)}); // En cas de que es mostri una barra de desplaçament sempre es mostrarà el principi de la secció
+                this._addSectionToNode(this.sections[i], divContent);
+                // if (this.sections[i].widget) {
+                //     this.sections[i].widget.placeAt(divContent);
+                // } else if (this.sections[i] instanceof jQuery) {
+                //     jQuery(divContent).append(this.sections[i]);
+                // } else {
+                //     divContent.appendChild(this.sections[i]);
+                // }
+
+            }
+
+            jQuery(this.sectionsNode.lastChild).animate({scrollTop: (0)}); // En cas de que es mostri una barra de desplaçament sempre es mostrarà el principi de la secció
+        },
+
+
+        _addSectionToNode : function (section, node){
+            if (section.widget) {
+                section.widget.placeAt(node);
+            } else if (section instanceof jQuery) {
+                jQuery(node).append(section);
+            } else {
+                node.appendChild(section);
             }
         },
 
         _addButtons: function () {
+
             if (!this.buttons) {
+                console.log("No hi ha botons per afegir");
                 return;
+            } else {
+                console.log("Afegint botons");
             }
             //this.buttonsNode.appendChild(this._createButtons());
             this._createButtons();
@@ -130,7 +180,11 @@ define([
 
         _createButtons: function () {
             var buttonId, classButton, btn;
+            console.log("Botons:", this.buttons);
             for (var i = 0; i < this.buttons.length; i++) {
+                console.log("Afegint botón:", this.buttons[i]);
+
+
                 buttonId = this._getButtonId(this.buttons[i].id);
                 if(this.buttons[i].classButton){
                     classButton = this.buttons[i].classButton;

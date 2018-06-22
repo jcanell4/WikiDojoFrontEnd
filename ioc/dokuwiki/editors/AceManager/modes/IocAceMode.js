@@ -242,7 +242,7 @@ define([
                 //this.defInline(closeRegex, tagToken, 'start');
 
                 if (contentToken) {
-                    this.defRule(name, ".", contentToken);
+                    this.defRule (name, ".", contentToken);
                 }
             },
 

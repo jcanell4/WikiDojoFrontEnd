@@ -105,11 +105,10 @@ define([
                 var dialogParams = {
                     title: "Editar cel·la", //TODO[Xavi] Localitzar
                     message: '',
+                    single: true,
                     sections: [
                         $container,
                         {widget: editorWidget}
-
-
                     ],
                     buttons: [
                         {

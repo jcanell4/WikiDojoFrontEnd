@@ -153,11 +153,10 @@ define([
                 var dialogParams = {
                     title: "Editar camp: " + fieldId, //TODO[Xavi] Localitzar
                     message: '',
+                    single: true,
                     sections: [
                         $container,
                         {widget: editorWidget}
-
-
                     ],
                     buttons: [
                         {

@@ -22,6 +22,7 @@ define([
 
         constructor: function (args) {
 
+            console.log("Args al constructor?", args);
             this.dispatcher = args.dispatcher;
             this.params = args;
 
@@ -229,6 +230,8 @@ define([
 
             delete (this.params.height);
             delete (this.params.width);
+
+            console.log("params?", this.params);
 
             return new CustomDialog(this.params);
         },
