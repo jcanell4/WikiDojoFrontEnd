@@ -164,6 +164,7 @@ define([
                     $label = jQuery('<label>'),
                     $select = jQuery('<select>');
 
+                console.log("RenderField: ", field);
                 $label.html(field.label);
 
                 $field.append($label)
@@ -179,7 +180,7 @@ define([
                     $select.attr('id', field.id);
                 }
 
-                this.addOptionsToSelect(field.options, $select);
+                this.addOptionsToSelect(field.config.options, $select);
 
                 if (field.props) {
                     this.addPropsToInput(field.props, $select);
