@@ -84,7 +84,6 @@ define([
         },
 
         select: function () {
-            // console.log("select");
             // patcher.restoreCachedFunctions(this.id);
             this.editor.restoreCachedFunctions();
         },
@@ -160,6 +159,8 @@ define([
             }
 
             this.toolbarId = 'toolbar_' + this.id;
+
+
             toolbarManager.initToolbar(this.toolbarId, 'textarea_' + this.id, this.TOOLBAR_ID);
         },
 

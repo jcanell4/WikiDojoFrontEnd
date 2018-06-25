@@ -893,9 +893,13 @@ define([
             for (var i = 0; i < editingChunks.length; i++) {
                 // console.log("Chunk:", editingChunks[i]);
 
-                // var content = jQuery('#textarea_' + this.id + '_' + editingChunks[i]).val();
+                if (this.getEditor(editingChunks[i])) {
+                    content = this.getEditor(editingChunks[i]).getValue();
+                } else {
+                    // ALERTA[Xavi] Per comprovar, sembla que si un editor es tanca i s'obre l'indx anterior retorna null, en aquest cas no cal fer res amb el draft
+                    continue;
+                }
 
-                content = this.getEditor(editingChunks[i]).getValue();
                 // console.log("Content de l'editor:", content);
 
 

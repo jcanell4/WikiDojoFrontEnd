@@ -21,7 +21,8 @@ define([
             _zoom: function (event) {
                 event.preventDefault();
                 this.setEditionState(true);
-                var fieldId = this.$field.attr('data-form-editor-button');
+                var fieldId = this.$field.attr('data-form-editor-button') || Date.now();
+
 
 
 
@@ -192,15 +193,9 @@ define([
 
 
                 this.$field.on('focus', function () {
-                    console.log("Focused!");
-
 
                     this.$field.parent().css('position', 'relative');
                     this.$field.before(this.$icon);
-
-                    //this.$field.val("Correcte, això es el textarea");
-
-                    console.log("Contingut del parent?", this.$field.parent().children());
 
                     if (lastFocusedElement) {
                         lastFocusedElement.show(false);

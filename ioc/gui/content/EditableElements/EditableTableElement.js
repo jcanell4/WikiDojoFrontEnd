@@ -123,9 +123,8 @@ define([
                 // Sobreescrita de _EditManager.js
                 grid.edit.apply= function(){
 
-                    console.log("Focused element:", document.activeElement);
                     if (jQuery(document.activeElement).hasClass('ace_text-input')) {
-                        console.log("És un dialeg, no fem res");
+                        // console.log("És un dialeg, no fem res");
                         return;
                     }
 

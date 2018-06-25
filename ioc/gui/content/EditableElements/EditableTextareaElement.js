@@ -98,6 +98,9 @@ define([
                     // plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar
                 });
 
+
+
+
                 this.editor = editor;
 
                 var context = this;
@@ -113,13 +116,26 @@ define([
 
                 var saveCallback = function(value) {
                     context.editor.setValue(value);
+
+                    context.editor.select();
                 };
+
+                var cancelCallback = function(value) {
+
+                    context.editor.select();
+                };
+
+                $container.on('click', function() {
+                    console.log("S'ha fet click a l'editor, perquè no es selecciona?", context);
+                    // context.editor.select();
+                });
 
                 new ZoomableFormElement({
                     context: this.context,
                     node: this.$textarea.get(0),
                     alwaysDisplayIcon: true,
-                    saveCallback: saveCallback
+                    saveCallback: saveCallback,
+                    cancelCallback: cancelCallback
                 });
             },
 

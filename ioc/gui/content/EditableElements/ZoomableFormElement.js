@@ -72,7 +72,7 @@ define([
             _zoom: function (event) {
                 event.preventDefault();
                 this.setEditionState(true);
-                var fieldId = this.$field.attr('data-form-editor-button');
+                var fieldId = this.$field.attr('data-form-editor-button') || Date.now();
 
 
                 var dialogManager = this.context.dispatcher.getDialogManager();
@@ -182,6 +182,11 @@ define([
                 dialog.resize();
 
                 toolbarManager.createToolbar(toolbarId , 'simple');
+
+
+                console.log("Zoomable en args.id", args.id);
+                alert("toolbarId?"+toolbarId);
+
 
                 var editor = new AceFacade({
                     id: args.id,

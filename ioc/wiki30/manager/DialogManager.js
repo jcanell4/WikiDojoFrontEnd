@@ -139,7 +139,7 @@ define([
              * @param params
              */
             _getDefaultDialog: function (refId, params) {
-                console.log("_getDefaultDialog", params);
+                // console.log("_getDefaultDialog", params);
                 var title = params.title;
                 //if (params.id) title += ": " + params.id;
 

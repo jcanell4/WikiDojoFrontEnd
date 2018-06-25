@@ -62,6 +62,10 @@ define([
                     cacheFunction(id, name);
                 }
 
+
+                this.lastPatchedId = id;
+                console.log("Nova id per restaurar (múltiples vegades)", this.lastPatchedId);
+
                 return obj[name];
             },
 
@@ -78,11 +82,14 @@ define([
 
             restoreCachedFunctions = function (id) {
 
-                if (id === this.lastPatchedId) {
-                    return; // No cal restaurar
-                } else {
-                    //console.log("patcher#restoreCachedFunctions", id);
-                }
+                // Que pasa si no fem el control?
+                // if (id === this.lastPatchedId) {
+                //     console.log("No cal restaturar", id, this.lastPatchedId);
+                //     return; // No cal restaurar
+                // } else {
+                    console.log("Restaurant ", id);
+                //     //console.log("patcher#restoreCachedFunctions", id);
+                // }
 
                 if (!cachedFunctions[id]) {
                     return;
@@ -102,7 +109,9 @@ define([
                     }
                 }
 
+
                 this.lastPatchedId = id;
+                console.log("Nova id per restaurar", this.lastPatchedId);
 
             };
 
@@ -200,6 +209,8 @@ define([
                     args = JSON.parse(JSON.stringify(this._default)); // deep clone
                 }
 
+
+
                 var iocAceMode = new IocAceMode({
                     baseHighlighters: args.langRules || {}, // ALERTA[Xavi] possibilitat d'afegir noves regles per paràmetre. Sense provar!
                     ruleSets: [new IocRuleSet()],
@@ -209,6 +220,7 @@ define([
                 args.mode = iocAceMode.getMode();
 
                 this.$textarea = jQuery('#' + args.textareaId);
+
 
                 this._patch(args.auxId);
 
@@ -269,6 +281,7 @@ define([
                      * @private
                      */
                     _patchPasteText = function (func, selection, text, opts) {
+
                         if (!opts) {
                             opts = {};
                         }
@@ -534,6 +547,40 @@ define([
                 // ALERTA[Xavi] això s'ha de cridar desprès d'inicialitzar els plugins, ja que aquests poden afegir nous estas de només lectura
                 this.readOnlyBlocksManager.enableReadonlyBlocks();
 
+                this.id = args.id;
+
+                // this.on('change', function (e) {
+                //     if (this.currentEditor === this.EDITOR.TEXT_AREA) {
+                //         return;
+                //     }
+                //
+                //     if (e.type === "focus") { // disparar el focus com a canvi ho vam afegir nosaltres?
+                //         return;
+                //     }
+                //
+                //     console.log("- detectat canvi",e);
+                //
+                //
+                //
+                //
+                //     // PROVA, no fem res, esta el textarea sincronitzat automàticament amb l'editor?
+                //
+                //     // // ALERTA sembla que el focus no es rellevant per solucionar el problema
+                //     // if (e.type === "change" || e.type === "focus") { // Alerta[Xavi], originalment en fer focus s'actualitzava el textarea però ara sembla que sempre está sincronitzat
+                //     //     console.log("- al textarea, establim el contingut a l'editor");
+                //     //     // es un canvi disparat pel textarea
+                //     //     this.setValue(this.getTextareaValue());
+                //     // }
+                //     //else {
+                //     //     console.log("- a l'editor, establim el contingut al textaarea");
+                //     //     this.setTextareaValue(this.get_value());
+                //     // }
+                //
+                //     summaryCheck(); // ALERTA! Funció propia de la Dokuwiki
+                //
+                //     commands.hide_menu(); // ALERTA! es pot moure la subscripcció al propi commands
+                //
+                // });
 
                 this.on('change', function () {
                     if (this.currentEditor === this.EDITOR.TEXT_AREA) {
@@ -1506,6 +1553,7 @@ define([
 
 
             restoreCachedFunctions: function () {
+                console.log("Cridant al patcher:", this.id);
                 patcher.restoreCachedFunctions(this.id);
             },
 

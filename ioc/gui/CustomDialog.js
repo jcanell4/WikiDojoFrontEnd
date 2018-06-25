@@ -105,7 +105,9 @@ define([
                 this._addSectionsTwoColumns()
             }
 
-            console.log("CustomDialog#_addSections", this.sections, this.single);
+            if (this.sections.length>0) {
+                jQuery(this.sectionsNode.lastChild).animate({scrollTop: (0)}); // En cas de que es mostri una barra de desplaçament sempre es mostrarà el principi de la secció
+            };
 
         },
 
@@ -127,7 +129,6 @@ define([
 
             }
 
-            jQuery(this.sectionsNode.lastChild).animate({scrollTop: (0)}); // En cas de que es mostri una barra de desplaçament sempre es mostrarà el principi de la secció
         },
 
 
@@ -149,7 +150,8 @@ define([
 
             }
 
-            jQuery(this.sectionsNode.lastChild).animate({scrollTop: (0)}); // En cas de que es mostri una barra de desplaçament sempre es mostrarà el principi de la secció
+
+
         },
 
 
@@ -166,24 +168,16 @@ define([
         _addButtons: function () {
 
             if (!this.buttons) {
-                console.log("No hi ha botons per afegir");
                 return;
-            } else {
-                console.log("Afegint botons");
             }
-            //this.buttonsNode.appendChild(this._createButtons());
+
             this._createButtons();
-            //for(var i=0; i<bts.length; i++){
-            //  this.addChild(bts[i]);
-            //}
+
         },
 
         _createButtons: function () {
             var buttonId, classButton, btn;
-            console.log("Botons:", this.buttons);
             for (var i = 0; i < this.buttons.length; i++) {
-                console.log("Afegint botón:", this.buttons[i]);
-
 
                 buttonId = this._getButtonId(this.buttons[i].id);
                 if(this.buttons[i].classButton){

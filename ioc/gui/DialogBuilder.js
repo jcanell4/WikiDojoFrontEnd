@@ -231,8 +231,6 @@ define([
             delete (this.params.height);
             delete (this.params.width);
 
-            console.log("params?", this.params);
-
             return new CustomDialog(this.params);
         },
 
