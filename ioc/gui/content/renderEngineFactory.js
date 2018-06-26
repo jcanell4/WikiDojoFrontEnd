@@ -13,7 +13,7 @@ define([
     "ioc/gui/content/engines/requiringRenderEngine",
     "ioc/gui/content/engines/requiring_partialRenderEngine",
     "ioc/gui/content/engines/notificationRenderEngine",
-    "ioc/gui/content/engines/formRenderEngine",
+//    "ioc/gui/content/engines/formRenderEngine",
     // "ioc/gui/content/engines/viewFormRenderEngine",
     "ioc/gui/content/engines/htmlRenderEngine",
     "ioc/gui/content/engines/request_formRenderEngine",
@@ -22,7 +22,7 @@ define([
     "ioc/gui/content/engines/formRenderEngineNew",
 ], function (standardRenderEngine, revisionRenderEngine, html_partialRenderEngine, 
                 dataRenderEngine, requiringRenderEngine, requiring_partialRenderEngine, 
-                notificationRenderEngine, formRenderEngine, /*viewFormRenderEngine, */htmlRenderEngine,
+                notificationRenderEngine,/* formRenderEngine, /*viewFormRenderEngine, */htmlRenderEngine,
                 request_formRenderEngine, zoomableFormRenderEngine, testRenderEngine, formRenderEngineNew) {
 
     var /** @type function */
@@ -68,7 +68,7 @@ define([
             _addRenderEngine('data', dataRenderEngine);
             _addRenderEngine('requiring', requiringRenderEngine);
             _addRenderEngine('requiring_partial', requiring_partialRenderEngine);
-            _addRenderEngine('form', formRenderEngine);
+            _addRenderEngine('form', formRenderEngineNew(true));
             // _addRenderEngine('project_edit', formRenderEngine);
             _addRenderEngine('project_edit', formRenderEngineNew(true));
             // _addRenderEngine('project_view', viewFormRenderEngine);

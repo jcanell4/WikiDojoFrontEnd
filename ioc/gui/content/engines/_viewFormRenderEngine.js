@@ -26,7 +26,7 @@ define([
             renderFieldSelect: function (field, fvalues) {
                 var $field = jQuery('<div>'),
                     $label = jQuery('<label>'),
-                    $select = jQuery('<select>');
+                    $select = jQuery('<span>');
 
                 $label.html(field.label);
 
