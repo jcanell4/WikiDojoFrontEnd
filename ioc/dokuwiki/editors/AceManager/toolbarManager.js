@@ -116,7 +116,7 @@ define([], function () {
                     jQuery('#' + idContainer).find('textarea').focus();
 
                     event.preventDefault();
-                    func(arguments);
+                    func(arguments, this);
                 });
             };
 

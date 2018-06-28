@@ -15,7 +15,8 @@ define([
             var config = {
                 type: args.type,
                 title: args.title,
-                icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png'
+                icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
+                class: 'toggled'
             };
 
             this.addButton(config, this.process);
@@ -25,7 +26,12 @@ define([
 
         },
 
-        process: function() {
+        process: function(args, btn) {
+
+            jQuery(btn).toggleClass('toggled');
+
+
+
             this.enabled = !this.enabled;
             this.editor.readOnlyBlocksManager.enabled = this.enabled;
         }

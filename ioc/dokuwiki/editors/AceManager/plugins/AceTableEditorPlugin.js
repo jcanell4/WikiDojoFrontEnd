@@ -372,6 +372,7 @@ define([
                     // {widget: grid}
 
                 ],
+                single: true,
                 buttons: [
                     {
                         id: 'accept',

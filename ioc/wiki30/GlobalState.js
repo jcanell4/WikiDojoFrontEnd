@@ -120,6 +120,11 @@ define([
         setCurrentElementId: function (node, typeId) {
             var id = this.getCurrentId();
 
+            if (!this.pages[id]) {
+                // No es tracta d'un document
+                return;
+            }
+
             if (typeof node === "string") {//recibe directamente el id
                 this.pages[id].currentElementId = node;
             } else if (node) {
