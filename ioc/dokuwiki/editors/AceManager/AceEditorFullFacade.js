@@ -84,6 +84,7 @@ define([
         },
 
         select: function () {
+            console.log("AceEditorFullFacade#select", this.id);
             // patcher.restoreCachedFunctions(this.id);
             this.editor.restoreCachedFunctions();
         },

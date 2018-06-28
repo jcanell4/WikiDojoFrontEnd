@@ -92,6 +92,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat seleccionat.
              */
             onSelect: function () {
+                console.log("AbstractContentTool#onSelect", this.id);
                 this.dispatchEvent(this.eventName.CONTENT_SELECTED, {id: this.id});
             },
 
@@ -99,6 +100,7 @@ define([
              * Dispara l'esdeveniment que indica que el contingut ha estat des-seleccionat.
              */
             onUnselect: function () {
+                console.log("AbstractContentTool#onUnselect", this.id);
                 this.dispatchEvent(this.eventName.CONTENT_SELECTED, {id: this.id});
             },
 

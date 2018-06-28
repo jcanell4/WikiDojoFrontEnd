@@ -18,7 +18,7 @@ define([
             defaultRow: null,
 
             init: function (args) {
-                console.log("EditableTableElement#init", args);
+                // console.log("EditableTableElement#init", args);
                 this.inherited(arguments);
                 this.fieldToCol = {};
                 // this.defaultDisplay = 'table';
@@ -87,11 +87,6 @@ define([
 
 
                 this.setupCells(gridLayout[0]);
-
-
-                console.log("Contingut del layout?", gridLayout);
-
-                console.log("Contingut de rows??", tableData.rows);
 
                 var objectStore = new Memory({data: tableData.rows});
                 this.dataStore = new ObjectStore({objectStore: objectStore});
@@ -278,11 +273,6 @@ define([
                             default:
                                 cell.type = cells._Widget;
                         }
-
-
-                        //cell.commitOnBlur = false;
-
-                        console.log("actualitzat", cell.name);
 
                     }
                 }

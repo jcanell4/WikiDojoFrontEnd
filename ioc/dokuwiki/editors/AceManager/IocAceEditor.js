@@ -13,6 +13,12 @@ define([
     var Range = ace.require('ace/range').Range,
         StateHandler = state_handler.StateHandler;
 
+    /**
+     * Registre dels editors actius, serveix per fer els canvis de context als botons parxejats
+     */
+    var editorRegistry = {};
+
+
     var patcher = (function () {
         var originalFunctions = {},
             cachedFunctions = {},
@@ -64,7 +70,6 @@ define([
 
 
                 this.lastPatchedId = id;
-                console.log("Nova id per restaurar (múltiples vegades)", this.lastPatchedId);
 
                 return obj[name];
             },
@@ -80,16 +85,16 @@ define([
 
             },
 
+            /**
+             * Aquesta funció **sembla** que ja no es crida mai, ara es fa el canvi de context automàticament
+             * @deprecated
+             * @param id
+             */
             restoreCachedFunctions = function (id) {
 
-                // Que pasa si no fem el control?
-                // if (id === this.lastPatchedId) {
-                //     console.log("No cal restaturar", id, this.lastPatchedId);
-                //     return; // No cal restaurar
-                // } else {
-                    console.log("Restaurant ", id);
-                //     //console.log("patcher#restoreCachedFunctions", id);
-                // }
+                if (id === this.lastPatchedId) {
+                    return; // No cal restaurar
+                }
 
                 if (!cachedFunctions[id]) {
                     return;
@@ -111,8 +116,6 @@ define([
 
 
                 this.lastPatchedId = id;
-                console.log("Nova id per restaurar", this.lastPatchedId);
-
             };
 
         return {
@@ -209,8 +212,6 @@ define([
                     args = JSON.parse(JSON.stringify(this._default)); // deep clone
                 }
 
-
-
                 var iocAceMode = new IocAceMode({
                     baseHighlighters: args.langRules || {}, // ALERTA[Xavi] possibilitat d'afegir noves regles per paràmetre. Sense provar!
                     ruleSets: [new IocRuleSet()],
@@ -220,7 +221,7 @@ define([
                 args.mode = iocAceMode.getMode();
 
                 this.$textarea = jQuery('#' + args.textareaId);
-
+                this.textareaId = args.textareaId;
 
                 this._patch(args.auxId);
 
@@ -233,18 +234,17 @@ define([
             _patch: function (id) {
                 var context = this,
 
+                    /**
+                     * Cridat automàticament en fer clic a un botó parxejat
+                     *
+                     * @param textareaId
+                     * @private
+                     */
                     _switchContext = function (textareaId) {
+
                         var $textarea = jQuery('#' + textareaId);
                         var docId = $textarea.attr('data-doc-id');
                         var headerId = $textarea.attr('data-header-id');
-
-
-                        // ALERTA[Xavi] si no hi ha un docId no es fa canvi de context, no es tracta d'un document de
-                        // la Wiki i per consegüent no es faran servir les seves funcions globals
-                        if (!docId) {
-                            return;
-                        }
-
 
                         context.dispatcher.getGlobalState().setCurrentId(docId);
 
@@ -252,14 +252,10 @@ define([
                             context.dispatcher.getGlobalState().setCurrentElement(headerId);
                         }
 
-                        // Recuperem l'editor actual
-                        if (context.dispatcher.getContentCache(docId) && context.dispatcher.getContentCache(docId).getMainContentTool().getEditor(headerId)) {
-                            context = context.dispatcher.getContentCache(docId).getMainContentTool().getEditor(headerId).editor;
+                        if (!editorRegistry[textareaId]) {
+                            console.error("Error: can't find editor with textarea id: " + textareaId);
                         }
-                        /*else {
-                            //console.log("no hi ha cap editor creat encara"); // ALERTA[Xavi] Això es normal perquè el canvi de contexte pot cridar-se quan encara no s'ha creat l'editor
-                        }*/
-
+                        context = editorRegistry[textareaId];
                     },
 
                     /**
@@ -310,6 +306,7 @@ define([
                         } else {
                             func(selection, text, opts);
                         }
+
 
                         context.$textarea.trigger('change', {newContent: context.$textarea.val()});
                     },
@@ -604,6 +601,20 @@ define([
                 // console.log("IocAceEditor.originalContent", args.originalContent);
                 this.originalContent = args.originalContent;
 
+
+                this.addToRegistry(this);
+            },
+
+            addToRegistry: function (editor) {
+                if (editorRegistry[editor.textareaId]) {
+                    console.warn("Warning: already registeres an editor with textarea id: ", textareaId);
+                }
+
+                editorRegistry[editor.textareaId] = editor;
+            },
+
+            removeFromRegistry: function (editor) {
+                delete(editorRegistry[editor.textareaId]);
             },
 
             initPlugins: function (plugins) {
@@ -760,6 +771,7 @@ define([
             },
 
             destroy: function () {
+                this.removeFromRegistry(this);
                 this.removePlugins();
                 this.editor.destroy();
 
@@ -1553,7 +1565,6 @@ define([
 
 
             restoreCachedFunctions: function () {
-                console.log("Cridant al patcher:", this.id);
                 patcher.restoreCachedFunctions(this.id);
             },
 
@@ -1577,7 +1588,7 @@ define([
             },
 
 
-            addReadonlyBlock: function(state, callback) {
+            addReadonlyBlock: function (state, callback) {
                 this.readOnlyBlocksManager.addReadonlyBlock(state, callback);
             }
 

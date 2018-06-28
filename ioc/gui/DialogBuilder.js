@@ -21,8 +21,6 @@ define([
         },
 
         constructor: function (args) {
-
-            console.log("Args al constructor?", args);
             this.dispatcher = args.dispatcher;
             this.params = args;
 

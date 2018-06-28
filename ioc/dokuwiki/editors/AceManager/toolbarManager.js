@@ -100,7 +100,7 @@ define([], function () {
          * @private
          */
         _createButtonInToolbar = function (config, func, type) {
-            //console.log('toolbarManager#_createButtonInToolbar', type);
+            // console.log('toolbarManager#_createButtonInToolbar', type);
             if (!_dispatcher) {
                 throw new ToolbarManagerException("No s'ha establert el dispatcher. Crida a toolbarManager.setDispatcher(dispatcher) abans.");
             }
@@ -171,7 +171,6 @@ define([], function () {
         },
 
         _patchButton = function (button) {
-            console.log("Aplicant patch a ", button);
             // El nom de la funció definit a la wiki(toolbar.js) està format per 'tb_' + button.type
             var funcType = 'tb_' + button.type;
 
@@ -184,34 +183,22 @@ define([], function () {
             if (originalFunction) {
 
                 window[funcType] = function ($btn, props, edid) {
-                    console.log("Click a un botó PARXEJAT", button.type, arguments);
-
 
                     if (!$btn.parent().hasClass('picker')) {
                         var $container = $btn.closest('[data-editor-container]');
 
                         if ($container) {
 
-
-
                             var containerId = $container.attr('id');
 //                            console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
-
-                            console.log("s'ha trobat un container amb id:", containerId, $container);
 
                             // Si la toolbar no s'ha afegit a un document o structure dcoument no hi haurà id.
                             if (containerId !== undefined) {
                                 _dispatcher.getGlobalState().setCurrentElement(containerId, true);
                                 jQuery('#' + containerId).find('textarea').focus();
                             } else {
-                                // var display = $btn.parent().find('textarea').css('display');
-                                // $btn.parent().find('textarea').css('display', 'block');
-                                // $btn.parent().find('textarea').css('display', display );
-                                //
-                                // //$btn.parent().find('textarea').focus();
-                                console.log("No es un container, dades que arriban:", $btn, props, edid);
+                                // console.log("No es un container, dades que arriban:", $btn, props, edid);
                             }
-
 
 
                         } else {

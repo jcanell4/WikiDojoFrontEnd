@@ -183,11 +183,6 @@ define([
 
                 toolbarManager.createToolbar(toolbarId , 'simple');
 
-
-                console.log("Zoomable en args.id", args.id);
-                alert("toolbarId?"+toolbarId);
-
-
                 var editor = new AceFacade({
                     id: args.id,
                     auxId: args.id,

@@ -53,8 +53,7 @@ define([
             },
 
             _getDialog: function (type, refId, params) {
-                console.log("DialogManager#getDialog", type, refId, params);
-
+                // console.log("DialogManager#getDialog", type, refId, params);
 
                 var dialogBuilder = null,
                     dialog;
