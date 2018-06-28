@@ -6,7 +6,9 @@
  *
  * @author Xavier García<xaviergaro.dev@gmail.com>
  */
-define([], function () {
+define([
+    'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
+], function (localization) {
 
 
     var ToolbarManagerException = function (message) {
@@ -39,6 +41,7 @@ define([], function () {
 
 
     var buttons = {},
+        categories={},
         baseToolbar = window['toolbar'], // Com a font fem servir sempre la barra d'eines exportada per la wiki
         toolbars = {},
         _dispatcher = null,
@@ -100,7 +103,7 @@ define([], function () {
          * @private
          */
         _createButtonInToolbar = function (config, func, type) {
-            // console.log('toolbarManager#_createButtonInToolbar', type);
+            console.log('toolbarManager#_createButtonInToolbar', config);
             if (!_dispatcher) {
                 throw new ToolbarManagerException("No s'ha establert el dispatcher. Crida a toolbarManager.setDispatcher(dispatcher) abans.");
             }
@@ -122,7 +125,37 @@ define([], function () {
 
             _checkAsPatched(config.type);
 
-            _getToolbar(type)[toolbars[type].length] = config;
+
+            // ALERTA[Xavi], això ha de canviar per categories
+            // - Si es una categoria:
+            //      1. No Existeix el picker: crear el picker
+            //      2. afegir al picker
+            //  - No es una categoria? normal
+
+
+            if (config.category) {
+                if (!categories[config.category]) {
+                    var category = {
+                        type: 'picker',
+                        title: localization["config.category"],
+                        icon: '/iocjslib/ioc/gui/img/cat_' + config.category + '.png',
+                        list: []
+                    };
+
+                    _getToolbar(type)[toolbars[type].length] = category;
+                    categories[config.category] = category;
+                }
+
+                categories[config.category].list.push(config);
+
+
+            } else {
+                _getToolbar(type)[toolbars[type].length] = config;
+            }
+
+
+
+
 
             if (!buttons[type]) {
                 buttons[type] = {};

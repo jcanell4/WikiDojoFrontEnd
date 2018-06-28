@@ -12,6 +12,7 @@ define({ root:
         // Categories
         'category-ioc': 'IOC',
         'category-header': 'Header',
+        'category-table': 'Tables',
 
         // Comments Plugin
         'ioc-comment-button': 'Add comment',
@@ -98,7 +99,8 @@ define({ root:
         'ioc-insert-header6-button': 'Header sintax level 6',
 
         'ioc-readonly-toggle': 'Toggle readonly blocks',
-        'ioc-table-editor':  'Table editor'
+        'ioc-table-editor':  'Table editor',
+        'ioc-table-editor-multiline':  'Multiline table editor'
     }),
 //end v1.x content
 

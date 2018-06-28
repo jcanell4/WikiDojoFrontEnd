@@ -48,7 +48,8 @@ define([
             'SaveDialogEditorButton' : AceFireDojoEvent,
             'TestReadonlyPlugin': AceTestReadonlyPlugin,
             'ReadonlyBlocksToggle': AceReadonlyBlocksToggle,
-            'TableEditor': AceTableEditor
+            'TableEditor': AceTableEditor,
+            'TableEditorMultiline': AceTableEditor
         },
 
         'Dojo': {
@@ -73,6 +74,7 @@ define([
             'InsertImportantSyntax': DojoFormat,
             'InsertQuoteSyntax': DojoFormat,
             'InsertAccountingSyntax': DojoFormat,
+
 
 
             // Botons barra d'eines de dojo bàsics
@@ -423,6 +425,13 @@ define([
             type: localization["ioc-table-editor"],
             title: localization["ioc-table-editor"],
             icon: 'IocTable',
+            category: 'WikiTable'
+        },
+        'TableEditorMultiline': {
+            type: localization["ioc-table-editor-multiline"],
+            title: localization["ioc-table-editor-multiline"],
+            icon: 'IocTable',
+            category: 'WikiTable'
         },
     };
 

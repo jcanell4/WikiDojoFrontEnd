@@ -36,6 +36,7 @@ define([
                 type: args.type,
                 title: args.title,
                 icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
+                category: args.category
             };
 
             // this.addButton(config);
@@ -391,9 +392,7 @@ define([
                 width: DIALOG_DEFAULT_WIDTH
             };
 
-
             var dialog = dialogManager.getDialog(dialogManager.type.DEFAULT, this.editor.ns, dialogParams);
-
 
             dialog.show();
 

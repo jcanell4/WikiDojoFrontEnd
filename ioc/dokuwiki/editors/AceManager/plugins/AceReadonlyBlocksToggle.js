@@ -16,7 +16,7 @@ define([
                 type: args.type,
                 title: args.title,
                 icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-                class: 'toggled'
+                class: 'toggled',
             };
 
             this.addButton(config, this.process);

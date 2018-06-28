@@ -11,6 +11,7 @@ define(
         // Categories
         'category-ioc': 'IOC',
         'category-header': 'Capçalera',
+        'category-table': 'Taules',
 
         // Comments Plugin
         'ioc-comment-button': 'Afegir comentari',
@@ -105,7 +106,8 @@ define(
 
         'ioc-readonly-toggle': 'Activa/Desactiva blocs de només lectura',
 
-        'ioc-table-editor':  'Editor de taules'
+        'ioc-table-editor':  'Editor de taules',
+        'ioc-table-editor-multiline':  'Editor de taules multilínia'
     })
 );
 

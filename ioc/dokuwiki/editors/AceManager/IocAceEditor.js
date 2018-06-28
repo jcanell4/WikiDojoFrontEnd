@@ -533,7 +533,9 @@ define([
                             'EnableWrapper',
                             'LatexPreview',
                             'TestReadonlyPlugin',
-                            'TableEditor'
+                            'TableEditor',
+                            'TableEditorMultiline'
+
                         ]
                     );
                     plugins = this.getPlugins(pluginNames)
@@ -607,7 +609,7 @@ define([
 
             addToRegistry: function (editor) {
                 if (editorRegistry[editor.textareaId]) {
-                    console.warn("Warning: already registeres an editor with textarea id: ", textareaId);
+                    console.warn("Warning: already registered an editor with textarea id: ", editor.textareaId);
                 }
 
                 editorRegistry[editor.textareaId] = editor;
@@ -929,12 +931,20 @@ define([
             },
 
             initializePlugin: function (_plugin) {
+
+                if (_plugin.category) {
+                    // si el picker existeix aifegir-lo
+                    // si no existeix crear-lo i afegir-lo
+                    console.log("TODO: afegir al picker ")
+                }
+
                 // console.log("IocAceEditor#initializePlugin#_plugin", _plugin);
                 var plugin = new _plugin.plugin();
                 this.plugins.push(plugin);
                 plugin.setEditor(this);
                 plugin.init(_plugin.config);
             },
+
 
 
             // FUNCIONS ORIGINALMENT AL ACE WRAPPER
