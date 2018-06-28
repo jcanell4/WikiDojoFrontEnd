@@ -24,20 +24,22 @@ define([
             },
 
             renderFieldSelect: function (field, fvalues) {
-                var $field = jQuery('<div>'),
-                    $label = jQuery('<label>'),
-                    $select = jQuery('<select>');
+                return this.renderFieldDefault(field, fvalues);
 
-                $label.html(field.label);
+                // var $field = jQuery('<div>'),
+                //     $label = jQuery('<label>'),
+                //     $select = jQuery('<select>');
+                //
+                // $label.html(field.label);
+                //
+                // $field.append($label)
+                //     .append($select);
+                //
+                // $select.attr('name', field.name)
+                //     .html(fvalues[field.name])
+                //     .addClass('view-field');
 
-                $field.append($label)
-                    .append($select);
-
-                $select.attr('name', field.name)
-                    .html(fvalues[field.name])
-                    .addClass('view-field');
-
-                return $field;
+                // return $field;
             },
 
             renderFieldTextarea: function (field, fvalues) {
