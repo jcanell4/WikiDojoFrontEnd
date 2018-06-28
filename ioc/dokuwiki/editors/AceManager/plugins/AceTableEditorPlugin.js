@@ -32,12 +32,16 @@ define([
 
             //console.log("AceTableEditorPlugin->args", args);
 
-            var config = {
-                type: args.type,
-                title: args.title,
-                icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-                category: args.category
-            };
+            var config = args;
+            config.icon = '/iocjslib/ioc/gui/img/' + args.icon + '.png';
+
+
+            // var config = {
+            //     type: args.type,
+            //     title: args.title,
+            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
+            //     category: args.category
+            // };
 
             // this.addButton(config);
 

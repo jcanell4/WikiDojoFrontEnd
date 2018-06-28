@@ -12,12 +12,17 @@ define([
             // console.log("AceFormatButtonPlugin#init", args);
 
             // TODO: Convertir en toggle per resaltar si està activat o nos
-            var config = {
-                type: args.type,
-                title: args.title,
-                icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-                class: 'toggled',
-            };
+            var config = args;
+            config.icon = '/iocjslib/ioc/gui/img/' + args.icon + '.png';
+            config.class ='toggled';
+
+
+            // var config = {
+            //     type: args.type,
+            //     title: args.title,
+            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
+            //     class: 'toggled',
+            // };
 
             this.addButton(config, this.process);
 

@@ -6,7 +6,6 @@ define([
 
     return declare([AbstractIocPlugin], {
 
-
         /**
          * Permet afegir botons propis de la dokuwiki i botons personalitzats.
          *

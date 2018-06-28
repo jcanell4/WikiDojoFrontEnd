@@ -7,15 +7,19 @@ define([
 
         init: function (args) {
             // console.log("AceFormatButtonPlugin#init", args);
+            var config = args;
+            config.type = 'format';
+            config.icon = '/iocjslib/ioc/gui/img/' + args.icon + '.png';
 
-            var config = {
-                type: 'format',
-                title: args.title,
-                icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-                open: args.open,
-                sample: args.sample,
-                close: args.close
-            };
+
+            // var config = {
+            //     type: 'format',
+            //     title: args.title,
+            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
+            //     open: args.open,
+            //     sample: args.sample,
+            //     close: args.close
+            // };
 
             this.addButton(config);
         }

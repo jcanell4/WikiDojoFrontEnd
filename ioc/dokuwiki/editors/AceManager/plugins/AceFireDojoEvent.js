@@ -10,11 +10,15 @@ define([
 
             // console.log("FireDomEventButtonPlugin#init", args);
 
-            var config = {
-                type: args.type,
-                title: args.title,
-                icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-            };
+            var config = args;
+            config.icon = '/iocjslib/ioc/gui/img/' + args.icon + '.png';
+
+
+            // var config = {
+            //     type: args.type,
+            //     title: args.title,
+            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
+            // };
 
             this.event = args.customEvent;
             this.fireEventComponent = new FireDojoEventComponent(this.editor);

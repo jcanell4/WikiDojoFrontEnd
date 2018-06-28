@@ -10,11 +10,14 @@ define([
 
             // console.log("FireEventButtonPlugin#init", args);
 
-            var config = {
-                type: args.type,
-                title: args.title,
-                icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-            };
+            var config = args;
+            config.icon = '/iocjslib/ioc/gui/img/' + args.icon + '.png';
+
+            // var config = {
+            //     type: args.type,
+            //     title: args.title,
+            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
+            // };
 
             this.events = args.event;
 

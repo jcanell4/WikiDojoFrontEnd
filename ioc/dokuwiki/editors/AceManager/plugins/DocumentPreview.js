@@ -7,6 +7,7 @@ define([
     return declare([AbstractAcePlugin], {
 
         init: function () {
+
             var args = {
                 type: "preview", // we havea new type that links to the function
                 title: "Previsualitzar el contingut d'aquest editor",

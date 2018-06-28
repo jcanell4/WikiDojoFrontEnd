@@ -9,12 +9,15 @@ define([
         init: function (args) {
 
             // console.log("AceDocumentPreview#init", args);
+            var config = args;
+            config.icon = '/iocjslib/ioc/gui/img/' + args.icon + '.png';
 
-            var config = {
-                type: args.type,
-                title: args.title,
-                icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-            };
+
+            // var config = {
+            //     type: args.type,
+            //     title: args.title,
+            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
+            // };
 
             this.documentPreviewComponent = new DocumentPreviewComponent(this.editor.dispatcher);
 

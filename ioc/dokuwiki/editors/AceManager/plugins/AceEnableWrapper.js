@@ -6,11 +6,15 @@ define([
     return declare([AbstractAcePlugin], {
 
         init: function (args) {
-            var config = {
-                type: args.type,
-                title: args.title,
-                icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png'
-            };
+
+            var config = args;
+            config.icon ='/iocjslib/ioc/gui/img/' + args.icon + '.png';
+
+            // var config = {
+            //     type: args.type,
+            //     title: args.title,
+            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png'
+            // };
 
             this.addButton(config, this.process);
         },
