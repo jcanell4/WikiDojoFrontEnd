@@ -13,7 +13,9 @@ define([
 
             // TODO: Convertir en toggle per resaltar si està activat o nos
             var config = args;
-            config.icon = '/iocjslib/ioc/gui/img/' + args.icon + '.png';
+            if (args.icon.indexOf(".png")===-1) {
+                config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
+            }
             config.class ='toggled';
 
 
@@ -34,8 +36,6 @@ define([
         process: function(args, btn) {
 
             jQuery(btn).toggleClass('toggled');
-
-
 
             this.enabled = !this.enabled;
             this.editor.readOnlyBlocksManager.enabled = this.enabled;

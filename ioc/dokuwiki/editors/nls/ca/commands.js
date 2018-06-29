@@ -11,7 +11,7 @@ define(
         // Categories
         'category-ioc': 'IOC',
         'category-header': 'Capçalera',
-        'category-table': 'Taules',
+        'category-WikiTable': 'Taules',
 
         // Comments Plugin
         'ioc-comment-button': 'Afegir comentari',

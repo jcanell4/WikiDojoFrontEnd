@@ -535,7 +535,6 @@ define([
                             'TestReadonlyPlugin',
                             'TableEditor',
                             'TableEditorMultiline'
-
                         ]
                     );
                     plugins = this.getPlugins(pluginNames)
@@ -931,12 +930,6 @@ define([
             },
 
             initializePlugin: function (_plugin) {
-
-                if (_plugin.category) {
-                    // si el picker existeix aifegir-lo
-                    // si no existeix crear-lo i afegir-lo
-                    console.log("TODO: afegir al picker ")
-                }
 
                 // console.log("IocAceEditor#initializePlugin#_plugin", _plugin);
                 var plugin = new _plugin.plugin();

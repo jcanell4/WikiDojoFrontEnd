@@ -415,20 +415,20 @@ define([
         },
 
         'ReadonlyBlocksToggle': {
-            type: localization["ioc-readonly-toggle"],
+            type: 'ReadonlyBlocksToggle',
             title: localization["ioc-readonly-toggle"],
             icon: 'IocReadonly'
             // category: 'C',
         },
 
         'TableEditor': {
-            type: localization["ioc-table-editor"],
+            type: 'TableEditor',
             title: localization["ioc-table-editor"],
             icon: 'IocTable',
             category: 'WikiTable'
         },
         'TableEditorMultiline': {
-            type: localization["ioc-table-editor-multiline"],
+             type: 'TableEditorMultiline',
             title: localization["ioc-table-editor-multiline"],
             icon: 'IocTable',
             category: 'WikiTable'

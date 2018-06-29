@@ -8,7 +8,11 @@ define([
         init: function (args) {
 
             var config = args;
-            config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
+
+            if (args.icon.indexOf(".png")===-1) {
+                config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
+            }
+
 
             // var config = {
             //     type: args.type,

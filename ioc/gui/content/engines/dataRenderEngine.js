@@ -11,11 +11,12 @@ define(function () {
      * @returns {string} - document amb el camp section_id afegit
      */
 
-    return function (data) {
+    return function (data, context) {
 
         // TODO afegir el beforeContent
 
-        var $container = jQuery('<div id="container_' + data.id + '" data-editor-container></div>'),
+        var idContainer = 'container_' + data.id,
+            $container = jQuery('<div id="container_' + data.id + '" data-editor-container></div>'),
             $form = jQuery(data.htmlForm).find('form').clone(),
             $textarea = $form.find('textarea');
 
@@ -26,6 +27,12 @@ define(function () {
         $textarea.attr('data-doc-id', data.id);
         $textarea.val(data.content);
         $container.append($form);
+
+
+        $container.on('click', function() {
+            context.dispatcher.getGlobalState().setCurrentElement(idContainer, true);
+            $textarea.focus();
+        });
 
         // TODO afegir el afterContent
 

@@ -28,6 +28,7 @@ define([
                 var $container = $btn.closest('[data-editor-container]'),
                     idContainer = $container.attr('id');
 
+                // console.log("Establint element", idContainer);
                 _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
                 jQuery('#' + idContainer).find('textarea').focus();
 
@@ -103,20 +104,20 @@ define([
          * @private
          */
         _createButtonInToolbar = function (config, func, type) {
-            console.log('toolbarManager#_createButtonInToolbar', config);
+            // console.log('toolbarManager#_createButtonInToolbar', config);
             if (!_dispatcher) {
                 throw new ToolbarManagerException("No s'ha establert el dispatcher. Crida a toolbarManager.setDispatcher(dispatcher) abans.");
             }
 
-            var funcType = 'addBtnAction' + (config.type = config.type.charAt(0).toUpperCase()+config.type.substring(1) + '_' + type);
+            var funcType = 'addBtnAction' + (config.type = config.type.charAt(0).toUpperCase()+config.type.substring(1) /*+ '_' + type*/);
 
             window[funcType] = function ($btn) {
 
                 $btn.click(function (event) {
-                    var idContainer = jQuery(event.currentTarget).closest('[data-editor-container]').attr('id');
-
-                    _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
-                    jQuery('#' + idContainer).find('textarea').focus();
+                    // var idContainer = jQuery(event.currentTarget).parent('[data-editor-container]').attr('id');
+                    //
+                    // _dispatcher.getGlobalState().setCurrentElement(idContainer, true);
+                    // jQuery('#' + idContainer).find('textarea').focus();
 
                     event.preventDefault();
                     func(arguments, this);
@@ -126,27 +127,26 @@ define([
             _checkAsPatched(config.type);
 
 
-            // ALERTA[Xavi], això ha de canviar per categories
-            // - Si es una categoria:
-            //      1. No Existeix el picker: crear el picker
-            //      2. afegir al picker
-            //  - No es una categoria? normal
-
 
             if (config.category) {
-                if (!categories[config.category]) {
+                if (!categories[type]) {
+                    categories[type] = {};
+                }
+
+
+                if (!categories[type][config.category]) {
                     var category = {
                         type: 'picker',
-                        title: localization["config.category"],
+                        title: localization["category-" + config.category],
                         icon: '/iocjslib/ioc/gui/img/cat_' + config.category + '.png',
                         list: []
                     };
 
                     _getToolbar(type)[toolbars[type].length] = category;
-                    categories[config.category] = category;
+                    categories[type][config.category] = category;
                 }
 
-                categories[config.category].list.push(config);
+                categories[type][config.category].list.push(config);
 
 
             } else {
@@ -217,28 +217,28 @@ define([
 
                 window[funcType] = function ($btn, props, edid) {
 
-                    if (!$btn.parent().hasClass('picker')) {
-                        var $container = $btn.closest('[data-editor-container]');
-
-                        if ($container) {
-
-                            var containerId = $container.attr('id');
-//                            console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
-
-                            // Si la toolbar no s'ha afegit a un document o structure dcoument no hi haurà id.
-                            if (containerId !== undefined) {
-                                _dispatcher.getGlobalState().setCurrentElement(containerId, true);
-                                jQuery('#' + containerId).find('textarea').focus();
-                            } else {
-                                // console.log("No es un container, dades que arriban:", $btn, props, edid);
-                            }
-
-
-                        } else {
-
-                            throw new ToolbarManagerException("No s'ha trobat el contenidor");
-                        }
-                    }
+//                     if (!$btn.parent().hasClass('picker')) {
+//                         var $container = $btn.closest('[data-editor-container]');
+//
+//                         if ($container) {
+//
+//                             var containerId = $container.attr('id');
+// //                            console.log("id del contenidor obtingut:", $btn, $btn.closest('[data-editor-container]'), idContainer);
+//
+//                             // Si la toolbar no s'ha afegit a un document o structure dcoument no hi haurà id.
+//                             if (containerId !== undefined) {
+//                                 _dispatcher.getGlobalState().setCurrentElement(containerId, true);
+//                                 jQuery('#' + containerId).find('textarea').focus();
+//                             } else {
+//                                 // console.log("No es un container, dades que arriban:", $btn, props, edid);
+//                             }
+//
+//
+//                         } else {
+//
+//                             throw new ToolbarManagerException("No s'ha trobat el contenidor");
+//                         }
+//                     }
 
                     originalFunction($btn, props, edid);
 
@@ -369,7 +369,7 @@ define([
                     return;
                 }
 
-                alert('unknown toolbar type: '+val.type+'  '+actionFunc);
+                //console.error("unknown toolbar type", val, val.type, actionFunc);
             });
         },
 
@@ -391,8 +391,8 @@ define([
          * @returns {boolean} Cert si s'ha afegit en botó o fals en cas contrari
          */
         addButton: function (config, func, type) {
-            config.type += '_' + type;
-            //console.log(toolbarManager#addButton);
+
+            // console.log("toolbarManager#addButton", config.type, type);
             if (_existsButtonInToolbar(config.title, type)) {
                 // console.error("Ja Existeix el botó", config.title, type);
                 return false;

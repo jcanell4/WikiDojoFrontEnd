@@ -586,6 +586,10 @@ define([
                         func = this.defBox;
                         break;
 
+                    case "innerbox":
+                        func = this.defInnerBox;
+                        break;
+
                     default:
                         throw new Error("No existeix el tipus de regla: " + type);
                 }
@@ -705,6 +709,7 @@ define([
                     n = [];
                 }
 
+
                 i = "drective-" + e + "-id";
                 s = "drective-" + e + "-offset";
                 o = "drective-" + e + "-params";
@@ -736,6 +741,51 @@ define([
 
                 this.defRule(o, "^(  :)(.+?)(:)", u);
                 this.defRule(o, "^", "text", "start");
+
+            },
+
+            // Copiada de defBox afegint el prefix
+            defInnerBox: function (e, n, prefix) {
+                prefix = prefix + "-";
+
+                var r, i, s, o, u, a, f, l, c;
+
+                if (!n) {
+                    n = [];
+                }
+
+
+                i = prefix + "drective-" + e + "-id";
+                s = prefix + "drective-" + e + "-offset";
+                o = prefix + "drective-" + e + "-params";
+                a = ["keyword.operator", "keyword", "keyword.operator"];
+                u = ["keyword.operator", "keyword.invalid", "keyword.operator"];
+
+                this.defBase("^(::)(" + prefix + e + ")(:)", a, i);
+                this.defRule(i, "\\s*$|^", "text", o);
+
+
+                if (n.indexOf("id") < 0) {
+                    this.defRule(i, ".+", "keyword.invalid");
+
+                }
+
+                if (n.indexOf("offset") >= 0) {
+                    this.defRule(o, "^(  :)(offset)(:)", a, s);
+                    this.defRule(s, "\\s*-?\\d+\\s*$", "constant.numeric", o);
+                    this.defRule(s, ".+$", "keyword.invalid", o);
+                }
+
+
+                c = _(n).without("id", "offset");
+
+                for (f = 0, l = c.length; f < l; f++) {
+                    r = c[f];
+                    this.defRule(o, "^(  :)(" + r + ")(:)", a);
+                }
+
+                this.defRule(o, "^(  :)(.+?)(:)", u);
+                this.defRule(o, "^", "text", prefix+"start");
 
             },
 

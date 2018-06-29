@@ -25,6 +25,11 @@ define([
                 default: // Això correspón a tots els botons personalitzats
                     toolbarManager.addButton(args, callback.bind(this), this.editor.TOOLBAR_ID);
             }
+        },
+
+        process:function() {
+            this.inherited(arguments);
+            jQuery('.picker').addClass('a11y');
         }
 
     });

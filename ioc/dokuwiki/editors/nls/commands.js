@@ -12,7 +12,7 @@ define({ root:
         // Categories
         'category-ioc': 'IOC',
         'category-header': 'Header',
-        'category-table': 'Tables',
+        'category-WikiTable': 'Tables',
 
         // Comments Plugin
         'ioc-comment-button': 'Add comment',

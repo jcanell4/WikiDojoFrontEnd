@@ -14,13 +14,16 @@ define([
     'dojo/_base/array',
     "dojox/grid/EnhancedGrid",
     "dojox/grid/enhanced/plugins/Selector", // Encara que no s'utitlitzi directament ho utilitza el EnghancedGrid i s'ha de carregar
-], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector) {
+    "dijit/registry"
+], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry) {
 
     // TODO[Xavi] Afegir com a paràmetre al constructor o als arguments d'inicialització
     var MAX_EXTRA_COLUMNS = 50,
-        DEFAULT_ROWS= 2,
-        DEFAULT_COLS = 2;
-
+        DEFAULT_ROWS = 2,
+        DEFAULT_COLS = 2,
+        NORMAL = "normal",
+        MULTILINE = "multiline",
+        ACCOUNTING = "accounting";
 
 
     return declare([AbstractAcePlugin], {
@@ -33,7 +36,9 @@ define([
             //console.log("AceTableEditorPlugin->args", args);
 
             var config = args;
-            config.icon = '/iocjslib/ioc/gui/img/' + args.icon + '.png';
+            if (args.icon.indexOf(".png")===-1) {
+                config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
+            }
 
 
             // var config = {
@@ -53,32 +58,30 @@ define([
         },
 
 
-        _buildDefaultTable: function() {
+        _buildDefaultTable: function () {
             var cols = Number(prompt("Introdueix el nombre de columnes (mínim 1):", DEFAULT_COLS));
-            var rows = Number(prompt("Introdueix el nombre de columnes (mínim 1):", DEFAULT_ROWS));
+            var rows = Number(prompt("Introdueix el nombre de files (mínim 1):", DEFAULT_ROWS));
             var value = "^ "; // generar el valor demanant el nombre de columnes i a partir d'aquest generar el codi wiki més simple possible
 
 
-            if (isNaN(cols) || cols<1) {
+            if (isNaN(cols) || cols < 1) {
                 cols = 1;
             }
 
-            if (isNaN(rows) || rows<1) {
+            if (isNaN(rows) || rows < 1) {
                 rows = 1;
             }
 
-            for (var i=0; i<cols; i++) {
-                value +="Columna " + (i+1) + " ^";
+            for (var i = 0; i < cols; i++) {
+                value += "Columna " + (i + 1) + " ^";
             }
 
 
-
-
-            for (var i=0; i<rows; i++) {
-                value +="\n|";
-                for (var j=0; j<cols; j++) {
-                    if (j===0) {
-                        value += " fila " + (i+1);
+            for (var i = 0; i < rows; i++) {
+                value += "\n|";
+                for (var j = 0; j < cols; j++) {
+                    if (j === 0) {
+                        value += " fila " + (i + 1);
                     }
                     value += " |";
                 }
@@ -103,7 +106,7 @@ define([
             //console.log(editor);
 
             var pos = {row: editor.getCurrentRow(), col: 0};
-            var range = {start :  pos, end: pos};
+            var range = {start: pos, end: pos};
             var value = this._buildDefaultTable();
 
             this._showDialog(value, range);
@@ -115,12 +118,16 @@ define([
 
             var chunk = dispatcher.getGlobalState().getCurrentElementId(),
                 id = dispatcher.getGlobalState().getCurrentId();
+
+            // console.log("chunk:", chunk);
+            // console.log("id:", id);
+
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
             var editor = dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
 
             var pos = {row: editor.getCurrentRow(), col: 0};
-            var range = {start :  pos, end: pos};
+            var range = {start: pos, end: pos};
             var value = this._buildDefaultTable();
 
             this._showDialog(value, range);
@@ -147,7 +154,6 @@ define([
             var dialogManager = this.editor.dispatcher.getDialogManager();
             var context = this;
 
-
             var saveCallback = function () {
 
                 store.fetch({
@@ -156,15 +162,19 @@ define([
                             dokuwikiTable.unshift('<edittable>');
                             dokuwikiTable.push('</edittable>');
                             context.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
+
                         }
                     }
                 );
+
+
 
             }.bind(this);
 
             var cancelCallback = function () {
 
                 dialog.onHide();
+
             }.bind(this);
 
 
@@ -178,22 +188,58 @@ define([
             $container.append($toolbar);
 
 
-            var $addCol = jQuery('<button>Afegir columna</button>');
+            var $addCol = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Afegir columna</span></button>');
             $toolbar.append($addCol);
 
-            var $addRow = jQuery('<button>Afegir fila</button>');
+            var $addRow = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Afegir fila</span></button>');
             $toolbar.append($addRow);
 
 
-            var $removeCol = jQuery('<button>Eliminar columna</button>');
+            var $removeCol = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Eliminar columna</span></button>');
             $toolbar.append($removeCol);
 
-            var $removeRow = jQuery('<button>Eliminar fila</button>');
+            var $removeRow = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Eliminar fila</span></button>');
             $toolbar.append($removeRow);
 
 
-            var $mergeCells = jQuery('<button>Fusionar cel·les</button>');
+            var $mergeCells = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Fusionar cel·les</span></button>');
             $toolbar.append($mergeCells);
+
+
+            var $tableTypeLabel = jQuery('<label>Tipus de taula:</label>');
+            this.$tableType = jQuery('<select></select>');
+            this.$tableType.append('<option value="' + NORMAL + '">Normal</option>');
+            this.$tableType.append('<option value="' + MULTILINE + '">Multilínia</option>');
+            this.$tableType.append('<option value="' + ACCOUNTING + '">Comptabilitat</option>');
+
+            $tableTypeLabel.append(this.$tableType);
+            $toolbar.append($tableTypeLabel);
+
+
+            var $titleLabel = jQuery('<label>Títol:</label>');
+            this.$title = jQuery('<input type="text" />');
+            $titleLabel.append(this.$title);
+            $toolbar.append($titleLabel);
+
+            var $footerLabel = jQuery('<label>Peu:</label>');
+            this.$footer= jQuery('<input type="text" />');
+            $footerLabel.append(this.$footer);
+            $toolbar.append($footerLabel);
+
+
+
+            var $widthsLabel = jQuery('<label>Amplades (separades per comes):</label>');
+            this.$widths = jQuery('<input type="text" />');
+            $widthsLabel.append(this.$widths);
+            $toolbar.append($widthsLabel);
+
+            var $typesLabel = jQuery('<label>Tipus (separats per comes):</label>');
+            this.$types = jQuery('<input type="text" />');
+            $typesLabel.append(this.$types);
+            $toolbar.append($typesLabel);
+
+
+
 
 
             this.numberOfColumns = 0;
@@ -219,7 +265,7 @@ define([
                 var items = grid.selection.getSelected('col', false);
 
                 for (var col in selection['cols']) {
-                    removedColumns.push((selection['cols'][col].col+1));
+                    removedColumns.push((selection['cols'][col].col + 1));
                     grid.layout.setColumnVisibility(/* int */ selection['cols'][col].col, /* bool */ false)
                 }
 
@@ -238,7 +284,7 @@ define([
 
                 var first = true;
                 for (var i = 0; i < this.numberOfColumns; i++) {
-                    if (first && removedColumns.indexOf(i) ===-1) {
+                    if (first && removedColumns.indexOf(i) === -1) {
                         first = false;
                         data['col' + (i + 1)] = 'nova fila';
                     } else {
@@ -416,6 +462,13 @@ define([
                 });
             }
 
+
+            var oldGrid = registry.byId('grid');
+
+            if (oldGrid) {
+                oldGrid.destroy();
+            }
+
             var grid = new EnhancedGrid({
                 id: 'grid',
                 store: store,
@@ -476,13 +529,60 @@ define([
             // ALERTA[Xavi] Arreglos d'estil forçats a la taula, no es poden arreglar mitjançant CSS
             jQuery('[dojoattachpoint="viewsHeaderNode"]').css('height', '24px');
 
+
+
+
+            // Establim els valors inicials de les opcions
+            this.$tableType.val(this.parsedData.meta.table_type);
+            this.$title.val(this.parsedData.meta.title);
+            this.$footer.val(this.parsedData.meta.footer);
+            this.$types.val(this.parsedData.meta.types);
+            this.$widths.val(this.parsedData.meta.widths)
+
+
+
         },
 
+        /**
+         * Métode que converteix la informació del grid en línies de codi wiki
+         *
+         * @param items
+         * @param layout
+         * @param removedColumns
+         * @returns {Array}
+         */
         parseData: function (items, layout, removedColumns) {
 
             // console.log(items, layout, removedColumns);
 
+
+
             var lines = [];
+
+            // Construim la caixa
+            lines.push("::" + (this.$tableType.val() === 'accounting'? 'accounting' : 'table') + ":");
+
+
+            if (this.$title.val().length>0) {
+                lines.push("  :title:" + this.$title.val());
+            }
+
+            if (this.$footer.val().length>0) {
+                lines.push("  :footer:" + this.$footer.val());
+            }
+
+            if (this.$widths.val().length>0) {
+                lines.push("  :widths:" + this.$widths.val());
+            }
+
+            if (this.$types.val().length>0) {
+                lines.push("  :types:" + this.$types.val());
+            }
+
+            if (this.$tableType.val() === MULTILINE) {
+                lines.push("  :type:" + this.$tableType.val());
+            }
+
 
             var header = "";
             var first = true;
@@ -559,6 +659,8 @@ define([
                 lines.push(line);
             }
 
+            // Tanquem la caixa
+            lines.push(":::");
 
             return lines;
         },
@@ -567,15 +669,15 @@ define([
         parseContentData: function (content) {
 
             var lines = content.split("\n");
-            var parsedData = this.parseContentLines(lines);
+            this.parsedData = this.parseContentLines(lines);
 
             return {
                 data: {
                     identifier: "id",
-                    items: parsedData.rows
+                    items: this.parsedData.rows
                 },
-                layout: parsedData.columns,
-                length: parsedData.rows.length
+                layout: this.parsedData.columns,
+                length: this.parsedData.rows.length
             };
         },
 
@@ -584,7 +686,14 @@ define([
 
             var parsedLines = {
                 columns: [],
-                rows: []
+                rows: [],
+                meta: {
+                    title: "",
+                    footer: "",
+                    types: "",
+                    widths: "",
+                    table_type: NORMAL
+                }
             };
 
             var rowsCounter = 0;
@@ -592,7 +701,23 @@ define([
 
             for (var i = 0; i < lines.length; i++) {
 
-                if (lines[i].startsWith('^')) {
+                if (lines[i].startsWith(':::')) {
+                    // Es tanca la taula
+                    continue;
+                } else if (lines[i].startsWith('  :title:')) {
+                    parsedLines.meta.title = lines[i].replace('  :title:', '').trim();
+                } else if (lines[i].startsWith('  :footer:')) {
+                    parsedLines.meta.footer = lines[i].replace('  :footer:', '').trim();
+                } else if (lines[i].startsWith('  :widths:')) {
+                    parsedLines.meta.widths = lines[i].replace('  :widths:', '').trim();
+                } else if (lines[i].startsWith('  :types:')) {
+                    parsedLines.meta.types= lines[i].replace('  :types:', '').trim();
+                } else if (lines[i].startsWith('::accounting:')) {
+                    parsedLines.meta.table_type = ACCOUNTING;
+                } else if (lines[i].startsWith('::table:')) {
+                    parsedLines.meta.table_type = NORMAL;
+
+                } else if (lines[i].startsWith('^')) {
 
                     // ALERTA, no s'admet que hi hagi més d'una fila de capçaleres
 
@@ -691,7 +816,7 @@ define([
             var cols = 0;
 
 
-            var formatterCallback = function(value, rowIndex, cell) {
+            var formatterCallback = function (value, rowIndex, cell) {
                 // TODO[Xavi] en lloc de comprovar el contingut es podria cercar l'element a l'store i comprovar si es merge o no i substituir el contingut.
 
                 if (!value || value === "undefined") {

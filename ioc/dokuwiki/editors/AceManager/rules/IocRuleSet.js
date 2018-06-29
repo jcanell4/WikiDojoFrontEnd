@@ -125,6 +125,9 @@ define([
                 ['container', ["edittable", "<edittable>", "keyword.operator.edittable"]],
                 ['rule', ["edittable-start", "</edittable>", "keyword.operator.edittable", "start"]],
 
+                ['innerbox', ["table", ["id", "title", "type", "footer", "large", "small", "vertical"], "edittable"]],
+                ['innerbox', ["accounting", ["id", "title", "type", "footer", "widths"], "edittable"]],
+
                 ['container', ["edittable-table", "^[\\|\\^]", "keyword.operator"]],
                 ['rule', ["edittable-table-start", "[\\|\\^]", "keyword.operator"]],
                 ['rule', ["edittable-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],

@@ -9,7 +9,9 @@ define([
             // console.log("AceFormatButtonPlugin#init", args);
             var config = args;
             config.type = 'format';
-            config.icon = '/iocjslib/ioc/gui/img/' + args.icon + '.png';
+            if (args.icon.indexOf(".png")===-1) {
+                config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
+            }
 
 
             // var config = {
