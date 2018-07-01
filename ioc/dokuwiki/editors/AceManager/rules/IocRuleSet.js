@@ -111,6 +111,11 @@ define([
                 ['inline', ["</quiz>", "keyword"]],
                 ['inline', ["!!!!", "keyword.operator"]],
 
+                //etiqueta [TODO: ...] Fondo amarillo
+                ['container', ["ioctodo", "(\\[TODO:)(.*?)$", ["keyword.operator.ioctodo", "markup.ioctodo"]]],
+                ['rule', ["ioctodo-start", "^(.*?)(\\])", ["markup.ioctodo", "keyword.operator.ioctodo"], "start"]],
+                ['rule', ["ioctodo-start", "^(.+?)$", "markup.ioctodo"]],
+
                 // Test readonly
                 ['container', ["readonly", "<readonly>", "keyword.operator.readonly"]],
                 ['rule', ["readonly-start", "</readonly>", "keyword.operator.readonly", "start"]],
@@ -132,9 +137,7 @@ define([
                 ['rule', ["edittable-table-start", "[\\|\\^]", "keyword.operator"]],
                 ['rule', ["edittable-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
                 ['rule', ["edittable-table-start", "[	 ]+", "text"]],
-                ['rule', ["edittable-table-start", "$", "text", "edittable-start"]],
-
-
+                ['rule', ["edittable-table-start", "$", "text", "edittable-start"]]
             ],
 
             /**

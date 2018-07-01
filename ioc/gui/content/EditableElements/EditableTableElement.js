@@ -249,7 +249,7 @@ define([
                 for (var i in layout.cells) {
                     var cell = layout.cells[i];
 
-                    if (this.args.fields[cell.name]) {
+                    if (this.args.fields && this.args.fields[cell.name]) {
 
                         var field = this.args.fields[cell.name];
 
