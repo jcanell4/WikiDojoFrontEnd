@@ -781,6 +781,7 @@ define([
             var rowsCounter = 0;
             var columns = 0;
 
+            this.tableType = NORMAL;
 
             for (var i = 0; i < lines.length; i++) {
 
@@ -808,9 +809,9 @@ define([
                 } else if (lines[i].startsWith('  :types:')) {
                     parsedLines.meta.types = lines[i].replace('  :types:', '').trim();
                 } else if (lines[i].startsWith('::accounting:')) {
-                    parsedLines.meta.table_type = ACCOUNTING;
-                } else if (lines[i].startsWith('::table:')) {
-                    parsedLines.meta.table_type = NORMAL;
+                    this.tableType = ACCOUNTING;
+                // } else if (lines[i].startsWith('::table:')) {
+                //     parsedLines.meta.table_type = NORMAL;
 
                 } else if (lines[i].startsWith('^')) {
 
