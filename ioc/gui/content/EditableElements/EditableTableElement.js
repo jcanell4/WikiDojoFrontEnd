@@ -162,7 +162,6 @@ define([
                     context.updateField();
                 });
 
-
                 var addKeyButton = new Button({
                     label: "Afegir clau",
 

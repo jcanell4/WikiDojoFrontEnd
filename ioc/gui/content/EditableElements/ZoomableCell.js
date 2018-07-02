@@ -8,7 +8,7 @@ define([
 	// module:
 	//		dijit/form/Textarea
 
-	return declare([Textarea], {
+	return declare("ioc.zoomablecell", [Textarea], {
 
 
 		buildRendering: function(){

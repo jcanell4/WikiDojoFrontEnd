@@ -1,11 +1,9 @@
 define([
     'dojo/_base/declare',
     'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin',
-    "dojox/grid/DataGrid",
+    // "dojox/grid/DataGrid",
     "dojox/grid/cells",
     "dojox/grid/cells/dijit",
-    "dojo/store/Memory",
-    "dojo/data/ObjectStore",
     "dijit/form/Button",
     "dojo/dom-construct",
     "dojo/_base/lang",
@@ -13,9 +11,14 @@ define([
     'dijit/Dialog',
     'dojo/_base/array',
     "dojox/grid/EnhancedGrid",
-    "dojox/grid/enhanced/plugins/Selector", // Encara que no s'utitlitzi directament ho utilitza el EnghancedGrid i s'ha de carregar
-    "dijit/registry"
-], function (declare, AbstractAcePlugin, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry) {
+    "dojox/grid/enhanced/plugins/Selector", // Encara que no s'utitlitzi directament ho utilitza el EnhancedGrid i s'ha de carregar
+    "dijit/registry",
+    // "dijit/form/Textarea"
+
+    // "ioc/gui/content/EditableElements/ZoomableCell",
+
+
+], function (declare, AbstractAcePlugin, /*DataGrid, */cells, cellsDijit, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry/*, Textarea*/) {
 
     // TODO[Xavi] Afegir com a paràmetre al constructor o als arguments d'inicialització
     var MAX_EXTRA_COLUMNS = 50,
@@ -27,6 +30,13 @@ define([
         MULTILINE = "multiline",
         ACCOUNTING = "accounting";
 
+
+    var ZoomableCell;
+
+    // ALERTA[Xavi] Si s'afegeix al declare no funciona, ni idea de perquè
+    require(["ioc/gui/content/EditableElements/ZoomableCell"], function(InZoomableCell) {
+        ZoomableCell = InZoomableCell;
+    });
 
     return declare([AbstractAcePlugin], {
 
@@ -50,6 +60,8 @@ define([
             }
 
             this.tableType = args.tableType;
+
+
 
             // var config = {
             //     type: args.type,
@@ -103,19 +115,7 @@ define([
         },
 
         _processFull: function () {
-            var dispatcher = this.editor.dispatcher;
-
-            var id = dispatcher.getGlobalState().getCurrentId(),
-                editor = dispatcher.getContentCache(id).getMainContentTool().getEditor().editor;
-            // editor.toggleEditor();
-
-
-            // editor.session.insert(editor.getCursorPosition(), "\n<edittable></edittable>")
-
-
-            //console.log(editor);
-
-            var pos = {row: editor.getCurrentRow(), col: 0};
+            var pos = {row: this.editor.getCurrentRow(), col: 0};
             var range = {start: pos, end: pos};
             var value = this._buildDefaultTable();
 
@@ -171,8 +171,6 @@ define([
 
                             dokuwikiTable.unshift('<' + context.triggerState + '>');
                             dokuwikiTable.push('</' + context.triggerState + '>');
-                            // dokuwikiTable.unshift('<edittable>');
-                            // dokuwikiTable.push('</edittable>');
                             context.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
 
                         }
@@ -458,15 +456,55 @@ define([
 
             var layout = contentData.layout;
 
+
             // TODO: Aquí es crean les columnes buides per poder afegir noves columnes.
             for (var i = this.numberOfColumns + 1; i < this.maxColumns; i++) {
-                layout.push({
-                    'name': 'Columna ' + i,
-                    'field': 'col' + i,
-                    'width': '100px',
+                var cell = {
+                    name: 'Columna ' + i,
+                    field: 'col' + i,
                     editable: true
-                });
+                };
+
+
+                if (this.tableType === MULTILINE) {
+                    cell.type = cells._Widget;
+                    cell.widgetClass = ZoomableCell;
+                }
+
+
+                layout.push(cell);
             }
+
+            var formatterCallback = function (value, rowIndex, cell) {
+                // TODO[Xavi] en lloc de comprovar el contingut es podria cercar l'element a l'store i comprovar si es merge o no i substituir el contingut.
+
+                if (!value || value === "undefined") {
+                    value = '';
+                }
+
+
+                if (value === '^^^' || value === '<<<' || value === '&lt;&lt;&lt;') {
+                    value = '<i>' + value + '</i>';
+                }
+
+                return value;
+            };
+
+            var defaultCell = {
+                width: '100px',
+                editable: true,
+                formatter: formatterCallback
+                // cellType: dojox.grid.cells.Select,
+                // options: ['aaa', 'bbb', 'ccc'],
+                // type:dojox.grid.cells._Widget,
+                // widgetClass: dijitTextarea,
+            };
+
+            if (this.tableType === MULTILINE) {
+                defaultCell.type = cells._Widget;
+                defaultCell.widgetClass = ZoomableCell;
+            }
+
 
 
             var oldGrid = registry.byId('grid');
@@ -479,7 +517,10 @@ define([
             var grid = new EnhancedGrid({
                 id: 'grid',
                 store: store,
-                structure: layout,
+                structure: [{
+                    defaultCell: defaultCell,
+                    cells: layout
+                }],
                 rowSelector: '20px',
                 height: '500px',
                 canSort: function () {
@@ -495,11 +536,37 @@ define([
                 selectionMode: 'multiple'
             });
 
+            // Alerta[Xavi] Sobreescrita de _EditManager.js y duplicada del EditableTalbeElements
+            grid.edit.apply= function(){
+
+                if (jQuery(document.activeElement).hasClass('ace_text-input')) {
+                    // console.log("És un dialeg, no fem res");
+                    return;
+                }
+
+                // summary:
+                //		Apply a grid edit
+                if(this.isEditing() && this._isValidInput()){
+                    this.grid.beginUpdate();
+                    this.editorApply();
+                    this.applyRowEdit();
+                    this.info = {};
+                    this.grid.endUpdate();
+                    this.grid.focus.focusGrid();
+                    this._doCatchBoomerang();
+                }
+            }
+
+
+
+
+
 
             domConstruct.place(grid.domNode, dialog.containerNode);
 
 
             grid.startup();
+
 
             // Amagem les columnes buides
             for (var i = this.numberOfColumns; i < this.maxColumns - 1; i++) {
@@ -718,14 +785,12 @@ define([
                 if (lines[i].startsWith('[')) {
                     this.tableType = MULTILINE;
                     lines[i] = lines[i].substr(1);
-                    console.log("Eliminat el [", lines[i]);
                 }
 
 
                 // Descartem el caràcter de tancament, no es necessari
                 if (lines[i].endsWith(']')) {
                     lines[i] = lines[i].slice(0, -1);
-                    console.log("Eliminat el ]", lines[i]);
                 }
 
                 if (lines[i].startsWith(':::')) {
@@ -843,20 +908,8 @@ define([
             var cols = 0;
 
 
-            var formatterCallback = function (value, rowIndex, cell) {
-                // TODO[Xavi] en lloc de comprovar el contingut es podria cercar l'element a l'store i comprovar si es merge o no i substituir el contingut.
+            // ALERTA! Si es fa servir això es descarta el tipus de cel·la personalitzat
 
-                if (!value || value === "undefined") {
-                    value = '';
-                }
-
-
-                if (value === '^^^' || value === '<<<' || value === '&lt;&lt;&lt;') {
-                    value = '<i>' + value + '</i>';
-                }
-
-                return value;
-            };
 
             for (var i = 0; i < tokens.length; i++) {
                 if (tokens[i].length === 0) {
@@ -865,13 +918,23 @@ define([
                     }
                 }
 
-                layout.push({
-                    'name': tokens[i].trim(),
-                    'field': 'col' + (cols + 1),
-                    'width': '100px',
-                    'editable': true,
-                    'formatter': formatterCallback
-                });
+                var cell = {
+                    name: tokens[i].trim(),
+                    field: 'col' + (cols + 1),
+                    // 'width': '100px',
+                    // 'editable': true,
+                    // 'formatter': formatterCallback,
+
+                };
+
+
+                if (this.tableType === MULTILINE) {
+                    cell.type = cells._Widget;
+                    cell.widgetClass = ZoomableCell;
+                }
+
+
+                layout.push(cell);
                 cols++;
             }
 

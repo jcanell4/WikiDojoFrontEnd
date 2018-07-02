@@ -79,7 +79,7 @@ define([
          * @private
          */
         setCurrentElementState: function (state) {
-            // console.log("GlobalState#setCurrentElementState", state);
+            console.log("GlobalState#setCurrentElementState", state);
             if (state) {
                 this.getCurrentContent().currentElementState = state;
             } else {
@@ -89,7 +89,7 @@ define([
 
 
         setCurrentElement: function (elementId, state) {
-            // console.log("GlobalState#setCurrentElement", elementId, state);
+            console.log("GlobalState#setCurrentElement", elementId, state);
             this.setCurrentElementId(elementId);
             this.setCurrentElementState(state);
         },

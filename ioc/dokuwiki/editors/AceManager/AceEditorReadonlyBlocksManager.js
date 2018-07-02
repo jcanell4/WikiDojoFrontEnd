@@ -147,8 +147,6 @@ define([
                 return;
             }
 
-            console.log("Afegint callback per l'estat:", state);
-
             this.readOnlyStates[state].push(callback);
         },
 

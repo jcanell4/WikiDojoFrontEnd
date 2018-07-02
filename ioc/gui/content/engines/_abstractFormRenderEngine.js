@@ -164,7 +164,6 @@ define([
                     $label = jQuery('<label>'),
                     $select = jQuery('<select>');
 
-                console.log("RenderField: ", field);
                 $label.html(field.label);
 
                 $field.append($label)

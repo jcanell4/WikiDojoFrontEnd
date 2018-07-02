@@ -54,7 +54,6 @@ define([
                     if (this.args.saveCallback) {
                         this.args.saveCallback(value);
 
-
                     } else {
                         // Aquest es el comportament per defecte, vàlid quan es treballa amb elements HTML
                         this.$field.val(value);
@@ -64,15 +63,10 @@ define([
                     this.setEditionState(false);
                     toolbarManager.delete(toolbarId);
 
-                    // this.$field.val(editor.getValue());
-                    // this.setEditionState(false);
-                    // toolbarManager.delete(toolbarId);
-                    // this.$field.trigger('input');
-
                     //this.clearExternalContent(); // Esborrant
 
                     dialog.onHide();
-                    console.log("Desant al node el nou contingut", editor.getValue(), this.$field, this.$field.val());
+                    // console.log("Desant al node el nou contingut", editor.getValue(), this.$field, this.$field.val());
 
                 }.bind(this);
 
@@ -94,8 +88,7 @@ define([
                 var changeCallback = function(e) {
 
                     if (editor.isChanged()) {
-                        console.log("changeCallback:", e);
-                        //this.$field.val(e.newContent);
+                        // console.log("changeCallback:", e);
                         this.setExternalContent(e.newContent);
                     } else {
                         this.clearExternalContent();
@@ -151,7 +144,6 @@ define([
                     plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton'] // Plugins que ha de contenir la toolbar
                 });
 
-                console.log("Quina informació tenim?", this);
                 editor.setHeight(DIALOG_DEFAULT_HEIGHT - 137); //137 es la diferencia entre l'alçada de l'editor i el contenidor tenint en compte la toolbar i la barra inferior de botons
 
                 editor.editor.on('CancelDialog', cancelCallback);
@@ -212,15 +204,11 @@ define([
             },
 
             setExternalContent: function (content) {
-                console.log("!!!!  set external content  !!!", content);
                 this.$field.val(content);
-                //this.context.setExternalContent(this.$field.attr('name'), content);
             },
 
             clearExternalContent: function() {
-                console.log("!!!!  clear external content  !!!");
                 this.$field.val(this.originalContent);
-                // this.context.setExternalContent(this.$field.attr('name')); // ALERTA[Xavi] això es necessari? no estem tractant amb el content tool
             }
 
         });

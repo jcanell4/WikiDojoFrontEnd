@@ -45,7 +45,7 @@ define([
                 this.$icon = jQuery('<img src="/iocjslib/ioc/gui/img/zoom.png" alt="" height="16" width="16">');
                 this.$icon.css('position', 'absolute');
                 this.$icon.css('top', '2px');
-                this.$icon.css('left', '2px');
+                this.$icon.css('right', '2px');
 
                 //console.log("this.args??", this.args);
 
