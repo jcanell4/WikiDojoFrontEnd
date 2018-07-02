@@ -197,56 +197,58 @@ define([
             $container.append($toolbar);
 
 
+
+            var $fieldsList = jQuery('<ul class="table-editor">');
+            $toolbar.append($fieldsList);
+
+
+            var $titleLabel = jQuery('<li><label>Títol:</label></li>');
+            this.$title = jQuery('<input type="text" />');
+            $titleLabel.append(this.$title);
+            $fieldsList.append($titleLabel);
+
+            var $footerLabel = jQuery('<li><label>Peu:</label></li>');
+            this.$footer = jQuery('<input type="text" />');
+            $footerLabel.append(this.$footer);
+            $fieldsList.append($footerLabel);
+
+
+            var $widthsLabel = jQuery('<li><label title="(separades per comes)">Amplades:</label></li>');
+            this.$widths = jQuery('<input type="text" />');
+            $widthsLabel.append(this.$widths);
+            $fieldsList.append($widthsLabel);
+
+            var $typesLabel = jQuery('<li><label title="(separades per comes)">Tipus:</label></li>');
+            this.$types = jQuery('<input type="text" />');
+            $typesLabel.append(this.$types);
+            $fieldsList.append($typesLabel);
+
+            this.numberOfColumns = 0;
+
+
+
+
+            var $buttonsBar = jQuery('<div class="table-editor">');
+            $toolbar.append($buttonsBar);
+
             var $addCol = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Afegir columna</span></button>');
-            $toolbar.append($addCol);
+            $buttonsBar.append($addCol);
 
             var $addRow = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Afegir fila</span></button>');
-            $toolbar.append($addRow);
+            $buttonsBar.append($addRow);
 
 
             var $removeCol = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Eliminar columna</span></button>');
-            $toolbar.append($removeCol);
+            $buttonsBar.append($removeCol);
 
             var $removeRow = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Eliminar fila</span></button>');
-            $toolbar.append($removeRow);
+            $buttonsBar.append($removeRow);
 
 
             var $mergeCells = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Fusionar cel·les</span></button>');
-            $toolbar.append($mergeCells);
+            $buttonsBar.append($mergeCells);
 
 
-            // var $tableTypeLabel = jQuery('<label>Tipus de taula:</label>');
-            // this.$tableType = jQuery('<select></select>');
-            // this.$tableType.append('<option value="' + NORMAL + '">Normal</option>');
-            // this.$tableType.append('<option value="' + MULTILINE + '">Multilínia</option>');
-            // this.$tableType.append('<option value="' + ACCOUNTING + '">Comptabilitat</option>');
-            //
-            // $tableTypeLabel.append(this.$tableType);
-            // $toolbar.append($tableTypeLabel);
-
-
-            var $titleLabel = jQuery('<label>Títol:</label>');
-            this.$title = jQuery('<input type="text" />');
-            $titleLabel.append(this.$title);
-            $toolbar.append($titleLabel);
-
-            var $footerLabel = jQuery('<label>Peu:</label>');
-            this.$footer = jQuery('<input type="text" />');
-            $footerLabel.append(this.$footer);
-            $toolbar.append($footerLabel);
-
-
-            var $widthsLabel = jQuery('<label>Amplades (separades per comes):</label>');
-            this.$widths = jQuery('<input type="text" />');
-            $widthsLabel.append(this.$widths);
-            $toolbar.append($widthsLabel);
-
-            var $typesLabel = jQuery('<label>Tipus (separats per comes):</label>');
-            this.$types = jQuery('<input type="text" />');
-            $typesLabel.append(this.$types);
-            $toolbar.append($typesLabel);
-
-            this.numberOfColumns = 0;
 
             $addCol.on('click', function (e) {
 
@@ -277,6 +279,7 @@ define([
             });
 
 
+
             $addRow.on('click', function (e) {
 
                 // ALERTA![xavi] El id ha de ser únic, fem servir un comptador extern que l'augmenti independentment de
@@ -287,7 +290,7 @@ define([
                 };
 
                 var first = true;
-                for (var i = 0; i < this.numberOfColumns; i++) {
+                for (var i = 0; i < context.numberOfColumns; i++) {
                     if (first && removedColumns.indexOf(i) === -1) {
                         first = false;
                         data['col' + (i + 1)] = 'nova fila';
@@ -442,7 +445,7 @@ define([
                         callback: cancelCallback
                     }
                 ],
-                height: DIALOG_DEFAULT_HEIGHT,
+                // height: DIALOG_DEFAULT_HEIGHT,
                 width: DIALOG_DEFAULT_WIDTH
             };
 
@@ -536,7 +539,7 @@ define([
                 selectionMode: 'multiple'
             });
 
-            // Alerta[Xavi] Sobreescrita de _EditManager.js y duplicada del EditableTalbeElements
+            // ALERTA[Xavi] Sobreescrita de _EditManager.js y duplicada del EditableTalbeElements. Això es imprescindible perque funcioni el dialeg!
             grid.edit.apply= function(){
 
                 if (jQuery(document.activeElement).hasClass('ace_text-input')) {

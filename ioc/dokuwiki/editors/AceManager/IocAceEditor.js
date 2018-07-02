@@ -246,14 +246,16 @@ define([
                         var docId = $textarea.attr('data-doc-id');
                         var headerId = $textarea.attr('data-header-id');
 
-                        context.dispatcher.getGlobalState().setCurrentId(docId);
+                        if (docId) {
+                            context.dispatcher.getGlobalState().setCurrentId(docId);
+                        }
 
                         if (headerId) {
                             context.dispatcher.getGlobalState().setCurrentElement(headerId);
                         }
 
                         if (!editorRegistry[textareaId]) {
-                            console.error("Error: can't find editor with textarea id: " + textareaId);
+                            console.error("Error: can't find an editor with textarea id: " + textareaId);
                         }
                         context = editorRegistry[textareaId];
                     },

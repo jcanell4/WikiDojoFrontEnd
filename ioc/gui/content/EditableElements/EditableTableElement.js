@@ -167,7 +167,7 @@ define([
 
                     onClick: function () {
 
-                        var key = prompt("TODO: Afegir un diàleg com cal. Introdueix la clau:");
+                        var key = prompt("Introdueix la clau:");
 
                         if (!key || key.length === 0) {
                             return;
@@ -179,10 +179,6 @@ define([
                         };
 
 
-
-
-
-                        console.log("Context defaultrow?", context.defaultRow);
                         for (var name in context.defaultRow) {
                             if (name === 'key') {
                                 continue;
@@ -190,9 +186,6 @@ define([
                             data[context.fieldToCol[name]] = context.defaultRow[name];
 
                         }
-
-                        console.log("Que hi ha al data en afegir-lo?", data);
-
                         context.dataStore.newItem(data);
 
                         //console.log("Afegides noves dades", context.dataStore);
