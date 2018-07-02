@@ -534,7 +534,8 @@ define([
                             'LatexPreview',
                             'TestReadonlyPlugin',
                             'TableEditor',
-                            'TableEditorMultiline'
+                            'TableEditorMultiline',
+                            'TableEditorAccounting'
                         ]
                     );
                     plugins = this.getPlugins(pluginNames)
@@ -1591,8 +1592,8 @@ define([
             },
 
 
-            addReadonlyBlock: function (state, callback) {
-                this.readOnlyBlocksManager.addReadonlyBlock(state, callback);
+            addReadonlyBlock: function (state, callback, unique) {
+                this.readOnlyBlocksManager.addReadonlyBlock(state, callback, unique);
             }
 
         });

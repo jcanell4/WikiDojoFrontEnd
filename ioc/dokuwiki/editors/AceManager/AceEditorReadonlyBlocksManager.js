@@ -138,10 +138,17 @@ define([
             }
         },
 
-        addReadonlyBlock: function (state, callback) {
+        addReadonlyBlock: function (state, callback, unique) {
             if (!this.readOnlyStates[state]) {
                 this.readOnlyStates[state] = [];
             }
+
+            if (unique && this.readOnlyStates[state].length>0) {
+                return;
+            }
+
+            console.log("Afegint callback per l'estat:", state);
+
             this.readOnlyStates[state].push(callback);
         },
 

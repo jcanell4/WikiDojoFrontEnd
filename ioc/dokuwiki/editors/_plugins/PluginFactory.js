@@ -49,7 +49,8 @@ define([
             'TestReadonlyPlugin': AceTestReadonlyPlugin,
             'ReadonlyBlocksToggle': AceReadonlyBlocksToggle,
             'TableEditor': AceTableEditor,
-            'TableEditorMultiline': AceTableEditor
+            'TableEditorMultiline': AceTableEditor,
+            'TableEditorAccounting': AceTableEditor
         },
 
         'Dojo': {
@@ -108,6 +109,7 @@ define([
     //  icon: classe css corresponent a aquest botó (es troben tots a un atlas, si es volen afegir s'ha de modificar el fitxer amb el css i afegir la nova icona al fitxer)
     //  open/close: correspondencia del codi wiki per la apertura i tancament d'una etiqueta.
     //  category: grup al que pertany una icona, tots els botons amb la mateixa categoria s'afegeixen al mateix botó desplegable.
+    //  tableType: tipus de taula: 'normal', 'multiline' o 'accounting'
 
     var config = {
         'CancelButton': {
@@ -425,13 +427,22 @@ define([
             type: 'TableEditor',
             title: localization["ioc-table-editor"],
             icon: 'IocTable',
-            category: 'WikiTable'
+            category: 'WikiTable',
+            tableType: 'normal'
         },
         'TableEditorMultiline': {
              type: 'TableEditorMultiline',
             title: localization["ioc-table-editor-multiline"],
             icon: 'IocTable',
-            category: 'WikiTable'
+            category: 'WikiTable',
+            tableType: 'multiline'
+        },
+        'TableEditorAccounting': {
+            type: 'TableEditorAccounting',
+            title: localization["ioc-table-editor-accounting"],
+            icon: 'IocTable',
+            category: 'WikiTable',
+            tableType: 'accounting',
         },
     };
 

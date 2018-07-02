@@ -21,6 +21,8 @@ define([
     var MAX_EXTRA_COLUMNS = 50,
         DEFAULT_ROWS = 2,
         DEFAULT_COLS = 2,
+
+        // Correspondencia amb els valors posibles al PluginFactory pel tableType
         NORMAL = "normal",
         MULTILINE = "multiline",
         ACCOUNTING = "accounting";
@@ -31,15 +33,23 @@ define([
         init: function (args) {
 
             this.previousMarker = null;
-            this.editor.addReadonlyBlock('edittable', this.editTableCallback.bind(this));
+
+            // ALERTA[Xavi] El callback només cal disparar-lo pel tipus original, s'utilizan diferents plugins només per crear els botons
+            this.triggerState = 'edittable';
+
+            this.editor.addReadonlyBlock(this.triggerState, this.editTableCallback.bind(this), true);
+
+
+            // this.editor.addReadonlyBlock('edittable', this.editTableCallback.bind(this));
 
             //console.log("AceTableEditorPlugin->args", args);
 
             var config = args;
-            if (args.icon.indexOf(".png")===-1) {
+            if (args.icon.indexOf(".png") === -1) {
                 config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
             }
 
+            this.tableType = args.tableType;
 
             // var config = {
             //     type: args.type,
@@ -150,7 +160,6 @@ define([
         _showDialog: function (value, range) {
             // Alerta, el value ha de ser un objecte JSON amb els valors i la estructura de la taula
 
-
             var dialogManager = this.editor.dispatcher.getDialogManager();
             var context = this;
 
@@ -159,14 +168,16 @@ define([
                 store.fetch({
                         query: {}, onComplete: function (items) {
                             var dokuwikiTable = context.parseData(items, layout, removedColumns);
-                            dokuwikiTable.unshift('<edittable>');
-                            dokuwikiTable.push('</edittable>');
+
+                            dokuwikiTable.unshift('<' + context.triggerState + '>');
+                            dokuwikiTable.push('</' + context.triggerState + '>');
+                            // dokuwikiTable.unshift('<edittable>');
+                            // dokuwikiTable.push('</edittable>');
                             context.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
 
                         }
                     }
                 );
-
 
 
             }.bind(this);
@@ -206,14 +217,14 @@ define([
             $toolbar.append($mergeCells);
 
 
-            var $tableTypeLabel = jQuery('<label>Tipus de taula:</label>');
-            this.$tableType = jQuery('<select></select>');
-            this.$tableType.append('<option value="' + NORMAL + '">Normal</option>');
-            this.$tableType.append('<option value="' + MULTILINE + '">Multilínia</option>');
-            this.$tableType.append('<option value="' + ACCOUNTING + '">Comptabilitat</option>');
-
-            $tableTypeLabel.append(this.$tableType);
-            $toolbar.append($tableTypeLabel);
+            // var $tableTypeLabel = jQuery('<label>Tipus de taula:</label>');
+            // this.$tableType = jQuery('<select></select>');
+            // this.$tableType.append('<option value="' + NORMAL + '">Normal</option>');
+            // this.$tableType.append('<option value="' + MULTILINE + '">Multilínia</option>');
+            // this.$tableType.append('<option value="' + ACCOUNTING + '">Comptabilitat</option>');
+            //
+            // $tableTypeLabel.append(this.$tableType);
+            // $toolbar.append($tableTypeLabel);
 
 
             var $titleLabel = jQuery('<label>Títol:</label>');
@@ -222,10 +233,9 @@ define([
             $toolbar.append($titleLabel);
 
             var $footerLabel = jQuery('<label>Peu:</label>');
-            this.$footer= jQuery('<input type="text" />');
+            this.$footer = jQuery('<input type="text" />');
             $footerLabel.append(this.$footer);
             $toolbar.append($footerLabel);
-
 
 
             var $widthsLabel = jQuery('<label>Amplades (separades per comes):</label>');
@@ -237,10 +247,6 @@ define([
             this.$types = jQuery('<input type="text" />');
             $typesLabel.append(this.$types);
             $toolbar.append($typesLabel);
-
-
-
-
 
             this.numberOfColumns = 0;
 
@@ -466,7 +472,8 @@ define([
             var oldGrid = registry.byId('grid');
 
             if (oldGrid) {
-                oldGrid.destroy();
+                // console.log("Destruit el grid anterior");
+                oldGrid.destroyRecursive();
             }
 
             var grid = new EnhancedGrid({
@@ -530,15 +537,12 @@ define([
             jQuery('[dojoattachpoint="viewsHeaderNode"]').css('height', '24px');
 
 
-
-
             // Establim els valors inicials de les opcions
-            this.$tableType.val(this.parsedData.meta.table_type);
+            // this.$tableType.val(this.parsedData.meta.table_type);
             this.$title.val(this.parsedData.meta.title);
             this.$footer.val(this.parsedData.meta.footer);
             this.$types.val(this.parsedData.meta.types);
             this.$widths.val(this.parsedData.meta.widths)
-
 
 
         },
@@ -556,32 +560,31 @@ define([
             // console.log(items, layout, removedColumns);
 
 
-
             var lines = [];
 
             // Construim la caixa
-            lines.push("::" + (this.$tableType.val() === 'accounting'? 'accounting' : 'table') + ":");
+            lines.push("::" + (this.tableType === 'accounting' ? 'accounting' : 'table') + ":");
 
 
-            if (this.$title.val().length>0) {
+            if (this.$title.val().length > 0) {
                 lines.push("  :title:" + this.$title.val());
             }
 
-            if (this.$footer.val().length>0) {
+            if (this.$footer.val().length > 0) {
                 lines.push("  :footer:" + this.$footer.val());
             }
 
-            if (this.$widths.val().length>0) {
+            if (this.$widths.val().length > 0) {
                 lines.push("  :widths:" + this.$widths.val());
             }
 
-            if (this.$types.val().length>0) {
+            if (this.$types.val().length > 0) {
                 lines.push("  :types:" + this.$types.val());
             }
 
-            if (this.$tableType.val() === MULTILINE) {
-                lines.push("  :type:" + this.$tableType.val());
-            }
+            // if (this.tableType === MULTILINE) {
+            //     lines.push("  :type:" + this.$tableType.val());
+            // }
 
 
             var header = "";
@@ -595,6 +598,9 @@ define([
 
                 if (first) {
                     first = false;
+                    if (this.tableType === MULTILINE) {
+                        header += "[";
+                    }
                 } else {
                     header += " ";
                 }
@@ -659,6 +665,12 @@ define([
                 lines.push(line);
             }
 
+
+            if (this.tableType === MULTILINE) {
+                lines[lines.length - 1] += "]";
+            }
+
+
             // Tanquem la caixa
             lines.push(":::");
 
@@ -699,7 +711,22 @@ define([
             var rowsCounter = 0;
             var columns = 0;
 
+
             for (var i = 0; i < lines.length; i++) {
+
+                // Determinem si es una taula multilínia
+                if (lines[i].startsWith('[')) {
+                    this.tableType = MULTILINE;
+                    lines[i] = lines[i].substr(1);
+                    console.log("Eliminat el [", lines[i]);
+                }
+
+
+                // Descartem el caràcter de tancament, no es necessari
+                if (lines[i].endsWith(']')) {
+                    lines[i] = lines[i].slice(0, -1);
+                    console.log("Eliminat el ]", lines[i]);
+                }
 
                 if (lines[i].startsWith(':::')) {
                     // Es tanca la taula
@@ -711,7 +738,7 @@ define([
                 } else if (lines[i].startsWith('  :widths:')) {
                     parsedLines.meta.widths = lines[i].replace('  :widths:', '').trim();
                 } else if (lines[i].startsWith('  :types:')) {
-                    parsedLines.meta.types= lines[i].replace('  :types:', '').trim();
+                    parsedLines.meta.types = lines[i].replace('  :types:', '').trim();
                 } else if (lines[i].startsWith('::accounting:')) {
                     parsedLines.meta.table_type = ACCOUNTING;
                 } else if (lines[i].startsWith('::table:')) {
