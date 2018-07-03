@@ -183,7 +183,10 @@ define([
 
                         // Només s'ha de mostrar si es tracta d'una taula
                         if (!self.isTable()) {
+                            console.log("No es una taula");
                             return;
+                        } else {
+                            console.log("Es una taula");
                         }
 
                         var context;
@@ -307,7 +310,8 @@ define([
                 var states = this.aceWrapper.get_line_states(this.aceWrapper.getCurrentRow());
 
                 for (var i = 0, len = states.length; i < len; i++) {
-                    if (states[i].name.indexOf("table") == 0) {
+                    console.log("Comprovant:", states[i].name);
+                    if (states[i].name.indexOf("table") >-1) {
                         return true;
                     }
                 }

@@ -228,7 +228,6 @@ define([
 
                 this.init(args);
 
-
             },
 
             _patch: function (id) {

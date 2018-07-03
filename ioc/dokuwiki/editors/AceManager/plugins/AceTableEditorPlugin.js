@@ -144,16 +144,99 @@ define([
 
         },
 
+        changeEditorCallback: function(e) {
+
+            var cursor = this.editor.editor.getCursorPosition();
+
+            if (cursor.row>=this.lastRange.start.row && cursor.row<=this.lastRange.end.row) {
+                return;
+            }
+            this.editor.remove_marker(this.marker);
+            clearTimeout(this.timerId);
+        },
+
 
         editTableCallback: function (range, blockContent) {
-            // console.log(range);
+
             this.editor.getSession().removeMarker(this.previousMarker);
-            this.previousMarker = this.editor.getSession().addMarker(range, 'edittable-highlight');
 
-            // Eliminem el principi i el final
-            var dokuwikiContent = blockContent.substring(11, blockContent.length - 12);
+            // this.previousMarker = this.editor.getSession().addMarker(range, 'edittable-highlight');
 
-            this._showDialog(dokuwikiContent, range);
+            this.lastRange = range;
+
+
+            this.editor.remove_marker(this.marker);
+
+            var context = this;
+
+            clearTimeout(this.timerId);
+
+            if (!this.initializedChangeDetection) {
+                this.editor.on('changeCursor', this.changeEditorCallback.bind(this));
+                this.initializedChangeDetection = true;
+            }
+
+
+            this.marker = this.editor.add_marker(
+                {
+                    start_row: range.start.row,
+
+                    start_column: range.start.column,
+
+                    end_row: range.start.row,
+
+                    end_column: range.start.column + 1,
+
+                    klass: 'preview',
+
+                    on_render: function (spec) {
+                        var attributes, style, vertical_pos, icon_id;
+
+                        icon_id = Date.now();
+
+                        // vertical_pos = spec.top > spec.screen_height - spec.bottom ? "bottom: "
+                        //     + (spec.container_height - spec.top) + "px;" : "top: " + spec.bottom + "px;";
+                        style = "right: 25px; top: " + spec.top + "px;";
+                        attributes = "class=\"zoom\" style=\"" + style + "\"";
+                        attributes += 'data-zoom-icon-id="' + icon_id + '"';
+
+
+                        context.timerId = setInterval(function() {
+
+                            var $node = jQuery('[data-zoom-icon-id="'+ icon_id+'"]');
+
+                            if ($node.length>0) {
+
+                                var $parent =$node.parent();
+                                $parent.css('z-index', 9999);
+                                $parent.css('pointer-events', 'auto');
+
+                                clearTimeout(context.timerId);
+
+                                $node.on('click', function (e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+
+                                    // Eliminem el principi i el final
+                                    var dokuwikiContent = blockContent.substring(11, blockContent.length - 12);
+
+                                    context._showDialog(dokuwikiContent, range);
+
+
+                                });
+
+                            }
+                        },0.1);
+
+
+                        return '<div ' + attributes + '><img src="/iocjslib/ioc/gui/img/zoom.png"/></div>';
+                    }
+                });
+
+
+
+
 
         },
 
@@ -176,7 +259,6 @@ define([
                         }
                     }
                 );
-
 
             }.bind(this);
 
