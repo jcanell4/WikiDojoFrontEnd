@@ -25,21 +25,6 @@ define([
 
             renderFieldSelect: function (field, fvalues) {
                 return this.renderFieldDefault(field, fvalues);
-
-                // var $field = jQuery('<div>'),
-                //     $label = jQuery('<label>'),
-                //     $select = jQuery('<select>');
-                //
-                // $label.html(field.label);
-                //
-                // $field.append($label)
-                //     .append($select);
-                //
-                // $select.attr('name', field.name)
-                //     .html(fvalues[field.name])
-                //     .addClass('view-field');
-
-                // return $field;
             },
 
             renderFieldTextarea: function (field, fvalues) {
