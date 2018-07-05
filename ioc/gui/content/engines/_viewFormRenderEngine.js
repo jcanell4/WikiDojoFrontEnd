@@ -24,7 +24,29 @@ define([
             },
 
             renderFieldSelect: function (field, fvalues) {
-                return this.renderFieldDefault(field, fvalues);
+                var $field = jQuery('<div>'),
+                    $label = jQuery('<label>'),
+                    $data = jQuery('<span>'),
+                    exit = false,
+                    value;
+                if (field.type !== 'hidden') {
+                    $label.html(field.label);
+                    $field.append($label)
+                        .append($data);
+
+                    value = fvalues[field.name];
+                    for(var i=0; !exit && i<field.config.options.length; i++){
+                        exit = field.config.options[i].value===value;
+                        if(exit){
+                            value = field.config.options[i].description;
+                        }
+                    }
+                    $data.attr('name', field.name)
+                        .html(value)
+                        .addClass('view-field')
+                        .attr('title', field.label);
+                }
+                return $field;
             },
 
             renderFieldTextarea: function (field, fvalues) {
@@ -83,7 +105,7 @@ define([
 
                 return $field;
             },
-
+            
             render: function (data, context, $content) {
 
                 // console.log(data, context, $content);

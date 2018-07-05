@@ -115,6 +115,10 @@ define([
                         $field = this.renderFieldCheckbox(field, fvalues);
                         break;
 
+                    case 'image':
+                        $field = this.renderImage(field, fvalues);
+                        break;
+
                     default:
                         $field = this.renderFieldDefault(field, fvalues);
                 }
@@ -375,6 +379,36 @@ define([
                 }
 
                 return $table;
+            },
+
+            renderImage: function (field, fvalues) {
+                var $field = jQuery('<div>'),
+                    $label = jQuery('<label>'),
+                    $image = jQuery('<img>');
+
+                $label.html(field.label);
+
+                $field.append($label)
+                    .append($image);
+
+                $image.attr('src', fvalues[field.name])
+                    .attr('title', field.label);    
+                if (field.props) {
+                    this.addPropsToInput(field.props, $image);
+                }
+
+                if (field.rows) {
+                    var padding = 6;
+                    var border = 1;
+                    var lineheight = 20;
+                    var height = (padding+border)*2 + lineheight * field.rows;
+
+                    $image.css('height', height);
+                }
+
+
+
+                return $field;                
             },
 
             addPropsToInput: function (props, $input) {
