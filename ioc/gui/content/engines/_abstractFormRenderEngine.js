@@ -40,6 +40,13 @@ define([
                             .html(group.title);
 
                         $group.append($header);
+
+                        // Afegim la icona de desplegable
+                        var $collapseIcon = jQuery('<span class="collapse-icon">^</span>');
+
+                        $header.append($collapseIcon);
+
+                        $collapseIcon.on('click', this._collapseToggle);
                     }
 
                     if (group.frame) {
@@ -436,6 +443,24 @@ define([
             render: function (data, context, $content) {
 
                 throw new Error("El mètode render ha de ser implementat per les subclasses");
+            },
+
+            _collapseToggle: function() {
+                var $icon = jQuery(this);
+                //getting the next element
+                var $content = $icon.parent().siblings();
+                $icon.parent().parent().css('min-height', 0); // Si fem servir el collapse deshabilitiem la alçada mínima per aquest grup
+
+                //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+                $content.slideToggle(500, function () {
+                    //execute this after slideToggle is done
+                    //change text of header based on visibility of content div
+                    $icon.text(function () {
+                        //change text based on condition
+                        // TODO: Canviar la icona per altra més adient
+                        return $content.is(":visible") ? "^" : "v";
+                    });
+                });
             }
         });
 });
