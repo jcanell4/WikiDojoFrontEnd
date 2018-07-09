@@ -269,7 +269,7 @@ define([
             }.bind(this);
 
 
-            var DIALOG_DEFAULT_HEIGHT = 800,
+            var DIALOG_DEFAULT_HEIGHT = 600,
                 DIALOG_DEFAULT_WIDTH = 800;
 
 
@@ -607,7 +607,7 @@ define([
                     cells: layout
                 }],
                 rowSelector: '20px',
-                height: '500px',
+                height: '400px',
                 canSort: function () {
                     return false;
                 },

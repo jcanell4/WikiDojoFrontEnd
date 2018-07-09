@@ -8,7 +8,7 @@ define([
 
     var lastFocusedElement;
 
-    var DIALOG_DEFAULT_HEIGHT = 800;
+    var DIALOG_DEFAULT_HEIGHT = 600;
     var DIALOG_DEFAULT_WIDTH = 800;
 
 
