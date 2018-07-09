@@ -182,7 +182,7 @@ define([
             // TODO[Xavi] Afegir comprovació per check/radios i selects
             var currentContent = {};
             var $form = jQuery('form[id="form_' + this.id + '"]');
-            var $input = $form.find('input[type="text"], input[type="hidden"], input[type="string"], textarea');
+            var $input = $form.find('input[type="text"], input[type="hidden"], input[type="string"], select, textarea');
 
             var context = this;
 
