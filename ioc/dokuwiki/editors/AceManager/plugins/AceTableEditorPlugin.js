@@ -863,7 +863,10 @@ define([
             var rowsCounter = 0;
             var columns = 0;
 
-            this.tableType = NORMAL;
+            if (!this.tableType) {
+                this.tableType = NORMAL;
+            }
+
 
             for (var i = 0; i < lines.length; i++) {
 
