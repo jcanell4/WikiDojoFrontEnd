@@ -73,6 +73,9 @@ define([
                         $group.attr('id', group.id);
                     }
                     $group.addClass('form-group col-xs-' + cols); // input-group o form-group?
+                    if(group.config && group.config.columns_offset){
+                        $group.addClass('col-xs-offset-' + group.config.columns_offset); 
+                    }
                 }
 
                 //[JOSEP]: Canviar el paràmetres fixats en el codi pels valors reals
@@ -124,6 +127,9 @@ define([
                 }
 
                 $field.addClass('col-xs-' + cols);
+                if(field.config && field.config.columns_offset){
+                    $field.addClass('col-xs-offset-' + field.config.columns_offset); 
+                }
 
                 // Padding 6px, border 1px, line height 20px
 
