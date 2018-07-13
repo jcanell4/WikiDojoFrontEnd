@@ -122,6 +122,10 @@ define([
                         $field = this.renderFieldCheckbox(field, fvalues);
                         break;
 
+                    case 'image':
+                        $field = this.renderImage(field, fvalues);
+                        break;
+
                     default:
                         $field = this.renderFieldDefault(field, fvalues);
                 }
@@ -192,7 +196,7 @@ define([
                     $select.attr('id', field.id);
                 }
 
-                this.addOptionsToSelect(field.config.options, $select);
+                this.addOptionsToSelect(field.config.options, $select, fvalues[field.name]);
 
                 if (field.props) {
                     this.addPropsToInput(field.props, $select);
@@ -201,7 +205,7 @@ define([
                 return $field;
             },
 
-            addOptionsToSelect: function (options, $select) {
+            addOptionsToSelect: function (options, $select, value) {
                 var $option;
 
                 for (var i = 0; i < options.length; i++) {
@@ -209,7 +213,7 @@ define([
                         .val(options[i].value)
                         .html(options[i].description);
 
-                    if (options[i].selected) {
+                    if (options[i].selected || options[i].value==value) {
                         $option.attr('selected', true);
                     }
 
@@ -296,25 +300,21 @@ define([
                 switch (field.props['data-editable-element']) {
                     case 'table':
                         $field = this.renderFieldTable(field, fvalues);
-                        // alert("Table!");
                         break;
 
                     default:
                         alert("error, editable-element no identificat:" + field.props['data-editable-element']);
-                    // $field = renderFieldDefault(field, fvalues);
+                        // $field = renderFieldDefault(field, fvalues);
                 }
-
 
                 if (field.id) {
                     $field.attr('id', field.id);
                 }
-
-
+                
                 return $field;
             },
 
             renderFieldTable: function (field, fvalues) {
-
                 var data;
                 var value = fvalues[field.name] || field.value;
 
@@ -329,7 +329,6 @@ define([
                 // }else{
                 //     data = field.value;
                 // }
-
 
                 var $table = jQuery('<table></table>');
                 $table.attr('id', field.id);
@@ -382,6 +381,36 @@ define([
                 }
 
                 return $table;
+            },
+
+            renderImage: function (field, fvalues) {
+                var $field = jQuery('<div>'),
+                    $label = jQuery('<label>'),
+                    $image = jQuery('<img>');
+
+                $label.html(field.label);
+
+                $field.append($label)
+                    .append($image);
+
+                $image.attr('src', fvalues[field.name])
+                    .attr('title', field.label);    
+                if (field.props) {
+                    this.addPropsToInput(field.props, $image);
+                }
+
+                if (field.rows) {
+                    var padding = 6;
+                    var border = 1;
+                    var lineheight = 20;
+                    var height = (padding+border)*2 + lineheight * field.rows;
+
+                    $image.css('height', height);
+                }
+
+
+
+                return $field;                
             },
 
             addPropsToInput: function (props, $input) {

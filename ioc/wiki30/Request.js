@@ -12,40 +12,25 @@ define([
     "dojo/dom",
     "dojo/Evented",
     "dojo/io-query",
-], function (declare, Standby, request, iframe, getDispatcher, Stateful
-    , timing, domConstruct, domGeom, style, dom, Evented, ioQuery) {
-    
+], function (declare, Standby, request, iframe, getDispatcher, Stateful,
+                timing, domConstruct, domGeom, style, dom, Evented, ioQuery) {
+    /**
+     * @class Request
+     */
     var ret = declare([Stateful, Evented],
-        /**
-         * @class Request
-         */
         {
             standbyId: null,
-
             hasTimer: false,
-
             disableOnSend: false,
-
             _disabled: false,
-
             _timer: null,
-
             urlBase: null,
-
             method: "post",
-
-            /*dispatcher: null,*/
-
             _standby: null,
-
             sectokId: null,
-
             sectokParam: "sectok",
-
             query: "",
-
             processors: null,
-
             dataToSend: null,
 
             constructor: function () {
@@ -77,7 +62,6 @@ define([
 
             /**
              * Retorna la query emmagatzemada. Aquest métode es sobrescrit a scriptesRef.tpl.
-             *
              * @returns {string}
              */
             getQuery: function () {
@@ -86,7 +70,6 @@ define([
 
             /**
              * Retorna true si hi ha PostData o false en cas contrari.
-             *
              * @returns {boolean}
              */
             hasPostData: function () {
@@ -104,7 +87,6 @@ define([
 
             /**
              * Retorna el token de seguretat emmagatzemat al dispatcher.
-             *
              * @returns {string} token de seguretat
              */
             getSectok: function () {
@@ -169,19 +151,18 @@ define([
                 if (this.urlBase === null || this.dispatcher === null) {
                     return;
                 }
-                var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
-                    (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
+                var linkChar = (this.urlBase[this.urlBase.length - 1] === "=") ? "" : (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
                 var vUrl = this.urlBase;
                 if (buttonQuery) {
                     vUrl += linkChar + buttonQuery;
                     linkChar = "&";
                 }
+                this._startStandby();
+
                 var gSect = this.getSectok();
                 if (gSect) {
                     vUrl += linkChar + this.sectokParam + "=" + gSect;
                 }
-
-                this._startStandby();
 
                 var resp;
                 var req = this;
@@ -227,12 +208,12 @@ define([
                     return;
                 }
 
-                //Set the query value and set the linkChar value to build a 
-                //good query.
-                //if query param is null, query takes the value returned by 
-                //getQuery function. 
-                var linkChar = this.urlBase[this.urlBase.length - 1] === "=" ? "" :
-                    (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
+                //starting standby proces if exsit some stantBy object
+                this._startStandby();
+
+                //Set the query value and set the linkChar value to build a good query.
+                //if query param is null, query takes the value returned by getQuery function. 
+                var linkChar = (this.urlBase[this.urlBase.length - 1] === "=") ? "" : (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
                 var vUrl = this.urlBase;
                 if (!query) {
                     query = this.getQuery();
@@ -265,9 +246,6 @@ define([
                     vUrl += linkChar + this.sectokParam + "=" + gSect;
                 }
 
-                //starting standby proces if exsit some stantBy object
-                this._startStandby();
-
 
 
                 // console.log("query", query, this.method, this.getPostData());
@@ -283,13 +261,6 @@ define([
                     this._stopStandby();
                     return;
                 }
-
-
-
-
-
-
-
 
 
                 //Build and send the request.
