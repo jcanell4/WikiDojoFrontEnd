@@ -269,8 +269,8 @@ define([
             }.bind(this);
 
 
-            var DIALOG_DEFAULT_HEIGHT = 600,
-                DIALOG_DEFAULT_WIDTH = 800;
+            var DIALOG_DEFAULT_HEIGHT = 'auto',
+                DIALOG_DEFAULT_WIDTH = 'auto';
 
 
             var $container = jQuery('<div>');
@@ -607,7 +607,8 @@ define([
                     cells: layout
                 }],
                 rowSelector: '20px',
-                height: '400px',
+                autoHeight: 'true',
+                autoWidth: 'true',
                 canSort: function () {
                     return false;
                 },
