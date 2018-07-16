@@ -23,11 +23,16 @@ define([
             },
 
             renderGroup: function (group, fvalues) {
-                // console.log("_abstractFormRenderEngine#RenderGroup:", group, fvalues);
+                console.log("_abstractFormRenderEngine#RenderGroup:", group, fvalues);
                 var fields,
                     $group = '',
                     $header,
                     cols = group.columns || 12;
+
+                var collapsed = group.config && group.config.collapsed ? true : false;
+
+                console.log("Collapsed?", collapsed, group);
+
 
                 if (group.elements) {
                     $group = jQuery('<div>');
@@ -42,11 +47,14 @@ define([
                         $group.append($header);
 
                         // Afegim la icona de desplegable
-                        var $collapseIcon = jQuery('<span class="collapse-icon">^</span>');
+                        var $collapseIcon = jQuery('<span class="collapse-icon">' + (collapsed? 'v' : '^') +'</span>');
+
 
                         $header.append($collapseIcon);
 
                         $collapseIcon.on('click', this._collapseToggle);
+
+
                     }
 
                     if (group.frame) {
@@ -56,17 +64,35 @@ define([
                     }
 
                     for (var i = 0; i < fields.length; i++) {
+                        var $element;
+
                         switch (group.elements[i].formType) {
                             case 'row':
-                                $group.append(this.renderRow(fields[i], fvalues));
+                                $element = this.renderRow(fields[i], fvalues);
                                 break;
+
                             case 'group':
-                                $group.append(this.renderGroup(fields[i], fvalues));
+                                $element = this.renderGroup(fields[i], fvalues);
                                 break;
+
                             case 'field':
-                                $group.append(this.renderField(fields[i], fvalues));
+
+                                $element = this.renderField(fields[i], fvalues);
+
                                 break;
+
+                            default:
+                                console.log("Element no reconegut. No s'ha rendertizat", $fields[i], fvalues);
                         }
+
+                        if ($element) {
+                            $group.append($element);
+
+                            if (collapsed) {
+                                $element.css('display', 'none');
+                            }
+                        }
+
                     }
 
                     if (group.id) {
@@ -98,7 +124,7 @@ define([
             },
 
             renderField: function (field, fvalues) {
-                //console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
+                // console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
                 var $field,
                     cols = field.columns || 12;
 
