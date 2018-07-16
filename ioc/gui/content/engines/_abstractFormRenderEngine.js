@@ -23,16 +23,13 @@ define([
             },
 
             renderGroup: function (group, fvalues) {
-                console.log("_abstractFormRenderEngine#RenderGroup:", group, fvalues);
+                // console.log("_abstractFormRenderEngine#RenderGroup:", group, fvalues);
                 var fields,
                     $group = '',
                     $header,
                     cols = group.columns || 12;
 
                 var collapsed = group.config && group.config.collapsed ? true : false;
-
-                console.log("Collapsed?", collapsed, group);
-
 
                 if (group.elements) {
                     $group = jQuery('<div>');
