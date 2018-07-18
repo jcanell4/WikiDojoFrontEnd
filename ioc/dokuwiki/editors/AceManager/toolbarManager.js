@@ -17,8 +17,18 @@ define([
         console.error(message);
     };
 
-    // ALERTA[Xavi] Substituim la funció global corresponent al picker
 
+    // ALERTA[Xavi] Substituim la funció global per crear botons per poder afegir el simbol de desplegable a les categories
+    var originalCreateToolButonFunction = window['createToolButton'];
+    window['createToolButton'] = function (icon,label,key,id,classname){
+
+        var $btn = originalCreateToolButonFunction(icon, label, key, id, classname);
+        jQuery($btn).append(jQuery('<span></span>'));
+
+        return $btn;
+    };
+
+    // ALERTA[Xavi] Substituim la funció global corresponent al picker
     window['addBtnActionPicker'] = function ($btn, props, edid) {
         var pickerid = 'picker' + (pickercounter++);
         createPicker(pickerid, props, edid);
@@ -139,6 +149,7 @@ define([
                         type: 'picker',
                         title: localization["category-" + config.category],
                         icon: '/iocjslib/ioc/gui/img/cat_' + config.category + '.png',
+                        class: 'category-button',
                         list: []
                     };
 
@@ -293,6 +304,7 @@ define([
                     // Encara no s'ha parxejat el botó, cerquem la funció
 
                     _patchButton(_buttons[i])
+
                 }
             }
 
