@@ -44,6 +44,9 @@ define([
                 this.columns = tableData.columns;
                 this.args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
 
+                console.log("Format de les columnes:", tableData.columns);
+                console.log("Contingut de this.args?", this.args);
+
                 var args = this.args;
 
                 var $container = jQuery('<div id="grid_container"></div>');
@@ -78,13 +81,21 @@ define([
                         editable: true,
                         // cellType: dojox.grid.cells.Select,
                         // options: ['aaa', 'bbb', 'ccc'],
-                        type: cells._Widget,
+                        // type: cells._Widget,
                         //widgetClass: dijitTextarea,
                         styles: 'text-align: left;'
                     },
                     cells: tableData.columns
                 }];
 
+
+                if (this.args.layout) {
+                    gridLayout = this.mergeLayout(gridLayout, this.args.layout);
+                    this.columns = gridLayout[0].cells;
+                }
+
+
+                console.log("gridLayout final:", gridLayout);
 
                 this.setupCells(gridLayout[0]);
 
@@ -116,7 +127,7 @@ define([
                 });
 
                 // Sobreescrita de _EditManager.js
-                grid.edit.apply= function(){
+                grid.edit.apply = function () {
 
                     if (jQuery(document.activeElement).hasClass('ace_text-input')) {
                         // console.log("És un dialeg, no fem res");
@@ -125,7 +136,7 @@ define([
 
                     // summary:
                     //		Apply a grid edit
-                    if(this.isEditing() && this._isValidInput()){
+                    if (this.isEditing() && this._isValidInput()) {
                         this.grid.beginUpdate();
                         this.editorApply();
                         this.applyRowEdit();
@@ -135,7 +146,6 @@ define([
                         this._doCatchBoomerang();
                     }
                 }
-
 
 
                 // grid.onApplyCellEdit = function(inValue,inRowIndex,inFieldIndex) {
@@ -428,7 +438,87 @@ define([
             restoreFromField: function () {
                 console.log("Contingut del field: ", this.$field.val());
                 alert("TODO: implementar");
+            },
+
+            mergeLayout: function (generatedLayout, configLayout) {
+                if (!configLayout || !Array.isArray(configLayout)) {
+                    console.warn("DefaultView invalid layout config:", configLayout);
+                    return generatedLayout;
+                }
+
+                var mergedLayout = [];
+
+                for (var i = 0; i < configLayout.length; i++) {
+                    if (generatedLayout.length < i) {
+                        mergedLayout.push(configLayout[i]);
+                        continue;
+                    }
+
+                    var layout = {};
+
+                    if (configLayout[i].defaultCell) {
+                        layout.defaultCell = configLayout[i].defaultCell;
+                    }
+
+                    layout.cells = this.mergeCells(generatedLayout[i].cells, configLayout[i].cells);
+
+
+                    mergedLayout.push(layout);
+
+
+                }
+
+
+
+                return mergedLayout;
+
+            },
+
+            mergeCells: function (generatedCells, configCells) {
+
+                if (!generatedCells && configCells) {
+                    return configCells;
+                } else if (!generatedCells && !configCells) {
+                    return [];
+                }
+
+
+                var cells = [];
+
+                // Eliminamos de generatedCells las que se encuentren con el mismo name en configCells
+
+                for (var i = 0; i < generatedCells.length; i++) {
+
+                    if (!this.isCellInLayout(generatedCells[i], configCells)) {
+                        cells.push(generatedCells[i]);
+                    }
+
+                }
+
+                for (var i = 0; i < configCells.length; i++) {
+                    configCells[i].field =  this.fieldToCol[configCells[i].name];
+
+                    cells.push(configCells[i]);
+                }
+
+                cells.sort(function(a, b) {
+                    return (Number(a.field.replace('col','')) - Number(b.field.replace('col','')));
+                });
+
+                return cells;
+            },
+
+            isCellInLayout(cell, layout) {
+                for (var i = 0; i < layout.length; i++) {
+                    if (layout[i].name === cell.name) {
+                        return true;
+                    }
+                }
+
+                return false;
             }
+
+
 
         });
 
