@@ -527,7 +527,7 @@ define([
                         callback: cancelCallback
                     }
                 ],
-                // height: DIALOG_DEFAULT_HEIGHT,
+                height: DIALOG_DEFAULT_HEIGHT,
                 width: DIALOG_DEFAULT_WIDTH
             };
 
