@@ -27,9 +27,17 @@ define([
                 var fields,
                     $group = '',
                     $header,
-                    cols = group.columns || 12;
+                    cols = group.columns || 12,
+                    collapsable = false,
+                    collapsed = false;
 
-                var collapsed = group.config && group.config.collapsed ? true : false;
+
+
+                if (group.config) {
+                    collapsable = group.config.collapsable ? true : false;
+                    collapsed = group.config.collapsed ? true : false;
+                }
+
 
                 if (group.elements) {
                     $group = jQuery('<div>');
@@ -43,14 +51,14 @@ define([
 
                         $group.append($header);
 
-                        // Afegim la icona de desplegable
-                        var $collapseIcon = jQuery('<span class="collapse-icon">' + (collapsed? 'v' : '^') +'</span>');
+                        if (collapsable) {
+                            // Afegim la icona de desplegable
+                            var $collapseIcon = jQuery('<span class="collapse-icon"><span class="' + (collapsed? 'collapsed' : '') +'"></span></span>');
 
+                            $header.append($collapseIcon);
 
-                        $header.append($collapseIcon);
-
-                        $collapseIcon.on('click', this._collapseToggle);
-
+                            $collapseIcon.on('click', this._collapseToggle);
+                        }
 
                     }
 
@@ -85,7 +93,7 @@ define([
                         if ($element) {
                             $group.append($element);
 
-                            if (collapsed) {
+                            if (collapsable && collapsed) {
                                 $element.css('display', 'none');
                             }
                         }
@@ -513,11 +521,20 @@ define([
                 $content.slideToggle(500, function () {
                     //execute this after slideToggle is done
                     //change text of header based on visibility of content div
-                    $icon.text(function () {
-                        //change text based on condition
-                        // TODO: Canviar la icona per altra més adient
-                        return $content.is(":visible") ? "^" : "v";
-                    });
+                    // $icon.text(function () {
+                    //     //change text based on condition
+                    //     // TODO: Canviar la icona per altra més adient
+                    //
+                    //     if ()
+                    //
+                    //     return $content.is(":visible") ? "^" : "v";
+                    // });
+
+                    if ($content.is(":visible")) {
+                        $icon.find('span').removeClass('collapsed');
+                    } else {
+                        $icon.find('span').addClass('collapsed');
+                    }
                 });
             }
         });
