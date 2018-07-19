@@ -44,9 +44,6 @@ define([
                 this.columns = tableData.columns;
                 this.args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
 
-                console.log("Format de les columnes:", tableData.columns);
-                console.log("Contingut de this.args?", this.args);
-
                 var args = this.args;
 
                 var $container = jQuery('<div id="grid_container"></div>');
@@ -99,12 +96,11 @@ define([
 
                 this.setupCells(gridLayout[0]);
 
-                var objectStore = new Memory({data: tableData.rows});
-                this.dataStore = new ObjectStore({objectStore: objectStore});
+                this.objectStore = new Memory({data: tableData.rows});
+
+                this.dataStore = new ObjectStore({objectStore: this.objectStore});
                 this.backupData = jQuery.extend(true, {}, tableData.rows);
 
-
-                //var height = Math.max(500, (tableData.rows.length * 30));
 
                 var rows = tableData.rows.length;
 
@@ -120,9 +116,8 @@ define([
                     store: this.dataStore,
                     structure: gridLayout,
                     escapeHTMLInData: false,
-                    //height: "500px"
+                    // height: "500px",
                     height: height + 'px', // la alçada de cada fila
-
 
                 });
 
@@ -172,41 +167,18 @@ define([
                     context.updateField();
                 });
 
-                var addKeyButton = new Button({
-                    label: "Afegir clau",
+                var addRowButton = new Button({label: "Afegir fila", onClick: this._addRowCallback.bind(this)});
+                addRowButton.placeAt($toolbar[0]);
+                addRowButton.startup();
 
-                    onClick: function () {
+                var addDefaultRowButton = new Button({label: "Afegir fila per defecte", onClick: this._addDefaultRowCallback.bind(this)});
+                addDefaultRowButton.placeAt($toolbar[0]);
+                addDefaultRowButton.startup();
 
-                        var key = prompt("Introdueix la clau:");
+                var addMultipleDefaultRowsButton = new Button({label: "Afegir múltiples files per defecte", onClick: this._addMultipleDefaultRowsCallback.bind(this)});
+                addMultipleDefaultRowsButton.placeAt($toolbar[0]);
+                addMultipleDefaultRowsButton.startup();
 
-                        if (!key || key.length === 0) {
-                            return;
-                        }
-
-                        var data = {
-                            id: objectStore.data.length,
-                            col0: key
-                        };
-
-
-                        for (var name in context.defaultRow) {
-                            if (name === 'key') {
-                                continue;
-                            }
-                            data[context.fieldToCol[name]] = context.defaultRow[name];
-
-                        }
-                        context.dataStore.newItem(data);
-
-                        //console.log("Afegides noves dades", context.dataStore);
-
-                        // ALERTA[Xavi] Un cop es desa ja no es pot fer revert, hem d'implementar el nostre propi revert
-                        context.dataStore.save();
-                        context.updateField();
-                    }
-                });
-                addKeyButton.placeAt($toolbar[0]);
-                addKeyButton.startup();
 
 
                 var removeKeyButton = new Button({
@@ -241,8 +213,89 @@ define([
                 this.widgetInitialized = true;
             },
 
+
+            /**
+             *
+             * @param <Object>|Array<Object>|null keyPairs si no hi ha cap valor es faran servir els valors per defecte.
+             * Si hi ha valors es faran servir aquests valors per les claus indicades y el default per a la resta.
+             * @private
+             */
+            addRow(keyPairs) {
+
+                var data = {
+                    id: this.objectStore.data.length,
+                };
+
+                for (var name in this.defaultRow) {
+                    if (keyPairs && keyPairs[name]) {
+                        data[this.fieldToCol[name]] = keyPairs[name];
+                    } else {
+                        data[this.fieldToCol[name]] = this.defaultRow[name];
+                    }
+                }
+
+                this.dataStore.newItem(data);
+
+                this.dataStore.save();
+                this.updateField();
+
+            },
+
+            _addRowCallback: function () {
+
+                var value;
+                var data = {};
+
+                for (var key in this.inputOnNewRowFields) {
+                    //var key = "key"; // TODO: això s'ha de passar per paràmetre de config desdel default view!
+
+                    do {
+                        value = prompt("Introdueix el valor pel camp " + key + ":");
+                        if (value.length === 0) {
+                            alert("El valor no pot ser buit");
+                        }
+                    } while (value.length === 0);
+
+
+                    data[key] = value;
+
+
+                }
+
+                this.addRow(data);
+            },
+
+            _addDefaultRowCallback: function() {
+                this.addRow();
+            },
+
+            _addMultipleDefaultRowsCallback: function() {
+
+                var quantity;
+
+                do {
+                    quantity = Number(prompt("Introdueix el nombre de files a afegir:"));
+                    if (isNaN(quantity) || quantity<1){
+                        alert("El nombre de files ha de ser un nombre igual o superior a 1.");
+                    }
+                } while (isNaN(quantity) || quantity<1);
+
+                this.addRows(quantity);
+
+            },
+
+            addRows: function(quantity) {
+
+                for (var i=0; i<quantity; i++) {
+                    this.addRow();
+                }
+
+            },
+
             // Copia els paràmetres de configuració a la cel·la
             setupCells: function (layout) {
+
+                this.inputOnNewRowFields= {};
 
                 if (!this.args.fields) {
                     return;
@@ -276,8 +329,15 @@ define([
                                 cell.type = cells._Widget;
                         }
 
+
+                        if (field["input_on_new_row"]===true) {
+                            this.inputOnNewRowFields[cell.name] = this.args.fields[cell.name];
+                        }
+
                     }
                 }
+
+                console.log("Cel·les amb input:", this.inputOnNewRowFields);
             },
 
 
@@ -469,7 +529,6 @@ define([
                 }
 
 
-
                 return mergedLayout;
 
             },
@@ -496,13 +555,13 @@ define([
                 }
 
                 for (var i = 0; i < configCells.length; i++) {
-                    configCells[i].field =  this.fieldToCol[configCells[i].name];
+                    configCells[i].field = this.fieldToCol[configCells[i].name];
 
                     cells.push(configCells[i]);
                 }
 
-                cells.sort(function(a, b) {
-                    return (Number(a.field.replace('col','')) - Number(b.field.replace('col','')));
+                cells.sort(function (a, b) {
+                    return (Number(a.field.replace('col', '')) - Number(b.field.replace('col', '')));
                 });
 
                 return cells;
@@ -517,7 +576,6 @@ define([
 
                 return false;
             }
-
 
 
         });
