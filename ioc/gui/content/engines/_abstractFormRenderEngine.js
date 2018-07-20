@@ -240,9 +240,11 @@ define([
                 var $option;
 
                 for (var i = 0; i < options.length; i++) {
+                    var value = options[i].value;
+                    var description = options[i].description?options[i].description:options[i].value;
                     $option = jQuery('<option>')
-                        .val(options[i].value)
-                        .html(options[i].description);
+                        .val(value)
+                        .html(description);
 
                     if (options[i].selected || options[i].value==value) {
                         $option.attr('selected', true);

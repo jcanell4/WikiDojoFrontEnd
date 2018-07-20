@@ -316,6 +316,9 @@ define([
                         // Els cellType estan definits com propietats a dojox/grid/cells/_Base.js
 
                         switch (field['type']) {
+                            case 'date':
+                                cell.type = dojox.grid.cells.DateTextBox;
+                                break;
                             case 'select':
                                 cell.type = dojox.grid.cells.Select;
                                 cell.options = field['options'] || ['Error. No options added to default view'];
@@ -326,6 +329,7 @@ define([
                                 cell.widgetClass = ZoomableCell;
                                 break;
 
+                            case 'boolean':
                             case 'bool':
                                 cell.type = dojox.grid.cells.Bool;
                                 break;
