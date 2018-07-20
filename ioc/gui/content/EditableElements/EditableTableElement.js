@@ -181,30 +181,7 @@ define([
 
 
 
-                var removeKeyButton = new Button({
-                    label: "Eliminar clau",
-
-                    onClick: function () {
-
-                        var selected = context.grid.selection.getSelected();
-
-
-                        var confirmation = confirm("Segur que vols eliminar les files seleccionades? (" + selected.length + ")");
-
-                        if (!confirmation) {
-                            return;
-                        }
-
-                        for (var i = 0; i < selected.length; i++) {
-                            context.dataStore.deleteItem(selected[i]);
-                        }
-
-                        context.dataStore.save();
-                        context.updateField();
-
-
-                    }
-                });
+                var removeKeyButton = new Button({label: "Eliminar files seleccionades", onClick: this._removeRowCallback.bind(this)});
                 removeKeyButton.placeAt($toolbar[0]);
                 removeKeyButton.startup();
 
@@ -292,6 +269,34 @@ define([
 
             },
 
+            _removeRowCallback: function () {
+
+                    var selected = this.grid.selection.getSelected();
+                    if (selected.length === 0) {
+                        return;
+                    }
+
+                    var suffix = selected.length>1 ? "es": "a";
+                    var confirmation = confirm("Segur que vols eliminar les fil"+suffix+" seleccionad"
+                        +suffix+"? (" + selected.length + " fil" + suffix + ")");
+
+                    if (!confirmation) {
+                        return;
+                    }
+
+                    this.removeRows(selected);
+
+            },
+
+            removeRows: function(indexes) {
+                for (var i = 0; i < indexes.length; i++) {
+                    this.dataStore.deleteItem(indexes[i]);
+                }
+
+                this.dataStore.save();
+                this.updateField();
+            },
+
             // Copia els paràmetres de configuració a la cel·la
             setupCells: function (layout) {
 
@@ -337,7 +342,6 @@ define([
                     }
                 }
 
-                console.log("Cel·les amb input:", this.inputOnNewRowFields);
             },
 
 
