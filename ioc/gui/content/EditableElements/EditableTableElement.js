@@ -13,6 +13,17 @@ define([
 
 ], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, ZoomableCell) {
 
+    var ADD_ROW = "add_row",
+        ADD_DEFAULT_ROW = "add_default_row",
+        ADD_MULTIPLE_DEFAULT_ROWS = "add_multiple_default_rows",
+        REMOVE_ROWS = "remove_rows";
+
+    var defaultActions = {
+        ADD_DEFAULT_ROW: "Afegir fila",
+        REMOVE_ROWS: "Eliminar fila"
+    };
+
+
     return declare([AbstractEditableElement],
         {
             defaultRow: null,
@@ -23,7 +34,17 @@ define([
                 this.fieldToCol = {};
                 // this.defaultDisplay = 'table';
 
+                this.initializeCallbacks()
 
+            },
+
+            initializeCallbacks() {
+                this.actionCallbacks = {};
+
+                this.actionCallbacks[ADD_ROW] = this._addRowCallback.bind(this);
+                this.actionCallbacks[ADD_DEFAULT_ROW] = this._addDefaultRowCallback.bind(this);
+                this.actionCallbacks[ADD_MULTIPLE_DEFAULT_ROWS] = this._addMultipleDefaultRowsCallback.bind(this);
+                this.actionCallbacks[REMOVE_ROWS] = this._removeRowCallback.bind(this);
             },
 
             _replaceNodeContent: function (args) {
@@ -39,6 +60,7 @@ define([
 
             // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
             createWidget: function () {
+
 
                 var tableData = this.htmlToJson(this.$node);
                 this.columns = tableData.columns;
@@ -158,38 +180,37 @@ define([
                 grid.placeAt($container[0]);
                 grid.startup();
 
-                // AFEGIR Buttons
-                var context = this;
-
-
                 grid.on("ApplyCellEdit", function (e) {
                     console.log("Canvis detectats: ", e);
-                    context.updateField();
-                });
-
-                var addRowButton = new Button({label: "Afegir fila", onClick: this._addRowCallback.bind(this)});
-                addRowButton.placeAt($toolbar[0]);
-                addRowButton.startup();
-
-                var addDefaultRowButton = new Button({label: "Afegir fila per defecte", onClick: this._addDefaultRowCallback.bind(this)});
-                addDefaultRowButton.placeAt($toolbar[0]);
-                addDefaultRowButton.startup();
-
-                var addMultipleDefaultRowsButton = new Button({label: "Afegir múltiples files per defecte", onClick: this._addMultipleDefaultRowsCallback.bind(this)});
-                addMultipleDefaultRowsButton.placeAt($toolbar[0]);
-                addMultipleDefaultRowsButton.startup();
+                    this.updateField();
+                }.bind(this));
 
 
+                var actions = this.args.actions ? this.args.actions : defaultActions;
 
-                var removeKeyButton = new Button({label: "Eliminar files seleccionades", onClick: this._removeRowCallback.bind(this)});
-                removeKeyButton.placeAt($toolbar[0]);
-                removeKeyButton.startup();
+                this.initializeButtons(actions, $toolbar[0]);
 
 
                 this.updateField();
                 this.widgetInitialized = true;
             },
 
+            initializeButtons: function (actions, toolbarNode) {
+
+                for (var action in actions) {
+                    this.initializeButton(actions[action], toolbarNode, this.actionCallbacks[action]);
+                }
+
+            },
+
+            initializeButton: function (label, toolbarNode, callback) {
+                var button = new Button({
+                    label: label,
+                    onClick: callback
+                });
+                button.placeAt(toolbarNode);
+                button.startup();
+            },
 
             /**
              *
@@ -242,28 +263,28 @@ define([
                 this.addRow(data);
             },
 
-            _addDefaultRowCallback: function() {
+            _addDefaultRowCallback: function () {
                 this.addRow();
             },
 
-            _addMultipleDefaultRowsCallback: function() {
+            _addMultipleDefaultRowsCallback: function () {
 
                 var quantity;
 
                 do {
                     quantity = Number(prompt("Introdueix el nombre de files a afegir:"));
-                    if (isNaN(quantity) || quantity<1){
+                    if (isNaN(quantity) || quantity < 1) {
                         alert("El nombre de files ha de ser un nombre igual o superior a 1.");
                     }
-                } while (isNaN(quantity) || quantity<1);
+                } while (isNaN(quantity) || quantity < 1);
 
                 this.addRows(quantity);
 
             },
 
-            addRows: function(quantity) {
+            addRows: function (quantity) {
 
-                for (var i=0; i<quantity; i++) {
+                for (var i = 0; i < quantity; i++) {
                     this.addRow();
                 }
 
@@ -271,24 +292,24 @@ define([
 
             _removeRowCallback: function () {
 
-                    var selected = this.grid.selection.getSelected();
-                    if (selected.length === 0) {
-                        return;
-                    }
+                var selected = this.grid.selection.getSelected();
+                if (selected.length === 0) {
+                    return;
+                }
 
-                    var suffix = selected.length>1 ? "es": "a";
-                    var confirmation = confirm("Segur que vols eliminar les fil"+suffix+" seleccionad"
-                        +suffix+"? (" + selected.length + " fil" + suffix + ")");
+                var suffix = selected.length > 1 ? "es" : "a";
+                var confirmation = confirm("Segur que vols eliminar les fil" + suffix + " seleccionad"
+                    + suffix + "? (" + selected.length + " fil" + suffix + ")");
 
-                    if (!confirmation) {
-                        return;
-                    }
+                if (!confirmation) {
+                    return;
+                }
 
-                    this.removeRows(selected);
+                this.removeRows(selected);
 
             },
 
-            removeRows: function(indexes) {
+            removeRows: function (indexes) {
                 for (var i = 0; i < indexes.length; i++) {
                     this.dataStore.deleteItem(indexes[i]);
                 }
@@ -300,7 +321,7 @@ define([
             // Copia els paràmetres de configuració a la cel·la
             setupCells: function (layout) {
 
-                this.inputOnNewRowFields= {};
+                this.inputOnNewRowFields = {};
 
                 if (!this.args.fields) {
                     return;
@@ -335,7 +356,7 @@ define([
                         }
 
 
-                        if (field["input_on_new_row"]===true) {
+                        if (field["input_on_new_row"] === true) {
                             this.inputOnNewRowFields[cell.name] = this.args.fields[cell.name];
                         }
 
