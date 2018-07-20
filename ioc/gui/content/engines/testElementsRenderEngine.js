@@ -53,7 +53,7 @@ define([
             var type = jQuery($nodes[i]).attr('data-editable-element');
 
             var config;
-            if (element) {
+            if (element && element.config) {
                 config = element.config;
                 config.data = element;
             } else {
