@@ -16,6 +16,7 @@ define([
     var ADD_ROW = "add_row",
         ADD_DEFAULT_ROW = "add_default_row",
         ADD_MULTIPLE_DEFAULT_ROWS = "add_multiple_default_rows",
+        SET_MULTIPLE_DEFAULT_ROWS = "set_multiple_default_rows",
         REMOVE_ROWS = "remove_rows";
 
     var defaultActions = {
@@ -267,6 +268,27 @@ define([
                 this.addRow();
             },
 
+            _setMultipleDefaultRowsCallback: function () {
+
+                var quantity;
+                var ok = true;
+                do {
+                    quantity = Number(prompt("Introdueix el nombre de files a afegir:"));
+                    if (isNaN(quantity) || quantity < 1) {
+                        alert("El nombre de files ha de ser un nombre igual o superior a 1.");
+                    }
+                } while (isNaN(quantity) || quantity < 1);
+                
+                ok =  this.objectStore.data.length < quantity;
+                if(ok){
+                    this.setRows(quantity);                    
+                }else if(this.objectStore.data.length > quantity){
+                    alert("Aquesta acció només permet incrementar el nombre de files. Per reduir-les, selecciona les que desitgis eliminar i prem el botó corresponent."); 
+                }else{
+                    alert("Has indicat el nombre de files que ja hi ha. No es realitzarà cap canvi." );
+                }
+            },
+
             _addMultipleDefaultRowsCallback: function () {
 
                 var quantity;
@@ -282,6 +304,15 @@ define([
 
             },
 
+            setRows: function (quantity) {
+                if(this.objectStore.data.length<quantity){
+                    for (var i = this.objectStore.data.length; i < quantity; i++) {
+                        this.addRow();
+                    }                    
+                }else if(this.objectStore.data.length>quantity){
+                    alert("Aquesta acció només permet incrementar el nombre de files. No pas reduir-lo.")
+                }                
+            },
             addRows: function (quantity) {
 
                 for (var i = 0; i < quantity; i++) {
