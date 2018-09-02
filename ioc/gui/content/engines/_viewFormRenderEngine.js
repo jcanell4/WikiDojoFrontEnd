@@ -20,6 +20,10 @@ define([
                         .addClass('view-field')
                         .attr('title', field.label);
                 }
+                
+                if (field.props) {
+                    this.addPropsToInput(field.props, $data);
+                }
                 return $field;
             },
 
@@ -38,7 +42,7 @@ define([
                     for(var i=0; !exit && i<field.config.options.length; i++){
                         exit = field.config.options[i].value===value;
                         if(exit){
-                            value = field.config.options[i].description;
+                            value = field.config.options[i].description?field.config.options[i].description:field.config.options[i].value;
                         }
                     }
                     $data.attr('name', field.name)
@@ -46,7 +50,9 @@ define([
                         .addClass('view-field')
                         .attr('title', field.label);
                 }
-                return $field;
+                if (field.props) {
+                    this.addPropsToInput(field.props, $data);
+                }                return $field;
             },
 
             renderFieldTextarea: function (field, fvalues) {
@@ -72,6 +78,9 @@ define([
 
                     $textarea.css('height', height);
                 }
+                if (field.props) {
+                    this.addPropsToInput(field.props, $textarea);
+                }                return $field;
 
 
 
@@ -102,7 +111,11 @@ define([
 
                 $data.attr('name', field.name)
                     .html(fvalues[field.name]);
-
+            
+                if (field.props) {
+                    this.addPropsToInput(field.props, $data);
+                }
+                
                 return $field;
             },
             
@@ -112,9 +125,14 @@ define([
 
                 var $doc = jQuery('<div>'),
                     $form = jQuery('<div>');
+                var $collapse = jQuery('<span>'),
+                    $expand = jQuery('<span>');
+
 
                 $form.attr('id', 'project_view_' + data.id);
-                $doc.addClass('container-fluid ioc-bootstrap').append($form);
+                $doc.addClass('container-fluid ioc-bootstrap');
+                this._setCollapseAllAndExpandAllButtons($doc, $collapse, $expand);
+                $doc.append($form);
                 data.elements.sort(this.comparePriority);
 
                 for (var i = 0; i < data.elements.length; i++) {
@@ -124,7 +142,36 @@ define([
                         case 'field': $form.append(this.renderField(data.elements[i], data.formValues)); break;
                     }
                 }
+                if(this.nCollapsableGruops==0){
+                    $collapse.hiden();
+                    $expand.hiden();
+                }
                 return $doc;
-            }
+            },
+            addPropsToInput: function (props, $tag) {
+                for (var prop in props) {
+                    switch (prop){
+                        case "accesskey":
+                        case "contenteditable":
+                        case "dir":
+                        case "draggable":
+                        case "dropzone":
+                        case "hidden":
+                        case "id":
+                        case "lang":
+                        case "spellcheck":
+                        case "style":
+                        case "tabindex":
+                        case "title":
+                        case "translate":
+                            $tag.attr(prop, props[prop]);
+                            break;                            
+                        default :
+                            if(prop.indexOf("data-")>-1){
+                                $tag.attr(prop, props[prop]);
+                            }
+                    }
+                }
+            }            
         });
 });

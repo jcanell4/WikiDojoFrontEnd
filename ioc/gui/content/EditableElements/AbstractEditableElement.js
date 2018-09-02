@@ -32,8 +32,12 @@ define([
             _replaceNodeContent: function (args) {
                 this.$container = jQuery('<div>');
 
+                var vstyle = this.$node.parent().attr("style");
                 this.$node.before(this.$container);
                 this.$container.append(this.$node);
+                if(vstyle && vstyle.indexOf("display: none;")!==-1){
+                    this.$container.attr("data-display-node", "none;")
+                }
 
 
                 // Alerta[Xavi] Aquesta es l'ancla on s'ha de ficar el widget que correspongui

@@ -5,6 +5,7 @@ define([
     return declare(null,
         {
 
+            nCollapsableGruops: 0,
             /**
              * Si obj1.priority es major, es colocarà abans
              * @param obj1
@@ -52,8 +53,9 @@ define([
                         $group.append($header);
 
                         if (collapsable) {
+                            this.nCollapsableGruops++;
                             // Afegim la icona de desplegable
-                            var $collapseIcon = jQuery('<span class="collapse-icon"><span class="' + (collapsed? 'collapsed' : '') +'"></span></span>');
+                            var $collapseIcon = jQuery('<span class="collapse-icon"><span class="' + (collapsed? 'collapsed" data-collapsed=true' : '"') +'></span></span>');
 
                             $header.append($collapseIcon);
 
@@ -87,7 +89,7 @@ define([
                                 break;
 
                             default:
-                                console.log("Element no reconegut. No s'ha rendertizat", $fields[i], fvalues);
+                                console.log("Element no reconegut. No s'ha rendertizat", fields[i], fvalues);
                         }
 
                         if ($element) {
@@ -236,7 +238,7 @@ define([
                 return $field;
             },
 
-            addOptionsToSelect: function (options, $select, value) {
+            addOptionsToSelect: function (options, $select, valueSelected) {
                 var $option;
 
                 for (var i = 0; i < options.length; i++) {
@@ -246,7 +248,7 @@ define([
                         .val(value)
                         .html(description);
 
-                    if (options[i].selected || options[i].value==value) {
+                    if (options[i].selected || options[i].value==valueSelected) {
                         $option.attr('selected', true);
                     }
 
@@ -312,7 +314,8 @@ define([
                 $input.attr('type', field.type)
                     .attr('name', field.name)
                     //.val(field.value);
-                    .val(fvalues[field.name]);
+                    .val(fvalues[field.name])
+                    .prop("checked", fvalues[field.value]);
 
                 if (field.id) {
                     $input.attr('id', field.id);
@@ -325,14 +328,16 @@ define([
                 return $field;
             },
 
-
+                        
             renderFieldEditableObject: function (field, fvalues) {
                 // console.log("_abstractFormRenderEngine#renderFieldEditableObject:", field, field.props.editableClass);
-                var $field;
-
+                var $field = jQuery('<div>'),
+                    $label = jQuery('<label>'),
+                    $editableObject;
+            
                 switch (field.props['data-editable-element']) {
                     case 'table':
-                        $field = this.renderFieldTable(field, fvalues);
+                        $editableObject = this.renderFieldTable(field, fvalues);
                         break;
 
                     default:
@@ -341,8 +346,15 @@ define([
                 }
 
                 if (field.id) {
-                    $field.attr('id', field.id);
+                    $editableObject.attr('id', field.id);
                 }
+                
+                if(field.label && field.name !== field.label){
+                    $field.append($label);
+                    $label.html(field.label);
+                    $field.attr("title", field.label);
+                }
+                $field.append($editableObject);
                 
                 return $field;
             },
@@ -511,6 +523,21 @@ define([
             render: function (data, context, $content) {
 
                 throw new Error("El mètode render ha de ser implementat per les subclasses");
+            },
+            
+            _setCollapseAllAndExpandAllButtons: function($doc, $collapse, $expand){            
+                $collapse.addClass("collapseAll-icon");
+                $collapse.attr('title', "compacta tots els grups de dades originalment compactats")
+                $collapse.click(function(event){
+                    $collapse.parent().parent().find(".collapse-icon span[data-collapsed=true]").not(".collapsed").trigger("click");
+                });
+                $doc.append($collapse);
+                $expand.addClass("expandAll-icon");
+                $expand.attr('title', "expandeix tots els grups de dades")
+                $expand.click(function(event){
+                    $expand.parent().parent().find(".collapse-icon span.collapsed").trigger("click");
+                });
+                $doc.append($expand);
             },
 
             _collapseToggle: function() {

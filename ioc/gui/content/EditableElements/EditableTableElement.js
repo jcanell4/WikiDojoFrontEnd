@@ -9,9 +9,10 @@ define([
     "dijit/form/Button",
     "dojox/grid/_Events",
     // "dijit/form/Textarea"
+    "dijit/form/NumberTextBox",
     "ioc/gui/content/EditableElements/ZoomableCell"
 
-], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, ZoomableCell) {
+], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell) {
 
     var ADD_ROW = "add_row",
         ADD_DEFAULT_ROW = "add_default_row",
@@ -45,6 +46,7 @@ define([
                 this.actionCallbacks[ADD_ROW] = this._addRowCallback.bind(this);
                 this.actionCallbacks[ADD_DEFAULT_ROW] = this._addDefaultRowCallback.bind(this);
                 this.actionCallbacks[ADD_MULTIPLE_DEFAULT_ROWS] = this._addMultipleDefaultRowsCallback.bind(this);
+                this.actionCallbacks[SET_MULTIPLE_DEFAULT_ROWS] = this._setMultipleDefaultRowsCallback.bind(this);
                 this.actionCallbacks[REMOVE_ROWS] = this._removeRowCallback.bind(this);
             },
 
@@ -71,6 +73,29 @@ define([
 
                 var $container = jQuery('<div id="grid_container"></div>');
 
+                if(this.args.data.props){
+                    var props = this.args.data.props;
+                    for (var prop in props) {
+                        switch (prop){
+                            case "accesskey":
+                            case "contenteditable":
+                            case "dir":
+                            case "draggable":
+                            case "dropzone":
+                            case "hidden":
+                            case "id":
+                            case "lang":
+                            case "spellcheck":
+                            case "style":
+                            case "tabindex":
+                            case "title":
+                            case "translate":
+                                $container.attr(prop, props[prop]);
+                                break;                            
+                            default :
+                        }
+                    }
+                }
 
                 // Movem l'estil de la taula al contenidor;
                 this.$container.parent().addClass('element-container');
@@ -86,6 +111,7 @@ define([
                 $container.append(this.$field);
 
                 this.$editableNode.css('display', 'block'); // S'ha de fer visible abans de crear el grid o l'alçada es 0.
+                this.$container.parent().css('display', 'block'); // S'ha de fer visible abans de crear el grid o l'alçada es 0.
 
 
                 var $toolbar = jQuery('<div></div>');
@@ -369,7 +395,23 @@ define([
 
                         switch (field['type']) {
                             case 'date':
+                                var storePattern = 'yyyy/MM/dd';
+                                var displayPattern = 'dd/MM/yyyy';
+                                
                                 cell.type = dojox.grid.cells.DateTextBox;
+                                cell.getValue = function(){
+                                    // Override the default getValue function for dojox.grid.cells.DateTextBox
+                                    return dojo.date.locale.format(this.widget.get('value'), {selector: 'date', datePattern: storePattern});
+                                };
+                                cell.formatter = function (datum){
+                                    // Format the value in store, so as to be displayed.
+                                    var d = datum==""?(new Date()):dojo.date.locale.parse(datum, {selector: 'date', datePattern: storePattern});
+                                    return dojo.date.locale.format(d, {selector: 'date', datePattern: displayPattern});
+                                };
+                                break;
+                            case 'number':
+                                cell.type = cells._Widget;
+                                cell.widgetClass = NumberTextBox;
                                 break;
                             case 'select':
                                 cell.type = dojox.grid.cells.Select;
@@ -513,9 +555,13 @@ define([
 
             show: function () {
                 this.inherited(arguments);
-
+                
                 this.grid.update();
                 this.$icon.css('display', 'none');
+                
+                if(this.$container.attr("data-display-node")){
+                    this.$container.parent().slideToggle();
+                }
 
             },
 
