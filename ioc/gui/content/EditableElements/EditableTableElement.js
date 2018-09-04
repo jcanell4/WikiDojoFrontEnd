@@ -170,6 +170,33 @@ define([
 
                 });
 
+                // Alerta[Xavi]: el DataGrid te un bug i no permet fer scroll a l'última fila. La solució ha estat
+                // afegir 25 punts a l'scroll, això actualment no afecta a la aplicació perquè no es contempla
+                // la opció de fer scroll a una fila en concret.
+                // Com que la gestió de l'scroll es realitza mitjançant la classe _Scroller.js desde la super classe
+                // _Grid.js he sobreescrit la funció concreta aquí:
+
+                grid.scroller.scroll= function(inTop){
+                    console.log("custom scroll", inTop);
+                    this.grid.scrollTop = inTop +25;
+                    if(this.colCount){
+                        this.startPacify();
+                        this.findPage(inTop);
+                        var h = this.height;
+                        var b = this.getScrollBottom(inTop);
+                        for(var p=this.page, y=this.pageTop; (p<this.pageCount)&&((b<0)||(y<b)); p++){
+                            y += this.needPage(p, y);
+                        }
+                        this.firstVisibleRow = this.getFirstVisibleRow(this.page, this.pageTop, inTop);
+                        this.lastVisibleRow = this.getLastVisibleRow(p - 1, y, b);
+                        // indicates some page size has been updated
+                        if(h != this.height){
+                            this.repositionPages(p-1);
+                        }
+                        this.endPacify();
+                    }
+                };
+
                 // Sobreescrita de _EditManager.js
                 grid.edit.apply = function () {
 
@@ -263,6 +290,7 @@ define([
 
                 this.dataStore.save();
                 this.updateField();
+                this.grid.scrollToRow(this.grid.rowCount);
 
             },
 
