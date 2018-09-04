@@ -80,10 +80,7 @@ define([
                 }
                 if (field.props) {
                     this.addPropsToInput(field.props, $textarea);
-                }                return $field;
-
-
-
+                }
                 return $field;
             },
 

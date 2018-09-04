@@ -32,9 +32,6 @@ define([
                     //si se pide, sustituimos los datos del formulario por los datos guardados en el draft local
                     args[0].content.formValues = JSON.parse(localDraft.project.content);
                 }
-                if (value.extra.generated) {
-                    dispatcher.getGlobalState().getContent(value.id)["generated"] = value.extra.generated;
-                }
             }
             
             //Con la incorporación del array de datos del formulario y los valores extra, llamamos a la secuencia principal

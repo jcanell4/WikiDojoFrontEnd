@@ -41,8 +41,11 @@ define([
 
             dispatcher.getGlobalState().getContent(value.id)["action"] = this.type;
             dispatcher.getGlobalState().getContent(value.id)["ns"] = value.ns;
-            dispatcher.getGlobalState().getContent(value.id)["projectType"] = value.extra.projectType;
-            dispatcher.getGlobalState().getContent(value.id)["rol"] = value.extra.rol;
+            if (value.extra) {
+                dispatcher.getGlobalState().getContent(value.id)["projectType"] = value.extra.projectType;
+                dispatcher.getGlobalState().getContent(value.id)["rol"] = value.extra.rol;
+                dispatcher.getGlobalState().getContent(value.id)["generated"] = value.extra.generated;
+            }            
         },
 
         /**
