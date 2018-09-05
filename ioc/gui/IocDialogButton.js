@@ -284,17 +284,17 @@ define([
                     var nsTemplate = item ? "&template="+item.path : "";
                 */
                 query = params.call_document + 
-                        '&id=' + params.ns +
+                        '&id=' + w.value.EspaiNoms + separacio + w.value.NouDocument +
+                        '&projectId=' + params.ns +
                         '&projectType=' + params.projectType +
                         '&espai=' + w.value.EspaiNoms +
-                        '&new_page=' + w.value.EspaiNoms + separacio + w.value.NouDocument +
                         nsTemplate;
             }
             else if (w.value.NovaCarpeta) {
                 query = params.call_folder + 
-                        '&id=' + params.ns +
-                        '&projectType=' + params.projectType +
-                        '&new_folder=' + w.value.EspaiNoms + separacio + w.value.NovaCarpeta;
+                        '&id=' + w.value.EspaiNoms + separacio + w.value.NovaCarpeta +
+                        '&projectId=' + params.ns +
+                        '&projectType=' + params.projectType;
             }
             if (query) {
                 w.action = query;
