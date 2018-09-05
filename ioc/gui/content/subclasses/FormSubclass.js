@@ -24,16 +24,14 @@ define([
             this._setOriginalContent(args.originalContent);
             this.hasChanges = false;
             this.contentToolFactory = args.contentToolFactory;
-
             this.editableElements = [];
-
             this.externalContent = {};
-
-
         },
 
         compareItems: function (itemA, itemB) {
-
+            if (typeof(itemA) === "number") {
+                itemA = itemA.toString();
+            }
             if (!itemA
                 || itemA === {}
                 || (itemA.length !== undefined && itemA.length ===0)
@@ -43,12 +41,14 @@ define([
                 itemA = null;
             }
 
+            if (typeof(itemB) === "number") {
+                itemB = itemB.toString();
+            }
             if (!itemB
                 || itemB === {}
                 || (itemB.length !== undefined && itemB.length ===0)
                 || itemB === '{}'
                 || itemB === '[]'
-
             ) {
                 itemB = null;
             }
@@ -56,12 +56,11 @@ define([
             return itemA === itemB;
         },
 
-       /**
+        /**
         * Retorna cert si el contingut actual i el contingut original sÃ³n diferents o fals si sÃ³n iguals.
-        *
         * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
         */
-       isContentChanged: function () {
+        isContentChanged: function () {
 
            var checked = {},
                item,
@@ -76,8 +75,6 @@ define([
                var auxOriginalContent = originalContent[item];
 
                if (!this.compareItems(auxCurrentContent, auxOriginalContent)) {
-               // if (currentContent[item] !== originalContent[item]) {
-                   // console.log(currentContent[item] + "!==" +  originalContent[item]);
                    changed = true;
                    break;
                } else {
@@ -88,11 +85,9 @@ define([
            if (!changed) {
                // Si tots son iguals, es comprova que tots els que restin de OriginalContent
                for (item in originalContent) {
-                    // if (!checked[item] && originalContent[item] !== currentContent[item]) {
                    auxCurrentContent = this.externalContent[item] || currentContent[item];
 
                    if (!checked[item] && !this.compareItems(originalContent[item],auxCurrentContent)) {
-                        //console.log(auxCurrentContent + "!==" +  originalContent[item], item);
                        changed = true;
                        break;
                    }
@@ -102,22 +97,20 @@ define([
            if (changed) {
                this.onDocumentChanged();
                this.hasChanges = true;
-           //} else {
-                //console.log(" **El contingut no ha canviat**");
            }
 
            return changed;
-       },
+        },
 
-      /**
-       * Reinicialitza l'estat del document establint el valor del contingut original igual al del contingut
-       * actual.
-       */
-      resetContentChangeState: function () {
+        /**
+        * Reinicialitza l'estat del document establint el valor del contingut original igual al del contingut
+        * actual.
+        */
+        resetContentChangeState: function () {
             this.hasChanges = false;
             this._setOriginalContent(this.getCurrentContent());
             this.onDocumentChangesReset();
-      },
+        },
 
         /**
          * Es registra als esdeveniments i activa la detecció de canvis, copiar, enganxar i pitjar tecles dins
@@ -129,24 +122,19 @@ define([
             this.registerToChangesManager();
             jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this)); // Alerta[Xavi] Comprovar si el domNode es suficient per detectar els canvis del formulari
             this.inherited(arguments);
-
-//            alert("event manager?");
         },
 
         /**
-         * Retorna el que estÃ  establert com a contingut original per fer comprovacions sobre canvis.
-         *
+         * Retorna el que està establert com a contingut original per fer comprovacions sobre canvis.
          * @returns {string} - Contingut original
          * @private
          */
         _getOriginalContent: function () {
-            //console.log("FormSubclass#_getOriginalContent", this.originalContent);
             return this.originalContent;
         },
 
         /**
-         * Estableix el contingut passat com parÃ metre com a contingut original.
-         *
+         * Estableix el contingut passat com paràmetre com a contingut original.
          * @param {string} content - Contingut a establir com original
          * @private
          */
@@ -155,10 +143,8 @@ define([
         },
 
         isLastCheckedContentChanged: function () {
-            //console.log("isLastCheckedContentChanged?");
-            var content = this.getCurrentContent(),
-                // result = this._getLastCheckedContent() !== content;
-                result = this.compareContents(content, this._getLastCheckedContent());
+            var content = this.getCurrentContent();
+            var result = this.compareContents(content, this._getLastCheckedContent());
 
             if (result) {
                 this._setLastCheckedContent(content);
@@ -176,23 +162,21 @@ define([
         },
 
         getCurrentContent: function () {
-
-            // Obtenir tots els valors dels camps? generar diccionary id:valor
-            // Fàcil pels inputs (únic cas contemplat)
-            // TODO[Xavi] Afegir comprovació per check/radios i selects
+            // Genera diccionari id:valor
             var currentContent = {};
             var $form = jQuery('form[id="form_' + this.id + '"]');
-            var $input = $form.find('input[type="text"], input[type="hidden"], input[type="string"], select, textarea');
+            var $input = $form.find('input[type="text"], input[type="hidden"], input[type="string"], input[type="number"], input[type="date"], select, textarea');
 
             var context = this;
+            var valor;
 
             $input.each(function () {
-                if (this.value && this.name) {
-
+                if (this.name) {
                     if (context.externalContent[this.name]) {
                         currentContent[this.name] = context.externalContent[name];
                     } else {
-                        currentContent[this.name] = this.value; // ALERTA[Xavi] this.id fa referencia al id de l'element, no del formulari
+                        valor = (this.value) ? this.value : "";
+                        currentContent[this.name] = valor;
                     }
 
                 }
@@ -208,17 +192,14 @@ define([
             }
 
             for (var key in contentA ) {
-
                 if (!key in contentB) {
                     //console.log("No existeix la clau al contentB", key);
                     return true;
                 }
-
                 if (contentA[key] !== contentB[key]) {
                     //console.log("El contingut es diferent",contentA[key],contentB[key] );
                     return true;
                 }
-
             }
 
             return false;
@@ -241,7 +222,6 @@ define([
         forceCheckChanges: function() {
             this._checkChanges();
         }
-
 
     });
     
