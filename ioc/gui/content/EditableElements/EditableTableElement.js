@@ -9,7 +9,8 @@ define([
     "dijit/form/Button",
     "dojox/grid/_Events",
     // "dijit/form/Textarea"
-    "dijit/form/NumberTextBox",
+    // "dijit/form/NumberTextBox",
+    "dijit/form/NumberSpinner", // això fa el mateix que el NumberTextBox però afegint les fletxes
     "ioc/gui/content/EditableElements/ZoomableCell"
 
 ], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell) {
@@ -177,7 +178,6 @@ define([
                 // _Grid.js he sobreescrit la funció concreta aquí:
 
                 grid.scroller.scroll= function(inTop){
-                    console.log("custom scroll", inTop);
                     this.grid.scrollTop = inTop +25;
                     if(this.colCount){
                         this.startPacify();
