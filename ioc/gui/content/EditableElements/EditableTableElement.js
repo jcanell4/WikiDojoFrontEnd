@@ -40,7 +40,7 @@ define([
 
             },
 
-            initializeCallbacks() {
+            initializeCallbacks: function() {
                 this.actionCallbacks = {};
 
                 this.actionCallbacks[ADD_ROW] = this._addRowCallback.bind(this);
@@ -272,7 +272,7 @@ define([
              * Si hi ha valors es faran servir aquests valors per les claus indicades y el default per a la resta.
              * @private
              */
-            addRow(keyPairs) {
+            addRow: function(keyPairs) {
 
                 var data = {
                     id: this.objectStore.data.length,
@@ -701,7 +701,7 @@ define([
                 return cells;
             },
 
-            isCellInLayout(cell, layout) {
+            isCellInLayout: function(cell, layout) {
                 for (var i = 0; i < layout.length; i++) {
                     if (layout[i].name === cell.name) {
                         return true;
