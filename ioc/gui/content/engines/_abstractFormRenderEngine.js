@@ -438,9 +438,9 @@ define([
                 $field.append($label)
                     .append($image);
 
-                $image.attr('src', fvalues[field.name])
-                    .attr('title', field.label);    
+                $image.attr('title', fvalues[field.label]);    
                 if (field.props) {
+                    $image.attr('src', field.props.src);    
                     this.addPropsToInput(field.props, $image);
                 }
 
