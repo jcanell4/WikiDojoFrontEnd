@@ -59,6 +59,7 @@ define([
                             }else{
                                 this.query = "id="+item.id;
                             }
+
                             return this.query;
                         };
                     }
