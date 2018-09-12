@@ -169,6 +169,13 @@ define([
 
                 values.contentFormat = this.getEditor().getContentFormat();
 
+                var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
+
+                if (contentCache.projectOwner) {
+                    values.projectOwner = contentCache.projectOwner;
+                    values.projectSourceType = contentCache.projectSourceType;
+                }
+
                 return values;
             },
 

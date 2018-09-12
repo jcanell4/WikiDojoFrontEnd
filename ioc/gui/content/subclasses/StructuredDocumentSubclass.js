@@ -211,6 +211,20 @@ define([
             //afegim el format de l'editor
             values["contentFormat"]=this.getEditor(header_id).getContentFormat();
 
+
+            console.log("Test: passa per aquí el query? que hi ha al content cache?", this.dispatcher.getGlobalState()/*.getContent(this.ns)*/);
+            console.log("Test: passa per aquí el query? que hi ha al content?", this.dispatcher.getGlobalState().getContent(this.id));
+            console.log("Test: quin es aquest id?", this.id);
+
+
+            var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
+
+
+            if (contentCache.projectOwner) {
+                values.projectOwner = contentCache.projectOwner;
+                values.projectSourceType = contentCache.projectSourceType;
+            }
+
             return values;
         },
 
