@@ -151,7 +151,7 @@ define([
         'DocumentPreviewButton': {
             type: 'DocumentPreview',
             title: localization["document-preview"],
-            icon: 'platreballfpentPreview',
+            icon: 'IocDocumentPreview',
             // category: 'B'
         },
         // 'TestFormatButton': {
