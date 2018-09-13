@@ -185,6 +185,15 @@ define([
                 if (this.rev) {
                     query += '&rev=' + this.rev;
                 }
+
+
+                var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
+
+                if (contentCache.projectOwner) {
+                    query +="&projectOwner=" + contentCache.projectOwner;
+                    query +="&projectSourceType=" + contentCache.projectSourceType;
+                }
+
                 return query;
             },
 
