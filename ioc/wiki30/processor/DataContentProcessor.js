@@ -17,6 +17,8 @@ define([
         {
             type: "data",
 
+            backupPreviousState: null,
+
             /**
              * Processa el valor i crea un nou Editor amb la informació i el lliga al Dispatcher passat com argument.
              * Desprès de efectuar les operacions necessaries delega a la classe ContentTool per continuar amb
@@ -29,6 +31,11 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                // Backup Previous State
+                if (dispatcher.getGlobalState().getContent(this.id)) {
+                    this.backupPreviousState =jQuery.extend(true, {}, dispatcher.getGlobalState().getContent(value.id));
+                };
+
                 var ret;
                 
                 var draft = dispatcher.getDraftManager().getContentLocalDraft(value.ns);
@@ -64,6 +71,7 @@ define([
                     this._initTimer(value, dispatcher);
                 }
 
+
                 return ret;
             },
 
@@ -76,10 +84,20 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
+
                 this.inherited(arguments);
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "edit";
                 dispatcher.getGlobalState().getContent(value.id).readonly = value.editing ? value.editing.readonly : false;
                 dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
+
+
+                // Restore previous State
+                // TODO: Considerar si caldria copiar tots els estates que no s'han tornat a enviar des del servidor
+                if (this.backupPreviousState && this.backupPreviousState.projectOwner) {
+                    dispatcher.getGlobalState().getContent(value.id).projectOwner = this.backupPreviousState.projectOwner;
+                    dispatcher.getGlobalState().getContent(value.id).projectSourceType = this.backupPreviousState.projectSourceType;
+                }
+
             },
 
             /**

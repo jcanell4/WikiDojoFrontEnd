@@ -211,6 +211,14 @@ define([
             //afegim el format de l'editor
             values["contentFormat"]=this.getEditor(header_id).getContentFormat();
 
+            var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
+
+
+            if (contentCache.projectOwner) {
+                values.projectOwner = contentCache.projectOwner;
+                values.projectSourceType = contentCache.projectSourceType;
+            }
+
             return values;
         },
 
@@ -304,6 +312,15 @@ define([
             if (!this.required) {
                 ret += "&unlock=false";
             }
+
+            var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
+
+            if (contentCache.projectOwner) {
+                ret +="&projectOwner=" + contentCache.projectOwner;
+                ret +="&projectSourceType=" + contentCache.projectSourceType;
+            }
+
+
             return ret;
         },
 

@@ -49,6 +49,17 @@ define([
                     else {
                         nsTree.urlBase = nsTree.urlBaseTyped["*"];
                     }
+                    console.log("info item?", item);
+
+                    if (item.nsproject) {
+                        nsTree.query += "&projectOwner="+item.nsproject;
+                    }
+
+                    if (item.projectType) {
+                        nsTree.query += "&projectSourceType="+item.projectType;
+                    }
+
+
                     //console.log("ContentTabDokuwikiNsTree#buildRendering::nsTree.query:", nsTree.query);
                     nsTree.sendRequest();
                 }
