@@ -49,12 +49,30 @@ define([
                 return ret;
             }
         },
+        
+        addContent: function(content, dispatcher, container) {
+            this.oldGlobalState = dispatcher.getGlobalState().getContent(content.id);
+            this.inherited(arguments);
+        },
 
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
             if (value.extra) {
                 dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
                 dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
+            }
+            if (this.oldGlobalState) {
+                //recuperar el globalstate updateButton
+                dispatcher.getGlobalState().getContent(value.id)['updateButton'] = this.oldGlobalState.updateButton;
+                /*
+                 * versión para recuperar todo lo diferente
+                var globalState = dispatcher.getGlobalState().getContent(value.id);
+                for (var item in this.oldGlobalState) {
+                    if (!globalState[item]) {
+                        dispatcher.getGlobalState().getContent(value.id)[item] = this.oldGlobalState[item];
+                    }
+                }
+                */
             }
         },
 
