@@ -61,7 +61,7 @@ define([
                 dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
                 dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
             }
-            if (this.oldGlobalState) {
+            if (this.oldGlobalState && this.oldGlobalState.updateButton) {
                 //recuperar el globalstate updateButton
                 dispatcher.getGlobalState().getContent(value.id)['updateButton'] = this.oldGlobalState.updateButton;
                 /*
