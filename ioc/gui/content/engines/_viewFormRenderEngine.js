@@ -5,20 +5,25 @@ define([
 
     return declare([AbstractFormRenderEngine],
         {
-
             renderFieldDefault: function (field, fvalues) {
                 var $field = jQuery('<div>'),
                     $label = jQuery('<label>'),
                     $data = jQuery('<span>');
+            
                 if (field.type !== 'hidden') {
                     $label.html(field.label);
                     $field.append($label)
                         .append($data);
 
                     $data.attr('name', field.name)
-                        .html(fvalues[field.name])
                         .addClass('view-field')
                         .attr('title', field.label);
+                    
+                    if (field.type === "date") {
+                        $data.html(this.convertToDateDMY(fvalues[field.name]));
+                    }else {
+                        $data.html(fvalues[field.name]);
+                    }
                 }
                 
                 if (field.props) {

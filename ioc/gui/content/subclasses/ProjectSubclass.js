@@ -156,6 +156,13 @@ define([
                 values[fields[i].name] = fields[i].value;
             }
 
+            var self = this;
+            $form.find('input').each(function() {
+                if (this.type === "date") {
+                    values[this.name] = self._convertToISODate(this.value);
+                }
+            });
+            
             return values;
         },
 
@@ -208,6 +215,18 @@ define([
         
         getProjectType: function() {
             return this.projectType;
+        },
+
+        //Convierte una fecha a formato ISO "yyyy-mm-dd"
+        _convertToISODate: function(data) {
+            function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
+            if (isNaN(data.substring(0,4))) {
+                sdata = data.split(/\/|-/);
+                return [sdata[2], pad(sdata[1]), pad(sdata[0])].join('-');
+            }else {
+                var d = new Date(data);
+                return [d.getFullYear(), pad(d.getMonth()+1), pad(d.getDate())].join('-');
+            }
         }
 
     });
