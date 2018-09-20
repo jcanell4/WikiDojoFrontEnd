@@ -137,7 +137,6 @@ define([
                 };
             }
 
-
             this.fireEvent('post_cancel_project', {id: this.id, extraDataToSend: {}});
 
             return {
@@ -158,7 +157,7 @@ define([
 
             var self = this;
             $form.find('input').each(function() {
-                if (this.type === "date") {
+                if (this.attributes.type.value === "date") {
                     values[this.name] = self._convertToISODate(this.value);
                 }
             });
