@@ -193,7 +193,7 @@ define([
                 if (this.checkDateInput()) {
                     $input.val(fvalues[field.name]);
                 }else {
-                    $input.val(this.convertDate(fvalues[field.name]));
+                    $input.val(this.convertToDateDMY(fvalues[field.name]));
                 }
             }else {
                 $input.val(fvalues[field.name]);
