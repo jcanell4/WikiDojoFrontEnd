@@ -219,7 +219,9 @@ define([
         //Convierte una fecha a formato ISO "yyyy-mm-dd"
         _convertToISODate: function(data) {
             function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
-            if (isNaN(data.substring(0,4))) {
+            if (data === "") {
+                return "";
+            }else if (isNaN(data.substring(0,4))) {
                 sdata = data.split(/\/|-/);
                 return [sdata[2], pad(sdata[1]), pad(sdata[0])].join('-');
             }else {

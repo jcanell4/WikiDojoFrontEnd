@@ -193,7 +193,7 @@ define([
                 if (this.checkDateInput()) {
                     $input.val(fvalues[field.name]);
                 }else {
-                    $input.val(this.convertDate(fvalues[field.name]));
+                    $input.val(this.convertToDateDMY(fvalues[field.name]));
                 }
             }else {
                 $input.val(fvalues[field.name]);
@@ -578,7 +578,9 @@ define([
         //Convierte una fecha a formato "dd/mm/yyyy". El formato esperado es ISO "yyyy-mm-dd"
         convertToDateDMY: function(data) {
             function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
-            if (isNaN(data.substring(0,4))) {
+            if (data === "") {
+                return "dd/mm/aaaa";
+            }else if (isNaN(data.substring(0,4))) {
                 sdata = data.split(/\/|-/);
                 return [pad(sdata[0]), pad(sdata[1]), sdata[2]].join('/');
             }else {
