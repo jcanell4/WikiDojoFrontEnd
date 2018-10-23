@@ -122,7 +122,6 @@ define([
             },
             
             render: function (data, context, $content) {
-
                 // console.log(data, context, $content);
 
                 var $doc = jQuery('<div>'),
@@ -145,8 +144,8 @@ define([
                     }
                 }
                 if(this.nCollapsableGruops==0){
-                    $collapse.hiden();
-                    $expand.hiden();
+                    $collapse.hide();
+                    $expand.hide();
                 }
                 return $doc;
             },
