@@ -102,9 +102,12 @@ define([
                 },
                 paramsOnExpire: paramsOnExpire
             });
-            contentTool.startTimer(params.timer.timeout);
-            //Añade un mensaje de tiempo
-            dispatcher.getInfoManager().setExtraInfo({priority: 0, message: "temps d'inactivitat permès: "+(paramsOnExpire.timeout/1000)+" segons"});
+            
+            if (paramsOnExpire.timeout > 0) {
+                contentTool.startTimer(params.timer.timeout);
+                //Añade un mensaje de tiempo
+                dispatcher.getInfoManager().setExtraInfo({priority: 0, message: "temps d'inactivitat permès: "+(paramsOnExpire.timeout/1000)+" segons"});
+            }
         }
 
     });
