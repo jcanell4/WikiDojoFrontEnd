@@ -12,8 +12,10 @@ define([
          * @returns {*}
          */
         comparePriority: function (obj1, obj2) {
-            //console.log('formRenderEngine#comparePriority', obj1.priority, obj2.priority);
-            if (!obj1) {
+//            console.log('formRenderEngine#comparePriority', obj1.priority, obj2.priority);
+            if (!obj1 && !obj2) {
+                return 0;
+            }else if (!obj1) {
                 return obj2.priority || 0;
             } else if (!obj2) {
                 return obj1.priority;
@@ -41,7 +43,8 @@ define([
 
             if (group.elements) {
                 $group = jQuery('<div>');
-                fields = group.elements.sort(this.comparePriority);
+//                fields = group.elements.sort(this.comparePriority);
+                fields = group.elements;
 
                 // renderitzar el marc i titol
                 if (group.title) {

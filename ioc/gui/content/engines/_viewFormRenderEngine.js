@@ -145,8 +145,8 @@ define([
                     }
                 }
                 if(this.nCollapsableGruops==0){
-                    $collapse.hiden();
-                    $expand.hiden();
+                    $collapse.hide();
+                    $expand.hide();
                 }
                 return $doc;
             },
