@@ -149,6 +149,7 @@ define([
                 /// FI TEST Nova toolbar
 
 
+                this.TOOLBAR_ID = args.TOOLBAR_ID;
             },
 
             onLoad: function () {

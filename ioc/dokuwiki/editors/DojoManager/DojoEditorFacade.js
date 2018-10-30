@@ -34,19 +34,20 @@ define([
 
             this.containerNode = jQuery('#' + args.containerId.replace(/^editor_/, '')).get(0);
 
-            console.log("Que estem cercant??, que hi ha al containerId?", args.containerId);
 
             // ALERTA[Xavi] Si es passa el valor de l'editor directament com a 'value' no s'executa el parse dels plugins.
             this.editor = new Editor({
                 styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
                 dispatcher: this.dispatcher,
                 components: [], // string[],
+                TOOLBAR_ID: this.TOOLBAR_ID
             }, dom.byId(args.containerId));
 
             if (args.TOOLBAR_ID) {
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
             }
 
+            console.log("TOOLBAR_ID?", this.TOOLBAR_ID);
 
             // alert("ALERTA: S'ha de fer el canvi per distingir entre el content i el originalContent pels esborranys!");
             // var text = this.$textarea.val();
