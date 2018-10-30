@@ -1,5 +1,5 @@
 define([
-    "dojo/_base/declare",
+    "dojo/_base/declare"
 ], function (declare) {
 
     return declare(null,
@@ -36,7 +36,7 @@ define([
                 this.$node.before(this.$container);
                 this.$container.append(this.$node);
                 if(vstyle && vstyle.indexOf("display: none;")!==-1){
-                    this.$container.attr("data-display-node", "none;")
+                    this.$container.attr("data-display-node", "none;");
                 }
 
 
@@ -71,7 +71,7 @@ define([
 
             show: function () {
                 if (!this.widgetInitialized) {
-                    this.createWidget()
+                    this.createWidget();
                 }
 
                 // console.log("AbstractEditableElement#show");
@@ -143,7 +143,7 @@ define([
                 // }.bind(this));
 
                 this.$icon.on('click', this.show.bind(this));
-            },
+            }
 
         });
 
