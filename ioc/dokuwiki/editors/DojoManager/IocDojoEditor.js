@@ -72,6 +72,7 @@ define([
                     this.getPlugin('HTMLLink'),
                     this.getPlugin('HTMLLinkExternal'),
 
+
                     // 'bold', 'italic','underline', /*'code' this.getPlugin('InsertCodeSyntax'),*/'strikethrough', /* Header x4, Enllaç intern,
                     // Enllaç extern (hi ha plugin de dojo), UL, OL, Linia horitzontal,  Afegir imatge,
                     // emoticones (plugin de dojo?), caracters especials, inserir signatura*/
@@ -102,6 +103,7 @@ define([
                     'SaveButton',
                     'CancelButton',
                     'DocumentPreviewButton',
+                    'ViewSource'
                 ]);
 
 

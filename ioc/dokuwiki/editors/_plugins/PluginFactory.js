@@ -4,6 +4,9 @@ define([
     // Plugins
     'ioc/dokuwiki/editors/AceManager/plugins/AceFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormat',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoReplaceFormat',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoClearFormat',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -24,14 +27,19 @@ define([
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceTableEditorPlugin',
 
+
+    'dijit/_editor/plugins/ViewSource',
     // Localització
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
 
 
 
-], function (EventFactory, AceFormat, DojoFormat, DojoComment, AceFireEvent, AceFireDojoEvent,
+], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
+             DojoClearFormat, DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
-             AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin, AceTableEditor, localization) {
+             AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
+             AceTableEditor, ViewSource,
+             localization) {
 
 
     var plugins = {
@@ -78,12 +86,12 @@ define([
 
 
 
-            // Botons barra d'eines de dojo bàsics
-            'HTMLBold': DojoFormat,
-            'HTMLItalic': DojoFormat,
-            'HTMLUnderline': DojoFormat,
-            'HTMLCode': DojoFormat,
-            'HTMLStrikethrough' : DojoFormat,
+            // Botons barra d'eines de dojo bàsics. Quan es retorna un string s'utilitza un dels plugins originals del Diit.Editor.
+            'HTMLBold': 'bold',
+            'HTMLItalic': 'italic',
+            'HTMLUnderline': 'underline',
+            'HTMLCode': DojoFormatBlock,
+            'HTMLStrikethrough' : 'strikethrough',
             'HTMLHeader1' : DojoFormat,
             'HTMLHeader2' : DojoFormat,
             'HTMLHeader3' : DojoFormat,
@@ -93,7 +101,8 @@ define([
             'HTMLLink' : DojoFormat,
             'HTMLLinkExternal' : DojoFormat,
 
-
+            'ViewSource' : ViewSource,
+            'Clear': DojoClearFormat,
         }
 
     };
@@ -330,10 +339,17 @@ define([
             icon: 'IocUnderline',
         },
 
+        // 'HTMLCode': {
+        //     title: localization["ioc-insert-code-button"],
+        //     open: '<code>',
+        //     close: '</code>',
+        //     sample: localization["ioc-insert-code-button"],
+        //     icon: 'IocCode',
+        // },
+
         'HTMLCode': {
             title: localization["ioc-insert-code-button"],
-            open: '<code>',
-            close: '</code>',
+            tag: 'pre',
             sample: localization["ioc-insert-code-button"],
             icon: 'IocCode',
         },
@@ -444,6 +460,20 @@ define([
             category: 'WikiTable',
             tableType: 'accounting',
         },
+
+        'ViewSource': {
+            type: 'ViewSource',
+            title: localization["view-source"],
+            icon: 'ViewSource',
+        },
+
+        'ClearFormat': {
+            type: 'ClearFormat',
+            title: localization["clear-format"],
+            icon: 'ClearFormat',
+        },
+
+
     };
 
 

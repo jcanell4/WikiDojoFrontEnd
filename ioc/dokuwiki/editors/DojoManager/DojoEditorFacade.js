@@ -55,7 +55,6 @@ define([
 
             // var originalContent = args.originalContent.replace(/^\s+|\s+$/gm, '');
 
-            //console.log("******* Original content?", args.originalContent);
             this.editor.originalContent = args.originalContent || args.content;
 
 
@@ -65,12 +64,13 @@ define([
                 this.emit('change', {newContent: newContent});
             }.bind(this));
 
-            this.editor.on('focus', function () {
-                // console.log('Focus DojoEditord');
-                // console.log("Enviant click fals:", args.parentId);
-                jQuery('#' + args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
-                // this.emit('click', {id: args.parentId});
-            }.bind(this));
+
+            // this.editor.on('focus', function () {
+            //     // console.log('Focus DojoEditord');
+            //     // console.log("Enviant click fals:", args.parentId);
+            //     jQuery('#' + args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
+            //     // this.emit('click', {id: args.parentId});
+            // }.bind(this));
 
             this.editor.startup();
             this.editor.focus();

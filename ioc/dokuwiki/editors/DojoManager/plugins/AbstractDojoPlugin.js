@@ -26,8 +26,17 @@ define([
         _getSelectionText: function () {
             var text = this.editor.window.getSelection().toString();
             return text;
-        }
+        },
 
+        updateState: function() {
+            console.log("Calling updateState", arguments);
+        },
+
+        destroy: function(){
+            this.inherited(arguments);
+
+            //TODO: Remember to destroy the toolbar you created.
+        }
 
     });
 
