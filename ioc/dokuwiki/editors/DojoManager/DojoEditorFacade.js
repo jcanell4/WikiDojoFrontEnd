@@ -35,12 +35,15 @@ define([
             this.containerNode = jQuery('#' + args.containerId.replace(/^editor_/, '')).get(0);
 
 
+            console.log("Args???", args);
+
             // ALERTA[Xavi] Si es passa el valor de l'editor directament com a 'value' no s'executa el parse dels plugins.
             this.editor = new Editor({
                 styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
                 dispatcher: this.dispatcher,
                 components: [], // string[],
-                TOOLBAR_ID: this.TOOLBAR_ID
+                TOOLBAR_ID: this.TOOLBAR_ID,
+                readOnly: args.readOnly
             }, dom.byId(args.containerId));
 
             if (args.TOOLBAR_ID) {

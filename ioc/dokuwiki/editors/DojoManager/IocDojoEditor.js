@@ -55,6 +55,8 @@ define([
                 this._pluginsToParse = [];
                 this.toolbars = {};
 
+                this.disabled = args.readOnly === true;
+
                 // Basic plugins
                 arguments[0].plugins = [
                     this.getPlugin('HTMLBold'),
@@ -150,6 +152,8 @@ define([
 
 
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
+
+
             },
 
             onLoad: function () {
@@ -412,9 +416,17 @@ define([
                     }
                     return r;
                 }
+            },
+
+            startup: function() {
+                this.inherited(arguments); // a la superclasse es crea la toolbar
+
+                if (this.disabled) {
+                    jQuery(this.toolbar.domNode).css('display', 'none');
+                    this.resize();
+                }
+
             }
-
-
 
         }
     )

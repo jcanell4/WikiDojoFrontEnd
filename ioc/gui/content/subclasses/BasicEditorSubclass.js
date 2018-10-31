@@ -304,6 +304,7 @@ define([
                         dispatcher: this.dispatcher,
                         content: config.content,
                         originalContent: config.originalContent,
+                        readOnly: this.getReadOnly(),
                     }
                 );
             },
