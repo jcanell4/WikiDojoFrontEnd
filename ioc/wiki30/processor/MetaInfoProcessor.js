@@ -178,7 +178,8 @@ define([
                 openOnClick: true,
                 typeDictionary: metaContent.typeDictionary,
                 treeDataSource: metaContent.treeDataSource,
-                urlBase: metaContent.urlBase
+                urlBase: metaContent.urlBase,
+                standbyId:metaContent.standbyId
             };
             if (metaContent.buttons) {
                 args.buttons = metaContent.buttons;
