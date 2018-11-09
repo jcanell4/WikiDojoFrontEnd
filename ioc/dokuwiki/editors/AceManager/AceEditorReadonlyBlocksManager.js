@@ -5,12 +5,21 @@ define([
 
     var Range = ace.require('ace/range').Range;
 
+    var instanceCounter = 0;
+
     return declare([], {
 
         constructor: function (editor) {
             this.editor = editor;
             this.session = editor.session;
             this.readOnlyStates = {};
+
+            this.counterId = instanceCounter++;
+            this.enabled = true;
+        },
+
+        toggle: function() {
+            this.enabled = !this.enabled;
         },
 
         enableReadonlyBlocks: function () {
@@ -139,6 +148,7 @@ define([
         },
 
         addReadonlyBlock: function (state, callback, unique) {
+
             if (!this.readOnlyStates[state]) {
                 this.readOnlyStates[state] = [];
             }
@@ -166,14 +176,16 @@ define([
             var cursor = this.editor.editor.getCursorPosition();
             var states = this.editor.get_line_states_preview(cursor.row, true);
 
-            if (this.isReadonlySection(states, cursor)) return;
+            if (this.isReadonlySection(states, cursor)) {
+                console.log("No es pot escriure, retornant");
+                return;
+            }
             next();
         },
 
         isReadonlySection: function (states, cursor) {
 
             if (!this.enabled) {
-
                 return false;
             }
 

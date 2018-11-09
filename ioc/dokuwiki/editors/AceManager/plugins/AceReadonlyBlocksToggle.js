@@ -28,19 +28,44 @@ define([
 
             this.addButton(config, this.process);
 
-            this.enabled = true;
-            this.editor.readOnlyBlocksManager.enabled = this.enabled;
+        },
+
+
+
+        _processFull: function () {
+            var dispatcher = this.editor.dispatcher;
+
+            var id = dispatcher.getGlobalState().getCurrentId(),
+                editor = dispatcher.getContentCache(id).getMainContentTool().getEditor();
+
+            this._toggleReadOnlyBlocksManager(editor);
 
         },
 
-        process: function(args, btn) {
+        _processPartial: function () {
+            var dispatcher = this.editor.dispatcher;
 
+            var chunk = dispatcher.getGlobalState().getCurrentElementId(),
+                id = dispatcher.getGlobalState().getCurrentId();
+            chunk = chunk.replace(id + "_", "");
+            chunk = chunk.replace("container_", "");
+            var editor = dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
+
+            this._toggleReadOnlyBlocksManager(editor);
+
+
+        },
+
+        _toggleReadOnlyBlocksManager: function (editor) {
+
+            editor.editor.readOnlyBlocksManager.toggle();
+        },
+
+        process: function(args, btn) {
             jQuery(btn).toggleClass('toggled');
 
-            this.enabled = !this.enabled;
-            this.editor.readOnlyBlocksManager.enabled = this.enabled;
+            this.inherited(arguments);
         }
-
 
     });
 
