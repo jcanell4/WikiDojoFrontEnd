@@ -244,9 +244,12 @@ define([
              */
             updateFromState: function () {
                 if (this.updateViewHandlers) {
-                    array.forEach(this.updateViewHandlers, function (handler) {
-                        handler.update();
-                    });
+                    for(var i=this.updateViewHandlers.length-1; i>=0; i--){
+                        this.updateViewHandlers[i].update();
+                    }
+//                    array.forEach(this.updateViewHandlers, function (handler) {
+//                        handler.update();
+//                    });
                 }
             },
 

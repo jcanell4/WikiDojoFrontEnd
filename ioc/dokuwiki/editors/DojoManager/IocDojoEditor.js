@@ -55,6 +55,8 @@ define([
                 this._pluginsToParse = [];
                 this.toolbars = {};
 
+                this.disabled = args.readOnly === true;
+
                 // Basic plugins
                 arguments[0].plugins = [
                     this.getPlugin('HTMLBold'),
@@ -71,6 +73,7 @@ define([
                     this.getPlugin('HTMLHeader6'),
                     this.getPlugin('HTMLLink'),
                     this.getPlugin('HTMLLinkExternal'),
+
 
                     // 'bold', 'italic','underline', /*'code' this.getPlugin('InsertCodeSyntax'),*/'strikethrough', /* Header x4, Enllaç intern,
                     // Enllaç extern (hi ha plugin de dojo), UL, OL, Linia horitzontal,  Afegir imatge,
@@ -102,6 +105,7 @@ define([
                     'SaveButton',
                     'CancelButton',
                     'DocumentPreviewButton',
+                    'ViewSource'
                 ]);
 
 
@@ -145,6 +149,9 @@ define([
                 // this.new_toolbar.startup();
 
                 /// FI TEST Nova toolbar
+
+
+                this.TOOLBAR_ID = args.TOOLBAR_ID;
 
 
             },
@@ -409,9 +416,17 @@ define([
                     }
                     return r;
                 }
+            },
+
+            startup: function() {
+                this.inherited(arguments); // a la superclasse es crea la toolbar
+
+                if (this.disabled) {
+                    jQuery(this.toolbar.domNode).css('display', 'none');
+                    this.resize();
+                }
+
             }
-
-
 
         }
     )

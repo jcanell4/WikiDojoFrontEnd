@@ -34,17 +34,23 @@ define([
 
             this.containerNode = jQuery('#' + args.containerId.replace(/^editor_/, '')).get(0);
 
+
+            console.log("Args???", args);
+
             // ALERTA[Xavi] Si es passa el valor de l'editor directament com a 'value' no s'executa el parse dels plugins.
             this.editor = new Editor({
                 styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
                 dispatcher: this.dispatcher,
                 components: [], // string[],
+                TOOLBAR_ID: this.TOOLBAR_ID,
+                readOnly: args.readOnly
             }, dom.byId(args.containerId));
 
             if (args.TOOLBAR_ID) {
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
             }
 
+            console.log("TOOLBAR_ID?", this.TOOLBAR_ID);
 
             // alert("ALERTA: S'ha de fer el canvi per distingir entre el content i el originalContent pels esborranys!");
             // var text = this.$textarea.val();
@@ -53,7 +59,6 @@ define([
 
             // var originalContent = args.originalContent.replace(/^\s+|\s+$/gm, '');
 
-            //console.log("******* Original content?", args.originalContent);
             this.editor.originalContent = args.originalContent || args.content;
 
 
@@ -63,12 +68,13 @@ define([
                 this.emit('change', {newContent: newContent});
             }.bind(this));
 
-            this.editor.on('focus', function () {
-                // console.log('Focus DojoEditord');
-                // console.log("Enviant click fals:", args.parentId);
-                jQuery('#' + args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
-                // this.emit('click', {id: args.parentId});
-            }.bind(this));
+
+            // this.editor.on('focus', function () {
+            //     // console.log('Focus DojoEditord');
+            //     // console.log("Enviant click fals:", args.parentId);
+            //     jQuery('#' + args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
+            //     // this.emit('click', {id: args.parentId});
+            // }.bind(this));
 
             this.editor.startup();
             this.editor.focus();

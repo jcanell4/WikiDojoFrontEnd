@@ -5,6 +5,12 @@ define([
     "dijit/registry",
     "ioc/wiki30/manager/EventFactory",
 ], function (declare, ContentProcessor, contentToolFactory, registry, EventFactory) {
+
+    var editorsByFormat = {
+        'html':'Dojo'
+    };
+
+
     /**
      * Aquesta classe s'encarrega de processar les dades i generar un document editable.
      *

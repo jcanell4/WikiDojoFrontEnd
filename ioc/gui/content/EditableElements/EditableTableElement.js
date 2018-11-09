@@ -35,7 +35,11 @@ define([
                 // console.log("EditableTableElement#init", args);
                 this.inherited(arguments);
                 this.fieldToCol = {};
-                this.initializeCallbacks();
+                this.colToField = {};
+                // this.defaultDisplay = 'table';
+
+                this.initializeCallbacks()
+
             },
 
             initializeCallbacks: function() {
@@ -228,7 +232,6 @@ define([
                 grid.startup();
 
                 grid.on("ApplyCellEdit", function (e) {
-                    console.log("Canvis detectats: ", e);
                     this.updateField();
                 }.bind(this));
 
@@ -447,7 +450,6 @@ define([
                                 cell.type = cells._Widget;
                         }
 
-
                         if (field["input_on_new_row"] === true) {
                             this.inputOnNewRowFields[cell.name] = this.args.fields[cell.name];
                         }
@@ -513,6 +515,7 @@ define([
                     data.columns.push(fieldData);
 
                     this.fieldToCol[fieldData.name] = fieldData.field;
+                    this.colToField[fieldData.field] = fieldData.name;
                 }
 
                 // Extraiem les dades de la resta de files
@@ -521,13 +524,37 @@ define([
                     var row = {id: i - 1};
 
                     for (var j = 0; j < $columns.length; j++) {
-                        row['col' + j] = jQuery($columns[j]).attr("data-originalvalue");
+
+                        var colKey = 'col' + j;
+                        var key = this.colToField[colKey]; // TODO: Determinar la clau: this.colToField?
+
+
+                        row[colKey] = this.normalizeValueForKey(key, jQuery($columns[j]).attr("data-originalvalue"));
                     }
                     data.rows.push(row);
                 }
 
                 return data;
             },
+
+            normalizeValueForKey: function(key, value) {
+                var normalizedValue;
+                var type = this.args.fields[key]? this.args.fields[key].type : '';
+
+                switch (type) {
+                    case 'bool':
+                    case 'boolean':
+                        normalizedValue = value === true || value === "true";
+                        break;
+
+                    default:
+                        normalizedValue = value;
+
+                }
+
+                return normalizedValue;
+            },
+
 
             jsonToHTML: function (data) {
                 var $table = this.$node.find('tbody');
@@ -591,11 +618,40 @@ define([
                     data.push(newItem);
                 }
 
+                data = this.normalizeData(data);
+
                 this.$field.val(JSON.stringify(data));
 
                 if (this.context.forceCheckChanges) {
                     this.context.forceCheckChanges();
                 }
+            },
+
+            normalizeData: function(data) {
+
+                // Recorrem totes les files
+                for (var i=0; i<data.length; i++) {
+
+
+                    for (var key in data[i]) {
+                        var type = this.args.fields[key]? this.args.fields[key].type : '';
+
+                        switch (type) {
+                            case 'bool':
+                            case 'boolean':
+                                data[i][key] = data[i][key] === true || data[i][key] === "true";
+                                break;
+
+                            default:
+                                // No fer cap canvi
+
+                        }
+
+                    }
+
+                }
+
+                return data;
             },
 
             restoreFromField: function () {
