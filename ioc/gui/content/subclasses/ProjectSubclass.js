@@ -148,7 +148,7 @@ define([
 
         _getQuerySave: function () {
             var $form = jQuery('#form_' + this.id);
-            var values = {id: this.ns, projectType: this.projectType};
+            var values = {id: this.ns, projectType: this.projectType, metaDataSubSet: this.metaDataSubSet};
             
             var fields = $form.serializeArray();
             for (var i=0; i < fields.length; i++) {
@@ -169,6 +169,7 @@ define([
             return {
                 id: this.ns, 
                 projectType: this.projectType,
+                metaDataSubSet: this.metaDataSubSet,
                 leaveResource: true
             };
         },
@@ -200,6 +201,7 @@ define([
                     name: eventManager.eventName.CANCEL_PROJECT,
                     dataToSend: {
                         projectType: this.projectType,
+                        metaDataSubSet: this.metaDataSubSet,
                         no_response: true,
                         keep_draft: false,
                         close: true

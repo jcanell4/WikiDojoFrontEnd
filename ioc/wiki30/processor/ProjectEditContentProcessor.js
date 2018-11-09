@@ -32,6 +32,9 @@ define([
                     //si se pide, sustituimos los datos del formulario por los datos guardados en el draft local
                     args[0].content.formValues = JSON.parse(localDraft.project.content);
                 }
+                if (value.extra.metaDataSubSet)
+                    args[0].metaDataSubSet = value.extra.metaDataSubSet;
+                    dispatcher.getGlobalState().getContent(value.id)['metaDataSubSet'] = value.extra.metaDataSubSet;
             }
             
             //Con la incorporación del array de datos del formulario y los valores extra, llamamos a la secuencia principal
@@ -63,6 +66,8 @@ define([
                     renderEngines: ['test', 'zoomable_form_element'],
                     editable: true // Activa el mode d'edició automàtica pels EditableElements
                 };
+                if (content.extra.metaDataSubSet)
+                    args.metaDataSubSet = content.extra.metaDataSubSet;
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_EDIT, args);    
             return this.contentTool;
         },
