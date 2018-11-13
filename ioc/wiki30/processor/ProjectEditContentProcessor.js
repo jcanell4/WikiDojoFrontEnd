@@ -50,6 +50,7 @@ define([
             var args = {
                     ns: content.ns,
                     id: content.id,
+                    metaDataSubSet: content.extra.metaDataSubSet,
                     title: content.title,
                     content: content.content,
                     closable: true,

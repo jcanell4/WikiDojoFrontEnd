@@ -149,6 +149,8 @@ define([
                         dataToSend: dataToSend
                        };
             if (this.contentTool['projectType']) {
+                if (this.contentTool['metaDataSubSet']) 
+                    data['metaDataSubSet'] = this.contentTool['metaDataSubSet'];
                 this.eventManager.fireEvent(this.eventName.SAVE_PROJECT_DRAFT, data);
             }else {
                 this.eventManager.fireEvent(this.eventName.SAVE_DRAFT, data);
@@ -322,6 +324,8 @@ define([
                 date: this.lastRefresh
             };
             if (this.contentTool['projectType']) {
+                if (this.contentTool['metaDataSubSet']) 
+                    dataToSend['metaDataSubSet'] = this.contentTool['metaDataSubSet'];
                 dataToSend['projectType'] = this.contentTool['projectType'];
             }
 

@@ -83,6 +83,7 @@ define([
             var args = {
                     ns: content.ns,
                     id: content.id,
+                    metaDataSubSet: content.extra.metaDataSubSet,
                     title: content.title,
                     content: content.content,
                     closable: true,
@@ -93,8 +94,6 @@ define([
                     isRevision: content.isRevision,
                     autosaveTimer: content.autosaveTimer
                 };
-                if (content.extra.metaDataSubSet)
-                    args.metaDataSubSet = content.extra.metaDataSubSet;
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_VIEW, args);    
             return this.contentTool;
         },
