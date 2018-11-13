@@ -367,6 +367,8 @@ define([
 
                         _switchContext(obj.id);
 
+                        console.log("PatchingGetSelection context:", context);
+
                         if (context.currentEditor === context.EDITOR.ACE && obj === context.$textarea.get(0)) {
                             // jQuery(context.textarea).val(context.aceGetValue());
                             context.$textarea.val(context.getEditorValue());

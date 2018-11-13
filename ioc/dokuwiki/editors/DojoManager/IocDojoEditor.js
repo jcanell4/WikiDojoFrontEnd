@@ -184,15 +184,54 @@ define([
                 }
             },
 
+            generateNodeState: function($node) {
+
+                // si el node te id ="dijitEditorBody" retorna ''
+                if ($node.attr('id')==='dijitEditorBody') {
+                    return '';
+                } else {
+                    var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
+                    var pre = this.generateNodeState($node.parent());
+
+                    if (pre.length>0) {
+                        state = pre +'-' + state;
+                    }
+
+                    return state;
+                }
+
+            },
+
             _enableChangeDetector: function () {
-                var $editorContainer = jQuery("iframe#" + this.domNode.id + "_iframe").contents().find('#dijitEditorBody');
+                this.$iframe = jQuery("iframe#" + this.domNode.id + "_iframe");
+
+                var $editorContainer = this.$iframe.contents().find('#dijitEditorBody');
                 var callback = function () {
-                    //console.log("IocDojoEditor#onDisplayChanged->callback");
+                    // ALERTA! Si això funciona afegir també un callback pel click aquí
+                    // s'ha d'aprofitar per fer un update de la posició del cursor, actualitzar el tipus de bloc i fer un update dels plugins per canviar l'estat dels botons
+
                     this.emit('change', {newValue: this.get('value')});
+
                 }.bind(this);
+
+                var updateCursorState = function() {
+                    console.log("IocDojoEditor#updateCursorState");
+                    var internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document; // ie compatibility
+
+                    // Normalment el node seleccionat serà de tipus text, en aquest cas s'envia el parent
+                    var node = internalDocument.getSelection().getRangeAt(0).startContainer;
+                    var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
+
+                    var currentState = this.generateNodeState($node);
+
+                    this.emit('changeCursor', {state: currentState, $node : node});
+
+                }.bind(this);
+
 
                 if ($editorContainer.length > 0) {
                     $editorContainer.on('input keyup', callback);
+                    $editorContainer.on('input keyup click', updateCursorState);
                     this.changeDetectorEnabled = true;
                 }
             },

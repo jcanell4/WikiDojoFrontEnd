@@ -3,8 +3,9 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    "dojo/string"
-], function (declare, AbstractDojoPlugin, lang, _Plugin, string) {
+    "dojo/string",
+    "dijit/form/ToggleButton"
+], function (declare, AbstractDojoPlugin, lang, _Plugin, string, Button) {
 
     var FormatButton = declare(AbstractDojoPlugin, {
 
@@ -28,9 +29,35 @@ define([
             };
 
             this.addButton(config);
+
+
+            this.editor.on('changeCursor', this.updateCursorState.bind(this));
+        },
+
+        addButton: function(config) {
+            this.button = new Button(config);
+        },
+
+        updateCursorState: function(e) {
+            console.log("DojoFormatBlock", e);
+
+            if (e.state.indexOf(this.tag)>-1) {
+                this.button.set('checked', true);
+            } else {
+                this.button.set('checked', false);
+            }
         },
 
         process: function () {
+
+            // ALERTA[Xavi] si el botó es troba checked, es que ja es troba en aquest format i s'ha de treure
+            // la solució que hi ha a continuació no ho te en compte i no funciona correctament perque s'afegeixen blocs div directament
+            // en el cas en que s'ha d'eliminar el bloc ho hem de fer manualment
+            // posible solució:
+            //      - cercar el primer parent amb el tag
+            //      - afegir el seu innerhtml al seu parent
+            //      - eliminar aquest node
+
             // var previousValue = this.editor.getValue();
             var previousValue = this.editor.getValue();
 
@@ -46,6 +73,21 @@ define([
         },
 
 
+    //     getTextNodesIn: function (node) {
+    //     var textNodes = [];
+    //
+    //     if (node.nodeType === 3) {
+    //         textNodes.push(node);
+    //     } else {
+    //         var children = node.childNodes;
+    //
+    //         for (var i = 0, len = children.length; i < len; ++i) {
+    //             textNodes.push.apply(textNodes, this.getTextNodesIn(children[i]));
+    //         }
+    //     }
+    //
+    //     return textNodes;
+    // }
     });
 
 
