@@ -214,9 +214,10 @@ define([
 
                 }.bind(this);
 
+                var internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document; // ie compatibility
+
                 var updateCursorState = function() {
                     console.log("IocDojoEditor#updateCursorState");
-                    var internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document; // ie compatibility
 
                     // Normalment el node seleccionat serà de tipus text, en aquest cas s'envia el parent
                     var node = internalDocument.getSelection().getRangeAt(0).startContainer;
@@ -224,7 +225,7 @@ define([
 
                     var currentState = this.generateNodeState($node);
 
-                    this.emit('changeCursor', {state: currentState, $node : node});
+                    this.emit('changeCursor', {state: currentState, $node : $node, node: node});
 
                 }.bind(this);
 
