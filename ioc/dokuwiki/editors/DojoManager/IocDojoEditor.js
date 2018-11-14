@@ -72,7 +72,7 @@ define([
                     this.getPlugin('HTMLHeader5'),
                     this.getPlugin('HTMLHeader6'),
                     this.getPlugin('HTMLLink'),
-                    this.getPlugin('HTMLLinkExternal'),
+                    // this.getPlugin('HTMLLinkExternal'),
 
 
                     // 'bold', 'italic','underline', /*'code' this.getPlugin('InsertCodeSyntax'),*/'strikethrough', /* Header x4, Enllaç intern,
@@ -86,6 +86,14 @@ define([
                 // Extra plugins
                 var plugins = this.getPlugins([
                     // 'TestDropdown'
+
+                    // plugins dojo
+                    'createLink',
+                    'unlink',
+                    'insertOrderedList',
+                    'insertUnorderedList',
+
+                    // plugins propis
                     'NewContent',
                     'InsertFigureSyntax',
                     'InsertFigureLinkSyntax',
@@ -100,12 +108,12 @@ define([
                     'InsertQuoteSyntax',
                     'InsertAccountingSyntax',
                     'IocSoundFormatButton',
-                    // 'TestFormatButton',
                     'IocComment',
                     'SaveButton',
                     'CancelButton',
                     'DocumentPreviewButton',
-                    'ViewSource'
+                    'ViewSource',
+
                 ]);
 
 
@@ -184,7 +192,9 @@ define([
                 }
             },
 
-            generateNodeState: function($node) {
+            generateNodeState: function(node) {
+
+                var $node =jQuery(node);
 
                 // si el node te id ="dijitEditorBody" retorna ''
                 if ($node.attr('id')==='dijitEditorBody') {
@@ -202,6 +212,64 @@ define([
 
             },
 
+            getSelection() {
+                // Normalment el node seleccionat serà de tipus text, en aquest cas s'enviarà el parent
+
+                var node = this.internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
+
+                var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
+
+                // console.log("Informació total de la selecció:", this.internalDocument.getSelection());
+                // console.log("Informació del rang at 0:", this.internalDocument.getSelection().getRangeAt(0));
+
+
+                // isCollapsed: true es que només inclou 1 node, false inclou més d'un node? <-- no serveix, es true quan hi han múltiples nodes en 1 sol block
+                var startNode = this.internalDocument.getSelection().getRangeAt(0).startContainer;
+                var endNode = this.internalDocument.getSelection().getRangeAt(0).endContainer;
+
+                startNode = startNode.nodeType === 3 ? startNode.parentElement : startNode;
+                endNode = endNode.nodeType === 3 ? endNode.parentElement : endNode;
+
+
+                var nodes = [];
+
+                if (startNode === endNode) {
+                    // jQuery(startNode).css('background-color','red'); // Utilitzat per comprovar que els blocks seleccionats son aquests (no s'elimina en deseleccionar)
+                    nodes.push(startNode);
+                } else {
+
+                    var started = false;
+
+                    $node.children().each(function() {
+
+                        if (jQuery.contains(this, startNode) || this === startNode) {
+                            started = true;
+                        }
+
+                        if (!started) {
+                            return true;
+                        }
+
+                        nodes.push(this);
+
+
+                        // jQuery(this).css('background-color','red'); // Utilitzat per comprovar que els blocks seleccionats son aquests (no s'elimina en deseleccionar)
+
+                        var ended = jQuery.contains(this, endNode) || this === endNode;
+
+                        return !ended;
+
+                    });
+                }
+
+                return {
+                    container: node,
+                    startNode: startNode,
+                    endNode: endNode,
+                    nodes: nodes
+                }
+            },
+
             _enableChangeDetector: function () {
                 this.$iframe = jQuery("iframe#" + this.domNode.id + "_iframe");
 
@@ -214,25 +282,20 @@ define([
 
                 }.bind(this);
 
-                var internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document; // ie compatibility
+                this.internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document; // ie compatibility
 
                 var updateCursorState = function() {
-                    console.log("IocDojoEditor#updateCursorState");
+                    var selection = this.getSelection();
+                    var currentState = this.generateNodeState(selection.startNode);
 
-                    // Normalment el node seleccionat serà de tipus text, en aquest cas s'envia el parent
-                    var node = internalDocument.getSelection().getRangeAt(0).startContainer;
-                    var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
-
-                    var currentState = this.generateNodeState($node);
-
-                    this.emit('changeCursor', {state: currentState, $node : $node, node: node});
+                    this.emit('changeCursor', {state: currentState, $node : selection.$node, node: selection.node});
 
                 }.bind(this);
 
 
                 if ($editorContainer.length > 0) {
                     $editorContainer.on('input keyup', callback);
-                    $editorContainer.on('input keyup click', updateCursorState);
+                    $editorContainer.on('input keyup click mouseup ', updateCursorState);
                     this.changeDetectorEnabled = true;
                 }
             },

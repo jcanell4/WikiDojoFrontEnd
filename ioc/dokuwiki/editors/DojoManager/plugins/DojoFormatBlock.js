@@ -9,7 +9,7 @@ define([
 
     var FormatButton = declare(AbstractDojoPlugin, {
 
-        init: function(args) {
+        init: function (args) {
             this.inherited(arguments);
 
             this.htmlTemplate = args.open + "${content}" + args.close;
@@ -34,14 +34,13 @@ define([
             this.editor.on('changeCursor', this.updateCursorState.bind(this));
         },
 
-        addButton: function(config) {
+        addButton: function (config) {
             this.button = new Button(config);
         },
 
-        updateCursorState: function(e) {
-            console.log("DojoFormatBlock", e);
+        updateCursorState: function (e) {
 
-            if (e.state.indexOf(this.tag)>-1) {
+            if (e.state.indexOf(this.tag) > -1) {
                 this.button.set('checked', true);
             } else {
                 this.button.set('checked', false);
@@ -50,44 +49,61 @@ define([
 
         process: function () {
 
-            // ALERTA[Xavi] si el botó es troba checked, es que ja es troba en aquest format i s'ha de treure
-            // la solució que hi ha a continuació no ho te en compte i no funciona correctament perque s'afegeixen blocs div directament
-            // en el cas en que s'ha d'eliminar el bloc ho hem de fer manualment
-            // posible solució:
-            //      - cercar el primer parent amb el tag
-            //      - afegir el seu innerhtml al seu parent
-            //      - eliminar aquest node
 
-            // var previousValue = this.editor.getValue();
-            var previousValue = this.editor.getValue();
+            // TODO: habilitar el sistema per selecció múltiple
 
-            // this.editor.execCommand('removeformat');
-            this.editor.execCommand('formatblock', this.tag);
+            // ALERTA: En aquest punt el botó encara no ha canviat d'estat en ser premut
+            // console.log("Estat del botó:", this.button.get('checked'));
 
-            // si no hi han canvis es que ja es trobaba aquest block, el reemplaçem pel block generic 'p'. Alerta! amb 'div' com a block generic no funciona, al 3er canvi falla
-            if (previousValue === this.editor.getValue()) {
-                // this.editor.execCommand('removeformat');
-                this.editor.execCommand('formatblock', 'p');
+            if (!this.button.get('checked')) {
+                // console.log("Removing block");
+                this.removeBlock()
+            } else {
+                // console.log("Adding block");
+                this.addBlock();
             }
 
         },
 
+        addBlock: function () {
+            var selection = this.editor.getSelection();
 
-    //     getTextNodesIn: function (node) {
-    //     var textNodes = [];
-    //
-    //     if (node.nodeType === 3) {
-    //         textNodes.push(node);
-    //     } else {
-    //         var children = node.childNodes;
-    //
-    //         for (var i = 0, len = children.length; i < len; ++i) {
-    //             textNodes.push.apply(textNodes, this.getTextNodesIn(children[i]));
-    //         }
-    //     }
-    //
-    //     return textNodes;
-    // }
+            for (var i = 0; i < selection.nodes.length; i++) {
+                var $node = jQuery(selection.nodes[i]);
+                var $newNode = jQuery('<' + this.tag + '>');
+
+                $newNode.html($node.html());
+                $node.empty();
+
+                $node.append($newNode);
+
+            }
+        },
+
+        removeBlock: function () {
+            var selection = this.editor.getSelection();
+
+            for (var i = 0; i < selection.nodes.length; i++) {
+                var $node = jQuery(selection.nodes[i]);
+                // console.log("Unwrapping node:", $node, $node.html());
+
+                if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()) {
+                    // Cas 1: l'element seleccionat es el que té la etiqueta
+                    $node.contents().unwrap();
+
+                } else {
+                    // Cas 2: Múltiples nodes poden contenir la etiqueta
+                    $node.find(this.tag).each(function () {
+                        jQuery(this).contents().unwrap();
+                    });
+
+                    // Cas 3: Un node superior conté la etiqueta
+                    $node.closest(this.tag).each(function() {
+                        jQuery(this).contents().unwrap();
+                    });
+                }
+            }
+        }
     });
 
 
