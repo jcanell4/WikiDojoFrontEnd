@@ -51,12 +51,23 @@ define([
             this.before(editor, 'onPaste', this.preventReadonly.bind(this));
             this.before(editor, 'onCut', this.preventReadonly.bind(this));
 
-            editor.on("click", this._handler.bind(this))
+            // Editor es l'editor ACE, no el IocAceEditor ni el AceFacade
+            editor.on("click", this._handler.bind(this));
+
+            // Aquest és el IocAceEditor
+            this.editor.on("update", this._handler.bind(this))
 
         },
 
         _handler: function (e) {
             var editor = e.editor;
+
+            if (editor === undefined) {
+                // Si mostrem e, te les propietats data i editor, però e.editor es undefined O.o
+                console.error("No s'ha rebut l'editor", e, editor, e.editor);
+                return;
+            }
+
             var session = editor.session;
 
             var cursor = this.editor.editor.getCursorPosition();

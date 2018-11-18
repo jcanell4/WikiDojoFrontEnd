@@ -41,7 +41,6 @@ define([
     return declare([AbstractAcePlugin], {
 
         init: function (args) {
-            console.log("Inicialitazant AceTableEditorPlugin", args);
 
             this.previousMarker = null;
 
@@ -249,7 +248,6 @@ define([
 
             var saveCallback = function () {
 
-                console.log("Click a save");
                 store.fetch({
                         query: {}, onComplete: function (items) {
                             var dokuwikiTable = context.parseData(items, layout, removedColumns);
@@ -257,6 +255,8 @@ define([
                             dokuwikiTable.unshift('<' + context.triggerState + '>');
                             dokuwikiTable.push('</' + context.triggerState + '>');
                             context.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
+
+                            context.editor.emit('update', {editor: context.editor.editor});
 
                         }
                     }
@@ -267,7 +267,6 @@ define([
             var cancelCallback = function () {
 
                 dialog.onHide();
-                console.log("Click a cancel");
 
             }.bind(this);
 
@@ -286,6 +285,11 @@ define([
             var $fieldsList = jQuery('<ul class="table-editor">');
             $toolbar.append($fieldsList);
 
+
+            var $idLabel = jQuery('<li><label>ID:</label></li>');
+            this.$id= jQuery('<input type="text" />');
+            $idLabel.append(this.$id);
+            $fieldsList.append($idLabel);
 
             var $titleLabel = jQuery('<li><label>Títol:</label></li>');
             this.$title = jQuery('<input type="text" />');
@@ -539,9 +543,6 @@ define([
             dialog.show();
 
             var contentData = this.parseContentData(value);
-            console.log("Value:", value);
-
-            console.log("ContentData:", contentData);
 
             var store = new ItemFileWriteStore({data: contentData.data});
 
@@ -698,6 +699,7 @@ define([
 
             // Establim els valors inicials de les opcions
             // this.$tableType.val(this.parsedData.meta.table_type);
+            this.$id.val(this.parsedData.meta.id);
             this.$title.val(this.parsedData.meta.title);
             this.$footer.val(this.parsedData.meta.footer);
             this.$types.val(this.parsedData.meta.types);
@@ -722,7 +724,7 @@ define([
             var lines = [];
 
             // Construim la caixa
-            lines.push("::" + (this.tableType === 'accounting' ? 'accounting' : 'table') + ":");
+            lines.push("::" + (this.tableType === 'accounting' ? 'accounting' : 'table') + ":" + this.$id.val());
 
 
             if (this.$title.val().length > 0) {
@@ -750,8 +752,10 @@ define([
             var first = true;
 
             // Construim la capçalera //
-            for (var i = 0; i < this.numberOfColumns; i++) {
-                if (removedColumns.indexOf(i) !== -1) {
+
+            for(var i=0; i<this.numberOfColumns; i++) {
+
+                if (removedColumns.indexOf(i+1) !== -1) {
                     continue; // Columna eliminada
                 }
 
@@ -765,8 +769,6 @@ define([
                 }
 
                 header += "^ " + layout[i].name;
-
-
             }
 
             header += " ^";
@@ -811,12 +813,9 @@ define([
                     }
 
 
-                    var cellContent = items[i]['col' + j][0];
-
-                    console.log(cellContent);
+                    var cellContent = items[i]['col' + j]? items[i]['col' + j][0] : '';
 
                     if (typeof cellContent === 'string') {
-                        console.log("Trobada string", cellContent);
                         cellContent = cellContent.split(new RegExp('\\n', 'g')).join('\\\\ ');
                     }
 
@@ -869,6 +868,7 @@ define([
                 columns: [],
                 rows: [],
                 meta: {
+                    id:"",
                     title: "",
                     footer: "",
                     types: "",
@@ -902,6 +902,8 @@ define([
                 if (lines[i].startsWith(':::')) {
                     // Es tanca la taula
                     continue;
+                } else if (lines[i].startsWith('::table:')) {
+                    parsedLines.meta.id= lines[i].replace('::table:', '').trim();
                 } else if (lines[i].startsWith('  :title:')) {
                     parsedLines.meta.title = lines[i].replace('  :title:', '').trim();
                 } else if (lines[i].startsWith('  :footer:')) {
@@ -936,7 +938,7 @@ define([
                         columns = row.length - 1;
                     }
                 } else {
-                    console.warn("*********** aquesta línia no esta sent processada:", lines[i]);
+                    console.warn("Línia no processada:", lines[i]);
                 }
             }
 
@@ -945,13 +947,10 @@ define([
         },
 
         parseLine: function (line, id) {
-            console.log("ParseLine", line);
             var tokens = line.split('|');
             var row = {
                 id: id
             };
-
-            console.log("Tokens trobats", line, tokens);
 
 
             var cols = 0;
