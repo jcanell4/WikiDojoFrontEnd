@@ -41,6 +41,7 @@ define([
     return declare([AbstractAcePlugin], {
 
         init: function (args) {
+            console.log("Inicialitazant AceTableEditorPlugin", args);
 
             this.previousMarker = null;
 
@@ -248,6 +249,7 @@ define([
 
             var saveCallback = function () {
 
+                console.log("Click a save");
                 store.fetch({
                         query: {}, onComplete: function (items) {
                             var dokuwikiTable = context.parseData(items, layout, removedColumns);
@@ -265,6 +267,7 @@ define([
             var cancelCallback = function () {
 
                 dialog.onHide();
+                console.log("Click a cancel");
 
             }.bind(this);
 
@@ -536,6 +539,9 @@ define([
             dialog.show();
 
             var contentData = this.parseContentData(value);
+            console.log("Value:", value);
+
+            console.log("ContentData:", contentData);
 
             var store = new ItemFileWriteStore({data: contentData.data});
 
@@ -732,7 +738,7 @@ define([
             }
 
             if (this.$types.val().length > 0) {
-                lines.push("  :types:" + this.$types.val());
+                lines.push("  :type:" + this.$types.val());
             }
 
             // if (this.tableType === MULTILINE) {
@@ -767,6 +773,7 @@ define([
 
             lines.push(header);
             for (var i = 0; i < items.length; i++) {
+
                 var line = "";
 
                 var ignoreFirstSpace = true;
@@ -804,7 +811,16 @@ define([
                     }
 
 
-                    var cellContent = items[i]['col' + j];
+                    var cellContent = items[i]['col' + j][0];
+
+                    console.log(cellContent);
+
+                    if (typeof cellContent === 'string') {
+                        console.log("Trobada string", cellContent);
+                        cellContent = cellContent.split(new RegExp('\\n', 'g')).join('\\\\ ');
+                    }
+
+
                     line += "| " + cellContent;
 
                 }
@@ -892,8 +908,8 @@ define([
                     parsedLines.meta.footer = lines[i].replace('  :footer:', '').trim();
                 } else if (lines[i].startsWith('  :widths:')) {
                     parsedLines.meta.widths = lines[i].replace('  :widths:', '').trim();
-                } else if (lines[i].startsWith('  :types:')) {
-                    parsedLines.meta.types = lines[i].replace('  :types:', '').trim();
+                } else if (lines[i].startsWith('  :type:')) {
+                    parsedLines.meta.types = lines[i].replace('  :type:', '').trim();
                 } else if (lines[i].startsWith('::accounting:')) {
                     this.tableType = ACCOUNTING;
                 // } else if (lines[i].startsWith('::table:')) {
@@ -919,6 +935,8 @@ define([
                     if (row.length - 1 > columns) {
                         columns = row.length - 1;
                     }
+                } else {
+                    console.warn("*********** aquesta línia no esta sent processada:", lines[i]);
                 }
             }
 
@@ -927,16 +945,20 @@ define([
         },
 
         parseLine: function (line, id) {
+            console.log("ParseLine", line);
             var tokens = line.split('|');
             var row = {
                 id: id
             };
+
+            console.log("Tokens trobats", line, tokens);
 
 
             var cols = 0;
 
             for (var i = 0; i < tokens.length; i++) {
                 var value = tokens[i].trim();
+                value = value.split('\\\\ ').join("\n");
 
 
                 if (tokens[i].length === 0) {
@@ -973,6 +995,8 @@ define([
                 row['col' + (cols + 1)] = value;
 
                 cols++;
+
+
             }
 
 
