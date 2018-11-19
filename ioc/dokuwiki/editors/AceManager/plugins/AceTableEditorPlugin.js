@@ -481,19 +481,19 @@ define([
                                         continue;
                                     }
 
-                                    if (!items[i].merge) {
-                                        items[i].merge = {
-                                            h: [],
-                                            v: []
-                                        }
-                                    }
+                                    // if (!items[i].merge) {
+                                    //     items[i].merge = {
+                                    //         h: [],
+                                    //         v: []
+                                    //     }
+                                    // }
 
                                     if (i === startRow) { // Merge horitzonal
-                                        items[i].merge.h.push(j);
+                                        // items[i].merge.h.push(j);
                                         items[i]['col' + (j + 1)] = ["<<<"];
 
                                     } else { // Merge vertical
-                                        items[i].merge.v.push(j);
+                                        // items[i].merge.v.push(j);
                                         items[i]['col' + (j + 1)] = ["^^^"];
                                     }
 
@@ -660,15 +660,50 @@ define([
             };
 
 
+            var isCellLocked = function(value) {
+                if (value === '<i>^^^</i>' || value === '<i>&lt;&lt;&lt;</i>') {
+                    return true;
+                } return false;
+            };
+
+            grid.onCellClick = function(e){
+                var value = jQuery(e.cellNode).html();
+
+                if (isCellLocked(value)) {
+                    this.onRowClick(e);
+                    return;
+                }
+
+                // summary:
+                //		Event fired when a cell is clicked.
+                // e: Event
+                //		Decorated event object which contains reference to grid, cell, and rowIndex
+                this._click[0] = this._click[1];
+                this._click[1] = e;
+                if(!this.edit.isEditCell(e.rowIndex, e.cellIndex)){
+                    this.focus.setFocusCell(e.cell, e.rowIndex);
+                }
+                // in some cases click[0] is null which causes false doubeClicks. Fixes #100703
+                if(this._click.length > 1 && this._click[0] == null){
+                    this._click.shift();
+                }
+                this.onRowClick(e);
+            },
+
             // ALERTA[Xavi]No sembla posible cridar al parent d'aquesta funció ni guardan't
             // la original ni cridant al inherited. Així que he copiat el codi original (de dojox/grid/_Events.js)
             grid.onCellDblClick = function(e) {
                 var value = jQuery(e.cellNode).html();
 
-                if (value === '<i>^^^</i>' || value === '<i>&lt;&lt;&lt;</i>') {
+
+                if (isCellLocked(value)) {
+                    this.onRowClick(e);
                     return;
-                } else {
                 }
+
+                // if (value === '<i>^^^</i>' || value === '<i>&lt;&lt;&lt;</i>') {
+                //     return;
+                // }
 
                 // summary:
                 //		Event fired when a cell is double-clicked.
@@ -811,10 +846,11 @@ define([
                 var addSpaceOnFinishLine;
 
 
-                if (items[i].merge && typeof items[i].merge[0] === 'string') {
-                    items[i].merge = JSON.parse(items[i].merge[0]);
-                }
+                // if (items[i].merge && typeof items[i].merge[0] === 'string') {
+                //     items[i].merge = JSON.parse(items[i].merge[0]);
+                // }
 
+                var previousCellContent;
 
                 for (var j = 1; j <= this.numberOfColumns; j++) {
                     if (removedColumns.indexOf(j) !== -1) {
@@ -829,20 +865,33 @@ define([
                         line += " ";
                     }
 
+                    var cellContent = items[i]['col' + j]? items[i]['col' + j][0] : '';
 
-                    if (items[i].merge && items[i].merge.h.indexOf(j - 1) !== -1) {
+                    if (cellContent === '<<<') {
+                        // if (items[i].merge && items[i].merge.h.indexOf(j - 1) !== -1) {
                         addSpaceOnFinishLine = false;
                         ignoreFirstSpace = true;
                         line += "|";
                         continue;
-                    } else if (items[i].merge && items[i].merge.v.indexOf(j - 1) !== -1) {
+                    } else if (cellContent === '^^^') {
+                    // } else if (items[i].merge && items[i].merge.v.indexOf(j - 1) !== -1) {
                         //merged = true;
-                        line += "| :::";
+
+                        if (previousCellContent==="^^^") {
+                            addSpaceOnFinishLine = false;
+                            ignoreFirstSpace = true;
+                            line += "|";
+                        } else {
+                            line += "| :::";
+                        }
+
+                        previousCellContent = cellContent;
+
                         continue;
                     }
 
 
-                    var cellContent = items[i]['col' + j]? items[i]['col' + j][0] : '';
+
 
                     if (typeof cellContent === 'string') {
                         cellContent = cellContent.split(new RegExp('\\n', 'g')).join('\\\\ ');
