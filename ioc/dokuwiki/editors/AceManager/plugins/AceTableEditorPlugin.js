@@ -17,8 +17,8 @@ define([
 
     // "ioc/gui/content/EditableElements/ZoomableCell",
 
-
-], function (declare, AbstractAcePlugin, /*DataGrid, */cells, cellsDijit, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry/*, Textarea*/) {
+    "dojo/_base/sniff"
+], function (declare, AbstractAcePlugin, /*DataGrid, */cells, cellsDijit, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry/*, Textarea*/, has) {
 
     // TODO[Xavi] Afegir com a paràmetre al constructor o als arguments d'inicialització
     var MAX_EXTRA_COLUMNS = 50,
@@ -465,7 +465,6 @@ define([
                 store.fetch({
                         query: {}, onComplete: function (items) {
 
-
                             //console.log("items:", items);
 
                             var first = true;
@@ -577,6 +576,7 @@ define([
 
                 if (value === '^^^' || value === '<<<' || value === '&lt;&lt;&lt;') {
                     value = '<i>' + value + '</i>';
+                    // cell.editable = false;
                 }
 
                 return value;
@@ -660,17 +660,41 @@ define([
             };
 
 
+            // ALERTA[Xavi]No sembla posible cridar al parent d'aquesta funció ni guardan't
+            // la original ni cridant al inherited. Així que he copiat el codi original (de dojox/grid/_Events.js)
+            grid.onCellDblClick = function(e) {
+                var value = jQuery(e.cellNode).html();
+
+                if (value === '<i>^^^</i>' || value === '<i>&lt;&lt;&lt;</i>') {
+                    return;
+                } else {
+                }
+
+                // summary:
+                //		Event fired when a cell is double-clicked.
+                // e: Event
+                //		Decorated event object contains reference to grid, cell, and rowIndex
+                var event;
+                if(this._click.length > 1 && has('ie')){
+                    event = this._click[1];
+                }else if(this._click.length > 1 && this._click[0].rowIndex != this._click[1].rowIndex){
+                    event = this._click[0];
+                }else{
+                    event = e;
+                }
+                this.focus.setFocusCell(event.cell, event.rowIndex);
+                this.edit.setEditCell(event.cell, event.rowIndex);
+                this.onRowDblClick(e);
+
+            };
+
             domConstruct.place(grid.domNode, dialog.containerNode);
-
-
             grid.startup();
-
 
             // Amagem les columnes buides
             for (var i = this.numberOfColumns; i < this.maxColumns - 1; i++) {
                 grid.layout.setColumnVisibility(/* int */ i, /* bool */ false);
             }
-
 
             grid.resize();
             dialog.resize();
