@@ -648,11 +648,16 @@ define([
                     this.grid.focus.focusGrid();
                     this._doCatchBoomerang();
                 }
-            }
+            };
 
-
-
-
+            grid.onHeaderCellDblClick = function (e){
+                var nouHeader = prompt("Introdueix el nom de la capçalera:", e.cell.name); // TODO: Localitzar
+                if (nouHeader === null) {
+                    return;
+                }
+                layout[e.cellIndex].name = nouHeader;
+                jQuery(e.cellNode).html(nouHeader);
+            };
 
 
             domConstruct.place(grid.domNode, dialog.containerNode);
