@@ -877,15 +877,15 @@ define([
                     // } else if (items[i].merge && items[i].merge.v.indexOf(j - 1) !== -1) {
                         //merged = true;
 
-                        if (previousCellContent==="^^^") {
-                            addSpaceOnFinishLine = false;
-                            ignoreFirstSpace = true;
-                            line += "|";
-                        } else {
+//                        if (previousCellContent==="^^^") {
+//                            addSpaceOnFinishLine = false;
+//                            ignoreFirstSpace = true;
+//                            line += "|";
+//                        } else {
                             line += "| :::";
-                        }
+//                        }
 
-                        previousCellContent = cellContent;
+//                        previousCellContent = cellContent;
 
                         continue;
                     }
