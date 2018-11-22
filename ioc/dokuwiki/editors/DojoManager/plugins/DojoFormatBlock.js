@@ -3,12 +3,13 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    "dojo/string"
-], function (declare, AbstractDojoPlugin, lang, _Plugin, string) {
+    "dojo/string",
+    "dijit/form/ToggleButton"
+], function (declare, AbstractDojoPlugin, lang, _Plugin, string, Button) {
 
     var FormatButton = declare(AbstractDojoPlugin, {
 
-        init: function(args) {
+        init: function (args) {
             this.inherited(arguments);
 
             this.htmlTemplate = args.open + "${content}" + args.close;
@@ -28,24 +29,81 @@ define([
             };
 
             this.addButton(config);
+
+
+            this.editor.on('changeCursor', this.updateCursorState.bind(this));
+        },
+
+        addButton: function (config) {
+            this.button = new Button(config);
+        },
+
+        updateCursorState: function (e) {
+
+            if (e.state.indexOf(this.tag) > -1) {
+                this.button.set('checked', true);
+            } else {
+                this.button.set('checked', false);
+            }
         },
 
         process: function () {
-            // var previousValue = this.editor.getValue();
-            var previousValue = this.editor.getValue();
 
-            // this.editor.execCommand('removeformat');
-            this.editor.execCommand('formatblock', this.tag);
 
-            // si no hi han canvis es que ja es trobaba aquest block, el reemplaçem pel block generic 'p'. Alerta! amb 'div' com a block generic no funciona, al 3er canvi falla
-            if (previousValue === this.editor.getValue()) {
-                // this.editor.execCommand('removeformat');
-                this.editor.execCommand('formatblock', 'p');
+            // TODO: habilitar el sistema per selecció múltiple
+
+            // ALERTA: En aquest punt el botó encara no ha canviat d'estat en ser premut
+            // console.log("Estat del botó:", this.button.get('checked'));
+
+            if (!this.button.get('checked')) {
+                // console.log("Removing block");
+                this.removeBlock()
+            } else {
+                // console.log("Adding block");
+                this.addBlock();
             }
 
         },
 
+        addBlock: function () {
+            var selection = this.editor.getSelection();
 
+            for (var i = 0; i < selection.nodes.length; i++) {
+                var $node = jQuery(selection.nodes[i]);
+                var $newNode = jQuery('<' + this.tag + '>');
+
+                $newNode.html($node.html());
+                $node.empty();
+
+                $node.append($newNode);
+
+            }
+        },
+
+        removeBlock: function () {
+            var selection = this.editor.getSelection();
+
+            for (var i = 0; i < selection.nodes.length; i++) {
+                var $node = jQuery(selection.nodes[i]);
+                // console.log("Unwrapping node:", $node, $node.html());
+
+                if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()) {
+                    // Cas 1: l'element seleccionat es el que té la etiqueta
+                    $node.contents().unwrap();
+
+                } else {
+                    // Cas 2: Múltiples nodes poden contenir la etiqueta
+                    $node.find(this.tag).each(function () {
+                        jQuery(this).contents().unwrap();
+                    });
+
+                    // Cas 3: Un node superior conté la etiqueta
+                    $node.closest(this.tag).each(function() {
+                        jQuery(this).contents().unwrap();
+                    });
+                }
+            }
+        }
     });
 
 

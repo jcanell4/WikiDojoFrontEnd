@@ -29,6 +29,8 @@ define([
 
 
     'dijit/_editor/plugins/ViewSource',
+    'dijit/_editor/plugins/LinkDialog',
+
     // Localització
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
 
@@ -38,7 +40,8 @@ define([
              DojoClearFormat, DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
-             AceTableEditor, ViewSource,
+             AceTableEditor,
+             ViewSource, LinkDialog,
              localization) {
 
 
@@ -103,6 +106,13 @@ define([
 
             'ViewSource' : ViewSource,
             'Clear': DojoClearFormat,
+
+            // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
+            // 'CreateLink' : 'createLink',
+            // 'Unlink' : 'unlink',
+            //
+            // 'InsertOrderedList' : 'insertOrderedList',
+            // 'InsertUnorderedList' :'insertUnorderedList'
         }
 
     };
@@ -467,6 +477,7 @@ define([
             icon: 'ViewSource',
         },
 
+
         'ClearFormat': {
             type: 'ClearFormat',
             title: localization["clear-format"],
@@ -487,7 +498,10 @@ define([
             };
         }
 
-        return null;
+        // Si el nom no existeix retorna el nom del plugin, això permet reutilizar els plugins de Dojo que no
+        // requereixen configuració sense afegir-los manualment
+        return name;
+        // return null;
     };
 
 
