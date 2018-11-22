@@ -225,7 +225,7 @@ define([
             if (data === "") {
                 return "";
             }else if (isNaN(data.substring(0,4))) {
-                sdata = data.split(/\/|-/);
+                var sdata = data.split(/\/|-/);
                 return [sdata[2], pad(sdata[1]), pad(sdata[0])].join('-');
             }else {
                 var d = new Date(data);
