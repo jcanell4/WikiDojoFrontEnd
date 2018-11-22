@@ -93,8 +93,7 @@ define([
         },
 
         _doCancelProjectForm: function (event) {
-            var extraDataToSend;
-            var dataToSend = this._getQueryCancel();
+            var dataToSend, extraDataToSend;
             var containerId = this.id;
             var data = this._getDataFromEvent(event);
             var isAuto = (typeof event.extraDataToSend === "string" && event.extraDataToSend.indexOf('auto=true') >= 0);
@@ -106,10 +105,12 @@ define([
             } 
             else if (data.discard_changes === undefined && this.isContentChanged()) {
                 var cancelDialog = this._generateDiscardDialog();
-                if (cancelDialog) 
+                if (cancelDialog)
                     cancelDialog.show();
                 this.cachedEvent = event;
                 return {_cancel: true};
+            }else {
+                dataToSend = this._getQueryCancel();
             }
 
             this.mixin(dataToSend, data);
