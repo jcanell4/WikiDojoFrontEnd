@@ -120,7 +120,7 @@ define([
          */
         postAttach: function () {
             this.registerToChangesManager();
-            jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this)); // Alerta[Xavi] Comprovar si el domNode es suficient per detectar els canvis del formulari
+            jQuery(this.domNode).on('paste cut keyup', this._checkChanges.bind(this)); // Alerta[Xavi] Comprovar si el domNode es suficient per detectar els canvis del formulari
             this.inherited(arguments);
         },
 

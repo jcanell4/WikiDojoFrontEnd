@@ -8,6 +8,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoClearFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoInternalLink',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -40,7 +41,7 @@ define([
 
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
-             DojoClearFormat, DojoMediaFormat,
+             DojoClearFormat, DojoMediaFormat, DojoInternalLink,
              DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
@@ -92,6 +93,7 @@ define([
             'InsertAccountingSyntax': DojoFormat,
 
             'InsertMediaSyntax': DojoMediaFormat,
+            'InsertInternalLinkSyntax': DojoInternalLink,
 
 
             // Botons barra d'eines de dojo bàsics. Quan es retorna un string s'utilitza un dels plugins originals del Diit.Editor.
@@ -335,6 +337,15 @@ define([
             // close: '\n:::',
             // sample: localization["ioc-insert-media-sample"],
             icon: 'IocInsertMediaSyntax',
+            // category: localization["category-ioc"]
+        },
+
+        'InsertInternalLinkSyntax': {
+            title: localization["ioc-insert-internal-link-button"],
+            // open: '::accounting:\n  :title:\n  :footer:\n',
+            // close: '\n:::',
+            // sample: localization["ioc-insert-media-sample"],
+            icon: 'IocInsertInternalLinkSyntax',
             // category: localization["category-ioc"]
         },
 
