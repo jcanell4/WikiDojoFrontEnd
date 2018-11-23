@@ -124,8 +124,11 @@ define([
 
 
                     if (callbacks) {
+                        console.log("EventObservable#dispatchEvent:", event, eventData);
                         for(var key in callbacks){
+                            console.log("EventObservable#dispatchEvent:callbacks[", key);
                             for(var i=0; callbacks[key] && i<callbacks[key].callbacks.length; i++){
+                                console.log("EventObservable#dispatchEvent:callbacks[key]callbacks[i]=", callbacks[key].callbacks[i]);
                                 callbacks[key].callbacks[i](eventData);
                             }
                         }

@@ -14,6 +14,7 @@ define([
     return declare([FormContentProcessor], {
 
         type: "project_edit",
+        contador: 0,
 
         process: function (value, dispatcher) {
             var args = arguments;
@@ -70,6 +71,7 @@ define([
 
          updateState: function (dispatcher, value) {
             this.inherited(arguments);
+            //Esto ya lo hace el padre, por tanto, no es necesario
             if (value.extra) {
                 dispatcher.getGlobalState().getContent(value.id)['metaDataSubSet'] = value.extra.metaDataSubSet;
             }
@@ -81,6 +83,8 @@ define([
             paramsOnExpire.contentTool = contentTool;
             paramsOnExpire.closable = false;
             paramsOnExpire.timeout = params.timer.timeout;
+            var self = this;
+            console.log("ProjectEditContentProcessor#_initTimer:contador=", this.contador);
             contentTool.initTimer({
                 onExpire: function (ptimer) {
                     // a) Si hi ha canvis:
@@ -99,6 +103,8 @@ define([
                                         , "lockExpiring_" + ptimer.contentTool.id
                                         , ptimer);
                         ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
+                        self.contador += 1;
+                        console.log("ProjectEditContentProcessor#_initTimer#onExpire:contador =", self.contador);
                         dialog.show();
                     // b) Si no hi ha canvis, es cancel·la sense avís previ, però a més
                     //    de l'html s'envia també una alerta informant del fet

@@ -22,6 +22,7 @@ define([
 
         type: "data",
         backupPreviousState: null,
+        contador: 0,
 
         /**
          * Processa el valor i crea un nou Editor amb la informació i el lliga al Dispatcher passat com argument.
@@ -155,6 +156,8 @@ define([
             paramsOnExpire.contentTool = contentTool;
             paramsOnExpire.closable = false;
             paramsOnExpire.timeout = params.timer.timeout;
+            var self = this;
+            console.log("DataContentProcessor#_initTimer:contador=", this.contador);
             contentTool.initTimer({
                 onExpire: function (ptimer) {
                     // a) Si hi ha canvis:
@@ -175,6 +178,8 @@ define([
                             , "lockExpiring_" + ptimer.contentTool.id
                             , ptimer);
                         ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
+                        self.contador += 1;
+                        console.log("DataContentProcessor#_initTimer#onExpire:contador =", self.contador);
                         dialog.show();
                         // b) Si no hi ha canvis, es cancel·la sense avís previ, però a mé 
                         //                  de l'html s'envia també una alerta informant del fet

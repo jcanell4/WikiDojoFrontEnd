@@ -49,7 +49,7 @@ define([
                     else {
                         nsTree.urlBase = nsTree.urlBaseTyped["*"];
                     }
-                    console.log("info item?", item);
+                    //console.log("info item?", item);
 
                     if (item.nsproject) {
                         nsTree.query += "&projectOwner="+item.nsproject;
