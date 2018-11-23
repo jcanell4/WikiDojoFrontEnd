@@ -1,19 +1,18 @@
 define([
     "dojo/_base/declare",
-    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    'ioc/dokuwiki/editors/Components/DocumentPreviewComponent',
-], function (declare, AbstractDojoPlugin, lang, _Plugin, DocumentPreviewComponent) {
+], function (declare, AbstractParseableDojoPlugin, lang, _Plugin) {
 
     var TIMER_INTERVAL = 0.1;
     var DEFAULT_WIDTH = 200;
     var timer = null;
 
 
-    var MediaButton = declare(AbstractDojoPlugin, {
+    var MediaButton = declare(AbstractParseableDojoPlugin, {
 
-        init: function(args) {
+        init: function (args) {
             this.inherited(arguments);
 
             //this.documentPreviewComponent= new DocumentPreviewComponent(this.editor.dispatcher);
@@ -34,7 +33,7 @@ define([
             this.addButton(config);
         },
 
-        _processFull:function() {
+        _processFull: function () {
             //this.documentPreviewComponent.send();
             // Opció 1: cridar directament a tb_mediapopup(btn, props, edid)
 
@@ -46,7 +45,7 @@ define([
             console.log("edid:", edid);
 
             // eliminem qualsevol textarea anterior. Alternativa: si existeix deixar aquest i no crear cap de nou
-            jQuery('textarea#'+edid).remove();
+            jQuery('textarea#' + edid).remove();
             clearInterval(timer);
 
             // Afegim un de nou
@@ -61,22 +60,23 @@ define([
 
             var context = this;
 
-            timer = setInterval(function() {
+            timer = setInterval(function () {
                 var value = $textarea.val();
-               if (value.length>0) {
-                   clearInterval(timer);
-                   // this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
+                if (value.length > 0) {
+                    clearInterval(timer);
+                    // this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
+
+                    context.insertHtml(value);
 
 
-                   context.editor.execCommand('inserthtml', context.wikiImageToHTML(value));
-                   // context.editor.execCommand('inserthtml', value);
+                    // context.editor.execCommand('inserthtml', value);
 
-                   timer = null;
-               }
+                    timer = null;
+                }
 
             }, TIMER_INTERVAL);
 
-            $textarea.on('focus', function(e) {
+            $textarea.on('focus', function (e) {
                 console.log($textarea.val());
                 alert("Canvis!");
             });
@@ -85,12 +85,11 @@ define([
                 null,
                 {
                     name: 'mediaselect', // name per la segona opció de window.open()
-                    options:'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes', // options pel tercer paràmetre de la funció window.open()
+                    options: 'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes', // options pel tercer paràmetre de la funció window.open()
                     url: 'lib/exe/mediamanager.php?ns='
                 },
                 edid
             );
-
 
 
             // Opció 2: copiar el codi de la funció:
@@ -107,11 +106,24 @@ define([
 
         },
 
-        wikiImageToHTML : function (value) {
+        insertHtml: function (value) {
+            var html = this.wikiImageToHTML(value);
+            this.editor.execCommand('inserthtml', html);
+            var id = jQuery(html).attr('data-ioc-id');
+
+            // ALERTA: Per alguna raó el .find() no troba els id normals d'html, per això es fa servir atribut propi
+            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id +'"]');
+
+            // TODO: Afegir aquí els botons que calguin
+
+            this._addHandlers($node);
+        },
+
+        wikiImageToHTML: function (value) {
             // Entrada: {{:0xb6mp.jpg?200|}};
 
-            var reg= new RegExp('{{:(.*)\\?');
-            var file= value.match(reg);
+            var reg = new RegExp('{{:(.*)\\?');
+            var file = value.match(reg);
 
             var width = value.match(/\?(.*?)\|/);
 
@@ -125,26 +137,54 @@ define([
 
             var url = 'lib/exe/fetch.php?'
                 // +'w=' + width[1]
-                +'media=' + file[1];
-                // +'&media=' + file[1];
-                // +'&tok=' + tok;
+                + 'media=' + file[1];
+            // +'&media=' + file[1];
+            // +'&tok=' + tok;
+
+            var id = file[1] + Date.now();
+
+            var html = '<img data-ioc-media data-ioc-id="' + id + '" src="' + url + '"/ style="width:' + width[1] + 'px;">'; // TODO: cal ficar alt o títol?
 
 
-
-            // Sortida: <img class="media"
-            // src="http://iocwiki.devv/dokuwiki_30/lib/exe/fetch.php?w=200&tok=0883bb&media=0xb6mp.jpg"
-            // alt="" width=""
-
-            var html = '<img src="' +url+'"/ style="width:'+ width[1] +'px;">'; // TODO: cal ficar alt o títol?
-
-            // TODO: Afegir aquí els handlers que calguin. Botons per editar/eliminar.
             // TODO: Alineació desde el botó: hi han tres combinacions posibles que depén de les etiquetes:
             // {{ wiki:dokuwiki-128.png}}
             // {{wiki:dokuwiki-128.png }}
             // {{ wiki:dokuwiki-128.png }}
             return html;
-        }
+        },
 
+        parse: function () {
+            var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-media]');
+            var context = this;
+
+            $nodes.each(function () {
+                context._addHandlers(jQuery(this)/*, context*/);
+            });
+
+        },
+
+        _addHandlers: function ($node) {
+            // ALERTA[Xavi] ens assegurem que s'esborre el node al premer les tecles delete o backspace
+            $node.on('keyup', function (e) {
+                var $this = jQuery(this);
+                console.log("keyup!", e.keyCode);
+
+                switch (e.keyCode) {
+                    case 8:  // Backspace
+                    case 46:  // Delete
+                        console.log("Backspace/delete pressed");
+                        $this.off();
+                        $this.remove();
+                        break;
+                }
+            });
+
+            //Codi de prova, per ara no es necessari gestionar el click, però ens assegurem que funciona
+            $node.on('click', function (e) {
+
+                console.log('click',this);
+            });
+        }
 
     });
 
