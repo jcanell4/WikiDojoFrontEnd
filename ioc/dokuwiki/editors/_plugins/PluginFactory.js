@@ -7,6 +7,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoReplaceFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoClearFormat',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -28,6 +29,8 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceTableEditorPlugin',
 
 
+
+
     'dijit/_editor/plugins/ViewSource',
     'dijit/_editor/plugins/LinkDialog',
 
@@ -37,7 +40,8 @@ define([
 
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
-             DojoClearFormat, DojoComment, AceFireEvent, AceFireDojoEvent,
+             DojoClearFormat, DojoMediaFormat,
+             DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
@@ -87,6 +91,7 @@ define([
             'InsertQuoteSyntax': DojoFormat,
             'InsertAccountingSyntax': DojoFormat,
 
+            'InsertMediaSyntax': DojoMediaFormat,
 
 
             // Botons barra d'eines de dojo bàsics. Quan es retorna un string s'utilitza un dels plugins originals del Diit.Editor.
@@ -323,6 +328,16 @@ define([
             icon: 'IocInsertAccountingSyntax',
             category: localization["category-ioc"]
         },
+
+        'InsertMediaSyntax': {
+            title: localization["ioc-insert-media-button"],
+            // open: '::accounting:\n  :title:\n  :footer:\n',
+            // close: '\n:::',
+            // sample: localization["ioc-insert-media-sample"],
+            icon: 'IocInsertMediaSyntax',
+            // category: localization["category-ioc"]
+        },
+
 
 
         'HTMLBold': {

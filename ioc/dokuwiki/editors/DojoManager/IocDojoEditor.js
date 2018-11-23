@@ -113,6 +113,7 @@ define([
                     'CancelButton',
                     'DocumentPreviewButton',
                     'ViewSource',
+                    'InsertMediaSyntax'
 
                 ]);
 
