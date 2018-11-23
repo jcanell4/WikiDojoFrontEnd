@@ -17,8 +17,8 @@ define([
 
     // "ioc/gui/content/EditableElements/ZoomableCell",
 
-
-], function (declare, AbstractAcePlugin, /*DataGrid, */cells, cellsDijit, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry/*, Textarea*/) {
+    "dojo/_base/sniff"
+], function (declare, AbstractAcePlugin, /*DataGrid, */cells, cellsDijit, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry/*, Textarea*/, has) {
 
     // TODO[Xavi] Afegir com a paràmetre al constructor o als arguments d'inicialització
     var MAX_EXTRA_COLUMNS = 50,
@@ -256,6 +256,8 @@ define([
                             dokuwikiTable.push('</' + context.triggerState + '>');
                             context.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
 
+                            context.editor.emit('update', {editor: context.editor.editor});
+
                         }
                     }
                 );
@@ -283,6 +285,11 @@ define([
             var $fieldsList = jQuery('<ul class="table-editor">');
             $toolbar.append($fieldsList);
 
+
+            var $idLabel = jQuery('<li><label>ID:</label></li>');
+            this.$id= jQuery('<input type="text" />');
+            $idLabel.append(this.$id);
+            $fieldsList.append($idLabel);
 
             var $titleLabel = jQuery('<li><label>Títol:</label></li>');
             this.$title = jQuery('<input type="text" />');
@@ -458,7 +465,6 @@ define([
                 store.fetch({
                         query: {}, onComplete: function (items) {
 
-
                             //console.log("items:", items);
 
                             var first = true;
@@ -475,19 +481,19 @@ define([
                                         continue;
                                     }
 
-                                    if (!items[i].merge) {
-                                        items[i].merge = {
-                                            h: [],
-                                            v: []
-                                        }
-                                    }
+                                    // if (!items[i].merge) {
+                                    //     items[i].merge = {
+                                    //         h: [],
+                                    //         v: []
+                                    //     }
+                                    // }
 
                                     if (i === startRow) { // Merge horitzonal
-                                        items[i].merge.h.push(j);
+                                        // items[i].merge.h.push(j);
                                         items[i]['col' + (j + 1)] = ["<<<"];
 
                                     } else { // Merge vertical
-                                        items[i].merge.v.push(j);
+                                        // items[i].merge.v.push(j);
                                         items[i]['col' + (j + 1)] = ["^^^"];
                                     }
 
@@ -570,6 +576,7 @@ define([
 
                 if (value === '^^^' || value === '<<<' || value === '&lt;&lt;&lt;') {
                     value = '<i>' + value + '</i>';
+                    // cell.editable = false;
                 }
 
                 return value;
@@ -641,24 +648,88 @@ define([
                     this.grid.focus.focusGrid();
                     this._doCatchBoomerang();
                 }
-            }
+            };
+
+            grid.onHeaderCellDblClick = function (e){
+                var nouHeader = prompt("Introdueix el nom de la capçalera:", e.cell.name); // TODO: Localitzar
+                if (nouHeader === null) {
+                    return;
+                }
+                layout[e.cellIndex].name = nouHeader;
+                jQuery(e.cellNode).html(nouHeader);
+            };
 
 
+            var isCellLocked = function(value) {
+                if (value === '<i>^^^</i>' || value === '<i>&lt;&lt;&lt;</i>') {
+                    return true;
+                } return false;
+            };
+
+            grid.onCellClick = function(e){
+                var value = jQuery(e.cellNode).html();
+
+                if (isCellLocked(value)) {
+                    this.onRowClick(e);
+                    return;
+                }
+
+                // summary:
+                //		Event fired when a cell is clicked.
+                // e: Event
+                //		Decorated event object which contains reference to grid, cell, and rowIndex
+                this._click[0] = this._click[1];
+                this._click[1] = e;
+                if(!this.edit.isEditCell(e.rowIndex, e.cellIndex)){
+                    this.focus.setFocusCell(e.cell, e.rowIndex);
+                }
+                // in some cases click[0] is null which causes false doubeClicks. Fixes #100703
+                if(this._click.length > 1 && this._click[0] == null){
+                    this._click.shift();
+                }
+                this.onRowClick(e);
+            },
+
+            // ALERTA[Xavi]No sembla posible cridar al parent d'aquesta funció ni guardan't
+            // la original ni cridant al inherited. Així que he copiat el codi original (de dojox/grid/_Events.js)
+            grid.onCellDblClick = function(e) {
+                var value = jQuery(e.cellNode).html();
 
 
+                if (isCellLocked(value)) {
+                    this.onRowClick(e);
+                    return;
+                }
 
+                // if (value === '<i>^^^</i>' || value === '<i>&lt;&lt;&lt;</i>') {
+                //     return;
+                // }
+
+                // summary:
+                //		Event fired when a cell is double-clicked.
+                // e: Event
+                //		Decorated event object contains reference to grid, cell, and rowIndex
+                var event;
+                if(this._click.length > 1 && has('ie')){
+                    event = this._click[1];
+                }else if(this._click.length > 1 && this._click[0].rowIndex != this._click[1].rowIndex){
+                    event = this._click[0];
+                }else{
+                    event = e;
+                }
+                this.focus.setFocusCell(event.cell, event.rowIndex);
+                this.edit.setEditCell(event.cell, event.rowIndex);
+                this.onRowDblClick(e);
+
+            };
 
             domConstruct.place(grid.domNode, dialog.containerNode);
-
-
             grid.startup();
-
 
             // Amagem les columnes buides
             for (var i = this.numberOfColumns; i < this.maxColumns - 1; i++) {
                 grid.layout.setColumnVisibility(/* int */ i, /* bool */ false);
             }
-
 
             grid.resize();
             dialog.resize();
@@ -692,6 +763,7 @@ define([
 
             // Establim els valors inicials de les opcions
             // this.$tableType.val(this.parsedData.meta.table_type);
+            this.$id.val(this.parsedData.meta.id);
             this.$title.val(this.parsedData.meta.title);
             this.$footer.val(this.parsedData.meta.footer);
             this.$types.val(this.parsedData.meta.types);
@@ -716,7 +788,7 @@ define([
             var lines = [];
 
             // Construim la caixa
-            lines.push("::" + (this.tableType === 'accounting' ? 'accounting' : 'table') + ":");
+            lines.push("::" + (this.tableType === 'accounting' ? 'accounting' : 'table') + ":" + this.$id.val());
 
 
             if (this.$title.val().length > 0) {
@@ -732,7 +804,7 @@ define([
             }
 
             if (this.$types.val().length > 0) {
-                lines.push("  :types:" + this.$types.val());
+                lines.push("  :type:" + this.$types.val());
             }
 
             // if (this.tableType === MULTILINE) {
@@ -744,8 +816,10 @@ define([
             var first = true;
 
             // Construim la capçalera //
-            for (var i = 0; i < this.numberOfColumns; i++) {
-                if (removedColumns.indexOf(i) !== -1) {
+
+            for(var i=0; i<this.numberOfColumns; i++) {
+
+                if (removedColumns.indexOf(i+1) !== -1) {
                     continue; // Columna eliminada
                 }
 
@@ -759,24 +833,24 @@ define([
                 }
 
                 header += "^ " + layout[i].name;
-
-
             }
 
             header += " ^";
 
             lines.push(header);
             for (var i = 0; i < items.length; i++) {
+
                 var line = "";
 
                 var ignoreFirstSpace = true;
                 var addSpaceOnFinishLine;
 
 
-                if (items[i].merge && typeof items[i].merge[0] === 'string') {
-                    items[i].merge = JSON.parse(items[i].merge[0]);
-                }
+                // if (items[i].merge && typeof items[i].merge[0] === 'string') {
+                //     items[i].merge = JSON.parse(items[i].merge[0]);
+                // }
 
+                var previousCellContent;
 
                 for (var j = 1; j <= this.numberOfColumns; j++) {
                     if (removedColumns.indexOf(j) !== -1) {
@@ -791,20 +865,39 @@ define([
                         line += " ";
                     }
 
+                    var cellContent = items[i]['col' + j]? items[i]['col' + j][0] : '';
 
-                    if (items[i].merge && items[i].merge.h.indexOf(j - 1) !== -1) {
+                    if (cellContent === '<<<') {
+                        // if (items[i].merge && items[i].merge.h.indexOf(j - 1) !== -1) {
                         addSpaceOnFinishLine = false;
                         ignoreFirstSpace = true;
                         line += "|";
                         continue;
-                    } else if (items[i].merge && items[i].merge.v.indexOf(j - 1) !== -1) {
+                    } else if (cellContent === '^^^') {
+                    // } else if (items[i].merge && items[i].merge.v.indexOf(j - 1) !== -1) {
                         //merged = true;
-                        line += "| :::";
+
+//                        if (previousCellContent==="^^^") {
+//                            addSpaceOnFinishLine = false;
+//                            ignoreFirstSpace = true;
+//                            line += "|";
+//                        } else {
+                            line += "| :::";
+//                        }
+
+//                        previousCellContent = cellContent;
+
                         continue;
                     }
 
 
-                    var cellContent = items[i]['col' + j];
+
+
+                    if (typeof cellContent === 'string') {
+                        cellContent = cellContent.split(new RegExp('\\n', 'g')).join('\\\\ ');
+                    }
+
+
                     line += "| " + cellContent;
 
                 }
@@ -853,6 +946,7 @@ define([
                 columns: [],
                 rows: [],
                 meta: {
+                    id:"",
                     title: "",
                     footer: "",
                     types: "",
@@ -886,14 +980,16 @@ define([
                 if (lines[i].startsWith(':::')) {
                     // Es tanca la taula
                     continue;
+                } else if (lines[i].startsWith('::table:')) {
+                    parsedLines.meta.id= lines[i].replace('::table:', '').trim();
                 } else if (lines[i].startsWith('  :title:')) {
                     parsedLines.meta.title = lines[i].replace('  :title:', '').trim();
                 } else if (lines[i].startsWith('  :footer:')) {
                     parsedLines.meta.footer = lines[i].replace('  :footer:', '').trim();
                 } else if (lines[i].startsWith('  :widths:')) {
                     parsedLines.meta.widths = lines[i].replace('  :widths:', '').trim();
-                } else if (lines[i].startsWith('  :types:')) {
-                    parsedLines.meta.types = lines[i].replace('  :types:', '').trim();
+                } else if (lines[i].startsWith('  :type:')) {
+                    parsedLines.meta.types = lines[i].replace('  :type:', '').trim();
                 } else if (lines[i].startsWith('::accounting:')) {
                     this.tableType = ACCOUNTING;
                 // } else if (lines[i].startsWith('::table:')) {
@@ -919,6 +1015,8 @@ define([
                     if (row.length - 1 > columns) {
                         columns = row.length - 1;
                     }
+                } else {
+                    console.warn("Línia no processada:", lines[i]);
                 }
             }
 
@@ -937,6 +1035,7 @@ define([
 
             for (var i = 0; i < tokens.length; i++) {
                 var value = tokens[i].trim();
+                value = value.split('\\\\ ').join("\n");
 
 
                 if (tokens[i].length === 0) {
@@ -973,6 +1072,8 @@ define([
                 row['col' + (cols + 1)] = value;
 
                 cols++;
+
+
             }
 
 

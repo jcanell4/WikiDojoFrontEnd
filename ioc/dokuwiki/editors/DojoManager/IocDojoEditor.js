@@ -72,7 +72,7 @@ define([
                     this.getPlugin('HTMLHeader5'),
                     this.getPlugin('HTMLHeader6'),
                     this.getPlugin('HTMLLink'),
-                    this.getPlugin('HTMLLinkExternal'),
+                    // this.getPlugin('HTMLLinkExternal'),
 
 
                     // 'bold', 'italic','underline', /*'code' this.getPlugin('InsertCodeSyntax'),*/'strikethrough', /* Header x4, Enllaç intern,
@@ -86,6 +86,14 @@ define([
                 // Extra plugins
                 var plugins = this.getPlugins([
                     // 'TestDropdown'
+
+                    // plugins dojo
+                    'createLink',
+                    'unlink',
+                    'insertOrderedList',
+                    'insertUnorderedList',
+
+                    // plugins propis
                     'NewContent',
                     'InsertFigureSyntax',
                     'InsertFigureLinkSyntax',
@@ -100,12 +108,12 @@ define([
                     'InsertQuoteSyntax',
                     'InsertAccountingSyntax',
                     'IocSoundFormatButton',
-                    // 'TestFormatButton',
                     'IocComment',
                     'SaveButton',
                     'CancelButton',
                     'DocumentPreviewButton',
-                    'ViewSource'
+                    'ViewSource',
+
                 ]);
 
 
@@ -184,15 +192,110 @@ define([
                 }
             },
 
+            generateNodeState: function(node) {
+
+                var $node =jQuery(node);
+
+                // si el node te id ="dijitEditorBody" retorna ''
+                if ($node.attr('id')==='dijitEditorBody') {
+                    return '';
+                } else {
+                    var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
+                    var pre = this.generateNodeState($node.parent());
+
+                    if (pre.length>0) {
+                        state = pre +'-' + state;
+                    }
+
+                    return state;
+                }
+
+            },
+
+            getSelection() {
+                // Normalment el node seleccionat serà de tipus text, en aquest cas s'enviarà el parent
+
+                var node = this.internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
+
+                var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
+
+                // console.log("Informació total de la selecció:", this.internalDocument.getSelection());
+                // console.log("Informació del rang at 0:", this.internalDocument.getSelection().getRangeAt(0));
+
+
+                // isCollapsed: true es que només inclou 1 node, false inclou més d'un node? <-- no serveix, es true quan hi han múltiples nodes en 1 sol block
+                var startNode = this.internalDocument.getSelection().getRangeAt(0).startContainer;
+                var endNode = this.internalDocument.getSelection().getRangeAt(0).endContainer;
+
+                startNode = startNode.nodeType === 3 ? startNode.parentElement : startNode;
+                endNode = endNode.nodeType === 3 ? endNode.parentElement : endNode;
+
+
+                var nodes = [];
+
+                if (startNode === endNode) {
+                    // jQuery(startNode).css('background-color','red'); // Utilitzat per comprovar que els blocks seleccionats son aquests (no s'elimina en deseleccionar)
+                    nodes.push(startNode);
+                } else {
+
+                    var started = false;
+
+                    $node.children().each(function() {
+
+                        if (jQuery.contains(this, startNode) || this === startNode) {
+                            started = true;
+                        }
+
+                        if (!started) {
+                            return true;
+                        }
+
+                        nodes.push(this);
+
+
+                        // jQuery(this).css('background-color','red'); // Utilitzat per comprovar que els blocks seleccionats son aquests (no s'elimina en deseleccionar)
+
+                        var ended = jQuery.contains(this, endNode) || this === endNode;
+
+                        return !ended;
+
+                    });
+                }
+
+                return {
+                    container: node,
+                    startNode: startNode,
+                    endNode: endNode,
+                    nodes: nodes
+                }
+            },
+
             _enableChangeDetector: function () {
-                var $editorContainer = jQuery("iframe#" + this.domNode.id + "_iframe").contents().find('#dijitEditorBody');
+                this.$iframe = jQuery("iframe#" + this.domNode.id + "_iframe");
+
+                var $editorContainer = this.$iframe.contents().find('#dijitEditorBody');
                 var callback = function () {
-                    //console.log("IocDojoEditor#onDisplayChanged->callback");
+                    // ALERTA! Si això funciona afegir també un callback pel click aquí
+                    // s'ha d'aprofitar per fer un update de la posició del cursor, actualitzar el tipus de bloc i fer un update dels plugins per canviar l'estat dels botons
+
                     this.emit('change', {newValue: this.get('value')});
+
                 }.bind(this);
+
+                this.internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document; // ie compatibility
+
+                var updateCursorState = function() {
+                    var selection = this.getSelection();
+                    var currentState = this.generateNodeState(selection.startNode);
+
+                    this.emit('changeCursor', {state: currentState, $node : selection.$node, node: selection.node});
+
+                }.bind(this);
+
 
                 if ($editorContainer.length > 0) {
                     $editorContainer.on('input keyup', callback);
+                    $editorContainer.on('input keyup click mouseup ', updateCursorState);
                     this.changeDetectorEnabled = true;
                 }
             },

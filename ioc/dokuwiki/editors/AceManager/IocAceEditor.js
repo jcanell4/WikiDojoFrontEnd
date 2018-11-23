@@ -636,6 +636,7 @@ define([
                 }.bind(this));
 
                 this.session.on('change', function (e) {
+
                     if (!this._readOnly) {
                         this.emit('change', e);
                     }

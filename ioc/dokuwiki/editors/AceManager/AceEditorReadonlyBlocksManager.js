@@ -5,12 +5,21 @@ define([
 
     var Range = ace.require('ace/range').Range;
 
+    var instanceCounter = 0;
+
     return declare([], {
 
         constructor: function (editor) {
             this.editor = editor;
             this.session = editor.session;
             this.readOnlyStates = {};
+
+            this.counterId = instanceCounter++;
+            this.enabled = true;
+        },
+
+        toggle: function() {
+            this.enabled = !this.enabled;
         },
 
         enableReadonlyBlocks: function () {
@@ -42,12 +51,23 @@ define([
             this.before(editor, 'onPaste', this.preventReadonly.bind(this));
             this.before(editor, 'onCut', this.preventReadonly.bind(this));
 
-            editor.on("click", this._handler.bind(this))
+            // Editor es l'editor ACE, no el IocAceEditor ni el AceFacade
+            editor.on("click", this._handler.bind(this));
+
+            // Aquest és el IocAceEditor
+            this.editor.on("update", this._handler.bind(this))
 
         },
 
         _handler: function (e) {
             var editor = e.editor;
+
+            if (editor === undefined) {
+                // Si mostrem e, te les propietats data i editor, però e.editor es undefined O.o
+                console.error("No s'ha rebut l'editor", e, editor, e.editor);
+                return;
+            }
+
             var session = editor.session;
 
             var cursor = this.editor.editor.getCursorPosition();
@@ -139,6 +159,7 @@ define([
         },
 
         addReadonlyBlock: function (state, callback, unique) {
+
             if (!this.readOnlyStates[state]) {
                 this.readOnlyStates[state] = [];
             }
@@ -166,14 +187,16 @@ define([
             var cursor = this.editor.editor.getCursorPosition();
             var states = this.editor.get_line_states_preview(cursor.row, true);
 
-            if (this.isReadonlySection(states, cursor)) return;
+            if (this.isReadonlySection(states, cursor)) {
+                console.log("No es pot escriure, retornant");
+                return;
+            }
             next();
         },
 
         isReadonlySection: function (states, cursor) {
 
             if (!this.enabled) {
-
                 return false;
             }
 

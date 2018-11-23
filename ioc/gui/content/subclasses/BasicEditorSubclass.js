@@ -372,7 +372,7 @@ define([
              */
             onResize: function (args) {
                 var $form = jQuery('#form_' + this.id);
-                if($form.length>0){
+                if($form.length>0 && args.changeSize){
                     $form.height(args.changeSize.h);
                 }
             },
