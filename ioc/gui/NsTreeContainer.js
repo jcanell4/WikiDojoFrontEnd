@@ -102,6 +102,8 @@ define([
                     ret = (opened && self.expandProject) ? "dijitIconConnector" : "dijitIconPackage";
                 }else if (item.type === "po") {
                     ret = (opened && self.expandProject) ? "dijitIconBookmark" : "dijitIconChart";
+                }else if (item.type === "s") {
+                    ret = (opened && self.expandProject) ? "dijitIconKey" : "dijitIconConfigure";
                 }
                 return ret;
             };

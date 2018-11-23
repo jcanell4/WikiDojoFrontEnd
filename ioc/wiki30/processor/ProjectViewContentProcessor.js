@@ -33,6 +33,8 @@ define([
                     args[0].discard_changes = value.extra.discard_changes;
                 if (value.extra.hasDraft)
                     args[0].hasDraft = value.extra.hasDraft;
+                if (value.extra.metaDataSubSet)
+                    args[0].metaDataSubSet = value.extra.metaDataSubSet;
             }
             
             //Con la incorporación del array de datos del formulario, llamamos a la secuencia principal
@@ -60,6 +62,7 @@ define([
             if (value.extra) {
                 dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
                 dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
+                dispatcher.getGlobalState().getContent(value.id)['metaDataSubSet'] = value.extra.metaDataSubSet;
             }
             if (this.oldGlobalState && this.oldGlobalState.updateButton) {
                 //recuperar el globalstate updateButton
@@ -80,6 +83,7 @@ define([
             var args = {
                     ns: content.ns,
                     id: content.id,
+                    metaDataSubSet: content.extra.metaDataSubSet,
                     title: content.title,
                     content: content.content,
                     closable: true,

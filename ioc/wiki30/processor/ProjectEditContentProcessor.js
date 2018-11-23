@@ -50,6 +50,7 @@ define([
             var args = {
                     ns: content.ns,
                     id: content.id,
+                    metaDataSubSet: content.extra.metaDataSubSet,
                     title: content.title,
                     content: content.content,
                     closable: true,
@@ -67,6 +68,13 @@ define([
             return this.contentTool;
         },
 
+         updateState: function (dispatcher, value) {
+            this.inherited(arguments);
+            if (value.extra) {
+                dispatcher.getGlobalState().getContent(value.id)['metaDataSubSet'] = value.extra.metaDataSubSet;
+            }
+        },
+        
         _initTimer: function (params, dispatcher) {
             var contentTool = registry.byId(params.id);
             var paramsOnExpire = params.timer.dialogOnExpire;
@@ -102,9 +110,12 @@ define([
                 },
                 paramsOnExpire: paramsOnExpire
             });
-            contentTool.startTimer(params.timer.timeout);
-            //Añade un mensaje de tiempo
-            dispatcher.getInfoManager().setExtraInfo({priority: 0, message: "temps d'inactivitat permès: "+(paramsOnExpire.timeout/1000)+" segons"});
+            
+            if (paramsOnExpire.timeout > 0) {
+                contentTool.startTimer(params.timer.timeout);
+                //Añade un mensaje de tiempo
+                dispatcher.getInfoManager().setExtraInfo({priority: 0, message: "temps d'inactivitat permès: "+(paramsOnExpire.timeout/1000)+" segons"});
+            }
         }
 
     });

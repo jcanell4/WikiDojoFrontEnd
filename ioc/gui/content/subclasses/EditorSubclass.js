@@ -51,12 +51,10 @@ define([
              * @returns {boolean} - Retorna true si el contingut ha canviat o false en cas contrari
              */
             isContentChanged: function () {
-                // console.log("EditorSubclass#isContentChanged");
-                var content = this.getCurrentContent(),
+//                var content = this.getCurrentContent(),
                     // diffFromOriginal = this._getOriginalContent() != content,
-                    diffFromOriginal = this.getEditor().isChanged(),
+                var diffFromOriginal = this.getEditor().isChanged(),
                     diffFromLastCheck = this.isLastCheckedContentChanged();
-
 
                 if (diffFromOriginal && diffFromLastCheck) { // No es fa el refresc si encara no s'ha produt cap canvi
                     this.onDocumentRefreshed();
@@ -84,70 +82,45 @@ define([
             /**
              * Es registra als esdeveniments i activa la detecció de canvis, copiar, enganxar i pijar tecles dins
              * del node on es troba quest ContentTool.
-             *
              * Realitza l'enregistrament al ChangesManager.
-             *
              * @override
              */
             postAttach: function () {
-                //console.log("EditorSubclass#postAttach");
                 this.registerObserverToEvent(this, this.eventName.REFRESH_EDITION, this._refreshEdition.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
-
                 this.registerToChangesManager();
-
-                // jQuery(this.domNode).on('input paste cut keyup', this._checkChanges.bind(this));
                 this.editor.on('change', this._checkChanges.bind(this));
-
-
                 this.inherited(arguments);
-
                 this.lockDocument(); // Lock i Draft  [JOSEP]:Ara no cal això, ja que es bloqueja des del servidor en fer la petició d'edició
-
                 this._checkChanges();
             },
 
             _refreshEdition: function (event) {
                 this.eventManager.fireEvent(this.eventManager.eventName.EDIT,
-                    {
-                        id: this.id,
-                        dataToSend: "id=" + this.ns + "&refresh=true"
-                    });
+                                            {
+                                                id: this.id,
+                                                dataToSend: "id=" + this.ns + "&refresh=true"
+                                            });
             },
 
 
             // Alerta[Xavi] el event pot contenir informació que cal afegir al dataToSend, com per exemple el keep_draft i el discardChanges
             _doCancelDocument: function (event) {
-                // console.log("EditorSubclass#_doCancelDocument", this.id, event);
-
+                var dataToSend, containerId;
                 event = this._mixCachedEvent(event);
-
-                var dataToSend, containerId, data = this._getDataFromEvent(event);
-
+                var data = this._getDataFromEvent(event);
                 var isAuto = (typeof event.extraDataToSend === 'string' && event.extraDataToSend.indexOf('auto=true') >= 0);
 
-
-                // if (typeof this.cachedDataToSend === 'object') {
-                //     data = lang.mixin(data, this.cachedDataToSend);
-                // }
-
-
-                // if (data.discardChanges || (data.discardChanges == null && (this.isContentChanged() && this.dispatcher.discardChanges()))) {
                 if (data.discardChanges || isAuto) {
-
                     dataToSend = this.getQueryForceCancel(); // el paràmetre no es fa servir
-
-                    // ALERTA[Xavi] Per defecte no es demana confirmació
-                } else if (data.discardChanges === undefined && (this.isContentChanged())) {
-
+                }
+                else if (data.discardChanges === undefined && this.isContentChanged()) {
                     var cancelDialog = this._generateDiscardDialog();
-                    cancelDialog.show();
+                    if (cancelDialog)
+                        cancelDialog.show();
                     this.cachedEvent = event;
-
                     return {_cancel: true};
-
-
-                } else {
-
+                }
+                else {
                     dataToSend = this.getQueryCancel(); // el paràmetre no es fa servir
                 }
 
@@ -156,10 +129,8 @@ define([
                 }
 
                 if (event.extraDataToSend) {
-                    // dataToSend = lang.mixin(dataToSend, event.extraDataToSend);
                     dataToSend = this.mixData(dataToSend, event.extraDataToSend, 'string');
                 }
-                    //
 
                 if (this.required && this.getPropertyValueFromData(dataToSend, 'keep_draft') === false) {
                     this._removeAllDrafts();
@@ -167,56 +138,17 @@ define([
 
                 containerId = this.id;
 
-                // if (event.extraDataToSend) {
-                //     if (typeof event.extraDataToSend === "string") {
-                //         dataToSend += "&" + event.extraDataToSend;
-                //     } else {
-                //         dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
-                //     }
-                // }
-                // if (event.dataToSend) {
-                //     if (typeof event.dataToSend === "string") {
-                //         dataToSend += "&" + event.dataToSend;
-                //     } else {
-                //         dataToSend += "&" + ioQuery.objectToQuery(event.dataToSend);
-                //     }
-                // }
-
-
-//                this.eventManager.dispatchEvent(this.eventName.CANCEL, {
-//                    id: this.id,
-//                    dataToSend: dataToSend,
-//                    standbyId: containerId
-//                })
-
-//                this.cachedDataToSend = null;
-
-                // if (this.cachedDataToSend) {
-                //     var cachedQuery;
-                //     if (typeof this.cachedDataToSend === 'object') {
-                //         cachedQuery = jQuery.param(this.cachedDataToSend);
-                //     }
-                //
-                //     dataToSend += "&" + cachedQuery;
-                //     this.cachedDataToSend = null;
-                // }
-
-
                 if (event.dataToSend && event.dataToSend.close === true || this.getPropertyValueFromData(dataToSend, 'close')) {
                     // this.removeContentTool();
                     // ALERTA[Xavi] Per forçar el tancament de la pestanya hem de descartar els canvis per actualizar
                     // El ChangesManager i forçar la crida de la pestanya com si s'hagues fet click a la pestanya
-
                     this.forceReset();
                     this.forceClose = true;
                     this.container.closeChild(this);
-
-
-
                     return {
                         id: this.id,
                         dataToSend: dataToSend
-                    }
+                    };
                 }
 
                 return {
@@ -224,8 +156,6 @@ define([
                     dataToSend: dataToSend,
                     standbyId: containerId
                 };
-
-
             },
 
             _removeAllDrafts: function () {
@@ -295,7 +225,6 @@ define([
              */
             discardChanges: function () {
                 // TODO: fer la substitució del contingut i comprovar que està sincronitzat amb el ACEEditor, i si no ho està comprovar si es necessari sincronitzar-lo.
-
                 this.inherited(arguments);
             },
 
@@ -329,9 +258,6 @@ define([
             },
 
             _doSave: function (event) {
-                // console.log("EditorSubclass#_doSave", event, arguments);
-                // event = this._mixCachedEvent(event);
-
                 arguments[0] =  this._mixCachedEvent(event);
 
                 if (this.hasChanges || this.rev) {
@@ -341,15 +267,11 @@ define([
                 }
             },
 
-
             onClose: function () {
-                // console.log("EditorSubclass#onClose");
                 var ret = this.inherited(arguments);
-
                 ret = ret && !this.isContentChanged();
-
                 return ret || this.forceClose;
-            },
+            }
 
         });
 });

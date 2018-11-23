@@ -93,8 +93,7 @@ define([
         },
 
         _doCancelProjectForm: function (event) {
-            var extraDataToSend;
-            var dataToSend = this._getQueryCancel();
+            var dataToSend, extraDataToSend;
             var containerId = this.id;
             var data = this._getDataFromEvent(event);
             var isAuto = (typeof event.extraDataToSend === "string" && event.extraDataToSend.indexOf('auto=true') >= 0);
@@ -106,10 +105,12 @@ define([
             } 
             else if (data.discard_changes === undefined && this.isContentChanged()) {
                 var cancelDialog = this._generateDiscardDialog();
-                if (cancelDialog) 
+                if (cancelDialog)
                     cancelDialog.show();
                 this.cachedEvent = event;
                 return {_cancel: true};
+            }else {
+                dataToSend = this._getQueryCancel();
             }
 
             this.mixin(dataToSend, data);
@@ -148,7 +149,7 @@ define([
 
         _getQuerySave: function () {
             var $form = jQuery('#form_' + this.id);
-            var values = {id: this.ns, projectType: this.projectType};
+            var values = {id: this.ns, projectType: this.projectType, metaDataSubSet: this.metaDataSubSet};
             
             var fields = $form.serializeArray();
             for (var i=0; i < fields.length; i++) {
@@ -169,6 +170,7 @@ define([
             return {
                 id: this.ns, 
                 projectType: this.projectType,
+                metaDataSubSet: this.metaDataSubSet,
                 leaveResource: true
             };
         },
@@ -200,6 +202,7 @@ define([
                     name: eventManager.eventName.CANCEL_PROJECT,
                     dataToSend: {
                         projectType: this.projectType,
+                        metaDataSubSet: this.metaDataSubSet,
                         no_response: true,
                         keep_draft: false,
                         close: true
@@ -219,8 +222,10 @@ define([
         //Convierte una fecha a formato ISO "yyyy-mm-dd"
         _convertToISODate: function(data) {
             function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
-            if (isNaN(data.substring(0,4))) {
-                sdata = data.split(/\/|-/);
+            if (data === "") {
+                return "";
+            }else if (isNaN(data.substring(0,4))) {
+                var sdata = data.split(/\/|-/);
                 return [sdata[2], pad(sdata[1]), pad(sdata[0])].join('-');
             }else {
                 var d = new Date(data);

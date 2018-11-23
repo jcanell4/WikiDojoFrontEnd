@@ -45,7 +45,9 @@ define([
                 dispatcher.getGlobalState().getContent(value.id)["projectType"] = value.extra.projectType;
                 dispatcher.getGlobalState().getContent(value.id)["rol"] = value.extra.rol;
                 dispatcher.getGlobalState().getContent(value.id)["generated"] = value.extra.generated;
-            }            
+                if (value.extra.metaDataSubSet)
+                    dispatcher.getGlobalState().getContent(value.id)['metaDataSubSet'] = value.extra.metaDataSubSet;
+            }
         },
 
         /**
@@ -70,6 +72,8 @@ define([
                     projectType: content.extra.projectType,
                     type: this.type
                 };
+                if (content.extra.metaDataSubSet)
+                    args.metaDataSubSet = content.extra.metaDataSubSet;
 
             return contentToolFactory.generate(contentToolFactory.generation.FORM, args);
         }

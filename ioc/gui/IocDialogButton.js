@@ -260,16 +260,18 @@ define([
             var separacio = (w.value.EspaiNoms !== '') ? ':' : '';
             
             if (w.value.NouProjecte) {
-//                query = params.call_project + 
-//                        '&id=' + params.ns +
-//                        '&projectType=' + params.projectType +
-//                        '&new_id=' + w.value.EspaiNoms + separacio + w.value.NouProjecte +
-//                        '&new_projectType=' + w.value.SelectProjecte;
+                //versión con los parámetros del proyecto generador del subproyecto
                 query = params.call_project + 
-                        '&id=' + w.value.EspaiNoms + separacio + w.value.NouProjecte +
-                        '&projectType=' + w.value.SelectProjecte +
-                        '&parent_id=' + params.ns +
-                        '&parent_projectType=' + params.projectType;
+                        '&id=' + params.ns +
+                        '&projectType=' + params.projectType +
+                        '&new_id=' + w.value.EspaiNoms + separacio + w.value.NouProjecte +
+                        '&new_projectType=' + w.value.SelectProjecte;
+                //versión con los parámetros del subproyecto
+//                query = params.call_project + 
+//                        '&id=' + w.value.EspaiNoms + separacio + w.value.NouProjecte +
+//                        '&projectType=' + w.value.SelectProjecte +
+//                        '&parent_id=' + params.ns +
+//                        '&parent_projectType=' + params.projectType;
             }
             else if (w.value.NouDocument) {
                 //Método nº 1 de obtención directa del contenido item de un ComboBox: usar una variable de la clase

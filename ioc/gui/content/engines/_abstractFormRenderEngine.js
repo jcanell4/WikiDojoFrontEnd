@@ -373,12 +373,6 @@ define([
                 data = value;
             }
 
-            // if(typeof field.value ==="string"){
-            //     data = JSON.parse(field.value);
-            // }else{
-            //     data = field.value;
-            // }
-
             var $table = jQuery('<table></table>');
             $table.attr('id', field.id);
 
@@ -388,7 +382,6 @@ define([
             // Agafem les claus de la primera fila per afegir la capñalera
             var $row = jQuery('<tr></tr>');
             var first = true;
-
 
             var defaultRow = field.config.defaultRow;
 
@@ -407,23 +400,26 @@ define([
             $header.append($row);
             $table.append($header);
 
-
+            var dato;
             // Afegim les files
             for (var i = 0; i < data.length; i++) {
                 $row = jQuery('<tr></tr>');
 
                 for (key in data[i]) {
-                    $col = jQuery('<td>' + data[i][key] + '</td>');
+                    if (field.config.fields[key].type === "date") {
+                        dato = this.convertToDateDMY(data[i][key]);
+                    }else {
+                        dato = data[i][key];
+                    }
+                    //tratamiento especial para los campos de fecha de las tablas
+                    $col = jQuery('<td data-originalvalue="' + data[i][key] + '">' + dato + '</td>');
                     $row.append($col);
                 }
 
                 $body.append($row);
-
             }
 
-
             $table.append($body);
-
 
             if (field.props) {
                 this.addPropsToInput(field.props, $table);
@@ -578,10 +574,12 @@ define([
             return input.type === "date";
         },
 
-        //Convierte una fecha a formato "dd/mm/yyyy". El formato esperado es ISO "yyyy-mm-dd"
+        //Convierte una fecha a formato "dd-mm-yyyy". El formato esperado es ISO "yyyy-mm-dd"
         convertToDateDMY: function(data) {
             function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
-            if (isNaN(data.substring(0,4))) {
+            if (data === "") {
+                return "dd-mm-aaaa";
+            }else if (isNaN(data.substring(0,4))) {
                 sdata = data.split(/\/|-/);
                 return [pad(sdata[0]), pad(sdata[1]), sdata[2]].join('/');
             }else {

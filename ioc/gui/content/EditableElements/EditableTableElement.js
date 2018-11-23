@@ -59,13 +59,11 @@ define([
                 } else {
                     this.defaultRow = {};
                 }
-
                 this.inherited(arguments);
             },
 
             // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
             createWidget: function () {
-
 
                 var tableData = this.htmlToJson(this.$node);
                 this.columns = tableData.columns;
@@ -142,8 +140,7 @@ define([
                     this.columns = gridLayout[0].cells;
                 }
 
-
-                console.log("gridLayout final:", gridLayout);
+                //console.log("gridLayout final:", gridLayout);
 
                 this.setupCells(gridLayout[0]);
 
@@ -158,7 +155,6 @@ define([
                 if (this.args.data.rows) {
                     // rows = Math.max(this.args.data.rows, rows);
                     rows = this.args.data.rows;
-
                 }
 
                 var height = 36 + (rows * 24);
@@ -241,9 +237,7 @@ define([
 
 
                 var actions = this.args.actions ? this.args.actions : defaultActions;
-
                 this.initializeButtons(actions, $toolbar[0]);
-
 
                 this.updateField();
                 this.widgetInitialized = true;
@@ -301,7 +295,6 @@ define([
 
                 for (var key in this.inputOnNewRowFields) {
                     //var key = "key"; // TODO: això s'ha de passar per paràmetre de config desdel default view!
-
                     do {
                         value = prompt("Introdueix el valor pel camp " + key + ":");
                         if (value.length === 0) {
@@ -309,10 +302,7 @@ define([
                         }
                     } while (value.length === 0);
 
-
                     data[key] = value;
-
-
                 }
 
                 this.addRow(data);
@@ -429,12 +419,12 @@ define([
                                 cell.type = dojox.grid.cells.DateTextBox;
                                 cell.getValue = function(){
                                     // Override the default getValue function for dojox.grid.cells.DateTextBox
-                                    return dojo.date.locale.format(this.widget.get('value'), {selector: 'date', datePattern: storePattern});
+                                    return dojo.date.locale.format(this.widget.get('value'), {selector:'date', datePattern:storePattern});
                                 };
                                 cell.formatter = function (datum){
                                     // Format the value in store, so as to be displayed.
-                                    var d = datum==""?(new Date()):dojo.date.locale.parse(datum, {selector: 'date', datePattern: storePattern});
-                                    return dojo.date.locale.format(d, {selector: 'date', datePattern: displayPattern});
+                                    var d = datum == "" ? (new Date()) : dojo.date.locale.parse(datum, {selector:'date', datePattern:storePattern});
+                                    return dojo.date.locale.format(d, {selector:'date', datePattern:displayPattern});
                                 };
                                 break;
                             case 'number':
@@ -469,7 +459,6 @@ define([
 
             },
 
-
             revert: function () {
                 // console.log("Revert!");
                 var data = jQuery.extend(true, {}, this.backupData);
@@ -493,19 +482,15 @@ define([
 
                 this.dataStore.save();
                 this.grid.update();
-
             },
+            
             saveToField: function () {
                 this.backupData = jQuery.extend(true, {}, this.dataStore.objectStore.data);
-
-                // console.log(this.backupData);
-                // console.log("Save!");
 
                 this.jsonToHTML(this.backupData);
                 this.updateField();
 
                 this.dataStore.save();
-
             },
 
             htmlToJson: function ($table) {
@@ -514,7 +499,6 @@ define([
                     columns: [],
                     rows: []
                 };
-
 
                 var $rows = $table.find('tr');
                 var $columns = jQuery($rows[0]).children();
@@ -525,10 +509,7 @@ define([
                     var fieldData = {
                         name: jQuery($columns[i]).text(),
                         field: 'col' + i,
-                        editable: jQuery($columns[i]).attr('readonly') === undefined,
-                        //formatter:,
-                        //constraint:,
-
+                        editable: jQuery($columns[i]).attr('readonly') === undefined
                     };
 
                     data.columns.push(fieldData);
@@ -548,7 +529,7 @@ define([
                         var key = this.colToField[colKey]; // TODO: Determinar la clau: this.colToField?
 
 
-                        row[colKey] = this.normalizeValueForKey(key, jQuery($columns[j]).text());
+                        row[colKey] = this.normalizeValueForKey(key, jQuery($columns[j]).attr("data-originalvalue"));
                     }
                     data.rows.push(row);
                 }
@@ -578,9 +559,6 @@ define([
             jsonToHTML: function (data) {
                 var $table = this.$node.find('tbody');
                 $table.html("");
-
-                // console.log(data);
-
 
                 var cols = this.columns.length;
 
@@ -613,7 +591,6 @@ define([
                 if(this.$container.attr("data-display-node")){
                     this.$container.parent().slideToggle();
                 }
-
             },
 
             hide: function () {
@@ -622,8 +599,6 @@ define([
                 if (this.$icon) {
                     this.$icon.css('display', 'block');
                 }
-
-
             },
 
 
@@ -650,8 +625,6 @@ define([
                 if (this.context.forceCheckChanges) {
                     this.context.forceCheckChanges();
                 }
-                //console.log("Rebuilt item:", data);
-
             },
 
             normalizeData: function(data) {
@@ -707,16 +680,9 @@ define([
                     }
 
                     layout.cells = this.mergeCells(generatedLayout[i].cells, configLayout[i].cells);
-
-
                     mergedLayout.push(layout);
-
-
                 }
-
-
                 return mergedLayout;
-
             },
 
             mergeCells: function (generatedCells, configCells) {
@@ -737,12 +703,10 @@ define([
                     if (!this.isCellInLayout(generatedCells[i], configCells)) {
                         cells.push(generatedCells[i]);
                     }
-
                 }
 
                 for (var i = 0; i < configCells.length; i++) {
                     configCells[i].field = this.fieldToCol[configCells[i].name];
-
                     cells.push(configCells[i]);
                 }
 
@@ -759,12 +723,45 @@ define([
                         return true;
                     }
                 }
-
                 return false;
+            },
+
+            //NO SE USA
+            //Convierte una fecha a formato "dd-mm-yyyy"
+            convertToDateDMY: function(data) {
+                function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
+                var displayPattern = 'dd-MM-yyyy';
+                var d;
+                if (data === "") {
+                    d = new Date();
+                    return dojo.date.locale.format(d, {selector:'date', datePattern:displayPattern});
+                }else if (isNaN(data.substring(0,4))) {
+                    sdata = data.split(/\/|-/);
+                    return [pad(sdata[0]), pad(sdata[1]), sdata[2]].join('-');
+                }else {
+                    d = new Date(data);
+                    return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-');
+                }
+            },
+
+            //NO SE USA
+            //Convierte una fecha a formato "yyyy-mm-dd"
+            convertToISODate: function(data) {
+                function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
+                var pattern = 'yyyy-MM-dd';
+                var d;
+                if (data === "") {
+                    d = new Date();
+                    return dojo.date.locale.format(d, {selector:'date', datePattern:pattern});
+                }else if (isNaN(data.substring(0,4))) {
+                    sdata = data.split(/\/|-/);
+                    return [sdata[2], pad(sdata[1]), pad(sdata[0])].join('-');
+                }else {
+                    d = new Date(data);
+                    return [d.getFullYear(), pad(d.getMonth()+1), pad(d.getDate())].join('-');
+                }
             }
 
-
         });
-
 
 });

@@ -122,7 +122,6 @@ define([
             },
             
             render: function (data, context, $content) {
-
                 // console.log(data, context, $content);
 
                 var $doc = jQuery('<div>'),
