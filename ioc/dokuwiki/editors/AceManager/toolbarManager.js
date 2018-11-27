@@ -33,8 +33,6 @@ define([
         var pickerid = 'picker' + (pickercounter++);
         createPicker(pickerid, props, edid);
 
-        console.log("Picker", $btn, props, edid);
-
         $btn.click(
             function () {
                 var $container = $btn.closest('[data-editor-container]'),

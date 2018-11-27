@@ -27,8 +27,6 @@ define([
                 onClick: lang.hitch(this, "process")
             };
 
-            this.events = args.event;
-
             this.addButton(config);
         },
 
@@ -40,7 +38,6 @@ define([
 
             var edid = 'textarea_' + this.editor.id+'_media';
 
-            console.log("edid:", edid);
 
             // eliminem qualsevol textarea anterior. Alternativa: si existeix deixar aquest i no crear cap de nou
             jQuery('textarea#' + edid).remove();

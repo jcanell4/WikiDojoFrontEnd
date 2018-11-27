@@ -9,7 +9,7 @@ define([
     var timer = null;
 
 
-    var InternalLinkButton = declare(AbstractDojoPlugin, {
+    var PickerButton = declare(AbstractDojoPlugin, {
 
         init: function (args) {
             this.inherited(arguments);
@@ -25,17 +25,24 @@ define([
                 onClick: lang.hitch(this, "process")
             };
 
-            this.open = args.open;
-            this.close = args.close;
-            this.linkClass = args.class;
-
             this.addButton(config);
+
+            this.pickerid = 'picker' + (pickercounter++); // pickercounter es una variable global definida per la wiki a toolbar.js
+
+            var props = {
+                block : false,
+                title : args.title,
+                type: 'picker',
+                list : args.list
+            };
+
+            this.edid = 'textarea_' + this.editor.id + '_picker';
+            createPicker(this.pickerid, props, this.edid);
         },
 
         _processFull: function () {
 
-            var formId = 'form_' + this.editor.id + '_internal_link';
-            var textareaId = 'textarea_' + this.editor.id + '_internal_link';
+            var formId = 'form_' + this.editor.id + '_picker';
 
             jQuery('form#' + formId).remove();
             clearInterval(timer);
@@ -43,16 +50,13 @@ define([
             // Afegim un de nou
             var $form = jQuery('<form>')
                 .attr('id', formId);
-            var $input = jQuery('<input>')
-                .attr('name', 'id')
-                .attr('value', this.editor.id);
+
             var $textarea = jQuery('<textarea>')
-                .attr('id', textareaId);
+                .attr('id', this.edid);
 
             $form.css('display', 'none');
 
             $form.append($textarea);
-            $form.append($input);
 
             jQuery('body').append($form);
 
@@ -72,36 +76,29 @@ define([
 
             }, TIMER_INTERVAL);
 
-            dw_linkwiz.val = {
-                open: this.open,
-                close: this.close
-            };
 
-            dw_linkwiz.toggle($textarea);
+            $textarea.focus();
+
+            var $btn = jQuery(this.button.domNode);
+
+            pickerToggle(this.pickerid, $btn);
 
         },
 
         insertHtml: function (value) {
-            var html = this.wikiInternalLinkToHTML(value);
-            this.editor.execCommand('inserthtml', html);
+            // var html = this.wikiInternalLinkToHTML(value);
+            // ALERTA[Xavi] Pel cas dels caràcters especials carldria fer servir un diccionari i fer la conversió a entitats html
+            this.editor.execCommand('inserthtml', value);
         },
 
-        wikiInternalLinkToHTML: function (value) {
-
-            var extractedValue = value.substring(this.open.length, value.length - this.close.length);
-
-            var tokens = extractedValue.split('|');
-
-            return '<a href="/dokuwiki_30/doku.php?id=' + tokens[0] + '" title="' + tokens[0] + '" class='+this.linkClass+'>' + (tokens[1] ? tokens[1] : tokens[0]) + '</a>'; // TODO: pasar la URL base desde servidor, com? el JSINFO?
-        }
 
     });
 
 
     // Register this plugin.
-    _Plugin.registry["internal_link"] = function () {
-        return new InternalLinkButton({command: "internal_link"});
+    _Plugin.registry["picker"] = function () {
+        return new PickerButton({command: "picker"});
     };
 
-    return InternalLinkButton;
+    return PickerButton;
 });

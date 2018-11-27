@@ -9,6 +9,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoClearFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoInternalLink',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoPicker',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -41,7 +42,7 @@ define([
 
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
-             DojoClearFormat, DojoMediaFormat, DojoInternalLink,
+             DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
              DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
@@ -94,6 +95,7 @@ define([
 
             'InsertMediaSyntax': DojoMediaFormat,
             'InsertInternalLinkSyntax': DojoInternalLink,
+            'InsertSpecialCharacter': DojoPicker,
             'InsertHrSyntax': DojoFormatBlock,
 
             // Botons barra d'eines de dojo bàsics. Quan es retorna un string s'utilitza un dels plugins originals del Diit.Editor.
@@ -335,11 +337,7 @@ define([
 
         'InsertMediaSyntax': {
             title: localization["ioc-insert-media-button"],
-            // open: '::accounting:\n  :title:\n  :footer:\n',
-            // close: '\n:::',
-            // sample: localization["ioc-insert-media-sample"],
             icon: 'IocMedia',
-            // category: localization["category-ioc"]
         },
 
         'InsertInternalLinkSyntax': {
@@ -348,6 +346,13 @@ define([
             'open': '[[',
             'close': ']]',
             'class': 'wikilink1' // ALERTA! aquestaclasse CSS es imprescindible per que funcionen els links AJAX
+        },
+
+        'InsertSpecialCharacter': {
+            title: localization["ioc-insert-special-character-button"],
+            icon: 'IocSpecialChars',
+            list: ['À', 'à', 'Á', 'á', 'Â', 'â', 'Ã', 'ã', 'Ä', 'ä', 'Ǎ', 'ǎ', 'Ă', 'ă', 'Å', 'å', 'Ā', 'ā', 'Ą', 'ą', 'Æ', 'æ', 'Ć', 'ć', 'Ç', 'ç', 'Č', 'č', 'Ĉ', 'ĉ', 'Ċ', 'ċ', 'Ð', 'đ', 'ð', 'Ď', 'ď', 'È', 'è', 'É', 'é', 'Ê', 'ê', 'Ë', 'ë', 'Ě', 'ě', 'Ē', 'ē', 'Ė', 'ė', 'Ę', 'ę', 'Ģ', 'ģ', 'Ĝ', 'ĝ', 'Ğ', 'ğ', 'Ġ', 'ġ', 'Ĥ', 'ĥ', 'Ì', 'ì', 'Í', 'í', 'Î', 'î', 'Ï', 'ï', 'Ǐ', 'ǐ', 'Ī', 'ī', 'İ', 'ı', 'Į', 'į', 'Ĵ', 'ĵ', 'Ķ', 'ķ', 'Ĺ', 'ĺ', 'Ļ', 'ļ', 'Ľ', 'ľ', 'Ł', 'ł', 'Ŀ', 'ŀ', 'Ń', 'ń', 'Ñ', 'ñ', 'Ņ', 'ņ', 'Ň', 'ň', 'Ò', 'ò', 'Ó', 'ó', 'Ô', 'ô', 'Õ', 'õ', 'Ö', 'ö', 'Ǒ', 'ǒ', 'Ō', 'ō', 'Ő', 'ő', 'Œ', 'œ', 'Ø', 'ø', 'Ŕ', 'ŕ', 'Ŗ', 'ŗ', 'Ř', 'ř', 'Ś', 'ś', 'Ş', 'ş', 'Š', 'š', 'Ŝ', 'ŝ', 'Ţ', 'ţ', 'Ť', 'ť', 'Ù', 'ù', 'Ú', 'ú', 'Û', 'û', 'Ü', 'ü', 'Ǔ', 'ǔ', 'Ŭ', 'ŭ', 'Ū', 'ū', 'Ů', 'ů', 'ǖ', 'ǘ', 'ǚ', 'ǜ', 'Ų', 'ų', 'Ű', 'ű', 'Ŵ', 'ŵ', 'Ý', 'ý', 'Ÿ', 'ÿ', 'Ŷ', 'ŷ', 'Ź', 'ź', 'Ž', 'ž', 'Ż', 'ż', 'Þ', 'þ', 'ß', 'Ħ', 'ħ', '¿', '¡', '¢', '£', '¤', '¥', '€', '¦', '§', 'ª', '¬', '¯', '°', '±', '÷', '‰', '¼', '½', '¾', '¹', '²', '³', 'µ', '¶', '†', '‡', '·', '•', 'º', '∀', '∂', '∃', 'Ə', 'ə', '∅', '∇', '∈', '∉', '∋', '∏', '∑', '‾', '−', '∗', '×', '⁄', '√', '∝', '∞', '∠', '∧', '∨', '∩', '∪', '∫', '∴', '∼', '≅', '≈', '≠', '≡', '≤', '≥', '⊂', '⊃', '⊄', '⊆', '⊇', '⊕', '⊗', '⊥', '⋅', '◊', '℘', 'ℑ', 'ℜ', 'ℵ', '♠', '♣', '♥', '♦', 'α', 'β', 'Γ', 'γ', 'Δ', 'δ', 'ε', 'ζ', 'η', 'Θ', 'θ', 'ι', 'κ', 'Λ', 'λ', 'μ', 'Ξ', 'ξ', 'Π', 'π', 'ρ', 'Σ', 'σ', 'Τ', 'τ', 'υ', 'Φ', 'φ', 'χ', 'Ψ', 'ψ', 'Ω', 'ω', '★', '☆', '☎', '☚', '☛', '☜', '☝', '☞', '☟', '☹', '☺', '✔', '✘', '„', '“', '”', '‚', '‘', '’', '«', '»', '‹', '›', '—', '–', '…', '←', '↑', '→', '↓', '↔', '⇐', '⇑', '⇒', '⇓', '⇔', '©', '™', '®', '′', '″', '[', ']', '{', '}', '~', '(', ')', '%', '§', '$', '#', '|', '@']
+
         },
 
         'InsertHrSyntax': {

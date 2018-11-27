@@ -88,10 +88,14 @@ define(
         'ioc-insert-code-sample' : 'Codi',
         'ioc-insert-strikethrough-button' : 'Text barrat',
         'ioc-insert-strikethrough-sample' : 'Text barrat',
-        'ioc-insert-link-button' : 'TODO: Enllaç intern',
-        'ioc-insert-link-sample' : 'TODO: Enllaç intern',
-        'ioc-insert-link-external-button' : 'TODO: Enllaç extern',
-        'ioc-insert-link-external-sample' : 'TODO: Enllaç extern',
+        'ioc-insert-link-button' : 'Enllaç intern',
+        'ioc-insert-link-sample' : 'Enllaç intern',
+        'ioc-insert-link-external-button' : 'Enllaç extern',
+        'ioc-insert-link-external-sample' : 'Enllaç extern',
+
+        'ioc-insert-special-character-button': 'Caràcters especials',
+        'ioc-insert-media-button': 'Afegeix imatges',
+        'ioc-insert-hr-button': 'Ratlla horitzontal',
 
 
 

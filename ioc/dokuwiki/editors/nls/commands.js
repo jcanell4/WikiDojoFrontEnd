@@ -90,6 +90,12 @@ define({ root:
         'ioc-insert-link-external-button' : 'External Link',
         'ioc-insert-link-external-sample' : 'External Link',
 
+        'ioc-insert-special-character-button': 'Special Characters',
+        'ioc-insert-hr-button': 'Horizontal Rule',
+        'ioc-insert-media-button': 'Insert Image',
+
+
+
         'ioc-insert-header-sample': 'Header',
         'ioc-insert-header1-button': 'Header sintax level 1',
         'ioc-insert-header2-button': 'Header sintax level 2',

@@ -87,19 +87,22 @@ define([
                 var plugins = this.getPlugins([
                     // 'TestDropdown'
 
-                    // plugins dojo
+                    // plugins propis
                     'InsertInternalLinkSyntax',
 
 
-
+                    // plugins Dojo
                     'createLink',
                     'unlink',
                     'insertOrderedList',
                     'insertUnorderedList',
-                    'InsertHrSyntax',
-                    'InsertMediaSyntax',
+
 
                     // plugins propis
+                    'InsertHrSyntax',
+                    'InsertMediaSyntax',
+                    'InsertSpecialCharacter',
+
                     'NewContent',
                     'InsertFigureSyntax',
                     'InsertFigureLinkSyntax',
@@ -119,6 +122,8 @@ define([
                     'CancelButton',
                     'DocumentPreviewButton',
                     'ViewSource',
+
+
 
 
                 ]);
