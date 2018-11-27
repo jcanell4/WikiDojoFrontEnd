@@ -94,7 +94,7 @@ define([
 
             'InsertMediaSyntax': DojoMediaFormat,
             'InsertInternalLinkSyntax': DojoInternalLink,
-
+            'InsertHrSyntax': DojoFormatBlock,
 
             // Botons barra d'eines de dojo bàsics. Quan es retorna un string s'utilitza un dels plugins originals del Diit.Editor.
             'HTMLBold': 'bold',
@@ -136,6 +136,7 @@ define([
     //  open/close: correspondencia del codi wiki per la apertura i tancament d'una etiqueta.
     //  category: grup al que pertany una icona, tots els botons amb la mateixa categoria s'afegeixen al mateix botó desplegable.
     //  tableType: tipus de taula: 'normal', 'multiline' o 'accounting'
+    //  empty: bool. Utilitzat per indicar que un block es de tipus buit (la línia horitzontal)
 
     var config = {
         'CancelButton': {
@@ -331,25 +332,31 @@ define([
             category: localization["category-ioc"]
         },
 
+
         'InsertMediaSyntax': {
             title: localization["ioc-insert-media-button"],
             // open: '::accounting:\n  :title:\n  :footer:\n',
             // close: '\n:::',
             // sample: localization["ioc-insert-media-sample"],
-            icon: 'IocInsertMediaSyntax',
+            icon: 'IocMedia',
             // category: localization["category-ioc"]
         },
 
         'InsertInternalLinkSyntax': {
-            title: localization["ioc-insert-internal-link-button"],
-            // open: '::accounting:\n  :title:\n  :footer:\n',
-            // close: '\n:::',
-            // sample: localization["ioc-insert-media-sample"],
-            icon: 'IocInsertInternalLinkSyntax',
-            // category: localization["category-ioc"]
+            title: localization["ioc-insert-link-button"],
+            icon: 'IocLink',
+            'open': '[[',
+            'close': ']]',
+            'class': 'wikilink1' // ALERTA! aquestaclasse CSS es imprescindible per que funcionen els links AJAX
         },
 
-
+        'InsertHrSyntax': {
+            title: localization["ioc-insert-hr-button"],
+            tag: 'hr',
+            sample: localization["ioc-insert-hr-button"],
+            icon: 'IocHr',
+            empty: true
+        },
 
         'HTMLBold': {
             title: localization["ioc-insert-bold-button"],
@@ -452,13 +459,13 @@ define([
             category: localization["category-header"]
         },
 
-        'HTMLLink': {
-            title: localization["ioc-insert-link-button"],
-            open: '',
-            close: '',
-            sample: localization["ioc-insert-link-sample"],
-            icon: 'IocLink',
-        },
+        // 'HTMLLink': {
+        //     title: localization["ioc-insert-link-button"],
+        //     open: '',
+        //     close: '',
+        //     sample: localization["ioc-insert-link-sample"],
+        //     icon: 'IocLink',
+        // },
 
         'HTMLLinkExternal': {
             title: localization["ioc-insert-link-external-button"],

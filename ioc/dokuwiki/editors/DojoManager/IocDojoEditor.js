@@ -71,7 +71,7 @@ define([
                     this.getPlugin('HTMLHeader4'),
                     this.getPlugin('HTMLHeader5'),
                     this.getPlugin('HTMLHeader6'),
-                    this.getPlugin('HTMLLink'),
+                    // this.getPlugin('HTMLLink'),
                     // this.getPlugin('HTMLLinkExternal'),
 
 
@@ -88,10 +88,16 @@ define([
                     // 'TestDropdown'
 
                     // plugins dojo
+                    'InsertInternalLinkSyntax',
+
+
+
                     'createLink',
                     'unlink',
                     'insertOrderedList',
                     'insertUnorderedList',
+                    'InsertHrSyntax',
+                    'InsertMediaSyntax',
 
                     // plugins propis
                     'NewContent',
@@ -113,8 +119,7 @@ define([
                     'CancelButton',
                     'DocumentPreviewButton',
                     'ViewSource',
-                    'InsertMediaSyntax',
-                    'InsertInternalLinkSyntax'
+
 
                 ]);
 

@@ -10,19 +10,14 @@ define([
     var dispatcher = null;
 
     var loadDispatcher = function() {
-        console.log("Loading dispatcher");
         // ALERTA[Xavi] Important, el require es syncron, fins que no s'executa no continua la execució!
         require(["ioc/wiki30/dispatcherSingleton"], function(getDispatcher) {
             dispatcher = getDispatcher();
-            console.log("Dispatcher assigned")
         });
-        console.log("Dispatcher loaded");
     };
 
 
-    console.log("Parxejat dw_linkwiz");
     dw_linkwiz.toggle = function ($textarea) {
-        console.log("New Toggle");
 
         if (!$textarea) {
 
@@ -48,22 +43,14 @@ define([
 
 
             $textarea = editor.editor.$textarea;
-            console.log(editor, $textarea);
+
         }
 
-        console.log("Inicialitzatn amb textarea:", $textarea);
         dw_linkwiz.init($textarea); // Ens asegurem que s'ha inicialitzat
         dw_linkwiz.textArea = $textarea[0]; // Establim el textarea
 
-
-
-
-
         originalToggle();
     };
-
-
-
 
 
     return declare([Evented], {

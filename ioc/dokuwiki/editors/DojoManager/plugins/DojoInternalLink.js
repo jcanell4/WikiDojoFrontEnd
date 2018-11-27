@@ -27,6 +27,10 @@ define([
                 onClick: lang.hitch(this, "process")
             };
 
+            this.open = args.open;
+            this.close = args.close;
+            this.linkClass = args.class;
+
             this.events = args.event;
 
             this.addButton(config);
@@ -48,7 +52,7 @@ define([
             // Afegim un de nou
             var $form = jQuery('<form>')
                 .attr('id', formId);
-            var $input= jQuery('<input>')
+            var $input = jQuery('<input>')
                 .attr('name', 'id')
                 .attr('value', this.editor.id);
             var $textarea = jQuery('<textarea>')
@@ -69,7 +73,9 @@ define([
 
             timer = setInterval(function () {
                 var value = $textarea.val();
+
                 if (value.length > 0) {
+                    console.log("$texarea:", $textarea);
                     clearInterval(timer);
                     // this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
 
@@ -83,6 +89,10 @@ define([
 
             }, TIMER_INTERVAL);
 
+            dw_linkwiz.val = {
+                open: this.open,
+                close: this.close
+            };
 
             dw_linkwiz.toggle($textarea);
 
@@ -117,16 +127,28 @@ define([
             var id = jQuery(html).attr('data-ioc-id');
 
             // ALERTA: Per alguna raó el .find() no troba els id normals d'html, per això es fa servir atribut propi
-            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id +'"]');
+            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
 
             // TODO: Afegir aquí els botons que calguin
 
             this._addHandlers($node);
         },
 
-        wikiInternalLinkToHTML: function(value) {
-            console.warn("TODO: implementar aquesta funció");
-          return '<b>TODO: Convertir en html: ' + value + '</b>';
+        wikiInternalLinkToHTML: function (value) {
+
+            var extractedValue = value.substring(this.open.length, value.length - this.close.length);
+
+            var tokens = extractedValue.split('|');
+
+            console.log("extractedValue:", extractedValue);
+            console.log("Tokens:", tokens);
+
+            console.log("retornant html:", '<a href="/dokuwiki_30/doku.php?id=' + tokens[0] + '" title="' + tokens[0] + '">' + (tokens[1] ? tokens[1] : tokens[0]) + '</a>'); // TODO: pasar la URL base desde servidor, com? el JSINFO?)
+
+            return '<a href="/dokuwiki_30/doku.php?id=' + tokens[0] + '" title="' + tokens[0] + '" class='+this.linkClass+'>' + (tokens[1] ? tokens[1] : tokens[0]) + '</a>'; // TODO: pasar la URL base desde servidor, com? el JSINFO?
+            // Eliminem el principi i el final
+
+            //return '<b>TODO: Convertir en html: ' + extractedValue + '</b>';
         },
 
         // wikiImageToHTML: function (value) {
@@ -192,7 +214,7 @@ define([
             //Codi de prova, per ara no es necessari gestionar el click, però ens assegurem que funciona
             $node.on('click', function (e) {
 
-                console.log('click',this);
+                console.log('click', this);
             });
         }
 

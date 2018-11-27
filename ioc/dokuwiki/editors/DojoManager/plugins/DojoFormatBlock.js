@@ -30,6 +30,8 @@ define([
 
             this.addButton(config);
 
+            this.empty = args.empty !== undefined ? args.empty : false;
+
 
             this.editor.on('changeCursor', this.updateCursorState.bind(this));
         },
@@ -55,7 +57,11 @@ define([
             // ALERTA: En aquest punt el botó encara no ha canviat d'estat en ser premut
             // console.log("Estat del botó:", this.button.get('checked'));
 
-            if (!this.button.get('checked')) {
+            if (this.empty) {
+
+                this.editor.execCommand('inserthtml', '<' +this.tag+'/>');
+
+            } else if (!this.button.get('checked')) {
                 // console.log("Removing block");
                 this.removeBlock()
             } else {
