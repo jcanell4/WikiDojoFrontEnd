@@ -111,7 +111,10 @@ define(
         'ioc-readonly-toggle': 'Activa/Desactiva blocs de només lectura',
 
         'ioc-table-editor':  'Editor de taules',
-        'ioc-table-editor-multiline':  'Editor de taules multilínia'
+        'ioc-table-editor-multiline':  'Editor de taules multilínia',
+
+        'merge-cells': 'Fusionar cel·les',
+        'table-delete': 'Eliminar taula'
     })
 );
 

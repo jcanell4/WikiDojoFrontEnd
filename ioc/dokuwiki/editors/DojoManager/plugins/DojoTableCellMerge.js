@@ -3,7 +3,6 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
     "dijit/_editor/_Plugin",
     "dojox/editor/plugins/TablePlugins",
-    // "ioc/dokuwiki/editors/DojoManager/plugins/IocDojoTablePlugins",
     "dojo/_base/lang",
 ], function (declare, AbstractDojoPlugin, _Plugin, TablePlugins, lang) {
 
@@ -12,10 +11,6 @@ define([
 
         init: function (args) {
             this.inherited(arguments);
-
-            // this.htmlTemplate = args.open + "${content}" + args.close;
-
-            // this.content = args.sample;
 
             var config = {
                 label: args.title,
@@ -29,7 +24,25 @@ define([
             };
 
             this.addButton(config);
+
+            this.button.set('disabled', true);
+
+            this.editor.on('changeCursor', this.updateCursorState.bind(this));
+
+
         },
+
+        updateCursorState: function (e) {
+
+            var selectedCells = this.getSelectedCells();
+
+            if (selectedCells.length > 1) {
+                this.button.set('disabled', false);
+            } else {
+                this.button.set('disabled', true);
+            }
+        },
+
         process: function () {
             var selectedCells = this.getSelectedCells();
             // jQuery(this.getSelectedCells()[0]).attr('colspan', 2);
@@ -91,9 +104,6 @@ define([
 
 
             this.makeColumnsEven();
-
-
-            console.log("_Plugins.registry:", _Plugin.registry)
         }
 
 
@@ -197,6 +207,7 @@ define([
 
                     o.trs.forEach(function (tr) {
                         if (jQuery(tr.cells[o.colIndex]).attr('data-ioc-merged') || tr.cells[o.colIndex] === undefined) {
+                            //console.log("Merged, raó:", jQuery(tr.cells[o.colIndex]).attr('data-ioc-merged'), tr.cells[o.colIndex], tr, tr.cells)
                             merged = true;
                         }
                     });

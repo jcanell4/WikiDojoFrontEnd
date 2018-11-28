@@ -121,6 +121,7 @@ define([
                     'tableContextMenu',
                     // plugin propi taules
                     'MergeCells',
+                    'TableDelete',
 
 
                     'NewContent',

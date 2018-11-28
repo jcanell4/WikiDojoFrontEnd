@@ -12,6 +12,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoPicker',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableCellMerge',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableDelete',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -47,7 +48,7 @@ define([
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
-             DojoTableCellMerge,
+             DojoTableCellMerge, DojoTableDelete,
              DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
@@ -130,6 +131,7 @@ define([
             'Clear': DojoClearFormat,
 
             'MergeCells' : DojoTableCellMerge,
+            'TableDelete' : DojoTableDelete
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -540,7 +542,13 @@ define([
         'MergeCells': {
             type: 'MergeCells',
             title: localization["merge-cells"],
-            icon: 'IcTable', // TODO[Xavi] Caniar la icona!
+            icon: 'IocMergeCell', // TODO[Xavi] Caniar la icona!
+        },
+
+        'TableDelete': {
+            type: 'TableDelete',
+            title: localization["table-delete"],
+            icon: 'IocTableDelete', // TODO[Xavi] Caniar la icona!
         },
 
 

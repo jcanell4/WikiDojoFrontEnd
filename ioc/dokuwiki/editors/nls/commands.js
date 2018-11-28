@@ -106,7 +106,10 @@ define({ root:
 
         'ioc-readonly-toggle': 'Toggle readonly blocks',
         'ioc-table-editor':  'Table editor',
-        'ioc-table-editor-multiline':  'Multiline table editor'
+        'ioc-table-editor-multiline':  'Multiline table editor',
+
+        'merge-cells': 'Merge cells',
+        'table-delete': 'Delete table'
     }),
 //end v1.x content
 
