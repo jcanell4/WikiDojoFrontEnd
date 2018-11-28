@@ -33,6 +33,7 @@ define([
     "dijit/_editor/range",
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
+    "dojox/editor/plugins/TablePlugins",
 
 ], function (AbstractIocEditor, declare, Editor,
              registry,
@@ -41,7 +42,10 @@ define([
              array, Deferred, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
-             _Plugin, EnterKeyHandling, html, rangeapi, RichText, dijit) {
+             _Plugin, EnterKeyHandling, html, rangeapi, RichText, dijit, TablePlugins) {
+
+
+
 
 
     return declare([Editor, AbstractIocEditor], {
@@ -102,6 +106,18 @@ define([
                     'InsertHrSyntax',
                     'InsertMediaSyntax',
                     'InsertSpecialCharacter',
+
+
+                    // plugins dojox
+                    'insertTable',
+                    'modifyTable',
+                    'insertTableRowBefore',
+                    'insertTableRowAfter',
+                    'insertTableColumnBefore',
+                    'insertTableColumnAfter',
+                    'deleteTableRow',
+                    'deleteTableColumn',
+                    'tableContextMenu',
 
                     'NewContent',
                     'InsertFigureSyntax',

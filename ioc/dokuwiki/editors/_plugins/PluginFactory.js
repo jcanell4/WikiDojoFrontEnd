@@ -37,9 +37,11 @@ define([
     'dijit/_editor/plugins/LinkDialog',
 
     // Localització
-    'dojo/i18n!ioc/dokuwiki/editors/nls/commands'
+    'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
 
 
+    // CSS
+    'dojo/text!./../DojoManager/css/editorPlugins.css', // Copiat de dojox/editor/resources
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
@@ -48,7 +50,15 @@ define([
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
              ViewSource, LinkDialog,
-             localization) {
+             localization,
+             editorPluginsCSS) {
+
+    // Load required CSS
+    var cssStyle = document.createElement('style');
+    cssStyle.innerHTML = editorPluginsCSS;
+    document.head.appendChild(cssStyle);
+
+
 
 
     var plugins = {
