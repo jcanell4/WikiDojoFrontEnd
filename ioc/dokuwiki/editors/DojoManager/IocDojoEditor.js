@@ -33,7 +33,8 @@ define([
     "dijit/_editor/range",
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
-    "dojox/editor/plugins/TablePlugins",
+    "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
+    // ioc/dokuwiki/editors/DojoManager/plugins/IocDojoTablePlugins"
 
 ], function (AbstractIocEditor, declare, Editor,
              registry,
@@ -110,7 +111,7 @@ define([
 
                     // plugins dojox
                     'insertTable',
-                    'modifyTable',
+                    // 'modifyTable',
                     'insertTableRowBefore',
                     'insertTableRowAfter',
                     'insertTableColumnBefore',
@@ -118,6 +119,9 @@ define([
                     'deleteTableRow',
                     'deleteTableColumn',
                     'tableContextMenu',
+                    // plugin propi taules
+                    'MergeCells',
+
 
                     'NewContent',
                     'InsertFigureSyntax',

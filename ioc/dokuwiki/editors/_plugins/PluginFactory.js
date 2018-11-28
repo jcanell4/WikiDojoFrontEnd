@@ -11,6 +11,8 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoInternalLink',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoPicker',
 
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableCellMerge',
+
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceFireEvent',
@@ -45,6 +47,7 @@ define([
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
+             DojoTableCellMerge,
              DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
@@ -125,6 +128,8 @@ define([
 
             'ViewSource' : ViewSource,
             'Clear': DojoClearFormat,
+
+            'MergeCells' : DojoTableCellMerge,
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -505,7 +510,7 @@ define([
             tableType: 'normal'
         },
         'TableEditorMultiline': {
-             type: 'TableEditorMultiline',
+            type: 'TableEditorMultiline',
             title: localization["ioc-table-editor-multiline"],
             icon: 'IocTable',
             category: 'WikiTable',
@@ -531,6 +536,13 @@ define([
             title: localization["clear-format"],
             icon: 'ClearFormat',
         },
+
+        'MergeCells': {
+            type: 'MergeCells',
+            title: localization["merge-cells"],
+            icon: 'IcTable', // TODO[Xavi] Caniar la icona!
+        },
+
 
 
     };
