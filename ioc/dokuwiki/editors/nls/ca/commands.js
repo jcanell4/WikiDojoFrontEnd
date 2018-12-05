@@ -39,7 +39,7 @@ define(
         'ioc-new-content-sample': 'Incloure la sintaxis de contingut nou',
 
         'ioc-insert-figure-button': 'Sintaxis de figura',
-        'ioc-insert-figure-sample': 'Incloure la sintaxis de figura',
+        'ioc-insert-figure-sample': 'Incloure la figura',
 
         'ioc-insert-figure-link-button': 'Sintaxis d\'enllaç a figura',
         'ioc-insert-figure-link-sample': 'Incloure la sintaxis d\'enllaç a figura',

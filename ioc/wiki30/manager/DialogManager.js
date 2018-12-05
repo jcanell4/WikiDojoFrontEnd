@@ -22,7 +22,8 @@ define([
                 REQUIRE: 'require',
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
-                LOCK_WARNING: 'lock_warning'
+                LOCK_WARNING: 'lock_warning',
+                FORM: 'form'
             },
 
             constructor: function (args) {
@@ -99,6 +100,9 @@ define([
                         dialogBuilder = this._getLockWarningDialog(refId, params);
                         break;
 
+                    case this.type.FORM:
+                        dialogBuilder = this._getFormDialog(refId, params);
+                        break;
 
                     default:
                         throw new DialogManagerException("El tipus de dialeg no existeix: ", type);
@@ -251,7 +255,7 @@ define([
             },
 
             _getLockExpiringDialog: function (refId, params) {
-                params. buttons =[
+                params.buttons =[
                     {
                         id: refId +'_ok',
                         buttonType: this.type.DEFAULT,
@@ -298,6 +302,44 @@ define([
                 return dialogBuilder;
             },
 
+            _getFormDialog: function (refId, params) {
+                params.single = true;
+
+                params.buttons =[
+                    {
+                        id: refId +'_ok',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(){
+                            // TODO: recuperar tots els valors dels camps i retornar-los com a json
+                            var inputs= jQuery(this.domNode).find('form').serializeArray();
+                            var data = {};
+                            for (var i in inputs) {
+                                data[inputs[i].name] = inputs[i].value;
+                            }
+
+                            params.callback(data);
+                            // params.contentTool.fireEvent(params.okContentEvent, params.okEventParams);
+                        }
+                    },
+                    {
+                        id: refId +'_cancel',
+                        buttonType: this.type.DEFAULT,
+                        description: params.cancel.text,
+                        callback: function(){
+                            // no cal fer res, cal declarar-la?
+                            console.log("Cridat el close del dialog")
+                        }
+                    }
+                ];
+
+                var dialogBuilder = this._getDefaultDialog(refId, params);
+
+                // TODO: afegir la secció del formulari construida a partir de params.data
+                dialogBuilder.addForm(params.data);
+
+                return dialogBuilder;
+            },
 
             /**
              *

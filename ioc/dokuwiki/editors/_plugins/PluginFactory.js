@@ -14,6 +14,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableCellMerge',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableDelete',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -49,7 +50,7 @@ define([
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
-             DojoTableCellMerge, DojoTableDelete, DojoSound,
+             DojoTableCellMerge, DojoTableDelete, DojoSound, DojoWikiBlock,
              DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
@@ -95,7 +96,7 @@ define([
 
             // Botons del desplegable IOC
             'NewContent': DojoFormat,
-            'InsertFigureSyntax': DojoFormat,
+            'InsertFigureSyntax': DojoWikiBlock,
             'InsertFigureLinkSyntax': DojoFormat,
             'InsertTableSyntax': DojoFormat,
             'InsertTableLinkSyntax': DojoFormat,
@@ -191,7 +192,7 @@ define([
             icon: 'IocSave',
             // category: 'A'
         },
-        'IocSoundFormatButton': {
+        'IocSoundFormatButton': { // Pel AceEditor
             title: localization["ioc-sound-button"],
             open: '{{soundcloud>',
             close: '}}',
@@ -199,6 +200,16 @@ define([
             icon: 'IocSound',
             category: localization["category-ioc"]
         },
+
+
+        'InsertSound': { // pel Dojo Editor
+            title: localization["ioc-insert-sound-button"],
+            propmt: localization["ioc-insert-sound-prompt"],
+            sample: localization["ioc-insert-sound-sample"],
+            icon: 'IocSound',
+        },
+
+
         'DocumentPreviewButton': {
             type: 'DocumentPreview',
             title: localization["document-preview"],
@@ -248,14 +259,14 @@ define([
             category: localization["category-ioc"]
         },
 
-        'InsertFigureSyntax': {
-            title: localization["ioc-insert-figure-button"],
-            open: '::figure:\n  :title:\n  :footer:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-figure-sample"],
-            icon: 'IocInsertFigureSyntax',
-            category: localization["category-ioc"]
-        },
+        // 'InsertFigureSyntax': {
+        //     title: localization["ioc-insert-figure-button"],
+        //     open: '::figure:\n  :title:\n  :footer:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-figure-sample"],
+        //     icon: 'IocInsertFigureSyntax',
+        //     category: localization["category-ioc"]
+        // },
 
         'InsertFigureLinkSyntax': {
             title: localization["ioc-insert-figure-link-button"],
@@ -556,12 +567,27 @@ define([
             icon: 'IocTableDelete', // TODO[Xavi] Caniar la icona!
         },
 
-        'InsertSound': {
-            title: localization["ioc-insert-sound-button"],
-            propmt: localization["ioc-insert-sound-prompt"],
-            sample: localization["ioc-insert-sound-sample"],
-            icon: 'IocSound',
+        'InsertFigureSyntax': {
+            title: localization["ioc-insert-figure-button"],
+            propmt: localization["ioc-insert-figure-prompt"],
+            sample: localization["ioc-insert-figure-sample"],
+            data: { // clau: etiqueta
+                'id':'Id', // localitzar -> localization["ioc-data-id"]
+                'title': 'Títol', // localitzar -> localization["ioc-data-title"]
+                'footer': 'Peu', // localitzar -> localization["ioc-data-footer"]
+            },
+            htmlTemplate: '<div class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure>' +
+                '<div class="iocinfo"><a name="${id}"><strong>ID:</strong>${id}<br></a>' +
+                '<strong>Títol:</strong> <span>${title}</span><br>' +
+                '<strong>Peu:</strong> ${footer}</br>' +
+                '</div>' +
+                '<p>'+localization["ioc-insert-figure-sample"]+'</p>'+
+                '</div>',
+
+            icon: 'IocInsertFigureSyntax',
+            category: localization["category-ioc"]
         },
+
 
     };
 

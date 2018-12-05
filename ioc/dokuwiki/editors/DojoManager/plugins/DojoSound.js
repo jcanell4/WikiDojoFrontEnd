@@ -35,6 +35,9 @@ define([
 
             var id = prompt(this.prompt, this.sample);
 
+            if (id===null) {
+                return;
+            }
             // No cal indicar el secret token, pot ser es per audios privats?
 
             // TODO[Xavi] passar la URL des del plugin factory?
@@ -50,7 +53,7 @@ define([
 
     // Register this plugin.
     _Plugin.registry["insert_sound"] = function () {
-        return new FormatButton({command: "insert_sound"});
+        return new SoundButton({command: "insert_sound"});
     };
 
     return SoundButton;

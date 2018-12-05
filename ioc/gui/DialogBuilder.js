@@ -76,6 +76,31 @@ define([
             return this;
         },
 
+        addForm: function(data) {
+
+            var $node = jQuery('<form>');
+            var $fields= jQuery('<ul>');
+
+            $node.addClass('ioc-bootstrap form-dialog')
+            $node.append($fields);
+
+            $node.addClass('row');
+
+            for (var item in data) {
+
+                var $li = jQuery('<li>');
+                var $input = jQuery('<label>'+data[item]+':</label><input name="'+item+'" placeholder="'+data[item]+'" class="form-control"/>');
+
+                $li.append($input);
+                $fields.append($li);
+            }
+
+
+
+            this._addSection($node[0]);
+            return this;
+        },
+
         setWidth: function (value) {
             if (this.params.width < value) {
                 this.params.width = value;

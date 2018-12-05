@@ -125,8 +125,12 @@ define([
                     'InsertSound',
 
 
+
                     'NewContent',
-                    'InsertFigureSyntax',
+
+                    'InsertFigureSyntax', // nou
+
+
                     'InsertFigureLinkSyntax',
                     'InsertTableSyntax',
                     'InsertTableLinkSyntax',
