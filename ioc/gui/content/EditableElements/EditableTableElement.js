@@ -217,7 +217,7 @@ define([
 
 
                 // grid.focus.focusGrid = function() {console.log("focusGrid")}; // aquesta es crida quan es fa doble click
-                grid.focus.focusGridView = function() {console.log("focusGridView")}; // Aquesta funció l'unci que fa es disparar l'esdeveniment 'focus' i es el que provoca el desplaçament de les cel·les
+                grid.focus.focusGridView = function() {}; // Aquesta funció l'unic que fa es disparar l'esdeveniment 'focus' i es el que provoca el desplaçament de les cel·les
 
 
 
