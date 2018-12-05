@@ -13,6 +13,7 @@ define([
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableCellMerge',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableDelete',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -48,7 +49,7 @@ define([
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
-             DojoTableCellMerge, DojoTableDelete,
+             DojoTableCellMerge, DojoTableDelete, DojoSound,
              DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
@@ -131,7 +132,9 @@ define([
             'Clear': DojoClearFormat,
 
             'MergeCells' : DojoTableCellMerge,
-            'TableDelete' : DojoTableDelete
+            'TableDelete' : DojoTableDelete,
+
+            'InsertSound' : DojoSound,
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -156,6 +159,8 @@ define([
     //  category: grup al que pertany una icona, tots els botons amb la mateixa categoria s'afegeixen al mateix botó desplegable.
     //  tableType: tipus de taula: 'normal', 'multiline' o 'accounting'
     //  empty: bool. Utilitzat per indicar que un block es de tipus buit (la línia horitzontal)
+
+    //  prompt: frase a mostrar en els dialogs (si escau)
 
     var config = {
         'CancelButton': {
@@ -551,7 +556,12 @@ define([
             icon: 'IocTableDelete', // TODO[Xavi] Caniar la icona!
         },
 
-
+        'InsertSound': {
+            title: localization["ioc-insert-sound-button"],
+            propmt: localization["ioc-insert-sound-prompt"],
+            sample: localization["ioc-insert-sound-sample"],
+            icon: 'IocSound',
+        },
 
     };
 

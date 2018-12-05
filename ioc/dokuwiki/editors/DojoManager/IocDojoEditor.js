@@ -122,6 +122,7 @@ define([
                     // plugin propi taules
                     'MergeCells',
                     'TableDelete',
+                    'InsertSound',
 
 
                     'NewContent',

@@ -109,7 +109,13 @@ define({ root:
         'ioc-table-editor-multiline':  'Multiline table editor',
 
         'merge-cells': 'Merge cells',
-        'table-delete': 'Delete table'
+        'table-delete': 'Delete table',
+
+
+
+        'ioc-insert-sound-button': 'Insert sound',
+        'ioc-insert-sound-sample': 'sound_id',
+        'ioc-insert-sound-prompt': 'Enter sound id:',
     }),
 //end v1.x content
 
