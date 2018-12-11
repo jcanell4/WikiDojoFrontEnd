@@ -312,11 +312,36 @@ define([
                         description: params.ok.text,
                         callback: function(){
                             // TODO: recuperar tots els valors dels camps i retornar-los com a json
-                            var inputs= jQuery(this.domNode).find('form').serializeArray();
+
+                            var $form = jQuery(this.domNode).find('form');
+
+                            var inputs= $form.serializeArray();
                             var data = {};
                             for (var i in inputs) {
                                 data[inputs[i].name] = inputs[i].value;
                             }
+
+                            var $inputs = $form.find('input');
+                            data.json = [];
+
+                            console.log($inputs);
+
+                            for (var i=0;i<$inputs.length; i++) {
+                                var $input = jQuery($inputs[i]);
+                                data.json.push({
+                                    'name':$input.attr('name'),
+                                    'placeholder':$input.attr('placeholder'),
+                                    'value':$input.val(),
+                                    'label':$form.find('label[for="'+$input.attr('name')+'"]').text().slice(0, -1)
+                                })
+
+
+                            }
+
+                            data.json = JSON.stringify(data.json);
+
+                            data.json = data.json.split('"').join('&quot');
+
 
                             params.callback(data);
                             // params.contentTool.fireEvent(params.okContentEvent, params.okEventParams);

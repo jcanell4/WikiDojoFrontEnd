@@ -47,8 +47,12 @@ define([
             //      - el retorn pasar-lo al template.
 
 
-            var data = this.data;
+            //var data = this.data;
 
+            this._showDialog(this.data);
+        },
+
+        _showDialog: function(data, previousId) {
             var editor = this.editor;
             var template = this.htmlTemplate;
 
@@ -73,6 +77,13 @@ define([
                     var html = string.substitute(template, newData);
                     var id = jQuery(html).attr('data-ioc-id');
 
+
+                    console.log("previous id?", previousId);
+                    if (previousId) {
+                        console.log("Eliminant previous node:", jQuery(editor.iframe).contents().find('[data-ioc-id="' + previousId +'"]'));
+                        jQuery(editor.iframe).contents().find('[data-ioc-id="' + previousId +'"]').remove();
+                    }
+
                     editor.execCommand('inserthtml', html);
 
                     // ALERTA: Per alguna raó el .find() no troba els id normals d'html, per això es fa servir atribut propi
@@ -89,12 +100,29 @@ define([
 
         _addHandlers: function ($node) {
 
+            var context = this;
+
             // Codi de prova, per ara no es gestiona el click
             $node.on('click', function (e) {
 
-                //TODO: generar un nou dialeg (destruir l'anterior si existeix) per fer un update de les dades
+
 
                 console.log('click',this);
+
+                // TODO: Extreure les dades del formulari, s'ha de fer un jQuery del this i extreure els inputs per recollir:'name', 'value', 'placeholder', 'label'
+                var $this= jQuery(this);
+
+
+                var json = $this.attr('data-ioc-block-json');
+
+
+                json = json.split('&quot').join('"');
+
+                var data = JSON.parse(json);
+
+                console.log("Previous id?", $this.attr('data-ioc-id'));
+                context._showDialog(data, $this.attr('data-ioc-id'));
+
             });
         },
 

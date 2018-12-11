@@ -86,16 +86,16 @@ define([
 
             $node.addClass('row');
 
-            for (var item in data) {
+            // for (var item in data) {
+            for (var i = 0; i<data.length; i++) {
+                var item = data[i];
 
                 var $li = jQuery('<li>');
-                var $input = jQuery('<label>'+data[item]+':</label><input name="'+item+'" placeholder="'+data[item]+'" class="form-control"/>');
+                var $input = jQuery('<label for="'+item.name+'">'+item.label+':</label><input name="'+item.name+'" placeholder="'+item.placeholder+'" class="form-control" value="'+item.value+'"/>');
 
                 $li.append($input);
                 $fields.append($li);
             }
-
-
 
             this._addSection($node[0]);
             return this;

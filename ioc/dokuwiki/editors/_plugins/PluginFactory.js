@@ -571,13 +571,28 @@ define([
             title: localization["ioc-insert-figure-button"],
             propmt: localization["ioc-insert-figure-prompt"],
             sample: localization["ioc-insert-figure-sample"],
-            data: { // clau: etiqueta
-                'id':'Id', // localitzar -> localization["ioc-data-id"]
-                'title': 'Títol', // localitzar -> localization["ioc-data-title"]
-                'footer': 'Peu', // localitzar -> localization["ioc-data-footer"]
-            },
-            htmlTemplate: '<div class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure>' +
-                '<div class="iocinfo"><a name="${id}"><strong>ID:</strong>${id}<br></a>' +
+            data:[ // clau: etiqueta
+                {
+                    'name': 'id',
+                    'label': 'Id',
+                    'value': '',
+                    'placeholder': 'Introduceix l\'identificador'
+                },
+                {
+                    'name': 'title',
+                    'label': 'Títol',
+                    'value': '',
+                    'placeholder': 'Introduceix el títol'
+                },
+                {
+                    'name': 'footer',
+                    'label': 'Peu',
+                    'value': '',
+                    'placeholder': 'Introduceix el peu'
+                }
+            ],
+            htmlTemplate: '<div class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
+                '<div class="iocinfo"><a name="${id}"><strong>ID:</strong> ${id}<br></a>' +
                 '<strong>Títol:</strong> <span>${title}</span><br>' +
                 '<strong>Peu:</strong> ${footer}</br>' +
                 '</div>' +
