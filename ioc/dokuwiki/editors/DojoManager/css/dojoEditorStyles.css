@@ -123,3 +123,7 @@ div.ioc-comment [data-type="ioc-comment"]{
     left: -13px;
     top: 0;
 }
+
+.editable-text {
+    border: 1px dotted lightgrey;
+}

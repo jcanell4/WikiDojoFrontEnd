@@ -13,7 +13,7 @@ define([
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableCellMerge',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableDelete',
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
@@ -50,7 +50,7 @@ define([
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
-             DojoTableCellMerge, DojoTableDelete, DojoSound, DojoWikiBlock,
+             DojoTableCellMerge, DojoTableDelete, /*DojoSound, */DojoWikiBlock,
              DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
@@ -98,16 +98,16 @@ define([
             'NewContent': DojoFormat,
             'InsertFigureSyntax': DojoWikiBlock,
             'InsertFigureLinkSyntax': DojoFormat,
-            'InsertTableSyntax': DojoFormat,
+            'InsertTableSyntax': DojoWikiBlock,
             'InsertTableLinkSyntax': DojoFormat,
-            'InsertTextSyntax': DojoFormat,
-            'InsertTextLargeSyntax': DojoFormat,
+            'InsertTextSyntax': DojoWikiBlock,
+            'InsertTextLargeSyntax': DojoWikiBlock,
             'InsertExampleSyntax': DojoFormat,
             'InsertNoteSyntax': DojoFormat,
             'InsertReferenceSyntax': DojoFormat,
             'InsertImportantSyntax': DojoFormat,
             'InsertQuoteSyntax': DojoFormat,
-            'InsertAccountingSyntax': DojoFormat,
+            'InsertAccountingSyntax': DojoWikiBlock,
 
             'InsertMediaSyntax': DojoMediaFormat,
             'InsertInternalLinkSyntax': DojoInternalLink,
@@ -135,7 +135,7 @@ define([
             'MergeCells' : DojoTableCellMerge,
             'TableDelete' : DojoTableDelete,
 
-            'InsertSound' : DojoSound,
+            'InsertSound' : DojoWikiBlock,
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -207,6 +207,16 @@ define([
             propmt: localization["ioc-insert-sound-prompt"],
             sample: localization["ioc-insert-sound-sample"],
             icon: 'IocSound',
+
+            data:[ // clau: etiqueta
+                {
+                    'name': 'id',
+                    'label': 'Id',
+                    'value': '',
+                    'placeholder': 'Introduceix l\'identificador'
+                }],
+
+            htmlTemplate: "<iframe data-ioc-id=\"ioc_sound_${id}\" data-ioc-sound data-ioc-block-json=\"${json}\" width=\"100%\" height=\"20\" scrolling=\"no\" frameborder=\"no\" src=\"https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${id}?secret_token=none&color=%230066cc&inverse=false&auto_play=false&show_user=true\"></iframe>"
         },
 
 
@@ -277,14 +287,14 @@ define([
             category: localization["category-ioc"]
         },
 
-        'InsertTableSyntax': {
-            title: localization["ioc-insert-table-button"],
-            open: '::table:\n  :title:\n  :footer:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-table-sample"],
-            icon: 'IocInsertTableSyntax',
-            category: localization["category-ioc"]
-        },
+        // 'InsertTableSyntax': {
+        //     title: localization["ioc-insert-table-button"],
+        //     open: '::table:\n  :title:\n  :footer:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-table-sample"],
+        //     icon: 'IocInsertTableSyntax',
+        //     category: localization["category-ioc"]
+        // },
 
         'InsertTableLinkSyntax': {
             title: localization["ioc-insert-table-link-button"],
@@ -295,23 +305,23 @@ define([
             category: localization["category-ioc"]
         },
 
-        'InsertTextSyntax': {
-            title: localization["ioc-insert-text-button"],
-            open: '::text:\n  :title:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-text-sample"],
-            icon: 'IocInsertTextSyntax',
-            category: localization["category-ioc"]
-        },
-
-        'InsertTextLargeSyntax': {
-            title: localization["ioc-insert-text-large-button"],
-            open: '::text:\n  :title:\n  :large:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-text-large-sample"],
-            icon: 'IocInsertTextLargeSyntax',
-            category: localization["category-ioc"]
-        },
+        // 'InsertTextSyntax': {
+        //     title: localization["ioc-insert-text-button"],
+        //     open: '::text:\n  :title:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-text-sample"],
+        //     icon: 'IocInsertTextSyntax',
+        //     category: localization["category-ioc"]
+        // },
+        //
+        // 'InsertTextLargeSyntax': {
+        //     title: localization["ioc-insert-text-large-button"],
+        //     open: '::text:\n  :title:\n  :large:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-text-large-sample"],
+        //     icon: 'IocInsertTextLargeSyntax',
+        //     category: localization["category-ioc"]
+        // },
 
         'InsertExampleSyntax': {
             title: localization["ioc-insert-example-button"],
@@ -358,14 +368,14 @@ define([
             category: localization["category-ioc"]
         },
 
-        'InsertAccountingSyntax': {
-            title: localization["ioc-insert-accounting-button"],
-            open: '::accounting:\n  :title:\n  :footer:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-accounting-sample"],
-            icon: 'IocInsertAccountingSyntax',
-            category: localization["category-ioc"]
-        },
+        // 'InsertAccountingSyntax': {
+        //     title: localization["ioc-insert-accounting-button"],
+        //     open: '::accounting:\n  :title:\n  :footer:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-accounting-sample"],
+        //     icon: 'IocInsertAccountingSyntax',
+        //     category: localization["category-ioc"]
+        // },
 
 
         'InsertMediaSyntax': {
@@ -571,7 +581,7 @@ define([
             title: localization["ioc-insert-figure-button"],
             propmt: localization["ioc-insert-figure-prompt"],
             sample: localization["ioc-insert-figure-sample"],
-            data:[ // clau: etiqueta
+            data:[
                 {
                     'name': 'id',
                     'label': 'Id',
@@ -592,17 +602,116 @@ define([
                 }
             ],
             htmlTemplate: '<div class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
-                '<div class="iocinfo"><a name="${id}"><strong>ID:</strong> ${id}<br></a>' +
+                '<div class="iocinfo" contenteditable="false"><a id="${id}" ><strong>ID:</strong> ${id}<br></a>' +
                 '<strong>Títol:</strong> <span>${title}</span><br>' +
                 '<strong>Peu:</strong> ${footer}</br>' +
                 '</div>' +
-                '<p>'+localization["ioc-insert-figure-sample"]+'</p>'+
+                '<p class="editable-text">'+localization["ioc-insert-figure-sample"]+'</p>'+
                 '</div>',
 
             icon: 'IocInsertFigureSyntax',
             category: localization["category-ioc"]
         },
 
+
+        'InsertTableSyntax': {
+            title: localization["ioc-insert-table-button"],
+            propmt: localization["ioc-insert-table-prompt"],
+            sample: localization["ioc-insert-table-sample"],
+            data:[
+                {
+                    'name': 'id',
+                    'label': 'Id',
+                    'value': '',
+                    'placeholder': 'Introduceix l\'identificador'
+                },
+                {
+                    'name': 'title',
+                    'label': 'Títol',
+                    'value': '',
+                    'placeholder': 'Introduceix el títol'
+                },
+                {
+                    'name': 'footer',
+                    'label': 'Peu',
+                    'value': '',
+                    'placeholder': 'Introduceix el peu'
+                }
+            ],
+            htmlTemplate: '<div class="ioctable" data-ioc-id="ioc_table_${id}" data-ioc-table data-ioc-block-json="${json}">' +
+            '<div class="iocinfo" contenteditable="false"><a id="${id}" ><strong>ID:</strong> ${id}<br></a>' +
+            '<strong>Títol:</strong> <span>${title}</span><br>' +
+            '<strong>Peu:</strong> ${footer}</br>' +
+            '</div>' +
+            '<p class="editable-text">'+localization["ioc-insert-table-sample"]+'</p>'+
+            '</div>',
+
+            icon: 'IocInsertTableSyntax',
+            category: localization["category-ioc"]
+        },
+
+        'InsertAccountingSyntax': {
+            title: localization["ioc-insert-accounting-button"],
+            propmt: localization["ioc-insert-accounting-prompt"],
+            sample: localization["ioc-insert-accounting-sample"],
+            data:[
+                {
+                    'name': 'id',
+                    'label': 'Id',
+                    'value': '',
+                    'placeholder': 'Introduceix l\'identificador'
+                },
+                {
+                    'name': 'title',
+                    'label': 'Títol',
+                    'value': '',
+                    'placeholder': 'Introduceix el títol'
+                },
+                {
+                    'name': 'footer',
+                    'label': 'Peu',
+                    'value': '',
+                    'placeholder': 'Introduceix el peu'
+                }
+            ],
+            htmlTemplate: '<div class="iocaccounting" data-ioc-id="ioc_accounting_${id}" data-ioc-accounting data-ioc-block-json="${json}">' +
+            '<div class="iocinfo" contenteditable="false"><a id="${id}" ><strong>ID:</strong> ${id}<br></a>' +
+            '<strong>Títol:</strong> <span>${title}</span><br>' +
+            '<strong>Peu:</strong> ${footer}</br>' +
+            '</div>' +
+            '<p class="editable-text">'+localization["ioc-insert-accounting-sample"]+'</p>'+
+            '</div>',
+
+            icon: 'IocInsertAccountingSyntax',
+            category: localization["category-ioc"]
+        },
+
+        'InsertTextSyntax': {
+            title: localization["ioc-insert-text-button"],
+            propmt: localization["ioc-insert-text-prompt"],
+            sample: localization["ioc-insert-text-sample"],
+            data:[],
+            htmlTemplate: '<div class="ioctext" data-ioc-id="ioc_text" data-ioc-text data-ioc-block-json="${json}">' +
+            '<div class="ioccontent">' +
+            '<p class="editable-text">'+localization["ioc-insert-text-sample"]+'</p>'+
+            '</div></div>',
+            icon: 'IocInsertTextSyntax',
+            category: localization["category-ioc"]
+        },
+
+
+        'InsertTextLargeSyntax': {
+            title: localization["ioc-insert-text-large-button"],
+            propmt: localization["ioc-insert-text-large-prompt"],
+            sample: localization["ioc-insert-text-large-sample"],
+            data:[],
+            htmlTemplate: '<div class="ioctextl" data-ioc-id="ioc_textl" data-ioc-textl data-ioc-block-json="${json}">' +
+            '<div class="ioccontent">' +
+            '<p class="editable-text">'+localization["ioc-insert-text-large-sample"]+'</p>'+
+            '</div></div>',
+            icon: 'IocInsertTextLargeSyntax',
+            category: localization["category-ioc"]
+        },
 
     };
 

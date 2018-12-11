@@ -324,8 +324,6 @@ define([
                             var $inputs = $form.find('input');
                             data.json = [];
 
-                            console.log($inputs);
-
                             for (var i=0;i<$inputs.length; i++) {
                                 var $input = jQuery($inputs[i]);
                                 data.json.push({
@@ -334,8 +332,6 @@ define([
                                     'value':$input.val(),
                                     'label':$form.find('label[for="'+$input.attr('name')+'"]').text().slice(0, -1)
                                 })
-
-
                             }
 
                             data.json = JSON.stringify(data.json);
@@ -344,7 +340,6 @@ define([
 
 
                             params.callback(data);
-                            // params.contentTool.fireEvent(params.okContentEvent, params.okEventParams);
                         }
                     },
                     {

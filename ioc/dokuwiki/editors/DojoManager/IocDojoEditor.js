@@ -118,7 +118,8 @@ define([
                     'insertTableColumnAfter',
                     'deleteTableRow',
                     'deleteTableColumn',
-                    'tableContextMenu',
+                    // 'tableContextMenu', // això no funciona bé, s'aplica tant si hi ha como si no hi ha taula
+
                     // plugin propi taules
                     'MergeCells',
                     'TableDelete',
