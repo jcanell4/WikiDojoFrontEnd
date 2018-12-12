@@ -143,7 +143,7 @@ define([
                     'InsertImportantSyntax',
                     'InsertQuoteSyntax',
                     'InsertAccountingSyntax',
-                    'IocSoundFormatButton',
+                    // 'IocSoundFormatButton',
                     'IocComment',
                     'SaveButton',
                     'CancelButton',

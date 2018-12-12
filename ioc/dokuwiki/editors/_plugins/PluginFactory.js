@@ -162,6 +162,8 @@ define([
     //  empty: bool. Utilitzat per indicar que un block es de tipus buit (la línia horitzontal)
 
     //  prompt: frase a mostrar en els dialogs (si escau)
+    //  htmlTemplate: templateHTML a utilitzar pels plugins dojo
+    //  data: [{name, label, value, placeholder}] estructura de dades per crear dialegs d'entrada de dades per plugins (como el DojoWikiBlock)
 
     var config = {
         'CancelButton': {
@@ -218,7 +220,8 @@ define([
 
             htmlTemplate: "<div data-ioc-id=\"ioc_sound_${id}\" data-ioc-sound data-ioc-block-json=\"${json}\" contenteditable=\"false\">" +
                 "<iframe width=\"100%\" height=\"20\" scrolling=\"no\" frameborder=\"no\" src=\"https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${id}?secret_token=none&color=%230066cc&inverse=false&auto_play=false&show_user=true\"></iframe>"+
-                "</div>"
+                "</div>",
+            category: localization["category-ioc"]
         },
 
 
@@ -228,14 +231,7 @@ define([
             icon: 'IocDocumentPreview',
             // category: 'B'
         },
-        // 'TestFormatButton': {
-        //     title: 'Test',
-        //     open: '{{test>',
-        //     close: '}}',
-        //     sample: 'FooBar',
-        //     icon: 'IocSound'
-        //     // category: 'C',
-        // },
+
         'IocComment': {
             type: 'IocComment',
             title: localization["ioc-comment-button"],
@@ -271,15 +267,6 @@ define([
             category: localization["category-ioc"]
         },
 
-        // 'InsertFigureSyntax': {
-        //     title: localization["ioc-insert-figure-button"],
-        //     open: '::figure:\n  :title:\n  :footer:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-figure-sample"],
-        //     icon: 'IocInsertFigureSyntax',
-        //     category: localization["category-ioc"]
-        // },
-
         'InsertFigureLinkSyntax': {
             title: localization["ioc-insert-figure-link-button"],
             open: ':figure:',
@@ -289,15 +276,6 @@ define([
             category: localization["category-ioc"]
         },
 
-        // 'InsertTableSyntax': {
-        //     title: localization["ioc-insert-table-button"],
-        //     open: '::table:\n  :title:\n  :footer:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-table-sample"],
-        //     icon: 'IocInsertTableSyntax',
-        //     category: localization["category-ioc"]
-        // },
-
         'InsertTableLinkSyntax': {
             title: localization["ioc-insert-table-link-button"],
             open: ':table:',
@@ -306,79 +284,6 @@ define([
             icon: 'IocInsertTableLinkSyntax',
             category: localization["category-ioc"]
         },
-
-        // 'InsertTextSyntax': {
-        //     title: localization["ioc-insert-text-button"],
-        //     open: '::text:\n  :title:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-text-sample"],
-        //     icon: 'IocInsertTextSyntax',
-        //     category: localization["category-ioc"]
-        // },
-        //
-        // 'InsertTextLargeSyntax': {
-        //     title: localization["ioc-insert-text-large-button"],
-        //     open: '::text:\n  :title:\n  :large:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-text-large-sample"],
-        //     icon: 'IocInsertTextLargeSyntax',
-        //     category: localization["category-ioc"]
-        // },
-
-        // 'InsertExampleSyntax': {
-        //     title: localization["ioc-insert-example-button"],
-        //     open: '::example:\n  :title:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-example-sample"],
-        //     icon: 'IocInsertExampleSyntax',
-        //     category: localization["category-ioc"]
-        // },
-        //
-        // 'InsertNoteSyntax': {
-        //     title: localization["ioc-insert-note-button"],
-        //     open: '::note:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-note-sample"],
-        //     icon: 'IocInsertNoteSyntax',
-        //     category: localization["category-ioc"]
-        // },
-        //
-        // 'InsertReferenceSyntax': {
-        //     title: localization["ioc-insert-reference-button"],
-        //     open: '::reference:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-reference-sample"],
-        //     icon: 'IocInsertReferenceSyntax',
-        //     category: localization["category-ioc"]
-        // },
-        //
-        // 'InsertImportantSyntax': {
-        //     title: localization["ioc-insert-important-button"],
-        //     open: '::important:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-reference-sample"],
-        //     icon: 'IocInsertImportantSyntax',
-        //     category: localization["category-ioc"]
-        // },
-        //
-        // 'InsertQuoteSyntax': {
-        //     title: localization["ioc-insert-quote-button"],
-        //     open: '::quote:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-quote-sample"],
-        //     icon: 'IocInsertQuoteSyntax',
-        //     category: localization["category-ioc"]
-        // },
-
-        // 'InsertAccountingSyntax': {
-        //     title: localization["ioc-insert-accounting-button"],
-        //     open: '::accounting:\n  :title:\n  :footer:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-accounting-sample"],
-        //     icon: 'IocInsertAccountingSyntax',
-        //     category: localization["category-ioc"]
-        // },
-
 
         'InsertMediaSyntax': {
             title: localization["ioc-insert-media-button"],
@@ -431,14 +336,6 @@ define([
             sample: localization["ioc-insert-underline-button"],
             icon: 'IocUnderline',
         },
-
-        // 'HTMLCode': {
-        //     title: localization["ioc-insert-code-button"],
-        //     open: '<code>',
-        //     close: '</code>',
-        //     sample: localization["ioc-insert-code-button"],
-        //     icon: 'IocCode',
-        // },
 
         'HTMLCode': {
             title: localization["ioc-insert-code-button"],
@@ -508,14 +405,6 @@ define([
             icon: 'IocHeader6',
             category: localization["category-header"]
         },
-
-        // 'HTMLLink': {
-        //     title: localization["ioc-insert-link-button"],
-        //     open: '',
-        //     close: '',
-        //     sample: localization["ioc-insert-link-sample"],
-        //     icon: 'IocLink',
-        // },
 
         'HTMLLinkExternal': {
             title: localization["ioc-insert-link-external-button"],
@@ -746,15 +635,6 @@ define([
             category: localization["category-ioc"]
         },
 
-        // 'InsertExampleSyntax': {
-        //     title: localization["ioc-insert-example-button"],
-        //     open: '::example:\n  :title:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-example-sample"],
-        //     icon: 'IocInsertExampleSyntax',
-        //     category: localization["category-ioc"]
-        // },
-
         'InsertNoteSyntax': {
             title: localization["ioc-insert-note-button"],
             propmt: localization["ioc-insert-note-prompt"],
@@ -767,15 +647,6 @@ define([
             icon: 'IocInsertNoteSyntax',
             category: localization["category-ioc"]
         },
-
-        // 'InsertNoteSyntax': {
-        //     title: localization["ioc-insert-note-button"],
-        //     open: '::note:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-note-sample"],
-        //     icon: 'IocInsertNoteSyntax',
-        //     category: localization["category-ioc"]
-        // },
 
         'InsertReferenceSyntax': {
             title: localization["ioc-insert-reference-button"],
@@ -790,15 +661,6 @@ define([
             category: localization["category-ioc"]
         },
 
-        // 'InsertReferenceSyntax': {
-        //     title: localization["ioc-insert-reference-button"],
-        //     open: '::reference:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-reference-sample"],
-        //     icon: 'IocInsertReferenceSyntax',
-        //     category: localization["category-ioc"]
-        // },
-
         'InsertImportantSyntax': {
             title: localization["ioc-insert-important-button"],
             propmt: localization["ioc-insert-important-prompt"],
@@ -811,17 +673,6 @@ define([
             icon: 'IocInsertImportantSyntax',
             category: localization["category-ioc"]
         },
-
-
-
-        // 'InsertQuoteSyntax': {
-        //     title: localization["ioc-insert-quote-button"],
-        //     open: '::quote:\n',
-        //     close: '\n:::',
-        //     sample: localization["ioc-insert-quote-sample"],
-        //     icon: 'IocInsertQuoteSyntax',
-        //     category: localization["category-ioc"]
-        // },
 
         'InsertQuoteSyntax': {
             title: localization["ioc-insert-quote-button"],

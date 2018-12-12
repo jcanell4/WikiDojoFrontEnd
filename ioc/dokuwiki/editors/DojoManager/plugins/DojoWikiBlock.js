@@ -111,32 +111,10 @@ define([
 
         _addHandlers: function ($node) {
 
-            // ALERTA! Comprovar si aquesta referència es guarda correctament amb múltiples editors i multiples instancies del plugin
-            var $parent = $node;
-
-
             // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
-            $parent.find('.no-render').remove();
-
-
-            // if ($node.attr('contenteditable') !== "false") {
-            //     $node = $node.find('[contenteditable="false"]');
-            // }
+            $node.find('.no-render').remove();
 
             var context = this;
-
-            // $node.on('click', function (e) {
-            //
-            //     var json = $parent.attr('data-ioc-block-json');
-            //
-            //     json = json.split('&quot').join('"');
-            //
-            //     var data = JSON.parse(json);
-            //
-            //     context._showDialog(data, $parent.attr('data-ioc-id'));
-            //
-            // });
-
 
             var $actions = jQuery('<div class="no-render action" >');
 
@@ -149,24 +127,24 @@ define([
 
             $actions.append($delete);
 
-            $parent.append($actions);
+            $node.append($actions);
 
             $edit.on('click', function (e) {
                 e.preventDefault();
                 // $node.trigger('click');
 
-                var json = $parent.attr('data-ioc-block-json');
+                var json = $node.attr('data-ioc-block-json');
 
                 json = json.split('&quot').join('"');
 
                 var data = JSON.parse(json);
 
-                context._showDialog(data, $parent.attr('data-ioc-id'));
+                context._showDialog(data, $node.attr('data-ioc-id'));
             });
 
             $delete.on('click', function (e) {
                 e.preventDefault();
-                $parent.remove();
+                $node.remove();
             });
 
 
