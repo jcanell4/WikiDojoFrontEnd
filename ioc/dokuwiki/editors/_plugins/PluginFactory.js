@@ -102,11 +102,11 @@ define([
             'InsertTableLinkSyntax': DojoFormat,
             'InsertTextSyntax': DojoWikiBlock,
             'InsertTextLargeSyntax': DojoWikiBlock,
-            'InsertExampleSyntax': DojoFormat,
-            'InsertNoteSyntax': DojoFormat,
-            'InsertReferenceSyntax': DojoFormat,
-            'InsertImportantSyntax': DojoFormat,
-            'InsertQuoteSyntax': DojoFormat,
+            'InsertExampleSyntax': DojoWikiBlock,
+            'InsertNoteSyntax': DojoWikiBlock,
+            'InsertReferenceSyntax': DojoWikiBlock,
+            'InsertImportantSyntax': DojoWikiBlock,
+            'InsertQuoteSyntax': DojoWikiBlock,
             'InsertAccountingSyntax': DojoWikiBlock,
 
             'InsertMediaSyntax': DojoMediaFormat,
@@ -216,7 +216,9 @@ define([
                     'placeholder': 'Introduceix l\'identificador'
                 }],
 
-            htmlTemplate: "<iframe data-ioc-id=\"ioc_sound_${id}\" data-ioc-sound data-ioc-block-json=\"${json}\" width=\"100%\" height=\"20\" scrolling=\"no\" frameborder=\"no\" src=\"https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${id}?secret_token=none&color=%230066cc&inverse=false&auto_play=false&show_user=true\"></iframe>"
+            htmlTemplate: "<div data-ioc-id=\"ioc_sound_${id}\" data-ioc-sound data-ioc-block-json=\"${json}\" contenteditable=\"false\">" +
+                "<iframe width=\"100%\" height=\"20\" scrolling=\"no\" frameborder=\"no\" src=\"https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${id}?secret_token=none&color=%230066cc&inverse=false&auto_play=false&show_user=true\"></iframe>"+
+                "</div>"
         },
 
 
@@ -323,50 +325,50 @@ define([
         //     category: localization["category-ioc"]
         // },
 
-        'InsertExampleSyntax': {
-            title: localization["ioc-insert-example-button"],
-            open: '::example:\n  :title:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-example-sample"],
-            icon: 'IocInsertExampleSyntax',
-            category: localization["category-ioc"]
-        },
-
-        'InsertNoteSyntax': {
-            title: localization["ioc-insert-note-button"],
-            open: '::note:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-note-sample"],
-            icon: 'IocInsertNoteSyntax',
-            category: localization["category-ioc"]
-        },
-
-        'InsertReferenceSyntax': {
-            title: localization["ioc-insert-reference-button"],
-            open: '::reference:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-reference-sample"],
-            icon: 'IocInsertReferenceSyntax',
-            category: localization["category-ioc"]
-        },
-
-        'InsertImportantSyntax': {
-            title: localization["ioc-insert-important-button"],
-            open: '::important:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-reference-sample"],
-            icon: 'IocInsertImportantSyntax',
-            category: localization["category-ioc"]
-        },
-
-        'InsertQuoteSyntax': {
-            title: localization["ioc-insert-quote-button"],
-            open: '::quote:\n',
-            close: '\n:::',
-            sample: localization["ioc-insert-quote-sample"],
-            icon: 'IocInsertQuoteSyntax',
-            category: localization["category-ioc"]
-        },
+        // 'InsertExampleSyntax': {
+        //     title: localization["ioc-insert-example-button"],
+        //     open: '::example:\n  :title:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-example-sample"],
+        //     icon: 'IocInsertExampleSyntax',
+        //     category: localization["category-ioc"]
+        // },
+        //
+        // 'InsertNoteSyntax': {
+        //     title: localization["ioc-insert-note-button"],
+        //     open: '::note:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-note-sample"],
+        //     icon: 'IocInsertNoteSyntax',
+        //     category: localization["category-ioc"]
+        // },
+        //
+        // 'InsertReferenceSyntax': {
+        //     title: localization["ioc-insert-reference-button"],
+        //     open: '::reference:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-reference-sample"],
+        //     icon: 'IocInsertReferenceSyntax',
+        //     category: localization["category-ioc"]
+        // },
+        //
+        // 'InsertImportantSyntax': {
+        //     title: localization["ioc-insert-important-button"],
+        //     open: '::important:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-reference-sample"],
+        //     icon: 'IocInsertImportantSyntax',
+        //     category: localization["category-ioc"]
+        // },
+        //
+        // 'InsertQuoteSyntax': {
+        //     title: localization["ioc-insert-quote-button"],
+        //     open: '::quote:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-quote-sample"],
+        //     icon: 'IocInsertQuoteSyntax',
+        //     category: localization["category-ioc"]
+        // },
 
         // 'InsertAccountingSyntax': {
         //     title: localization["ioc-insert-accounting-button"],
@@ -690,9 +692,15 @@ define([
             title: localization["ioc-insert-text-button"],
             propmt: localization["ioc-insert-text-prompt"],
             sample: localization["ioc-insert-text-sample"],
-            data:[],
-            htmlTemplate: '<div class="ioctext" data-ioc-id="ioc_text" data-ioc-text data-ioc-block-json="${json}">' +
+            data:[{
+                'name': 'title',
+                'label': 'Títol',
+                'value': '',
+                'placeholder': 'Introduceix el títol'
+            }],
+            htmlTemplate: '<div class="ioctext" data-ioc-id="ioc_text_${id}" data-ioc-text data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
+            '<p class="ioctitle" data-ioc-optional>${title}</p>'+
             '<p class="editable-text">'+localization["ioc-insert-text-sample"]+'</p>'+
             '</div></div>',
             icon: 'IocInsertTextSyntax',
@@ -704,12 +712,127 @@ define([
             title: localization["ioc-insert-text-large-button"],
             propmt: localization["ioc-insert-text-large-prompt"],
             sample: localization["ioc-insert-text-large-sample"],
-            data:[],
-            htmlTemplate: '<div class="ioctextl" data-ioc-id="ioc_textl" data-ioc-textl data-ioc-block-json="${json}">' +
+            data:[{
+                'name': 'title',
+                'label': 'Títol',
+                'value': '',
+                'placeholder': 'Introduceix el títol'
+            }],
+            htmlTemplate: '<div class="ioctextl" data-ioc-id="ioc_textl_${id}" data-ioc-textl data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
+            '<p class="ioctitle" data-ioc-optional>${title}</p>'+
             '<p class="editable-text">'+localization["ioc-insert-text-large-sample"]+'</p>'+
             '</div></div>',
             icon: 'IocInsertTextLargeSyntax',
+            category: localization["category-ioc"]
+        },
+
+        'InsertExampleSyntax': {
+            title: localization["ioc-insert-example-button"],
+            propmt: localization["ioc-insert-example-prompt"],
+            sample: localization["ioc-insert-example-sample"],
+            data:[{
+                'name': 'title',
+                'label': 'Títol',
+                'value': '',
+                'placeholder': 'Introduceix el títol'
+            }],
+            htmlTemplate: '<div class="iocexample" data-ioc-id="ioc_example_${id}" data-ioc-example data-ioc-block-json="${json}">' +
+            '<div class="ioccontent">' +
+            '<p class="ioctitle" data-ioc-optional>${title}</p>'+
+            '<p class="editable-text">'+localization["ioc-insert-example-sample"]+'</p>'+
+            '</div></div>',
+            icon: 'IocInsertExampleSyntax',
+            category: localization["category-ioc"]
+        },
+
+        // 'InsertExampleSyntax': {
+        //     title: localization["ioc-insert-example-button"],
+        //     open: '::example:\n  :title:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-example-sample"],
+        //     icon: 'IocInsertExampleSyntax',
+        //     category: localization["category-ioc"]
+        // },
+
+        'InsertNoteSyntax': {
+            title: localization["ioc-insert-note-button"],
+            propmt: localization["ioc-insert-note-prompt"],
+            sample: localization["ioc-insert-note-sample"],
+            data:[],
+            htmlTemplate: '<div class="iocnote" data-ioc-id="ioc_note_${id}" data-ioc-note data-ioc-block-json="${json}">' +
+            '<div class="ioccontent">' +
+            '<p class="editable-text">'+localization["ioc-insert-note-sample"]+'</p>'+
+            '</div></div>',
+            icon: 'IocInsertNoteSyntax',
+            category: localization["category-ioc"]
+        },
+
+        // 'InsertNoteSyntax': {
+        //     title: localization["ioc-insert-note-button"],
+        //     open: '::note:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-note-sample"],
+        //     icon: 'IocInsertNoteSyntax',
+        //     category: localization["category-ioc"]
+        // },
+
+        'InsertReferenceSyntax': {
+            title: localization["ioc-insert-reference-button"],
+            propmt: localization["ioc-insert-reference-prompt"],
+            sample: localization["ioc-insert-reference-sample"],
+            data:[],
+            htmlTemplate: '<div class="iocreference" data-ioc-id="ioc_reference_${id}" data-ioc-reference data-ioc-block-json="${json}">' +
+            '<div class="ioccontent">' +
+            '<p class="editable-text">'+localization["ioc-insert-reference-sample"]+'</p>'+
+            '</div></div>',
+            icon: 'IocInsertReferenceSyntax',
+            category: localization["category-ioc"]
+        },
+
+        // 'InsertReferenceSyntax': {
+        //     title: localization["ioc-insert-reference-button"],
+        //     open: '::reference:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-reference-sample"],
+        //     icon: 'IocInsertReferenceSyntax',
+        //     category: localization["category-ioc"]
+        // },
+
+        'InsertImportantSyntax': {
+            title: localization["ioc-insert-important-button"],
+            propmt: localization["ioc-insert-important-prompt"],
+            sample: localization["ioc-insert-important-sample"],
+            data:[],
+            htmlTemplate: '<div class="iocimportant" data-ioc-id="ioc_important_${id}" data-ioc-important data-ioc-block-json="${json}">' +
+            '<div class="ioccontent">' +
+            '<p class="editable-text">'+localization["ioc-insert-important-sample"]+'</p>'+
+            '</div></div>',
+            icon: 'IocInsertImportantSyntax',
+            category: localization["category-ioc"]
+        },
+
+
+
+        // 'InsertQuoteSyntax': {
+        //     title: localization["ioc-insert-quote-button"],
+        //     open: '::quote:\n',
+        //     close: '\n:::',
+        //     sample: localization["ioc-insert-quote-sample"],
+        //     icon: 'IocInsertQuoteSyntax',
+        //     category: localization["category-ioc"]
+        // },
+
+        'InsertQuoteSyntax': {
+            title: localization["ioc-insert-quote-button"],
+            propmt: localization["ioc-insert-quote-prompt"],
+            sample: localization["ioc-insert-quote-sample"],
+            data:[],
+            htmlTemplate: '<div class="iocquote" data-ioc-id="ioc_quote_${id}" data-ioc-important data-ioc-block-json="${json}">' +
+            '<div class="ioccontent">' +
+            '<p class="editable-text">'+localization["ioc-insert-quote-sample"]+'</p>'+
+            '</div></div>',
+            icon: 'IocInsertQuoteSyntax',
             category: localization["category-ioc"]
         },
 

@@ -44,6 +44,7 @@ define([
 
         _showDialog: function (data, previousId) {
 
+
             var dialogManager = this.editor.dispatcher.getDialogManager();
 
             this.previousId = previousId;
@@ -65,6 +66,13 @@ define([
         },
 
         _callback: function (data) {
+            var volatileId = false;
+
+            if (data.id === undefined) {
+                data.id = Date.now();
+                volatileId = true;
+            }
+
             var html = string.substitute(this.htmlTemplate, data);
 
             var $html = jQuery(html);
@@ -75,11 +83,30 @@ define([
                 jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + this.previousId + '"]').remove();
             }
 
+            // Si un node opcional es buit l'eliminem
+            $html.find('[data-ioc-optional]').each(function () {
+                    var $this = jQuery(this);
+
+                    if ($this.text().length === 0) {
+                        console.log("eliminant node opcional");
+                        $this.remove();
+                    }
+                }
+            );
+
+
             this.editor.execCommand('inserthtml', html);
 
             var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
             $node.attr('data-ioc-block-' + this.normalize(this.title), true);
+
+
             this._addHandlers($node);
+
+            // Com que el valor de data.id pot venir de this.data si s'asigna un cop es queda fixat per a tots els nous elements generats
+            if (volatileId) {
+                data.id = undefined;
+            }
         },
 
         _addHandlers: function ($node) {
@@ -87,13 +114,46 @@ define([
             // ALERTA! Comprovar si aquesta referència es guarda correctament amb múltiples editors i multiples instancies del plugin
             var $parent = $node;
 
-            if ($node.attr('contenteditable') !== "false") {
-                $node = $node.find('[contenteditable="false"]');
-            }
+
+            // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
+            $parent.find('.no-render').remove();
+
+
+            // if ($node.attr('contenteditable') !== "false") {
+            //     $node = $node.find('[contenteditable="false"]');
+            // }
 
             var context = this;
 
-            $node.on('click', function (e) {
+            // $node.on('click', function (e) {
+            //
+            //     var json = $parent.attr('data-ioc-block-json');
+            //
+            //     json = json.split('&quot').join('"');
+            //
+            //     var data = JSON.parse(json);
+            //
+            //     context._showDialog(data, $parent.attr('data-ioc-id'));
+            //
+            // });
+
+
+            var $actions = jQuery('<div class="no-render action" >');
+
+            var $edit = jQuery('<a contenteditable="false" style="float:right;">editar</a>');
+            var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
+
+            if (this.data.length > 0) {
+                $actions.append($edit);
+            }
+
+            $actions.append($delete);
+
+            $parent.append($actions);
+
+            $edit.on('click', function (e) {
+                e.preventDefault();
+                // $node.trigger('click');
 
                 var json = $parent.attr('data-ioc-block-json');
 
@@ -102,8 +162,14 @@ define([
                 var data = JSON.parse(json);
 
                 context._showDialog(data, $parent.attr('data-ioc-id'));
-
             });
+
+            $delete.on('click', function (e) {
+                e.preventDefault();
+                $parent.remove();
+            });
+
+
         },
 
         parse: function () {
