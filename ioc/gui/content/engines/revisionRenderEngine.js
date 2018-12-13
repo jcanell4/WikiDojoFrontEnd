@@ -24,7 +24,7 @@ define(function () {
             var html = '';
             html += '<td>';
             html += '<input class="check" type="checkbox" name="rev2[]" value="' + revisionId + '" ';
-            html += ' title="Marca 2 revisions i clica al botò de la part superior per comparar-les"/>';
+            html += ' title="Marca 2 revisions i clica al botó de la part superior per comparar-les"/>';
             html += '</td>';
 
             return html;
@@ -38,10 +38,9 @@ define(function () {
             var html = '',
                 linkDiff = "?id=" + revision['id'] + "&rev=" + revision['rev'] + "&difftype=sidebyside";
 
-            //html += '<td><a href="' + linkDiff + '" data-call="diff">';
             html += '<td><a href="' + linkDiff + '" data-call="' + call_diff + '">';
             html += '<img width="15" height="11" alt="Mostra diferències amb la versió actual"';
-            html += 'title="Mostra diferències entre la revisió del ' + revision['date'];
+            html += ' title="Mostra diferències entre la revisió del ' + revision['date'];
             html += ' i la versió actual" src="/iocjslib/ioc/gui/img/diff.png" />';
             html += '</a></td>';
 
@@ -84,13 +83,13 @@ define(function () {
             linkTime,
             sortable = [],
             linkCurrent,
-            call_view,
+            call_view = '',
             call_diff = "diff";
 
         html += '<form id="revisions_selector_' + id + '" action="'+ data.urlBase+'" method="post">';
         html += '<input name="id" value="' + ns + '" type="hidden">';
         html += '<table class="meta-revisions">';
-        html += '<tr><th colspan="5" style="text-align: center"><input type="submit" name="submit" value="comparar revisions"/></th></tr>'; // TODO[Xavi]no funciona, surt fora de la taula, perquè?
+        html += '<tr><th colspan="5" style="text-align: center"><input type="submit" name="submit" value="comparar revisions"/></th></tr>';
 
         // Comprovem si existeix l'actual i si es així l'eliminem de la llista de revisions
         if (data[data.current]) {
@@ -109,10 +108,11 @@ define(function () {
         }
         var page = Math.floor(Math.max(data.position, 0) / data.amount) + 1;
 
-        call_view = data.call_view;
-        if (data.call_diff) {
-            call_diff = data.call_diff;
+        if (data.call_view) {
+            call_view = ' data-call="' + data.call_view + '"';
         }
+        if (data.call_diff)
+            call_diff = data.call_diff;
 
         delete(data.position);
         delete(data.amount);
@@ -122,20 +122,20 @@ define(function () {
         delete(data.call_view);
         delete(data.call_diff);
 
-        // extreiem cada objecte i l'afegim a un array per poder ordenar-los
+        // afegim l'element rev, amb valor data, a cada array per poder ordenar-los
         for (var j in data) {
             data[j]['rev'] = j;
             sortable.push(data[j]);
         }
 
-        // Ordenem el array
+        // Ordenem l'array
         sortable.sort(function (a, b) {
             return a['rev'] > b['rev'] ? -1 : 1;
         });
 
-        // Afegim el actual
+        // Afegim l'actual
         html += '<tr><td></td>';
-        html += '<td colspan="4" class="current-revision"><a href="' + linkCurrent + '" title="' + 'Obrir la revisió actual">';
+        html += '<td colspan="4" class="current-revision"><a href="' + linkCurrent + '"' + call_view + ' title="Obrir la revisió actual">';
         html += 'Versió actual';
         html += '</a></td></tr>';
 
@@ -148,11 +148,7 @@ define(function () {
 
             html += '<tr>';
             html += _generateHtmlForCheckRevision(sortable[i]['rev']);
-            if (call_view) {
-                html += '<td><a href="' + linkRev + '" data-call="' + call_view + '" title="' + 'Obrir la revisió del ' + sortable[i]['date'] + '">';
-            }else {
-                html += '<td><a href="' + linkRev + '" title="' + 'Obrir la revisió del ' + sortable[i]['date'] + '">';
-            }
+            html += '<td><a href="' + linkRev + '"' + call_view + ' title="Obrir la revisió del ' + sortable[i]['date'] + '">';
             html += linkTime;
             html += '</a></td>';
             html += '<td>' + sortable[i]['user'] + '</td>';
