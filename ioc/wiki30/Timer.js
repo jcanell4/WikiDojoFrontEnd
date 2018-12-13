@@ -5,7 +5,7 @@ define([
 
     var TimerException = function (message) {
         this.message = message;
-        this.name = "TimerException"
+        this.name = "TimerException";
         console.error(this);
     };
 
@@ -15,8 +15,7 @@ define([
          * @param {{onExpire: function}} args conté un objecte que obligatoriament ha de contenir la duració del temporitzador
          */
         constructor: function (args) {
-            //console.log('Timer#constructor:args = ', args);
-            if(args){
+            if (args){
                 this.init(args);
             }
         },
@@ -28,8 +27,8 @@ define([
         
         start: function (timeout, params) {
             this.expired = false;
-            if(params){
-                this.paramsOnExpire=params;
+            if (params){
+                this.paramsOnExpire = params;
             }else{
                 params = this.paramsOnExpire;
             }            
@@ -86,4 +85,5 @@ define([
         }
 
     });
+    
 });

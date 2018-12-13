@@ -212,7 +212,7 @@ define([
 
             },
 
-            getSelection() {
+            getSelection: function () {
                 // Normalment el node seleccionat serà de tipus text, en aquest cas s'enviarà el parent
 
                 var node = this.internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció

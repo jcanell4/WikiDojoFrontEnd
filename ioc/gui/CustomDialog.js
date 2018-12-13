@@ -41,25 +41,20 @@ define([
         },
 
         _initTimer: function () {
-            //console.log("CustomDialog#_initTimer", this.timeout);
             if (!this.timeout) {
                 return;
             }
 
             var timerId = setTimeout(function () {
-                //console.log("Expire!");
                 this.dispatchEvent(this.eventName.TIMEOUT, {id: this.id});
             }.bind(this), this.timeout); // El context del timer serà el propi dialog
 
             this.registerObserverToEvent(this, this.eventName.DESTROY, function () {
-                //console.log("Clear!");
                 clearInterval(timerId);
             });
         },
 
         _initFunctions: function () {
-            //console.log('CustomDialog#_initFunctions'. this.initFunctions);
-
             for (var i = 0; i < this.initFunctions.length; i++) {
                 this.initFunctions[i].bind(this)(); // es passa el contexte del dialog a cada funció que es crida
             }
@@ -69,8 +64,6 @@ define([
         },
 
         _initNextDialogs: function () {
-            //console.log("CustomDialog#_initNextDialogs", this.nextDialogs);
-
             for (var event in this.nextDialogs) {
                 this.registerObserverToEvent(this, event, this._createDialogShowCallback(this.nextDialogs[event]).bind(this));
             }
@@ -83,7 +76,6 @@ define([
         },
 
         _initNextCallbacks: function () {
-            //console.log("CustomDialog#_initNextCallbacks", this.nextCallbacks);
             // llença tota la seqüencia de funcions d'inicialització afegides
             for (var event in this.nextCallbacks) {
                 // Es tracta d'un array
@@ -98,19 +90,16 @@ define([
         },
 
         _addSections: function () {
-
             if (this.single === true) {
-                this._addSectionSingleColumn()
+                this._addSectionSingleColumn();
             } else {
-                this._addSectionsTwoColumns()
+                this._addSectionsTwoColumns();
             }
 
             if (this.sections.length>0) {
                 jQuery(this.sectionsNode.lastChild).animate({scrollTop: (0)}); // En cas de que es mostri una barra de desplaçament sempre es mostrarà el principi de la secció
             };
-
         },
-
 
         _addSectionSingleColumn: function() {
             for (var i = 0; i < this.sections.length; i++) {
@@ -126,9 +115,7 @@ define([
                 // } else {
                 //     divSection.appendChild(this.sections[i]);
                 // }
-
             }
-
         },
 
 
@@ -147,11 +134,7 @@ define([
                 // } else {
                 //     divContent.appendChild(this.sections[i]);
                 // }
-
             }
-
-
-
         },
 
 
@@ -166,13 +149,10 @@ define([
         },
 
         _addButtons: function () {
-
             if (!this.buttons) {
                 return;
             }
-
             this._createButtons();
-
         },
 
         _createButtons: function () {
