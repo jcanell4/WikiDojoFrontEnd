@@ -58,7 +58,7 @@ define([
             rev1 = JSON.stringify(content.content);
             rev2 = JSON.stringify(content.rev1);
             href = "<a class=wikilink1 href=?id="+content.ns;
-            label1 = href + ">";
+            label1 = href + ((content.revTrev) ? "&rev="+content.date : "") + ">";
             label1 += (content.revTrev) ? "Revisió" : "Projecte original";
             label1 += " (" + this._convertUnixDate(content.date, true) + ")</a>";
             label2 = href + "&rev="+content.date_rev1 +">" + "Revisió (" + this._convertUnixDate(content.date_rev1, true) + ")</a>";
