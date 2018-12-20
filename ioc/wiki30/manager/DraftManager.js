@@ -52,8 +52,16 @@ define([
             return this.drafts[docNs];
         },
         
-        getContentLocalDraft: function(ns) {
+        getContentLocalDraft: function(ns, metaDataSubSet) {
             var page = this._doGetPage(ns);
+            if (page && page.drafts.project) {
+                if (!metaDataSubSet) metaDataSubSet = "main";
+                if (page.drafts.project[metaDataSubSet])
+                    //sube un nivel eliminando el subnivel metaDataSubSet
+                    page.drafts.project = page.drafts.project[metaDataSubSet];
+                else
+                    page = {};
+            }
             return page ? page.drafts : {};
         },
 
@@ -213,6 +221,31 @@ define([
                 }
             }
         },
+
+        /**
+         * @param remoteDrafts és un objecte amb l'estructura:
+         * 'project': {
+         *      'content': {'key':'value', ...},
+         *      'date': data en milisegons
+         * }
+         */
+        updateProjectLocalDrafts: function (ns, metaDataSubSet, remoteDrafts) {
+            var draft, data;
+            var page = this._doGetPage(ns);
+            var localDrafts = page ? page.drafts : {};
+            for (var type in remoteDrafts) {
+                data = (localDrafts && localDrafts[type] && localDrafts[type][metaDataSubSet]) ? localDrafts[type][metaDataSubSet].date : -1;
+                if (remoteDrafts[type].date > data) {
+                    draft = {
+                        content: remoteDrafts[type].content,
+                        id: ns,
+                        metaDataSubSet: metaDataSubSet,
+                        type: type
+                    };
+                    this._doSaveLocal(draft, remoteDrafts[type].date, ns);
+                }
+            }
+        },
         
         _doSaveLocal: function (draft, date, ns) {
             // console.log("Draft#_doSaveLocalStorage", draft);
@@ -237,13 +270,15 @@ define([
                 case 'structured':
                     page = this._formatLocalStructuredPage(page, draft, date);
                     break;
-                case 'project':
                 case 'full':
                     page = this._formatLocalFullPage(page, draft, date);
+                    break;
+                case 'project':
+                    page = this._formatLocalProject(page, draft, date);
+                    break;
             }
-
+            
             this._doSetPage(page, ns);
-
         },
 
         // ALERTA[Xavi] Aquest codi es pracicament idéntic al de Draft.js
@@ -315,6 +350,13 @@ define([
             draft.date = date;
             page.drafts[draft.type] = draft; //sobrescriu el valor anterior si existeix
 
+            // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
+            return page;
+        },
+
+        _formatLocalProject: function (page, draft, date) {
+            draft.date = date;
+            page.drafts[draft.type][draft.metaDataSubSet] = draft; //sobrescriu el valor anterior si existeix
             // 2- Afegim el nou document, si ja existeix s'ha de sobrescriure amb la nova versió
             return page;
         }

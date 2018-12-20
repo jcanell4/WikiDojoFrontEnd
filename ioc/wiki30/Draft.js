@@ -138,7 +138,9 @@ define([
         },
 
         _formatProjectPage: function (page, draft, date) {
-            return this._formatLocalFullPage(page, draft, date);
+            draft.date = date;
+            page.drafts[draft.type][draft.metaDataSubSet] = draft; 
+            return page;
         },
 
         _doSaveRemoteServer: function () {
@@ -218,7 +220,6 @@ define([
         },
 
         _removeLocalStructuredDraft: function () {
-            // console.log("Draft#_removeLocalStructureDraft");
             // En aquest cas només s'han d'esborrar el draft dels chunks actius al desar
             var pages = this._doGetPages(),
                 draft = this._getLastGeneratedDraft();
@@ -250,23 +251,18 @@ define([
         },
 
         _doGetPages: function () {
-            //console.log('Draft#_doGetPages');
             var user = this._doGetUser();
-
             return user['pages'] ? user['pages'] : {};
         },
 
         _doGetUser: function () {
-            //console.log('Draft#_doGetUser');
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
                 user = JSON.parse(localStorage.getItem(userId));
 
             if (user && user.pages) {
                 return user;
             } else {
-                return {
-                    pages: {}
-                };
+                return {pages: {}};
             }
         },
 
@@ -285,7 +281,6 @@ define([
 
         _compactPages: function (pages) {
             // console.log("Compactant pàgines:", pages);
-
             for (var ns in pages) {
                 if (Object.keys(pages[ns].drafts).length === 0) {
                     // console.log("Esborrant pàgina", ns);
@@ -294,20 +289,16 @@ define([
             }
         },
 
-
         // TODO[Xavi] aquí podem afegir la descompresió de dades
         _doGetPage: function () {
-            //console.log('Draft#_doGetPage');
             var pages = this._doGetPages();
-
             return pages && pages[this.contentTool.ns] ? pages[this.contentTool.ns] : null;
         },
 
         // TODO[Xavi] aquí podem afegir la compresió de dades
         _doSetPage: function (page) {
-            //console.log('Draft#_doSetPage');
             var userId = 'user_' + this.dispatcher.getGlobalState().userId,
-                user = this._doGetUser(userId);
+                user = this._doGetUser();
 
             user.pages[this.contentTool.ns] = page;
             localStorage.setItem(userId, JSON.stringify(user));
@@ -315,14 +306,13 @@ define([
 
 
         _getQueryLock: function () {
-            // console.log('Draft#_getQueryLock');
             var draft = this._getLastGeneratedDraft();
 
             var dataToSend = {
-                id: this.contentTool.ns,
-                draft: JSON.stringify(draft),
-                date: this.lastRefresh
-            };
+                    id: this.contentTool.ns,
+                    draft: JSON.stringify(draft),
+                    date: this.lastRefresh
+                };
             if (this.contentTool['projectType']) {
                 if (this.contentTool['metaDataSubSet']) 
                     dataToSend['metaDataSubSet'] = this.contentTool['metaDataSubSet'];
@@ -334,7 +324,6 @@ define([
 
         _setLastGeneratedDraft: function (draft) {
             // console.log("Draft#_setLastGeneratedDraft", draft);
-
             if (draft.content !== {}) {
                 this.lastGeneratedDraft = draft;
             }

@@ -15,13 +15,8 @@ define([
         type: "project_view",
 
         process: function (value, dispatcher) {
+            var subSet;
             var args = arguments;
-            
-            //Si hay draft añadimos un mensaje
-            var localDraft = dispatcher.getDraftManager().getContentLocalDraft(value.ns);
-            if (!jQuery.isEmptyObject(localDraft)) {
-                dispatcher.getInfoManager().setExtraInfo({priority:0, message:LANG.template['ioc-template'].has_draft});
-            }
             
             //Se añade un array (key:value) con los datos originales del formulario
             args[0].content.formValues = args[0].originalContent;
@@ -33,8 +28,17 @@ define([
                     args[0].discard_changes = value.extra.discard_changes;
                 if (value.extra.hasDraft)
                     args[0].hasDraft = value.extra.hasDraft;
-                if (value.extra.metaDataSubSet)
-                    args[0].metaDataSubSet = value.extra.metaDataSubSet;
+                subSet = value.extra.metaDataSubSet;
+                if (subSet)
+                    args[0].metaDataSubSet = subSet;
+            }
+            
+            if (!subSet) subSet = (value.metaDataSubSet) ? value.metaDataSubSet : "main";
+            
+            //Si hay draft añadimos un mensaje
+            var localDraft = dispatcher.getDraftManager().getContentLocalDraft(value.ns, subSet);
+            if (!jQuery.isEmptyObject(localDraft)) {
+                dispatcher.getInfoManager().setExtraInfo({priority:0, message:LANG.template['ioc-template'].has_draft});
             }
             
             //Con la incorporación del array de datos del formulario, llamamos a la secuencia principal
@@ -42,7 +46,7 @@ define([
             var ret = this.inherited(args);
 
             //Si existe un borrador, llamamos a la función que muestra un diálogo para elegir original o borrador
-            if (localDraft.project && value.extra.edit){
+            if (localDraft && localDraft.project && value.extra && value.extra.edit){
                 this.eventManager = dispatcher.getEventManager();
                 this.dialogManager = dispatcher.getDialogManager();
                 this._showDiffDialog(value, localDraft.project);
@@ -111,7 +115,7 @@ define([
             };
             var dataDocum = this._convertUnixDate(data.document.date);
             var dataDraft = this._convertUnixDate(data.draft.date);
-            var query = "id="+value.ns + "&projectType="+value.extra.projectType + (value.rev ? "&rev="+value.rev : "");
+            var query = "id="+value.ns + "&projectType="+value.extra.projectType + (value.extra.metaDataSubSet ? "&metaDataSubSet="+value.extra.metaDataSubSet : "") + (value.rev ? "&rev="+value.rev : "");
 
             var dialogParams = {
                 id: value.id,

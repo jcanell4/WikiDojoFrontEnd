@@ -20,6 +20,7 @@ define([
             return {
                 type: this.DRAFT_TYPE,
                 id: this.ns,
+                metaDataSubSet: (this.params.metaDataSubSet) ? this.params.metaDataSubSet : "main",
                 content: JSON.stringify(this.getCurrentContent())
             };
         },
