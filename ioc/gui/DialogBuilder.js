@@ -97,6 +97,11 @@ define([
                 $fields.append($li);
             }
 
+            // No s'utilitza l'event submit del form, es fan servir botons que executen el callback corresponent
+            $node.on('submit', function(e) {
+                e.preventDefault();
+            });
+
             this._addSection($node[0]);
             return this;
         },
