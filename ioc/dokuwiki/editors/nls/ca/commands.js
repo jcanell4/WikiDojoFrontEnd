@@ -120,6 +120,25 @@ define(
         'ioc-insert-sound-sample': 'identificador_so',
         'ioc-insert-sound-prompt': 'Introdueix l\'identificador del so:',
 
+        'ioc-insert-figure-prompt': 'Introdueix les dades de la figura:',
+
+        'ioc-insert-label-id': 'Id',
+        'ioc-insert-placeholder-id': 'Introduceix l\'identificador',
+
+        'ioc-insert-label-title': 'Title',
+        'ioc-insert-placeholder-title': 'Introdueix el títol',
+
+        'ioc-insert-label-footer': 'Footer',
+        'ioc-insert-placeholder-footer': 'Introdueix el peu',
+
+        'ioc-insert-table-prompt': 'Introdueix les dades de la taula:',
+
+        'ioc-insert-accounting-prompt': 'Introdueix les dades de la taula de contabilitat:',
+
+        'ioc-insert-text-prompt' : 'Introdueix el títol:',
+        'ioc-insert-text-large-prompt': 'Introdueix el títol:',
+        'ioc-insert-example-prompt': 'Introdueix el títol:',
+
 
     })
 );

@@ -470,26 +470,26 @@ define([
 
         'InsertFigureSyntax': {
             title: localization["ioc-insert-figure-button"],
-            propmt: localization["ioc-insert-figure-prompt"],
+            prompt: localization["ioc-insert-figure-prompt"],
             sample: localization["ioc-insert-figure-sample"],
             data:[
                 {
                     'name': 'id',
-                    'label': 'Id',
+                    'label': localization["ioc-insert-label-id"],
                     'value': '',
-                    'placeholder': 'Introduceix l\'identificador'
+                    'placeholder': localization["ioc-insert-placeholder-id"]
                 },
                 {
                     'name': 'title',
-                    'label': 'Títol',
+                    'label': localization["ioc-insert-label-title"],
                     'value': '',
-                    'placeholder': 'Introduceix el títol'
+                    'placeholder': localization["ioc-insert-placeholder-title"],
                 },
                 {
                     'name': 'footer',
-                    'label': 'Peu',
+                    'label': localization["ioc-insert-label-footer"],
                     'value': '',
-                    'placeholder': 'Introduceix el peu'
+                    'placeholder': localization["ioc-insert-placeholder-footer"],
                 }
             ],
             htmlTemplate: '<div class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
@@ -507,26 +507,26 @@ define([
 
         'InsertTableSyntax': {
             title: localization["ioc-insert-table-button"],
-            propmt: localization["ioc-insert-table-prompt"],
+            prompt: localization["ioc-insert-table-prompt"],
             sample: localization["ioc-insert-table-sample"],
             data:[
                 {
                     'name': 'id',
-                    'label': 'Id',
+                    'label': localization["ioc-insert-label-id"],
                     'value': '',
-                    'placeholder': 'Introduceix l\'identificador'
+                    'placeholder': localization["ioc-insert-placeholder-id"]
                 },
                 {
                     'name': 'title',
-                    'label': 'Títol',
+                    'label': localization["ioc-insert-label-title"],
                     'value': '',
-                    'placeholder': 'Introduceix el títol'
+                    'placeholder': localization["ioc-insert-placeholder-title"],
                 },
                 {
                     'name': 'footer',
-                    'label': 'Peu',
+                    'label': localization["ioc-insert-label-footer"],
                     'value': '',
-                    'placeholder': 'Introduceix el peu'
+                    'placeholder': localization["ioc-insert-placeholder-footer"],
                 }
             ],
             htmlTemplate: '<div class="ioctable" data-ioc-id="ioc_table_${id}" data-ioc-table data-ioc-block-json="${json}">' +
@@ -543,26 +543,26 @@ define([
 
         'InsertAccountingSyntax': {
             title: localization["ioc-insert-accounting-button"],
-            propmt: localization["ioc-insert-accounting-prompt"],
+            prompt: localization["ioc-insert-accounting-prompt"],
             sample: localization["ioc-insert-accounting-sample"],
             data:[
                 {
                     'name': 'id',
-                    'label': 'Id',
+                    'label': localization["ioc-insert-label-id"],
                     'value': '',
-                    'placeholder': 'Introduceix l\'identificador'
+                    'placeholder': localization["ioc-insert-placeholder-id"]
                 },
                 {
                     'name': 'title',
-                    'label': 'Títol',
+                    'label': localization["ioc-insert-label-title"],
                     'value': '',
-                    'placeholder': 'Introduceix el títol'
+                    'placeholder': localization["ioc-insert-placeholder-title"],
                 },
                 {
                     'name': 'footer',
-                    'label': 'Peu',
+                    'label': localization["ioc-insert-label-footer"],
                     'value': '',
-                    'placeholder': 'Introduceix el peu'
+                    'placeholder': localization["ioc-insert-placeholder-footer"],
                 }
             ],
             htmlTemplate: '<div class="iocaccounting" data-ioc-id="ioc_accounting_${id}" data-ioc-accounting data-ioc-block-json="${json}">' +
@@ -579,7 +579,7 @@ define([
 
         'InsertTextSyntax': {
             title: localization["ioc-insert-text-button"],
-            propmt: localization["ioc-insert-text-prompt"],
+            prompt: localization["ioc-insert-text-prompt"],
             sample: localization["ioc-insert-text-sample"],
             data:[{
                 'name': 'title',
@@ -599,13 +599,13 @@ define([
 
         'InsertTextLargeSyntax': {
             title: localization["ioc-insert-text-large-button"],
-            propmt: localization["ioc-insert-text-large-prompt"],
+            prompt: localization["ioc-insert-text-large-prompt"],
             sample: localization["ioc-insert-text-large-sample"],
             data:[{
                 'name': 'title',
-                'label': 'Títol',
+                'label': localization["ioc-insert-label-title"],
                 'value': '',
-                'placeholder': 'Introduceix el títol'
+                'placeholder': localization["ioc-insert-placeholder-title"],
             }],
             htmlTemplate: '<div class="ioctextl" data-ioc-id="ioc_textl_${id}" data-ioc-textl data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
@@ -618,13 +618,13 @@ define([
 
         'InsertExampleSyntax': {
             title: localization["ioc-insert-example-button"],
-            propmt: localization["ioc-insert-example-prompt"],
+            prompt: localization["ioc-insert-example-prompt"],
             sample: localization["ioc-insert-example-sample"],
             data:[{
                 'name': 'title',
-                'label': 'Títol',
+                'label': localization["ioc-insert-label-title"],
                 'value': '',
-                'placeholder': 'Introduceix el títol'
+                'placeholder': localization["ioc-insert-placeholder-title"],
             }],
             htmlTemplate: '<div class="iocexample" data-ioc-id="ioc_example_${id}" data-ioc-example data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
@@ -637,7 +637,7 @@ define([
 
         'InsertNoteSyntax': {
             title: localization["ioc-insert-note-button"],
-            propmt: localization["ioc-insert-note-prompt"],
+            // propmt: localization["ioc-insert-note-prompt"],
             sample: localization["ioc-insert-note-sample"],
             data:[],
             htmlTemplate: '<div class="iocnote" data-ioc-id="ioc_note_${id}" data-ioc-note data-ioc-block-json="${json}">' +
@@ -650,7 +650,7 @@ define([
 
         'InsertReferenceSyntax': {
             title: localization["ioc-insert-reference-button"],
-            propmt: localization["ioc-insert-reference-prompt"],
+            //propmt: localization["ioc-insert-reference-prompt"],
             sample: localization["ioc-insert-reference-sample"],
             data:[],
             htmlTemplate: '<div class="iocreference" data-ioc-id="ioc_reference_${id}" data-ioc-reference data-ioc-block-json="${json}">' +
@@ -663,7 +663,7 @@ define([
 
         'InsertImportantSyntax': {
             title: localization["ioc-insert-important-button"],
-            propmt: localization["ioc-insert-important-prompt"],
+            //propmt: localization["ioc-insert-important-prompt"],
             sample: localization["ioc-insert-important-sample"],
             data:[],
             htmlTemplate: '<div class="iocimportant" data-ioc-id="ioc_important_${id}" data-ioc-important data-ioc-block-json="${json}">' +
@@ -676,7 +676,7 @@ define([
 
         'InsertQuoteSyntax': {
             title: localization["ioc-insert-quote-button"],
-            propmt: localization["ioc-insert-quote-prompt"],
+            //propmt: localization["ioc-insert-quote-prompt"],
             sample: localization["ioc-insert-quote-sample"],
             data:[],
             htmlTemplate: '<div class="iocquote" data-ioc-id="ioc_quote_${id}" data-ioc-important data-ioc-block-json="${json}">' +

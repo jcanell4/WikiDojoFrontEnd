@@ -1,9 +1,5 @@
 /* Estils pel DOJO-Editor */
 
-
-
-
-
 /* Plugin comentaris */
 
 .ioc-comment-block {
@@ -17,36 +13,36 @@
 .ioc-comment {
     cursor: default;
     color: black;
-    background-color:#FEEFB3;
+    background-color: #FEEFB3;
     border: 1px solid #9F6000;
     border-radius: 5px;
     padding: 5px;
 }
 
 .ioc-comment-body {
-    position:relative;
+    position: relative;
     max-width: 400px;
 }
 
 .ioc-comment textarea {
-    width:96.5%;
+    width: 96.5%;
     margin: 10px 5px 5px;
-    resize:none;
+    resize: none;
 }
 
 .ioc-comment-reply {
-    margin:5px;
-    padding:10px;
+    margin: 5px;
+    padding: 10px;
     border-radius: 5px;
 }
 
 .ioc-comment-reply:nth-child(even) {
-    background-color:#CBBF8F;
+    background-color: #CBBF8F;
 }
 
 .ioc-signature span {
     color: red;
-    font-weight:normal;
+    font-weight: normal;
     font-style: italic;
 }
 
@@ -55,15 +51,15 @@ div.editComment {
 }
 
 /*.ioc-reply-list div:first-child {*/
-    /*background-color:#FEE067;*/
+/*background-color:#FEE067;*/
 /*}*/
 
 /*.ioc-comment-reply:nth-child(odd) {*/
-    /*background-color:#FEE067;*/
+/*background-color:#FEE067;*/
 /*}*/
 
-.ioc-comment-reply .editComment{
-    overflow : auto;
+.ioc-comment-reply .editComment {
+    overflow: auto;
 }
 
 .ioc-comment-reply textarea {
@@ -71,22 +67,21 @@ div.editComment {
 }
 
 .ioc-comment-body, .ioc-comment button {
-    float:right;
+    float: right;
 }
 
 span.ioc-comment-toolbar {
-    float:right;
-    color:#9F6000;
+    float: right;
+    color: #9F6000;
 }
 
 span.ioc-comment-toolbar-button {
     cursor: pointer;
     font-weight: 100;
-    font-size:smaller;
+    font-size: smaller;
 }
 
-
-div.ioc-comment [data-type="ioc-comment"]{
+div.ioc-comment [data-type="ioc-comment"] {
     float: right;
     display: block;
     max-width: 350px;
@@ -100,10 +95,10 @@ div.ioc-comment [data-type="ioc-comment"]{
     border-top: 1px dotted #9F6000;
     padding-top: 5px;
     font-weight: bold;
-    font-size:smaller;
+    font-size: smaller;
 }
 
-.triangle-inner{
+.triangle-inner {
     position: absolute;
     border-top: none;
     border-bottom: 24px solid transparent;
@@ -114,7 +109,7 @@ div.ioc-comment [data-type="ioc-comment"]{
     z-index: -1;
 }
 
-.triangle-outer{
+.triangle-outer {
     position: absolute;
     border-top: none;
     border-bottom: 18px solid transparent;
@@ -126,16 +121,31 @@ div.ioc-comment [data-type="ioc-comment"]{
 
 .editable-text {
     border: 1px dotted dodgerblue;
-    padding: 5px;
+    border-bottom: none;
+    border-top: none;
+    padding: 0 5px;
+    margin: 0;
+
 }
+
+p.editable-text:first-child, .iocinfo + p.editable-text, .ioctitle+ p.editable-text, p.editable-text + .no-render.action{
+    border-top: 1px dotted dodgerblue;
+}
+
+p.editable-text:last-child {
+    border-bottom: 1px dotted dodgerblue;
+}
+
+
+
 
 div.action {
     clear: both;
 }
 
 .action a {
-    font-style:italic;
-    float:right;
+    font-style: italic;
+    float: right;
     margin-left: 5px;
     margin-right: 5px;
     font-size: small;
@@ -147,101 +157,103 @@ div.action {
 /* html styles
 -------------------------------------------------------------------------------*/
 
-.dokuwiki h1, .dokuwiki h2, .dokuwiki h3, .dokuwiki h4, .dokuwiki h5{
-    clear:left;
-    width:73%;
-}
-.ioctextl, .iocexample, .iocimportant, .iocquote, .iocfigure, .ioctable, .iocaccounting{
-    width:73% !important;
+.dokuwiki h1, .dokuwiki h2, .dokuwiki h3, .dokuwiki h4, .dokuwiki h5 {
+    clear: left;
+    width: 73%;
 }
 
-.ioctable, .iocaccounting{
+.ioctextl, .iocexample, .iocimportant, .iocquote, .iocfigure, .ioctable, .iocaccounting {
+    width: 73% !important;
+}
+
+.ioctable, .iocaccounting {
     margin-left: auto !important;
     margin-right: auto !important;
 }
 
-div.level1, div.level2, div.level3, div.level4{
-    float:none !important;
+div.level1, div.level2, div.level3, div.level4 {
+    float: none !important;
 }
 
-.level1 p, .level2 p, .level3 p, .level4 p, .level5 p, .level1 ol, .level2 ol, .level3 ol, .level4 ol, .level5 ol, .level1 ul, .level2 ul, .level3 ul, .level4 ul, .level5 ul{
-    width:73% !important;
+.level1 p, .level2 p, .level3 p, .level4 p, .level5 p, .level1 ol, .level2 ol, .level3 ol, .level4 ol, .level5 ol, .level1 ul, .level2 ul, .level3 ul, .level4 ul, .level5 ul {
+    width: 73% !important;
 }
 
-.dokuwiki #toc__inside .toc{
-    width:auto !important;
+.dokuwiki #toc__inside .toc {
+    width: auto !important;
 }
 
-div.dokuwiki #toc__inside{
-    float:right;
-    min-width:99%;
+div.dokuwiki #toc__inside {
+    float: right;
+    min-width: 99%;
 }
 
-div.dokuwiki #toc__inside ul{
-    float:none;
+div.dokuwiki #toc__inside ul {
+    float: none;
 }
 
 .dokuwiki .secedit {
-    float:none !important;
-    padding-left:93%;
+    float: none !important;
+    padding-left: 93%;
 }
 
-.ioccontent ul, .ioccontent ol{
-    float:none;
+.ioccontent ul, .ioccontent ol {
+    float: none;
 }
 
-.dokuwiki pre{
-    width:73%;
+.dokuwiki pre {
+    width: 73%;
 }
 
-.dokuwiki .ioccontent pre{
-    width:98%;
+.dokuwiki .ioccontent pre {
+    width: 98%;
 }
 
-.iocfigure .iocinfo{
-    margin:2em auto 0;
+.iocfigure .iocinfo {
+    margin: 2em auto 0;
 }
 
-.iocfigure .iocinfo img{
-    margin-bottom:0 !important;
+.iocfigure .iocinfo img {
+    margin-bottom: 0 !important;
 }
 
-.iocfigure p{
-    width:100%!important;
+.iocfigure p {
+    width: 100% !important;
 }
 
-.iocfigure img{
-    display:block;
-    margin:0 auto 2em auto;
-    max-width:100%;
+.iocfigure img {
+    display: block;
+    margin: 0 auto 2em auto;
+    max-width: 100%;
 }
 
-.solution p{
-    width:100% !important;
+.solution p {
+    width: 100% !important;
 }
 
-.solution img{
-    max-width:100%;
+.solution img {
+    max-width: 100%;
 }
 
-.imgb{
+.imgb {
     position: relative;
     clear: right;
-    float:right;
+    float: right;
     margin-bottom: 1em;
-    width:200px !important;
-}
-.imgb img{
-    max-width:195px;
-    float:left !important;
+    width: 200px !important;
 }
 
-.imgb a{
-    float:left !important;
+.imgb img {
+    max-width: 195px;
+    float: left !important;
+}
+
+.imgb a {
+    float: left !important;
 
 }
 
-.imgb .title{
+.imgb .title {
     clear: right;
     float: left !important;
     font-size: 0.85em;
@@ -251,7 +263,7 @@ div.dokuwiki #toc__inside ul{
     width: 145px;
 }
 
-.newcontent{
+.newcontent {
     display: block;
     margin-left: -9px;
     padding-left: 6px;
@@ -259,40 +271,40 @@ div.dokuwiki #toc__inside ul{
 }
 
 /* TABLE */
-.ioctable,.iocaccounting{
+.ioctable, .iocaccounting {
     /*  width:100%;*/
 }
 
-.iocaccounting table{
-    border:1px solid !important;
+.iocaccounting table {
+    border: 1px solid !important;
 }
 
-.iocaccounting table td,.iocaccounting table th{
-    border:1px solid !important;
+.iocaccounting table td, .iocaccounting table th {
+    border: 1px solid !important;
 }
 
-.iocaccounting table th{
-    background-color:#ccc!important;
+.iocaccounting table th {
+    background-color: #ccc !important;
 }
 
-.iocaccounting table td[colspan="3"]{
-    background-color:#ccc!important;
+.iocaccounting table td[colspan="3"] {
+    background-color: #ccc !important;
 }
 
-.ioctable .iocinfo, .iocaccounting .iocinfo{
-    margin:2em auto 0 auto;
+.ioctable .iocinfo, .iocaccounting .iocinfo {
+    margin: 2em auto 0 auto;
 }
 
 /* COLUMN B */
 
-.ioctext{
+.ioctext {
     position: relative;
     clear: right;
-    float:right;
-    width:200px !important;
-    margin-bottom:1em;
+    float: right;
+    width: 200px !important;
+    margin-bottom: 1em;
     padding: 0;
-    font-size:0.85em;
+    font-size: 0.85em;
 }
 
 .ioctext .ioccontent {
@@ -300,137 +312,134 @@ div.dokuwiki #toc__inside ul{
     float: left;
 }
 
-
-
-.iocreference{
+.iocreference {
     position: relative;
     clear: right;
-    float:right;
-    width:145px !important;
-    margin-bottom:1em;
+    float: right;
+    width: 145px !important;
+    margin-bottom: 1em;
     background: url("./images/iocexportl/iocreference.png") no-repeat scroll left 0.2em #efefef;
-    padding:1em 0.5em 1em 5em;
-    font-size:0.85em;
+    padding: 1em 0.5em 1em 5em;
+    font-size: 0.85em;
 }
 
-.iocnote{
+.iocnote {
     position: relative;
     clear: right;
-    float:right;
-    width:145px !important;
-    margin-bottom:1em;
+    float: right;
+    width: 145px !important;
+    margin-bottom: 1em;
     background: url("./images/iocexportl/iocnote.png") no-repeat scroll left 0.2em #efefef;
-    padding:1em 0.5em 1em 5em;
-    font-size:0.85em;
+    padding: 1em 0.5em 1em 5em;
+    font-size: 0.85em;
 }
 
 /* COLUMN A */
 
-.ioctextl, .iocexample, .iocimportant, .iocquote{
+.ioctextl, .iocexample, .iocimportant, .iocquote {
     overflow: hidden;
 }
 
-.ioctextl .ioccontent{
-    clear:both!important;
-    width:80%;
+.ioctextl .ioccontent {
+    clear: both !important;
+    width: 80%;
     background-color: #efefef;
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
     padding: 1.5em 1.5em 2.5em;
-    margin:1em auto;
+    margin: 1em auto;
 }
 
-.ioctextl .ioccontent p.ioctitle{
+.ioctextl .ioccontent p.ioctitle {
     margin-bottom: 2em !important;
 }
 
-.iocexample .ioccontent{
-    clear:both!important;
-    width:80%;
+.iocexample .ioccontent {
+    clear: both !important;
+    width: 80%;
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
-    padding:1.5em 1.5em 2.5em;
-    margin:1em auto;
-    font-size:85%;
+    padding: 1.5em 1.5em 2.5em;
+    margin: 1em auto;
+    font-size: 85%;
 }
 
-.iocexample .ioccontent p.ioctitle{
+.iocexample .ioccontent p.ioctitle {
     margin-bottom: 2em !important;
-    font-size:120%;
+    font-size: 120%;
 }
 
-.iocquote .ioccontent{
-    clear:both!important;
-    font-size:85%;
-    width:80%;
+.iocquote .ioccontent {
+    clear: both !important;
+    font-size: 85%;
+    width: 80%;
     color: #2c2c2c;
     background: url("./images/iocexportl/iocquote.png") no-repeat scroll 98% 1em #efefef;
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
     padding: 1.5em 4.5em 2.5em 1.5em;
-    margin:1em auto;
+    margin: 1em auto;
 }
 
-.iocimportant .ioccontent{
-    clear:both!important;
-    width:80%;
+.iocimportant .ioccontent {
+    clear: both !important;
+    width: 80%;
     background-color: #ccc;
-    padding:1.5em;
-    margin:1em auto;
+    padding: 1.5em;
+    margin: 1em auto;
 }
 
-.iocexample .iocaccounting, .iocexample .ioctable, .ioctextl .iocaccounting, .ioctextl .ioctable{
-    width:100%!important;
+.iocexample .iocaccounting, .iocexample .ioctable, .ioctextl .iocaccounting, .ioctextl .ioctable {
+    width: 100% !important;
 }
 
-.iocexample .iocfigure, .ioctextl .iocfigure{
-    margin:0 auto;
+.iocexample .iocfigure, .ioctextl .iocfigure {
+    margin: 0 auto;
 }
 
-
-.ioctext p, .ioctextl p, .iocquote p, .iocexample p, .iocimportant p, .iocreference p, .iocnote p{
-    margin-bottom:0px !important;
-    width:100% !important;
-    float:none;
+.ioctext p, .ioctextl p, .iocquote p, .iocexample p, .iocimportant p, .iocreference p, .iocnote p {
+    margin-bottom: 0px !important;
+    width: 100% !important;
+    float: none;
 }
 
-.ioctextl img, .iocexample img{
-    max-width:100%;
+.ioctextl img, .iocexample img {
+    max-width: 100%;
 }
 
-.ioctext pre, .ioctextl pre, .iocquote pre, .iocexemple pre{
-    margin-bottom:0px !important;
+.ioctext pre, .ioctextl pre, .iocquote pre, .iocexemple pre {
+    margin-bottom: 0px !important;
 }
 
-.ioctitle{
-    font-weight:bold;
+.ioctitle {
+    font-weight: bold;
 }
 
-img.latex_displayed{
-    margin:1em auto!important;
-    display:block;
+img.latex_displayed {
+    margin: 1em auto !important;
+    display: block;
 }
 
-.iocExportPdfIcon{
+.iocExportPdfIcon {
     background-image: url("./images/iocexportl/iocPdf.png");
     width: 32px;
     height: 32px;
 }
 
-.iocExportPdfsIcon{
+.iocExportPdfsIcon {
     background-image: url("./images/iocexportl/iocPdfs.png");
     width: 32px;
     height: 32px;
 }
 
-.iocExportHtmlIcon{
+.iocExportHtmlIcon {
     background-image: url("./images/iocexportl/iocHtml.png");
     width: 32px;
     height: 32px;
 }
 
-div.iocContainer{
-    background-color:#FEEFB3;
+div.iocContainer {
+    background-color: #FEEFB3;
     color: #444444
 }
 

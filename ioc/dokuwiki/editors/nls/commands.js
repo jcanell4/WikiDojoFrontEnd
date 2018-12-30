@@ -116,6 +116,32 @@ define({ root:
         'ioc-insert-sound-button': 'Insert sound',
         'ioc-insert-sound-sample': 'sound_id',
         'ioc-insert-sound-prompt': 'Enter sound id:',
+
+        'ioc-insert-figure-prompt': 'Enter id, title and foot for the figure:',
+
+        'ioc-insert-label-id': 'Id',
+        'ioc-insert-placeholder-id': 'Enter id',
+
+        'ioc-insert-label-title': 'Title',
+        'ioc-insert-placeholder-title': 'Enter title',
+
+        'ioc-insert-label-footer': 'Footer',
+        'ioc-insert-placeholder-footer': 'Enter footer',
+
+        'ioc-insert-table-prompt': 'Enter id, title and foot for the table:',
+
+        'ioc-insert-accounting-prompt': 'Enter id, title and foot for the accounting table:',
+
+        'ioc-insert-text-prompt' : 'Enter a tittle:',
+        'ioc-insert-text-large-prompt': 'Enter a tittle:',
+        'ioc-insert-example-prompt': 'Enter a tittle:',
+
+
+
+
+
+
+
     }),
 //end v1.x content
 

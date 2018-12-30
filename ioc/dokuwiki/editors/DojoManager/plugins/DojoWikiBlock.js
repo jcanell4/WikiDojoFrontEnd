@@ -49,6 +49,8 @@ define([
 
             this.previousId = previousId;
 
+
+
             var dialog = dialogManager.getDialog('form', this.editor.id, {
                 title: this.title,
                 message: this.prompt, // TODO: localitzar
