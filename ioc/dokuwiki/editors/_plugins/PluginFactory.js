@@ -15,6 +15,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableDelete',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiLink',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -36,8 +37,6 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceTableEditorPlugin',
 
 
-
-
     'dijit/_editor/plugins/ViewSource',
     'dijit/_editor/plugins/LinkDialog',
 
@@ -50,9 +49,9 @@ define([
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
-             DojoTableCellMerge, DojoTableDelete, /*DojoSound, */DojoWikiBlock,
+             DojoTableCellMerge, DojoTableDelete, /*DojoSound, */DojoWikiBlock, DojoWikiLink,
              DojoComment, AceFireEvent, AceFireDojoEvent,
-             DojoFireEvent, AceDocumentPreview,DojoDocumentPreview,
+             DojoFireEvent, AceDocumentPreview, DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
              ViewSource, LinkDialog,
@@ -65,20 +64,18 @@ define([
     document.head.appendChild(cssStyle);
 
 
-
-
     var plugins = {
         'ACE': {
-            'IocSoundFormatButton' : AceFormat,
+            'IocSoundFormatButton': AceFormat,
             // 'TestFormatButton' : AceFormat,
-            'CancelButton' : AceFireEvent,
-            'SaveButton' : AceFireEvent,
+            'CancelButton': AceFireEvent,
+            'SaveButton': AceFireEvent,
             'DocumentPreviewButton': AceDocumentPreview,
             'EnableACE': AceEnableACE,
             'EnableWrapper': AceEnableWrapper,
             'LatexPreview': AceLatexPreview,
-            'CancelDialogEditorButton' : AceFireDojoEvent,
-            'SaveDialogEditorButton' : AceFireDojoEvent,
+            'CancelDialogEditorButton': AceFireDojoEvent,
+            'SaveDialogEditorButton': AceFireDojoEvent,
             'TestReadonlyPlugin': AceTestReadonlyPlugin,
             'ReadonlyBlocksToggle': AceReadonlyBlocksToggle,
             'TableEditor': AceTableEditor,
@@ -87,19 +84,21 @@ define([
         },
 
         'Dojo': {
-            'IocSoundFormatButton' : DojoFormat,
+            'IocSoundFormatButton': DojoFormat,
             // 'TestFormatButton' : DojoFormat,
-            'IocComment' : DojoComment,
-            'CancelButton' : DojoFireEvent,
-            'SaveButton' : DojoFireEvent,
+            'IocComment': DojoComment,
+            'CancelButton': DojoFireEvent,
+            'SaveButton': DojoFireEvent,
             'DocumentPreviewButton': DojoDocumentPreview,
 
             // Botons del desplegable IOC
             'NewContent': DojoFormat,
             'InsertFigureSyntax': DojoWikiBlock,
-            'InsertFigureLinkSyntax': DojoFormat,
+            //'InsertFigureLinkSyntax': DojoFormat,
+            'InsertFigureLinkSyntax': DojoWikiLink,
             'InsertTableSyntax': DojoWikiBlock,
-            'InsertTableLinkSyntax': DojoFormat,
+            // 'InsertTableLinkSyntax': DojoFormat,
+            'InsertTableLinkSyntax': DojoWikiLink,
             'InsertTextSyntax': DojoWikiBlock,
             'InsertTextLargeSyntax': DojoWikiBlock,
             'InsertExampleSyntax': DojoWikiBlock,
@@ -119,23 +118,23 @@ define([
             'HTMLItalic': 'italic',
             'HTMLUnderline': 'underline',
             'HTMLCode': DojoFormatBlock,
-            'HTMLStrikethrough' : 'strikethrough',
-            'HTMLHeader1' : DojoFormat,
-            'HTMLHeader2' : DojoFormat,
-            'HTMLHeader3' : DojoFormat,
-            'HTMLHeader4' : DojoFormat,
-            'HTMLHeader5' : DojoFormat,
-            'HTMLHeader6' : DojoFormat,
-            'HTMLLink' : DojoFormat,
-            'HTMLLinkExternal' : DojoFormat,
+            'HTMLStrikethrough': 'strikethrough',
+            'HTMLHeader1': DojoFormat,
+            'HTMLHeader2': DojoFormat,
+            'HTMLHeader3': DojoFormat,
+            'HTMLHeader4': DojoFormat,
+            'HTMLHeader5': DojoFormat,
+            'HTMLHeader6': DojoFormat,
+            'HTMLLink': DojoFormat,
+            'HTMLLinkExternal': DojoFormat,
 
-            'ViewSource' : ViewSource,
+            'ViewSource': ViewSource,
             'Clear': DojoClearFormat,
 
-            'MergeCells' : DojoTableCellMerge,
-            'TableDelete' : DojoTableDelete,
+            'MergeCells': DojoTableCellMerge,
+            'TableDelete': DojoTableDelete,
 
-            'InsertSound' : DojoWikiBlock,
+            'InsertSound': DojoWikiBlock,
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -146,7 +145,6 @@ define([
         }
 
     };
-
 
 
     // Atributs de configucarió:
@@ -183,14 +181,14 @@ define([
         'CancelDialogEditorButton': {
             type: 'CancelDialogEditorButton',
             title: localization["cancel-button"],
-            customEvent: {type:'CancelDialog', data: {}},
+            customEvent: {type: 'CancelDialog', data: {}},
             icon: 'IocBack',
             // category: 'A'
         },
         'SaveDialogEditorButton': {
             type: 'SaveDialogEditorButton',
             title: localization["save-button"],
-            customEvent: {type:'SaveDialog', data: {}},
+            customEvent: {type: 'SaveDialog', data: {}},
             icon: 'IocSave',
             // category: 'A'
         },
@@ -210,7 +208,7 @@ define([
             sample: localization["ioc-insert-sound-sample"],
             icon: 'IocSound',
 
-            data:[ // clau: etiqueta
+            data: [ // clau: etiqueta
                 {
                     'name': 'id',
                     'label': 'Id',
@@ -219,8 +217,8 @@ define([
                 }],
 
             htmlTemplate: "<div data-ioc-id=\"ioc_sound_${id}\" data-ioc-sound data-ioc-block-json=\"${json}\" contenteditable=\"false\">" +
-                "<iframe width=\"100%\" height=\"20\" scrolling=\"no\" frameborder=\"no\" src=\"https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${id}?secret_token=none&color=%230066cc&inverse=false&auto_play=false&show_user=true\"></iframe>"+
-                "</div>",
+            "<iframe width=\"100%\" height=\"20\" scrolling=\"no\" frameborder=\"no\" src=\"https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${id}?secret_token=none&color=%230066cc&inverse=false&auto_play=false&show_user=true\"></iframe>" +
+            "</div>",
             category: localization["category-ioc"]
         },
 
@@ -269,21 +267,38 @@ define([
 
         'InsertFigureLinkSyntax': {
             title: localization["ioc-insert-figure-link-button"],
-            open: ':figure:',
-            close: ':',
-            sample: localization["ioc-insert-figure-link-sample"],
+            prompt: localization["ioc-insert-figure-link-prompt"],
+            target: 'data-ioc-figure',
             icon: 'IocInsertFigureLinkSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc"],
+            htmlTemplate: '<a data-ioc-link data-ioc-id="ioc_link_figure_${id}" href="#${target}" data-ioc-block-json="${json}">${target}</a>',
+            data: [
+                {
+                    'name': 'target',
+                    'label': localization["ioc-insert-label-figure"],
+                    'value': '',
+                    'placeholder': localization["ioc-insert-placeholder-select"],
+                    'type': 'select'
+                }]
         },
 
         'InsertTableLinkSyntax': {
             title: localization["ioc-insert-table-link-button"],
-            open: ':table:',
-            close: ':',
-            sample: localization["ioc-insert-table-link-sample"],
+            prompt: localization["ioc-insert-table-link-prompt"],
+            target: 'data-ioc-table',
             icon: 'IocInsertTableLinkSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc"],
+            htmlTemplate: '<a data-ioc-link data-ioc-id="ioc_link_table_${id}" href="#${target}" data-ioc-block-json="${json}">${target}</a>',
+            data: [
+                {
+                    'name': 'target',
+                    'label': localization["ioc-insert-label-table"],
+                    'value': '',
+                    'placeholder': localization["ioc-insert-placeholder-select"],
+                    'type': 'select'
+                }]
         },
+
 
         'InsertMediaSyntax': {
             title: localization["ioc-insert-media-button"],
@@ -472,7 +487,7 @@ define([
             title: localization["ioc-insert-figure-button"],
             prompt: localization["ioc-insert-figure-prompt"],
             sample: localization["ioc-insert-figure-sample"],
-            data:[
+            data: [
                 {
                     'name': 'id',
                     'label': localization["ioc-insert-label-id"],
@@ -493,12 +508,12 @@ define([
                 }
             ],
             htmlTemplate: '<div class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
-                '<div class="iocinfo" contenteditable="false"><a id="${id}" ><strong>ID:</strong> ${id}<br></a>' +
-                '<strong>Títol:</strong> <span>${title}</span><br>' +
-                '<strong>Peu:</strong> ${footer}</br>' +
-                '</div>' +
-                '<p class="editable-text">'+localization["ioc-insert-figure-sample"]+'</p>'+
-                '</div>',
+            '<div class="iocinfo" contenteditable="false"><a id="${id}" ><strong>ID:</strong> ${id}<br></a>' +
+            '<strong>Títol:</strong> <span>${title}</span><br>' +
+            '<strong>Peu:</strong> ${footer}</br>' +
+            '</div>' +
+            '<p class="editable-text">' + localization["ioc-insert-figure-sample"] + '</p>' +
+            '</div>',
 
             icon: 'IocInsertFigureSyntax',
             category: localization["category-ioc"]
@@ -509,7 +524,7 @@ define([
             title: localization["ioc-insert-table-button"],
             prompt: localization["ioc-insert-table-prompt"],
             sample: localization["ioc-insert-table-sample"],
-            data:[
+            data: [
                 {
                     'name': 'id',
                     'label': localization["ioc-insert-label-id"],
@@ -534,7 +549,7 @@ define([
             '<strong>Títol:</strong> <span>${title}</span><br>' +
             '<strong>Peu:</strong> ${footer}</br>' +
             '</div>' +
-            '<p class="editable-text">'+localization["ioc-insert-table-sample"]+'</p>'+
+            '<p class="editable-text">' + localization["ioc-insert-table-sample"] + '</p>' +
             '</div>',
 
             icon: 'IocInsertTableSyntax',
@@ -545,7 +560,7 @@ define([
             title: localization["ioc-insert-accounting-button"],
             prompt: localization["ioc-insert-accounting-prompt"],
             sample: localization["ioc-insert-accounting-sample"],
-            data:[
+            data: [
                 {
                     'name': 'id',
                     'label': localization["ioc-insert-label-id"],
@@ -565,12 +580,12 @@ define([
                     'placeholder': localization["ioc-insert-placeholder-footer"],
                 }
             ],
-            htmlTemplate: '<div class="iocaccounting" data-ioc-id="ioc_accounting_${id}" data-ioc-accounting data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="iocaccounting" data-ioc-id="ioc_accounting_${id}" data-ioc-table data-ioc-block-json="${json}">' +
             '<div class="iocinfo" contenteditable="false"><a id="${id}" ><strong>ID:</strong> ${id}<br></a>' +
             '<strong>Títol:</strong> <span>${title}</span><br>' +
             '<strong>Peu:</strong> ${footer}</br>' +
             '</div>' +
-            '<p class="editable-text">'+localization["ioc-insert-accounting-sample"]+'</p>'+
+            '<p class="editable-text">' + localization["ioc-insert-accounting-sample"] + '</p>' +
             '</div>',
 
             icon: 'IocInsertAccountingSyntax',
@@ -581,7 +596,7 @@ define([
             title: localization["ioc-insert-text-button"],
             prompt: localization["ioc-insert-text-prompt"],
             sample: localization["ioc-insert-text-sample"],
-            data:[{
+            data: [{
                 'name': 'title',
                 'label': 'Títol',
                 'value': '',
@@ -589,8 +604,8 @@ define([
             }],
             htmlTemplate: '<div class="ioctext" data-ioc-id="ioc_text_${id}" data-ioc-text data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="ioctitle" data-ioc-optional>${title}</p>'+
-            '<p class="editable-text">'+localization["ioc-insert-text-sample"]+'</p>'+
+            '<p class="ioctitle" data-ioc-optional>${title}</p>' +
+            '<p class="editable-text">' + localization["ioc-insert-text-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertTextSyntax',
             category: localization["category-ioc"]
@@ -601,7 +616,7 @@ define([
             title: localization["ioc-insert-text-large-button"],
             prompt: localization["ioc-insert-text-large-prompt"],
             sample: localization["ioc-insert-text-large-sample"],
-            data:[{
+            data: [{
                 'name': 'title',
                 'label': localization["ioc-insert-label-title"],
                 'value': '',
@@ -609,8 +624,8 @@ define([
             }],
             htmlTemplate: '<div class="ioctextl" data-ioc-id="ioc_textl_${id}" data-ioc-textl data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="ioctitle" data-ioc-optional>${title}</p>'+
-            '<p class="editable-text">'+localization["ioc-insert-text-large-sample"]+'</p>'+
+            '<p class="ioctitle" data-ioc-optional>${title}</p>' +
+            '<p class="editable-text">' + localization["ioc-insert-text-large-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertTextLargeSyntax',
             category: localization["category-ioc"]
@@ -620,7 +635,7 @@ define([
             title: localization["ioc-insert-example-button"],
             prompt: localization["ioc-insert-example-prompt"],
             sample: localization["ioc-insert-example-sample"],
-            data:[{
+            data: [{
                 'name': 'title',
                 'label': localization["ioc-insert-label-title"],
                 'value': '',
@@ -628,8 +643,8 @@ define([
             }],
             htmlTemplate: '<div class="iocexample" data-ioc-id="ioc_example_${id}" data-ioc-example data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="ioctitle" data-ioc-optional>${title}</p>'+
-            '<p class="editable-text">'+localization["ioc-insert-example-sample"]+'</p>'+
+            '<p class="ioctitle" data-ioc-optional>${title}</p>' +
+            '<p class="editable-text">' + localization["ioc-insert-example-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertExampleSyntax',
             category: localization["category-ioc"]
@@ -639,10 +654,10 @@ define([
             title: localization["ioc-insert-note-button"],
             // propmt: localization["ioc-insert-note-prompt"],
             sample: localization["ioc-insert-note-sample"],
-            data:[],
+            data: [],
             htmlTemplate: '<div class="iocnote" data-ioc-id="ioc_note_${id}" data-ioc-note data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="editable-text">'+localization["ioc-insert-note-sample"]+'</p>'+
+            '<p class="editable-text">' + localization["ioc-insert-note-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertNoteSyntax',
             category: localization["category-ioc"]
@@ -652,10 +667,10 @@ define([
             title: localization["ioc-insert-reference-button"],
             //propmt: localization["ioc-insert-reference-prompt"],
             sample: localization["ioc-insert-reference-sample"],
-            data:[],
+            data: [],
             htmlTemplate: '<div class="iocreference" data-ioc-id="ioc_reference_${id}" data-ioc-reference data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="editable-text">'+localization["ioc-insert-reference-sample"]+'</p>'+
+            '<p class="editable-text">' + localization["ioc-insert-reference-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertReferenceSyntax',
             category: localization["category-ioc"]
@@ -665,10 +680,10 @@ define([
             title: localization["ioc-insert-important-button"],
             //propmt: localization["ioc-insert-important-prompt"],
             sample: localization["ioc-insert-important-sample"],
-            data:[],
+            data: [],
             htmlTemplate: '<div class="iocimportant" data-ioc-id="ioc_important_${id}" data-ioc-important data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="editable-text">'+localization["ioc-insert-important-sample"]+'</p>'+
+            '<p class="editable-text">' + localization["ioc-insert-important-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertImportantSyntax',
             category: localization["category-ioc"]
@@ -678,10 +693,10 @@ define([
             title: localization["ioc-insert-quote-button"],
             //propmt: localization["ioc-insert-quote-prompt"],
             sample: localization["ioc-insert-quote-sample"],
-            data:[],
+            data: [],
             htmlTemplate: '<div class="iocquote" data-ioc-id="ioc_quote_${id}" data-ioc-important data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="editable-text">'+localization["ioc-insert-quote-sample"]+'</p>'+
+            '<p class="editable-text">' + localization["ioc-insert-quote-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertQuoteSyntax',
             category: localization["category-ioc"]
@@ -695,7 +710,7 @@ define([
 
         if (plugins[editorType][name]) {
             return {
-                plugin : plugins[editorType][name],
+                plugin: plugins[editorType][name],
                 config: config[name] || {}
             };
         }

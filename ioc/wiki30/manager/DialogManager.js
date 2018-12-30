@@ -334,6 +334,20 @@ define([
                                 })
                             }
 
+                            var $selects = $form.find('select');
+                            for (var i=0;i<$selects.length; i++) {
+                                var $select = jQuery($selects[i]);
+                                data.json.push({
+                                    'name':$select.attr('name'),
+                                    'placeholder':jQuery($select.find('option').get(0)).text(),
+                                    'value':$select.val(),
+                                    'label':$form.find('label[for="'+$select.attr('name')+'"]').text().slice(0, -1),
+                                    'type':'select'
+                                })
+                            }
+
+
+
                             data.json = JSON.stringify(data.json);
 
                             data.json = data.json.split('"').join('&quot');
@@ -348,7 +362,7 @@ define([
                         description: params.cancel.text,
                         callback: function(){
                             // no cal fer res, cal declarar-la?
-                            console.log("Cridat el close del dialog")
+                            //console.log("Cridat el close del dialog")
                         }
                     }
                 ];

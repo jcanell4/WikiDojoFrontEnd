@@ -75,14 +75,14 @@ define([
                 volatileId = true;
             }
 
+            // el json es genera al DialogManager#_getFormDialog()
+
             var html = string.substitute(this.htmlTemplate, data);
 
             var $html = jQuery(html);
             $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
             var id = jQuery(html).attr('data-ioc-id');
             var text= '';
-
-            console.log("Id:", id);
 
             if (this.previousId) {
                 var $contents = jQuery(this.editor.iframe).contents();
@@ -97,7 +97,6 @@ define([
                     var $this = jQuery(this);
 
                     if ($this.text().length === 0) {
-                        console.log("eliminant node opcional");
                         $this.remove();
                     }
                 }
@@ -111,7 +110,7 @@ define([
 
 
             // S'ha de restaurar el text aquí
-            if (text.length>0) {
+            if (text && text.length>0) {
                 $node.find('.editable-text').html(text);
             };
 

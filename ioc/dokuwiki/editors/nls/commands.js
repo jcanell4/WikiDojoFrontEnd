@@ -136,8 +136,13 @@ define({ root:
         'ioc-insert-text-large-prompt': 'Enter a tittle:',
         'ioc-insert-example-prompt': 'Enter a tittle:',
 
+        'ioc-insert-figure-link-prompt': 'Insert a link to figure.',
+        'ioc-insert-table-link-prompt': 'Insert a link to table.',
 
 
+        'ioc-insert-placeholder-select': '-- Select an item --',
+        'ioc-insert-label-table': 'Select a table from the list:',
+        'ioc-insert-label-figure': 'Select a figure from the list:'
 
 
 

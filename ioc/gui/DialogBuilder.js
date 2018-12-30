@@ -76,10 +76,10 @@ define([
             return this;
         },
 
-        addForm: function(data) {
+        addForm: function (data) {
 
             var $node = jQuery('<form>');
-            var $fields= jQuery('<ul>');
+            var $fields = jQuery('<ul>');
 
             $node.addClass('ioc-bootstrap form-dialog')
             $node.append($fields);
@@ -87,24 +87,66 @@ define([
             $node.addClass('row');
 
             // for (var item in data) {
-            for (var i = 0; i<data.length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 var item = data[i];
 
                 var $li = jQuery('<li>');
-                var $input = jQuery('<label for="'+item.name+'">'+item.label+':</label><input name="'+item.name+'" placeholder="'+item.placeholder+'" class="form-control" value="'+item.value+'"/>');
+
+                var $input;
+
+                switch (item.type) {
+
+                    case 'select':
+                        $input = this._createSelect(item);
+                        break;
+
+                    default:
+                        $input = this._createInput(item);
+
+                }
 
                 $li.append($input);
                 $fields.append($li);
             }
 
             // No s'utilitza l'event submit del form, es fan servir botons que executen el callback corresponent
-            $node.on('submit', function(e) {
+            $node.on('submit', function (e) {
                 e.preventDefault();
             });
 
             this._addSection($node[0]);
             return this;
         },
+
+        _createInput: function (item) {
+            return jQuery('<label for="' + item.name + '">' + item.label + ':</label><input name="' + item.name + '" placeholder="' + item.placeholder + '" class="form-control" value="' + item.value + '"/>');
+        },
+
+        _createSelect: function (item) {
+
+            var $input = jQuery('<div>');
+            var $label = jQuery('<label for="' + item.name + '">' + item.label + ':</label>');
+            var $select = jQuery('<select name="' + item.name + '" class="form-control">');
+
+
+
+            var $option = jQuery('<option value="'+item.placeholder+'">'+item.placeholder+'</option>');
+            $select.append($option);
+
+            for (var i=0; i<item.options.length || 0; i++) {
+                $option = jQuery('<option value="'+item.options[i]+'">'+item.options[i]+'</option>');
+                $select.append($option);
+            }
+
+
+            $select.val(item.value);
+            $input.append($label);
+            $input.append($select);
+
+
+            return $input;
+        },
+
 
         setWidth: function (value) {
             if (this.params.width < value) {
@@ -113,19 +155,19 @@ define([
             return this;
         },
 
-        setHeight: function(value) {
+        setHeight: function (value) {
             if (this.params.height < value) {
                 this.params.height = value;
             }
             return this;
         },
 
-        addButtons: function(buttons) {
+        addButtons: function (buttons) {
             if (!buttons) {
                 console.warn("Dialog without buttons");
                 return;
             }
-            for (var i=0; i<buttons.length; i++) {
+            for (var i = 0; i < buttons.length; i++) {
                 this.addButton(buttons[i].buttonType, buttons[i]);
             }
         },
@@ -211,20 +253,20 @@ define([
                 //    id: this.id,
                 //    dataToSend: dataToSend
                 //}, observable);
-                if(dataToSend){
-                    if(typeof dataToSend === "string"){
+                if (dataToSend) {
+                    if (typeof dataToSend === "string") {
                         dts = {
                             id: this.id,
                             dataToSend: dataToSend
                         };
-                    }else if(dataToSend.extraDataToSend){
+                    } else if (dataToSend.extraDataToSend) {
                         dts = dataToSend;
-                    }else{
-                        if(!dataToSend.id){
+                    } else {
+                        if (!dataToSend.id) {
                             dataToSend.id = this.id;
                         }
                         dts = {
-                            id:dataToSend.id,
+                            id: dataToSend.id,
                             dataToSend: dataToSend
                         };
                     }
@@ -247,11 +289,11 @@ define([
             var style = '';
 
             if (this.params.height) {
-                style += 'height:'+this.params.height+"px;";
+                style += 'height:' + this.params.height + "px;";
             }
 
             if (this.params.width) {
-                style += 'width:'+this.params.width+"px";
+                style += 'width:' + this.params.width + "px";
             }
 
             this.params['style'] = style;
@@ -284,7 +326,7 @@ define([
             return button;
         },
 
-        _createEventButton: function(params) {
+        _createEventButton: function (params) {
             var button = {
                     id: params.id,
                     description: params.description
@@ -296,7 +338,7 @@ define([
                 for (var i = 0; i < params.extra.length; i++) {
                     callback.push(this._generateFireEventCallback(params.extra[i].eventType, params.extra[i].data, params.extra[i].observable));
                 }
-            }else {
+            } else {
                 callback = this._generateFireEventCallback(params.extra.eventType, params.extra.data, params.extra.observable);
             }
 
@@ -307,7 +349,7 @@ define([
 
         _createCancelButton: function (params) {
             return {
-                id:params.id,
+                id: params.id,
                 description: params.description || 'Cancel·lar',
                 callback: this._generateCancelCallback()
             };
@@ -321,7 +363,7 @@ define([
                 callback: params.callback
             }
             */
-           return params;
+            return params;
         },
 
         _generateRequestControlCallback: function (event, dataToSend, observable) {
@@ -341,7 +383,7 @@ define([
             if (!data.id) {
                 if (typeof observable === "string") {
                     data.id = observable;
-                }else {
+                } else {
                     data.id = observable.id;
                 }
             }
@@ -349,7 +391,7 @@ define([
             return function () {
                 // ALERTA[Xavi] Això permet afegir dades extras a l'event que s'obtenen des del dialog
                 if (this.extraData) {
-                    for(var item in this.extraData) {
+                    for (var item in this.extraData) {
                         data[item] = this.extraData[item];
                     }
                 }
