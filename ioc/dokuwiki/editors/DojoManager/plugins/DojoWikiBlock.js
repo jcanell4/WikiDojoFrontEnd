@@ -78,9 +78,16 @@ define([
             var $html = jQuery(html);
             $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
             var id = jQuery(html).attr('data-ioc-id');
+            var text= '';
+
+            console.log("Id:", id);
 
             if (this.previousId) {
-                jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + this.previousId + '"]').remove();
+                var $contents = jQuery(this.editor.iframe).contents();
+                text = $contents.find('[data-ioc-id="'+this.previousId+'"] .editable-text').html();
+
+                $contents.find('[data-ioc-id="' + this.previousId + '"]').remove();
+
             }
 
             // Si un node opcional es buit l'eliminem
@@ -99,6 +106,12 @@ define([
 
             var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
             $node.attr('data-ioc-block-' + this.normalize(this.title), true);
+
+
+            // S'ha de restaurar el text aquí
+            if (text.length>0) {
+                $node.find('.editable-text').html(text);
+            };
 
 
             this._addHandlers($node);
