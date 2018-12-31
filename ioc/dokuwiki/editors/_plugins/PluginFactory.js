@@ -161,7 +161,10 @@ define([
 
     //  prompt: frase a mostrar en els dialogs (si escau)
     //  htmlTemplate: templateHTML a utilitzar pels plugins dojo
-    //  data: [{name, label, value, placeholder}] estructura de dades per crear dialegs d'entrada de dades per plugins (como el DojoWikiBlock)
+    //  data: [{name, label, value, placeholder, type?, options?}] estructura de dades per crear dialegs d'entrada de
+    //      dades per plugins (como el DojoWikiBlock). Type es opcional i per ara només discriminar per 'select' que
+    //      indica que ha de ser un desplegable. En aquest cas alguns plugins s'utilitza l'atribut 'options' (altres
+    //      el generan dinàmicament) per mostrar les opcions disponibles al desplegable.
 
     var config = {
         'CancelButton': {

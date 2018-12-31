@@ -6,6 +6,23 @@ define([
     "dojo/string"
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string) {
 
+    /*
+     Al node generat per aquest plugin trobem dos tipus d'atributs propis:
+        * Tipus de bloc, aquests son generics i permet agrupar-los, per exemple les taules normals i de contabilitat son data-ioc-table:
+            - data-ioc-table
+            - data-ioc-figure
+            - data-ioc-etc
+
+        * Tipus de plugin, aquests son individuals per cada configuració del plugin i permeten discriminar entre els elements del mateix tipus per obrir el dialeg corresponent al botó (es generen a partir del títol del botó), per exemple:
+             - data-ioc-block-sintaxi-de-taula
+             - data-ioc-block-sintaxi-de-quote
+
+     Nota: pel correcte funcionament s'ha de generar un ID únic per cada element, aquest es genera automàticament
+     en base al timestamp si no es troba l'atribut id a les dades. En cas contrari no funcionaran correctament les opcions
+     d'editar i eliminar.
+     */
+
+
     var WikiBlockButton = declare(AbstractParseableDojoPlugin, {
 
         init: function (args) {
