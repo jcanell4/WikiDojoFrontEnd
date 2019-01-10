@@ -13,17 +13,15 @@ define([
     "ioc/gui/content/engines/requiringRenderEngine",
     "ioc/gui/content/engines/requiring_partialRenderEngine",
     "ioc/gui/content/engines/notificationRenderEngine",
-//    "ioc/gui/content/engines/formRenderEngine",
-    // "ioc/gui/content/engines/viewFormRenderEngine",
+    "ioc/gui/content/engines/formRenderEngine",
     "ioc/gui/content/engines/htmlRenderEngine",
     "ioc/gui/content/engines/request_formRenderEngine",
     "ioc/gui/content/engines/zoomableFormElementsRenderEngine",
-    "ioc/gui/content/engines/testElementsRenderEngine",
-    "ioc/gui/content/engines/formRenderEngineNew",
+    "ioc/gui/content/engines/testElementsRenderEngine"
 ], function (standardRenderEngine, revisionRenderEngine, html_partialRenderEngine, 
                 dataRenderEngine, requiringRenderEngine, requiring_partialRenderEngine, 
-                notificationRenderEngine,/* formRenderEngine, /*viewFormRenderEngine, */htmlRenderEngine,
-                request_formRenderEngine, zoomableFormRenderEngine, testRenderEngine, formRenderEngineNew) {
+                notificationRenderEngine, formRenderEngine, htmlRenderEngine,
+                request_formRenderEngine, zoomableFormRenderEngine, testRenderEngine) {
 
     var /** @type function */
         defaultRenderEngine = null,
@@ -68,11 +66,10 @@ define([
             _addRenderEngine('data', dataRenderEngine);
             _addRenderEngine('requiring', requiringRenderEngine);
             _addRenderEngine('requiring_partial', requiring_partialRenderEngine);
-            _addRenderEngine('form', formRenderEngineNew(true));
-            // _addRenderEngine('project_edit', formRenderEngine);
-            _addRenderEngine('project_edit', formRenderEngineNew(true));
-            // _addRenderEngine('project_view', viewFormRenderEngine);
-            _addRenderEngine('project_view', formRenderEngineNew(false));
+            _addRenderEngine('form', formRenderEngine(true));
+            _addRenderEngine('project_edit', formRenderEngine(true));
+            _addRenderEngine('project_view', formRenderEngine(false));
+            _addRenderEngine('project_require', formRenderEngine(false));
             _addRenderEngine('metainfo', htmlRenderEngine);
             _addRenderEngine('request_form', request_formRenderEngine);
             _addRenderEngine('zoomable_form_element', zoomableFormRenderEngine);
@@ -94,7 +91,7 @@ define([
                 }
 
                 return content;
-            }
+            };
         };
 
     _init();
