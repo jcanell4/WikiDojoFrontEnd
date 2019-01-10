@@ -12,7 +12,6 @@ define([
          * @returns {*}
          */
         comparePriority: function (obj1, obj2) {
-//            console.log('formRenderEngine#comparePriority', obj1.priority, obj2.priority);
             if (!obj1 && !obj2) {
                 return 0;
             }else if (!obj1) {
