@@ -10,7 +10,7 @@ define([
         /**
          * Aquesta classe s'encarrega de processar les dades i generar un document editable.
          *
-         * @class DataContentProcessor
+         * @class RequiringContentProcessor
          * @extends ContentProcessor
          * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
          */

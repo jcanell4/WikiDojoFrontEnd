@@ -33,6 +33,8 @@ define([
     "dijit/_editor/range",
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
+    "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
+    // ioc/dokuwiki/editors/DojoManager/plugins/IocDojoTablePlugins"
 
 ], function (AbstractIocEditor, declare, Editor,
              registry,
@@ -41,7 +43,10 @@ define([
              array, Deferred, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
-             _Plugin, EnterKeyHandling, html, rangeapi, RichText, dijit) {
+             _Plugin, EnterKeyHandling, html, rangeapi, RichText, dijit, TablePlugins) {
+
+
+
 
 
     return declare([Editor, AbstractIocEditor], {
@@ -71,7 +76,7 @@ define([
                     this.getPlugin('HTMLHeader4'),
                     this.getPlugin('HTMLHeader5'),
                     this.getPlugin('HTMLHeader6'),
-                    this.getPlugin('HTMLLink'),
+                    // this.getPlugin('HTMLLink'),
                     // this.getPlugin('HTMLLinkExternal'),
 
 
@@ -87,15 +92,46 @@ define([
                 var plugins = this.getPlugins([
                     // 'TestDropdown'
 
-                    // plugins dojo
+                    // plugins propis
+                    'InsertInternalLinkSyntax',
+
+
+                    // plugins Dojo
                     'createLink',
                     'unlink',
                     'insertOrderedList',
                     'insertUnorderedList',
 
+
                     // plugins propis
+                    'InsertHrSyntax',
+                    'InsertMediaSyntax',
+                    'InsertSpecialCharacter',
+
+
+                    // plugins dojox
+                    'insertTable',
+                    // 'modifyTable',
+                    'insertTableRowBefore',
+                    'insertTableRowAfter',
+                    'insertTableColumnBefore',
+                    'insertTableColumnAfter',
+                    'deleteTableRow',
+                    'deleteTableColumn',
+                    // 'tableContextMenu', // això no funciona bé, s'aplica tant si hi ha como si no hi ha taula
+
+                    // plugin propi taules
+                    'MergeCells',
+                    'TableDelete',
+                    'InsertSound',
+
+
+
                     'NewContent',
-                    'InsertFigureSyntax',
+
+                    'InsertFigureSyntax', // nou
+
+
                     'InsertFigureLinkSyntax',
                     'InsertTableSyntax',
                     'InsertTableLinkSyntax',
@@ -107,12 +143,15 @@ define([
                     'InsertImportantSyntax',
                     'InsertQuoteSyntax',
                     'InsertAccountingSyntax',
-                    'IocSoundFormatButton',
+                    // 'IocSoundFormatButton',
                     'IocComment',
                     'SaveButton',
                     'CancelButton',
                     'DocumentPreviewButton',
                     'ViewSource',
+
+
+
 
                 ]);
 

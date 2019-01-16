@@ -8,6 +8,7 @@ define([
     'dojo/_base/lang',
     'ioc/dokuwiki/editors/AceManager/state_handler',
     'ioc/dokuwiki/editors/AceManager/AceEditorReadonlyBlocksManager'
+
 ], function (AbstractIocEditor, IocRuleSet, IocAceMode, IocCommands, /*LatexPreviewPlugin,*/ declare, lang, state_handler, AceEditorReadonlyBlocksManager) {
 
     var Range = ace.require('ace/range').Range,
@@ -254,9 +255,11 @@ define([
                         }
 
                         if (!editorRegistry[textareaId]) {
-                            console.error("Error: can't find an editor with textarea id: " + textareaId);
+                            console.warn("Error: can't find an editor with textarea id: " + textareaId);
+                        } else {
+                            context = editorRegistry[textareaId];
                         }
-                        context = editorRegistry[textareaId];
+
                     },
 
                     /**
@@ -284,7 +287,7 @@ define([
                         }
 
                         _switchContext(selection.obj.id);
-                        if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
+                        if (context && context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
 
                             // ALERTA[Xavi] això no es pot aplicar al textarea perquè la posició del cursor al textarea no està sincornitzada amb l'editor, només s'actualitza quan es fa el canvi de mode ACE/textarea
                             if (context.readOnlyBlocksManager.isReadonlySection()) {
@@ -308,8 +311,10 @@ define([
                             func(selection, text, opts);
                         }
 
+                        if (context) {
+                            context.$textarea.trigger('change', {newContent: context.$textarea.val()});
+                        }
 
-                        context.$textarea.trigger('change', {newContent: context.$textarea.val()});
                     },
 
                     /**
@@ -367,7 +372,7 @@ define([
 
                         _switchContext(obj.id);
 
-                        if (context.currentEditor === context.EDITOR.ACE && obj === context.$textarea.get(0)) {
+                        if (context && context.currentEditor === context.EDITOR.ACE && obj === context.$textarea.get(0)) {
                             // jQuery(context.textarea).val(context.aceGetValue());
                             context.$textarea.val(context.getEditorValue());
                             result = context.getEditorSelection();
@@ -403,7 +408,7 @@ define([
                         this.doku_get_text = this.getText; // ALERTA[Xavi] Això no ha estat mai correcte? s'hauria de desar i recuperar del context i no del this!?
 
                         this.getText = function () {
-                            if (context.currentEditor === context.EDITOR.ACE && this.obj === context.$textarea.get(0)) {
+                            if (context && context.currentEditor === context.EDITOR.ACE && this.obj === context.$textarea.get(0)) {
                                 // return context.aceGetText(this.start, this.end);
 
                                 return context.getEditorValue().substring(this.start, this.end);
@@ -424,7 +429,7 @@ define([
                     _patchSetSelection = function (func, selection) {
                         _switchContext(selection.obj.id);
 
-                        if (context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
+                        if (context && context.currentEditor === context.EDITOR.ACE && selection.obj.id === context.$textarea.attr('id')) {
                             context.setEditorSelection(selection.start, selection.end);
                             context.focus();
                         } else if (func) {

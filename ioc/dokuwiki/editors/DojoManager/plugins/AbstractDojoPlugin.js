@@ -28,9 +28,6 @@ define([
             return text;
         },
 
-        updateState: function() {
-            console.log("Calling updateState", arguments);
-        },
 
         destroy: function(){
             this.inherited(arguments);

@@ -39,7 +39,7 @@ define(
         'ioc-new-content-sample': 'Incloure la sintaxis de contingut nou',
 
         'ioc-insert-figure-button': 'Sintaxis de figura',
-        'ioc-insert-figure-sample': 'Incloure la sintaxis de figura',
+        'ioc-insert-figure-sample': 'Incloure la figura',
 
         'ioc-insert-figure-link-button': 'Sintaxis d\'enllaç a figura',
         'ioc-insert-figure-link-sample': 'Incloure la sintaxis d\'enllaç a figura',
@@ -88,10 +88,14 @@ define(
         'ioc-insert-code-sample' : 'Codi',
         'ioc-insert-strikethrough-button' : 'Text barrat',
         'ioc-insert-strikethrough-sample' : 'Text barrat',
-        'ioc-insert-link-button' : 'TODO: Enllaç intern',
-        'ioc-insert-link-sample' : 'TODO: Enllaç intern',
-        'ioc-insert-link-external-button' : 'TODO: Enllaç extern',
-        'ioc-insert-link-external-sample' : 'TODO: Enllaç extern',
+        'ioc-insert-link-button' : 'Enllaç intern',
+        'ioc-insert-link-sample' : 'Enllaç intern',
+        'ioc-insert-link-external-button' : 'Enllaç extern',
+        'ioc-insert-link-external-sample' : 'Enllaç extern',
+
+        'ioc-insert-special-character-button': 'Caràcters especials',
+        'ioc-insert-media-button': 'Afegeix imatges',
+        'ioc-insert-hr-button': 'Ratlla horitzontal',
 
 
 
@@ -107,7 +111,40 @@ define(
         'ioc-readonly-toggle': 'Activa/Desactiva blocs de només lectura',
 
         'ioc-table-editor':  'Editor de taules',
-        'ioc-table-editor-multiline':  'Editor de taules multilínia'
+        'ioc-table-editor-multiline':  'Editor de taules multilínia',
+
+        'merge-cells': 'Fusionar cel·les',
+        'table-delete': 'Eliminar taula',
+
+        'ioc-insert-sound-button': 'Insertar so',
+        'ioc-insert-sound-sample': 'identificador_so',
+        'ioc-insert-sound-prompt': 'Introdueix l\'identificador del so:',
+
+        'ioc-insert-figure-prompt': 'Introdueix les dades de la figura:',
+
+        'ioc-insert-label-id': 'Id',
+        'ioc-insert-placeholder-id': 'Introduceix l\'identificador',
+
+        'ioc-insert-label-title': 'Title',
+        'ioc-insert-placeholder-title': 'Introdueix el títol',
+
+        'ioc-insert-label-footer': 'Footer',
+        'ioc-insert-placeholder-footer': 'Introdueix el peu',
+
+        'ioc-insert-table-prompt': 'Introdueix les dades de la taula:',
+
+        'ioc-insert-accounting-prompt': 'Introdueix les dades de la taula de contabilitat:',
+
+        'ioc-insert-text-prompt' : 'Introdueix el títol:',
+        'ioc-insert-text-large-prompt': 'Introdueix el títol:',
+        'ioc-insert-example-prompt': 'Introdueix el títol:',
+
+        'ioc-insert-placeholder-select': '-- Selecciona un element --',
+        'ioc-insert-label-table': 'Selecciona una taula de la llista:',
+        'ioc-insert-label-figure': 'Selecciona una figura de la llista:',
+
+        'ioc-insert-figure-link-prompt': 'Afegeix un enllaç a una figura.',
+        'ioc-insert-table-link-prompt': 'Afegeix un enllaç a una taula.',
     })
 );
 

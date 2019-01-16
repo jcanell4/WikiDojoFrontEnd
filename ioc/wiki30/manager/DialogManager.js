@@ -22,7 +22,8 @@ define([
                 REQUIRE: 'require',
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
-                LOCK_WARNING: 'lock_warning'
+                LOCK_WARNING: 'lock_warning',
+                FORM: 'form'
             },
 
             constructor: function (args) {
@@ -99,6 +100,9 @@ define([
                         dialogBuilder = this._getLockWarningDialog(refId, params);
                         break;
 
+                    case this.type.FORM:
+                        dialogBuilder = this._getFormDialog(refId, params);
+                        break;
 
                     default:
                         throw new DialogManagerException("El tipus de dialeg no existeix: ", type);
@@ -251,7 +255,7 @@ define([
             },
 
             _getLockExpiringDialog: function (refId, params) {
-                params. buttons =[
+                params.buttons =[
                     {
                         id: refId +'_ok',
                         buttonType: this.type.DEFAULT,
@@ -298,6 +302,78 @@ define([
                 return dialogBuilder;
             },
 
+            _getFormDialog: function (refId, params) {
+                params.single = true;
+
+                params.buttons =[
+                    {
+                        id: refId +'_ok',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(){
+                            // TODO: recuperar tots els valors dels camps i retornar-los com a json
+
+                            var $form = jQuery(this.domNode).find('form');
+
+                            var inputs= $form.serializeArray();
+                            var data = {};
+                            for (var i in inputs) {
+                                data[inputs[i].name] = inputs[i].value;
+                            }
+
+                            var $inputs = $form.find('input');
+                            data.json = [];
+
+                            for (var i=0;i<$inputs.length; i++) {
+                                var $input = jQuery($inputs[i]);
+                                data.json.push({
+                                    'name':$input.attr('name'),
+                                    'placeholder':$input.attr('placeholder'),
+                                    'value':$input.val(),
+                                    'label':$form.find('label[for="'+$input.attr('name')+'"]').text().slice(0, -1)
+                                })
+                            }
+
+                            var $selects = $form.find('select');
+                            for (var i=0;i<$selects.length; i++) {
+                                var $select = jQuery($selects[i]);
+                                data.json.push({
+                                    'name':$select.attr('name'),
+                                    'placeholder':jQuery($select.find('option').get(0)).text(),
+                                    'value':$select.val(),
+                                    'label':$form.find('label[for="'+$select.attr('name')+'"]').text().slice(0, -1),
+                                    'type':'select'
+                                })
+                            }
+
+
+
+                            data.json = JSON.stringify(data.json);
+
+                            data.json = data.json.split('"').join('&quot');
+
+
+                            params.callback(data);
+                        }
+                    },
+                    {
+                        id: refId +'_cancel',
+                        buttonType: this.type.DEFAULT,
+                        description: params.cancel.text,
+                        callback: function(){
+                            // no cal fer res, cal declarar-la?
+                            //console.log("Cridat el close del dialog")
+                        }
+                    }
+                ];
+
+                var dialogBuilder = this._getDefaultDialog(refId, params);
+
+                // TODO: afegir la secció del formulari construida a partir de params.data
+                dialogBuilder.addForm(params.data);
+
+                return dialogBuilder;
+            },
 
             /**
              *
