@@ -64,22 +64,19 @@ define([
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
             if (value.extra) {
-                dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
-                dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
-                dispatcher.getGlobalState().getContent(value.id)['metaDataSubSet'] = value.extra.metaDataSubSet;
+                dispatcher.getGlobalState().getContent(value.id).rev = value.extra.rev;
+                dispatcher.getGlobalState().getContent(value.id).isRevision = (value.extra.rev) ? true : false;
             }
             if (this.oldGlobalState && this.oldGlobalState.updateButton) {
                 //recuperar el globalstate updateButton
-                dispatcher.getGlobalState().getContent(value.id)['updateButton'] = this.oldGlobalState.updateButton;
-                /*
-                 * versión para recuperar todo lo diferente
+                dispatcher.getGlobalState().getContent(value.id).updateButton = this.oldGlobalState.updateButton;
+                /* versión para recuperar todo lo diferente
                 var globalState = dispatcher.getGlobalState().getContent(value.id);
                 for (var item in this.oldGlobalState) {
                     if (!globalState[item]) {
                         dispatcher.getGlobalState().getContent(value.id)[item] = this.oldGlobalState[item];
                     }
-                }
-                */
+                }*/
             }
         },
 
@@ -87,7 +84,6 @@ define([
             var args = {
                     ns: content.ns,
                     id: content.id,
-                    metaDataSubSet: content.extra.metaDataSubSet,
                     title: content.title,
                     content: content.content,
                     closable: true,
@@ -98,6 +94,9 @@ define([
                     isRevision: content.isRevision,
                     autosaveTimer: content.autosaveTimer
                 };
+                if (content.extra.metaDataSubSet)
+                    args.metaDataSubSet = content.extra.metaDataSubSet;
+                
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_VIEW, args);    
             return this.contentTool;
         },
