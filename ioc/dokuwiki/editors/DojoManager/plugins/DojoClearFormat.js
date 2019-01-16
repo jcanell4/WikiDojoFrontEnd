@@ -1,8 +1,7 @@
 define([
     "dojo/_base/declare",
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormat',
-    "dijit/_editor/_Plugin",
-    "dojo/string",
+    "dijit/_editor/_Plugin"
 ], function (declare, DojoFormat, _Plugin) {
 
     var ClearFormatButton = declare(DojoFormat, {

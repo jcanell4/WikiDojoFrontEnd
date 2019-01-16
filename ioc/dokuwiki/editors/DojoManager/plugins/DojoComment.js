@@ -11,9 +11,10 @@ define([
     'ioc/gui/DialogBuilder',
     "dojo/text!./templates/CommentFragment.html",
     "dojo/text!./templates/CommentFragmentReply.html",
+    'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
 
 ], function (declare, AbstractParseableDojoPlugin,
-             /*i18n,*/ lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply) {
+             /*i18n,*/ lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply, localization) {
 
     // var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
 
@@ -136,11 +137,11 @@ define([
                 id: "ioc-comment-" + Date.now(),
                 reference: reference,
                 ref: ref,
-                resolveBtnTitle: this.strings['ioc-comment-resolve-title'],
-                resolveBtn : this.strings['ioc-comment-resolve-button'],
-                textareaPlaceholder : this.strings['ioc-comment-textarea-placeholder'],
-                replyBtnTitle : this.strings['ioc-comment-reply-title'],
-                replyBtn : this.strings['ioc-comment-reply-button']
+                resolveBtnTitle: localization['ioc-comment-resolve-title'],
+                resolveBtn : localization['ioc-comment-resolve-button'],
+                textareaPlaceholder : localization['ioc-comment-textarea-placeholder'],
+                replyBtnTitle : localization['ioc-comment-reply-title'],
+                replyBtn : localization['ioc-comment-reply-button']
                 // signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
             };
 
@@ -191,8 +192,8 @@ define([
                 reply: reply,
                 signature: SIG,
                 // TODO[Xavi] Afegir els noms dels botons esborrar i editar localitzats
-                btnSave: this.strings['ioc-comment-save-button'],
-                btnCancel: this.strings['ioc-comment-cancel-button']
+                btnSave: localization['ioc-comment-save-button'],
+                btnCancel: localization['ioc-comment-cancel-button']
             };
 
             var $replyCode = jQuery(string.substitute(this.replyTemplate, args));

@@ -90,6 +90,12 @@ define({ root:
         'ioc-insert-link-external-button' : 'External Link',
         'ioc-insert-link-external-sample' : 'External Link',
 
+        'ioc-insert-special-character-button': 'Special Characters',
+        'ioc-insert-hr-button': 'Horizontal Rule',
+        'ioc-insert-media-button': 'Insert Image',
+
+
+
         'ioc-insert-header-sample': 'Header',
         'ioc-insert-header1-button': 'Header sintax level 1',
         'ioc-insert-header2-button': 'Header sintax level 2',
@@ -100,7 +106,47 @@ define({ root:
 
         'ioc-readonly-toggle': 'Toggle readonly blocks',
         'ioc-table-editor':  'Table editor',
-        'ioc-table-editor-multiline':  'Multiline table editor'
+        'ioc-table-editor-multiline':  'Multiline table editor',
+
+        'merge-cells': 'Merge cells',
+        'table-delete': 'Delete table',
+
+
+
+        'ioc-insert-sound-button': 'Insert sound',
+        'ioc-insert-sound-sample': 'sound_id',
+        'ioc-insert-sound-prompt': 'Enter sound id:',
+
+        'ioc-insert-figure-prompt': 'Enter id, title and foot for the figure:',
+
+        'ioc-insert-label-id': 'Id',
+        'ioc-insert-placeholder-id': 'Enter id',
+
+        'ioc-insert-label-title': 'Title',
+        'ioc-insert-placeholder-title': 'Enter title',
+
+        'ioc-insert-label-footer': 'Footer',
+        'ioc-insert-placeholder-footer': 'Enter footer',
+
+        'ioc-insert-table-prompt': 'Enter id, title and foot for the table:',
+
+        'ioc-insert-accounting-prompt': 'Enter id, title and foot for the accounting table:',
+
+        'ioc-insert-text-prompt' : 'Enter a tittle:',
+        'ioc-insert-text-large-prompt': 'Enter a tittle:',
+        'ioc-insert-example-prompt': 'Enter a tittle:',
+
+        'ioc-insert-figure-link-prompt': 'Insert a link to figure.',
+        'ioc-insert-table-link-prompt': 'Insert a link to table.',
+
+
+        'ioc-insert-placeholder-select': '-- Select an item --',
+        'ioc-insert-label-table': 'Select a table from the list:',
+        'ioc-insert-label-figure': 'Select a figure from the list:'
+
+
+
+
     }),
 //end v1.x content
 

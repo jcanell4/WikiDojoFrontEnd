@@ -112,8 +112,9 @@ define([
                 ['inline', ["!!!!", "keyword.operator"]],
 
                 //etiqueta [TODO: ...] Fondo amarillo
-                ['container', ["ioctodo", "(\\[TODO:)(.*?)$", ["keyword.operator.ioctodo", "markup.ioctodo"]]],
-                ['rule', ["ioctodo-start", "^(.*?)(\\])", ["markup.ioctodo", "keyword.operator.ioctodo"], "start"]],
+                ['rule', ["start", "(\\[##TODO:)(.*?)(##\\])", ["keyword.operator.ioctodo", "markup.ioctodo", "keyword.operator.ioctodo"]]],
+                ['container', ["ioctodo", "(\\[##TODO:)(.*?)$", ["keyword.operator.ioctodo", "markup.ioctodo"]]],
+                ['rule', ["ioctodo-start", "^(.*?)(##\\])", ["markup.ioctodo", "keyword.operator.ioctodo"], "start"]],
                 ['rule', ["ioctodo-start", "^(.+?)$", "markup.ioctodo"]],
 
                 // Test readonly
