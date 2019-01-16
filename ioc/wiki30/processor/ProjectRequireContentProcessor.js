@@ -13,7 +13,7 @@ define([
     return declare([ContentProcessor], {
         
         type: "project_require",
-        action: "project_view",
+        stateAction: "project_view",
 
         /**
          * En funció de l''action' genera un quadre de diàleg o un refresc de la petició
@@ -70,7 +70,7 @@ define([
                     dispatcher.getGlobalState().getContent(value.id).metaDataSubSet = value.extra.metaDataSubSet;
             }
             dispatcher.getGlobalState().getContent(value.id).readonly = true;
-            dispatcher.getGlobalState().getContent(value.id).action = this.action;
+            dispatcher.getGlobalState().getContent(value.id).action = this.stateAction;
         },
 
         createContentTool: function (content, dispatcher) {
