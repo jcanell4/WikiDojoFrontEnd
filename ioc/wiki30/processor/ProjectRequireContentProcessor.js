@@ -13,6 +13,7 @@ define([
     return declare([ContentProcessor], {
         
         type: "project_require",
+        stateAction: "project_view",
 
         /**
          * En funció de l''action' genera un quadre de diàleg o un refresc de la petició
@@ -26,8 +27,11 @@ define([
             var args = arguments;
             //Se añade un array (key:value) con los datos originales del formulario
             args[0].content.formValues = args[0].originalContent;
-            if (value.extra)
+            if (value.extra) {
                 args[0].isRevision = (value.extra.rev) ? true : false;
+                if (value.extra.metaDataSubSet)
+                    args[0].metaDataSubSet = value.extra.metaDataSubSet;
+            }
 
             var ret = this.inherited(args);
             var contentTool = registry.byId(value.id);
@@ -59,11 +63,14 @@ define([
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
             if (value.extra) {
-                dispatcher.getGlobalState().getContent(value.id)["projectType"] = value.extra.projectType;
-                dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
-                dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
+                dispatcher.getGlobalState().getContent(value.id).projectType = value.extra.projectType;
+                dispatcher.getGlobalState().getContent(value.id).rev = value.extra.rev;
+                dispatcher.getGlobalState().getContent(value.id).isRevision = (value.extra.rev) ? true : false;
+                if (value.extra.metaDataSubSet)
+                    dispatcher.getGlobalState().getContent(value.id).metaDataSubSet = value.extra.metaDataSubSet;
             }
             dispatcher.getGlobalState().getContent(value.id).readonly = true;
+            dispatcher.getGlobalState().getContent(value.id).action = this.stateAction;
         },
 
         createContentTool: function (content, dispatcher) {
@@ -81,10 +88,11 @@ define([
                     isRevision: content.isRevision,
                     locked: true,
                     readonly: true
-                    /*
-                    autosaveTimer: content.autosaveTimer,
-                    */
+                    /*autosaveTimer: content.autosaveTimer,*/
                 };
+                if (content.extra.metaDataSubSet) {
+                    args.metaDataSubSet = content.extra.metaDataSubSet;
+                }
             return contentToolFactory.generate(contentToolFactory.generation.PROJECT_REQUIRE, args);
         },
 
@@ -106,6 +114,7 @@ define([
 
         _processTimerDialog: function(params, contentTool, dispatcher){
             var refId = "require_project_timer";
+            var query = "id="+params.ns + "&projectType="+params.extra.projectType + (params.extra.metaDataSubSet ? "&metaDataSubSet="+params.extra.metaDataSubSet : "") + (params.rev ? "&rev="+params.rev : "");
             var generateDialog = function(func){
                 var dialogParams = {
                     dispatcher: dispatcher,
@@ -115,19 +124,21 @@ define([
                     message: params.dialog.message,
                     closable: true
                 };
-                var builder = new DialogBuilder(dialogParams),
-                    dialogManager = dispatcher.getDialogManager(),
-                    dlg;
-
-                dlg = dialogManager.getDialog(refId, builder.getId());
+                var builder = new DialogBuilder(dialogParams);
+                var dialogManager = dispatcher.getDialogManager();
+                var dlg = dialogManager.getDialog(refId, builder.getId());
                 if (!dlg){
-                    var button = {
+                    var button_ok = {
                         id: refId + '_ok',
                         buttonType: 'default',
                         description: params.dialog.ok.text,
+                        extra: {
+                            ns: params.ns,
+                            dataToSend: query
+                        },
                         callback: func
                     };
-                    builder.addButton(button.buttonType, button);
+                    builder.addButton(button_ok.buttonType, button_ok);
                     builder.addCancelDialogButton({description: params.dialog.cancel.text});
 
                     dlg = builder.build();

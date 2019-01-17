@@ -39,14 +39,16 @@ define([
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
 
-            dispatcher.getGlobalState().getContent(value.id)["action"] = this.type;
-            dispatcher.getGlobalState().getContent(value.id)["ns"] = value.ns;
+            dispatcher.getGlobalState().getContent(value.id).action = this.type;
+            dispatcher.getGlobalState().getContent(value.id).ns = value.ns;
             if (value.extra) {
-                dispatcher.getGlobalState().getContent(value.id)["projectType"] = value.extra.projectType;
-                dispatcher.getGlobalState().getContent(value.id)["rol"] = value.extra.rol;
-                dispatcher.getGlobalState().getContent(value.id)["generated"] = value.extra.generated;
+                dispatcher.getGlobalState().getContent(value.id).projectType = value.extra.projectType;
+                if (value.extra.generated)
+                    dispatcher.getGlobalState().getContent(value.id).generated = value.extra.generated;
                 if (value.extra.metaDataSubSet)
-                    dispatcher.getGlobalState().getContent(value.id)['metaDataSubSet'] = value.extra.metaDataSubSet;
+                    dispatcher.getGlobalState().getContent(value.id).metaDataSubSet = value.extra.metaDataSubSet;
+                if (value.extra.rol)
+                    dispatcher.getGlobalState().getContent(value.id).rol = value.extra.rol;
             }
         },
 

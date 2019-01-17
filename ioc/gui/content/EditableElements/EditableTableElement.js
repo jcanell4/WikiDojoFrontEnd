@@ -213,7 +213,18 @@ define([
                         this.grid.focus.focusGrid();
                         this._doCatchBoomerang();
                     }
-                }
+                };
+
+
+                // grid.focus.focusGrid = function() {console.log("focusGrid")}; // aquesta es crida quan es fa doble click
+                grid.focus.focusGridView = function() {}; // Aquesta funció l'unic que fa es disparar l'esdeveniment 'focus' i es el que provoca el desplaçament de les cel·les
+
+
+
+                // grid.views.getFirstScrollingView = function() {
+                //     console.log("getFirstScrollingView");
+                //     return null;
+                // };
 
 
                 // grid.onApplyCellEdit = function(inValue,inRowIndex,inFieldIndex) {

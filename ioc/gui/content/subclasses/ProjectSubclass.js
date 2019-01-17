@@ -20,6 +20,7 @@ define([
             return {
                 type: this.DRAFT_TYPE,
                 id: this.ns,
+                metaDataSubSet: (this.params.metaDataSubSet) ? this.params.metaDataSubSet : "main",
                 content: JSON.stringify(this.getCurrentContent())
             };
         },
@@ -96,7 +97,7 @@ define([
             var dataToSend, extraDataToSend;
             var containerId = this.id;
             var data = this._getDataFromEvent(event);
-            var isAuto = (typeof event.extraDataToSend === "string" && event.extraDataToSend.indexOf('auto=true') >= 0);
+            var isAuto = (this.getPropertyValueFromData(event.extraDataToSend, 'auto') === true);
 
             if (data.discard_changes || isAuto) {
                 dataToSend = this._getQueryForceCancel();

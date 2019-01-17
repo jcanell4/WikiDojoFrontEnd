@@ -15,13 +15,8 @@ define([
         type: "project_view",
 
         process: function (value, dispatcher) {
+            var subSet;
             var args = arguments;
-            
-            //Si hay draft añadimos un mensaje
-            var localDraft = dispatcher.getDraftManager().getContentLocalDraft(value.ns);
-            if (!jQuery.isEmptyObject(localDraft)) {
-                dispatcher.getInfoManager().setExtraInfo({priority:0, message:LANG.template['ioc-template'].has_draft});
-            }
             
             //Se añade un array (key:value) con los datos originales del formulario
             args[0].content.formValues = args[0].originalContent;
@@ -33,8 +28,17 @@ define([
                     args[0].discard_changes = value.extra.discard_changes;
                 if (value.extra.hasDraft)
                     args[0].hasDraft = value.extra.hasDraft;
-                if (value.extra.metaDataSubSet)
-                    args[0].metaDataSubSet = value.extra.metaDataSubSet;
+                subSet = value.extra.metaDataSubSet;
+                if (subSet)
+                    args[0].metaDataSubSet = subSet;
+            }
+            
+            if (!subSet) subSet = (value.metaDataSubSet) ? value.metaDataSubSet : "main";
+            
+            //Si hay draft añadimos un mensaje
+            var localDraft = dispatcher.getDraftManager().getContentLocalDraft(value.ns, subSet);
+            if (!jQuery.isEmptyObject(localDraft)) {
+                dispatcher.getInfoManager().setExtraInfo({priority:0, message:LANG.template['ioc-template'].has_draft});
             }
             
             //Con la incorporación del array de datos del formulario, llamamos a la secuencia principal
@@ -42,7 +46,7 @@ define([
             var ret = this.inherited(args);
 
             //Si existe un borrador, llamamos a la función que muestra un diálogo para elegir original o borrador
-            if (localDraft.project && value.extra.edit){
+            if (localDraft && localDraft.project && value.extra && value.extra.edit){
                 this.eventManager = dispatcher.getEventManager();
                 this.dialogManager = dispatcher.getDialogManager();
                 this._showDiffDialog(value, localDraft.project);
@@ -60,22 +64,19 @@ define([
         updateState: function (dispatcher, value) {
             this.inherited(arguments);
             if (value.extra) {
-                dispatcher.getGlobalState().getContent(value.id)['rev'] = value.extra.rev;
-                dispatcher.getGlobalState().getContent(value.id)['isRevision'] = (value.extra.rev) ? true : false;
-                dispatcher.getGlobalState().getContent(value.id)['metaDataSubSet'] = value.extra.metaDataSubSet;
+                dispatcher.getGlobalState().getContent(value.id).rev = value.extra.rev;
+                dispatcher.getGlobalState().getContent(value.id).isRevision = (value.extra.rev) ? true : false;
             }
             if (this.oldGlobalState && this.oldGlobalState.updateButton) {
                 //recuperar el globalstate updateButton
-                dispatcher.getGlobalState().getContent(value.id)['updateButton'] = this.oldGlobalState.updateButton;
-                /*
-                 * versión para recuperar todo lo diferente
+                dispatcher.getGlobalState().getContent(value.id).updateButton = this.oldGlobalState.updateButton;
+                /* versión para recuperar todo lo diferente
                 var globalState = dispatcher.getGlobalState().getContent(value.id);
                 for (var item in this.oldGlobalState) {
                     if (!globalState[item]) {
                         dispatcher.getGlobalState().getContent(value.id)[item] = this.oldGlobalState[item];
                     }
-                }
-                */
+                }*/
             }
         },
 
@@ -83,7 +84,6 @@ define([
             var args = {
                     ns: content.ns,
                     id: content.id,
-                    metaDataSubSet: content.extra.metaDataSubSet,
                     title: content.title,
                     content: content.content,
                     closable: true,
@@ -94,6 +94,9 @@ define([
                     isRevision: content.isRevision,
                     autosaveTimer: content.autosaveTimer
                 };
+                if (content.extra.metaDataSubSet)
+                    args.metaDataSubSet = content.extra.metaDataSubSet;
+                
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_VIEW, args);    
             return this.contentTool;
         },
@@ -111,7 +114,7 @@ define([
             };
             var dataDocum = this._convertUnixDate(data.document.date);
             var dataDraft = this._convertUnixDate(data.draft.date);
-            var query = "id="+value.ns + "&projectType="+value.extra.projectType + (value.rev ? "&rev="+value.rev : "");
+            var query = "id="+value.ns + "&projectType="+value.extra.projectType + (value.extra.metaDataSubSet ? "&metaDataSubSet="+value.extra.metaDataSubSet : "") + (value.rev ? "&rev="+value.rev : "");
 
             var dialogParams = {
                 id: value.id,

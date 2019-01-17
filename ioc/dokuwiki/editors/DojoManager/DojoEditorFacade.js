@@ -34,9 +34,6 @@ define([
 
             this.containerNode = jQuery('#' + args.containerId.replace(/^editor_/, '')).get(0);
 
-
-            console.log("Args???", args);
-
             // ALERTA[Xavi] Si es passa el valor de l'editor directament com a 'value' no s'executa el parse dels plugins.
             this.editor = new Editor({
                 styleSheets: '/iocjslib/ioc/dokuwiki/editors/DojoManager/css/dojoEditorStyles.css',
@@ -50,14 +47,7 @@ define([
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
             }
 
-            console.log("TOOLBAR_ID?", this.TOOLBAR_ID);
-
-            // alert("ALERTA: S'ha de fer el canvi per distingir entre el content i el originalContent pels esborranys!");
-            // var text = this.$textarea.val();
-            // this.editor.value = text.replace(/^\s+|\s+$/gm, ''); // <-- this.editor.value = args.content
             this.editor.value = args.content;
-
-            // var originalContent = args.originalContent.replace(/^\s+|\s+$/gm, '');
 
             this.editor.originalContent = args.originalContent || args.content;
 
@@ -68,17 +58,8 @@ define([
                 this.emit('change', {newContent: newContent});
             }.bind(this));
 
-
-            // this.editor.on('focus', function () {
-            //     // console.log('Focus DojoEditord');
-            //     // console.log("Enviant click fals:", args.parentId);
-            //     jQuery('#' + args.parentId).trigger('click'); // ALERTA[Xavi] No recordo perquè vaig ficar això xD
-            //     // this.emit('click', {id: args.parentId});
-            // }.bind(this));
-
             this.editor.startup();
             this.editor.focus();
-
 
         },
 

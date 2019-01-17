@@ -43,22 +43,20 @@ define([
             },
 
             registerObserverToEvent: function (observer, event, callback) {
-                // console.log("RegisteredObserverToEvent:", observer, event);
-                if(!observer.id){
+                if (!observer.id){
                     observer.id = (new Date()).getTime();
                 }
-                if(!this.id){
+                if (!this.id) {
                     this.id = (new Date()).getTime();
                 }
                 observer.addObservable(this.id, this);
                 
-                if(!this.callbacks[event]){
-                    this.callbacks[event]={}
+                if (!this.callbacks[event]) {
+                    this.callbacks[event] = {};
                 }
-                if(!this.callbacks[event][observer.id]){
-                    this.callbacks[event][observer.id]={observer:observer, callbacks:[]}
+                if (!this.callbacks[event][observer.id]) {
+                    this.callbacks[event][observer.id] = {observer:observer, callbacks:[]};
                 }
-//                this.callbacks[event].push({observerId:observer.id, callback:callback, observer:observer});
                 this.callbacks[event][observer.id].callbacks.push(callback);
             },
 
@@ -91,37 +89,31 @@ define([
             },
             
             fireEvent: function(eventName, dataEventBase, preventGlobalProp){
-                // console.log("EventObservable#fireEvent: ", eventName, dataEventBase);
-                var eventData,
-                        fireEventFunc = this.fireEvents[eventName];
-                if(fireEventFunc){
-                    eventData=fireEventFunc.handler(dataEventBase);
-                    if(typeof preventGlobalProp === "undefined"){
+                var eventData;
+                var fireEventFunc = this.fireEvents[eventName];
+                
+                if (fireEventFunc){
+                    eventData = fireEventFunc.handler(dataEventBase);
+                    if (typeof preventGlobalProp === "undefined"){
                         preventGlobalProp = fireEventFunc.preventGlobalPropagation;
                     }
                 }else if(dataEventBase){
                     eventData = dataEventBase;
                 }
 
-
                 if (!eventData) {
-                    eventData={};
+                    eventData = {};
                 }
 
                 this.dispatchEvent(eventName, eventData, !preventGlobalProp);
             },
             
             dispatchEvent: function (event, eventData, globalPropagation) {
-                // console.log("EventObservable#dispatchEvent: ", event, eventData);
                 var callbacks;
-                
 
-                if (eventData._cancel) {
-                    // console.warn("S'ha cancel·lat l'event");
-                } else {
+                if (! eventData._cancel) {
                     eventData.name = event;
                     callbacks = this.callbacks[eventData.name];
-
 
                     if (callbacks) {
                         for(var key in callbacks){
@@ -131,20 +123,16 @@ define([
                         }
                     }
 
-                    if(globalPropagation
-                        && (this.eventManager || this.dispatcher)){
-                        if(!this.eventManager){
-                            this.eventManager=this.dispatcher.getEventManager();
+                    if (globalPropagation && (this.eventManager || this.dispatcher)){
+                        if (!this.eventManager){
+                            this.eventManager = this.dispatcher.getEventManager();
                         }
                         this.eventManager._dispatchEvent(event, eventData);
                     }
                 }
-
-
             },
             
              _onDestroy: function () {
-//                console.log("EventObserver#onDestroy");
                 this._removeMeInObservers();
             },
 

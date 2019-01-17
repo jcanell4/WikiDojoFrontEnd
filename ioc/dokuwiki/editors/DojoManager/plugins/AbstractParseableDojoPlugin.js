@@ -8,8 +8,10 @@ define([
 
         needsParse: true,
 
-        init: function() {
+        init: function(args) {
+            this.inherited(arguments);
             this.editor._addPluginParser(this);
+
         },
 
         parse: function () {

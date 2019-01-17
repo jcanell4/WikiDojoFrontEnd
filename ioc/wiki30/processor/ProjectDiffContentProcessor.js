@@ -57,11 +57,11 @@ define([
             var rev1, rev2, href, label1, label2;
             rev1 = JSON.stringify(content.content);
             rev2 = JSON.stringify(content.rev1);
-            href = "<a class=wikilink1 href=?id="+content.ns + "&rev=";
-            label1 = href + content.date +">";
+            href = "<a class=wikilink1 href=?id="+content.ns;
+            label1 = href + ((content.revTrev) ? "&rev="+content.date : "") + ">";
             label1 += (content.revTrev) ? "Revisió" : "Projecte original";
             label1 += " (" + this._convertUnixDate(content.date, true) + ")</a>";
-            label2 = href + content.date_rev1 +">" + "Revisió (" + this._convertUnixDate(content.date_rev1, true) + ")</a>";
+            label2 = href + "&rev="+content.date_rev1 +">" + "Revisió (" + this._convertUnixDate(content.date_rev1, true) + ")</a>";
             
             diff = jsProjectDiff.getDiff(rev1, rev2, label1, label2);
             rev = this._convertUnixDate(content.date) + " - " + this._convertUnixDate(content.date_rev1);

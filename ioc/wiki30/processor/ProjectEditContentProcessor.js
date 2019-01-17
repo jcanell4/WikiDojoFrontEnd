@@ -16,6 +16,7 @@ define([
         type: "project_edit",
 
         process: function (value, dispatcher) {
+            var subSet;
             var args = arguments;
             //Se añade un array (key:value) con los datos originales del formulario
             //(nota: los datos de este nuevo array se cambiarán si existe un borrador)
@@ -26,9 +27,10 @@ define([
                 if (value.extra.hasDraft) {
                     args[0].hasDraft = value.extra.hasDraft;
                 }
+                subSet = (value.extra.metaDataSubSet) ? value.extra.metaDataSubSet : ((value.metaDataSubSet) ? value.metaDataSubSet : "main");
                 this.draftManager = dispatcher.getDraftManager();
-                var localDraft = this.draftManager.getContentLocalDraft(value.ns);
-                if (value.extra.recover_draft) {
+                var localDraft = this.draftManager.getContentLocalDraft(value.ns, subSet);
+                if (value.extra.recover_draft && localDraft && localDraft.project && localDraft.project.content) {
                     //si se pide, sustituimos los datos del formulario por los datos guardados en el draft local
                     args[0].content.formValues = JSON.parse(localDraft.project.content);
                 }
@@ -70,6 +72,7 @@ define([
 
          updateState: function (dispatcher, value) {
             this.inherited(arguments);
+            //Lo siguiente ya lo hace el padre, por tanto, no es necesario
             if (value.extra) {
                 dispatcher.getGlobalState().getContent(value.id)['metaDataSubSet'] = value.extra.metaDataSubSet;
             }
