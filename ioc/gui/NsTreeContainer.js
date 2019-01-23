@@ -99,7 +99,7 @@ define([
             this.tree.getIconClass = function(item, opened) {
                 var ret = this.getIconClassOrig(item, opened);
                 if (item.type === "p") {
-                    ret = (opened && self.expandProject) ? "dijitIconConnector" : "dijitIconPackage";
+                    ret = (opened && self.expandProject) ? "iocIconProjectOpened" : "iocIconProjectClosed";
                 }else if (item.type === "po") {
                     ret = (opened && self.expandProject) ? "dijitIconBookmark" : "dijitIconChart";
                 }else if (item.type === "s") {
