@@ -32,7 +32,7 @@ define([
             defaultRow: null,
 
             init: function (args) {
-                // console.log("EditableTableElement#init", args);
+                console.log("EditableTableElement#init", args);
                 this.inherited(arguments);
                 this.fieldToCol = {};
                 this.colToField = {};
@@ -65,6 +65,7 @@ define([
             // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
             createWidget: function () {
 
+                console.log("Quins son els arguments, on és el config??", this);
                 var tableData = this.htmlToJson(this.$node);
                 this.columns = tableData.columns;
                 this.args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
@@ -724,6 +725,7 @@ define([
                 cells.sort(function (a, b) {
                     return (Number(a.field.replace('col', '')) - Number(b.field.replace('col', '')));
                 });
+
 
                 return cells;
             },

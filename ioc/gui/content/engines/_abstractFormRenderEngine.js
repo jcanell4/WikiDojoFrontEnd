@@ -363,6 +363,7 @@ define([
         },
 
         renderFieldTable: function (field, fvalues) {
+            console.log("render table:", field, fvalues);
             var data;
             var value = fvalues[field.name] || field.value;
 
