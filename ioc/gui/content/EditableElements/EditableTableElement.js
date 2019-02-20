@@ -32,10 +32,12 @@ define([
             defaultRow: null,
 
             init: function (args) {
-                console.log("EditableTableElement#init", args);
+                // console.log("EditableTableElement#init", args);
                 this.inherited(arguments);
                 this.fieldToCol = {};
                 this.colToField = {};
+                this.colToName = {};
+
                 // this.defaultDisplay = 'table';
 
                 this.initializeCallbacks()
@@ -65,7 +67,6 @@ define([
             // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
             createWidget: function () {
 
-                console.log("Quins son els arguments, on és el config??", this);
                 var tableData = this.htmlToJson(this.$node);
                 this.columns = tableData.columns;
                 this.args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
@@ -528,6 +529,7 @@ define([
 
                     this.fieldToCol[fieldData.name] = fieldData.field;
                     this.colToField[fieldData.field] = fieldData.name;
+                    this.colToName[fieldData.field] = jQuery($columns[i]).attr('data-field-name') || fieldData.name;
                 }
 
                 // Extraiem les dades de la resta de files
@@ -545,6 +547,7 @@ define([
                     }
                     data.rows.push(row);
                 }
+
 
                 return data;
             },

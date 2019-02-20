@@ -363,7 +363,7 @@ define([
         },
 
         renderFieldTable: function (field, fvalues) {
-            console.log("render table:", field, fvalues);
+            // console.log("render table:", field, fvalues);
             var data;
             var value = fvalues[field.name] || field.value;
 
@@ -387,7 +387,22 @@ define([
 
             // for (var key in data[0]) {
             for (var key in defaultRow) {
-                var $col = jQuery('<th>' + key + '</th>');
+                // TODO[Xavi] Canviar test+key pel nom del config, s'extreu del config.defaultRow?
+                var fieldName = this.getDataFieldNameIfExists(defaultRow, key, field.config.layout);
+
+
+                var extra = '';
+
+                if (fieldName) {
+                    //console.log("Trobat extra:", key, defaultRow[key].name);
+                    extra += 'data-field-name="' + fieldName + '"';
+                }
+
+                // extra += this.getDataFieldNameIfExists(defaultRow[key].name, field.config.layout);
+
+
+                var $col = jQuery('<th ' + extra + '>' + key + '</th>');
+                //var $col = jQuery('<th >' + key + '</th>');
 
                 // ALERTA[Xavi]! Posem la primera fila com a readonly manualment.
                 if (first) {
@@ -426,6 +441,28 @@ define([
             }
 
             return $table;
+        },
+
+        getDataFieldNameIfExists: function(row, fieldKey, layout) {
+
+
+            if (!layout) {
+                // ALERTA[Xavi] Això només funciona per extreure la informació del config, però això ha de trobar-se al layout. Per altra banda si no hi ha layout s'hauria d'enviar això
+                // console.log("DataFieldName:", row[fieldKey].name);
+
+                return row[fieldKey].name ? row[fieldKey].name : null;
+            }
+
+            for (var i=0;i<layout.length;i++) {
+
+                for (var j=0; j<layout[i].cells.length; j++) {
+                    if (layout[i].cells[j].field === fieldKey && layout[i].cells[j].name !== undefined) {
+                        return layout[i].cells[j].name
+                    }
+                }
+            }
+
+            return false;
         },
 
         renderImage: function (field, fvalues) {
