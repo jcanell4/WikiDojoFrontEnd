@@ -385,23 +385,24 @@ define([
 
             var defaultRow = field.config.defaultRow;
 
+            var fieldToCol = {};
+            var colCounter=0;
+
             // for (var key in data[0]) {
             for (var key in defaultRow) {
-                // TODO[Xavi] Canviar test+key pel nom del config, s'extreu del config.defaultRow?
-                var fieldName = this.getDataFieldNameIfExists(defaultRow, key, field.config.layout);
 
+                var fieldName = this.getDataFieldNameIfExists(defaultRow, key, field.config.layout) || key;
+
+                fieldToCol[key] = colCounter++;
 
                 var extra = '';
 
                 if (fieldName) {
                     //console.log("Trobat extra:", key, defaultRow[key].name);
-                    extra += 'data-field-name="' + fieldName + '"';
+                    extra += 'data-field="' + key + '"';
                 }
 
-                // extra += this.getDataFieldNameIfExists(defaultRow[key].name, field.config.layout);
-
-
-                var $col = jQuery('<th ' + extra + '>' + key + '</th>');
+                var $col = jQuery('<th '+extra+'>' + fieldName  + '</th>');
                 //var $col = jQuery('<th >' + key + '</th>');
 
                 // ALERTA[Xavi]! Posem la primera fila com a readonly manualment.
@@ -420,16 +421,62 @@ define([
             for (var i = 0; i < data.length; i++) {
                 $row = jQuery('<tr></tr>');
 
+                var $cols = [];
+
+
+                // Creem una cel·la buida per cada columna
+                for (var j =0; j<colCounter; j++) {
+                    $col = jQuery('<td></td>');
+                    $cols.push($col);
+                }
+
+
                 for (key in data[i]) {
+
+                    var colNumber = fieldToCol[key]
+
+
+                    if (!field.config.fields[key]) {
+                        console.error("Key " + key + " not found.");
+                        continue;
+                    }
+
                     if (field.config.fields[key].type === "date") {
                         dato = this.convertToDateDMY(data[i][key]);
                     }else {
                         dato = data[i][key];
                     }
                     //tratamiento especial para los campos de fecha de las tablas
-                    $col = jQuery('<td data-originalvalue="' + data[i][key] + '">' + dato + '</td>');
-                    $row.append($col);
+
+                    $cols[colNumber].attr('data-field', key);
+                    $cols[colNumber].attr('data-originalValue', data[i][key]);
+                    $cols[colNumber].html(dato);
+
+                    //$col = jQuery('<td data-field="'+key+'" data-originalvalue="' + data[i][key] + '">' + dato + '</td>');
                 }
+
+                for (var j=0; j<colCounter; j++) {
+                    $row.append($cols[j]);
+                }
+
+
+
+                // for (key in data[i]) {
+                //
+                //     if (!field.config.fields[key]) {
+                //         console.error("Key " + key + " not found.");
+                //         continue;
+                //     }
+                //
+                //     if (field.config.fields[key].type === "date") {
+                //         dato = this.convertToDateDMY(data[i][key]);
+                //     }else {
+                //         dato = data[i][key];
+                //     }
+                //     //tratamiento especial para los campos de fecha de las tablas
+                //     $col = jQuery('<td data-field="'+key+'" data-originalvalue="' + data[i][key] + '">' + dato + '</td>');
+                //     $row.append($col);
+                // }
 
                 $body.append($row);
             }
@@ -445,10 +492,8 @@ define([
 
         getDataFieldNameIfExists: function(row, fieldKey, layout) {
 
-
+            // Si no existeix el layout el cerca al config
             if (!layout) {
-                // ALERTA[Xavi] Això només funciona per extreure la informació del config, però això ha de trobar-se al layout. Per altra banda si no hi ha layout s'hauria d'enviar això
-                // console.log("DataFieldName:", row[fieldKey].name);
 
                 return row[fieldKey].name ? row[fieldKey].name : null;
             }

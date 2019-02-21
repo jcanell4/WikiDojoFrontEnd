@@ -527,24 +527,43 @@ define([
 
                     data.columns.push(fieldData);
 
-                    this.fieldToCol[fieldData.name] = fieldData.field;
-                    this.colToField[fieldData.field] = fieldData.name;
+                    var field = jQuery($columns[i]).attr('data-field');
+
+
+                    this.fieldToCol[field] = fieldData.field;
+                    this.colToField[fieldData.field] = field;
+
+
+                    // this.fieldToCol[fieldData.name] = fieldData.field;
+                    //this.colToField[fieldData.field] = fieldData.name;
+
+
                     this.colToName[fieldData.field] = jQuery($columns[i]).attr('data-field-name') || fieldData.name;
                 }
+
+                // ALERTA! ens hem d'asegurar que al abstractFormRenderEngine s'afegeixen files buides si és necessari.
+
+                var numColumns = $columns.length;
 
                 // Extraiem les dades de la resta de files
                 for (i = 1; i < $rows.length; i++) {
                     $columns = jQuery($rows[i]).children();
                     var row = {id: i - 1};
 
-                    for (var j = 0; j < $columns.length; j++) {
+                    for (var j = 0; j < numColumns; j++) {
 
-                        var colKey = 'col' + j;
-                        var key = this.colToField[colKey]; // TODO: Determinar la clau: this.colToField?
+                        // Cerquem la columna corresponent al camp
+                        var field = jQuery($columns[j]).attr('data-field');
+                        var colKey = this.fieldToCol[field];
+
+                        // var colKey = 'col' + j;
+                        var key = this.colToField[colKey];
 
 
-                        row[colKey] = this.normalizeValueForKey(key, jQuery($columns[j]).attr("data-originalvalue"));
+                        row[colKey] = this.normalizeValueForKey(key, jQuery($columns[j]).attr("data-originalvalue")) || '';
+
                     }
+
                     data.rows.push(row);
                 }
 
@@ -627,7 +646,8 @@ define([
 
                     for (var j = 0; j < this.columns.length; j++) {
                         // console.log(this.columns[j],updatedData[i]);
-                        newItem[this.columns[j].name] = updatedData[i][this.columns[j].field];
+                        var key = this.colToField[this.columns[j].field];
+                        newItem[key] = updatedData[i][this.columns[j].field];
                     }
 
                     data.push(newItem);
@@ -721,7 +741,8 @@ define([
                 }
 
                 for (var i = 0; i < configCells.length; i++) {
-                    configCells[i].field = this.fieldToCol[configCells[i].name];
+                    configCells[i].field = this.fieldToCol[configCells[i].field];
+                    //configCells[i].field = this.fieldToCol[configCells[i].name];
                     cells.push(configCells[i]);
                 }
 
@@ -734,8 +755,10 @@ define([
             },
 
             isCellInLayout: function(cell, layout) {
+
                 for (var i = 0; i < layout.length; i++) {
-                    if (layout[i].name === cell.name) {
+                    if (layout[i].field === this.colToField[cell.field]) {
+                    // if (layout[i].field === cell.field) {
                         return true;
                     }
                 }
