@@ -293,6 +293,15 @@ define([
                     }
                 }
 
+                // Afegim la fila als valors originals
+                console.log("Add Row:", this.defaultRow);
+                var originalValue = JSON.parse(this.args.data.value);
+                originalValue.push(this.defaultRow);
+                this.args.data.value = JSON.stringify(originalValue);
+                console.log("Valors actualitzat", this.args.data.value);
+
+
+
                 this.dataStore.newItem(data);
 
                 this.dataStore.save();
@@ -398,9 +407,32 @@ define([
             },
 
             removeRows: function (indexes) {
+                indexes.sort(function(a, b) {
+                    return b-a;
+                });
+
+
+                var originalValues = JSON.parse(this.args.data.value);
+
                 for (var i = 0; i < indexes.length; i++) {
                     this.dataStore.deleteItem(indexes[i]);
+
+                    // Eliminem segons el seu index de major a menor
+
+                    console.log("eliminant dades: ", originalValues[indexes[i]]);
+
+                    originalValues.splice(indexes[i],1);
+
                 }
+                this.args.data.value = JSON.stringify(originalValues);
+
+
+                console.log("Dades desades:", originalValues, this.args.data.value);
+
+
+
+
+
 
                 this.dataStore.save();
                 this.updateField();
@@ -637,9 +669,12 @@ define([
 
 
             updateField: function () {
+                console.log ("args (tenim la informació original dels valors??:", this.args.data.value);
                 var data = [];
 
                 var updatedData = this.dataStore.objectStore.data;
+
+
 
                 for (var i = 0; i < updatedData.length; i++) {
                     var newItem = {};
@@ -651,9 +686,17 @@ define([
                     }
 
                     data.push(newItem);
+                    this.addHiddenFieldValues(newItem, i);
                 }
 
+
+
+
                 data = this.normalizeData(data);
+
+
+
+                console.log("newData", data);
 
                 this.$field.val(JSON.stringify(data));
 
@@ -685,6 +728,7 @@ define([
                     }
 
                 }
+
 
                 return data;
             },
@@ -735,15 +779,21 @@ define([
 
                 for (var i = 0; i < generatedCells.length; i++) {
 
-                    if (!this.isCellInLayout(generatedCells[i], configCells)) {
+                    if (!this.isCellInLayout(generatedCells[i], configCells) && this.isFieldDisplayed(generatedCells[i].field)) {
                         cells.push(generatedCells[i]);
                     }
                 }
 
                 for (var i = 0; i < configCells.length; i++) {
+
+
                     configCells[i].field = this.fieldToCol[configCells[i].field];
-                    //configCells[i].field = this.fieldToCol[configCells[i].name];
-                    cells.push(configCells[i]);
+
+                    if (configCells[i].field !== undefined) {
+                        cells.push(configCells[i]);
+                    }
+
+
                 }
 
                 cells.sort(function (a, b) {
@@ -752,6 +802,27 @@ define([
 
 
                 return cells;
+            },
+
+            isFieldDisplayed: function (field) {
+                if (!this.args.display_fields) {
+                    return true;
+                } else {
+                    return this.args.display_fields.indexOf(field) > -1;
+                }
+            },
+
+            addHiddenFieldValues: function(row, rowNumber) {
+
+                var originalValues = JSON.parse(this.args.data.value);
+
+                console.log("Original values:", originalValues);
+                for (var field in originalValues[rowNumber]) {
+                    if (!this.isFieldDisplayed(field)) {
+                        row[field] = originalValues[rowNumber][field];
+                        console.log("Afegit camp ocult:", field, row[field]);
+                    }
+                }
             },
 
             isCellInLayout: function(cell, layout) {

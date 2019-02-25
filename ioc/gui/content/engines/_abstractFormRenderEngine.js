@@ -380,18 +380,30 @@ define([
             var $body = jQuery('<tbody></tbody>');
 
             // Agafem les claus de la primera fila per afegir la capñalera
+            // ALERTA[Xavi] La capçalera està formada pels continguts de field.config.display_fields si eisteix i
+            // en aquest ordre. Només es mostren les columnes indicades.
             var $row = jQuery('<tr></tr>');
             var first = true;
 
-            var defaultRow = field.config.defaultRow;
+            var headerRow = field.config.display_fields ||
+                field.config.defaultRow;
 
             var fieldToCol = {};
             var colCounter=0;
 
             // for (var key in data[0]) {
-            for (var key in defaultRow) {
+            for (var key in headerRow) {
 
-                var fieldName = this.getDataFieldNameIfExists(defaultRow, key, field.config.layout) || key;
+                if (field.config.display_fields) {
+                    // en aquest cas key és l'index, hem de fer la conversió
+
+                    key = headerRow[key];
+
+                } else {
+
+                }
+
+                var fieldName = this.getDataFieldNameIfExists(headerRow, key, field.config.layout) || key;
 
                 fieldToCol[key] = colCounter++;
 
@@ -433,7 +445,12 @@ define([
 
                 for (key in data[i]) {
 
-                    var colNumber = fieldToCol[key]
+                    var colNumber = fieldToCol[key];
+
+                    if (colNumber === undefined) {
+                        // Si no s'ha afegit la columna s'ignora la dada
+                        continue;
+                    }
 
 
                     if (!field.config.fields[key]) {
