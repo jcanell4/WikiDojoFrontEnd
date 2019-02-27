@@ -294,13 +294,13 @@ define([
                 }
 
                 // Afegim la fila als valors originals
-                console.log("Add Row:", this.defaultRow);
+                // console.log("Add Row:", this.defaultRow);
                 var originalValue = JSON.parse(this.args.data.value);
                 originalValue.push(this.defaultRow);
                 this.args.data.value = JSON.stringify(originalValue);
-                console.log("Valors actualitzat", this.args.data.value);
+                // console.log("Valors actualitzat", this.args.data.value);
 
-
+                // this.args.data.value.push(this.defaultRow);
 
                 this.dataStore.newItem(data);
 
@@ -413,25 +413,17 @@ define([
 
 
                 var originalValues = JSON.parse(this.args.data.value);
+                // var originalValues = this.args.data.value;
 
                 for (var i = 0; i < indexes.length; i++) {
                     this.dataStore.deleteItem(indexes[i]);
 
                     // Eliminem segons el seu index de major a menor
-
-                    console.log("eliminant dades: ", originalValues[indexes[i]]);
-
                     originalValues.splice(indexes[i],1);
 
                 }
                 this.args.data.value = JSON.stringify(originalValues);
-
-
-                console.log("Dades desades:", originalValues, this.args.data.value);
-
-
-
-
+                // this.args.data.value = originalValues;
 
 
                 this.dataStore.save();
@@ -809,8 +801,8 @@ define([
 
             addHiddenFieldValues: function(row, rowNumber) {
 
-                var originalValues = JSON.parse(this.args.data.value);
-
+                // var originalValues = JSON.parse(this.args.data.value);
+                var originalValues = this.args.data.value;
 
                 for (var field in originalValues[rowNumber]) {
                     if (!this.isFieldDisplayed(field)) {
