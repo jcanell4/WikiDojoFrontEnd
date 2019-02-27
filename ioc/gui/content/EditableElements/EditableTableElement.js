@@ -669,7 +669,6 @@ define([
 
 
             updateField: function () {
-                console.log ("args (tenim la informació original dels valors??:", this.args.data.value);
                 var data = [];
 
                 var updatedData = this.dataStore.objectStore.data;
@@ -693,10 +692,6 @@ define([
 
 
                 data = this.normalizeData(data);
-
-
-
-                console.log("newData", data);
 
                 this.$field.val(JSON.stringify(data));
 
@@ -816,11 +811,10 @@ define([
 
                 var originalValues = JSON.parse(this.args.data.value);
 
-                console.log("Original values:", originalValues);
+
                 for (var field in originalValues[rowNumber]) {
                     if (!this.isFieldDisplayed(field)) {
                         row[field] = originalValues[rowNumber][field];
-                        console.log("Afegit camp ocult:", field, row[field]);
                     }
                 }
             },
