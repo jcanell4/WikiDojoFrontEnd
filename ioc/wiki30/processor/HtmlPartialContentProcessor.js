@@ -215,7 +215,8 @@ define([
                     type: this.type,
                     readonly: content.readonly? content.readonly : false,
                     ignoreLastNSSections : content.ignoreLastNSSections,
-                    editorType : content.editorType
+                    editorType : content.editorType,
+                    plugins: ['EmbededComment']
                 };
 
                 if(content.autosaveTimer){

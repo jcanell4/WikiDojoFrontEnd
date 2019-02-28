@@ -6,8 +6,10 @@ define([
     "dojo/dom-style",
     "dojo/dom",
     "ioc/gui/content/renderEngineFactory",
-    "dojo/aspect"
-], function (declare, IocContentPane, EventObserver, EventObservable, domStyle, dom, renderEngineFactory, aspect) {
+    "dojo/aspect",
+    "ioc/gui/content/plugins/contentToolPluginFactory",
+], function (declare, IocContentPane, EventObserver, EventObservable, domStyle, dom, renderEngineFactory, aspect,
+             contentToolPluginFactory) {
     /**
      * Aquesta classe no s'ha de instanciar, es fa servir com a base per afegir tota la funcionalitat bàsica del
      * ContentTool que no ha de ser modificada.
@@ -41,8 +43,14 @@ define([
             /** @type ContainerContentTool @private */
             container: null,
 
-            /** @type string @private*/
+            /** @type string|null @private*/
             type: null,
+
+            /** @type string[]|null @private noms dels plugins a carregar*/
+            plugins: null,
+
+            /** @type AbstractContentToolPlugin[] plugin instanciat @private*/
+            _plugins: [],
 
             /**
              * Aquest component treballa amb la propietat data a la que dona format segons la implementació de les
@@ -175,6 +183,7 @@ define([
 
 
 
+
                 // Establim els aspectes
 
                 aspect.after(this, "render", this.postRender);
@@ -185,7 +194,21 @@ define([
                     this.render();
                 }
 
+                if (this.plugins !== null) {
+                    this.initPlugins();
+                }
             },
+
+            initPlugins: function (){
+
+                for (var i=0; i<this.plugins.length; i++) {
+                    var pluginClass = contentToolPluginFactory.getPlugin(this.plugins[i]);
+                    var plugin = new pluginClass();
+                    plugin.init(this);
+                    this._plugins.push(plugin); // Alerta[Xavi] Actualment no és necesari, guardem les referencies per si cal més endavant.
+                }
+            },
+
 
             /**
              * Afegeix un nou tipus de render engine i regenera el RenderEngine.
