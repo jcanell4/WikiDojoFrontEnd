@@ -129,7 +129,6 @@ define([
                 ignoreLastNSSections: content.ignoreLastNSSections,
                 cancelDialogConfig: content.extra.dialogSaveOrDiscard,
                 messageChangesDetected: content.extra.messageChangesDetected,
-                plugins: ['EmbededComment']
             };
 
             console.log("Afegits plugins?", args.plugins);
