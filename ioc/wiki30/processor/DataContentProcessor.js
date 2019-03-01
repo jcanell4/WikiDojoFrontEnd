@@ -131,8 +131,6 @@ define([
                 messageChangesDetected: content.extra.messageChangesDetected,
             };
 
-            console.log("Afegits plugins?", args.plugins);
-
             if (content.autosaveTimer) {
                 args["autosaveTimer"] = content.autosaveTimer;
             }
