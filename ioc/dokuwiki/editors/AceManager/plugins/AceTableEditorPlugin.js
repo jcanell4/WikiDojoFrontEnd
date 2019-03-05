@@ -44,6 +44,8 @@ define([
 
             this.previousMarker = null;
 
+            this.uniqueId = "UNIQUE ID " + Date.now();
+
             // ALERTA[Xavi] El callback només cal disparar-lo pel tipus original, s'utilizan diferents plugins només per crear els botons
             this.triggerState = 'edittable';
 
@@ -76,6 +78,22 @@ define([
 
             this.enabled = true;
             this.editor.readOnlyBlocksManager.enabled = this.enabled; // TODO: Afegir una propietat independent per les taules?
+
+        },
+
+        _getEditor: function () {
+            var dispatcher = this.editor.dispatcher;
+            var id = dispatcher.getGlobalState().getCurrentId(),
+                contentTool = dispatcher.getContentCache(id).getMainContentTool();
+            //
+            //
+            // // TODO: Afegir el mètode getCurrentEditor que retorni l'editor seleccionat actualment tant al basic document com al structured
+            // // ALERTA: prova temporal per l'editor full
+            // console.log("editor:", contentTool.getCurrentEditor());
+            // contentTool.getCurrentEditor();
+
+            // return contentTool.editor;
+            return contentTool.getCurrentEditor();
 
         },
 
@@ -115,7 +133,9 @@ define([
         },
 
         _processFull: function () {
-            var pos = {row: this.editor.getCurrentRow(), col: 0};
+            var editor = this._getEditor();
+
+            var pos = {row: editor.getCurrentRow(), col: 0};
             var range = {start: pos, end: pos};
             var value = this._buildDefaultTable();
 
@@ -132,9 +152,10 @@ define([
             // console.log("chunk:", chunk);
             // console.log("id:", id);
 
-            chunk = chunk.replace(id + "_", "");
-            chunk = chunk.replace("container_", "");
-            var editor = dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
+            // chunk = chunk.replace(id + "_", "");
+            // chunk = chunk.replace("container_", "");
+            // var editor = dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
+            var editor = this._getEditor();
 
             var pos = {row: editor.getCurrentRow(), col: 0};
             var range = {start: pos, end: pos};
@@ -151,28 +172,30 @@ define([
             if (cursor.row>=this.lastRange.start.row && cursor.row<=this.lastRange.end.row) {
                 return;
             }
-            this.editor.remove_marker(this.marker);
+            this._getEditor().editor.remove_marker(this.marker);
             clearTimeout(this.timerId);
         },
 
 
         editTableCallback: function (range, blockContent) {
 
-            this.editor.getSession().removeMarker(this.previousMarker);
+            var editor = this._getEditor().editor;
+
+            editor.getSession().removeMarker(this.previousMarker);
 
             // this.previousMarker = this.editor.getSession().addMarker(range, 'edittable-highlight');
 
             this.lastRange = range;
 
 
-            this.editor.remove_marker(this.marker);
+            editor.remove_marker(this.marker);
 
             var context = this;
 
             clearTimeout(this.timerId);
 
             if (!this.initializedChangeDetection) {
-                this.editor.on('changeCursor', this.changeEditorCallback.bind(this));
+                editor.on('changeCursor', this.changeEditorCallback.bind(this));
                 this.initializedChangeDetection = true;
             }
 
@@ -221,6 +244,8 @@ define([
                                     // Eliminem el principi i el final
                                     var dokuwikiContent = blockContent.substring(11, blockContent.length - 12);
 
+
+
                                     context._showDialog(dokuwikiContent, range);
 
 
@@ -241,6 +266,7 @@ define([
         },
 
         _showDialog: function (value, range) {
+            console.log("Range:", range, "Value:", value);
             // Alerta, el value ha de ser un objecte JSON amb els valors i la estructura de la taula
 
             var dialogManager = this.editor.dispatcher.getDialogManager();
@@ -254,15 +280,22 @@ define([
 
                             dokuwikiTable.unshift('<' + context.triggerState + '>');
                             dokuwikiTable.push('</' + context.triggerState + '>');
-                            context.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
 
-                            context.editor.emit('update', {editor: context.editor.editor});
+                            var editor = context._getEditor();
+
+                            console.log("Editor:", editor);
+
+                            editor.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
+                            editor.editor.emit('update', {editor: editor.editor});
+
+                            // context.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
+                            // context.editor.emit('update', {editor: context.editor.editor});
 
                         }
                     }
                 );
 
-            }.bind(this);
+            };
 
             var cancelCallback = function () {
 
@@ -602,7 +635,7 @@ define([
             var oldGrid = registry.byId('grid');
 
             if (oldGrid) {
-                // console.log("Destruit el grid anterior");
+                console.log("Destruit el grid anterior");
                 oldGrid.destroyRecursive();
             }
 
@@ -718,6 +751,9 @@ define([
                     event = e;
                 }
                 this.focus.setFocusCell(event.cell, event.rowIndex);
+
+
+                console.log("hi ha widget?", this.edit.widget)
                 this.edit.setEditCell(event.cell, event.rowIndex);
                 this.onRowDblClick(e);
 
@@ -925,7 +961,7 @@ define([
 
 
         parseContentData: function (content) {
-
+            console.log("AceTableEditorPlugin#parseContentData", content);
             var lines = content.split("\n");
             this.parsedData = this.parseContentLines(lines);
 
@@ -940,7 +976,7 @@ define([
         },
 
         parseContentLines: function (lines) {
-
+            console.log("AceTableEditorPlugin#parseContentLines", lines);
 
             var parsedLines = {
                 columns: [],
@@ -1034,8 +1070,17 @@ define([
             var cols = 0;
 
             for (var i = 0; i < tokens.length; i++) {
-                var value = tokens[i].trim();
-                value = value.split('\\\\ ').join("\n");
+                var token = tokens[i].trim();
+
+                var items = token.split("\\\\");
+
+                for (var j=0; j<items.length; j++) {
+                    items[j] = items[j].trim();
+                }
+
+                token = items.join("\n");
+
+
 
 
                 if (tokens[i].length === 0) {
@@ -1052,12 +1097,12 @@ define([
                         }
 
                         row.merge.h.push(cols);
-                        value = '<<<';
+                        token = '<<<';
                     }
                 }
 
-                if (value === ':::') {
-                    value = '^^^';
+                if (token === ':::') {
+                    token = '^^^';
 
                     if (!row.merge) {
                         row.merge = {
@@ -1069,7 +1114,7 @@ define([
                     row.merge.v.push(cols);
                 }
 
-                row['col' + (cols + 1)] = value;
+                row['col' + (cols + 1)] = token;
 
                 cols++;
 

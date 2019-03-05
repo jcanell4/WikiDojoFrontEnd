@@ -1499,12 +1499,14 @@ define([
              * @param {string[]} lines - Array de línies que s'inseriran
              */
             replace_lines: function (start, end, lines) {
+                console.log(start, end, lines, this);
                 var session = this.getSession(),
                     doc = session.getDocument(),
                     doc_length = end - start + 1,
                     min_length = Math.min(doc_length, lines.length);
 
                 for (var i = 0, len = min_length; 0 <= len ? i < len : i > len; 0 <= len ? i++ : i--) {
+                    console.log(doc);
                     if (doc.getLine(start + i) !== lines[i]) {
                         doc.removeInLine(start + i, 0, Infinity);
                         doc.insertInLine({

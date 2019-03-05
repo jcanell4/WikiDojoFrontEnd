@@ -7,10 +7,11 @@ define([
     'dojo/dom-geometry',
     'dojo/cookie',
     'ioc/dokuwiki/editors/DojoManager/DojoEditorPartialFacade',
+    'ioc/gui/content/subclasses/AbstractEditorSubclass',
 
 
 ], function (declare, ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AceFacade, dom, geometry, cookie,
-             DojoEditorPartialFacade) {
+             DojoEditorPartialFacade, AbstractEditorSubclass) {
     /**
      * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
      *
@@ -33,7 +34,7 @@ define([
      * @private
      * @abstract
      */
-    return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass], {
+    return declare([ChangesManagerCentralSubclass, LocktimedDocumentSubclass, AbstractEditorSubclass], {
 
         // TOOLBAR_ID: 'partial-editor',
         // VERTICAL_MARGIN: 100, // TODO [Xavi]: Pendent de decidir on ha d'anar això definitivament. si aquí o al AceFacade
@@ -48,7 +49,6 @@ define([
             this.editors = {}; // A aquest objecte es guardarà per cada header_id el seu editor
             this.currentElementId = null;
             this.hasChanges = false;
-
 
 
             // toolbarManager.setDispatcher(args.dispatcher);
@@ -1717,5 +1717,9 @@ define([
         },
 
 
+        getCurrentEditor: function () {
+            var chunk = this._getCurrentChunk();
+            return this.getEditor(chunk);
+        }
     })
 });

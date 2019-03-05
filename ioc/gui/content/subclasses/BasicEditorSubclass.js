@@ -7,10 +7,10 @@ define([
     'dojo/dom',
     "dojo/io-query",
     "dojo/_base/lang",
-], function (declare, on, AceFacade, DojoEditorFacade, geometry, dom, ioQuery, lang) {
+    'ioc/gui/content/subclasses/AbstractEditorSubclass',
+], function (declare, on, AceFacade, DojoEditorFacade, geometry, dom, ioQuery, lang, AbstractEditorSubclass) {
 
-    return declare([],
-        //return declare(null,
+    return declare([AbstractEditorSubclass],
 
         /**
          * Aquesta classe no s'ha de instanciar directament, s'ha de fer a través del contentToolFactory.
@@ -405,5 +405,10 @@ define([
                 }
                 return ret;
             },
+
+            getCurrentEditor: function() {
+
+                return this.editor;
+            }
         });
 });
