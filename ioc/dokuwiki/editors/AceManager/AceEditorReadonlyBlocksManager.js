@@ -123,7 +123,7 @@ define([
 
                 // comprovació per les línies anteriors
                 for (i = cursor.row - 1; i >= 0; i--) {
-                    console.log("comprovant línia (enderrere):", i);
+                    // console.log("comprovant línia (enderrere):", i);
                     parse = this.parseState(state, i, cursor, true);
 
                     if (!parse) {

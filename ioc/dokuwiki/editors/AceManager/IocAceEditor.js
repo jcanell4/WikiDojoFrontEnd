@@ -1499,7 +1499,7 @@ define([
              * @param {string[]} lines - Array de línies que s'inseriran
              */
             replace_lines: function (start, end, lines) {
-                console.log(start, end, lines, this);
+                // console.log(start, end, lines, this);
                 var session = this.getSession(),
                     doc = session.getDocument(),
                     doc_length = end - start + 1,
@@ -1603,7 +1603,11 @@ define([
 
             addReadonlyBlock: function (state, callback, unique) {
                 this.readOnlyBlocksManager.addReadonlyBlock(state, callback, unique);
-            }
+            },
+
+            isReadonlySection: function () {
+                return this.readOnlyBlocksManager.isReadonlySection();
+            },
 
         });
 

@@ -133,6 +133,12 @@ define([
         },
 
         _processFull: function () {
+
+            if (!this.canInsert()) {
+                alert("No es pot inserir una taula en aquest punt del document");
+                return;
+            }
+
             var editor = this._getEditor();
 
             var pos = {row: editor.getCurrentRow(), col: 0};
@@ -143,27 +149,31 @@ define([
 
         },
 
-        _processPartial: function () {
-            var dispatcher = this.editor.dispatcher;
+        // _processPartial: function () {
+        //     this._processFull();
+        //     if (!this.canInsert()) {
+        //         alert("No es pot inserir una taula en aquest punt del document");
+        //         return;
+        //     }
+        //
+        //     var editor = this._getEditor();
+        //
+        //     var pos = {row: editor.getCurrentRow(), col: 0};
+        //     var range = {start: pos, end: pos};
+        //     var value = this._buildDefaultTable();
+        //
+        //     this._showDialog(value, range);
+        //
+        // },
 
-            var chunk = dispatcher.getGlobalState().getCurrentElementId(),
-                id = dispatcher.getGlobalState().getCurrentId();
+        canInsert() {
+            var editor = this._getEditor().editor;
 
-            // console.log("chunk:", chunk);
-            // console.log("id:", id);
-
-            // chunk = chunk.replace(id + "_", "");
-            // chunk = chunk.replace("container_", "");
-            // var editor = dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
-            var editor = this._getEditor();
-
-            var pos = {row: editor.getCurrentRow(), col: 0};
-            var range = {start: pos, end: pos};
-            var value = this._buildDefaultTable();
-
-            this._showDialog(value, range);
+            return !(editor.isReadonlySection() || editor.getReadOnly());
 
         },
+
+
 
         changeEditorCallback: function(e) {
 
@@ -266,7 +276,7 @@ define([
         },
 
         _showDialog: function (value, range) {
-            console.log("Range:", range, "Value:", value);
+            // console.log("Range:", range, "Value:", value);
             // Alerta, el value ha de ser un objecte JSON amb els valors i la estructura de la taula
 
             var dialogManager = this.editor.dispatcher.getDialogManager();
@@ -282,8 +292,6 @@ define([
                             dokuwikiTable.push('</' + context.triggerState + '>');
 
                             var editor = context._getEditor();
-
-                            console.log("Editor:", editor);
 
                             editor.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
                             editor.editor.emit('update', {editor: editor.editor});
@@ -752,8 +760,6 @@ define([
                 }
                 this.focus.setFocusCell(event.cell, event.rowIndex);
 
-
-                console.log("hi ha widget?", this.edit.widget)
                 this.edit.setEditCell(event.cell, event.rowIndex);
                 this.onRowDblClick(e);
 
@@ -961,7 +967,7 @@ define([
 
 
         parseContentData: function (content) {
-            console.log("AceTableEditorPlugin#parseContentData", content);
+            // console.log("AceTableEditorPlugin#parseContentData", content);
             var lines = content.split("\n");
             this.parsedData = this.parseContentLines(lines);
 
@@ -976,7 +982,7 @@ define([
         },
 
         parseContentLines: function (lines) {
-            console.log("AceTableEditorPlugin#parseContentLines", lines);
+            // console.log("AceTableEditorPlugin#parseContentLines", lines);
 
             var parsedLines = {
                 columns: [],
