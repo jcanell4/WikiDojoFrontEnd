@@ -13,12 +13,14 @@ define([
     "dojox/grid/EnhancedGrid",
     "dojox/grid/enhanced/plugins/Selector", // Encara que no s'utitlitzi directament ho utilitza el EnhancedGrid i s'ha de carregar
     "dijit/registry",
+
     // "dijit/form/Textarea"
 
     // "ioc/gui/content/EditableElements/ZoomableCell",
 
-    "dojo/_base/sniff"
-], function (declare, AbstractAcePlugin, /*DataGrid, */cells, cellsDijit, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry/*, Textarea*/, has) {
+    "dojo/_base/sniff",
+    "dojox/widget/Standby",
+], function (declare, AbstractAcePlugin, /*DataGrid, */cells, cellsDijit, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry/*, Textarea*/, has, Standby) {
 
     // TODO[Xavi] Afegir com a paràmetre al constructor o als arguments d'inicialització
     var MAX_EXTRA_COLUMNS = 50,
@@ -100,7 +102,17 @@ define([
 
         _buildDefaultTable: function () {
             var cols = Number(prompt("Introdueix el nombre de columnes (mínim 1):", DEFAULT_COLS));
+
+            if (cols===0) {
+                return null;
+            }
+
             var rows = Number(prompt("Introdueix el nombre de files (mínim 1):", DEFAULT_ROWS));
+
+            if (rows === 0) {
+                return null;
+            }
+
             var value = "^ "; // generar el valor demanant el nombre de columnes i a partir d'aquest generar el codi wiki més simple possible
 
 
@@ -145,7 +157,9 @@ define([
             var range = {start: pos, end: pos};
             var value = this._buildDefaultTable();
 
-            this._showDialog(value, range);
+            if (value!=null) {
+                this._showDialog(value, range);
+            }
 
         },
 
@@ -256,6 +270,7 @@ define([
 
 
 
+
                                     context._showDialog(dokuwikiContent, range);
 
 
@@ -263,7 +278,6 @@ define([
 
                             }
                         },0.1);
-
 
                         return '<div ' + attributes + '><img src="/iocjslib/ioc/gui/img/zoom.png"/></div>';
                     }
@@ -278,6 +292,8 @@ define([
         _showDialog: function (value, range) {
             // console.log("Range:", range, "Value:", value);
             // Alerta, el value ha de ser un objecte JSON amb els valors i la estructura de la taula
+
+
 
             var dialogManager = this.editor.dispatcher.getDialogManager();
             var context = this;
@@ -294,10 +310,7 @@ define([
                             var editor = context._getEditor();
 
                             editor.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
-                            editor.editor.emit('update', {editor: editor.editor});
-
-                            // context.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
-                            // context.editor.emit('update', {editor: context.editor.editor});
+                            editor.editor.emit('update', {editor: editor.editor, start:range.start.row, end:range.start.row + (dokuwikiTable.length-1), block: true});
 
                         }
                     }
@@ -398,7 +411,7 @@ define([
 
             $removeCol.on('click', function (e) {
 
-                var items = grid.selection.getSelected('col', false);
+                // var items = grid.selection.getSelected('col', false);
 
                 for (var col in selection['cols']) {
                     removedColumns.push((selection['cols'][col].col + 1));
@@ -502,39 +515,31 @@ define([
                 }
 
 
+
                 // Hem de treballar amb el llistat complet de files per que no hi ha correspondencia directa entre cel·les i files/columnes de dades al store
                 store.fetch({
                         query: {}, onComplete: function (items) {
 
-                            //console.log("items:", items);
+                            if (!context.canMerge(items, startRow, endRow, startCol, endCol)) {
+                                alert("No es poden fusionar cel·les ja fusionades");
+                                return;
+                            }
 
                             var first = true;
                             for (var i = startRow; i <= endRow; i++) {
 
-                                if (items[i].merge && typeof items[i].merge[0] === "string") {
-                                    items[i].merge = JSON.parse(items[i].merge[0]);
-                                }
 
                                 for (var j = startCol; j <= endCol; j++) {
-                                    if (first) { // El primer element es el que conté el contingut del merge, esborrem qualsevol informació de merge anterior
-                                        delete(items[i].merge);
+                                    if (first) { // El primer element del merge conté el contingut, no s'ha de modificar
                                         first = false;
                                         continue;
                                     }
 
-                                    // if (!items[i].merge) {
-                                    //     items[i].merge = {
-                                    //         h: [],
-                                    //         v: []
-                                    //     }
-                                    // }
-
                                     if (i === startRow) { // Merge horitzonal
-                                        // items[i].merge.h.push(j);
+
                                         items[i]['col' + (j + 1)] = ["<<<"];
 
                                     } else { // Merge vertical
-                                        // items[i].merge.v.push(j);
                                         items[i]['col' + (j + 1)] = ["^^^"];
                                     }
 
@@ -582,12 +587,18 @@ define([
 
             dialog.show();
 
+            var standby = new Standby({target: dialog.id});
+
+            document.body.appendChild(standby.domNode);
+
+            standby.startup();
+            standby.show();
+
             var contentData = this.parseContentData(value);
 
             var store = new ItemFileWriteStore({data: contentData.data});
 
             var layout = contentData.layout;
-
 
             // TODO: Aquí es crean les columnes buides per poder afegir noves columnes.
             for (var i = this.numberOfColumns + 1; i < this.maxColumns; i++) {
@@ -597,12 +608,10 @@ define([
                     editable: true
                 };
 
-
                 if (this.tableType === MULTILINE) {
                     cell.type = cells._Widget;
                     cell.widgetClass = ZoomableCell;
                 }
-
 
                 layout.push(cell);
             }
@@ -617,7 +626,7 @@ define([
 
                 if (value === '^^^' || value === '<<<' || value === '&lt;&lt;&lt;') {
                     value = '<i>' + value + '</i>';
-                    // cell.editable = false;
+
                 }
 
                 return value;
@@ -775,6 +784,7 @@ define([
 
             grid.resize();
             dialog.resize();
+            standby.hide();
 
 
             var selection = {};
@@ -812,6 +822,37 @@ define([
             this.$widths.val(this.parsedData.meta.widths)
 
 
+        },
+
+        canMerge : function (items, startRow, endRow, startCol, endCol) {
+            for (var i = startRow; i <= endRow; i++) {
+
+                for (var j = startCol; j <= endCol; j++) {
+
+                    var cell = items[i]['col' + (j + 1)][0];
+
+                    if (cell === "^^^" || cell === "<<<") {
+
+                        return false;
+                    } else {
+                        // S'ha de comprovar si la cel·la de la dreta est "<<<" o la inferior és "^^^^, en aquest cas es tractarà de la cel·la del contingut d'una fusió
+
+                        // petará si es la última columna
+                        // petará si és la última fila
+
+                        var cellDown = items[i+1]['col' + (j + 1)][0];
+                        var cellRight = items[i]['col' + (j + 2)][0];
+
+                        if (cellDown === "^^^" || cellRight ==="<<<") {
+                            return false;
+                        }
+
+                    }
+
+                }
+            }
+
+            return true;
         },
 
         /**
@@ -888,12 +929,6 @@ define([
                 var addSpaceOnFinishLine;
 
 
-                // if (items[i].merge && typeof items[i].merge[0] === 'string') {
-                //     items[i].merge = JSON.parse(items[i].merge[0]);
-                // }
-
-                var previousCellContent;
-
                 for (var j = 1; j <= this.numberOfColumns; j++) {
                     if (removedColumns.indexOf(j) !== -1) {
                         continue; // Columna eliminada
@@ -910,25 +945,14 @@ define([
                     var cellContent = items[i]['col' + j]? items[i]['col' + j][0] : '';
 
                     if (cellContent === '<<<') {
-                        // if (items[i].merge && items[i].merge.h.indexOf(j - 1) !== -1) {
+
                         addSpaceOnFinishLine = false;
                         ignoreFirstSpace = true;
                         line += "|";
                         continue;
                     } else if (cellContent === '^^^') {
-                    // } else if (items[i].merge && items[i].merge.v.indexOf(j - 1) !== -1) {
-                        //merged = true;
 
-//                        if (previousCellContent==="^^^") {
-//                            addSpaceOnFinishLine = false;
-//                            ignoreFirstSpace = true;
-//                            line += "|";
-//                        } else {
                             line += "| :::";
-//                        }
-
-//                        previousCellContent = cellContent;
-
                         continue;
                     }
 
@@ -1095,14 +1119,7 @@ define([
 
                     } else {
                         // Es tracta d'un merge horitzontal
-                        if (!row.merge) {
-                            row.merge = {
-                                h: [],
-                                v: []
-                            }
-                        }
 
-                        row.merge.h.push(cols);
                         token = '<<<';
                     }
                 }
@@ -1110,14 +1127,6 @@ define([
                 if (token === ':::') {
                     token = '^^^';
 
-                    if (!row.merge) {
-                        row.merge = {
-                            h: [],
-                            v: []
-                        }
-                    }
-
-                    row.merge.v.push(cols);
                 }
 
                 row['col' + (cols + 1)] = token;
@@ -1133,10 +1142,6 @@ define([
                 row['col' + (cols + 1)] = '';
             }
 
-            // Quan es crea el datagrid cap element pot ser un array, ho passem com a json i fem el canvi quan sigui necessari
-            if (row.merge) {
-                row.merge = JSON.stringify(row.merge);
-            }
 
             return row;
         },

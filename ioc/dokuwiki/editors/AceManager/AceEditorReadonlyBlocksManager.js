@@ -5,6 +5,10 @@ define([
 
     var Range = ace.require('ace/range').Range;
 
+
+    var FIXED_COL_END = 99999;
+    var FIXED_COL_START = 0;
+
     var instanceCounter = 0;
 
     return declare([], {
@@ -59,8 +63,16 @@ define([
 
         },
 
+        /**
+         *
+         * @param e Object<{editor: editor, start:number, end:number, block: bool}> start i end corresponen a la
+         * posició de la fila. Block indica si s'ha de tractar com un block a l'hora de calcular la posició inicial i
+         * final de les columnes.
+         * @private
+         */
         _handler: function (e) {
             var editor = e.editor;
+
 
             if (editor === undefined) {
                 // Si mostrem e, te les propietats data i editor, però e.editor es undefined O.o
@@ -79,10 +91,16 @@ define([
                 return;
             }
 
-            var rowStart = cursor.row;
+            var rowStart =  cursor.row;
             var rowEnd = cursor.row;
-            var colStart = cursor.column;
-            var colEnd = cursor.column;
+            var colStart, colEnd;
+
+            if (e.block) {
+                colStart = FIXED_COL_START;
+            } else {
+                colStart = cursor.column;
+            }
+
 
             // console.log("Cursor:", rowStart, rowEnd, colStart, colEnd);
 
@@ -94,11 +112,11 @@ define([
                 // comprovació per les línies següents
                 for (var i = cursor.row; i < session.getLength(); i++) {
                     // console.log("comprovant línia (endavant):", i, "Fins a:",session.getLength());
-                    parse = this.parseState(state, i, cursor); // TODO[Xavi] això ha d'estar parametritzat
+                    parse = this.parseState(state, i, cursor);
 
 
                     if (!parse) {
-                        // console.log("El resultat ha estat null, parem de cercar endavant", parse);
+                        // console.log("El resultat ha estat null, parem de cercar endavant", parse, "línia:" , i);
                         break;
                     } else {
                         rowEnd = i;
@@ -110,11 +128,6 @@ define([
                         if (parse.end === 0) {
                             colEnd = session.getLine(i).length;
 
-                            // } else if (parse.end !== session.getLine(i).length) {
-                        //     colEnd = parse.end;
-                        //
-                        //
-                        //     break;
                         } else {
                             colEnd = parse.end;
                         }
@@ -133,9 +146,6 @@ define([
                         rowStart = i;
                         colStart = parse.start;
 
-                        // if (parse.start > 0) {
-                        //     break;
-                        // }
                     }
                 }
 
@@ -144,7 +154,16 @@ define([
                 }
             }
 
-            var range = new Range(rowStart, colStart, rowEnd, colEnd);
+
+
+
+            // var range = new Range(e.start || rowStart, colStart, e.end || rowEnd, colEnd);
+
+            if (e.block) {
+                colEnd = FIXED_COL_END;
+            }
+
+            var range = new Range(e.start || rowStart, colStart, e.end || rowEnd, colEnd);
 
             if (this.readOnlyStates[currentReadonlyState] && this.readOnlyStates[currentReadonlyState].length > 0) {
                 for (i = 0; i < this.readOnlyStates[currentReadonlyState].length; i++) {
@@ -228,7 +247,7 @@ define([
         parseState: function (state, row, cursor, backwards) {
             // console.log("Comprovant", state, row, cursor, backwards);
             var states = this.editor.get_line_states_preview(row, true);
-            var session = this.editor.session;
+            // var session = this.editor.session;
 
             // si es backwards compta cap enderrera
             var i, expr, inc;
@@ -247,7 +266,7 @@ define([
                 inc = 1;
             }
 
-            var ret = {};
+            // var ret = {};
 
 
 
@@ -268,10 +287,11 @@ define([
 
                     // }
                 } else {
-                    // console.log("----- fi de la cerca, l'estat no comença", state, states[i]);
+
                 }
             }
 
+            // console.log( "No s'ha trobat l'estat" + state + " a la línia amb stats", states);
             return null; // No s'ha trobat l'estat a aquesta línia
         }
 

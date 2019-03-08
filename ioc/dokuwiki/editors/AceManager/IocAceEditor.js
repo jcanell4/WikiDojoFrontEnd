@@ -1506,7 +1506,7 @@ define([
                     min_length = Math.min(doc_length, lines.length);
 
                 for (var i = 0, len = min_length; 0 <= len ? i < len : i > len; 0 <= len ? i++ : i--) {
-                    console.log(doc);
+                    // console.log(doc);
                     if (doc.getLine(start + i) !== lines[i]) {
                         doc.removeInLine(start + i, 0, Infinity);
                         doc.insertInLine({
@@ -1523,6 +1523,7 @@ define([
                 if (doc_length < lines.length) {
                     doc.insertLines(end + 1, lines.slice(doc_length));
                 }
+
             },
 
             /**
