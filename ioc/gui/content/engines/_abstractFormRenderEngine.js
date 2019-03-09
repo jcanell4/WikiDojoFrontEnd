@@ -32,6 +32,9 @@ define([
                 collapsable = false,
                 collapsed = false;
 
+            if(!group.elements || group.elements.length==0){
+                return;
+            }
 
 
             if (group.config) {
@@ -40,74 +43,72 @@ define([
             }
 
 
-            if (group.elements) {
-                $group = jQuery('<div>');
+            $group = jQuery('<div>');
 //                fields = group.elements.sort(this.comparePriority);
-                fields = group.elements;
+            fields = group.elements;
 
-                // renderitzar el marc i titol
-                if (group.title) {
-                    $header = jQuery('<p>')
-                        .addClass('h2')
-                        .html(group.title);
+            // renderitzar el marc i titol
+            if (group.title) {
+                $header = jQuery('<p>')
+                    .addClass('h2')
+                    .html(group.title);
 
-                    $group.append($header);
+                $group.append($header);
 
-                    if (collapsable) {
-                        this.nCollapsableGruops++;
-                        // Afegim la icona de desplegable
-                        var $collapseIcon = jQuery('<span class="collapse-icon"><span class="' + (collapsed? 'collapsed" data-collapsed=true' : '"') +'></span></span>');
+                if (collapsable) {
+                    this.nCollapsableGruops++;
+                    // Afegim la icona de desplegable
+                    var $collapseIcon = jQuery('<span class="collapse-icon"><span class="' + (collapsed? 'collapsed" data-collapsed=true' : '"') +'></span></span>');
 
-                        $header.append($collapseIcon);
+                    $header.append($collapseIcon);
 
-                        $collapseIcon.on('click', this._collapseToggle);
+                    $collapseIcon.on('click', this._collapseToggle);
+                }
+
+            }
+
+            if (group.frame) {
+                $group.addClass('form-frame');
+            } else {
+                $group.addClass('form-without-frame');
+            }
+
+            for (var i = 0; i < fields.length; i++) {
+                var $element;
+
+                switch (group.elements[i].formType) {
+                    case 'row':
+                        $element = this.renderRow(fields[i], fvalues);
+                        break;
+
+                    case 'group':
+                        $element = this.renderGroup(fields[i], fvalues);
+                        break;
+
+                    case 'field':
+                        $element = this.renderField(fields[i], fvalues);
+                        break;
+
+                    default:
+                        console.log("Element no reconegut. No s'ha rendertizat", fields[i], fvalues);
+                }
+
+                if ($element) {
+                    $group.append($element);
+
+                    if (collapsable && collapsed) {
+                        $element.css('display', 'none');
                     }
-
                 }
 
-                if (group.frame) {
-                    $group.addClass('form-frame');
-                } else {
-                    $group.addClass('form-without-frame');
-                }
+            }
 
-                for (var i = 0; i < fields.length; i++) {
-                    var $element;
-
-                    switch (group.elements[i].formType) {
-                        case 'row':
-                            $element = this.renderRow(fields[i], fvalues);
-                            break;
-
-                        case 'group':
-                            $element = this.renderGroup(fields[i], fvalues);
-                            break;
-
-                        case 'field':
-                            $element = this.renderField(fields[i], fvalues);
-                            break;
-
-                        default:
-                            console.log("Element no reconegut. No s'ha rendertizat", fields[i], fvalues);
-                    }
-
-                    if ($element) {
-                        $group.append($element);
-
-                        if (collapsable && collapsed) {
-                            $element.css('display', 'none');
-                        }
-                    }
-
-                }
-
-                if (group.id) {
-                    $group.attr('id', group.id);
-                }
-                $group.addClass('form-group col-xs-' + cols); // input-group o form-group?
-                if(group.config && group.config.columns_offset){
-                    $group.addClass('col-xs-offset-' + group.config.columns_offset); 
-                }
+            if (group.id) {
+                $group.attr('id', group.id);
+            }
+            $group.addClass('form-group col-xs-' + cols); // input-group o form-group?
+            if(group.config && group.config.columns_offset){
+                $group.addClass('col-xs-offset-' + group.config.columns_offset); 
             }
 
             //[JOSEP]: Canviar el paràmetres fixats en el codi pels valors reals
@@ -159,9 +160,12 @@ define([
                     $field = this.renderFieldDefault(field, fvalues);
             }
 
-            $field.addClass('col-xs-' + cols);
-            if (field.config && field.config.columns_offset){
-                $field.addClass('col-xs-offset-' + field.config.columns_offset); 
+            if (field.type !== 'hidden') {
+                $field.addClass('col-xs-' + cols);
+                $field.addClass('pair-label-field');
+                if (field.config && field.config.columns_offset){
+                    $field.addClass('col-xs-offset-' + field.config.columns_offset); 
+                }
             }
 
             // Padding 6px, border 1px, line height 20px
