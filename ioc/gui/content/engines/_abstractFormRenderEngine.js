@@ -160,9 +160,12 @@ define([
                     $field = this.renderFieldDefault(field, fvalues);
             }
 
-            $field.addClass('col-xs-' + cols);
-            if (field.config && field.config.columns_offset){
-                $field.addClass('col-xs-offset-' + field.config.columns_offset); 
+            if (field.type !== 'hidden') {
+                $field.addClass('col-xs-' + cols);
+                $field.addClass('pair-label-field');
+                if (field.config && field.config.columns_offset){
+                    $field.addClass('col-xs-offset-' + field.config.columns_offset); 
+                }
             }
 
             // Padding 6px, border 1px, line height 20px
