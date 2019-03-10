@@ -26,6 +26,7 @@ define([
     var MAX_EXTRA_COLUMNS = 50,
         DEFAULT_ROWS = 2,
         DEFAULT_COLS = 2,
+        TOTAL_COLUMNS_WIDTH = 800,
 
         // Correspondencia amb els valors posibles al PluginFactory pel tableType
         NORMAL = "normal",
@@ -36,7 +37,7 @@ define([
     var ZoomableCell;
 
     // ALERTA[Xavi] Si s'afegeix al declare no funciona, ni idea de perquè
-    require(["ioc/gui/content/EditableElements/ZoomableCell"], function(InZoomableCell) {
+    require(["ioc/gui/content/EditableElements/ZoomableCell"], function (InZoomableCell) {
         ZoomableCell = InZoomableCell;
     });
 
@@ -66,7 +67,6 @@ define([
             this.tableType = args.tableType;
 
 
-
             // var config = {
             //     type: args.type,
             //     title: args.title,
@@ -76,10 +76,21 @@ define([
 
             // this.addButton(config);
 
+
+
+
             this.addButton(config, this.process);
 
-            this.enabled = true;
-            this.editor.readOnlyBlocksManager.enabled = this.enabled; // TODO: Afegir una propietat independent per les taules?
+            // var editor = this._getEditor();
+            //
+            // if (editor.readonly) {
+            //     this.enabled = false;
+            // } else {
+                this.enabled = true;
+            // }
+            // }
+
+            this.editor.readOnlyBlocksManager.enabled = this.enabled;
 
         },
 
@@ -103,7 +114,7 @@ define([
         _buildDefaultTable: function () {
             var cols = Number(prompt("Introdueix el nombre de columnes (mínim 1):", DEFAULT_COLS));
 
-            if (cols===0) {
+            if (cols === 0) {
                 return null;
             }
 
@@ -157,7 +168,7 @@ define([
             var range = {start: pos, end: pos};
             var value = this._buildDefaultTable();
 
-            if (value!=null) {
+            if (value != null) {
                 this._showDialog(value, range);
             }
 
@@ -188,12 +199,11 @@ define([
         },
 
 
-
-        changeEditorCallback: function(e) {
+        changeEditorCallback: function (e) {
 
             var cursor = this.editor.editor.getCursorPosition();
 
-            if (cursor.row>=this.lastRange.start.row && cursor.row<=this.lastRange.end.row) {
+            if (cursor.row >= this.lastRange.start.row && cursor.row <= this.lastRange.end.row) {
                 return;
             }
             this._getEditor().editor.remove_marker(this.marker);
@@ -247,18 +257,24 @@ define([
                         attributes = "class=\"zoom\" style=\"" + style + "\"";
                         attributes += 'data-zoom-icon-id="' + icon_id + '"';
 
+                        if (context._getEditor().editor.getReadOnly()) {
+                            return '';
+                        }
 
-                        context.timerId = setInterval(function() {
+                        context.timerId = setInterval(function () {
 
-                            var $node = jQuery('[data-zoom-icon-id="'+ icon_id+'"]');
 
-                            if ($node.length>0) {
+                            var $node = jQuery('[data-zoom-icon-id="' + icon_id + '"]');
 
-                                var $parent =$node.parent();
+                            if ($node.length > 0) {
+
+                                var $parent = $node.parent();
                                 $parent.css('z-index', 9999);
                                 $parent.css('pointer-events', 'auto');
 
                                 clearTimeout(context.timerId);
+
+
 
                                 $node.on('click', function (e) {
                                     e.preventDefault();
@@ -269,22 +285,17 @@ define([
                                     var dokuwikiContent = blockContent.substring(11, blockContent.length - 12);
 
 
-
-
                                     context._showDialog(dokuwikiContent, range);
 
 
                                 });
 
                             }
-                        },0.1);
+                        }, 0.1);
 
                         return '<div ' + attributes + '><img src="/iocjslib/ioc/gui/img/zoom.png"/></div>';
                     }
                 });
-
-
-
 
 
         },
@@ -292,7 +303,6 @@ define([
         _showDialog: function (value, range) {
             // console.log("Range:", range, "Value:", value);
             // Alerta, el value ha de ser un objecte JSON amb els valors i la estructura de la taula
-
 
 
             var dialogManager = this.editor.dispatcher.getDialogManager();
@@ -310,7 +320,12 @@ define([
                             var editor = context._getEditor();
 
                             editor.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
-                            editor.editor.emit('update', {editor: editor.editor, start:range.start.row, end:range.start.row + (dokuwikiTable.length-1), block: true});
+                            editor.editor.emit('update', {
+                                editor: editor.editor,
+                                start: range.start.row,
+                                end: range.start.row + (dokuwikiTable.length - 1),
+                                block: true
+                            });
 
                         }
                     }
@@ -335,13 +350,12 @@ define([
             $container.append($toolbar);
 
 
-
             var $fieldsList = jQuery('<ul class="table-editor">');
             $toolbar.append($fieldsList);
 
 
             var $idLabel = jQuery('<li><label>ID:</label></li>');
-            this.$id= jQuery('<input type="text" />');
+            this.$id = jQuery('<input type="text" />');
             $idLabel.append(this.$id);
             $fieldsList.append($idLabel);
 
@@ -369,8 +383,6 @@ define([
             this.numberOfColumns = 0;
 
 
-
-
             var $buttonsBar = jQuery('<div class="table-editor">');
             $toolbar.append($buttonsBar);
 
@@ -380,18 +392,17 @@ define([
             var $addRow = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Afegir fila</span></button>');
             $buttonsBar.append($addRow);
 
-
             var $removeCol = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Eliminar columna</span></button>');
             $buttonsBar.append($removeCol);
 
             var $removeRow = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Eliminar fila</span></button>');
             $buttonsBar.append($removeRow);
 
-
             var $mergeCells = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Fusionar cel·les</span></button>');
             $buttonsBar.append($mergeCells);
 
-
+            var $splitCells = jQuery('<button><span class="dijit dijitReset dijitInline dijitButton">Separar cel·les</span></button>');
+            $buttonsBar.append($splitCells);
 
             $addCol.on('click', function (e) {
 
@@ -411,7 +422,18 @@ define([
 
             $removeCol.on('click', function (e) {
 
-                // var items = grid.selection.getSelected('col', false);
+
+                for (var i = 0; i < selection['cols'].length; i++) {
+                    var col = selection['cols'][i].col;
+                    for (var j = 0; j < mergedBlocks.length; j++) {
+
+                        if (col >= mergedBlocks[j].startCol && col <= mergedBlocks[j].endCol) {
+                            alert("No es poden eliminar columnes que contenen cel·les fusionades. S'han de separar primer");
+                            return;
+                        }
+                    }
+                }
+
 
                 for (var col in selection['cols']) {
                     removedColumns.push((selection['cols'][col].col + 1));
@@ -420,7 +442,6 @@ define([
 
                 grid.selection.clear();
             });
-
 
 
             $addRow.on('click', function (e) {
@@ -453,14 +474,48 @@ define([
 
                 var items = grid.selection.getSelected('row', false);
 
+                var rows = selection['rows'];
+
+
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i].row;
+
+                    for (var j = 0; j < mergedBlocks.length; j++) {
+
+                        if (row >= mergedBlocks[j].startRow && row <= mergedBlocks[j].endRow) {
+                            alert("No es poden eliminar files que contenen cel·les fusionades. S'han de separar primer");
+                            return;
+                        }
+                    }
+
+                }
+
 
                 if (items.length) {
-                    array.forEach(items, function (selectedItem) {
+                    array.forEach(items, function (selectedItem, i) {
+
                         if (selectedItem !== null) {
                             store.deleteItem(selectedItem);
                         }
+
+                        var row = rows[i].row;
+
+
+                        for (var j = 0; j < mergedBlocks.length; j++) {
+
+                            if (row < mergedBlocks[j].startRow) {
+                                // Desplaçant fusió cap a dalt
+                                mergedBlocks[j].startRow--;
+                                mergedBlocks[j].endRow--;
+
+                            }
+                        }
+
+
                     });
+
                 }
+
 
                 grid.selection.clear();
 
@@ -468,13 +523,6 @@ define([
 
 
             $mergeCells.on('click', function (e) {
-
-
-                var confirmed = confirm("La fusió de cel·les no es pot desfer, vols continuar?");
-
-                if (!confirmed) {
-                    return;
-                }
 
                 var first = true;
                 var startCol, endCol, startRow, endRow, currentCol, currentRow;
@@ -515,13 +563,12 @@ define([
                 }
 
 
-
                 // Hem de treballar amb el llistat complet de files per que no hi ha correspondencia directa entre cel·les i files/columnes de dades al store
                 store.fetch({
                         query: {}, onComplete: function (items) {
 
-                            if (!context.canMerge(items, startRow, endRow, startCol, endCol)) {
-                                alert("No es poden fusionar cel·les ja fusionades");
+                            if (!context.canMerge(items, startRow, endRow, startCol, endCol, removedColumns)) {
+                                alert("No es poden fusionar cel·les ja fusionades. S'han de separar primer");
                                 return;
                             }
 
@@ -547,6 +594,78 @@ define([
 
                             }
 
+                            mergedBlocks.push({
+                                startRow: startRow,
+                                endRow: endRow,
+                                startCol: startCol,
+                                endCol: endCol
+                            });
+
+
+                            grid.setQuery({'id': '*'}); // Reresca el grid amb les dades actualitzades
+                        }
+                    }
+                );
+
+
+            });
+
+
+            $splitCells.on('click', function (e) {
+
+
+                var first = true;
+                var startCol, endCol, startRow, endRow, currentCol, currentRow;
+
+                var rows = [];
+
+                // la posició inicial i final de la selecció
+                for (var i = 0; i < selection['cells'].length; i++) {
+                    currentCol = selection['cells'][i].col;
+                    currentRow = selection['cells'][i].row;
+
+
+                    if (rows.indexOf(currentRow) === -1) {
+                        rows.push(currentRow);
+                    }
+
+                    if (first) {
+                        startCol = currentCol;
+                        startRow = currentRow;
+                        endCol = currentCol;
+                        endRow = currentRow;
+
+                        first = false;
+
+                    } else {
+                        if (currentCol < startCol) {
+                            startCol = currentCol;
+                        } else if (currentCol > endCol) {
+                            endCol = currentCol;
+                        }
+
+                        if (currentRow < startRow) {
+                            startRow = currentRow;
+                        } else if (currentRow > endRow) {
+                            endRow = currentRow;
+                        }
+                    }
+                }
+
+                // // Hem de treballar amb el llistat complet de files per que no hi ha correspondencia directa entre cel·les i files/columnes de dades al store
+                store.fetch({
+                        query: {}, onComplete: function (items) {
+
+                            for (var i = startRow; i <= endRow; i++) {
+                                for (var j = startCol; j <= endCol; j++) {
+
+                                    if (context.isMergedBlock(items, i, j, mergedBlocks)) {
+                                        context.splitMergedBlock(items, i, j, mergedBlocks);
+
+                                    }
+
+                                }
+                            }
 
                             grid.setQuery({'id': '*'}); // Reresca el grid amb les dades actualitzades
                         }
@@ -597,8 +716,9 @@ define([
             var contentData = this.parseContentData(value);
 
             var store = new ItemFileWriteStore({data: contentData.data});
-
             var layout = contentData.layout;
+
+            var mergedBlocks = context.findMergedBlocks(contentData.data.items, removedColumns);
 
             // TODO: Aquí es crean les columnes buides per poder afegir noves columnes.
             for (var i = this.numberOfColumns + 1; i < this.maxColumns; i++) {
@@ -633,7 +753,7 @@ define([
             };
 
             var defaultCell = {
-                width: '100px',
+                width: TOTAL_COLUMNS_WIDTH/(this.numberOfColumns)+"px",
                 editable: true,
                 formatter: formatterCallback
                 // cellType: dojox.grid.cells.Select,
@@ -648,11 +768,9 @@ define([
             }
 
 
-
             var oldGrid = registry.byId('grid');
 
             if (oldGrid) {
-                console.log("Destruit el grid anterior");
                 oldGrid.destroyRecursive();
             }
 
@@ -665,7 +783,7 @@ define([
                 }],
                 rowSelector: '20px',
                 autoHeight: 'true',
-                autoWidth: 'true',
+                // autoWidth: 'true',
                 canSort: function () {
                     return false;
                 },
@@ -680,7 +798,7 @@ define([
             });
 
             // ALERTA[Xavi] Sobreescrita de _EditManager.js y duplicada del EditableTalbeElements. Això es imprescindible perque funcioni el dialeg!
-            grid.edit.apply= function(){
+            grid.edit.apply = function () {
 
                 if (jQuery(document.activeElement).hasClass('ace_text-input')) {
                     // console.log("És un dialeg, no fem res");
@@ -689,7 +807,7 @@ define([
 
                 // summary:
                 //		Apply a grid edit
-                if(this.isEditing() && this._isValidInput()){
+                if (this.isEditing() && this._isValidInput()) {
                     this.grid.beginUpdate();
                     this.editorApply();
                     this.applyRowEdit();
@@ -700,7 +818,7 @@ define([
                 }
             };
 
-            grid.onHeaderCellDblClick = function (e){
+            grid.onHeaderCellDblClick = function (e) {
                 var nouHeader = prompt("Introdueix el nom de la capçalera:", e.cell.name); // TODO: Localitzar
                 if (nouHeader === null) {
                     return;
@@ -710,13 +828,14 @@ define([
             };
 
 
-            var isCellLocked = function(value) {
+            var isCellLocked = function (value) {
                 if (value === '<i>^^^</i>' || value === '<i>&lt;&lt;&lt;</i>') {
                     return true;
-                } return false;
+                }
+                return false;
             };
 
-            grid.onCellClick = function(e){
+            grid.onCellClick = function (e) {
                 var value = jQuery(e.cellNode).html();
 
                 if (isCellLocked(value)) {
@@ -730,49 +849,49 @@ define([
                 //		Decorated event object which contains reference to grid, cell, and rowIndex
                 this._click[0] = this._click[1];
                 this._click[1] = e;
-                if(!this.edit.isEditCell(e.rowIndex, e.cellIndex)){
+                if (!this.edit.isEditCell(e.rowIndex, e.cellIndex)) {
                     this.focus.setFocusCell(e.cell, e.rowIndex);
                 }
                 // in some cases click[0] is null which causes false doubeClicks. Fixes #100703
-                if(this._click.length > 1 && this._click[0] == null){
+                if (this._click.length > 1 && this._click[0] == null) {
                     this._click.shift();
                 }
                 this.onRowClick(e);
             },
 
-            // ALERTA[Xavi]No sembla posible cridar al parent d'aquesta funció ni guardan't
-            // la original ni cridant al inherited. Així que he copiat el codi original (de dojox/grid/_Events.js)
-            grid.onCellDblClick = function(e) {
-                var value = jQuery(e.cellNode).html();
+                // ALERTA[Xavi]No sembla posible cridar al parent d'aquesta funció ni guardan't
+                // la original ni cridant al inherited. Així que he copiat el codi original (de dojox/grid/_Events.js)
+                grid.onCellDblClick = function (e) {
+                    var value = jQuery(e.cellNode).html();
 
 
-                if (isCellLocked(value)) {
-                    this.onRowClick(e);
-                    return;
-                }
+                    if (isCellLocked(value)) {
+                        this.onRowClick(e);
+                        return;
+                    }
 
-                // if (value === '<i>^^^</i>' || value === '<i>&lt;&lt;&lt;</i>') {
-                //     return;
-                // }
+                    // if (value === '<i>^^^</i>' || value === '<i>&lt;&lt;&lt;</i>') {
+                    //     return;
+                    // }
 
-                // summary:
-                //		Event fired when a cell is double-clicked.
-                // e: Event
-                //		Decorated event object contains reference to grid, cell, and rowIndex
-                var event;
-                if(this._click.length > 1 && has('ie')){
-                    event = this._click[1];
-                }else if(this._click.length > 1 && this._click[0].rowIndex != this._click[1].rowIndex){
-                    event = this._click[0];
-                }else{
-                    event = e;
-                }
-                this.focus.setFocusCell(event.cell, event.rowIndex);
+                    // summary:
+                    //		Event fired when a cell is double-clicked.
+                    // e: Event
+                    //		Decorated event object contains reference to grid, cell, and rowIndex
+                    var event;
+                    if (this._click.length > 1 && has('ie')) {
+                        event = this._click[1];
+                    } else if (this._click.length > 1 && this._click[0].rowIndex != this._click[1].rowIndex) {
+                        event = this._click[0];
+                    } else {
+                        event = e;
+                    }
+                    this.focus.setFocusCell(event.cell, event.rowIndex);
 
-                this.edit.setEditCell(event.cell, event.rowIndex);
-                this.onRowDblClick(e);
+                    this.edit.setEditCell(event.cell, event.rowIndex);
+                    this.onRowDblClick(e);
 
-            };
+                };
 
             domConstruct.place(grid.domNode, dialog.containerNode);
             grid.startup();
@@ -824,28 +943,173 @@ define([
 
         },
 
-        canMerge : function (items, startRow, endRow, startCol, endCol) {
+        splitMergedBlock: function (items, row, col, mergedBlocks) {
+
+            var block = this.findContentCell(items, row, col, mergedBlocks);
+
+            if (block === null) {
+                console.warn("No hi cap bloc en aquesta posició", row, col, mergedBlocks);
+                return;
+            }
+
+            var first = true;
+            for (var i = block.startRow; i <= block.endRow; i++) {
+
+
+                for (var j = block.startCol; j <= block.endCol; j++) {
+                    // La primera cel·la s'ignora perquè es la que conté el contingut
+                    if (first) {
+                        first = false;
+                        continue;
+                    }
+
+                    items[i]['col' + (j + 1)] = [""];
+                }
+            }
+
+            mergedBlocks.splice(mergedBlocks.indexOf(block), 1);
+        },
+
+
+        findContentCell: function (items, row, col, mergedBlocks) {
+            // Merged cells es un array: {startRow, startCol, endRow, endCol}
+            for (var i = 0; i < mergedBlocks.length; i++) {
+
+                if (row >= mergedBlocks[i].startRow
+                    && row <= mergedBlocks[i].endRow
+                    && col >= mergedBlocks[i].startCol
+                    && col <= mergedBlocks[i].endCol) {
+                    return mergedBlocks[i];
+                }
+            }
+
+            return null;
+        },
+
+        findMergedBlocks: function (items, removedColumns) {
+
+            var mergedBlocks = [];
+
+            var colNumber = this.countColumns(items[0]);
+
+
+            var matrix = [];
+
+            // Creem una copia per poder modificar la matriu
+            for (var row = 0; row < items.length; row++) {
+                matrix[row] = [];
+                for (var col = 0; col < colNumber; col++) {
+                    matrix[row][col] = items[row]['col' + (col + 1)];
+                }
+            }
+
+            // cerquem les cel·les amb contingut
+
+            for (row = 0; row < matrix.length; row++) {
+
+                for (col = 0; col < colNumber; col++) {
+
+                    if (removedColumns.indexOf(col) > -1) {
+                        continue;
+                    }
+
+                    if (matrix[row][col] === "<<<") {
+                        // La cel·la d'origen es troba a la dreta
+                        mergedBlocks.push(this.extractContentBlock(row, col - 1, matrix));
+
+                    } else if (matrix[row][col] === "^^^") {
+                        // La cel·la d'origen es troba a sobre
+                        mergedBlocks.push(this.extractContentBlock(row - 1, col, matrix));
+                    }
+                }
+            }
+
+            return mergedBlocks;
+        },
+
+        // row i col son les coordenades de la casella amb el contingut, la casella superior esquerra del block
+        extractContentBlock: function (row, col, matrix) {
+            var block = {
+                startRow: row,
+                startCol: col,
+                endRow: row,
+                endCol: col
+
+            };
+
+            var first = true;
+
+
+            for (var i = row; i < matrix.length; i++) {
+
+                // Si no es la primera fila, la cel·la ha de ser ^^^, si no es així es que s'ha arribat al final del block
+                if (!first && matrix[i][col] !== "^^^") {
+                    break;
+                }
+
+                block.endRow = i;
+
+                for (var j = col; i < matrix[i].length; j++) {
+                    // block.endCol = j;
+                    // la primera cel·la es la del contingut
+                    if (first) {
+                        first = false;
+                        continue;
+                    }
+
+                    if (matrix[i][j] === "<<<" || matrix[i][j] === "^^^") {
+                        block.endCol = j;
+                        matrix[i][j] = ""
+                    } else {
+                        break;
+                    }
+
+                }
+
+            }
+
+            return block;
+        },
+
+        countColumns: function (row) {
+            var count = 0;
+            var cellContent = undefined;
+
+            do {
+                count++;
+                cellContent = row['col' + (count)];
+
+            } while (cellContent !== undefined);
+
+            return count - 1;
+        },
+
+        isMergedBlock: function (items, row, col, mergedBlocks) {
+
+            var cell = items[row]['col' + (col + 1)] !== undefined ? items[row]['col' + (col + 1)][0] : '';
+
+            if (cell === "^^^" || cell === "<<<") {
+                return true;
+            } else {
+                return this.findContentCell(items, row, col, mergedBlocks) !== null;
+            }
+
+        },
+
+        canMerge: function (items, startRow, endRow, startCol, endCol, removedColumns) {
+
             for (var i = startRow; i <= endRow; i++) {
 
                 for (var j = startCol; j <= endCol; j++) {
 
-                    var cell = items[i]['col' + (j + 1)][0];
+                    if (removedColumns.indexOf(j + 1) > -1) {
+                        continue;
+                    }
 
-                    if (cell === "^^^" || cell === "<<<") {
+                    var cell = items[i]['col' + (j + 1)] !== undefined ? items[i]['col' + (j + 1)][0] : '';
 
-                        return false;
-                    } else {
-                        // S'ha de comprovar si la cel·la de la dreta est "<<<" o la inferior és "^^^^, en aquest cas es tractarà de la cel·la del contingut d'una fusió
-
-                        // petará si es la última columna
-                        // petará si és la última fila
-
-                        var cellDown = items[i+1]['col' + (j + 1)][0];
-                        var cellRight = items[i]['col' + (j + 2)][0];
-
-                        if (cellDown === "^^^" || cellRight ==="<<<") {
-                            return false;
-                        }
+                    if (cell === "^^^" || cell === "<<<" || this.isRightCellMerged(items, i, j + 1, removedColumns) || this.isDownCellMerged(items, i, j + 1, removedColumns)) {
+                        return false
 
                     }
 
@@ -854,6 +1118,46 @@ define([
 
             return true;
         },
+
+        isRightCellMerged: function (items, row, col, removedColumns) {
+
+            var result;
+
+
+            // si "col"+(col+1) no es troba a items[row] es que no hi ha més columnes a la dreta i retorna false
+
+            if (items[row]['col' + (col + 1)] === undefined) {
+                // ALERTA! A items només surten les cel·les amb contingut, en crearse hi ha una columna extra amb contingut buit
+                result = false;
+
+            } else if (removedColumns.indexOf(col + 1) > -1) {
+                // si existeix comprovem i es troba a removed column cerquem a la dreta
+                result = this.isRightCellMerged(items, row, col + 1, removedColumns)
+            } else {
+                result = items[row]['col' + (col + 1)][0] === "<<<";
+            }
+
+            return result;
+
+
+        },
+
+        isDownCellMerged: function (items, row, col, removedColumns) {
+            // Comprova si la cel·la inferior és "^^^"
+
+            var result;
+
+            if (removedColumns.indexOf(col) > -1) {
+                result = false;
+            } else if (row + 1 < items.length && items[row + 1]['col' + col]) {
+                result = items[row + 1]['col' + col][0] === "^^^";
+            } else {
+                result = false;
+            }
+
+            return result;
+        },
+
 
         /**
          * Métode que converteix la informació del grid en línies de codi wiki
@@ -900,9 +1204,9 @@ define([
 
             // Construim la capçalera //
 
-            for(var i=0; i<this.numberOfColumns; i++) {
+            for (var i = 0; i < this.numberOfColumns; i++) {
 
-                if (removedColumns.indexOf(i+1) !== -1) {
+                if (removedColumns.indexOf(i + 1) !== -1) {
                     continue; // Columna eliminada
                 }
 
@@ -942,7 +1246,7 @@ define([
                         line += " ";
                     }
 
-                    var cellContent = items[i]['col' + j]? items[i]['col' + j][0] : '';
+                    var cellContent = items[i]['col' + j] ? items[i]['col' + j][0] : '';
 
                     if (cellContent === '<<<') {
 
@@ -952,11 +1256,9 @@ define([
                         continue;
                     } else if (cellContent === '^^^') {
 
-                            line += "| :::";
+                        line += "| :::";
                         continue;
                     }
-
-
 
 
                     if (typeof cellContent === 'string') {
@@ -1012,7 +1314,7 @@ define([
                 columns: [],
                 rows: [],
                 meta: {
-                    id:"",
+                    id: "",
                     title: "",
                     footer: "",
                     types: "",
@@ -1047,7 +1349,7 @@ define([
                     // Es tanca la taula
                     continue;
                 } else if (lines[i].startsWith('::table:')) {
-                    parsedLines.meta.id= lines[i].replace('::table:', '').trim();
+                    parsedLines.meta.id = lines[i].replace('::table:', '').trim();
                 } else if (lines[i].startsWith('  :title:')) {
                     parsedLines.meta.title = lines[i].replace('  :title:', '').trim();
                 } else if (lines[i].startsWith('  :footer:')) {
@@ -1058,8 +1360,8 @@ define([
                     parsedLines.meta.types = lines[i].replace('  :type:', '').trim();
                 } else if (lines[i].startsWith('::accounting:')) {
                     this.tableType = ACCOUNTING;
-                // } else if (lines[i].startsWith('::table:')) {
-                //     parsedLines.meta.table_type = NORMAL;
+                    // } else if (lines[i].startsWith('::table:')) {
+                    //     parsedLines.meta.table_type = NORMAL;
 
                 } else if (lines[i].startsWith('^')) {
 
@@ -1082,7 +1384,7 @@ define([
                         columns = row.length - 1;
                     }
                 } else {
-                    console.warn("Línia no processada:", lines[i]);
+                    // console.warn("Línia no processada:", lines[i]);
                 }
             }
 
@@ -1104,13 +1406,11 @@ define([
 
                 var items = token.split("\\\\");
 
-                for (var j=0; j<items.length; j++) {
+                for (var j = 0; j < items.length; j++) {
                     items[j] = items[j].trim();
                 }
 
                 token = items.join("\n");
-
-
 
 
                 if (tokens[i].length === 0) {
