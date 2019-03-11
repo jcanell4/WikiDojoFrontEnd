@@ -7,10 +7,11 @@ define([
 
     return declare([ObjectStore],
         {
+            // Coopiat de ObjectStore, només canvia que agafa kwArgs.options i ho passa com a optiosn al mètode .put del OjectStore
             save: function(kwArgs){
+
                 var options = kwArgs && kwArgs.options ? kwArgs.options : {};
 
-                console.log("save args:", kwArgs);
 
                 // summary:
                 //		Saves the dirty data using object store provider. See dojo/data/api/Write for API.
@@ -51,6 +52,7 @@ define([
                     if(this.objectStore.transaction){
                         var transaction = this.objectStore.transaction();
                     }
+
                     for(var i = 0; i < dirtyObjects.length; i++){
                         var dirty = dirtyObjects[i];
                         var object = dirty.object;

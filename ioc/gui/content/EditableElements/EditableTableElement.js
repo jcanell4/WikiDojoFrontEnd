@@ -1,7 +1,8 @@
 define([
     'dojo/_base/declare',
     'ioc/gui/content/EditableElements/AbstractEditableElement',
-    "dojox/grid/DataGrid",
+    "ioc/store/IocDataGrid",
+    // "dojox/grid/DataGrid",
     "dojox/grid/cells",
     "dojox/grid/cells/dijit",
     "ioc/store/IocMemory",
@@ -176,6 +177,15 @@ define([
 
                 });
 
+
+
+
+
+
+
+
+
+
                 // Alerta[Xavi]: el DataGrid te un bug i no permet fer scroll a l'última fila. La solució ha estat
                 // afegir 25 punts a l'scroll, això actualment no afecta a la aplicació perquè no es contempla
                 // la opció de fer scroll a una fila en concret.
@@ -291,8 +301,10 @@ define([
              */
             addRow: function(keyPairs, options) {
 
+                this.dataStore.save(); // Desem els canvis actuals al grid (cel·les editades)
+
                 var data = {
-                    id: this.objectStore.data.length,
+                    id: this.objectStore.getUniqueId(),
                 };
 
                 for (var name in this.defaultRow) {
@@ -312,17 +324,7 @@ define([
 
                 // this.args.data.value.push(this.defaultRow);
 
-                console.log("Selection?", this.grid.selection.selectedIndex);
-
-                // TEST Before
-                // this.dataStore.newItem(data, {before: {id:this.grid.selection.selectedIndex}});
                 this.dataStore.newItem(data);
-
-                // this.dataStore.save({
-                //     options: {
-                //         before: {
-                //             id:this.grid.selection.selectedIndex}
-                //     }});
 
                 if (options) {
                     this.dataStore.save({options: options});
@@ -330,23 +332,13 @@ define([
                     this.dataStore.save();
                 }
 
-                // this.dataStore.save({
-                //     options: {
-                //         after: {
-                //             id:this.grid.selection.selectedIndex}
-                //     }});
-
-
                 this.grid._refresh();
-
-
 
                 this.updateField();
 
-
-                this.grid.scrollToRow(data.id < data.length - 1 ? data.id + 1: data.length -1);
-                // this.grid.scrollToRow(this.grid.rowCount);
-
+                if (!options || (!options.after && !options.before)) {
+                    this.grid.scrollToRow(this.grid.rowCount);
+                }
             },
 
             addRowAfter(data) {
@@ -487,7 +479,27 @@ define([
                 // this.args.data.value = originalValues;
 
 
+
+
                 this.dataStore.save();
+
+                // this.grid._refresh(true);
+
+                // console.log("removed: this.dataStore", this.dataStore);
+                // alert("Que s'ha desat?");
+
+                /////////
+                // var grid = this.grid;
+                // this.dataStore.fetch({
+                //         query: {}, onComplete: function (items) {
+                //             grid.setQuery({'id': '*'}); // Reresca el grid amb les dades actualitzades
+                //             grid._refresh();
+                //         }
+                //     }
+                // );
+
+                /////////
+
                 this.updateField();
             },
 
