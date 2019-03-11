@@ -13,11 +13,6 @@ define([
     "dojox/grid/EnhancedGrid",
     "dojox/grid/enhanced/plugins/Selector", // Encara que no s'utitlitzi directament ho utilitza el EnhancedGrid i s'ha de carregar
     "dijit/registry",
-
-    // "dijit/form/Textarea"
-
-    // "ioc/gui/content/EditableElements/ZoomableCell",
-
     "dojo/_base/sniff",
     "dojox/widget/Standby",
 ], function (declare, AbstractAcePlugin, /*DataGrid, */cells, cellsDijit, Button, domConstruct, lang, ItemFileWriteStore, Dialog, array, EnhancedGrid, Selector, registry/*, Textarea*/, has, Standby) {
@@ -54,18 +49,12 @@ define([
 
             this.editor.addReadonlyBlock(this.triggerState, this.editTableCallback.bind(this), true);
 
-
-            // this.editor.addReadonlyBlock('edittable', this.editTableCallback.bind(this));
-
-            //console.log("AceTableEditorPlugin->args", args);
-
             var config = args;
             if (args.icon.indexOf(".png") === -1) {
                 config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
             }
 
             this.tableType = args.tableType;
-
 
             // var config = {
             //     type: args.type,
@@ -76,19 +65,9 @@ define([
 
             // this.addButton(config);
 
-
-
-
             this.addButton(config, this.process);
 
-            // var editor = this._getEditor();
-            //
-            // if (editor.readonly) {
-            //     this.enabled = false;
-            // } else {
-                this.enabled = true;
-            // }
-            // }
+            this.enabled = true;
 
             this.editor.readOnlyBlocksManager.enabled = this.enabled;
 
@@ -98,14 +77,7 @@ define([
             var dispatcher = this.editor.dispatcher;
             var id = dispatcher.getGlobalState().getCurrentId(),
                 contentTool = dispatcher.getContentCache(id).getMainContentTool();
-            //
-            //
-            // // TODO: Afegir el mètode getCurrentEditor que retorni l'editor seleccionat actualment tant al basic document com al structured
-            // // ALERTA: prova temporal per l'editor full
-            // console.log("editor:", contentTool.getCurrentEditor());
-            // contentTool.getCurrentEditor();
 
-            // return contentTool.editor;
             return contentTool.getCurrentEditor();
 
         },
@@ -173,23 +145,6 @@ define([
             }
 
         },
-
-        // _processPartial: function () {
-        //     this._processFull();
-        //     if (!this.canInsert()) {
-        //         alert("No es pot inserir una taula en aquest punt del document");
-        //         return;
-        //     }
-        //
-        //     var editor = this._getEditor();
-        //
-        //     var pos = {row: editor.getCurrentRow(), col: 0};
-        //     var range = {start: pos, end: pos};
-        //     var value = this._buildDefaultTable();
-        //
-        //     this._showDialog(value, range);
-        //
-        // },
 
         canInsert() {
             var editor = this._getEditor().editor;

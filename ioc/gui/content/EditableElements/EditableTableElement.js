@@ -4,8 +4,10 @@ define([
     "dojox/grid/DataGrid",
     "dojox/grid/cells",
     "dojox/grid/cells/dijit",
-    "dojo/store/Memory",
-    "dojo/data/ObjectStore",
+    "ioc/store/IocMemory",
+    "ioc/store/IocObjectStore",
+    // "dojo/store/Memory",
+    // "dojo/data/ObjectStore",
     "dijit/form/Button",
     "dojox/grid/_Events",
     // "dijit/form/Textarea"
@@ -17,6 +19,8 @@ define([
 
     var ADD_ROW = "add_row",
         ADD_DEFAULT_ROW = "add_default_row",
+        ADD_DEFAULT_ROW_BEFORE = "add_default_row_before",
+        ADD_DEFAULT_ROW_AFTER = "add_default_row_after",
         ADD_MULTIPLE_DEFAULT_ROWS = "add_multiple_default_rows",
         SET_MULTIPLE_DEFAULT_ROWS = "set_multiple_default_rows",
         REMOVE_ROWS = "remove_rows";
@@ -49,6 +53,8 @@ define([
 
                 this.actionCallbacks[ADD_ROW] = this._addRowCallback.bind(this);
                 this.actionCallbacks[ADD_DEFAULT_ROW] = this._addDefaultRowCallback.bind(this);
+                this.actionCallbacks[ADD_DEFAULT_ROW_AFTER] = this._addDefaultRowAfterCallback.bind(this);
+                this.actionCallbacks[ADD_DEFAULT_ROW_BEFORE] = this._addDefaultRowBeforeCallback.bind(this);
                 this.actionCallbacks[ADD_MULTIPLE_DEFAULT_ROWS] = this._addMultipleDefaultRowsCallback.bind(this);
                 this.actionCallbacks[SET_MULTIPLE_DEFAULT_ROWS] = this._setMultipleDefaultRowsCallback.bind(this);
                 this.actionCallbacks[REMOVE_ROWS] = this._removeRowCallback.bind(this);
@@ -93,7 +99,7 @@ define([
                             case "title":
                             case "translate":
                                 $container.attr(prop, props[prop]);
-                                break;                            
+                                break;
                             default :
                         }
                     }
@@ -277,9 +283,13 @@ define([
              *
              * @param <Object>|Array<Object>|null keyPairs si no hi ha cap valor es faran servir els valors per defecte.
              * Si hi ha valors es faran servir aquests valors per les claus indicades y el default per a la resta.
+             *
+             * @param <Object> options objecte amb les opcions {before: {id: number} | after: {id: number}} on number és
+             * l'index de la fila.
+             *
              * @private
              */
-            addRow: function(keyPairs) {
+            addRow: function(keyPairs, options) {
 
                 var data = {
                     id: this.objectStore.data.length,
@@ -302,12 +312,55 @@ define([
 
                 // this.args.data.value.push(this.defaultRow);
 
+                console.log("Selection?", this.grid.selection.selectedIndex);
+
+                // TEST Before
+                // this.dataStore.newItem(data, {before: {id:this.grid.selection.selectedIndex}});
                 this.dataStore.newItem(data);
 
-                this.dataStore.save();
-                this.updateField();
-                this.grid.scrollToRow(this.grid.rowCount);
+                // this.dataStore.save({
+                //     options: {
+                //         before: {
+                //             id:this.grid.selection.selectedIndex}
+                //     }});
 
+                if (options) {
+                    this.dataStore.save({options: options});
+                } else {
+                    this.dataStore.save();
+                }
+
+                // this.dataStore.save({
+                //     options: {
+                //         after: {
+                //             id:this.grid.selection.selectedIndex}
+                //     }});
+
+
+                this.grid._refresh();
+
+
+
+                this.updateField();
+
+
+                this.grid.scrollToRow(data.id < data.length - 1 ? data.id + 1: data.length -1);
+                // this.grid.scrollToRow(this.grid.rowCount);
+
+            },
+
+            addRowAfter(data) {
+                this.addRow(data, {
+                    after: {
+                        id: this.grid.selection.selectedIndex}
+                });
+            },
+
+            addRowBefore(data) {
+                this.addRow(data, {
+                    before: {
+                        id: this.grid.selection.selectedIndex}
+                });
             },
 
             _addRowCallback: function () {
@@ -334,6 +387,14 @@ define([
                 this.addRow();
             },
 
+            _addDefaultRowAfterCallback: function () {
+                this.addRowAfter();
+            },
+
+            _addDefaultRowBeforeCallback: function () {
+                this.addRowBefore();
+            },
+
             _setMultipleDefaultRowsCallback: function () {
 
                 var quantity;
@@ -344,12 +405,12 @@ define([
                         alert("El nombre de files ha de ser un nombre igual o superior a 1.");
                     }
                 } while (isNaN(quantity) || quantity < 1);
-                
+
                 ok =  this.objectStore.data.length < quantity;
                 if(ok){
-                    this.setRows(quantity);                    
+                    this.setRows(quantity);
                 }else if(this.objectStore.data.length > quantity){
-                    alert("Aquesta acció només permet incrementar el nombre de files. Per reduir-les, selecciona les que desitgis eliminar i prem el botó corresponent."); 
+                    alert("Aquesta acció només permet incrementar el nombre de files. Per reduir-les, selecciona les que desitgis eliminar i prem el botó corresponent.");
                 }else{
                     alert("Has indicat el nombre de files que ja hi ha. No es realitzarà cap canvi." );
                 }
@@ -374,10 +435,10 @@ define([
                 if(this.objectStore.data.length<quantity){
                     for (var i = this.objectStore.data.length; i < quantity; i++) {
                         this.addRow();
-                    }                    
+                    }
                 }else if(this.objectStore.data.length>quantity){
                     alert("Aquesta acció només permet incrementar el nombre de files. No pas reduir-lo.")
-                }                
+                }
             },
             addRows: function (quantity) {
 
@@ -452,7 +513,7 @@ define([
                             case 'date':
                                 var storePattern = 'yyyy/MM/dd';
                                 var displayPattern = 'dd/MM/yyyy';
-                                
+
                                 cell.type = dojox.grid.cells.DateTextBox;
                                 cell.getValue = function(){
                                     // Override the default getValue function for dojox.grid.cells.DateTextBox
@@ -520,7 +581,7 @@ define([
                 this.dataStore.save();
                 this.grid.update();
             },
-            
+
             saveToField: function () {
                 this.backupData = jQuery.extend(true, {}, this.dataStore.objectStore.data);
 
@@ -642,10 +703,10 @@ define([
 
             show: function () {
                 this.inherited(arguments);
-                
+
                 this.grid.update();
                 this.$icon.css('display', 'none');
-                
+
                 if(this.$container.attr("data-display-node")){
                     this.$container.parent().slideToggle();
                 }
