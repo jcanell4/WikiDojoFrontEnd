@@ -316,13 +316,9 @@ define([
                 }
 
                 // Afegim la fila als valors originals
-                // console.log("Add Row:", this.defaultRow);
-                var originalValue = JSON.parse(this.args.data.value);
+                var originalValue = this.args.data.value;
                 originalValue.push(this.defaultRow);
-                this.args.data.value = JSON.stringify(originalValue);
-                // console.log("Valors actualitzat", this.args.data.value);
-
-                // this.args.data.value.push(this.defaultRow);
+                this.args.data.value = originalValue;
 
                 this.dataStore.newItem(data);
 
@@ -465,8 +461,7 @@ define([
                 });
 
 
-                var originalValues = JSON.parse(this.args.data.value);
-                // var originalValues = this.args.data.value;
+                var originalValues = this.args.data.value;
 
                 for (var i = 0; i < indexes.length; i++) {
                     this.dataStore.deleteItem(indexes[i]);
@@ -475,8 +470,7 @@ define([
                     originalValues.splice(indexes[i],1);
 
                 }
-                this.args.data.value = JSON.stringify(originalValues);
-                // this.args.data.value = originalValues;
+                this.args.data.value = originalValues;
 
 
 
