@@ -532,16 +532,16 @@ define([
                     pluginNames = pluginNames.concat(
                         [
                             'IocSoundFormatButton',
-                            'CancelButton',
-                            'SaveButton',
                             'DocumentPreviewButton',
-                            'EnableACE',
-                            'EnableWrapper',
                             'LatexPreview',
                             'TestReadonlyPlugin',
                             'TableEditor',
                             'TableEditorMultiline',
-                            'TableEditorAccounting'
+                            'TableEditorAccounting',
+                            'EnableACE',
+                            'EnableWrapper',
+                            'SaveButton',
+                            'CancelButton'
                         ]
                     );
                     plugins = this.getPlugins(pluginNames)

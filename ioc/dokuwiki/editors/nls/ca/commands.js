@@ -112,6 +112,7 @@ define(
 
         'ioc-table-editor':  'Editor de taules',
         'ioc-table-editor-multiline':  'Editor de taules multilínia',
+        'ioc-table-editor-accounting':  'Editor de taules accounting',
 
         'merge-cells': 'Fusionar cel·les',
         'table-delete': 'Eliminar taula',
