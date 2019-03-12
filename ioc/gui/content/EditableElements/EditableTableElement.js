@@ -300,6 +300,7 @@ define([
              * @private
              */
             addRow: function(keyPairs, options) {
+                this.grid.addingRow = true;
 
                 this.dataStore.save(); // Desem els canvis actuals al grid (cel·les editades)
 
@@ -335,6 +336,8 @@ define([
                 if (!options || (!options.after && !options.before)) {
                     this.grid.scrollToRow(this.grid.rowCount);
                 }
+
+                this.grid.addingRow = false;
             },
 
             addRowAfter(data) {
@@ -472,27 +475,7 @@ define([
                 }
                 this.args.data.value = originalValues;
 
-
-
-
                 this.dataStore.save();
-
-                // this.grid._refresh(true);
-
-                // console.log("removed: this.dataStore", this.dataStore);
-                // alert("Que s'ha desat?");
-
-                /////////
-                // var grid = this.grid;
-                // this.dataStore.fetch({
-                //         query: {}, onComplete: function (items) {
-                //             grid.setQuery({'id': '*'}); // Reresca el grid amb les dades actualitzades
-                //             grid._refresh();
-                //         }
-                //     }
-                // );
-
-                /////////
 
                 this.updateField();
             },

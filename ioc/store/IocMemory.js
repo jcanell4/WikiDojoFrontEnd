@@ -42,14 +42,11 @@ define([
 
 
                         //carve out a spot for the new item
-
                         data.splice(targetIndex, 0, object);
 
-
                         // reindexing
-
                         this.setData(data);
-                        // }
+
                     }
                 }
 

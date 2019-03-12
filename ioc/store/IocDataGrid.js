@@ -7,6 +7,8 @@ define([
 
     return declare([DataGrid],
         {
+            addingRow: false,
+
             _onFetchBegin :  function(size, req) {
 
                 // Fix per evitar que s'esborri tota la taula en fer una inserció després d'eliminar 1 fila
@@ -16,7 +18,19 @@ define([
 
                 this.inherited(arguments);
 
-            }
+            },
+
+            getSortProps: function(inSortInfo){
+
+                var ret = this.inherited(arguments);
+
+                if (this.addingRow) {
+                    return {};
+                }
+
+                return ret;
+            },
+
         });
 
 });
