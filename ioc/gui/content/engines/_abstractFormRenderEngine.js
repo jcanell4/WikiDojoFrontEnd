@@ -1,6 +1,11 @@
 define([
     "dojo/_base/declare",
-], function (declare) {
+    'ioc/widgets/WidgetFactory',
+], function (declare, widgetFactory) {
+
+    var createAMDWidget = function (data, nodeId) {
+        widgetFactory.addWidgetToNode(data, nodeId)
+    };
 
     return declare(null, {
 
@@ -156,6 +161,10 @@ define([
                     $field = this.renderImage(field, fvalues);
                     break;
 
+                case 'amd':
+                    $field = this.renderWidget(field, fvalues);
+                    break;
+
                 default:
                     $field = this.renderFieldDefault(field, fvalues);
             }
@@ -171,6 +180,26 @@ define([
             // Padding 6px, border 1px, line height 20px
 
             return $field;
+        },
+
+        renderWidget: function (field, fvalues) {
+            // console.log("es amd", field.config, fvalues);
+            // // TODO[Xavi] Comprovar si això és posible, en aquest punt el node encara no existeix
+            // // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
+            // var token = Date.now() + Math.ceil(Math.random() * 16);
+            // var $input = jQuery('<div>');
+            // $input.attr('id', token);
+            // createAMDWidget(field.config, token);
+            //
+            // var $field = jQuery('<div>');
+            // var $label = jQuery('<label>');
+            //
+            // $label.html(field.label);
+            //
+            // $field.append($label)
+            //     .append($input);
+
+            return this.renderFieldDefault(field, fvalues);
         },
 
         renderFieldDefault: function (field, fvalues) {

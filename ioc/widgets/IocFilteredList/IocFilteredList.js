@@ -413,9 +413,10 @@ define([
 
                     var item = this.data[i];
 
+                    console.log("Item:", item, this.fieldId, this.defaultEntryField);
 
                     var lowerFieldId = item[this.fieldId].toLowerCase(),
-                        loserDefaultEntryField = item[this.defaultEntryField].toLowerCase();
+                        lowerDefaultEntryField = item[this.defaultEntryField].toLowerCase();
 
 
                     // Si es troba seleccioant no cal comprovar-lo, ja s'ha amagat abans.
@@ -429,7 +430,7 @@ define([
                     } else {
                         // Si la mida del query es 0 es mostren tots
 
-                        if (query.length === 0 || lowerFieldId.indexOf(query) >= 0 || loserDefaultEntryField.indexOf(query) >= 0) {
+                        if (query.length === 0 || lowerFieldId.indexOf(query) >= 0 || lowerDefaultEntryField.indexOf(query) >= 0) {
                             item.widget.show();
 
                             if (isEmpty) {

@@ -51,7 +51,7 @@ define([], function () {
             };
 
 
-        return  {
+        return {
             addWidgetToNode: addWidgetToNode
 
         };
