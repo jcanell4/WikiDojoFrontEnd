@@ -90,7 +90,8 @@ define([
 
         getSelected: function () {
             return this.selection;
-        }
+        },
+
 
     });
 });

@@ -22,7 +22,7 @@ define([], function () {
             // console.log("URL Demanada per carregar mòdul AMD:", url);
 
             require([url], function (Widget) {
-                // console.log("Carrega del modul completa");
+                // console.log("Carrega del modul completa, data:", data);
                 appendAMDWidget(Widget, data, id);
             });
         },

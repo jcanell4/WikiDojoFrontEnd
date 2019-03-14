@@ -8,22 +8,26 @@ define([
         'dojo/text!./css/IocFilteredList.css',
         'dijit/form/Button',
         'ioc/wiki30/dispatcherSingleton',
-        'ioc/widgets/SearchUsersPane/SearchUsersPane',
+        'ioc/widgets/SearchPane/SearchPane',
+        // 'ioc/widgets/SearchUsersPane/SearchUsersPane',
         'dojo/dom-class',
+        'dojo/string', // string.substitute
     ],
-    function (declare, _WidgetBase, _TemplatedMixin, template, arrayUtil, IocFilteredItem, css, Button, getDispatcher, SearchUsersPane, domClass) {
+
+    function (declare, _WidgetBase, _TemplatedMixin, template, arrayUtil, IocFilteredItem, css, Button, getDispatcher, SearchUsersPane, domClass, string) {
 
         var cssStyle = document.createElement('style');
         cssStyle.innerHTML = css;
         document.head.appendChild(cssStyle);
 
         var dispatcher = getDispatcher();
-        
-        var isRelatedTargetAnItem = function(event){
-            var ret = false;
+
+        var isRelatedTargetAnItem = function (event) {
+
             var relatedTarget = event.relatedTarget || event.originalEvent.explicitOriginalTarget || event.originalTarget;
-            ret = relatedTarget && domClass.contains(relatedTarget, 'ioc-filtered-item');
-            if(relatedTarget && !ret){
+            var ret = relatedTarget && domClass.contains(relatedTarget, 'ioc-filtered-item');
+
+            if (relatedTarget && !ret) {
                 relatedTarget = relatedTarget.parentNode;
                 ret = relatedTarget && domClass.contains(relatedTarget, 'ioc-filtered-item');
             }
@@ -33,12 +37,53 @@ define([
 
         return declare([_WidgetBase, _TemplatedMixin], {
             templateString: template,
+
             baseClass: 'ioc-filtered-list',
 
-            constructor: function (/*data, field*/) {
+            // {string} clau del camp a utilizar com identificador
+            fieldId: null,
+
+            // {string} clau del camp a utilitzar com entrada per defecte
+            defaultEntryField: null,
+
+            // [Object] definició dels camps a mostrar a la taula de cerca
+            fields: null,
+
+            // [Object] Array amb la informació dels items a afegir en el desplegable per defecte
+            data: null,
+
+            // {string} etiqueta del botó del dialog per iniciar la cerca
+            buttonLabel: null,
+
+            // {string} nom que rep el camp ocult del formulari que conté els identificadors dels elements seleccionats
+            // i que s'enviarà amb el formulari
+            fieldName: null,
+
+            // {string} token de seguretat de la wiki
+            token: null,
+
+            // {string} url per realitzar la cerca desdel panell de cerca i que retornarà l'array d'elements trobats
+            searchDataUrl: null,
+
+            // {string} títol del diàleg de cerca
+            dialogTitle: null,
+
+            // {string} etiqueta del botó per tancar el diàleg de cerca i afegir els resultats seleccionats.
+            dialogButtonLabel: null,
+
+            // {string} template a utilitzar per cada item afegit
+            itemTemplateHtml: null,
+
+            constructor: function (args) {
+
                 this.inherited(arguments);
                 this.selected = {}; // referenciats pel id per trobar-los més ràpidament
                 this.candidate = null;
+
+                if (!this.data) {
+                    this.data = [];
+                }
+
             },
 
             postCreate: function () {
@@ -50,18 +95,31 @@ define([
             _addListeners: function () {
                 var $input = jQuery(this.entryText);
 
+                var that = this;
+
                 $input.on('change click input', function () {
                     this.filter($input.val());
                 }.bind(this));
 
                 $input.on('keydown', function (e) {
+
+
                     if (e.which == 13) { // Enter
                         var item;
                         // cas 1: Hi ha almenys un element visible a la llista, es selecciona
                         if (this.candidate) {
                             item = this.candidate;
                         } else {
-                            item = {name: $input.val(), username: ''};
+
+                            item = {};
+                            for (var fieldKey in that.fields) {
+                                if (fieldKey === that.defaultEntryField) {
+                                    item[fieldKey] = $input.val();
+                                } else {
+                                    item[fieldKey] = '';
+                                }
+                            }
+
                         }
 
                         this.filter('');
@@ -106,12 +164,15 @@ define([
                         ns: this.ns,
                         urlBase: this.searchDataUrl,
                         buttonLabel: this.buttonLabel,
-                        colNameLabel: 'Nom', // TODO[Xavi] Localitzar
-                        colUsernameLabel: 'Nom d\'usuari'// TODO[Xavi] Localitzar
+
+                        // Això ha d'arribar des del servidor, format {field:label, field:label}
+                        fields: this.fields,
+
+                        colFieldId: this.fieldId
                     });
 
                     var dialogParams = {
-                        title: "Cerca usuaris per afegir", //TODO[Xavi] Localitzar
+                        title: this.dialogTitle,
                         message: '',
                         sections: [
                             // Secció 1: widget de cerca que inclou la taula pel resultat.
@@ -121,7 +182,7 @@ define([
                         buttons: [
                             {
                                 id: 'add-results',
-                                description: 'Afegir', // TODO[Xavi] Localitzar
+                                description: this.dialogButtonLabel,
                                 buttonType: 'default',
                                 callback: function () {
                                     var items = searchUserWidget.getSelected();
@@ -164,57 +225,101 @@ define([
 
 
             _fill: function () {
+
                 // console.log("IocFilteredList#fill", this.data);
-                this.itemListByUserId = {};
+                this.itemListByFieldId = {};
 
                 var that = this;
 
                 arrayUtil.forEach(this.data, function (item) {
                     // Create our widget and place it
-                    var data = item;
+                    var data = {};
+                    data.fields = item;
+                    data.fieldId = that.fieldId;
+                    data.defaultEntryField = that.defaultEntryField;
                     data.container = that;
                     item.widget = new IocFilteredItem(data);
                     item.widget.placeAt(that.contentListNode);
                     item.widget.on('selected', that._itemSelected.bind(that));
-                    that.itemListByUserId[item.username] = item;
-                });
+                    that.itemListByFieldId[item[that.fieldId]] = item;
 
+                });
             },
 
 
+            getItemHtmlTemplate: function () {
+                var htmlTemplate;
+
+                if (this.itemHtmlTemplate) {
+                    htmlTemplate = this.itemHtmlTemplate;
+                } else {
+                    // Gerenerem un template automàtic a partir del fieldId i el defaultEntryField
+                    htmlTemplate = '${' + this.defaultEntryField + '} &lt;${' + this.fieldId + '}&gt;';
+                }
+
+                return htmlTemplate + " <span data-close>x</span>";
+            },
+
             _itemSelected: function (item) {
 
-                if (this.selected[item.username]) {
+                if (this.selected[item[this.fieldId]]) {
                     // console.log("Ja s'ha afegit anteriorment")
                     return;
                 }
 
+                // TODO[Xavi] decidir com definir el format, utilitzar algun tipus de template? utilitzar aquest format
+                // com a default si no es passa cap template? (repasar el 'string' de Dojo per treballar amb els templates)
+
+
+                // Ens assegurem que com a mínim aquests dos valors estan definits per evitar errors al template per defecte.
+
+                console.log("item?", item);
+                
+                alert('stop');
+                if (!item[this.fieldId]) {
+                    item[this.fieldId] = ''
+                }
+
+                if (!item[this.defaultEntryField]) {
+                    item[this.defaultEntryField] = '';
+                }
+
                 var newItem = jQuery('<li class="selected"></li>');
-                newItem.html(item.name + " &lt;" + item.username + "&gt;" + " <span>x</span>");
-                newItem.attr('data-user-id', item.username);
-                newItem.attr('data-name', item.name);
+
+                var itemHtml = string.substitute(this.getItemHtmlTemplate(), item);
+                newItem.html(itemHtml);
+
+                // newItem.html(item.name + " &lt;" + item.username + "&gt;" + " <span data-close>x</span>");
+
+                for (var fieldKey in this.fields) {
+                    newItem.attr('data-' + fieldKey, item[fieldKey]);
+                }
+
 
                 newItem.insertBefore(this.entryListItem);
 
                 var that = this;
-                var closeButton = newItem.find('span').on('click', function () {
+
+                // Close button
+                newItem.find('span[data-close]').on('click', function () {
                     that._itemUnselected(this);
                 });
 
-
-                if (item.username) {
-                    this.selected[item.username] = item;
+                if (item[this.fieldId]) {
+                    this.selected[item[this.fieldId]] = item;
 
                     // ALERTA[Xavi] Els elements afegits a partir del dialeg no són a la llista
-                    if (this.itemListByUserId[item.username]) {
-                        this.itemListByUserId[item.username].widget.hide();
+
+
+                    if (this.itemListByFieldId[item[this.fieldId]]) {
+                        this.itemListByFieldId[item[this.fieldId]].widget.hide();
                     }
 
                 } else {
                     // Aquest cas només pot ocorrer quan s'entra un valor que no es trobi a la llista
                     this.selected[item.name] = item;
                 }
-                this._updateHiddentSelectedField();
+                this._updateHiddenSelectedField();
 
                 var $input = jQuery(this.entryText);
                 $input.val('');
@@ -235,12 +340,19 @@ define([
 
                 var $node = jQuery(itemNode.parentElement);
 
-                if (this.selected[$node.attr('data-user-id')] || this.selected[$node.attr('data-name')]) {
-                    delete(this.selected[$node.attr('data-user-id')]);
+                // Ss'ha d'eliminar si està seleccionat la coincidencia de qualsevol camp.
+                // Això es perque quan s'entra un valor que no sigui al llistat pot no tenir id, llavors s'ha de comprovar
+                // el 'data-' + this.fieldId o el 'data-' + this.defaultEntryField
+
+                var attrFieldId = 'data-' + this.fieldId,
+                    attrDefaultEntryField = 'data-' + this.defaultEntryField;
+
+                if (this.selected[$node.attr(attrFieldId)] || this.selected[$node.attr(attrDefaultEntryField)]) {
+                    delete(this.selected[$node.attr(attrFieldId)]);
                     this.selectedCount--;
                     $node.remove();
 
-                    this._updateHiddentSelectedField();
+                    this._updateHiddenSelectedField();
 
                 } else {
                     // console.error("L'item no es troba a la llista de seleccionats:", $node, this.selected);
@@ -251,25 +363,25 @@ define([
 
             },
 
-            _updateHiddentSelectedField: function () {
+            _updateHiddenSelectedField: function () {
                 var $hiddenField = jQuery(this.hiddenSelected);
 
-                var selectedUserIds = "",
+                var selectedIds = "",
                     first = true;
 
                 for (var selected in this.selected) {
                     if (first) {
                         first = false;
                     } else {
-                        selectedUserIds += ",";
+                        selectedIds += ",";
                     }
-                    selectedUserIds += selected;
+                    selectedIds += selected;
                 }
 
 
-                $hiddenField.val(selectedUserIds);
+                $hiddenField.val(selectedIds);
 
-                if (selectedUserIds.length === 0) {
+                if (selectedIds.length === 0) {
                     jQuery(this.entryText).prop('required', true);
                 } else {
                     jQuery(this.entryText).prop('required', false);
@@ -283,7 +395,7 @@ define([
              * @param query
              */
             filter: function (query) {
-                // console.log("IocFilteredList#filter");
+                // console.log("IocFilteredList#filter", query);
 
                 if (this.candidate) {
 
@@ -305,12 +417,13 @@ define([
 
                     var item = this.data[i];
 
-                    var lowerUserId = item.username.toLowerCase(),
-                        lowerName = item.name.toLowerCase();
+
+                    var lowerFieldId = item[this.fieldId].toLowerCase(),
+                        loserDefaultEntryField = item[this.defaultEntryField].toLowerCase();
 
 
                     // Si es troba seleccioant no cal comprovar-lo, ja s'ha amagat abans.
-                    if (this.selected[item.username]) {
+                    if (this.selected[item[this.fieldId]]) {
                         // console.log("Ja es troba seleccionat", item.username);
                         continue;
 
@@ -320,7 +433,7 @@ define([
                     } else {
                         // Si la mida del query es 0 es mostren tots
 
-                        if (query.length === 0 || lowerUserId.indexOf(query) >= 0 || lowerName.indexOf(query) >= 0) {
+                        if (query.length === 0 || lowerFieldId.indexOf(query) >= 0 || loserDefaultEntryField.indexOf(query) >= 0) {
                             item.widget.show();
 
                             if (isEmpty) {
