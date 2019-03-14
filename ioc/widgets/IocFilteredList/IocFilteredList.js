@@ -112,6 +112,12 @@ define([
                         } else {
 
                             item = {};
+
+                            if (!that.fields) {
+                                item[that.defaultEntryField] = $input.val();
+                            }
+
+                            // Si no s'ha definit that.fields no s'executa el bucle
                             for (var fieldKey in that.fields) {
                                 if (fieldKey === that.defaultEntryField) {
                                     item[fieldKey] = $input.val();
@@ -267,15 +273,7 @@ define([
                     return;
                 }
 
-                // TODO[Xavi] decidir com definir el format, utilitzar algun tipus de template? utilitzar aquest format
-                // com a default si no es passa cap template? (repasar el 'string' de Dojo per treballar amb els templates)
-
-
                 // Ens assegurem que com a mínim aquests dos valors estan definits per evitar errors al template per defecte.
-
-                console.log("item?", item);
-                
-                alert('stop');
                 if (!item[this.fieldId]) {
                     item[this.fieldId] = ''
                 }
@@ -288,8 +286,6 @@ define([
 
                 var itemHtml = string.substitute(this.getItemHtmlTemplate(), item);
                 newItem.html(itemHtml);
-
-                // newItem.html(item.name + " &lt;" + item.username + "&gt;" + " <span data-close>x</span>");
 
                 for (var fieldKey in this.fields) {
                     newItem.attr('data-' + fieldKey, item[fieldKey]);
