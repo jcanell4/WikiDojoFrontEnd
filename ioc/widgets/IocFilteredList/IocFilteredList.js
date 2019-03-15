@@ -59,9 +59,6 @@ define([
             // i que s'enviarà amb el formulari
             fieldName: null,
 
-            // {string} token de seguretat de la wiki
-            token: null,
-
             // {string} url per realitzar la cerca desdel panell de cerca i que retornarà l'array d'elements trobats
             searchDataUrl: null,
 
@@ -109,7 +106,6 @@ define([
 
 
                 for (var item in this.value) {
-                    console.log("afegint valor:", this.value[item]);
                     this._itemSelected(this.value[item]);
                 }
 
@@ -322,13 +318,10 @@ define([
                     this.itemHtmlTemplate = htmlTemplate;
                 }
 
-                console.log ("Template generat:", htmlTemplate + " <span data-close>x</span>")
-
                 return htmlTemplate + " <span data-close>x</span>";
             },
 
             _itemSelected: function (item) {
-                console.log("Afegint item", item);
 
                 if (this.selected[item[this.fieldId]]) {
                     console.log("Ja s'ha afegit anteriorment")
@@ -345,8 +338,6 @@ define([
                 }
 
                 var newItem = jQuery('<li class="selected"></li>');
-
-                console.log("item?", item);
 
                 var itemHtml = string.substitute(this.getItemHtmlTemplate(), item);
                 newItem.html(itemHtml);

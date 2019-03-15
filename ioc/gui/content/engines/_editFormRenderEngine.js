@@ -57,7 +57,6 @@ define([
             },
 
             renderWidget: function (field, fvalues) {
-
                 if (field.config.class.edit) {
                     field.config.class = field.config.class.edit;
                 }

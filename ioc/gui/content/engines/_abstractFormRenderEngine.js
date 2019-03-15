@@ -188,10 +188,6 @@ define([
                 return this.renderFieldDefault(field, fvalues);
             }
 
-            console.log(field.config.class, typeof field.config.class);
-
-            console.log("es amd", field.config, fvalues[field.name]);
-
             // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
             var token = Date.now() + Math.ceil(Math.random() * 16);
             var $input = jQuery('<div>');
