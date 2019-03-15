@@ -74,9 +74,12 @@ define([
             // {string} template a utilitzar per cada item afegit
             itemTemplateHtml: null,
 
+            // {string} format del valor que es desa, per defecte es string, accepta també el format 'json'
+            valueFormat: null,
+
             constructor: function (args) {
 
-                this.inherited(arguments);
+
                 this.selected = {}; // referenciats pel id per trobar-los més ràpidament
                 this.candidate = null;
 
@@ -90,7 +93,58 @@ define([
                 this.inherited(arguments);
                 this._addListeners();
                 this._fill();
+                this._fillValues();
             },
+
+            _fillValues() {
+
+                // TODO: si this.values es un string son valors separats per comes, s'han de generar els items
+                // per defecte com quan s'entren per teclat
+
+                if (this.valueFormat === 'json' && typeof this.value === 'string' && this.value.length>0) {
+                    this.value = JSON.parse(this.value);
+                } else if (typeof this.value === 'string') {
+                    this.value = this._generateItemsFromString(this.value);
+                }
+
+
+                for (var item in this.value) {
+                    console.log("afegint valor:", this.value[item]);
+                    this._itemSelected(this.value[item]);
+                }
+
+            },
+
+            _generateItemsFromString(value) {
+                if (value.length === 0) {
+                    return {};
+                }
+
+
+                var objects = {};
+                var values = value.split(',');
+
+                for (var i=0; i<values.length; i++) {
+                    var text = values[i];
+
+
+                    var item = {};
+
+                    if (this.fieldId) {
+                        item[this.fieldId] = text;
+                    }
+
+                    if (this.defaultEntryField) {
+                        item[this.defaultEntryField] = text;
+                    }
+
+                    objects[text] = item;
+                }
+
+                return objects;
+            },
+
+
 
             _addListeners: function () {
                 var $input = jQuery(this.entryText);
@@ -113,18 +167,21 @@ define([
 
                             item = {};
 
-                            if (!that.fields) {
-                                item[that.defaultEntryField] = $input.val();
-                            }
+                            // Afegim les dades per defecte basades en el text entrat
+                            // if (!that.fields) {
+                                item[that.fieldId] = $input.val();
+                                item[that.defaultEntryField] = item[that.fieldId];
+                            // }
+
 
                             // Si no s'ha definit that.fields no s'executa el bucle
-                            for (var fieldKey in that.fields) {
-                                if (fieldKey === that.defaultEntryField) {
-                                    item[fieldKey] = $input.val();
-                                } else {
-                                    item[fieldKey] = '';
-                                }
-                            }
+                            // for (var fieldKey in that.fields) {
+                            //     if (fieldKey === that.defaultEntryField) {
+                            //         item[fieldKey] = $input.val();
+                            //     } else {
+                            //         item[fieldKey] = '';
+                            //     }
+                            // }
 
                         }
 
@@ -192,6 +249,7 @@ define([
                                 buttonType: 'default',
                                 callback: function () {
                                     var items = searchUserWidget.getSelected();
+
                                     for (var item in items) {
                                         this._itemSelected(items[item]);
                                     }
@@ -261,15 +319,19 @@ define([
                 } else {
                     // Gerenerem un template automàtic a partir del fieldId i el defaultEntryField
                     htmlTemplate = '${' + this.defaultEntryField + '} &lt;${' + this.fieldId + '}&gt;';
+                    this.itemHtmlTemplate = htmlTemplate;
                 }
+
+                console.log ("Template generat:", htmlTemplate + " <span data-close>x</span>")
 
                 return htmlTemplate + " <span data-close>x</span>";
             },
 
             _itemSelected: function (item) {
+                console.log("Afegint item", item);
 
                 if (this.selected[item[this.fieldId]]) {
-                    // console.log("Ja s'ha afegit anteriorment")
+                    console.log("Ja s'ha afegit anteriorment")
                     return;
                 }
 
@@ -283,6 +345,8 @@ define([
                 }
 
                 var newItem = jQuery('<li class="selected"></li>');
+
+                console.log("item?", item);
 
                 var itemHtml = string.substitute(this.getItemHtmlTemplate(), item);
                 newItem.html(itemHtml);
@@ -315,6 +379,7 @@ define([
                     // Aquest cas només pot ocorrer quan s'entra un valor que no es trobi a la llista
                     this.selected[item.name] = item;
                 }
+
                 this._updateHiddenSelectedField();
 
                 var $input = jQuery(this.entryText);
@@ -360,6 +425,40 @@ define([
             },
 
             _updateHiddenSelectedField: function () {
+                var value = this.valueFormat || '';
+
+                switch (value.toLowerCase()) {
+
+                    case 'json':
+                        this._updateHiddenSelectedFieldJson();
+                        break;
+
+                    default:
+                        this._updateHiddenSelectedFieldString();
+
+                }
+            },
+
+            _updateHiddenSelectedFieldJson: function() {
+                var $hiddenField = jQuery(this.hiddenSelected);
+
+                var selectedItems = jQuery.extend(true, {}, this.selected);
+
+                for (var key in selectedItems) {
+                    delete(selectedItems[key].widget);
+                }
+                var selected = JSON.stringify(selectedItems);
+
+                $hiddenField.val(selected);
+
+                if (this.selected.length === 0) {
+                    jQuery(this.entryText).prop('required', true);
+                } else {
+                    jQuery(this.entryText).prop('required', false);
+                }
+            },
+
+            _updateHiddenSelectedFieldString: function() {
                 var $hiddenField = jQuery(this.hiddenSelected);
 
                 var selectedIds = "",
@@ -374,7 +473,6 @@ define([
                     selectedIds += selected;
                 }
 
-
                 $hiddenField.val(selectedIds);
 
                 if (selectedIds.length === 0) {
@@ -383,7 +481,6 @@ define([
                     jQuery(this.entryText).prop('required', false);
                 }
             },
-
 
             /**
              * ALERTA[Xavi] Quan query es una cadena buida es mostren tots els resultats, però quan és null no es mostra cap resultat i s'amaga la llista
@@ -413,7 +510,7 @@ define([
 
                     var item = this.data[i];
 
-                    console.log("Item:", item, this.fieldId, this.defaultEntryField);
+                    // console.log("Item:", item, this.fieldId, this.defaultEntryField);
 
                     var lowerFieldId = item[this.fieldId].toLowerCase(),
                         lowerDefaultEntryField = item[this.defaultEntryField].toLowerCase();

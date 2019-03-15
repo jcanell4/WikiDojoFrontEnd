@@ -183,23 +183,33 @@ define([
         },
 
         renderWidget: function (field, fvalues) {
-            // console.log("es amd", field.config, fvalues);
-            // // TODO[Xavi] Comprovar si això és posible, en aquest punt el node encara no existeix
-            // // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
-            // var token = Date.now() + Math.ceil(Math.random() * 16);
-            // var $input = jQuery('<div>');
-            // $input.attr('id', token);
-            // createAMDWidget(field.config, token);
-            //
-            // var $field = jQuery('<div>');
-            // var $label = jQuery('<label>');
-            //
-            // $label.html(field.label);
-            //
-            // $field.append($label)
-            //     .append($input);
 
-            return this.renderFieldDefault(field, fvalues);
+            if (!field.config.class || typeof field.config.class !== 'string') {
+                return this.renderFieldDefault(field, fvalues);
+            }
+
+            console.log(field.config.class, typeof field.config.class);
+
+            console.log("es amd", field.config, fvalues[field.name]);
+
+            // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
+            var token = Date.now() + Math.ceil(Math.random() * 16);
+            var $input = jQuery('<div>');
+            $input.attr('id', token);
+
+            field.config.data.value = fvalues[field.name];
+
+            createAMDWidget(field.config, token);
+
+            var $field = jQuery('<div>');
+            var $label = jQuery('<label>');
+
+            $label.html(field.label);
+
+            $field.append($label)
+                .append($input);
+
+            return $field;
         },
 
         renderFieldDefault: function (field, fvalues) {

@@ -1,6 +1,11 @@
-.ioc-filtered-list ul {
+.ioc-filtered-list ul.filtered-fields {
     padding: 0;
-    border: 1px solid grey;
+    /*border: 1px solid grey;*/
+    margin-left: 0;
+    margin-right: 0;
+
+    border: 1px solid #cccccc;
+    border-radius: 4px;
 }
 
 .ioc-filtered-list li {

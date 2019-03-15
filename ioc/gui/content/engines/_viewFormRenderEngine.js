@@ -173,6 +173,19 @@ define([
                             }
                     }
                 }
-            }            
+            },
+
+            renderWidget: function (field, fvalues) {
+
+                if (field.config.class.view) {
+                    field.config.class = field.config.class.view;
+                    arguments[0].config.class = field.config.class.view;
+                }
+
+                // console.log("arguments després de modificar?", arguments);
+                // alert("Stop!");
+
+                return this.inherited(arguments);
+            },
         });
 });

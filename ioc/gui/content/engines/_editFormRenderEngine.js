@@ -57,26 +57,12 @@ define([
             },
 
             renderWidget: function (field, fvalues) {
-                console.log("es amd", field.config, fvalues);
-                // TODO[Xavi] Comprovar si això és posible, en aquest punt el node encara no existeix
-                // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
-                var token = Date.now() + Math.ceil(Math.random() * 16);
-                var $input = jQuery('<div>');
-                $input.attr('id', token);
 
-                field.config.value = fvalues[field.name];
+                if (field.config.class.edit) {
+                    field.config.class = field.config.class.edit;
+                }
 
-                createAMDWidget(field.config, token);
-
-                var $field = jQuery('<div>');
-                var $label = jQuery('<label>');
-
-                $label.html(field.label);
-
-                $field.append($label)
-                    .append($input);
-
-                return $field;
+                return this.inherited(arguments);
             },
         });
 });

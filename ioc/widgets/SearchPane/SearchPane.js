@@ -20,9 +20,8 @@ define([
 
         templateString: template,
         baseClass: "search-users-pane",
-        
-        process: function(response, dispatcher){
 
+        process: function(response, dispatcher){
             var that = this;
             var $tableHead = jQuery(this.tableHeadNode);
             var $tableBody = jQuery(this.tableBodyNode);
@@ -33,23 +32,33 @@ define([
 
             // Add headers rows
             // var fields = response[0];
-            var $row = jQuery('<tr>');
+
             
             if (!this.fields && Array.isArray(response) && response.length>0) {
                 this.generateFields(response[0]);
             }
-            
-            // TODO: passar els fiels com argument al constructor (arribaran del server), i que incloguin el 'label': {field1:label1, field2:label2}
-            for (var fieldKey in this.fields) {
-                var $field = jQuery('<th>');
-                $field.html(this.fields[fieldKey]);
-                $row.append($field);
+
+            if (!this.generatedHead) {
+
+                var $row = jQuery('<tr>');
+                // TODO: passar els fiels com argument al constructor (arribaran del server), i que incloguin el 'label': {field1:label1, field2:label2}
+                for (var fieldKey in this.fields) {
+                    var $field = jQuery('<th>');
+                    $field.html(this.fields[fieldKey]);
+                    $row.append($field);
+                }
+
+                // +1 cell for the check box
+                $row.append(jQuery('<th>'));
+
+                $tableHead.append($row);
+
+                this.generatedHead = true;
+
+
             }
+            
 
-            // +1 cell for the check box
-            $row.append(jQuery('<th>'));
-
-            $tableHead.append($row);
 
 
 
@@ -80,7 +89,9 @@ define([
 
                     if ($this.prop('checked')) {
 
+                        console.log("auxData", fieldId, auxData);
                         that.selection[fieldId] = auxData;
+
 
                     } else {
                         delete(that.selection[fieldId]);
@@ -90,8 +101,11 @@ define([
                 $row.append($colSelect);
 
                 $tableBody.append($row);
+
+
             }
 
+            this.requesting = false;
         },
 
         generateFields: function(data) {
@@ -135,6 +149,12 @@ define([
         
         onClickButton: function(){
             var $input = jQuery(this.searchNode);
+
+            if ($input.val().length===0 || this.requesting) {
+                return;
+            } else {
+                this.requesting = true;
+            }
                 
             this.sendRequest({
                 filter: $input.val(),
@@ -146,10 +166,6 @@ define([
         getSelected: function () {
             return this.selection;
         },
-
-        // constructor: function(args) {
-        //     console.log("Arguments?", args);
-        // }
 
 
     });
