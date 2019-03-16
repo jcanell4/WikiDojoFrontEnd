@@ -14,7 +14,7 @@ define([], function () {
             var url;
 
             if (data.urlBase) {
-                url = data.urlBase + data.class + '/' + data.class;
+                url = data.urlBase + data.class;
             } else {
                 url = URL_BASE + data.class + '/' + data.class;
             }
@@ -26,8 +26,6 @@ define([], function () {
                 appendAMDWidget(Widget, data, id);
             });
         },
-
-
             appendAMDWidget = function (Widget, data, nodeId) {
                 var parentNode;
 
