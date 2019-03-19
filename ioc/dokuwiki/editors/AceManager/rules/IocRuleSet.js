@@ -91,7 +91,7 @@ define([
                 ['rule', ["media-offset", ".+?(?=\\}\\})", "keyword.invalid"]],
                 ['inline', ["(?:(?:https?|telnet|gopher|wais|ftp|ed2k|irc)://[\\w/\\#~:.?+=&%@!\\-.:?\\-;,]+?(?=[.:?\\-;,]*[^\\w/\\#~:.?+=&%@!\\-.:?\\-;,]|$)|(?:www|ftp)\\[\\w.:?\\-;,]+?\\.[\\w.:?\\-;,]+?[\\w/\\#~:.?+=&%@!\\-.:?\\-;,]+?(?=[.:?\\-;,]*[^\\w/\\#~:.?+=&%@!\\-.:?\\-;,]|$))", "markup.underline"]],
                 ['inline', ["(<)([0-9a-zA-Z!#$%&'*+/=?^_`{|}~-]+(?:\\.[0-9a-zA-Z!#$%&'*+\\/=?^_`{|}~-]+)*@(?:[0-9a-zA-Z][0-9a-zA-Z-]*\\.)+(?:[a-zA-Z]{2,4}|museum|travel))(>)", ["keyword.operator", "markup.underline", "keyword.operator"]]],
-                ['box', ["table", ["id", "title", "type", "footer", "large", "small", "vertical"]]],
+                ['box', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"]]],
                 ['box', ["accounting", ["id", "title", "type", "footer", "widths"]]],
                 ['box', ["figure", ["id", "title", "copyright", "license", "footer", "large"]]],
                 ['box', ["text", ["offset", "title", "large"]]],
@@ -110,6 +110,8 @@ define([
                 ['inline', ["<quiz .*>", "keyword"]],
                 ['inline', ["</quiz>", "keyword"]],
                 ['inline', ["!!!!", "keyword.operator"]],
+/*                ['inline', ["^(\^)(.*)", ["keyword.operator","text"]]],
+                ['inline', ["^(\|)(.*)", ["keyword.operator","text"]]],*/
 
                 //etiqueta [TODO: ...] Fondo amarillo
                 ['rule', ["start", "(\\[##TODO:)(.*?)(##\\])", ["keyword.operator.ioctodo", "markup.ioctodo", "keyword.operator.ioctodo"]]],
@@ -122,17 +124,17 @@ define([
                 ['rule', ["readonly-start", "</readonly>", "keyword.operator.readonly", "start"]],
 
                 ['format', ["markkey", "@@", "@@"]],
-//                ['base', ["(:###)(.+?)(###:)", ["keyword.operator", "markup.underline", "keyword.operator"]]],
-                ['container', ["protectedcontent", "(:###)(.*?)$", ["keyword.operator.protectedcontent", "markup.protectedcontent"]]],
-//                //['rule', ["protectedcontent-start", "^(.+\n)(?=.*\n?###:)", "markup.underline"]],
-                ['rule', ["protectedcontent-start", "^(.*?)(###:)", ["markup.protectedcontent", "keyword.operator.protectedcontent"], "start"]],
-                ['rule', ["protectedcontent-start", "^(.+?)$", "markup.protectedcontent"]],
+                ['container', ["protectedcontent", "(:###)(.*)", ["keyword.operator.protectedcontent", "markup.protectedcontent"]]],
+                ['rule', ["protectedcontent-start", "^(.*)(###:)", ["markup.protectedcontent", "keyword.operator.protectedcontent"], "start"]],
+                ['rule', ["protectedcontent-start", "^(.+)", "markup.protectedcontent"]],
+                ['rule', ["protectedcontent-table-start", "^(.*)(###:)", ["markup.protectedcontent", "keyword.operator.protectedcontent"], "start"]],
+                ['rule', ["protectedcontent-table-start", "^(.+)", "markup.protectedcontent"]],
 
                 ['container', ["edittable", "<edittable>", "keyword.operator.edittable"]],
                 ['rule', ["edittable-start", "</edittable>", "keyword.operator.edittable", "start"]],
 
-                ['innerbox', ["table", ["id", "title", "type", "footer", "large", "small", "vertical"], "edittable"]],
-                ['innerbox', ["accounting", ["id", "title", "type", "footer", "widths"], "edittable"]],
+                ['innerbox', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], "edittable"]],
+                ['innerbox', ["accounting", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], "edittable"]],
 
                 ['container', ["edittable-table", "^[\\|\\^]", "keyword.operator"]],
                 ['rule', ["edittable-table-start", "[\\|\\^]", "keyword.operator"]],
