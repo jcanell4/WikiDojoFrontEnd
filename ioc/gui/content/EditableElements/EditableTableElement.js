@@ -317,7 +317,16 @@ define([
                 }
 
                 // Afegim la fila als valors originals
-                var originalValue = this.args.data.value;
+                var originalValue;
+                if(typeof  this.args.data.value =="string"){
+                    if(0 == this.args.data.value.length){
+                        originalValue = [];
+                    }else{
+                        originalValue = JSON.parse(this.args.data.value);
+                    }
+                }else{
+                    originalValue = this.args.data.value;
+                }
                 originalValue.push(this.defaultRow);
                 this.args.data.value = originalValue;
 
