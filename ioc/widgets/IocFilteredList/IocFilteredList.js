@@ -12,9 +12,10 @@ define([
         // 'ioc/widgets/SearchUsersPane/SearchUsersPane',
         'dojo/dom-class',
         'dojo/string', // string.substitute
+        'ioc/wiki30/Request',
     ],
 
-    function (declare, _WidgetBase, _TemplatedMixin, template, arrayUtil, IocFilteredItem, css, Button, getDispatcher, SearchUsersPane, domClass, string) {
+    function (declare, _WidgetBase, _TemplatedMixin, template, arrayUtil, IocFilteredItem, css, Button, getDispatcher, SearchUsersPane, domClass, string, Request) {
 
         var cssStyle = document.createElement('style');
         cssStyle.innerHTML = css;
@@ -76,7 +77,6 @@ define([
 
             constructor: function (args) {
 
-
                 this.selected = {}; // referenciats pel id per trobar-los més ràpidament
                 this.candidate = null;
 
@@ -84,13 +84,16 @@ define([
                     this.data = [];
                 }
 
+                this.itemListByFieldId = {};
+
             },
 
             postCreate: function () {
                 this.inherited(arguments);
                 this._addListeners();
-                this._fill();
                 this._fillValues();
+                this._fill();
+
             },
 
             _fillValues() {
@@ -284,10 +287,32 @@ define([
             },
 
 
+            process: function(response) {
+                this.data = response;
+                this._fill();
+            },
+
             _fill: function () {
 
-                // console.log("IocFilteredList#fill", this.data);
-                this.itemListByFieldId = {};
+                if (typeof this.data === 'string') {
+                    var request = new Request({urlBase: this.data, dispatcher: dispatcher});
+                    request.addProcessor("array", this);
+
+                    var params = this.dataQuery || {};
+
+                    params.id = this.ns;
+
+                    request.sendRequest(params);
+
+
+
+                    // request.sendRequest({
+                    //     id: this.ns || '', // això es necessari per alguns commands, per exemple pel user_list
+                    //     filter: this.filter || '',
+                    // });
+
+                    return;
+                }
 
                 var that = this;
 
@@ -302,6 +327,10 @@ define([
                     item.widget.placeAt(that.contentListNode);
                     item.widget.on('selected', that._itemSelected.bind(that));
                     that.itemListByFieldId[item[that.fieldId]] = item;
+
+                    if (that.selected[item[that.fieldId]]) {
+                        item.widget.hide();
+                    }
 
                 });
             },
@@ -360,7 +389,6 @@ define([
                     this.selected[item[this.fieldId]] = item;
 
                     // ALERTA[Xavi] Els elements afegits a partir del dialeg no són a la llista
-
 
                     if (this.itemListByFieldId[item[this.fieldId]]) {
                         this.itemListByFieldId[item[this.fieldId]].widget.hide();
