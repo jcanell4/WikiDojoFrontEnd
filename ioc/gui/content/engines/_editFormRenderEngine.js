@@ -65,12 +65,9 @@ define([
                     return this.inherited(arguments);
                 }
 
-
-
                 if (field.config.readonly === true && field.config.class.view) {
                     // Es readonly i hi ha un widget diferent per la vista
                     field.config.class = field.config.class.view;
-                    alert("Readonly i view");
                 } else {
 
                     // No es readonly o es readonly però ho gestiona el mateix widget.
