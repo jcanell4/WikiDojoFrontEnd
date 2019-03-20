@@ -57,8 +57,25 @@ define([
             },
 
             renderWidget: function (field, fvalues) {
-                if (field.config.class.edit) {
+
+                // Si es un string no cal fer res, no hi ha alternativa de representació. En aquest cas el widget ha de
+                // gestionar internament la vista i el readonly.
+
+                if (typeof field.config.class === 'string') {
+                    return this.inherited(arguments);
+                }
+
+
+
+                if (field.config.readonly === true && field.config.class.view) {
+                    // Es readonly i hi ha un widget diferent per la vista
+                    field.config.class = field.config.class.view;
+                    alert("Readonly i view");
+                } else {
+
+                    // No es readonly o es readonly però ho gestiona el mateix widget.
                     field.config.class = field.config.class.edit;
+
                 }
 
                 return this.inherited(arguments);
