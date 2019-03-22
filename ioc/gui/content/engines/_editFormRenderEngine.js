@@ -77,5 +77,13 @@ define([
 
                 return this.inherited(arguments);
             },
+
+            renderRow: function() {
+                return this.inherited(arguments);
+            },
+
+            renderGroup: function() {
+                return this.inherited(arguments);
+            }
         });
 });

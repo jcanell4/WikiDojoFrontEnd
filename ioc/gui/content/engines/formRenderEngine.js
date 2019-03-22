@@ -8,7 +8,8 @@
 
 define([
     "ioc/gui/content/engines/_editFormRenderEngine",
-    "ioc/gui/content/engines/_viewFormRenderEngine"
+    // "ioc/gui/content/engines/_viewFormRenderEngine"
+    "ioc/gui/content/engines/_partialEditFormRenderEngine",
 ], function (EditFormRenderEngine, ViewFormRenderEngine) {
 
     return function (editable) {
