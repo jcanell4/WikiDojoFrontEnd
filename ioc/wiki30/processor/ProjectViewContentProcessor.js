@@ -92,7 +92,8 @@ define([
                     projectType: content.extra.projectType,
                     type: this.type,
                     isRevision: content.isRevision,
-                    autosaveTimer: content.autosaveTimer
+                    autosaveTimer: content.autosaveTimer,
+                    renderEngines: ['test'],
                 };
                 if (content.extra.metaDataSubSet)
                     args.metaDataSubSet = content.extra.metaDataSubSet;

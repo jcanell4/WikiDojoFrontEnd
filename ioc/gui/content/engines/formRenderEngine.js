@@ -8,17 +8,28 @@
 
 define([
     "ioc/gui/content/engines/_editFormRenderEngine",
-    // "ioc/gui/content/engines/_viewFormRenderEngine"
+    "ioc/gui/content/engines/_viewFormRenderEngine",
     "ioc/gui/content/engines/_partialEditFormRenderEngine",
-], function (EditFormRenderEngine, ViewFormRenderEngine) {
+], function (EditFormRenderEngine, ViewFormRenderEngine, PartialFormRenderEngine) {
 
-    return function (editable) {
+    return function (options) {
         var renderEngine;
 
-        if (editable) {
-            renderEngine = new EditFormRenderEngine();
-        } else {
-            renderEngine = new ViewFormRenderEngine();
+        switch (options.type) {
+            case 'edit':
+                renderEngine = new EditFormRenderEngine();
+                break;
+            case 'view':
+                // renderEngine = new ViewFormRenderEngine();
+                renderEngine = new PartialFormRenderEngine(); // ALERTA[Xavi] Test fins que implementent el respons handler pel partial
+                break;
+
+            case 'partial':
+                renderEngine = new PartialFormRenderEngine();
+                break;
+
+            default:
+                renderEngine = new ViewFormRenderEngine();
         }
 
         return renderEngine.render.bind(renderEngine); // Mètode del render engine seleccionat

@@ -44,6 +44,7 @@ define([
         var $nodes = $content.find('[data-editable-element]');
         var formId = $content.find('form').attr('id');
 
+
         for (var i = 0; i < $nodes.length; i++) {
 
             var id = jQuery($nodes[i]).attr('id');
@@ -51,6 +52,13 @@ define([
 
 
             var type = jQuery($nodes[i]).attr('data-editable-element');
+
+            var readonly = jQuery($nodes[i]).attr('readonly');
+
+
+            if (readonly) {
+                continue;
+            }
 
             var config;
             if (element && element.config) {
@@ -67,8 +75,6 @@ define([
             config.formId = formId;
 
             editableElementsFactory.createElement(type, config);
-
-
         }
 
 

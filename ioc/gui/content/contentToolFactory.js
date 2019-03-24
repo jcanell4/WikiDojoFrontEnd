@@ -434,7 +434,8 @@ define([
 
                     case this.generation.PROJECT_VIEW:
                         GeneratedContentTool = base
-                            .createSubclass(DocumentSubclass);
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(FormSubclass);
                         break;
 
                     case this.generation.PROJECT_REQUIRE:

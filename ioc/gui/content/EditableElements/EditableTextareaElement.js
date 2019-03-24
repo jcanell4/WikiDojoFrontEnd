@@ -9,6 +9,12 @@ define([
     return declare([AbstractEditableElement],
         {
 
+            // Node de destí que s'actualitzarà amb els canvis de l'editor
+            $target: null,
+
+
+            // Això es crida en fer click al botó d'editar
+
             createWidget: function () {
                 // TODO[Xavi]: exposar com id de l'element directament
                 // TODO[Xavi]: generar un element ocult amb aquesta informació
@@ -22,21 +28,7 @@ define([
                 // this.$node.before($container);
 
 
-
-
-
                 var $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
-                //var $textarea = jQuery('<textarea id="textarea_' + args.id + '" style="width:100%;height:200px"></textarea>');
-                // this.$textarea = this.$node;
-
-
-                // ALERTA[Xavi] Es crea un nou node arrel on s'afegeix el node de lectura
-                // var $root = jQuery('<div></div>');
-                // this.$node.before($root);
-                // this.$node = $root; // ALERTA! falta afegir el on dbl click! mirar si es poden moure els triggers
-                //
-                // $root.append(this.$viewer);
-
 
                 this.$textarea.css('height', '200px');
 
@@ -45,15 +37,13 @@ define([
 
                 this.$node.text(this.$textarea.val());
 
-                // this.$textarea.css('display', 'none'); // No cal, ho fa automàticament l'ACE
-
-
                 $container.append($toolbar);
                 $container.append(this.$textarea);
                 $container.append(editorWidget);
 
                 this.$editableNode.append($container);
 
+                // ALERTA[Xavi] Exemple d'implementació
                 // var saveCallback = function (e) {
                 //     this.originalContent = editor.getValue();
                 //
@@ -81,6 +71,7 @@ define([
 
                 this.originalContent = this.args.data.value;
 
+
                 var editor = new AceFacade({
                     id: args.id,
                     auxId: args.id,
@@ -94,31 +85,49 @@ define([
                     originalContent: this.originalContent,
                     TOOLBAR_ID: toolbarId,
                     ignorePatching: true,
-                    //plugins: [],
-                     plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar
+                    plugins: [],
+                    //  plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar
                 });
-
-
 
 
                 this.editor = editor;
 
                 var context = this;
 
-                this.editor.on('change', function(e) {
-                    context.originalContent = e.newContent;
+                this.editor.on('change', function (e) {
+                    context.updateTarget(e.newContent);
                 });
 
-                // this.editor.editor.on('CancelDialog', cancelCallback);
-                // this.editor.editor.on('SaveDialog', saveCallback);
+
+                // ALERTA[Xavi] Proves blur del editor, funciona però es dispara en fer clic a la barra d'eines, la icona del zoom, etc.
+                this.editor.editor.editor.on('blur', function (e) {
+
+
+                    // TEST: afegim un delay porque el focus es dispara sempre després que el blur
+                    // setTimeout(function () {
+                    //     console.log("HasFocus?", contextEditor.isFocused());
+                    // }, 50);
+
+                    // console.log("focused?", window.activeElement)
+                    // console.log("HasFocus?", contextEditor.isFocused())
+                    // context.hide();
+                });
+
+
+                // var contextEditor = this.editor.editor.editor;
+
 
                 this.widgetInitialized = true;
 
-                var saveCallback = function(value) {
+                var saveCallback = function (value) {
                     context.editor.setValue(value);
 
                     // context.editor.select();
                 };
+
+                // ALERTA[Xavi] Exemple d'implementació
+                // this.editor.editor.on('CancelDialog', cancelCallback);
+                // this.editor.editor.on('SaveDialog', saveCallback);
 
                 // var cancelCallback = function(value) {
                 //
@@ -135,17 +144,43 @@ define([
                 });
             },
 
+            setTarget: function ($target) {
+                this.$target = $target;
+            },
+
+            updateTarget: function (content) {
+
+                if (!this.$target) {
+                    return;
+                }
+
+                if (this.$target.is("input, textarea")) {
+                    this.$target.val(content)
+                } else {
+                    this.$target.html(content);
+                }
+            },
+
             _replaceNodeContent: function (args) {
+
                 this.$container = jQuery('<div>');
 
 
                 // Afegim un nou node que servirà d'arrel
                 var $newViewNode = jQuery('<div>');
                 $newViewNode.addClass('view-textarea');
+
+                this.setTarget($newViewNode);
+
                 this.$node.before($newViewNode);
 
                 // Assignem el textarea
+
                 this.$textarea = this.$node;
+                this.$textarea.css('display', 'none');
+
+                $newViewNode.html(this.$textarea.val());
+
 
                 // Reemplacem el valor del $node pel del nou node (l'anterior corresponia al $textarea, i no es correcte en aquest cas)
                 this.$node = $newViewNode;
@@ -155,7 +190,7 @@ define([
                 this.$container.append(this.$node);
                 // Alerta[Xavi] Aquesta es l'ancla on s'ha de ficar el widget que correspongui
 
-                this.$editableNode = jQuery('<div></div>');
+                this.$editableNode = jQuery('<div>');
                 this.$container.append(this.$editableNode);
 
 
@@ -164,12 +199,12 @@ define([
                 this.$node.on('dblclick', this.show.bind(this));
 
                 if (args.editable) {
-                    jQuery(args.context.domNode).on('postrender',this.show.bind(this));
+                    jQuery(args.context.domNode).on('postrender', this.show.bind(this));
                 }
 
+                this.$parentNode = this.$container.parent();
+
             },
-
-
 
             updateField: function () {
                 // No fem res, la sincronització es automàtica
@@ -180,7 +215,7 @@ define([
                 // No fem res, la sincronització es automàtica
             },
 
-            show: function() {
+            show: function () {
                 if (this.editor) {
                     this.editor.enable();
                 }
@@ -189,7 +224,7 @@ define([
                 this.inherited(arguments);
             },
 
-            hide: function() {
+            hide: function () {
                 if (this.editor) {
                     this.editor.disable();
                 }

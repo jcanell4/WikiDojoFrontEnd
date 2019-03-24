@@ -67,9 +67,10 @@ define([
             _addRenderEngine('requiring', requiringRenderEngine);
             _addRenderEngine('requiring_partial', requiring_partialRenderEngine);
             _addRenderEngine('form', formRenderEngine(true));
-            _addRenderEngine('project_edit', formRenderEngine(true));
-            _addRenderEngine('project_view', formRenderEngine(false));
-            _addRenderEngine('project_require', formRenderEngine(false));
+            _addRenderEngine('project_edit', formRenderEngine({type: 'edit'}));
+            _addRenderEngine('project_partial', formRenderEngine({type: 'partial'}));
+            _addRenderEngine('project_view', formRenderEngine({type: 'view'}));
+            _addRenderEngine('project_require', formRenderEngine({type: 'view'}));
             _addRenderEngine('metainfo', htmlRenderEngine);
             _addRenderEngine('request_form', request_formRenderEngine);
             _addRenderEngine('zoomable_form_element', zoomableFormRenderEngine);

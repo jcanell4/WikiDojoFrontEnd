@@ -61,6 +61,7 @@ define([
             },
 
             renderFieldTextarea: function (field, fvalues) {
+
                 var $field = jQuery('<div>'),
                     $label = jQuery('<label>'),
                     $textarea = jQuery('<div>');
