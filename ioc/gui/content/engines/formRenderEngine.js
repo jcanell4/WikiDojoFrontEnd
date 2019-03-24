@@ -21,7 +21,7 @@ define([
                 break;
             case 'view':
                 // renderEngine = new ViewFormRenderEngine();
-                renderEngine = new PartialFormRenderEngine(); // ALERTA[Xavi] Test fins que implementent el respons handler pel partial
+                renderEngine = new ViewFormRenderEngine(); // ALERTA[Xavi] Test fins que implementent el respons handler pel partial
                 break;
 
             case 'partial':
