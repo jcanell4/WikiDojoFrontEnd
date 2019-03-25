@@ -7,9 +7,9 @@ define([
     return declare([AjaxComponent, Renderable], {
 
         send: function (text) {
-
+            var textToSend = text;
             arguments[0] = DOKU_BASE + 'lib/plugins/aceeditor/preview.php';
-            arguments[1] = {text: text};
+            arguments[1] = {text: textToSend};
 
             var context = this;
 
