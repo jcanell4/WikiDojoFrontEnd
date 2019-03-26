@@ -7,10 +7,7 @@ define([
     return declare([AjaxComponent, Renderable], {
 
         send: function (text) {
-            var textToSend = text;
-            arguments[0] = DOKU_BASE + 'lib/plugins/aceeditor/preview.php';
-            arguments[1] = {text: textToSend};
-
+            arguments = [DOKU_BASE + 'lib/plugins/aceeditor/preview.php', {text: text}, "POST"]
             var context = this;
 
             var promise = this.inherited(arguments).then(function(data) {
