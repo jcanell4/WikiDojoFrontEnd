@@ -52,7 +52,7 @@ define([
                 this._fillValues();
             },
 
-            _fillValues() {
+            _fillValues: function() {
 
                 // TODO: si this.values es un string son valors separats per comes, s'han de generar els items
                 // per defecte com quan s'entren per teclat
@@ -70,7 +70,7 @@ define([
 
             },
 
-            _generateItemsFromString(value) {
+            _generateItemsFromString: function(value) {
                 if (value.length === 0) {
                     return {};
                 }

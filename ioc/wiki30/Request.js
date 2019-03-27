@@ -11,7 +11,7 @@ define([
     "dojo/dom-style",
     "dojo/dom",
     "dojo/Evented",
-    "dojo/io-query",
+    "dojo/io-query"
 ], function (declare, Standby, request, iframe, getDispatcher, Stateful,
                 timing, domConstruct, domGeom, style, dom, Evented, ioQuery) {
     /**
@@ -413,7 +413,7 @@ define([
                     if (outputExt.w < outputInt.w) {
                         textSize = textSize - outputInt.w + outputExt.w - 2;
                         if (textSize > outputExt.h / 2) {
-                            textSize = outputExt.h / 2
+                            textSize = outputExt.h / 2;
                         }
                         nodeCounter.style["font-size"] = "" + (textSize) + "px";
                     }
@@ -426,7 +426,7 @@ define([
                     validatorData = {
                         callback: validatorData,
                         message: LANG.template['ioc-template'].default_validation_request_error
-                    }
+                    };
                 }
 
                 this.validatorData = validatorData;
@@ -454,7 +454,6 @@ define([
                         }
                     }
 
-
                 } else {
 
                     if (!this.validatorData.callback(data)) {
@@ -462,7 +461,6 @@ define([
                             success: false,
                             message: this.validatorData.message || LANG.template['ioc-template'].default_validation_request_error
                         };
-
                     }
                 }
 

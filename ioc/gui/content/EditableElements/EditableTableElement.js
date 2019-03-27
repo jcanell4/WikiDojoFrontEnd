@@ -349,14 +349,14 @@ define([
                 this.grid.addingRow = false;
             },
 
-            addRowAfter(data) {
+            addRowAfter: function(data) {
                 this.addRow(data, {
                     after: {
                         id: this.grid.selection.selectedIndex}
                 });
             },
 
-            addRowBefore(data) {
+            addRowBefore: function(data) {
                 this.addRow(data, {
                     before: {
                         id: this.grid.selection.selectedIndex}

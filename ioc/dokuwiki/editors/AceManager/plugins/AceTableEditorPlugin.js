@@ -146,7 +146,7 @@ define([
 
         },
 
-        canInsert() {
+        canInsert: function () {
             var editor = this._getEditor().editor;
 
             return !(editor.isReadonlySection() || editor.getReadOnly());
