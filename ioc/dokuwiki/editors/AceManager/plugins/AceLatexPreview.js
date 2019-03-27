@@ -96,7 +96,7 @@ define([
             this.start = start;
             this.end = end;
 
-            this.latexPreviewComponent.send(text).then(function (data) {
+            this.latexPreviewComponent.send({text:text}).then(function (data) {
                 context.editor.remove_marker(this.marker);
                 if (!data) {
                     return;

@@ -4,17 +4,20 @@ define([
 ], function (declare, AbstractIocComponent) {
 
     return declare(AbstractIocComponent, {
-
-        send: function (urlBase, dataToSend, type) {
+        urlBase:"",
+        method:"GET",
+        init: function (urlBase, method) {
+            this.urlBase = urlBase;
+            if(method){
+                this.method = method;
+            }
+        },
+        send: function (dataToSend) {
             var context = this;
 
-            if (!type) {
-                type = 'GET';
-            }
-
             var promise = jQuery.ajax({
-                url: urlBase,
-                type: type,
+                url: context.urlBase,
+                type: context.method,
                 data: dataToSend,
                 dataType: "json",
 
