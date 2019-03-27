@@ -5,12 +5,11 @@ define([
 ], function (declare, AjaxComponent, Renderable) {
 
     return declare([AjaxComponent, Renderable], {
+        constructor: function () {
+            this.init(DOKU_BASE + 'lib/plugins/aceeditor/preview.php');
+        },
 
-        send: function (text) {
-
-            arguments[0] = DOKU_BASE + 'lib/plugins/aceeditor/preview.php';
-            arguments[1] = {text: text};
-
+        send: function (dataToSend) {
             var context = this;
 
             var promise = this.inherited(arguments).then(function(data) {
