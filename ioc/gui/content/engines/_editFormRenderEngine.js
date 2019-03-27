@@ -26,6 +26,8 @@ define([
                 data.elements.sort(this.comparePriority);
 
                 for (var i = 0; i < data.elements.length; i++) {
+                    console.log("formType:", data.elements[i].formType);
+
                     switch (data.elements[i].formType) {
                         case 'row':
                             $form.append(this.renderRow(data.elements[i], data.formValues));
@@ -39,6 +41,7 @@ define([
 
 
                         case 'amd':
+
                             // En au
                             // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
                             var token = Date.now() + Math.ceil(Math.random() * 16);

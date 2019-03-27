@@ -12,6 +12,10 @@ define([
      */
     return declare([], {
 
+
+        // boolean indica si s'han d'amagar tots els altres EditableElements un cop es selecciona un d'ells
+        showOnlyOneElement: null,
+
         /**
          * El contingut original inicial s'ha de passar a través del constructor
          * dins dels arguments com a propietat originalContent.
@@ -20,6 +24,7 @@ define([
         constructor: function (args) {
 
             this.editableElements = [];
+
         },
 
         _registerEditableElement: function (element) {
@@ -27,7 +32,14 @@ define([
                 console.error("L'element no és updatable", element)
             } else {
                 this.editableElements.push(element);
+                element.on('pre-show', this.onShowEditableElement.bind(this));
             }
+        },
+
+        onShowEditableElement: function() {
+          if (this.showOnlyOneElement) {
+              this._disableEditableElements();
+          }
         },
 
         _unregisterEditableElement: function (element) {
@@ -73,7 +85,9 @@ define([
                 this.editableElements[i].restoreFromField();
             }
             //console.log("EditableElementsContainerSubclass#updateDocument", this.editableElements, this.data);
-        }
+        },
+
+
 
     });
 

@@ -221,7 +221,8 @@ define([
 
         forceCheckChanges: function() {
             this._checkChanges();
-        }
+        },
+
 
     });
     

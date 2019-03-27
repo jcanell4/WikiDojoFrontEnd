@@ -1,7 +1,8 @@
 define([
     'ioc/gui/content/EditableElements/EditableTableElement',
-    'ioc/gui/content/EditableElements/EditableTextareaElement'
-], function (/*TestFormElement, */EditableTableElement, EditableTextareaElement) {
+    'ioc/gui/content/EditableElements/EditableTextareaElement',
+    'ioc/gui/content/EditableElements/EditableWidgetElement',
+], function (/*TestFormElement, */EditableTableElement, EditableTextareaElement, EditableWidgetElement) {
 
     var editableElements = {},
 
@@ -16,6 +17,7 @@ define([
         _init = function () {
             _addEditableElement('table', EditableTableElement);
             _addEditableElement('textarea', EditableTextareaElement);
+            _addEditableElement('widget', EditableWidgetElement);
         };
 
     _init();

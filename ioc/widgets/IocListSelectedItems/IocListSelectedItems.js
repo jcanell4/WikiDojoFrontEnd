@@ -50,19 +50,27 @@ define([
                 // this._addListeners();
                 // this._fill();
                 this._fillValues();
+
             },
 
             _fillValues() {
 
+                jQuery(this.selectedItemsNode).html('');
+
                 // TODO: si this.values es un string son valors separats per comes, s'han de generar els items
                 // per defecte com quan s'entren per teclat
 
-                if (this.valueFormat === 'json' && typeof this.value === 'string' && this.value.length>0) {
+                if (this.valueFormat === 'json' && typeof this.value === 'string' && this.value.length > 0) {
                     this.value = JSON.parse(this.value);
                 } else if (typeof this.value === 'string') {
                     this.value = this._generateItemsFromString(this.value);
                 }
 
+                if (Object.keys(this.value).length=== 0) {
+
+                    // Això serveix per afegir un espai mínim quan la llista es buida
+                    jQuery(this.selectedItemsNode).html('<li></li>');
+                }
 
                 for (var item in this.value) {
                     this._itemSelected(this.value[item]);
@@ -79,7 +87,7 @@ define([
                 var objects = {};
                 var values = value.split(',');
 
-                for (var i=0; i<values.length; i++) {
+                for (var i = 0; i < values.length; i++) {
                     var text = values[i];
 
 
@@ -113,6 +121,11 @@ define([
                 return htmlTemplate;
             },
 
+            _setValueAttr(value) {
+                this.value = value;
+                this._fillValues();
+            },
+
             _itemSelected: function (item) {
 
                 if (this.selected[item[this.fieldId]]) {
@@ -135,8 +148,9 @@ define([
                 var itemHtml = string.substitute(this.getItemHtmlTemplate(), item);
                 newItem.html(itemHtml);
 
+                jQuery(this.selectedItemsNode).append(newItem);
 
-                newItem.insertBefore(this.entryListItem);
+                // newItem.insertBefore(this.entryListItem);
 
             },
 

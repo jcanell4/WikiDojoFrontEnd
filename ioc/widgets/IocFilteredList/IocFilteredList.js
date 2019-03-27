@@ -93,7 +93,6 @@ define([
                 this._addListeners();
                 this._fillValues();
                 this._fill();
-
             },
 
             _fillValues() {
@@ -101,15 +100,16 @@ define([
                 // TODO: si this.values es un string son valors separats per comes, s'han de generar els items
                 // per defecte com quan s'entren per teclat
 
+                var value = null;
+
                 if (this.valueFormat === 'json' && typeof this.value === 'string' && this.value.length>0) {
-                    this.value = JSON.parse(this.value);
+                    value = this.value = JSON.parse(this.value);
                 } else if (typeof this.value === 'string') {
-                    this.value = this._generateItemsFromString(this.value);
+                    value = this._generateItemsFromString(this.value);
                 }
 
-
-                for (var item in this.value) {
-                    this._itemSelected(this.value[item]);
+                for (var item in value) {
+                    this._itemSelected(value[item]);
                 }
 
             },
@@ -456,6 +456,7 @@ define([
                         this._updateHiddenSelectedFieldString();
 
                 }
+
             },
 
             _updateHiddenSelectedFieldJson: function() {
@@ -475,6 +476,10 @@ define([
                 } else {
                     jQuery(this.entryText).prop('required', false);
                 }
+
+                this.set('value',selected);
+
+
             },
 
             _updateHiddenSelectedFieldString: function() {
@@ -499,6 +504,9 @@ define([
                 } else {
                     jQuery(this.entryText).prop('required', false);
                 }
+
+                this.set('value', selectedIds);
+
             },
 
             /**
@@ -517,8 +525,7 @@ define([
 
                 var isEmpty = true;
 
-
-                if (query !== null) {
+                if (query) {
                     query = query.toLowerCase();
                 }
 

@@ -8,8 +8,9 @@ define([
 
         send: function (text) {
 
-            arguments[0] = DOKU_BASE + 'lib/plugins/aceeditor/preview.php';
             arguments[1] = {text: text};
+            arguments[0] = DOKU_BASE + 'lib/plugins/aceeditor/preview.php';
+            arguments.length = 2;
 
             var context = this;
 

@@ -14,10 +14,17 @@ define([
         {
             viewRenderer: null,
 
+            /**
+             *
+             * @param data      Dades a partir de les quals es realitza el render
+             * @param context   ContentTool
+             * @param $content  Contingut Renderitzat com a objecte jQuery
+             * @returns {*}
+             */
             render: function (data, context, $content) {
-                // console.log("_partialEditFormRenderEngine#render", data);
 
                 this.viewRenderer = new ViewFormRenderEngine();
+                this.contentTool = context;
 
 
                 var $doc = jQuery('<div>'),
@@ -76,11 +83,15 @@ define([
                 switch (element.type) {
                     case 'textarea':
                         // this.convertToPartialFieldTextarea($fieldEdit, $container, element, values);
-                        // console.log("Textarea. Skipping...");
+                        console.log("Textarea. Skipping...");
                         break;
 
                     case 'editableObject':
-                        // console.log("Editable Object. Skipping...");
+                        console.log("Editable Object. Skipping...");
+                        break;
+
+                    case 'amd':
+                        console.log("AMD. Skipping...");
                         break;
 
                     default:
@@ -111,7 +122,7 @@ define([
                 var $fieldView = this.viewRenderer.renderField(element, values);
                 $container.append($fieldView);
 
-                $fieldEdit.attr('data-edit-id', element.id);
+                    $fieldEdit.attr('data-edit-id', element.id);
                 $fieldView.attr('data-view-id', element.id);
 
                 // Canviar el icon al passa sobre el $fieldView (css)
@@ -121,9 +132,6 @@ define([
                 var context = this;
 
                 $fieldView.on('dblclick', function () {
-
-
-                    console.log("dbl click", this)
                     var $this = jQuery(this);
 
                     $this.css('display', 'none');
@@ -133,8 +141,8 @@ define([
                     var $field = jQuery('[data-edit-id="' + fieldId + '"]');
                     $field.css('display', 'inherit');
 
-                    // context.deselectPrevious();
-                    // context.select($field);
+                    context.deselectPrevious();
+                    context.select($field);
 
                     $field.off('focusout');
 
@@ -142,7 +150,7 @@ define([
 
 
                     $field.on('focusout', function () {
-                        console.log("blur", this)
+
                         var $this = jQuery(this);
 
                         $this.css('display', 'none');
@@ -166,51 +174,35 @@ define([
 
                 });
 
-                // El listener de l'edit ha de comprovar:
-                //      on change/input pare actualitzar els valors del field ocult
-                //      on blur per amagar-se
-                //      ALERTA!
+            },
 
 
-                // $fieldEdit.on('focusout', function() {
-                //     console.log("blur", this)
-                //     var $this = jQuery(this);
-                //
-                //     $this.css('display', 'none');
-                //     var fieldId = $this.attr('data-edit-id');
-                //     jQuery('[data-view-id="'+fieldId+'"]').css('display', 'inherit');
-                // });
+            select: function ($node) {
+                this.selected = $node;
+            },
 
+            deselectPrevious: function() {
 
-                // Afegir un listener a edició que actualitzi el view i s'amagui i mostri la vista en finalitzar la edició
+                this.deselectEditableObjects();
 
+                if (!this.selected) {
+                    return;
+                }
 
-                // var $fieldEdit = this.renderField(data.elements[i], data.formValues);
-                // $form.append($fieldEdit));
+                this.selected.trigger('focusout');
+            },
 
-                // ALERTA[Xavi] Compte amb el canvi de contexte als listeners, pot ser es millor afegir una unique id
-                // per lligar els camps. Per utilitzar directament els objectes s'hauria de cridar a una nova funció
-                // per crear un closure únic per cada parell de nodes.
+            deselectEditableObjects: function () {
 
-
-                // Habilitar el botó de desar.
+                if (this.contentTool._disableEditableElements) {
+                    this.contentTool._disableEditableElements();
+                } else {
+                    console.warn("El ContentTool no és subclasse de EditableElementsContainerSubclass i per tant no es poden deseleccionar");
+                }
 
             },
 
 
-            // select: function ($node) {
-            //     console.log("Select", $node);
-            //     this.selected = $node;
-            // },
-            //
-            // deselectPrevious: function() {
-            //     console.log("Deselect", this.selected);
-            //     if (!this.selected) {
-            //         return;
-            //     }
-            //
-            //     this.selected.trigger('focusout');
-            // },
 
             renderRow: function (row, fvalues) {
                 var $row = jQuery('<div>'),
@@ -428,10 +420,98 @@ define([
             },
 
             renderFieldEditableObject: function (field, fvalues) {
+
                 if (field.config.readonly) {
                     field.props['readonly'] = true;
                 }
                 return this.inherited(arguments);
+            },
+
+            // ALERTA[xavi] Duplicat al edit
+            renderWidget: function (field, fvalues) {
+
+                // només hi ha una classe
+                if (typeof field.config.class !== 'string' && !(field.config.class.edit && field.config.class.view)) {
+                    field.config.class = field.config.class.edit || field.config.class.view;
+                }
+
+                // Si classe es un string no s'ha de canviar el mode d'edició
+                if (typeof field.config.class === 'string') {
+                    return this.inherited(arguments);
+                }
+
+                // Si arriba aquí es que tenim 2 widgets diferents per la vista i la edició
+
+                // Si es readonly només retornem la vista
+                if (field.config.readonly) {
+                    field.config.class = field.config.class.view;
+                    return this.inherited(arguments);
+                }
+
+                // Si arriba aquí hem de generar l'editable element amb dos widgets
+
+
+                var token = Date.now() + Math.ceil(Math.random() * 16);
+                var $field = jQuery('<div>');
+                $field.attr('id', token);
+
+                //
+                // // La referència s'ha de passar
+                // $field = this.inherited(arguments);
+                // $field.attr('id');
+
+
+                var editClass = field.config.class.edit;
+                var viewClass = field.config.class.view;
+
+                field.config.class = viewClass;
+                field.config.prefix = 'view';
+                var $viewField = this.renderSingleWidget(field, fvalues);
+
+
+
+
+                field.config.customFieldUpdate = true;
+                field.config.prefix = 'edit';
+                field.config.class = editClass;
+                var $editField = this.renderSingleWidget(field, fvalues);
+
+                var $label = jQuery('<label>');
+                $label.html(field.label + " (partial) ");
+                $field.append($label);
+
+                $field.append($editField);
+                $field.append($viewField);
+                $field.attr('data-edit-id', $editField.attr('id'));
+                $field.attr('data-view-id', $viewField.attr('id'));
+                $field.attr('data-editable-element', 'widget');
+
+                return $field;
+
+            },
+
+            renderSingleWidget: function (field, fvalues) {
+
+                if (!field.config.class || typeof field.config.class !== 'string') {
+                    return this.renderFieldDefault(field, fvalues);
+                }
+
+                // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
+                var token = Date.now() + Math.ceil(Math.random() * 16);
+
+                if (field.config.prefix) {
+                    token = field.config.prefix + '_' + token;
+                }
+
+                var $input = jQuery('<div>');
+                $input.attr('id', token);
+
+                field.config.data.value = fvalues[field.name];
+
+                createAMDWidget(field.config, token);
+
+
+                return $input;
             },
         });
 });

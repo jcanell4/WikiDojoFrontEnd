@@ -200,7 +200,7 @@ define([
             var $field = jQuery('<div>');
             var $label = jQuery('<label>');
 
-            $label.html(field.label);
+            $label.html(field.label + ' (abstract) ');
 
             $field.append($label)
                 .append($input);
@@ -209,12 +209,13 @@ define([
         },
 
         renderFieldDefault: function (field, fvalues) {
+
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
                 $input = jQuery('<input>');
 
             if (field.type !== 'hidden') {
-                $label.html(field.label);
+                $label.html(field.label + ' (default)');
                 $field.append($label);
 
                 // TODO[Xavi] Afegir un parámetre a field que retornará del servidor i indicarà si s'ha de mostrar el botó de l'editor
@@ -518,25 +519,6 @@ define([
                 for (var j=0; j<colCounter; j++) {
                     $row.append($cols[j]);
                 }
-
-
-
-                // for (key in data[i]) {
-                //
-                //     if (!field.config.fields[key]) {
-                //         console.error("Key " + key + " not found.");
-                //         continue;
-                //     }
-                //
-                //     if (field.config.fields[key].type === "date") {
-                //         dato = this.convertToDateDMY(data[i][key]);
-                //     }else {
-                //         dato = data[i][key];
-                //     }
-                //     //tratamiento especial para los campos de fecha de las tablas
-                //     $col = jQuery('<td data-field="'+key+'" data-originalvalue="' + data[i][key] + '">' + dato + '</td>');
-                //     $row.append($col);
-                // }
 
                 $body.append($row);
             }

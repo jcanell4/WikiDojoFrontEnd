@@ -89,9 +89,7 @@ define([
 
                     if ($this.prop('checked')) {
 
-                        console.log("auxData", fieldId, auxData);
                         that.selection[fieldId] = auxData;
-
 
                     } else {
                         delete(that.selection[fieldId]);

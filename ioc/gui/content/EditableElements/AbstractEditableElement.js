@@ -1,8 +1,9 @@
 define([
-    "dojo/_base/declare"
-], function (declare) {
+    "dojo/_base/declare",
+    "dojo/Evented",
+], function (declare, Evented) {
 
-    return declare(null,
+    return declare([Evented],
         {
             editionState : false,
 
@@ -60,7 +61,9 @@ define([
             },
 
             hide: function () {
-                // console.log("AbstractEditableElement#hide");
+
+                this.emit('pre-hide', {});
+
                 this.setEditionState(false);
 
                 this.$node.css('display', this.defaultDisplay);
@@ -70,21 +73,26 @@ define([
                 }
 
                 this.$editableNode.css('display', 'none');
+
+                this.emit('hide', {});
             },
 
             show: function () {
+                this.setEditionState(true);
+                this.emit('pre-show', {});
+
                 if (!this.widgetInitialized) {
                     this.createWidget();
                 }
 
-                // console.log("AbstractEditableElement#show");
-                this.setEditionState(true);
                 this.$node.css('display', 'none');
 
                 if (this.$icon) {
                     this.$icon.css('display', 'none');
                 }
                 this.$editableNode.css('display', 'block');
+
+                this.emit('show', {});
             },
 
             setEditionState: function (state) { // Alerta[Xavi] es un booleà o un enum?

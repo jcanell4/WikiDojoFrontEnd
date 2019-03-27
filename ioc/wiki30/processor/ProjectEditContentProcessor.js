@@ -15,6 +15,8 @@ define([
 
         type: "project_edit",
 
+        editable: true,
+
         process: function (value, dispatcher) {
             var subSet;
             var args = arguments;
@@ -64,7 +66,8 @@ define([
                     cancelDialogConfig: content.extra.dialogSaveOrDiscard,
                     messageChangesDetected: content.extra.messageChangesDetected,
                     renderEngines: ['test', 'zoomable_form_element'],
-                    editable: true // Activa el mode d'edició automàtica pels EditableElements
+                    editable: this.editable, // Activa el mode d'edició automàtica pels EditableElements
+                    showOnlyOneElement: this.showOnlyOneElement
                 };
             this.contentTool = contentToolFactory.generate(contentToolFactory.generation.PROJECT_EDIT, args);    
             return this.contentTool;
