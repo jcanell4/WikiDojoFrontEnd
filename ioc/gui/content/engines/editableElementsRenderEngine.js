@@ -1,9 +1,8 @@
 /**
- * @module TestRenderEngine
+ * @module editableElementsRenderEngine
  * @author Xavier García <xaviergaro.dev@gmail.com>
  */
 define([
-    // 'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/gui/content/editableElementsFactory'
 ], function (editableElementsFactory) {
 

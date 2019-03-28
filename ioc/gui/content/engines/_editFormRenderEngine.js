@@ -26,7 +26,7 @@ define([
                 data.elements.sort(this.comparePriority);
 
                 for (var i = 0; i < data.elements.length; i++) {
-                    console.log("formType:", data.elements[i].formType);
+                    // console.log("formType:", data.elements[i].formType);
 
                     switch (data.elements[i].formType) {
                         case 'row':

@@ -65,7 +65,7 @@ define([
                     autosaveTimer: content.autosaveTimer,
                     cancelDialogConfig: content.extra.dialogSaveOrDiscard,
                     messageChangesDetected: content.extra.messageChangesDetected,
-                    renderEngines: ['test', 'zoomable_form_element'],
+                    renderEngines: ['editable_elements', 'zoomable_form_element'],
                     editable: this.editable, // Activa el mode d'edició automàtica pels EditableElements
                     showOnlyOneElement: this.showOnlyOneElement
                 };

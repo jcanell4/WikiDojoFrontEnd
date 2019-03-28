@@ -553,7 +553,7 @@ define([
                     } else {
                         // Si la mida del query es 0 es mostren tots
 
-                        if (query.length === 0 || lowerFieldId.indexOf(query) >= 0 || lowerDefaultEntryField.indexOf(query) >= 0) {
+                        if (query === undefined || query.length === 0 || lowerFieldId.indexOf(query) >= 0 || lowerDefaultEntryField.indexOf(query) >= 0) {
                             item.widget.show();
 
                             if (isEmpty) {

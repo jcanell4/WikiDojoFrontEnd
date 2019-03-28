@@ -81,32 +81,15 @@ define([
 
             convertToPartialField($fieldEdit, $container, element, values) {
                 switch (element.type) {
-                    case 'textarea':
-                        // this.convertToPartialFieldTextarea($fieldEdit, $container, element, values);
-                        console.log("Textarea. Skipping...");
-                        break;
-
-                    case 'editableObject':
-                        console.log("Editable Object. Skipping...");
-                        break;
-
-                    case 'amd':
-                        console.log("AMD. Skipping...");
+                    case 'textarea': // Fallthrough intencionat
+                    case 'editableObject':  // Fallthrough intencionat
+                    case 'amd':  // Fallthrough intencionat
                         break;
 
                     default:
                         this.convertToPartialFieldDefault($fieldEdit, $container, element, values);
                 }
             },
-
-            // convertToPartialFieldTextarea($fieldEdit, $container, element, values) {
-            //     var $textarea = $fieldEdit.find('textarea');
-            //
-            //     $textarea.on('change input paste cut', function() {
-            //         console.log("TODO: actualitzar el $fieldEdit (o cercar el viewEdit) amb el nou contingut:", $fieldEdit, $container);
-            //     })
-            //
-            // },
 
             convertToPartialFieldDefault($fieldEdit, $container, element, values) {
                 // console.log("convertToPartialFieldDefault", $fieldEdit, $container, element, values);
