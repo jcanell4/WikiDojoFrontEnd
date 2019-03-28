@@ -17,11 +17,11 @@ define([
     "ioc/gui/content/engines/htmlRenderEngine",
     "ioc/gui/content/engines/request_formRenderEngine",
     "ioc/gui/content/engines/zoomableFormElementsRenderEngine",
-    "ioc/gui/content/engines/testElementsRenderEngine"
+    "ioc/gui/content/engines/editableElementsRenderEngine"
 ], function (standardRenderEngine, revisionRenderEngine, html_partialRenderEngine, 
                 dataRenderEngine, requiringRenderEngine, requiring_partialRenderEngine, 
                 notificationRenderEngine, formRenderEngine, htmlRenderEngine,
-                request_formRenderEngine, zoomableFormRenderEngine, testRenderEngine) {
+                request_formRenderEngine, zoomableFormRenderEngine, editableElementsRenderEngine) {
 
     var /** @type function */
         defaultRenderEngine = null,
@@ -74,7 +74,7 @@ define([
             _addRenderEngine('metainfo', htmlRenderEngine);
             _addRenderEngine('request_form', request_formRenderEngine);
             _addRenderEngine('zoomable_form_element', zoomableFormRenderEngine);
-            _addRenderEngine('test', testRenderEngine);
+            _addRenderEngine('editable_elements', editableElementsRenderEngine);
             defaultRenderEngine = _getRenderEngine('standard');
         },
 

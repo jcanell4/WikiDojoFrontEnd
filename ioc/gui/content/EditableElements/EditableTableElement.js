@@ -581,6 +581,11 @@ define([
             },
 
             saveToField: function () {
+                // Això pot passar si no s'ha carregat encara el mode d'edició
+                if (!this.dataStore) {
+                    return;
+                }
+
                 this.backupData = jQuery.extend(true, {}, this.dataStore.objectStore.data);
 
                 this.jsonToHTML(this.backupData);
@@ -712,6 +717,8 @@ define([
 
             hide: function () {
                 this.inherited(arguments);
+
+                this.saveToField();
 
                 if (this.$icon) {
                     this.$icon.css('display', 'block');
