@@ -53,7 +53,7 @@ define([
 
             },
 
-            _fillValues() {
+            _fillValues: function() {
 
                 jQuery(this.selectedItemsNode).html('');
 
@@ -78,7 +78,7 @@ define([
 
             },
 
-            _generateItemsFromString(value) {
+            _generateItemsFromString: function(value) {
                 if (value.length === 0) {
                     return {};
                 }
