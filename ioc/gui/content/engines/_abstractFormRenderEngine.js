@@ -200,7 +200,7 @@ define([
             var $field = jQuery('<div>');
             var $label = jQuery('<label>');
 
-            $label.html(field.label + ' (abstract) ');
+            $label.html(field.label);
 
             $field.append($label)
                 .append($input);

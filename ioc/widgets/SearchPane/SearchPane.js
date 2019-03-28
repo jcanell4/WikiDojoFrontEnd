@@ -148,7 +148,7 @@ define([
         onClickButton: function(){
             var $input = jQuery(this.searchNode);
 
-            if ($input.val().length===0 || this.requesting) {
+            if (this.requesting) {
                 return;
             } else {
                 this.requesting = true;

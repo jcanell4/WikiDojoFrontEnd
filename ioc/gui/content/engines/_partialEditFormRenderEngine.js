@@ -477,7 +477,7 @@ define([
                 var $editField = this.renderSingleWidget(field, fvalues);
 
                 var $label = jQuery('<label>');
-                $label.html(field.label + " (partial) ");
+                $label.html(field.label);
                 $field.append($label);
 
                 $field.append($editField);
