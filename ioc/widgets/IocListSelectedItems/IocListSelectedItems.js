@@ -121,7 +121,7 @@ define([
                 return htmlTemplate;
             },
 
-            _setValueAttr(value) {
+            _setValueAttr: function(value) {
                 this.value = value;
                 this._fillValues();
             },
@@ -129,13 +129,13 @@ define([
             _itemSelected: function (item) {
 
                 if (this.selected[item[this.fieldId]]) {
-                    console.log("Ja s'ha afegit anteriorment")
+                    console.log("Ja s'ha afegit anteriorment");
                     return;
                 }
 
                 // Ens assegurem que com a mínim aquests dos valors estan definits per evitar errors al template per defecte.
                 if (!item[this.fieldId]) {
-                    item[this.fieldId] = ''
+                    item[this.fieldId] = '';
                 }
 
                 if (!item[this.defaultEntryField]) {
@@ -152,7 +152,7 @@ define([
 
                 // newItem.insertBefore(this.entryListItem);
 
-            },
+            }
 
         });
     });

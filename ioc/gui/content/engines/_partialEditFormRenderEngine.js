@@ -2,11 +2,11 @@ define([
     "dojo/_base/declare",
     "ioc/gui/content/engines/_abstractFormRenderEngine",
     'ioc/widgets/WidgetFactory',
-    "ioc/gui/content/engines/_viewFormRenderEngine",
+    "ioc/gui/content/engines/_viewFormRenderEngine"
 ], function (declare, AbstractFormRenderEngine, widgetFactory, ViewFormRenderEngine) {
 
     var createAMDWidget = function (data, nodeId) {
-        widgetFactory.addWidgetToNode(data, nodeId)
+        widgetFactory.addWidgetToNode(data, nodeId);
     };
 
 
@@ -48,7 +48,7 @@ define([
                             break;
 
                         case 'group':
-                            var $group = this.renderGroup(data.elements[i], data.formValues)
+                            var $group = this.renderGroup(data.elements[i], data.formValues);
                             $form.append($group);
 
                             break;
@@ -79,7 +79,7 @@ define([
                 return $doc;
             },
 
-            convertToPartialField($fieldEdit, $container, element, values) {
+            convertToPartialField: function($fieldEdit, $container, element, values) {
                 switch (element.type) {
                     case 'textarea': // Fallthrough intencionat
                     case 'editableObject':  // Fallthrough intencionat
@@ -91,7 +91,7 @@ define([
                 }
             },
 
-            convertToPartialFieldDefault($fieldEdit, $container, element, values) {
+            convertToPartialFieldDefault: function($fieldEdit, $container, element, values) {
                 // console.log("convertToPartialFieldDefault", $fieldEdit, $container, element, values);
 
 
@@ -294,7 +294,7 @@ define([
 
                         case 'group':
                             $element = this.renderGroup(fields[i], fvalues);
-                            group.append($element)
+                            group.append($element);
                             break;
 
                         case 'field':
@@ -495,6 +495,6 @@ define([
 
 
                 return $input;
-            },
+            }
         });
 });
