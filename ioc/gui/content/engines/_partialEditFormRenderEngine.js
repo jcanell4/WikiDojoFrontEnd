@@ -294,7 +294,7 @@ define([
 
                         case 'group':
                             $element = this.renderGroup(fields[i], fvalues);
-                            group.append($element);
+                            $group.append($element);
                             break;
 
                         case 'field':
