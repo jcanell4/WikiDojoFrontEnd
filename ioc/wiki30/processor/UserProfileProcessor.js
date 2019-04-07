@@ -21,6 +21,7 @@ define([
             },
 
             createContentTool: function (content, dispatcher) {
+                console.log("USerProfile", content);
                 var args = {
                         id:         content.id,
                         title:      content.title,

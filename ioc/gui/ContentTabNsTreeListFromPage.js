@@ -28,6 +28,7 @@ define([
                 this._render(params.data);
             },
             _render: function(data){
+
 //                var trees = [];
                 var render = domConstruct.toDom("<div>"+data+"</div>");
         
