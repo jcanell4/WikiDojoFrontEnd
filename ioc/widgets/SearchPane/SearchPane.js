@@ -21,8 +21,20 @@ define([
         templateString: template,
         baseClass: "search-users-pane",
 
+        // Accepta selecció múltiple? per defecte es true, establert al constructor
+        multiple: null,
+
+        constructor: function(args) {
+
+            if (args.multiple === false){
+                this.multiple = false;
+            } else {
+                this.multiple = true;
+            }
+        },
+
         process: function(response, dispatcher){
-            var that = this;
+            var context = this;
             var $tableHead = jQuery(this.tableHeadNode);
             var $tableBody = jQuery(this.tableBodyNode);
             var data = response;
@@ -81,18 +93,26 @@ define([
 
                     var auxData = {};
 
-                    for (fieldKey in that.fields ) {
+                    for (fieldKey in context.fields ) {
                         auxData[fieldKey] = $this.attr('data-' + fieldKey);
                     }
 
-                    var fieldId = auxData[that.getColFieldId()];
+                    var fieldId = auxData[context.getColFieldId()];
 
-                    if ($this.prop('checked')) {
 
-                        that.selection[fieldId] = auxData;
+                    var checked = $this.prop('checked');
+
+                    if (!context.multiple) {
+                        context.deselectAll();
+                    }
+
+                    if (checked) {
+
+                        $this.prop('checked', checked);
+                        context.selection[fieldId] = auxData;
 
                     } else {
-                        delete(that.selection[fieldId]);
+                        delete(context.selection[fieldId]);
                     }
                 });
 
@@ -104,6 +124,13 @@ define([
             }
 
             this.requesting = false;
+        },
+
+
+        deselectAll: function() {
+            jQuery(this.tableBodyNode).find('input').prop('checked', false);
+
+            this.selection = {};
         },
 
         generateFields: function(data) {
