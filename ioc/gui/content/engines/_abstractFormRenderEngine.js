@@ -191,7 +191,7 @@ define([
             // ALERTA[Xavi] Aquesta no és la id del component, si no la id del lloc on s'afegirà
             var token = field.name + (Date.now() + Math.ceil(Math.random() * 16));
             // var token = Date.now() + Math.ceil(Math.random() * 16);
-            console.log('id', token);
+
             var $input = jQuery('<div>');
             $input.attr('id', token);
 
