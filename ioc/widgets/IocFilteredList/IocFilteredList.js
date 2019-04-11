@@ -294,7 +294,7 @@ define([
 
             _fill: function () {
 
-                if (typeof this.data === 'string') {
+                if (typeof this.data === 'string' && this.data.length>0) {
                     var request = new Request({urlBase: this.data, dispatcher: dispatcher});
                     request.addProcessor("array", this);
 
