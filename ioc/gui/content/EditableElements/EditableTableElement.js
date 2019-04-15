@@ -26,6 +26,9 @@ define([
         SET_MULTIPLE_DEFAULT_ROWS = "set_multiple_default_rows",
         REMOVE_ROWS = "remove_rows";
 
+    var DATA_STORE_PATTERN = 'yyyy/MM/dd';
+    var DATA_DISPLAY_PATTERN = 'dd/MM/yyyy';
+
     var defaultActions = {
         ADD_DEFAULT_ROW: "Afegir fila",
         REMOVE_ROWS: "Eliminar fila"
@@ -300,6 +303,7 @@ define([
              * @private
              */
             addRow: function(keyPairs, options) {
+
                 this.grid.addingRow = true;
 
                 this.dataStore.save(); // Desem els canvis actuals al grid (cel·les editades)
@@ -309,8 +313,18 @@ define([
                 };
 
                 for (var name in this.defaultRow) {
+                    var field = this.args.fields[name];
+                    // console.log("Field:", field, this.args.data.value);
+
+
+
                     if (keyPairs && keyPairs[name]) {
                         data[this.fieldToCol[name]] = keyPairs[name];
+
+                    } else if (field.type && field.type === "date" && !this.defaultRow[name]) {
+                        data[this.fieldToCol[name]] = dojo.date.locale.format(new Date(), {selector:'date', datePattern:DATA_STORE_PATTERN});
+
+                        // dojo.date.locale.format(new Date(), {selector:'date', datePattern:DATA_DISPLAY_PATTERN})
                     } else {
                         data[this.fieldToCol[name]] = this.defaultRow[name];
                     }
@@ -369,7 +383,7 @@ define([
                 var data = {};
 
                 for (var key in this.inputOnNewRowFields) {
-                    //var key = "key"; // TODO: això s'ha de passar per paràmetre de config desdel default view!
+
                     do {
                         value = prompt("Introdueix el valor pel camp " + key + ":");
                         if (value.length === 0) {
@@ -509,18 +523,18 @@ define([
 
                         switch (field['type']) {
                             case 'date':
-                                var storePattern = 'yyyy/MM/dd';
-                                var displayPattern = 'dd/MM/yyyy';
+
 
                                 cell.type = dojox.grid.cells.DateTextBox;
                                 cell.getValue = function(){
                                     // Override the default getValue function for dojox.grid.cells.DateTextBox
-                                    return dojo.date.locale.format(this.widget.get('value'), {selector:'date', datePattern:storePattern});
+                                    return dojo.date.locale.format(this.widget.get('value'), {selector:'date', datePattern:DATA_STORE_PATTERN});
                                 };
                                 cell.formatter = function (datum){
+
                                     // Format the value in store, so as to be displayed.
-                                    var d = datum == "" ? (new Date()) : dojo.date.locale.parse(datum, {selector:'date', datePattern:storePattern});
-                                    return dojo.date.locale.format(d, {selector:'date', datePattern:displayPattern});
+                                    var d = !datum ? (new Date()) : dojo.date.locale.parse(datum, {selector:'date', datePattern:DATA_STORE_PATTERN});
+                                    return dojo.date.locale.format(d, {selector:'date', datePattern:DATA_DISPLAY_PATTERN});
                                 };
                                 break;
                             case 'number':
