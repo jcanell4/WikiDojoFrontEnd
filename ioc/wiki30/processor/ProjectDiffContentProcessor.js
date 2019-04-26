@@ -2,8 +2,9 @@ define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/DiffContentProcessor",
     "ioc/gui/content/contentToolFactory",
-    'ioc/functions/jsProjectDiff'
-], function (declare, DiffContentProcessor, contentToolFactory, jsProjectDiff) {
+    'ioc/functions/jsProjectDiff',
+    'ioc/functions/jsTreeProjectDiff'
+], function (declare, DiffContentProcessor, contentToolFactory, jsProjectDiff, jsTreeProjectDiff) {
     /**
      * Aquesta classe s'encarrega de processar els continguts per documents de tipus Html, generar els ContentTool
      * apropiat i afegir-lo al contenidor adequat.
@@ -24,7 +25,9 @@ define([
          * @override
          */
         process: function (value, dispatcher) {
-            return this.inherited(arguments);
+            var ret = this.inherited(arguments);
+            //jsTreeProjectDiff.getDiff(JSON.stringify(value.content), JSON.stringify(value.rev1)); //versión con dojo/tree
+            return ret;
         },
 
         /**
@@ -63,7 +66,17 @@ define([
             label1 += " (" + this._convertUnixDate(content.date, true) + ")</a>";
             label2 = href + "&rev="+content.date_rev1 +">" + "Revisió (" + this._convertUnixDate(content.date_rev1, true) + ")</a>";
             
-            diff = jsProjectDiff.getDiff(rev1, rev2, label1, label2);
+            diff = jsProjectDiff.getDiff(rev1, rev2, label1, label2); 
+            //versión con dojo/tree
+//            diff = "<div style=\"overflow-y: scroll;\">"; //contenedor de los árboles correspondientes a las revisiones que se comparan
+//            diff += "<table width='100%'>";
+//            diff += "<th class='leftcolor' width='50%'>" + label1 + "</th>";
+//            diff += "<th class='rightcolor' width='50%'>" + label2 + "</th>";
+//            diff += "<tr>";
+//            diff += "<td><div id='treeRevision1'></div></td>";
+//            diff += "<td><div id='treeRevision2'></div></td>";
+//            diff += "</tr>";
+//            diff += "</div>";
             rev = this._convertUnixDate(content.date) + " - " + this._convertUnixDate(content.date_rev1);
             
             var args = {
