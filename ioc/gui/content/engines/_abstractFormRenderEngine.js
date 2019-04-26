@@ -431,6 +431,7 @@ define([
             var $row = jQuery('<tr></tr>');
             var first = true;
 
+            console.log(field.config);
             var headerRow = field.config.display_fields ||
                 field.config.defaultRow;
 
@@ -539,7 +540,7 @@ define([
             // Si no existeix el layout el cerca al config
             if (!layout) {
 
-                return row[fieldKey].name ? row[fieldKey].name : null;
+                return row[fieldKey] && row[fieldKey].name ? row[fieldKey].name : null;
             }
 
             for (var i=0;i<layout.length;i++) {
