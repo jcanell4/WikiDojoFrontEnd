@@ -25,9 +25,7 @@ define([
          * @override
          */
         process: function (value, dispatcher) {
-            var ret = this.inherited(arguments);
-            //jsTreeProjectDiff.getDiff(JSON.stringify(value.content), JSON.stringify(value.rev1)); //versión con dojo/tree
-            return ret;
+            return this.inherited(arguments);
         },
 
         /**
@@ -67,16 +65,6 @@ define([
             label2 = href + "&rev="+content.date_rev1 +">" + "Revisió (" + this._convertUnixDate(content.date_rev1, true) + ")</a>";
             
             diff = jsProjectDiff.getDiff(rev1, rev2, label1, label2); 
-            //versión con dojo/tree
-//            diff = "<div style=\"overflow-y: scroll;\">"; //contenedor de los árboles correspondientes a las revisiones que se comparan
-//            diff += "<table width='100%'>";
-//            diff += "<th class='leftcolor' width='50%'>" + label1 + "</th>";
-//            diff += "<th class='rightcolor' width='50%'>" + label2 + "</th>";
-//            diff += "<tr>";
-//            diff += "<td><div id='treeRevision1'></div></td>";
-//            diff += "<td><div id='treeRevision2'></div></td>";
-//            diff += "</tr>";
-//            diff += "</div>";
             rev = this._convertUnixDate(content.date) + " - " + this._convertUnixDate(content.date_rev1);
             
             var args = {
