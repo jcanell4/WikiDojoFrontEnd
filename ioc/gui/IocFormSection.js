@@ -51,8 +51,11 @@ define([
             };
 
             var _submitDialogForm = function (w, params) {
-                var query;
+                var query, k;
                 var separacio = (w.value.EspaiNoms !== '') ? ':' : '';
+                for (k in w.value) {
+                    w.value[k] = this._normalitzaCaracters(w.value[k]);
+                } 
 
                 if (w.value.NouProjecte) {
                     query = params.call_project + 
@@ -87,6 +90,23 @@ define([
             
             var dialogBuilder = new DialogBuilder(dialogParams);
             return dialogBuilder;
+        },
+        
+        _normalitzaCaracters: function(cadena) {
+            console.log ("IocFormSection#_normalitzaCaracters 1:", cadena);
+            cadena = cadena.toLowerCase();
+            cadena = cadena.replace(/[áäàâ]/gi,"a");
+            cadena = cadena.replace(/[éèëê]/gi,"e");
+            cadena = cadena.replace(/[íìïî]/gi,"i");
+            cadena = cadena.replace(/[óòöô]/gi,"o");
+            cadena = cadena.replace(/[úùüû]/gi,"u");
+            cadena = cadena.replace(/ç/gi,"c");
+            cadena = cadena.replace(/ñ/gi,"n");
+            cadena = cadena.replace(/[^0-9a-z_]/gi,"_");
+            cadena = cadena.replace(/_+/g,"_");
+            cadena = cadena.replace(/^_+|_+$/g,"");
+            console.log ("newButton#_normalitzaCaracters 2:", cadena);
+            return cadena;
         },
 
         _getDialogTree: function (treeDataSource, fromRoot, reactClick) {
