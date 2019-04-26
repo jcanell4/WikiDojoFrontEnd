@@ -431,7 +431,6 @@ define([
             var $row = jQuery('<tr></tr>');
             var first = true;
 
-            console.log(field.config);
             var headerRow = field.config.display_fields ||
                 field.config.defaultRow;
 
