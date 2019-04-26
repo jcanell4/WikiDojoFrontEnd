@@ -62,7 +62,18 @@ define([
             };
 
             var dialog = this.dialogManager.getDialog(this.dialogManager.type.PROJECT_NEW_ELEMENT, id, dialogParams);
-            dialog.show();
+            var promesa = dialog.show();
+            promesa.then(function(){
+                //Si sólo hay un botón activo, simula un onClick para activarlo automáticamente
+                var id, activeButtons = 0;
+                if (params.call_project)  {++activeButtons; id = "ButtonProject";}
+                if (params.call_document) {++activeButtons; id = "ButtonDocument";}
+                if (params.call_folder)   {++activeButtons; id = "ButtonFolder";}
+                if (activeButtons===1) {
+                    registry.byId(id).onClick();
+                }                 
+             });
+            
         },
 
         _getDialogTree: function (treeDataSource, fromRoot, reactClick) {
@@ -270,11 +281,11 @@ define([
                         '&new_id=' + w.value.EspaiNoms + separacio + w.value.NouProjecte +
                         '&new_projectType=' + w.value.SelectProjecte;
                 //versión con los parámetros del subproyecto
-//                query = params.call_project + 
-//                        '&id=' + w.value.EspaiNoms + separacio + w.value.NouProjecte +
-//                        '&projectType=' + w.value.SelectProjecte +
-//                        '&parent_id=' + params.ns +
-//                        '&parent_projectType=' + params.projectType;
+                //query = params.call_project + 
+                //        '&id=' + w.value.EspaiNoms + separacio + w.value.NouProjecte +
+                //        '&projectType=' + w.value.SelectProjecte +
+                //        '&parent_id=' + params.ns +
+                //        '&parent_projectType=' + params.projectType;
             }
             else if (w.value.NouDocument) {
                 //Método nº 1 de obtención directa del contenido item de un ComboBox: usar una variable de la clase
@@ -321,11 +332,7 @@ define([
         },
         
         _normalitzaCaracters: function(cadena) {
-//            var specialChars = "!@#$^&%*()+=-[]\/{}'|:<>?,. ";
-//            for (var i=0; i < specialChars.length; i++) {
-//                cadena = cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '_');
-//            }
-            console.log ("IocDialogButton#_normalitzaCaracters 1:", cadena);
+            //console.log ("IocDialogButton#_normalitzaCaracters 1:", cadena);
             cadena = cadena.toLowerCase();
             cadena = cadena.replace(/[áäàâ]/gi,"a");
             cadena = cadena.replace(/[éèëê]/gi,"e");
@@ -334,10 +341,11 @@ define([
             cadena = cadena.replace(/[úùüû]/gi,"u");
             cadena = cadena.replace(/ç/gi,"c");
             cadena = cadena.replace(/ñ/gi,"n");
-            cadena = cadena.replace(/[^0-9a-z_]/gi,"_");
+            cadena = cadena.replace(/[^0-9a-z_:]/gi,"_");
             cadena = cadena.replace(/_+/g,"_");
+            cadena = cadena.replace(/:+/g,":");
             cadena = cadena.replace(/^_+|_+$/g,"");
-            console.log ("newButton#_normalitzaCaracters 2:", cadena);
+            //console.log ("newButton#_normalitzaCaracters 2:", cadena);
             return cadena;
         }
         
