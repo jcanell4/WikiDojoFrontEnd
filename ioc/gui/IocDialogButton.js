@@ -259,7 +259,7 @@ define([
             var query, k;
             var separacio = (w.value.EspaiNoms !== '') ? ':' : '';
             for (k in w.value) {
-                w.value.k = this._normalitzaCaracters(w.value.k);
+                w.value[k] = this._normalitzaCaracters(w.value[k]);
             }
 
             if (w.value.NouProjecte) {
