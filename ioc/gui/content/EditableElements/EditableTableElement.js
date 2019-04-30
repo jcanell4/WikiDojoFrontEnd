@@ -35,6 +35,35 @@ define([
     };
 
 
+    // TODO: si augmenta el nombre de funcions s'ha d'extreure a un mòdul
+    var wiocclFunctions = {
+
+        inc: function (defaultValue, previousField) {
+
+            if (!previousField) {
+                console.warn("No s'ha trobat el valor previ del camp");
+                return defaultValue;
+            }
+
+            var numberRegex = /(\d)+/gi;
+            var matches = previousField.match(numberRegex);
+
+            if (matches != null) {
+                return Number(matches[0]) + 1;
+            } else {
+                return defaultValue;
+            }
+        },
+
+        today: function () {
+            return dojo.date.locale.format(new Date(), {
+                selector: 'date',
+                datePattern: DATA_STORE_PATTERN
+            });
+        }
+
+    };
+
     return declare([AbstractEditableElement],
         {
             defaultRow: null,
@@ -289,39 +318,6 @@ define([
             parseRow: function (row) {
                 var newRow = {};
 
-                // TODO: si augmenta el nombre de funcions s'ha d'extreure a un mòdul
-                var wiocclFunctions = {
-
-                    inc: function (defaultValue, previousField) {
-
-                        if (!previousField) {
-                            console.warn("No s'ha trobat el valor previ del camp");
-                            return defaultValue;
-                        }
-
-                        var numberRegex = /(\d)+/gi;
-                        var matches = previousField.match(numberRegex);
-
-                        if (matches != null) {
-                            return Number(matches[0]) + 1;
-                        } else {
-                            return defaultValue;
-                        }
-                    },
-
-                    today: function () {
-                        var value = dojo.date.locale.format(new Date(), {
-                            selector: 'date',
-                            datePattern: DATA_STORE_PATTERN
-                        });
-
-
-                        return value;
-                    }
-
-                };
-
-
                 var lastRow;
 
                 if (this.dataStore.objectStore.data.length > 0) {
@@ -331,8 +327,7 @@ define([
                 var fieldRegex = /{#(.*?)#}/g;
 
                 for (var name in row) {
-                    newRow[name] = row[name]+"";
-                    console.log(name, row[name]);
+                    newRow[name] = row[name] + "";
 
                     var tokens = newRow[name].match(fieldRegex);
 
@@ -341,7 +336,6 @@ define([
                     } else if (tokens.length > 1) {
                         console.warn("Alerta, només es processarà un token:", tokens[0]);
                     }
-
 
                     // Extraïem la funció
                     var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
