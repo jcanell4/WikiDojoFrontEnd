@@ -2,8 +2,9 @@ define([
     "dojo/_base/declare",
     "ioc/wiki30/processor/DiffContentProcessor",
     "ioc/gui/content/contentToolFactory",
-    'ioc/functions/jsProjectDiff'
-], function (declare, DiffContentProcessor, contentToolFactory, jsProjectDiff) {
+    'ioc/functions/jsProjectDiff',
+    'ioc/functions/jsTreeProjectDiff'
+], function (declare, DiffContentProcessor, contentToolFactory, jsProjectDiff, jsTreeProjectDiff) {
     /**
      * Aquesta classe s'encarrega de processar els continguts per documents de tipus Html, generar els ContentTool
      * apropiat i afegir-lo al contenidor adequat.
@@ -63,7 +64,7 @@ define([
             label1 += " (" + this._convertUnixDate(content.date, true) + ")</a>";
             label2 = href + "&rev="+content.date_rev1 +">" + "Revisió (" + this._convertUnixDate(content.date_rev1, true) + ")</a>";
             
-            diff = jsProjectDiff.getDiff(rev1, rev2, label1, label2);
+            diff = jsProjectDiff.getDiff(rev1, rev2, label1, label2); 
             rev = this._convertUnixDate(content.date) + " - " + this._convertUnixDate(content.date_rev1);
             
             var args = {
