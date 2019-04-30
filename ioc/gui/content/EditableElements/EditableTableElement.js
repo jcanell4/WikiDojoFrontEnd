@@ -52,7 +52,7 @@ define([
 
             },
 
-            initializeCallbacks: function() {
+            initializeCallbacks: function () {
                 this.actionCallbacks = {};
 
                 this.actionCallbacks[ADD_ROW] = this._addRowCallback.bind(this);
@@ -72,6 +72,7 @@ define([
                     this.defaultRow = {};
                 }
                 this.inherited(arguments);
+
             },
 
             // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
@@ -85,10 +86,10 @@ define([
 
                 var $container = jQuery('<div id="grid_container"></div>');
 
-                if(this.args.data.props){
+                if (this.args.data.props) {
                     var props = this.args.data.props;
                     for (var prop in props) {
-                        switch (prop){
+                        switch (prop) {
                             case "accesskey":
                             case "contenteditable":
                             case "dir":
@@ -181,35 +182,27 @@ define([
                 });
 
 
-
-
-
-
-
-
-
-
                 // Alerta[Xavi]: el DataGrid te un bug i no permet fer scroll a l'última fila. La solució ha estat
                 // afegir 25 punts a l'scroll, això actualment no afecta a la aplicació perquè no es contempla
                 // la opció de fer scroll a una fila en concret.
                 // Com que la gestió de l'scroll es realitza mitjançant la classe _Scroller.js desde la super classe
                 // _Grid.js he sobreescrit la funció concreta aquí:
 
-                grid.scroller.scroll= function(inTop){
-                    this.grid.scrollTop = inTop +25;
-                    if(this.colCount){
+                grid.scroller.scroll = function (inTop) {
+                    this.grid.scrollTop = inTop + 25;
+                    if (this.colCount) {
                         this.startPacify();
                         this.findPage(inTop);
                         var h = this.height;
                         var b = this.getScrollBottom(inTop);
-                        for(var p=this.page, y=this.pageTop; (p<this.pageCount)&&((b<0)||(y<b)); p++){
+                        for (var p = this.page, y = this.pageTop; (p < this.pageCount) && ((b < 0) || (y < b)); p++) {
                             y += this.needPage(p, y);
                         }
                         this.firstVisibleRow = this.getFirstVisibleRow(this.page, this.pageTop, inTop);
                         this.lastVisibleRow = this.getLastVisibleRow(p - 1, y, b);
                         // indicates some page size has been updated
-                        if(h != this.height){
-                            this.repositionPages(p-1);
+                        if (h != this.height) {
+                            this.repositionPages(p - 1);
                         }
                         this.endPacify();
                     }
@@ -238,8 +231,8 @@ define([
 
 
                 // grid.focus.focusGrid = function() {console.log("focusGrid")}; // aquesta es crida quan es fa doble click
-                grid.focus.focusGridView = function() {}; // Aquesta funció l'unic que fa es disparar l'esdeveniment 'focus' i es el que provoca el desplaçament de les cel·les
-
+                grid.focus.focusGridView = function () {
+                }; // Aquesta funció l'unic que fa es disparar l'esdeveniment 'focus' i es el que provoca el desplaçament de les cel·les
 
 
                 // grid.views.getFirstScrollingView = function() {
@@ -292,6 +285,106 @@ define([
                 button.startup();
             },
 
+
+            parseRow: function (row) {
+                var newRow = {};
+
+                // TODO: si augmenta el nombre de funcions s'ha d'extreure a un mòdul
+                var wiocclFunctions = {
+
+                    inc: function (defaultValue, previousField) {
+
+                        if (!previousField) {
+                            console.warn("No s'ha trobat el valor previ del camp");
+                            return defaultValue;
+                        }
+
+                        var numberRegex = /(\d)+/gi;
+                        var matches = previousField.match(numberRegex);
+
+                        if (matches != null) {
+                            return Number(matches[0]) + 1;
+                        } else {
+                            return defaultValue;
+                        }
+                    },
+
+                    today: function () {
+                        var value = dojo.date.locale.format(new Date(), {
+                            selector: 'date',
+                            datePattern: DATA_STORE_PATTERN
+                        });
+
+
+                        return value;
+                    }
+
+                };
+
+
+                var lastRow;
+
+                if (this.dataStore.objectStore.data.length > 0) {
+                    lastRow = this.dataStore.objectStore.data[this.dataStore.objectStore.data.length - 1];
+                }
+
+                var fieldRegex = /{#(.*?)#}/g;
+
+                for (var name in row) {
+                    newRow[name] = row[name]+"";
+                    console.log(name, row[name]);
+
+                    var tokens = newRow[name].match(fieldRegex);
+
+                    if (tokens === null) {
+                        continue;
+                    } else if (tokens.length > 1) {
+                        console.warn("Alerta, només es processarà un token:", tokens[0]);
+                    }
+
+
+                    // Extraïem la funció
+                    var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
+                    var functionTokens = functionRegex.exec(tokens[0]);
+
+                    // El primer token és el nom de la funció
+                    var func = functionTokens[1].toLowerCase();
+
+                    // El segón token conté els paràmetres
+                    var params = functionTokens[2];
+
+                    var value;
+
+
+                    switch (func) {
+                        case 'inc':
+
+                            // Si hi ha una fila anterior cerquem el valor anterior
+                            if (lastRow) {
+                                value = wiocclFunctions[func](params[0], lastRow[this.fieldToCol[name]]);
+                            } else {
+                                // El paràmetre és el valor per defecte per la primera fila
+                                value = params[0];
+                            }
+
+                            break;
+
+                        default:
+                            if (wiocclFunctions[func]) {
+                                value = wiocclFunctions[func](params);
+                            } else {
+                                console.error("Function: unknown", params);
+                            }
+                    }
+
+                    newRow[name] = newRow[name].replace(fieldRegex, value);
+
+                }
+
+                return newRow;
+            },
+
+
             /**
              *
              * @param <Object>|Array<Object>|null keyPairs si no hi ha cap valor es faran servir els valors per defecte.
@@ -302,7 +395,7 @@ define([
              *
              * @private
              */
-            addRow: function(keyPairs, options) {
+            addRow: function (keyPairs, options) {
 
                 this.grid.addingRow = true;
 
@@ -312,36 +405,40 @@ define([
                     id: this.objectStore.getUniqueId(),
                 };
 
-                for (var name in this.defaultRow) {
+                // console.log("Valor de la taula", this.args.data.value);
+
+                var parsedRow = this.parseRow(this.defaultRow);
+
+                for (var name in parsedRow) {
                     var field = this.args.fields[name];
-                    // console.log("Field:", field, this.args.data.value);
-
-
 
                     if (keyPairs && keyPairs[name]) {
                         data[this.fieldToCol[name]] = keyPairs[name];
 
-                    } else if (field.type && field.type === "date" && !this.defaultRow[name]) {
-                        data[this.fieldToCol[name]] = dojo.date.locale.format(new Date(), {selector:'date', datePattern:DATA_STORE_PATTERN});
+                    } else if (field.type && field.type === "date" && !parsedRow[name]) {
+                        data[this.fieldToCol[name]] = dojo.date.locale.format(new Date(), {
+                            selector: 'date',
+                            datePattern: DATA_STORE_PATTERN
+                        });
 
                         // dojo.date.locale.format(new Date(), {selector:'date', datePattern:DATA_DISPLAY_PATTERN})
                     } else {
-                        data[this.fieldToCol[name]] = this.defaultRow[name];
+                        data[this.fieldToCol[name]] = parsedRow[name];
                     }
                 }
 
                 // Afegim la fila als valors originals
                 var originalValue;
-                if(typeof  this.args.data.value =="string"){
-                    if(0 == this.args.data.value.length){
+                if (typeof  this.args.data.value == "string") {
+                    if (0 == this.args.data.value.length) {
                         originalValue = [];
-                    }else{
+                    } else {
                         originalValue = JSON.parse(this.args.data.value);
                     }
-                }else{
+                } else {
                     originalValue = this.args.data.value;
                 }
-                originalValue.push(this.defaultRow);
+                originalValue.push(parsedRow);
                 this.args.data.value = originalValue;
 
                 this.dataStore.newItem(data);
@@ -363,17 +460,19 @@ define([
                 this.grid.addingRow = false;
             },
 
-            addRowAfter: function(data) {
+            addRowAfter: function (data) {
                 this.addRow(data, {
                     after: {
-                        id: this.grid.selection.selectedIndex}
+                        id: this.grid.selection.selectedIndex
+                    }
                 });
             },
 
-            addRowBefore: function(data) {
+            addRowBefore: function (data) {
                 this.addRow(data, {
                     before: {
-                        id: this.grid.selection.selectedIndex}
+                        id: this.grid.selection.selectedIndex
+                    }
                 });
             },
 
@@ -420,13 +519,13 @@ define([
                     }
                 } while (isNaN(quantity) || quantity < 1);
 
-                ok =  this.objectStore.data.length < quantity;
-                if(ok){
+                ok = this.objectStore.data.length < quantity;
+                if (ok) {
                     this.setRows(quantity);
-                }else if(this.objectStore.data.length > quantity){
+                } else if (this.objectStore.data.length > quantity) {
                     alert("Aquesta acció només permet incrementar el nombre de files. Per reduir-les, selecciona les que desitgis eliminar i prem el botó corresponent.");
-                }else{
-                    alert("Has indicat el nombre de files que ja hi ha. No es realitzarà cap canvi." );
+                } else {
+                    alert("Has indicat el nombre de files que ja hi ha. No es realitzarà cap canvi.");
                 }
             },
 
@@ -446,11 +545,11 @@ define([
             },
 
             setRows: function (quantity) {
-                if(this.objectStore.data.length<quantity){
+                if (this.objectStore.data.length < quantity) {
                     for (var i = this.objectStore.data.length; i < quantity; i++) {
                         this.addRow();
                     }
-                }else if(this.objectStore.data.length>quantity){
+                } else if (this.objectStore.data.length > quantity) {
                     alert("Aquesta acció només permet incrementar el nombre de files. No pas reduir-lo.")
                 }
             },
@@ -482,8 +581,8 @@ define([
             },
 
             removeRows: function (indexes) {
-                indexes.sort(function(a, b) {
-                    return b-a;
+                indexes.sort(function (a, b) {
+                    return b - a;
                 });
 
 
@@ -493,7 +592,7 @@ define([
                     this.dataStore.deleteItem(indexes[i]);
 
                     // Eliminem segons el seu index de major a menor
-                    originalValues.splice(indexes[i],1);
+                    originalValues.splice(indexes[i], 1);
 
                 }
                 this.args.data.value = originalValues;
@@ -526,15 +625,24 @@ define([
 
 
                                 cell.type = dojox.grid.cells.DateTextBox;
-                                cell.getValue = function(){
+                                cell.getValue = function () {
                                     // Override the default getValue function for dojox.grid.cells.DateTextBox
-                                    return dojo.date.locale.format(this.widget.get('value'), {selector:'date', datePattern:DATA_STORE_PATTERN});
+                                    return dojo.date.locale.format(this.widget.get('value'), {
+                                        selector: 'date',
+                                        datePattern: DATA_STORE_PATTERN
+                                    });
                                 };
-                                cell.formatter = function (datum){
+                                cell.formatter = function (datum) {
 
                                     // Format the value in store, so as to be displayed.
-                                    var d = !datum ? (new Date()) : dojo.date.locale.parse(datum, {selector:'date', datePattern:DATA_STORE_PATTERN});
-                                    return dojo.date.locale.format(d, {selector:'date', datePattern:DATA_DISPLAY_PATTERN});
+                                    var d = !datum ? (new Date()) : dojo.date.locale.parse(datum, {
+                                        selector: 'date',
+                                        datePattern: DATA_STORE_PATTERN
+                                    });
+                                    return dojo.date.locale.format(d, {
+                                        selector: 'date',
+                                        datePattern: DATA_DISPLAY_PATTERN
+                                    });
                                 };
                                 break;
                             case 'number':
@@ -673,9 +781,9 @@ define([
                 return data;
             },
 
-            normalizeValueForKey: function(key, value) {
+            normalizeValueForKey: function (key, value) {
                 var normalizedValue;
-                var type = this.args.fields[key]? this.args.fields[key].type : '';
+                var type = this.args.fields[key] ? this.args.fields[key].type : '';
 
                 switch (type) {
                     case 'bool':
@@ -724,7 +832,7 @@ define([
                 this.grid.update();
                 this.$icon.css('display', 'none');
 
-                if(this.$container.attr("data-display-node")){
+                if (this.$container.attr("data-display-node")) {
                     this.$container.parent().slideToggle();
                 }
             },
@@ -746,7 +854,6 @@ define([
                 var updatedData = this.dataStore.objectStore.data;
 
 
-
                 for (var i = 0; i < updatedData.length; i++) {
                     var newItem = {};
 
@@ -761,8 +868,6 @@ define([
                 }
 
 
-
-
                 data = this.normalizeData(data);
 
                 this.$field.val(JSON.stringify(data));
@@ -772,14 +877,14 @@ define([
                 }
             },
 
-            normalizeData: function(data) {
+            normalizeData: function (data) {
 
                 // Recorrem totes les files
-                for (var i=0; i<data.length; i++) {
+                for (var i = 0; i < data.length; i++) {
 
 
                     for (var key in data[i]) {
-                        var type = this.args.fields[key]? this.args.fields[key].type : '';
+                        var type = this.args.fields[key] ? this.args.fields[key].type : '';
 
                         switch (type) {
                             case 'bool':
@@ -788,7 +893,7 @@ define([
                                 break;
 
                             default:
-                                // No fer cap canvi
+                            // No fer cap canvi
 
                         }
 
@@ -879,7 +984,7 @@ define([
                 }
             },
 
-            addHiddenFieldValues: function(row, rowNumber) {
+            addHiddenFieldValues: function (row, rowNumber) {
 
                 // var originalValues = JSON.parse(this.args.data.value);
                 var originalValues = this.args.data.value;
@@ -891,11 +996,11 @@ define([
                 }
             },
 
-            isCellInLayout: function(cell, layout) {
+            isCellInLayout: function (cell, layout) {
 
                 for (var i = 0; i < layout.length; i++) {
                     if (layout[i].field === this.colToField[cell.field]) {
-                    // if (layout[i].field === cell.field) {
+                        // if (layout[i].field === cell.field) {
                         return true;
                     }
                 }
@@ -904,37 +1009,43 @@ define([
 
             //NO SE USA
             //Convierte una fecha a formato "dd-mm-yyyy"
-            convertToDateDMY: function(data) {
-                function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
+            convertToDateDMY: function (data) {
+                function pad(s) {
+                    return (s.length < 2 || s.toString().length < 2) ? '0' + s : s;
+                }
+
                 var displayPattern = 'dd-MM-yyyy';
                 var d;
                 if (data === "") {
                     d = new Date();
-                    return dojo.date.locale.format(d, {selector:'date', datePattern:displayPattern});
-                }else if (isNaN(data.substring(0,4))) {
+                    return dojo.date.locale.format(d, {selector: 'date', datePattern: displayPattern});
+                } else if (isNaN(data.substring(0, 4))) {
                     sdata = data.split(/\/|-/);
                     return [pad(sdata[0]), pad(sdata[1]), sdata[2]].join('-');
-                }else {
+                } else {
                     d = new Date(data);
-                    return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-');
+                    return [pad(d.getDate()), pad(d.getMonth() + 1), d.getFullYear()].join('-');
                 }
             },
 
             //NO SE USA
             //Convierte una fecha a formato "yyyy-mm-dd"
-            convertToISODate: function(data) {
-                function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
+            convertToISODate: function (data) {
+                function pad(s) {
+                    return (s.length < 2 || s.toString().length < 2) ? '0' + s : s;
+                }
+
                 var pattern = 'yyyy-MM-dd';
                 var d;
                 if (data === "") {
                     d = new Date();
-                    return dojo.date.locale.format(d, {selector:'date', datePattern:pattern});
-                }else if (isNaN(data.substring(0,4))) {
+                    return dojo.date.locale.format(d, {selector: 'date', datePattern: pattern});
+                } else if (isNaN(data.substring(0, 4))) {
                     sdata = data.split(/\/|-/);
                     return [sdata[2], pad(sdata[1]), pad(sdata[0])].join('-');
-                }else {
+                } else {
                     d = new Date(data);
-                    return [d.getFullYear(), pad(d.getMonth()+1), pad(d.getDate())].join('-');
+                    return [d.getFullYear(), pad(d.getMonth() + 1), pad(d.getDate())].join('-');
                 }
             }
 
