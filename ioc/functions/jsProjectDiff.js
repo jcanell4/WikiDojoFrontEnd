@@ -1,68 +1,127 @@
 define([], function () {
     
     var lib = {
-        sort: function (arr) {
-            return arr.sort();
-        },
         
-        comparaOld: function (arrL, arrR, titleL, titleR) {
-            var item, clase,
-                diff = {}, 
-                inTBi = "<table><th colspan=2>",
-                inTBf = "</th>",
-                fiTB = "</table>",
-                inTR = "<tr><td",
-                fiTR = "</td></tr>",
-                inTD = "</td><td",
-                changed = " class='itemProjectChanged'>";
-        
-            diff.L = inTBi + titleL + inTBf;
-            diff.R = inTBi + titleR + inTBf;
-            
-            for (item in arrL) {
-                diff.L += inTR;
-                diff.R += inTR;
-                clase = (arrL[item] !== arrR[item]) ? changed : ">";
-                diff.L += clase + item + inTD + clase + arrL[item] + fiTR;
-                diff.R += clase + item + inTD + clase + arrR[item] + fiTR;
-            }
-            diff.L += fiTB;
-            diff.R += fiTB;
-            return diff;
-        },
+        colorL: "leftcolor",
+        colorR: "rightcolor",
+        divMain: "<div class='diffmain'>",
+        divRow: "<div class='diffrow'>",
+        divCol: "<div class='diffcolumn ",
+        spnCol: "<span class='",
+        fiSpn: "</span>",
+        fiDiv: "</div>",
+        fiCH: "'>",
+        clCH: " itemProjectChanged'>",
         
         compara: function (arrL, arrR, titleL, titleR) {
-            var item, ch, taula,
-                colorL = "leftcolor",
-                colorR = "rightcolor",
-                inTB = "<table>",
-                fiTB = "</table>",
-                inTHl = "<th colspan=2 class='"+ colorL + "'>",
-                inTHr = "<th colspan=2 class='"+ colorR + "'>",
-                fiTH = "</th>",
-                inTR = "<tr>",
-                inTD = "<td class='",
-                inTH = "<th class='",
-                fiTR = "</tr>",
-                fiTD = "</td>",
-                fiTH = "</th>",
-                clCH = " itemProjectChanged'>";
+            var key, itemL, itemR, taula,
+                inHl = this.divCol + this.colorL + "'>" + titleL + this.fiDiv,
+                inHr = this.divCol + this.colorR + "'>" + titleR + this.fiDiv;
                 
-            taula = inTB + inTHl + titleL + fiTH + inTHr + titleR + fiTH;
-            for (item in arrL) {
-                ch = (arrL[item] !== arrR[item]) ? clCH : "'>";
-                taula += inTR + inTH + colorL + ch + item +": " + fiTH;
-                taula += inTD + colorL + ch + arrL[item] + fiTD;
-                taula += inTH + colorR + ch + item + ": " + fiTH;
-                taula += inTD + colorR + ch + arrR[item] + fiTD + fiTR;
+            taula = this.divMain + this.divRow + inHl + inHr + this.fiDiv;
+            for (key in arrL) {
+                itemL = this.parseStringToArrayOrObject(arrL[key]);
+                itemR = this.parseStringToArrayOrObject(arrR[key]);
+                if (Array.isArray(itemL)) {
+                    taula += this.construyeDesdeArray(key, itemL, itemR, 1);
+                }else if (typeof itemL === 'object') {
+                    taula += this.construyeDesdeObjeto(key, itemL, itemR, 1);
+                }else {
+                    taula += this.construye(key, itemL, itemR, 1);
+                }
             }
-            taula += fiTB;
+            taula += this.fiDiv;
             return taula;
         },
         
-        stripLinebreaks: function (str) {
-            return str.replace(/^[\n\r]*|[\n\r]*$/g, "");
+        construyeDesdeArray: function(k, arrL, arrR, level) {
+            var key, itemL, itemR;
+            var max = (arrL.length > arrR.length) ? arrL.length : arrR.length;
+
+            var taula = this.construye(k, "", "", level);
+            
+            for (var key = 0; key < max; key++) {
+                itemL = this.parseStringToArrayOrObject(arrL[key]);
+                itemR = this.parseStringToArrayOrObject(arrR[key]);
+                if (Array.isArray(itemL)) {
+                    taula += this.construyeDesdeArray(k, itemL, itemR, level+1);
+                }else if (typeof itemL === 'object') {
+                    taula += this.construyeDesdeObjeto(key, itemL, itemR, level+1);
+                }else {
+                    taula += this.construye(key, itemL, itemR, level);
+                }
+            }
+            
+            return taula;
+        },
+        
+        construyeDesdeObjeto: function(k, arrL, arrR, level) {
+            var key, itemL, itemR;
+            var taula = this.construye("fila "+(k+1), "", "", level, "diffkeycolor");
+            
+            for (key in arrL) {
+                itemL = this.parseStringToArrayOrObject(arrL[key]);
+                itemR = this.parseStringToArrayOrObject(arrR[key]);
+                if (Array.isArray(itemL)) {
+                    taula += this.construyeDesdeArray(key, itemL, itemR, level+1);
+                }else if (typeof itemL === 'object') {
+                    taula += this.construyeDesdeObjeto(key, itemL, itemR, level+1);
+                }else {
+                    taula += this.construye(key, itemL, itemR, level);
+                }
+                //eliminamos el elemeto procesado de cada uno de los objetos
+                delete arrL[key];
+                if (itemR !== undefined && itemR !== "") delete arrR[key];
+            }
+            
+            for (key in arrR) {
+                itemL = this.parseStringToArrayOrObject(arrL[key]);
+                itemR = this.parseStringToArrayOrObject(arrR[key]);
+                if (Array.isArray(itemR)) {
+                    taula += this.construyeDesdeArray(key, itemL, itemR, level+1);
+                }else if (typeof itemR === 'object') {
+                    taula += this.construyeDesdeObjeto(key, itemL, itemR, level+1);
+                }else {
+                    taula += this.construye(key, itemL, itemR, level);
+                }
+            }
+            
+            return taula;
+        },
+        
+        construye: function(key, itemL, itemR, level, keycolor) {
+            var taula = "";
+            var ch = (itemL !== itemR) ? this.clCH : this.fiCH;
+
+            var dvCl = this.divCol + this.colorL + ch,  //div column left
+                dvCr = this.divCol + this.colorR + ch,  //div column right
+                spClk = this.spnCol + "difflevel"+level + " diffkey " + keycolor + " " + this.colorL + ch, //span column left key
+                spClv = this.spnCol + this.colorL + ch,                                   //span column left value
+                spCrk = this.spnCol + "difflevel"+level + " diffkey " + keycolor + " " + this.colorR + ch, //span column right key
+                spCrv = this.spnCol + this.colorR + ch;                                   //span column right value
+            
+            taula += this.divRow;
+            taula += dvCl;
+            taula += spClk + key + ": " + this.fiSpn;
+            taula += spClv + itemL + this.fiSpn;
+            taula += this.fiDiv;
+            taula += dvCr;
+            taula += spCrk + key + ": " + this.fiSpn;
+            taula += spCrv + itemR + this.fiSpn;
+            taula += this.fiDiv;
+            taula += this.fiDiv;
+            return taula;
+        },
+        
+        parseStringToArrayOrObject: function(elem) {
+            try {
+                ret = JSON.parse(elem);
+            }catch(err) {
+                ret = (elem===undefined) ? "" : elem;
+            }
+            return ret;
         }
+        
     };
     
     var getDiff = function(formL, formR, titleL, titleR){
