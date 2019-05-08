@@ -6,6 +6,8 @@
 
     border: 1px solid #cccccc;
     border-radius: 4px;
+
+    min-height: 35px;
 }
 
 .ioc-filtered-list li {

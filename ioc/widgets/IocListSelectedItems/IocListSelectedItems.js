@@ -66,7 +66,7 @@ define([
                     this.value = this._generateItemsFromString(this.value);
                 }
 
-                if (Object.keys(this.value).length=== 0) {
+                if (!this.value || Object.keys(this.value).length === 0) {
 
                     // Això serveix per afegir un espai mínim quan la llista es buida
                     jQuery(this.selectedItemsNode).html('<li></li>');
