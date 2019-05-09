@@ -575,20 +575,23 @@ define([
             },
 
             removeRows: function (indexes) {
-                indexes.sort(function (a, b) {
-                    return b - a;
+                indexes.sort(function (a, b) { // això no se si cal
+                    return b.id - a.id;
                 });
 
+                var originalValues;
 
-                var originalValues = this.args.data.value;
+                if (typeof this.args.data.value ==="string") {
+                    originalValues = JSON.parse(this.args.data.value);
+                } else {
+                    originalValues = this.args.data.value;
+                }
 
                 for (var i = 0; i < indexes.length; i++) {
+                    originalValues.splice(indexes[i].id, 1);
                     this.dataStore.deleteItem(indexes[i]);
-
-                    // Eliminem segons el seu index de major a menor
-                    originalValues.splice(indexes[i], 1);
-
                 }
+
                 this.args.data.value = originalValues;
 
                 this.dataStore.save();
@@ -982,6 +985,12 @@ define([
 
                 // var originalValues = JSON.parse(this.args.data.value);
                 var originalValues = this.args.data.value;
+
+                if (typeof this.args.data.value === "string") {
+                    originalValues = JSON.parse(this.args.data.value);
+                } else {
+                    originalValues = this.args.data.value;
+                }
 
                 for (var field in originalValues[rowNumber]) {
                     if (!this.isFieldDisplayed(field)) {
