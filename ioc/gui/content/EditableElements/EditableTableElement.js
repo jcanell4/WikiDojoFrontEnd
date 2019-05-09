@@ -38,21 +38,39 @@ define([
     // TODO: si augmenta el nombre de funcions s'ha d'extreure a un mòdul
     var wiocclFunctions = {
 
+        copy: function (defaultValue, previousField) {
+            var ret;
+            
+            if (!previousField) {
+                console.warn("No s'ha trobat el valor previ del camp");
+                return defaultValue;
+            }
+            
+            return previousField;
+        },
         inc: function (defaultValue, previousField) {
-
+            var ret;
+            
             if (!previousField) {
                 console.warn("No s'ha trobat el valor previ del camp");
                 return defaultValue;
             }
 
-            var numberRegex = /(\d)+/gi;
-            var matches = previousField.match(numberRegex);
-
-            if (matches != null) {
-                return Number(matches[0]) + 1;
-            } else {
-                return defaultValue;
+            if(typeof previousField == "string"){
+                var numberRegex = /(\d)+/gi;
+                var matches = previousField.match(numberRegex);
+                if (matches != null) {
+                    ret = Number(matches[0]) + 1;
+                } else {
+                    ret = defaultValue;
+                }
+            }else if(typeof previousField == "number"){
+                ret = previousField + 1;
+            }else{
+                ret = defaultValue;
             }
+            
+            return ret;
         },
 
         today: function () {
@@ -351,6 +369,7 @@ define([
 
 
                     switch (func) {
+                        case 'copy':
                         case 'inc':
 
                             // Si hi ha una fila anterior cerquem el valor anterior
