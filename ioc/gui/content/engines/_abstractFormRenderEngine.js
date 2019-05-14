@@ -292,7 +292,20 @@ define([
                 $option = jQuery('<option>')
                     .val(value)
                     .html(description);
-
+            
+                if(typeof valueSelected == "string"){
+                    switch(typeof options[i].value){
+                        case "boolean":
+                            valueSelected = valueSelected.toLowerCase()=="true"
+                                            || valueSelected.toLowerCase()=="yes"
+                                            || valueSelected.toLowerCase()=="si"
+                                            || valueSelected.toLowerCase()=="on";
+                            break;
+                        case "Number":
+                            valueSelected = Number(valueSelected);
+                            break;
+                    }
+                }
                 if (options[i].selected || options[i].value==valueSelected) {
                     $option.attr('selected', true);
                 }
