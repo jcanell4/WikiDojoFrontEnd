@@ -212,9 +212,19 @@ define([
 
         renderFieldDefault: function (field, fvalues) {
 
+
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
-                $input = jQuery('<input>');
+                $input = jQuery('<input>'),
+                value = fvalues[field.name];
+
+            console.log("render default:", field, value);
+
+            if (Array.isArray(value)) {
+                console.log("Es array:", value);
+                value = JSON.stringify(value);
+            }
+
 
             if (field.type !== 'hidden') {
                 $label.html(field.label + ' (default)');
@@ -235,12 +245,12 @@ define([
 
             if (field.type === "date") {
                 if (this.checkDateInput()) {
-                    $input.val(fvalues[field.name]);
+                    $input.val(value);
                 }else {
-                    $input.val(this.convertToDateDMY(fvalues[field.name]));
+                    $input.val(this.convertToDateDMY(value));
                 }
             }else {
-                $input.val(fvalues[field.name]);
+                $input.val(value);
             }
 
             if (field.id) {
