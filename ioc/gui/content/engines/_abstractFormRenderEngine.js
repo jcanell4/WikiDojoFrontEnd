@@ -471,6 +471,12 @@ define([
                 }
 
                 var $col = jQuery('<th '+extra+'>' + fieldName  + '</th>');
+                
+                var witdth = this.getLayoudDataIfExists(key, field.config.layout, "width");
+                if(witdth){
+                    $col.css("width", witdth);
+                }
+                    
                 //var $col = jQuery('<th >' + key + '</th>');
 
                 // ALERTA[Xavi]! Posem la primera fila com a readonly manualment.
@@ -542,6 +548,32 @@ define([
             }
 
             return $table;
+        },
+
+        getLayoudDataIfExists: function(fieldKey, layout, layoutKey) {
+
+            // Si no existeix el layout el cerca al config
+            if (!layout) {
+
+                return false;
+            }
+
+            for (var i=0;i<layout.length;i++) {
+
+                for (var j=0; j<layout[i].cells.length; j++) {
+                    if (layout[i].cells[j].field === fieldKey) {
+                        var ret = false;
+                        if(layout[i].cells[j][layoutKey] !== undefined){
+                            ret = layout[i].cells[j][layoutKey];
+                        }else if(layout[i].defaultCell[layoutKey]){
+                            ret = layout[i].defaultCell[layoutKey];
+                        }
+                        return ret;
+                    }
+                }
+            }
+
+            return false;
         },
 
         getDataFieldNameIfExists: function(row, fieldKey, layout) {
