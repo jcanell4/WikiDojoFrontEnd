@@ -217,7 +217,7 @@ define([
                 $input = jQuery('<input>');
 
             if (field.type !== 'hidden') {
-                $label.html(field.label + ' (default)');
+                $label.html(field.label);
                 $field.append($label);
 
                 // TODO[Xavi] Afegir un parámetre a field que retornará del servidor i indicarà si s'ha de mostrar el botó de l'editor
@@ -356,12 +356,15 @@ define([
                 $group = jQuery('<div>'),
                 $span = jQuery('<span>'),
                 $input = jQuery('<input>'),
-                $label = jQuery('<input>');
-
-            $field.append($group);
+                $label = jQuery('<input>'),
+                $nolabel = jQuery('<label>');
+        
+            $nolabel.html(" ");
+            $field.append($nolabel).append($group);
 
             $label.attr('readonly', true)
                 .addClass('form-control')
+                .addClass('check-label')
                 .val(field.label)
                 .attr('type', 'text')
                 .attr('title', field.label);
@@ -376,8 +379,7 @@ define([
             $input.attr('type', field.type)
                 .attr('name', field.name)
                 //.val(field.value);
-                .val(fvalues[field.name])
-                .prop("checked", fvalues[field.value]);
+                .prop("checked", fvalues[field.name]==="true" || fvalues[field.name]===true);
 
             if (field.id) {
                 $input.attr('id', field.id);
