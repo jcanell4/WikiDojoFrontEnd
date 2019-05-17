@@ -350,7 +350,10 @@ define([
              */
             changeWidgetProperty: function (id, propertyName, value) {
                 var widget = registry.byId(id);
-                widget.set(propertyName, value);
+                if (widget === undefined) 
+                    alert("ERROR:\nDispatcher#changeWidgetProperty()\nid = "+id);
+                else
+                    widget.set(propertyName, value);
             },
 
             /**
