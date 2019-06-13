@@ -195,12 +195,13 @@ define([
                 }];
 
 
+
                 if (this.args.layout) {
                     gridLayout = this.mergeLayout(gridLayout, this.args.layout);
                     this.columns = gridLayout[0].cells;
                 }
 
-                //console.log("gridLayout final:", gridLayout);
+
 
                 this.setupCells(gridLayout[0]);
 
@@ -629,16 +630,16 @@ define([
 
                 for (var i in layout.cells) {
                     var cell = layout.cells[i];
+                    var fieldName = this.colToField[cell.field];
 
-                    if (this.args.fields && this.args.fields[cell.name]) {
+                    if (this.args.fields && this.args.fields[fieldName]) {
 
-                        var field = this.args.fields[cell.name];
+                        var field = this.args.fields[fieldName];
 
                         // Els cellType estan definits com propietats a dojox/grid/cells/_Base.js
 
                         switch (field['type']) {
                             case 'date':
-
 
                                 cell.type = dojox.grid.cells.DateTextBox;
                                 cell.getValue = function () {
@@ -688,6 +689,10 @@ define([
                             this.inputOnNewRowFields[cell.name] = this.args.fields[cell.name];
                         }
 
+                    } else {
+                        console.error(i, cell);
+                        console.error("No s'ha trobat?", cell.name, this.args.fields[cell.name])
+                        console.error(this.args.fields);
                     }
                 }
 
@@ -894,13 +899,13 @@ define([
             },
 
             normalizeData: function (data) {
-
                 // Recorrem totes les files
                 for (var i = 0; i < data.length; i++) {
 
 
                     for (var key in data[i]) {
                         var type = this.args.fields[key] ? this.args.fields[key].type : '';
+
 
                         switch (type) {
                             case 'bool':

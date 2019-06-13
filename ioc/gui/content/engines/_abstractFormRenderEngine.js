@@ -29,7 +29,7 @@ define([
         },
 
         renderGroup: function (group, fvalues) {
-            // console.log("_abstractFormRenderEngine#RenderGroup:", group, fvalues);
+            // console.log("_abstractFormRenderEngine#RenderGroup:", group);
             var fields,
                 $group = '',
                 $header,
@@ -217,8 +217,6 @@ define([
                 $label = jQuery('<label>'),
                 $input = jQuery('<input>'),
                 value = fvalues[field.name];
-
-            console.log("render default:", field, value);
 
             if (Array.isArray(value)) {
                 console.log("Es array:", value);
