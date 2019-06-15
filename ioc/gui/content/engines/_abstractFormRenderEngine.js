@@ -219,7 +219,6 @@ define([
                 value = fvalues[field.name];
 
             if (Array.isArray(value)) {
-                console.log("Es array:", value);
                 value = JSON.stringify(value);
             }
 
