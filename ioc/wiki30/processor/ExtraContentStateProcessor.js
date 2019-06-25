@@ -15,7 +15,6 @@ define([
          */
         updateState: function(dispatcher, value){
             dispatcher.getGlobalState().getContent(value.id)[value.type]=value.value;
-            console.log("Actualitzat estat:", value.id, dispatcher.getGlobalState().getContent(value.id));
         }
     });
     return ret;

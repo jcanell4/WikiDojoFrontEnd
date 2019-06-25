@@ -78,11 +78,6 @@ define([
                     }
                 }*/
             }
-
-            if (this.oldGlobalState && this.oldGlobalState.ftpSendButton) {
-                //recuperar el globalstate updateButton
-                dispatcher.getGlobalState().getContent(value.id).ftpSendButton = this.oldGlobalState.ftpSendButton;
-            }
         },
 
         createContentTool: function (content, dispatcher) {
