@@ -124,11 +124,31 @@ define([
                 ['rule', ["readonly-start", "</readonly>", "keyword.operator.readonly", "start"]],
 
                 ['format', ["markkey", "@@", "@@"]],
-                ['container', ["protectedcontent", "(:###)(.*)", ["keyword.operator.protectedcontent", "markup.protectedcontent"]]],
-                ['rule', ["protectedcontent-start", "^(.*)(###:)", ["markup.protectedcontent", "keyword.operator.protectedcontent"], "start"]],
-                ['rule', ["protectedcontent-start", "^(.+)", "markup.protectedcontent"]],
-                ['rule', ["protectedcontent-table-start", "^(.*)(###:)", ["markup.protectedcontent", "keyword.operator.protectedcontent"], "start"]],
-                ['rule', ["protectedcontent-table-start", "^(.+)", "markup.protectedcontent"]],
+
+                // PROTECTEDCONTENT
+                ['container', ["protectedcontent", "^:###$", "keyword.operator.protectedcontent"]],
+                ['rule', ["protectedcontent-start", "^###:$", "keyword.operator.protectedcontent", "start"]],
+                ['rule', ["protectedcontent-start", ".", "markup.protectedcontent"]], // ALERTA[Xavi] Això és el que aplica el resaltat a tota la selecció entre la apertura i el tancament
+
+                // + TABLE
+                ['rule', ["protectedcontent-start", "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-table-start"]],
+                ['rule', ["protectedcontent-table-start", "$", "markup.protectedcontent", "protectedcontent-start"]],
+
+
+                // + EDITTABLE
+                ['rule', ["protectedcontent-start", "<edittable>", "keyword.operator.edittable", "protectedcontent-edittable-start"]],
+                ['rule', ["protectedcontent-edittable-start", "</edittable>", "keyword.operator.edittable", "protectedcontent-start"]],
+
+                ['rule', ["protectedcontent-edittable-start", "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-edittable-table-start"]],
+                ['rule', ["protectedcontent-edittable-table-start", "$", "markup.protectedcontent", "protectedcontent-edittable-start"]],
+
+
+
+                // ['rule', ["protectedcontent-start", "^(.+)", "markup.protectedcontent"]],
+                // ['rule', ["protectedcontent-table-start", "^(.*)(###:)", ["markup.protectedcontent", "keyword.operator.protectedcontent"], "start"]],
+                // ['rule', ["protectedcontent-table-start", "^(.+)", "markup.protectedcontent"]],
+
+
 
                 ['container', ["edittable", "<edittable>", "keyword.operator.edittable"]],
                 ['rule', ["edittable-start", "</edittable>", "keyword.operator.edittable", "start"]],

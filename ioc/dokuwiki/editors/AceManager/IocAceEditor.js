@@ -1069,6 +1069,9 @@ define([
                                 mapping = tokenizer.matchMappings[currentState];
                                 lastIndex = re.lastIndex;
                                 re = tokenizer.regExps[currentState];
+                                if (!re) {
+                                    console.error("Error:", currentState, tokenizer.regExps);
+                                }
                                 re.lastIndex = lastIndex;
                                 _.last(states).end = lastIndex;
                                 states.push({
@@ -1144,6 +1147,10 @@ define([
 
 
                                 re = tokenizer.regExps[currentState];
+                                if (!re) {
+                                    console.error("Error:", currentState, tokenizer.regExps);
+                                }
+
                                 re.lastIndex = lastIndex;
                                 _.last(states).end = lastIndex;
 

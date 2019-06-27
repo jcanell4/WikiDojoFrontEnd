@@ -489,7 +489,7 @@ define([
                     state = lineStates[i];
                     text = line.slice(state.start, state.end);
 
-                    if (state.name === 'start' || state.name === 'table-start') {
+                    if (state.name === 'start' || state.name.indexOf('table-start')>-1) {
                         words = text.split(/([\^\|]+)/);
 
                         if (words[0]) {
