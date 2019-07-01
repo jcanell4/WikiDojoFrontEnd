@@ -1322,6 +1322,17 @@ define([
                 return this.getLineStatesPreview(line, state, session.getMode().getTokenizer(), includeFirst);
             },
 
+            get_last_line_states: function () {
+                var session = this.getSession(),
+                    row = session.getLength()-1;
+                    // state = row > 0 ? session.getState(row - 1) : 'start',
+                    // state = 'start',
+                    // line = session.getLine(session.getLength()-1);
+
+
+                return this.get_line_states_preview(row, true);
+            },
+
 
             /**
              * Retorna un objecte amb la posició del caràcter inicial i el caràcter final seleccionats. S'ha de tenir en

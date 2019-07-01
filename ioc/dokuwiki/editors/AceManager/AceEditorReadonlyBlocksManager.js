@@ -228,19 +228,40 @@ define([
                 states = this.editor.get_line_states_preview(cursor.row, true);
             }
 
+            var ret = false;
+
             for (var state in this.readOnlyStates) {
                 for (var j = 0; j < states.length; j++) {
                     if (states[j].name.startsWith(state)
                         && ((states[j].start === states[j].end && cursor.column > states[j].start)
                             || (states[j].start <= cursor.column && states[j].end >= cursor.column ))) {
-                        return true;
+                        ret = true;
+                        break;
                     }
 
-                    // console.log(states[j].name);
+                    // console.log("Cursor State: ", states[j].name);
+
+                }
+
+                if (ret) {
+                    break;
                 }
             }
 
-            return false;
+            // Comprovem que la última línia no contingui l'estat readonly, això permet escriure fins que afegim l'etiqueta de tancament
+            var lastLineStates = this.editor.get_last_line_states();
+
+            for (var state in this.readOnlyStates) {
+                for (var i = 0; i < lastLineStates.length; i++) {
+                    if (lastLineStates[i].name.startsWith(state)) {
+                        return false;
+                    }
+                }
+            }
+
+
+
+            return ret;
 
         },
 
