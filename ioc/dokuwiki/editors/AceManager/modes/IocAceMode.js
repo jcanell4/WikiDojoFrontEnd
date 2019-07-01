@@ -746,6 +746,19 @@ define([
 
             // Copiada de defBox afegint el prefix
             defInnerBox: function (e, n, prefix) {
+
+                if (Array.isArray(prefix)) {
+                    for (var i = 0; i < prefix.length; i++) {
+                        this._defInnerBox(e, n, prefix[i])
+                    }
+                } else {
+                    this._defInnerBox(e, n, prefix)
+                }
+
+            },
+
+            _defInnerBox: function (e, n, prefix) {
+
                 prefix = prefix + "-";
 
                 var r, i, s, o, u, a, f, l, c;
@@ -753,7 +766,6 @@ define([
                 if (!n) {
                     n = [];
                 }
-
 
                 i = prefix + "drective-" + e + "-id";
                 s = prefix + "drective-" + e + "-offset";

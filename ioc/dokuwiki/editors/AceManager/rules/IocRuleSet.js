@@ -142,11 +142,13 @@ define([
                 ['rule', ["protectedcontent-edittable-start", "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-edittable-table-start"]],
                 ['rule', ["protectedcontent-edittable-table-start", "$", "markup.protectedcontent", "protectedcontent-edittable-start"]],
 
+                ['rule', ["protectedcontent-edittable-start", ".", "markup.protectedcontent"]],
+                ['rule', ["protectedcontent-edittable-table-start", ".", "markup.protectedcontent"]],
+                ['rule', ["protectedcontent-table-start", ".", "markup.protectedcontent"]],
 
-
-                // ['rule', ["protectedcontent-start", "^(.+)", "markup.protectedcontent"]],
-                // ['rule', ["protectedcontent-table-start", "^(.*)(###:)", ["markup.protectedcontent", "keyword.operator.protectedcontent"], "start"]],
-                // ['rule', ["protectedcontent-table-start", "^(.+)", "markup.protectedcontent"]],
+                // + INNERBOX
+                ['innerbox', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], ["protectedcontent", "edittable"]]],
+                ['innerbox', ["accounting", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], ["protectedcontent", "edittable"]]],
 
 
 
@@ -160,7 +162,11 @@ define([
                 ['rule', ["edittable-table-start", "[\\|\\^]", "keyword.operator"]],
                 ['rule', ["edittable-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
                 ['rule', ["edittable-table-start", "[	 ]+", "text"]],
-                ['rule', ["edittable-table-start", "$", "text", "edittable-start"]]
+                ['rule', ["edittable-table-start", "$", "text", "edittable-start"]],
+
+
+
+
             ],
 
             /**
