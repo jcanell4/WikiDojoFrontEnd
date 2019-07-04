@@ -528,7 +528,7 @@ define([
 
 
                     if (!field.config.fields[key]) {
-                        console.error("Key " + key + " not found.");
+                        console.error("Key " + key + " not found.", field.config.fields);
                         continue;
                     }
 
