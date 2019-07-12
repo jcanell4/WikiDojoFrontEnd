@@ -126,25 +126,25 @@ define([
                 ['format', ["markkey", "@@", "@@"]],
 
                 // PROTECTEDCONTENT
-                ['container', ["protectedcontent", "^:###$", "keyword.operator.protectedcontent"]],
-                ['rule', ["protectedcontent-start", "^###:$", "keyword.operator.protectedcontent", "start"]],
-                ['rule', ["protectedcontent-start", ".", "markup.protectedcontent"]], // ALERTA[Xavi] Això és el que aplica el resaltat a tota la selecció entre la apertura i el tancament
+                ['container', ["protectedcontent", "^:###", "keyword.operator.protectedcontent"]],
+                ['rule', ["protectedcontent-start", "^###:", "keyword.operator.protectedcontent", "start"]],
+                // ['rule', ["protectedcontent-start", ".", "markup.protectedcontent"]], // ALERTA[Xavi] Això és el que aplica el resaltat a tota la selecció entre la apertura i el tancament
 
                 // + TABLE
-                ['rule', ["protectedcontent-start", "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-table-start"]],
-                ['rule', ["protectedcontent-table-start", "$", "markup.protectedcontent", "protectedcontent-start"]],
+                // ['rule', ["protectedcontent-start",^ "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-table-start"]],
+                // ['rule', ["protectedcontent-table-start", "$", "markup.protectedcontent", "protectedcontent-start"]],
 
 
                 // + EDITTABLE
                 ['rule', ["protectedcontent-start", "<edittable>", "keyword.operator.edittable", "protectedcontent-edittable-start"]],
                 ['rule', ["protectedcontent-edittable-start", "</edittable>", "keyword.operator.edittable", "protectedcontent-start"]],
 
-                ['rule', ["protectedcontent-edittable-start", "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-edittable-table-start"]],
-                ['rule', ["protectedcontent-edittable-table-start", "$", "markup.protectedcontent", "protectedcontent-edittable-start"]],
+                // ['rule', ["protectedcontent-edittable-start", "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-edittable-table-start"]],
+                // ['rule', ["protectedcontent-edittable-table-start", "$", "markup.protectedcontent", "protectedcontent-edittable-start"]],
 
-                ['rule', ["protectedcontent-edittable-start", ".", "markup.protectedcontent"]],
-                ['rule', ["protectedcontent-edittable-table-start", ".", "markup.protectedcontent"]],
-                ['rule', ["protectedcontent-table-start", ".", "markup.protectedcontent"]],
+                // ['rule', ["protectedcontent-edittable-start", ".", "markup.protectedcontent"]],
+                // ['rule', ["protectedcontent-edittable-table-start", ".", "markup.protectedcontent"]],
+                // ['rule', ["protectedcontent-table-start", ".", "markup.protectedcontent"]],
 
                 // + INNERBOX
                 ['innerbox', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], ["protectedcontent", "edittable"]]],
