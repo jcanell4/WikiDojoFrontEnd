@@ -131,13 +131,30 @@ define([
                 // ['rule', ["protectedcontent-start", ".", "markup.protectedcontent"]], // ALERTA[Xavi] Això és el que aplica el resaltat a tota la selecció entre la apertura i el tancament
 
                 // + TABLE
-                // ['rule', ["protectedcontent-start",^ "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-table-start"]],
-                // ['rule', ["protectedcontent-table-start", "$", "markup.protectedcontent", "protectedcontent-start"]],
+
+                ['container', ["protectedcontent-table", "^[\\|\\^]", "keyword.operator"]],
+                ['container', ["protectedcontent-table", "^\\[[\\|\\^]", "keyword.operator"]],
+                ['rule', ["protectedcontent-table-start", "[\\|\\^]", "keyword.operator"]],
+                ['rule', ["protectedcontent-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
+                ['rule', ["protectedcontent-table-start", "[	 ]+", "text"]],
+                ['rule', ["protectedcontent-table-start", "$", "text", "protectedcontent-start"]],
 
 
                 // + EDITTABLE
-                ['rule', ["protectedcontent-start", "<edittable>", "keyword.operator.edittable", "protectedcontent-edittable-start"]],
+                // ['rule', ["protectedcontent-start", "<edittable>", "keyword.operator.edittable", "protectedcontent-edittable-start"]],
+                // ['rule', ["protectedcontent-edittable-start", "</edittable>", "keyword.operator.edittable", "protectedcontent-start"]],
+                ['container', ["protectedcontent-edittable", "<edittable>", "keyword.operator.edittable"]],
                 ['rule', ["protectedcontent-edittable-start", "</edittable>", "keyword.operator.edittable", "protectedcontent-start"]],
+
+                ['container', ["protectedcontent-edittable-table", "^[\\|\\^]", "keyword.operator"]],
+                ['container', ["protectedcontent-edittable-table", "^\\[[\\|\\^]", "keyword.operator"]],
+                ['rule', ["protectedcontent-edittable-table-start", "[\\|\\^]", "keyword.operator"]],
+                ['rule', ["protectedcontent-edittable-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
+                ['rule', ["protectedcontent-edittable-table-start", "[	 ]+", "text"]],
+                ['rule', ["protectedcontent-edittable-table-start", "$", "text", "protectedcontent-edittable-start"]],
+
+
+
 
                 // ['rule', ["protectedcontent-edittable-start", "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-edittable-table-start"]],
                 // ['rule', ["protectedcontent-edittable-table-start", "$", "markup.protectedcontent", "protectedcontent-edittable-start"]],
@@ -147,16 +164,16 @@ define([
                 // ['rule', ["protectedcontent-table-start", ".", "markup.protectedcontent"]],
 
                 // + INNERBOX
-                ['innerbox', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], ["protectedcontent", "edittable"]]],
-                ['innerbox', ["accounting", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], ["protectedcontent", "edittable"]]],
+                ['innerbox', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], ["protectedcontent", "edittable", "protectedcontent-edittable"]]],
+                ['innerbox', ["accounting", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], ["protectedcontent", "edittable", "protectedcontent-edittable"]]],
 
 
 
                 ['container', ["edittable", "<edittable>", "keyword.operator.edittable"]],
                 ['rule', ["edittable-start", "</edittable>", "keyword.operator.edittable", "start"]],
 
-                ['innerbox', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], "edittable"]],
-                ['innerbox', ["accounting", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], "edittable"]],
+                // ['innerbox', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], "edittable"]],
+                // ['innerbox', ["accounting", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], "edittable"]],
 
                 ['container', ["edittable-table", "^[\\|\\^]", "keyword.operator"]],
                 ['rule', ["edittable-table-start", "[\\|\\^]", "keyword.operator"]],

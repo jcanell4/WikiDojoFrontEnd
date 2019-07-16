@@ -128,7 +128,11 @@ define([
                         var sep;
                         sep = args.is_header ? '^' : '|';
                         return sep + args.content + new Array(args.colspan).join(sep);
-                    }
+                    },
+
+                    is_multiline: function () {
+                        return args.is_multiline;
+                    },
                 };
             },
 
@@ -149,6 +153,10 @@ define([
                     self = this;
 
                 return {
+                    is_multiline: function() {
+                      return cells[0].is_multiline();
+                    },
+
                     align_cell: function (index, align) {
                         return cells[index].set_align(align);
                     },
@@ -319,6 +327,16 @@ define([
                             return results;
                         })();
 
+                        // Només cal comprovar la primera fila, si és multilinia tota la taula ho és
+                        var is_multiline = rows[0].is_multiline();
+
+                        if (is_multiline) {
+                            lines[0] = '[' + lines[0];
+                            lines[lines.length-1] = lines[lines.length-1] + ']';
+                        }
+
+
+
                         self.aceWrapper.replace_lines(start_row, end_row, lines);
 
                         return self.aceWrapper.navigate(cursor_position());
@@ -480,17 +498,29 @@ define([
                     auxWords;
 
 
-                if (!/^[\||\^].*[\||\^][ \t]*$/.test(line)) {
+                if (!/^[\[|\||\^].*[\]|\||\^][ \t]*$/.test(line)) {
                     return;
                 }
 
+                var is_multiline = false;
+
+                if (line.indexOf('[') === 0) {
+                    line = line.substr(1);
+                    is_multiline = true;
+                } else if (line.indexOf(']') === line.length - 1) {
+                    line = line.substr(0, line.length-1);
+                    is_multiline = true;
+                }
 
                 for (var i = 0, len = lineStates.length; i < len; i++) {
+
                     state = lineStates[i];
+
                     text = line.slice(state.start, state.end);
 
                     if (state.name === 'start' || state.name.indexOf('table-start')>-1) {
-                        words = text.split(/([\^\|]+)/);
+                        words = text.split(/(\[?[\^\|]+)/);
+
 
                         if (words[0]) {
                             contents.push(contents.pop() + words[0]);
@@ -507,6 +537,8 @@ define([
                             word = auxWords[k];
                             separators.push(word);
                         }
+
+
                     } else {
                         contents.push((contents.pop() || '') + text);
                     }
@@ -517,10 +549,27 @@ define([
                     return;
                 }
 
+                // ALERTA[Xavi] Això es un fix per alguns casos
+                if (contents[0]==="") {
+                    contents.shift();
+                }
+
                 for (i = 0, len = contents.length - 1; 0 <= len ? i < len : i > len; 0 <= len ? ++i : --i) {
                     content = contents[i];
                     is_header = _.last(separators[i]) === '^';
-                    colspan = separators[i + 1].length;
+
+                    if (content.indexOf('^') === 0 || content.indexOf('|') === 0) {
+                        // això passa en alguns casos, no es separa correctament
+                        separators.push(separators[0]); // Afegim un separador del mateix tipus
+                        content = content.substr(1);
+                    }
+
+                    if (separators.length < i+1) {
+                        colspan = separators[i + 1].length;
+                    } else {
+                        colspan = separators[i].length;
+                    }
+
                     align = !/^  +[^ ]/.test(content) ? 'left' : /[^ ]  +$/.test(content) ? 'center' : 'right';
 
                     cells.push(this.new_cell(
@@ -528,10 +577,12 @@ define([
                             align:     align,
                             colspan:   colspan,
                             content:   content,
-                            is_header: is_header
+                            is_header: is_header,
+                            is_multiline: is_multiline,
                         }
                     ));
                 }
+
                 return this.new_row(cells);
             },
 
