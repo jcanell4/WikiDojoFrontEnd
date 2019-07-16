@@ -550,6 +550,7 @@ define([
                 this.initPlugins(plugins);
 
                 // ALERTA[Xavi] això s'ha de cridar desprès d'inicialitzar els plugins, ja que aquests poden afegir nous estas de només lectura
+
                 this.readOnlyBlocksManager.enableReadonlyBlocks();
 
                 this.id = args.id;

@@ -125,6 +125,17 @@ define([
 
                 ['format', ["markkey", "@@", "@@"]],
 
+                // EDITTABLE
+                ['container', ["edittable", "<edittable>", "keyword.operator.edittable"]],
+                ['rule', ["edittable-start", "</edittable>", "keyword.operator.edittable", "start"]],
+
+                ['container', ["edittable-table", "^[\\|\\^]", "keyword.operator"]],
+                ['rule', ["edittable-table-start", "[\\|\\^]", "keyword.operator"]],
+                ['rule', ["edittable-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
+                ['rule', ["edittable-table-start", "[	 ]+", "text"]],
+                ['rule', ["edittable-table-start", "$", "text", "edittable-start"]],
+
+
                 // PROTECTEDCONTENT
                 ['container', ["protectedcontent", "^:###", "keyword.operator.protectedcontent"]],
                 ['rule', ["protectedcontent-start", "^###:", "keyword.operator.protectedcontent", "start"]],
@@ -133,35 +144,25 @@ define([
                 // + TABLE
 
                 ['container', ["protectedcontent-table", "^[\\|\\^]", "keyword.operator"]],
-                ['container', ["protectedcontent-table", "^\\[[\\|\\^]", "keyword.operator"]],
-                ['rule', ["protectedcontent-table-start", "[\\|\\^]", "keyword.operator"]],
+                ['container', ["protectedcontent-table", "^\\[[\\|\\^]]?", "keyword.operator"]],
+                ['rule', ["protectedcontent-table-start", "[\\|\\^]]?", "keyword.operator"]],
                 ['rule', ["protectedcontent-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
                 ['rule', ["protectedcontent-table-start", "[	 ]+", "text"]],
                 ['rule', ["protectedcontent-table-start", "$", "text", "protectedcontent-start"]],
 
 
                 // + EDITTABLE
-                // ['rule', ["protectedcontent-start", "<edittable>", "keyword.operator.edittable", "protectedcontent-edittable-start"]],
-                // ['rule', ["protectedcontent-edittable-start", "</edittable>", "keyword.operator.edittable", "protectedcontent-start"]],
                 ['container', ["protectedcontent-edittable", "<edittable>", "keyword.operator.edittable"]],
                 ['rule', ["protectedcontent-edittable-start", "</edittable>", "keyword.operator.edittable", "protectedcontent-start"]],
-
+                //
                 ['container', ["protectedcontent-edittable-table", "^[\\|\\^]", "keyword.operator"]],
-                ['container', ["protectedcontent-edittable-table", "^\\[[\\|\\^]", "keyword.operator"]],
-                ['rule', ["protectedcontent-edittable-table-start", "[\\|\\^]", "keyword.operator"]],
-                ['rule', ["protectedcontent-edittable-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
-                ['rule', ["protectedcontent-edittable-table-start", "[	 ]+", "text"]],
+                ['container', ["protectedcontent-edittable-table", "^\\[[\\|\\^]]?", "keyword.operator"]],
+                ['rule', ["protectedcontent-edittable-table-start", "[\\|\\^]]?", "keyword.operator"]],
+                // ['rule', ["protectedcontent-edittable-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
+                // ['rule', ["protectedcontent-edittable-table-start", "[	 ]+", "text"]],
                 ['rule', ["protectedcontent-edittable-table-start", "$", "text", "protectedcontent-edittable-start"]],
 
 
-
-
-                // ['rule', ["protectedcontent-edittable-start", "^[\\|\\^]", "markup.protectedcontent", "protectedcontent-edittable-table-start"]],
-                // ['rule', ["protectedcontent-edittable-table-start", "$", "markup.protectedcontent", "protectedcontent-edittable-start"]],
-
-                // ['rule', ["protectedcontent-edittable-start", ".", "markup.protectedcontent"]],
-                // ['rule', ["protectedcontent-edittable-table-start", ".", "markup.protectedcontent"]],
-                // ['rule', ["protectedcontent-table-start", ".", "markup.protectedcontent"]],
 
                 // + INNERBOX
                 ['innerbox', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], ["protectedcontent", "edittable", "protectedcontent-edittable"]]],
@@ -169,17 +170,7 @@ define([
 
 
 
-                ['container', ["edittable", "<edittable>", "keyword.operator.edittable"]],
-                ['rule', ["edittable-start", "</edittable>", "keyword.operator.edittable", "start"]],
 
-                // ['innerbox', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], "edittable"]],
-                // ['innerbox', ["accounting", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"], "edittable"]],
-
-                ['container', ["edittable-table", "^[\\|\\^]", "keyword.operator"]],
-                ['rule', ["edittable-table-start", "[\\|\\^]", "keyword.operator"]],
-                ['rule', ["edittable-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
-                ['rule', ["edittable-table-start", "[	 ]+", "text"]],
-                ['rule', ["edittable-table-start", "$", "text", "edittable-start"]],
 
 
 

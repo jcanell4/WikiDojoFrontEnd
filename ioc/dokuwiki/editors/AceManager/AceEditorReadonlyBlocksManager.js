@@ -216,6 +216,7 @@ define([
         isReadonlySection: function (states, cursor) {
 
             if (!this.enabled) {
+                console.log("FALSE: no està activat");
                 return false;
             }
 
@@ -225,6 +226,7 @@ define([
             }
 
             if (!states) {
+                // TODO: aquesta funció no serveix, s'ha de fer una nova que retorni els states per cursor.row i cursor.col (no se si això existeix)
                 states = this.editor.get_line_states_preview(cursor.row, true);
             }
 
@@ -239,7 +241,7 @@ define([
                         break;
                     }
 
-                    // console.log("Cursor State: ", states[j].name);
+                     console.log("Cursor State: ", states[j].name);
 
                 }
 
@@ -254,6 +256,7 @@ define([
             for (var state in this.readOnlyStates) {
                 for (var i = 0; i < lastLineStates.length; i++) {
                     if (lastLineStates[i].name.startsWith(state)) {
+                        console.log("FALSE: la última línia conté l'estat readonly:", state, lastLineStates[i].name);
                         return false;
                     }
                 }
