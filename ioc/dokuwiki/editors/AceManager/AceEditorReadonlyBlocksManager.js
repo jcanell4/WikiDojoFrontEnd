@@ -226,15 +226,16 @@ define([
             }
 
             if (!states) {
-                // TODO: aquesta funció no serveix, s'ha de fer una nova que retorni els states per cursor.row i cursor.col (no se si això existeix)
                 states = this.editor.get_line_states_preview(cursor.row, true);
+
             }
 
             var ret = false;
 
             for (var state in this.readOnlyStates) {
                 for (var j = 0; j < states.length; j++) {
-                    if (states[j].name.startsWith(state)
+                    // if (states[j].name.startsWith(state)
+                    if (states[j].name.indexOf(state)!== -1
                         && ((states[j].start === states[j].end && cursor.column > states[j].start)
                             || (states[j].start <= cursor.column && states[j].end >= cursor.column ))) {
                         ret = true;
@@ -255,7 +256,8 @@ define([
 
             for (var state in this.readOnlyStates) {
                 for (var i = 0; i < lastLineStates.length; i++) {
-                    if (lastLineStates[i].name.startsWith(state)) {
+                    // if (lastLineStates[i].name.startsWith(state)) {
+                    if (lastLineStates[i].name.indexOf(state) !== -1) {
                         console.log("FALSE: la última línia conté l'estat readonly:", state, lastLineStates[i].name);
                         return false;
                     }
@@ -297,7 +299,8 @@ define([
             for (; expr(i); i += inc) {
                 // console.log("Comprovant state", states[i]);
 
-                if (states[i].name.startsWith(state)) {
+                // if (states[i].name.startsWith(state)) {
+                if (states[i].name.indexOf(state)!== -1) {
 
                     // if (states[i].start === states[i].end && (row !== cursor.row || cursor.column > states[i].start)) {
                     //     console.log(row, "L'estat s'obre però no es tanca en aquesta línia", states[i]);

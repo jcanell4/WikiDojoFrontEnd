@@ -137,8 +137,8 @@ define([
 
 
                 // PROTECTEDCONTENT
-                ['container', ["protectedcontent", "^:###", "keyword.operator.protectedcontent"]],
-                ['rule', ["protectedcontent-start", "^###:", "keyword.operator.protectedcontent", "start"]],
+                ['container', ["protectedcontent", ":###", "keyword.operator.protectedcontent"]],
+                ['rule', ["protectedcontent-start", "###:", "keyword.operator.protectedcontent", "start"]],
                 // ['rule', ["protectedcontent-start", ".", "markup.protectedcontent"]], // ALERTA[Xavi] Això és el que aplica el resaltat a tota la selecció entre la apertura i el tancament
 
                 // + TABLE
@@ -149,6 +149,11 @@ define([
                 ['rule', ["protectedcontent-table-start", "[	 ]*:::[	 ]*(?=[\\|\\^])", "keyword.operator"]],
                 ['rule', ["protectedcontent-table-start", "[	 ]+", "text"]],
                 ['rule', ["protectedcontent-table-start", "$", "text", "protectedcontent-start"]],
+
+
+                ['container', ["table-protectedcontent", ":###", "keyword.operator.protectedcontent"]],
+                ['rule', ["table-protectedcontent-start", "###:", "keyword.operator.protectedcontent", "table-start"]],
+
 
 
                 // + EDITTABLE
