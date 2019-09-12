@@ -200,7 +200,11 @@ define([
         getContent: function (id) {
             var ret = undefined;
 
-            if (this.pages[id]) {
+
+            // Aquest cas es dona quan no hi ha cap document
+            if (id === null) {
+                ret = {};
+            } else if (this.pages[id]) {
                 ret = this.pages[id];
             } else {
                 ret = this.pages[id] = {};
@@ -481,7 +485,7 @@ define([
         },
 
         updateSessionStorage: function () {
-            // console.log("GlobalState#updateSessionStorage", this);
+             console.log("GlobalState#updateSessionStorage", this);
             // Update del sessionStorage, això és el que es fa ara en recarregar la pàgina
             storageManager.setObject('globalState', this);
         },
