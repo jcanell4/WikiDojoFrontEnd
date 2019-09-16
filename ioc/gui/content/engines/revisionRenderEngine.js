@@ -84,7 +84,8 @@ define(function () {
             sortable = [],
             linkCurrent,
             call_view = '',
-            call_diff = "diff";
+            call_diff = "diff",
+            revision_actual = [];
 
         html += '<form id="revisions_selector_' + id + '" action="'+ data.urlBase+'" method="post">';
         html += '<input name="id" value="' + ns + '" type="hidden">';
@@ -108,11 +109,12 @@ define(function () {
         }
         var page = Math.floor(Math.max(data.position, 0) / data.amount) + 1;
 
-        if (data.call_view) {
+        if (data.call_view)
             call_view = ' data-call="' + data.call_view + '"';
-        }
         if (data.call_diff)
             call_diff = data.call_diff;
+        if (data.summary)
+            revision_actual.sum = data.summary;
 
         delete(data.position);
         delete(data.amount);
@@ -121,6 +123,7 @@ define(function () {
         delete(data.urlBase);
         delete(data.call_view);
         delete(data.call_diff);
+        delete(data.summary);
 
         // afegim l'element rev, amb valor data, a cada array per poder ordenar-los
         for (var j in data) {
@@ -135,9 +138,11 @@ define(function () {
 
         // Afegim l'actual
         html += '<tr><td></td>';
-        html += '<td colspan="4" class="current-revision"><a href="' + linkCurrent + '"' + call_view + ' title="Obrir la revisió actual">';
-        html += 'Versió actual';
-        html += '</a></td></tr>';
+        html += '<td colspan="3" class="current-revision">';
+        html += '<a href="' + linkCurrent + '"' + call_view + ' title="Obrir la revisió actual">Versió actual</a>';
+        html += '</td>';
+        html += _generateHtmlForSummary(revision_actual);
+        html += '</tr>';
 
         if (page > 1) 
             html+=_generatePaginationRow(lessButton, moreButton, page);
