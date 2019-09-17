@@ -216,7 +216,8 @@ define([
                     readonly: content.readonly? content.readonly : false,
                     ignoreLastNSSections : content.ignoreLastNSSections,
                     editorType : content.editorType,
-                    plugins: ['EmbededComment']
+                    plugins: ['EmbededComment'],
+                    partialDisabled: content.partialDisabled // TODO: rebre aquest param des del servidor
                 };
 
                 if(content.autosaveTimer){
