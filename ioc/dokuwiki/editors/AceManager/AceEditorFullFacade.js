@@ -35,14 +35,9 @@ define([
                 originalContent: args.originalContent || args.content,
                 dispatcher: args.dispatcher,
                 plugins: args.plugins,
-                TOOLBAR_ID: this.TOOLBAR_ID
+                TOOLBAR_ID: this.TOOLBAR_ID,
+                partialDisabled: args.partialDisabled
             });
-
-
-
-
-
-
 
             this.dispatcher = args.dispatcher;
             this.editor = iocAceEditor;

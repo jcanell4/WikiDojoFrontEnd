@@ -44,12 +44,13 @@ define([
 
         constructor: function (args) {
 
+            console.log("args?", args);
             this._generateEmptyChangedChunks(args.content.chunks);
             this.savedDrafts = {};
             this.editors = {}; // A aquest objecte es guardarà per cada header_id el seu editor
             this.currentElementId = null;
             this.hasChanges = false;
-
+            this.partialDisabled = args.partialDisabled;
 
             // toolbarManager.setDispatcher(args.dispatcher);
         },
@@ -136,6 +137,11 @@ define([
         },
 
         addEditionListener: function () {
+            if (this.partialDisabled) {
+                return;
+            }
+
+
             //console.log("StructuredDocumentSubclass#addEditionListener");
             if (this.rev !== null && this.rev !== undefined && this.rev !== '') {
                 return;
@@ -1079,6 +1085,11 @@ define([
 
         // Aquesta es la gestió del ressaltat que es trobava a processContentPaje.js
         addSelectionListener: function () {
+            if (this.partialDisabled) {
+                return;
+            }
+
+
             //console.log("StructuredDocumentSubclass#addSelectionListener");
             if (this.rev !== null && this.rev !== undefined && this.rev !== '') {
                 return;
