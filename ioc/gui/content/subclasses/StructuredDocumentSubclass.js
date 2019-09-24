@@ -44,7 +44,6 @@ define([
 
         constructor: function (args) {
 
-            console.log("args?", args);
             this._generateEmptyChangedChunks(args.content.chunks);
             this.savedDrafts = {};
             this.editors = {}; // A aquest objecte es guardarà per cada header_id el seu editor
