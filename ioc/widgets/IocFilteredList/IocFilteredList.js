@@ -75,6 +75,9 @@ define([
             // {string} format del valor que es desa, per defecte es string, accepta també el format 'json'
             valueFormat: null,
 
+            // {object} referencia als controls jQuery
+            controls: null,
+
             constructor: function (args) {
 
                 this.selected = {}; // referenciats pel id per trobar-los més ràpidament
@@ -86,6 +89,7 @@ define([
 
                 this.itemListByFieldId = {};
 
+                this.controls = {};
             },
 
             postCreate: function () {
@@ -143,13 +147,45 @@ define([
                 return objects;
             },
 
+            _addInput: function() {
+                var item;
 
+                if (this.candidate) {
+                    item = this.candidate;
+                    this._itemSelected(item);
+                } else {
+
+                    //var value = this.controls.$input.val();
+
+                    var values = this.controls.$input.val().split(/,| /);
+                    console.log("values:", values);
+
+                    for (var i = 0; i < values.length; i++) {
+                        var value = values[i].trim();
+
+                        if (value === "") {
+                            continue;
+                        }
+
+                        item = {};
+                        item[this.fieldId] = value;
+                        item[this.defaultEntryField] = item[this.fieldId];
+
+                        this._itemSelected(item);
+                    }
+
+                }
+
+                this.filter('');
+
+            },
 
             _addListeners: function () {
 
                 var $input = jQuery(this.entryText);
+                this.controls.$input = $input;
 
-                var that = this;
+                // var that = this;
 
                 $input.on('change click input', function () {
                     this.filter($input.val());
@@ -159,34 +195,20 @@ define([
 
 
                     if (e.which == 13) { // Enter
-                        var item;
-                        // cas 1: Hi ha almenys un element visible a la llista, es selecciona
-                        if (this.candidate) {
-                            item = this.candidate;
-                        } else {
-
-                            item = {};
-
-                            // Afegim les dades per defecte basades en el text entrat
-                            // if (!that.fields) {
-                                item[that.fieldId] = $input.val();
-                                item[that.defaultEntryField] = item[that.fieldId];
-                            // }
-
-
-                            // Si no s'ha definit that.fields no s'executa el bucle
-                            // for (var fieldKey in that.fields) {
-                            //     if (fieldKey === that.defaultEntryField) {
-                            //         item[fieldKey] = $input.val();
-                            //     } else {
-                            //         item[fieldKey] = '';
-                            //     }
-                            // }
-
-                        }
-
-                        this.filter('');
-                        this._itemSelected(item);
+                        this._addInput();
+                        // var item;
+                        // // cas 1: Hi ha almenys un element visible a la llista, es selecciona
+                        // if (this.candidate) {
+                        //     item = this.candidate;
+                        // } else {
+                        //
+                        //     item = {};
+                        //     item[this.fieldId] = $input.val();
+                        //     item[this.defaultEntryField] = item[that.fieldId];
+                        // }
+                        //
+                        // this.filter('');
+                        // this._itemSelected(item);
                         e.preventDefault();
                         e.stopPropagation();
 
@@ -222,6 +244,9 @@ define([
                 var $searchButton = jQuery(searchButton.domNode);
 
                 $searchButton.on('click', function () {
+                    this._addInput();
+
+
 
                     var searchUserWidget = new SearchUsersPane({
                         ns: this.ns,
