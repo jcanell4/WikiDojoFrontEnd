@@ -183,8 +183,13 @@ define([
             },
 
             renderWidget: function (field, fvalues) {
-                if (field.config.class.view) {
+
+                if (field.config.readonly === true && field.config.class.view) {
+                    // Es readonly i hi ha un widget diferent per la vista
                     field.config.class = field.config.class.view;
+                } else {
+                    // No es readonly o es readonly però ho gestiona el mateix widget.
+                    field.config.class = field.config.class.edit;
                 }
 
                 return this.inherited(arguments);
