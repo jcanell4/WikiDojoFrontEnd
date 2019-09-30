@@ -77,8 +77,6 @@ define([
 
             constructor: function (args) {
 
-                console.log("que arriba al constructor? es pot obtenir el readonly?", args);
-
                 this.selected = {}; // referenciats pel id per trobar-los més ràpidament
                 this.candidate = null;
 
@@ -148,7 +146,6 @@ define([
 
 
             _addListeners: function () {
-                console.error("_addListeners", this);
 
                 var $input = jQuery(this.entryText);
 

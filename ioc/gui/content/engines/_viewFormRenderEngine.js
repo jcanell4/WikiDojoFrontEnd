@@ -184,7 +184,7 @@ define([
 
             renderWidget: function (field, fvalues) {
 
-                if (field.config.readonly === true && field.config.class.view) {
+                if ((field.config.readonly === true || this._options.type === "view") && field.config.class.view) {
                     // Es readonly i hi ha un widget diferent per la vista
                     field.config.class = field.config.class.view;
                 } else {
