@@ -157,8 +157,7 @@ define([
 
                     //var value = this.controls.$input.val();
 
-                    var values = this.controls.$input.val().split(/,| /);
-                    console.log("values:", values);
+                    var values = this.controls.$input.val().split(',');
 
                     for (var i = 0; i < values.length; i++) {
                         var value = values[i].trim();
