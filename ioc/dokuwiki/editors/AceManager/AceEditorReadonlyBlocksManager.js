@@ -242,8 +242,6 @@ define([
                         break;
                     }
 
-                     console.log("Cursor State: ", states[j].name);
-
                 }
 
                 if (ret) {

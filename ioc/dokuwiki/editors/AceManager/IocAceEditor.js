@@ -489,6 +489,7 @@ define([
             },
 
             init: function (args) {
+
                 this.currentEditor = this.EDITOR.ACE;
                 this.dispatcher = args.dispatcher;
                 this.TOOLBAR_ID = args.TOOLBAR_ID;

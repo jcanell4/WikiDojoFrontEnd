@@ -542,7 +542,7 @@ define([
              * @param {string} id
              */
             removeDocumentState: function (id) {
-                // console.log("Dispatcher#removeDocumentState", id);
+                console.log("Dispatcher#removeDocumentState", id);
                 this.getGlobalState().deleteContent(id);
 
                 if (this.contentCache[id]) {

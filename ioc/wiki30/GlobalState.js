@@ -377,7 +377,6 @@ define([
         },
 
         freeAllPages: function (ignoreGlobalStateId) {
-            // console.log("GlobalState#freeAllPages", this.userId);
             var storedPages = storageManager.getObject('requiredPages', storageManager.type.LOCAL);
             if (storedPages && storedPages.userId === this.userId) {
 
@@ -487,6 +486,12 @@ define([
         updateSessionStorage: function () {
              console.log("GlobalState#updateSessionStorage", this);
             // Update del sessionStorage, això és el que es fa ara en recarregar la pàgina
+
+            if (this.pages && this.pages[""]) {
+                console.warn("S'ha trobat un pàgina amb id buit");
+                delete (this.pages[""]);
+            }
+
             storageManager.setObject('globalState', this);
         },
 

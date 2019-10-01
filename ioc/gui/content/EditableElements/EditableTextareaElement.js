@@ -83,7 +83,8 @@ define([
                     dispatcher: this.context.dispatcher,
                     content: this.$textarea.val(),
                     originalContent: this.originalContent,
-                    TOOLBAR_ID: toolbarId,
+                    // TOOLBAR_ID: toolbarId,
+                    TOOLBAR_ID: 'full-editor',
                     ignorePatching: true,
                     plugins: [],
                     //  plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton', 'TestReadonlyPlugin'] // Plugins que ha de contenir la toolbar
