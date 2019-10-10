@@ -84,7 +84,7 @@ define([
             _processRefresh: function (command, dispatcher) {
                 var tabId = registry.byId(command.id);
                 if (tabId.refresh) {
-                    tabId.refresh();
+                    tabId.refresh(command.extra);
                 } else {
                     dispatcher._processError("Aquest element: " + command.id + " no té mètode refresh.");
                 }

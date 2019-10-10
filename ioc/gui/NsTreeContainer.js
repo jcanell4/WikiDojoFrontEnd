@@ -179,6 +179,7 @@ define([
             // when a new selection is made.
             // These references are contained in Tree.selectedItem,
             // Tree.selectedItems, Tree.selectedNode, and Tree.selectedNodes.
+            this.parameters = false;
             this.tree.dndController.selectNone();
 
             // Completely delete every node from the dijit.Tree

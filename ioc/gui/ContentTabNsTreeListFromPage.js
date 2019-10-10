@@ -1,74 +1,72 @@
 define([
-    "dojo/_base/declare", // declare
+    "dojo/_base/declare",
     "dojo/dom-attr",
     "dijit/layout/ContentPane",
     "dojo/query",
     "dojo/dom-construct",
     "ioc/gui/ContentTabDokuwikiNsTree"
 ], function (declare, att, ContentPane, query, domConstruct, NsTree) {
-    var ret = declare("ioc.gui.ContentTabNsTreeListFromPage", [ContentPane],
+    /**
+     * Construye un array de árboles NsTree, uno por cada directorio
+     * (se usa en el tab 'Dreceres')
+     */
+    var ret = declare("ioc.gui.ContentTabNsTreeListFromPage", [ContentPane], {
 
-        /**
-         * Converteix enllaços normals en crides AJAX.
-         *
-         * @class ContentTabDokuwikiPage
-         * @extends dijit.layout.ContentPane
-         * @extends Request
-         */
-        {
+        /** @override */
+        startup: function () {
+            this.inherited(arguments);
+            this._render(this.data);
+        },            
+        setData: function(params){
+            this.destroyDescendants();
+            this._render(params.data);
+        },
+        _render: function(data){
+            var render = domConstruct.toDom("<div>"+data+"</div>");
 
-            /** @override */
-            startup: function () {
-                this.inherited(arguments);
-                /*TO DO: */
-                this._render(this.data);
-            },            
-            setData: function(params){
-                this.destroyDescendants();
-                this._render(params.data);
-            },
-            _render: function(data){
-
-//                var trees = [];
-                var render = domConstruct.toDom("<div>"+data+"</div>");
-        
-                query("a", render).forEach(function(node){
-//                    var tree;
-                    var treeParams = {};
-                    var arr = att.get(node, "href").split("?");            
-                    if (arr.length > 1) {
-                        var aId = arr[1].split("="),
-                             id = aId.length>1?aId[1]:aId[0];
-                        treeParams.treeDataSource = this.treeDataSource;
-                        treeParams.fromRoot = id;
-                        treeParams.sortBy = this.sortBy;
-                        treeParams.onlyDirs = this.onlyDirs;
-                        treeParams.expandProject = this.expandProject;
-                        treeParams.processOnClickAndOpenOnClick=this.processOnClickAndOpenOnClick;
-                        treeParams.standbyId = this.standbyId;
-                        if(this.urlBase){
-                            treeParams.urlBase = this.urlBase;    
-                        }
-                        if(this.typeDictionary){
-                            treeParams.typeDictionary = this.typeDictionary;
-                        }else if(this.urlBaseTyped){
-                            treeParams.urlBaseTyped = this.urlBaseTyped;                    
-                        }
-                        treeParams.updateQuery = function(item){
-                            if(item.id.length===0){
-                                this.query = "id="+this.fromRoot;
-                            }else{
-                                this.query = "id="+item.id;
-                            }
-
-                            return this.query;
-                        };
+            query("a", render).forEach(function(node){
+                var treeParams = {};
+                var arr = att.get(node, "href").split("?");            
+                if (arr.length > 1) {
+                    var aId = arr[1].split("=");
+                    var id = aId.length>1?aId[1]:aId[0];
+                    treeParams.treeDataSource = this.treeDataSource;
+                    treeParams.fromRoot = id;
+                    treeParams.sortBy = this.sortBy;
+                    treeParams.onlyDirs = this.onlyDirs;
+                    treeParams.expandProject = this.expandProject;
+                    treeParams.processOnClickAndOpenOnClick=this.processOnClickAndOpenOnClick;
+                    treeParams.standbyId = this.standbyId;
+                    if(this.urlBase){
+                        treeParams.urlBase = this.urlBase;    
                     }
-                    this.addChild(new NsTree(treeParams));
-//                    trees.push(new NsTree(treeParams));
-                }.bind(this));                                
+                    if(this.typeDictionary){
+                        treeParams.typeDictionary = this.typeDictionary;
+                    }else if(this.urlBaseTyped){
+                        treeParams.urlBaseTyped = this.urlBaseTyped;                    
+                    }
+                    treeParams.updateQuery = function(item){
+                        if(item.id.length===0){
+                            this.query = "id="+this.fromRoot;
+                        }else{
+                            this.query = "id="+item.id;
+                        }
+
+                        return this.query;
+                    };
+                }
+                this.addChild(new NsTree(treeParams));
+                
+            }.bind(this));                                
+        },
+
+        refresh: function(extra) {
+            if (extra) {
+                var pattern = new RegExp(extra.old_ns, "g");
+                this.setData({"data":this.data.replace(pattern, extra.new_ns)});
             }
-        });
+        }
+    });
 
     return ret;
 });
