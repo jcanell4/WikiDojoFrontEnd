@@ -28,6 +28,7 @@ define([
             REMOVE_DRAFT: 'remove_draft',
             REMOVE_PROJECT_DRAFT: 'remove_project_draft',
             RENAME_PROJECT: 'rename_project',
+            REMOVE_PROJECT: 'remove_project',
             SAVE: 'save',
             SAVE_DRAFT: 'save_draft',
             SAVE_PARTIAL: 'save_partial',
