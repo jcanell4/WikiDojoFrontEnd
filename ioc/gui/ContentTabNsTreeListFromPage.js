@@ -61,9 +61,11 @@ define([
         },
 
         refresh: function(extra) {
-            if (extra) {
+            if (extra.old_ns) {
                 var pattern = new RegExp(extra.old_ns, "g");
                 this.setData({"data":this.data.replace(pattern, extra.new_ns)});
+            }else if (extra.html_sc) {
+                this.setData({"data":extra.html_sc});
             }
         }
     });
