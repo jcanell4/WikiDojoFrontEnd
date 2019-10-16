@@ -110,7 +110,10 @@ define([
             };
         },
 
-
+        getIsProjectManager: function() {
+            return this.permissions.isadmin || this.permissions.ismanager || this.permissions.isprojectmanager;
+        },
+        
         /**
          * Node es un node del DOM o una cadena amb el nom de l'element
          *
