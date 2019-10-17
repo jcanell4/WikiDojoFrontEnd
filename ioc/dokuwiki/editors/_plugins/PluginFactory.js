@@ -415,14 +415,14 @@ define([
             category: localization["category-header"]
         },
 
-        'HTMLHeader6': {
-            title: localization["ioc-insert-header6-button"],
-            open: '<h6>',
-            close: '</h6>',
-            sample: localization["ioc-insert-header-sample"],
-            icon: 'IocHeader6',
-            category: localization["category-header"]
-        },
+        // 'HTMLHeader6': {
+        //     title: localization["ioc-insert-header6-button"],
+        //     open: '<h6>',
+        //     close: '</h6>',
+        //     sample: localization["ioc-insert-header-sample"],
+        //     icon: 'IocHeader6',
+        //     category: localization["category-header"]
+        // },
 
         'HTMLLinkExternal': {
             title: localization["ioc-insert-link-external-button"],
