@@ -152,6 +152,10 @@ define([
                     $field = this.renderFieldSelect(field, fvalues);
                     break;
 
+                case 'datalist':
+                    $field = this.renderFieldDataList(field, fvalues);
+                    break;
+
                 case 'checkbox': // TODO[Xavi] No s'ajusta correctament l'amplada
                 case 'radio':
                     $field = this.renderFieldCheckbox(field, fvalues);
@@ -261,6 +265,39 @@ define([
             return $field;
         },
 
+        renderFieldDataList: function (field, fvalues) {
+            var $field = jQuery('<div>'),
+                $label = jQuery('<label>'),
+                $input = jQuery('<input>'),
+                $select = jQuery('<datalist>');
+
+            $label.html(field.label);
+
+            $field.append($label)
+                .append($input)
+                .append($select);
+            
+            $input.attr('type', 'text')
+                .attr('list', 'dl_'+field.name)
+                .attr('name', field.name)
+                .val(fvalues[field.name])
+                .addClass('form-control');
+                        
+            $select.attr('id', 'dl_'+field.name);
+
+            if (field.id) {
+                $input.attr('id', field.id);
+            }
+
+            this.addOptionsToSelect(field.config.options, $select, fvalues[field.name]);
+
+            if (field.props) {
+                this.addPropsToInput(field.props, $input);
+            }
+
+            return $field;
+        },
+        
         renderFieldSelect: function (field, fvalues) {
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),

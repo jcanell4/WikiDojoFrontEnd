@@ -38,6 +38,17 @@ define([
     // TODO: si augmenta el nombre de funcions s'ha d'extreure a un mòdul
     var wiocclFunctions = {
 
+        iffieldisequal: function (params/*field, value, valueIfTrue, valueIfFalse*/) {
+            var field=params[0], value=params[1], valueIfTrue=params[2], valueIfFalse=params[3];
+            var ret;
+            var $input = jQuery("#"+field);
+            if($input.val()==value){
+                ret = valueIfTrue;
+            }else{
+                ret = valueIfFalse;
+            }
+            return ret;
+        },
         copy: function (defaultValue, previousField) {
             var ret;
             
@@ -356,42 +367,83 @@ define([
                         console.warn("Alerta, només es processarà un token:", tokens[0]);
                     }
 
-                    // Extraïem la funció
-                    var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
-                    var functionTokens = functionRegex.exec(tokens[0]);
+//CODI ORIGINAL
+//                    // Extraïem la funció
+//                    var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
+//                    var functionTokens = functionRegex.exec(tokens[0]);
+//
+//                    // El primer token és el nom de la funció
+//                    var func = functionTokens[1].toLowerCase();
+//
+//                    // El segón token conté els paràmetres
+//                    var params = JSON.parse("["+functionTokens[2]+"]");
+//
+//                    var value;
+//
+//
+//                    switch (func) {
+//                        case 'copy':
+//                        case 'inc':
+//
+//                            // Si hi ha una fila anterior cerquem el valor anterior
+//                            if (lastRow) {
+//                                value = wiocclFunctions[func](params[0], lastRow[this.fieldToCol[name]]);
+//                            } else {
+//                                // El paràmetre és el valor per defecte per la primera fila
+//                                value = params[0];
+//                            }
+//
+//                            break;
+//
+//                        default:
+//                            if (wiocclFunctions[func]) {
+//                                value = wiocclFunctions[func](params);
+//                            } else {
+//                                console.error("Function: unknown", params);
+//                            }
+//                    }
+//
+//                    newRow[name] = newRow[name].replace(fieldRegex, value);
 
-                    // El primer token és el nom de la funció
-                    var func = functionTokens[1].toLowerCase();
+//CODI MILLORAT PER TAL QUE TRACTI MÚLTIPLES TOKENS EN EL MATEIX DEFAULT
+                    for(var iToken=0; iToken<tokens.length; iToken++){
+                        // Extraïem la funció
+                        var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
+                        var functionTokens = functionRegex.exec(tokens[iToken]);
 
-                    // El segón token conté els paràmetres
-                    var params = functionTokens[2];
+                        // El primer token és el nom de la funció
+                        var func = functionTokens[1].toLowerCase();
 
-                    var value;
+                        // El segón token conté els paràmetres
+                        var params = JSON.parse("["+functionTokens[2]+"]");
+
+                        var value;
 
 
-                    switch (func) {
-                        case 'copy':
-                        case 'inc':
+                        switch (func) {
+                            case 'copy':
+                            case 'inc':
 
-                            // Si hi ha una fila anterior cerquem el valor anterior
-                            if (lastRow) {
-                                value = wiocclFunctions[func](params[0], lastRow[this.fieldToCol[name]]);
-                            } else {
-                                // El paràmetre és el valor per defecte per la primera fila
-                                value = params[0];
-                            }
+                                // Si hi ha una fila anterior cerquem el valor anterior
+                                if (lastRow) {
+                                    value = wiocclFunctions[func](params[0], lastRow[this.fieldToCol[name]]);
+                                } else {
+                                    // El paràmetre és el valor per defecte per la primera fila
+                                    value = params[0];
+                                }
 
-                            break;
+                                break;
 
-                        default:
-                            if (wiocclFunctions[func]) {
-                                value = wiocclFunctions[func](params);
-                            } else {
-                                console.error("Function: unknown", params);
-                            }
+                            default:
+                                if (wiocclFunctions[func]) {
+                                    value = wiocclFunctions[func](params);
+                                } else {
+                                    console.error("Function: unknown", params);
+                                }
+                        }
+
+                        newRow[name] = newRow[name].replace(tokens[iToken], value);
                     }
-
-                    newRow[name] = newRow[name].replace(fieldRegex, value);
 
                 }
 
