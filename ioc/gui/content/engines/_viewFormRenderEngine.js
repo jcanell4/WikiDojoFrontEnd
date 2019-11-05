@@ -57,9 +57,14 @@ define([
                 }
                 if (field.props) {
                     this.addPropsToInput(field.props, $data);
-                }                return $field;
+                }                
+                return $field;
             },
 
+            renderFieldDataList: function (field, fvalues) {
+                return this.renderFieldSelect(field, fvalues);
+            },
+            
             renderFieldTextarea: function (field, fvalues) {
 
                 var $field = jQuery('<div>'),
