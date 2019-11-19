@@ -20,7 +20,7 @@ define([
         runQuiz(id);
 
         var domNode = dom.byId(id);
-        on(domNode, 'div.imgb a.media:click, div.iocgif a.media:click, div.iocfigure a.media:click', function (e) {
+        on(domNode, 'div.imgb a.media:click, div.imga a.media:click, div.iocgif a.media:click, div.iocfigure a.media:click', function (e) {
             var query = "";
             var arr = att.get(this, "href").split("?");
             if (arr.length > 1) {
