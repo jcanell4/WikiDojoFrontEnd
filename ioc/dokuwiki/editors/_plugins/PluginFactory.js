@@ -13,6 +13,7 @@ define([
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableCellMerge',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableDelete',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableInsert',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiLink',
@@ -49,7 +50,10 @@ define([
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
-             DojoTableCellMerge, DojoTableDelete, /*DojoSound, */DojoWikiBlock, DojoWikiLink,
+             DojoTableCellMerge, DojoTableDelete,
+             DojoTableInsert,
+             /*DojoSound, */
+             DojoWikiBlock, DojoWikiLink,
              DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview, DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,

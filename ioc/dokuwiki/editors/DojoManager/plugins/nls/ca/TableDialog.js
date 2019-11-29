@@ -28,6 +28,9 @@ define(
 	deleteTableRowLabel: "Suprimeix fila",
 	deleteTableColumnLabel: "Suprimeix columna",
 	colorTableCellTitle: "Cel·la de taula del color de fons",
-	tableContextMenuTitle: "Menú contextual de la taula"
+	tableContextMenuTitle: "Menú contextual de la taula",
+    tableId: "Id",
+    title: "Títol",
+	type: "Tipus"
 })
 );
