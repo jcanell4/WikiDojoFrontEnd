@@ -1,6 +1,6 @@
 define([
     "dojo/_base/declare",
-    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
     "dijit/_editor/_Plugin",
     "dojox/editor/plugins/TablePlugins",
     "dijit/Dialog",
@@ -9,10 +9,9 @@ define([
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
     "dojo/text!./templates/insertTable.html",
-    // "ioc/dokuwiki/editors/DojoManager/plugins/templates/insertTable.html",
     "dojo/i18n!./nls/TableDialog",
 
-], function (declare, AbstractDojoPlugin, _Plugin, TablePlugins, Dialog,
+], function (declare, AbstractParseableDojoPlugin, _Plugin, TablePlugins, Dialog,
              lang, _WidgetBase,
              _TemplatedMixin, _WidgetsInTemplateMixin,
              insertTableTemplate,
@@ -50,10 +49,10 @@ define([
 
                 // TODO: Afegir abans l'apertura de la taula
 
-                pre = '<div class="ioctable ' + this.inputType.get("value") + '" data-dw-type="'
+                pre = '<div id="box_' + _id + '" class="ioctable ' + this.inputType.get("value") + '" data-dw-type="'
                     + this.inputType.get("value") + "\" data-dw-box=\"table\">\n",
-                info = '<div class="iocinfo"><b data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br>'
-                    + '<b data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
+                info = '<div class="iocinfo"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br>'
+                    + '<b contenteditable="false" data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
                     + '</div>',
 
 
@@ -83,6 +82,12 @@ define([
 
             //console.log(t);
             this.onBuildTable({htmlText: t, id: _id});
+
+            // TODO: suposem que en aquest punt s'ha de trobar al editor el html inserit, cerquem els camps
+            var $node = jQuery(this.plugin.editor.iframe).contents().find('#box_' + _id).find('[data-dw-field]');
+
+            this.plugin._addHandlers($node/*, this*/);
+
         },
 
         onCancel: function () {
@@ -98,18 +103,19 @@ define([
             });
         },
 
-        onBuildTable: function (tableText) {
-            //stub
-            console.log("tableText:", tableText);
-        }
+        // onBuildTable: function (tableText) {
+        //     //stub
+        //     // console.log("tableText:", tableText);
+        // }
     });
 
-    var InsertTable = declare("dojox.editor.plugins.InsertTable", TablePlugins, {
+    var InsertTable = declare("dojox.editor.plugins.InsertTable", [TablePlugins, AbstractParseableDojoPlugin], {
         alwaysAvailable: true,
 
         modTable: function () {
-            var w = new EditorTableDialog({});
+            var w = new EditorTableDialog({plugin: this});
             w.show();
+
             var c = dojo.connect(w, "onBuildTable", this, function (obj) {
                 dojo.disconnect(c);
 
@@ -122,23 +128,10 @@ define([
                 //HMMMM.... This throws a security error now. didn't used to.
                 //this.editor.selectElement(td);
             });
-        }
-    });
-
-
-    function registerGeneric(args) {
-        return new TablePlugins(args);
-    }
-
-    _Plugin.registry["insertTable"] = function (args) {
-        return new InsertTable(args);
-    };
-
-
-    var TableInsertClass = declare([TablePlugins, AbstractDojoPlugin], {
-
+        },
 
         init: function (args) {
+
             this.inherited(arguments);
 
             var config = {
@@ -154,7 +147,7 @@ define([
 
             this.addButton(config);
 
-            this.button.set('disabled', true);
+            this.button.set('disabled', false);
 
             this.editor.on('changeCursor', this.updateCursorState.bind(this));
 
@@ -163,83 +156,77 @@ define([
 
         updateCursorState: function (e) {
 
-            var selectedCells = this.getSelectedCells();
+            // console.log(e);
 
-            if (selectedCells.length > 1) {
-                this.button.set('disabled', true);
-            } else {
-                this.button.set('disabled', false);
+            if (e.$node) {
+                if (e.$node.closest('table, [data-dw-box]').length > 0) {
+                    this.button.set('disabled', true);
+                } else {
+                    this.button.set('disabled', false);
+                }
+
             }
+
         },
 
         process: function () {
-            // TODO: Eque fem al process?
-            alert("process insert table");
-            // var selectedCells = this.getSelectedCells();
-            // // jQuery(this.getSelectedCells()[0]).attr('colspan', 2);
-            //
-            //
-            // var $firstCell = jQuery(selectedCells[0]);
-            // // var $previousRow = $firstCell.parent()[0];
-            // var cols = $firstCell.attr('colspan') ? $firstCell.attr('colspan') : 1;
-            // var rows = 1;
-            // var maxCols = cols;
-            // var maxRows = $firstCell.attr('rowspan') ? $firstCell.attr('rowspan') : 1;
-            //
-            // var previousRows = [];
-            // previousRows.push($firstCell.parent()[0]);
-            //
-            // // El recorregut de les cel·les seleccionades es fa d'esquerra a dreta i d'adalt cap avall
-            // for (var i = 1; i < selectedCells.length; i++) {
-            //     var $selectedCell = jQuery(selectedCells[i]);
-            //
-            //     if (previousRows.indexOf($selectedCell.parent()[0]) > -1) {
-            //
-            //         if ($selectedCell.attr('colspan')) {
-            //             cols += $selectedCell.attr('colspan');
-            //         } else {
-            //             cols++;
-            //         }
-            //
-            //
-            //     } else {
-            //         // ALERTA[Xavi] si es fa un merge amb una cel·la amb rowspawn el càlcul no serà correcte
-            //         // - calcular un valor auxiliar com a maxrows
-            //
-            //
-            //         if ($selectedCell.attr('rowspan')) {
-            //             maxRows = Math.max(rows + $selectedCell.attr('rowspan'), maxRows);
-            //         }
-            //
-            //         rows++;
-            //         previousRows.push($selectedCell.parent()[0]);
-            //
-            //         if (cols > maxCols) {
-            //             maxCols = cols;
-            //         }
-            //
-            //         cols = 1;
-            //         console.log("rows:", rows);
-            //
-            //     }
-            //
-            //     maxRows = Math.max(rows, maxRows);
-            //
-            //
-            //     $selectedCell.remove();
-            // }
-            //
-            // $firstCell.attr('colspan', maxCols);
-            // $firstCell.attr('rowspan', maxRows);
-            // $firstCell.attr('data-ioc-merged', true);
-            //
-            //
-            // this.makeColumnsEven();
-        }
+            this.modTable();
+        },
+
+        parse: function () {
+
+            // TODO
+            var $nodes = jQuery(this.editor.iframe).contents().find('.ioc-comment-block');
+            var context = this;
+
+            $nodes.each(function () {
+                context._addHandlers(jQuery(this)/*, context*/);
+            });
+
+        },
+
+        _addHandlers: function ($nodes/*, context*/) {
+            // TODO
+            console.log("Adding handlers (fields?)", $nodes);
+
+            $nodes.each(function () {
+                var $node = jQuery(this);
+                console.log($node);
+                // Els events keypress no funcionen
+                // $node.on('keypress keydown keyup paste cut', function (e) {
+                //     e.preventDefault();
+                //     e.stopPropagation();
+                //     alert("Ignorem event");
+                // });
+
+
+                // $node.on('click dblclick', function (e) {
+                //     console.log(e);
+                //     e.preventDefault();
+                //     e.stopPropagation();
+                //     alert("Ignorem event");
+                // });
+
+                // $node.keypress(function (e) {
+                //     e.preventDefault();
+                //     e.stopPropagation();
+                //     alert("Ignorem event específic");
+                // });
+            });
+
+
+
+        },
 
 
     });
 
 
-    return TableInsertClass;
+    _Plugin.registry["insertTable"] = function (args) {
+        return new InsertTable(args);
+    };
+
+
+    return InsertTable;
+
 });

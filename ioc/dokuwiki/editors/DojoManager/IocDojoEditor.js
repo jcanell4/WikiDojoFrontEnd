@@ -258,6 +258,9 @@ define([
 
                 var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
 
+
+                // console.log("jQuery:", $node);
+
                 // console.log("Informació total de la selecció:", this.internalDocument.getSelection());
                 // console.log("Informació del rang at 0:", this.internalDocument.getSelection().getRangeAt(0));
 
@@ -305,7 +308,8 @@ define([
                     container: node,
                     startNode: startNode,
                     endNode: endNode,
-                    nodes: nodes
+                    nodes: nodes,
+                    $node: $node
                 }
             },
 
@@ -436,7 +440,9 @@ define([
 
                 plugin.setEditor(this);
 
-                if (plugin.init) {// TODO[Xavi] Comprovar si això es pot moure al setEditor del plugin
+                if (plugin.init) {
+                    // console.log("Config:", config);
+                    // console.log("Plugin:", plugin);
                     plugin.init(config);
                 }
 

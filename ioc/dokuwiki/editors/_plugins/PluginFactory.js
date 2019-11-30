@@ -135,6 +135,7 @@ define([
             'ViewSource': ViewSource,
             'Clear': DojoClearFormat,
 
+            'insertTable': DojoTableInsert,
             'MergeCells': DojoTableCellMerge,
             'TableDelete': DojoTableDelete,
 
@@ -478,16 +479,22 @@ define([
             icon: 'ClearFormat',
         },
 
+        'insertTable': {
+            type: 'insertTable',
+            title: localization["table-insert"],
+            icon: 'IocInsertTable',
+        },
+
         'MergeCells': {
             type: 'MergeCells',
             title: localization["merge-cells"],
-            icon: 'IocMergeCell', // TODO[Xavi] Caniar la icona!
+            icon: 'IocMergeCell',
         },
 
         'TableDelete': {
             type: 'TableDelete',
             title: localization["table-delete"],
-            icon: 'IocTableDelete', // TODO[Xavi] Caniar la icona!
+            icon: 'IocTableDelete',
         },
 
         'InsertFigureSyntax': {

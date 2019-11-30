@@ -109,6 +109,7 @@ define({ root:
         'ioc-table-editor-multiline':  'Multiline table editor',
         'ioc-table-editor-accounting':  'Accounting table editor',
 
+        'table-insert': 'Insert table',
         'merge-cells': 'Merge cells',
         'table-delete': 'Delete table',
 
