@@ -110,6 +110,7 @@ define({ root:
         'ioc-table-editor-accounting':  'Accounting table editor',
 
         'table-insert': 'Insert table',
+        'table-toggle-header' : 'Toggle header',
         'merge-cells': 'Merge cells',
         'table-delete': 'Delete table',
 

@@ -162,7 +162,7 @@ define([
             paramsOnExpire.closable = false;
             paramsOnExpire.timeout = params.timer.timeout;
             var self = this;
-            console.log("DataContentProcessor#_initTimer:contador=", this.contador);
+            // console.log("DataContentProcessor#_initTimer:contador=", this.contador);
             contentTool.initTimer({
                 onExpire: function (ptimer) {
                     // a) Si hi ha canvis:

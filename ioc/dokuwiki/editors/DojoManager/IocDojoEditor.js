@@ -111,6 +111,7 @@ define([
 
                     // plugins dojox
                     'insertTable',
+                    'ToggleTableHeader', //plugin propi
                     // 'modifyTable',
                     'insertTableRowBefore',
                     'insertTableRowAfter',

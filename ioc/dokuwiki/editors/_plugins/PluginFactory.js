@@ -14,6 +14,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableCellMerge',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableDelete',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableInsert',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoToggleTableHeader',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiLink',
@@ -51,7 +52,7 @@ define([
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
              DojoTableCellMerge, DojoTableDelete,
-             DojoTableInsert,
+             DojoTableInsert, DojoToggleTableHeader,
              /*DojoSound, */
              DojoWikiBlock, DojoWikiLink,
              DojoComment, AceFireEvent, AceFireDojoEvent,
@@ -136,6 +137,7 @@ define([
             'Clear': DojoClearFormat,
 
             'insertTable': DojoTableInsert,
+            'ToggleTableHeader' : DojoToggleTableHeader,
             'MergeCells': DojoTableCellMerge,
             'TableDelete': DojoTableDelete,
 
@@ -477,6 +479,12 @@ define([
             type: 'ClearFormat',
             title: localization["clear-format"],
             icon: 'ClearFormat',
+        },
+
+        'ToggleTableHeader': {
+            type: 'ToggleTableHeader',
+            title: localization["table-toggle-header"],
+            icon: 'IocToggleTableHeader',
         },
 
         'insertTable': {

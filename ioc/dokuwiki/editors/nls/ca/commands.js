@@ -115,6 +115,7 @@ define(
         'ioc-table-editor-accounting':  'Editor de taules accounting',
 
         'table-insert': 'Insertar taula',
+        'table-toggle-header' : 'Alternar capçalera',
         'merge-cells': 'Fusionar cel·les',
         'table-delete': 'Eliminar taula',
 

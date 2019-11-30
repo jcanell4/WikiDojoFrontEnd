@@ -1,6 +1,6 @@
 define([
     "dojo/_base/declare",
-    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
     "dijit/_editor/_Plugin",
     "dojox/editor/plugins/TablePlugins",
     "dijit/Dialog",
@@ -11,7 +11,7 @@ define([
     "dojo/text!./templates/insertTable.html",
     "dojo/i18n!./nls/TableDialog",
 
-], function (declare, AbstractParseableDojoPlugin, _Plugin, TablePlugins, Dialog,
+], function (declare, AbstractDojoPlugin, _Plugin, TablePlugins, Dialog,
              lang, _WidgetBase,
              _TemplatedMixin, _WidgetsInTemplateMixin,
              insertTableTemplate,
@@ -83,10 +83,9 @@ define([
             //console.log(t);
             this.onBuildTable({htmlText: t, id: _id});
 
-            // TODO: suposem que en aquest punt s'ha de trobar al editor el html inserit, cerquem els camps
-            var $node = jQuery(this.plugin.editor.iframe).contents().find('#box_' + _id).find('[data-dw-field]');
+            // var $node = jQuery(this.plugin.editor.iframe).contents().find('#box_' + _id).find('[data-dw-field]');
 
-            this.plugin._addHandlers($node/*, this*/);
+            // this.plugin._addHandlers($node/*, this*/);
 
         },
 
@@ -109,7 +108,7 @@ define([
         // }
     });
 
-    var InsertTable = declare("dojox.editor.plugins.InsertTable", [TablePlugins, AbstractParseableDojoPlugin], {
+    var InsertTable = declare("dojox.editor.plugins.InsertTable", [TablePlugins, AbstractDojoPlugin], {
         alwaysAvailable: true,
 
         modTable: function () {
@@ -173,50 +172,45 @@ define([
             this.modTable();
         },
 
-        parse: function () {
-
-            // TODO
-            var $nodes = jQuery(this.editor.iframe).contents().find('.ioc-comment-block');
-            var context = this;
-
-            $nodes.each(function () {
-                context._addHandlers(jQuery(this)/*, context*/);
-            });
-
-        },
-
-        _addHandlers: function ($nodes/*, context*/) {
-            // TODO
-            console.log("Adding handlers (fields?)", $nodes);
-
-            $nodes.each(function () {
-                var $node = jQuery(this);
-                console.log($node);
-                // Els events keypress no funcionen
-                // $node.on('keypress keydown keyup paste cut', function (e) {
-                //     e.preventDefault();
-                //     e.stopPropagation();
-                //     alert("Ignorem event");
-                // });
-
-
-                // $node.on('click dblclick', function (e) {
-                //     console.log(e);
-                //     e.preventDefault();
-                //     e.stopPropagation();
-                //     alert("Ignorem event");
-                // });
-
-                // $node.keypress(function (e) {
-                //     e.preventDefault();
-                //     e.stopPropagation();
-                //     alert("Ignorem event específic");
-                // });
-            });
-
-
-
-        },
+        // parse: function () {
+        //
+        //     var $nodes = jQuery(this.editor.iframe).contents().find('.ioc-comment-block');
+        //     var context = this;
+        //
+        //     $nodes.each(function () {
+        //         context._addHandlers(jQuery(this)/*, context*/);
+        //     });
+        //
+        // },
+        //
+        // _addHandlers: function ($nodes/*, context*/) {
+        //     console.log("Adding handlers (fields?)", $nodes);
+        //
+        //     $nodes.each(function () {
+        //         var $node = jQuery(this);
+        //         console.log($node);
+        //         // Els events keypress no funcionen
+        //         // $node.on('keypress keydown keyup paste cut', function (e) {
+        //         //     e.preventDefault();
+        //         //     e.stopPropagation();
+        //         //     alert("Ignorem event");
+        //         // });
+        //
+        //
+        //         // $node.on('click dblclick', function (e) {
+        //         //     console.log(e);
+        //         //     e.preventDefault();
+        //         //     e.stopPropagation();
+        //         //     alert("Ignorem event");
+        //         // });
+        //
+        //         // $node.keypress(function (e) {
+        //         //     e.preventDefault();
+        //         //     e.stopPropagation();
+        //         //     alert("Ignorem event específic");
+        //         // });
+        //     });
+        // },
 
 
     });
