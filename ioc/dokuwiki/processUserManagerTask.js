@@ -14,13 +14,8 @@ define([
     ,"dojo/dom-form"
     ,"ioc/wiki30/Request"
 ], function(on, dom, query, event, domform, Request){
-    var requestUpdate = new Request();
-//    requestUpdate.updateSectok=function(sk){
-//            this.sectok=sk;
-//    };
-//    requestUpdate.sectok = requestUpdate.dispatcher.getSectok();
-//    requestUpdate.dispatcher.toUpdateSectok.push(requestUpdate);
 
+    var requestUpdate = new Request();
 
     var res = function(id, params){
 
@@ -43,6 +38,17 @@ define([
                 }   
             });
 
+            var handle = on(forms[i], "button[name*=fn]:click", function(e) {
+                if (this.name !== params.exportCsvName) { //el botó ExportCSV no Ajax
+                    requestUpdate.sendForm(
+                            this.form,
+                            this.name + "="+ domform.fieldToObject(this)
+                    );
+                    event.stop(e);
+                    handle.remove();
+                }   
+            });
+
             // capturar el clic sobre els enllaços dels usuaris <a>
             var handle = on(forms[i], "tr.user_info a:click", function(e){
                 //enviar
@@ -53,10 +59,10 @@ define([
                 requestUpdate.sendRequest(queryString);
                 event.stop(e);
                 handle.remove();
-        });
-            
+            });
         };
-
     };
+    
     return res;
+    
 });
