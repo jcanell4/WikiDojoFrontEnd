@@ -133,7 +133,7 @@ define([
 
 
                     'InsertFigureLinkSyntax',
-                    'InsertTableSyntax',
+                    // 'InsertTableSyntax',
                     'InsertTableLinkSyntax',
                     'InsertTextSyntax',
                     'InsertTextLargeSyntax',

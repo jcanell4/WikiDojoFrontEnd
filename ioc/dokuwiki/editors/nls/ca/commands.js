@@ -116,6 +116,9 @@ define(
 
         'table-insert': 'Insertar taula',
         'table-toggle-header' : 'Alternar capçalera',
+        'table-align-right' : 'Aliniar cel·la dreta',
+        'table-align-left' : 'Aliniar cel·la esquerra',
+        'table-align-center' : 'Aliniar cel·la centre',
         'merge-cells': 'Fusionar cel·les',
         'table-delete': 'Eliminar taula',
 

@@ -494,21 +494,21 @@ define([
 
         'TableAlignLeft': {
             type: 'TableAlign',
-            title: localization["table-toggle-header"], // TODO: afegir text
+            title: localization["table-align-left"],
             icon: 'IocTableAlignLeft', // TODO: Canviar icona
             align: 'left'
         },
 
         'TableAlignRight': {
             type: 'TableAlign',
-            title: localization["table-toggle-header"], // TODO: afegir text
+            title: localization["table-align-right"],
             icon: 'IocTableAlignRight', // TODO: Canviar icona
             align: 'right'
         },
 
         'TableAlignCenter': {
             type: 'TableAlign',
-            title: localization["table-toggle-header"], // TODO: afegir text
+            title: localization["table-align-center"],
             icon: 'IocTableAlignCenter', // TODO: Canviar icona
             align: 'center'
         },
