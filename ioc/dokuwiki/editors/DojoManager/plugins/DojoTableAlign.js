@@ -7,7 +7,11 @@ define([
     "dijit/form/ToggleButton"
 ], function (declare, AbstractDojoPlugin, lang, _Plugin, string, Button) {
 
-    var FormatButton = declare(AbstractDojoPlugin, {
+    // Alerta! això és global, ho fem servir per asegurar-nos que només un dels botons es actiu en cada moment
+
+    var registeredButtons = [];
+
+    var AlignButton = declare(AbstractDojoPlugin, {
 
         init: function (args) {
             this.inherited(arguments);
@@ -33,7 +37,14 @@ define([
 
             this.editor.on('changeCursor', this.updateCursorState.bind(this));
 
+            this.align = args.align;
+            this.alignClass = args.align + 'align';
 
+            // ALERTA! Això no funcionarà amb finestres múltiples
+
+
+
+            registeredButtons[this.editor.id + '-'+ args.align] = this;
         },
 
         addButton: function (config) {
@@ -45,11 +56,13 @@ define([
             // console.log(e);
 
             if (e.$node) {
+
                 if (e.$node.is('td, th')) {
                     this.button.set('disabled', false);
-                    if (e.state.indexOf('th') > -1) {
-                        this.button.set('checked', true);
 
+
+                    if (e.$node.hasClass(this.alignClass)) {
+                        this.button.set('checked', true);
                     } else {
                         this.button.set('checked', false);
                     }
@@ -64,35 +77,47 @@ define([
 
         process: function () {
             var selected = this.editor.getSelection();
-            var $oldNode = selected.$node;
-            var $content = $oldNode.html();
-            var $newNode;
 
-            if ($oldNode.is('td')) {
-                $newNode = jQuery('<th>');
-                this.button.set('checked', true);
+            var $node = selected.$node;
+
+            if ($node.hasClass(this.alignClass)) {
+                this.disable($node);
+
             } else {
-                $newNode = jQuery('<td>');
-                this.button.set('checked', false);
+                this.disableOthers($node);
+                this.enable($node);
             }
 
-            $newNode.attr('id', $oldNode.attr('id'));
-            $newNode.attr('class', $oldNode[0].className);
-            $newNode.html($content);
-
-            $oldNode.replaceWith($newNode[0]);
-
-            this.editor.forceUpdateCursor();
             this.editor.forceChange();
         },
+
+        disableOthers: function ($node) {
+            for (var button in registeredButtons) {
+                if (registeredButtons[button] === this || !button.startsWith(this.editor.id +'-')) {
+                    continue;
+                }
+                registeredButtons[button].disable($node);
+            }
+        },
+
+        enable: function ($node) {
+            $node.addClass(this.alignClass);
+            this.button.set('checked', true);
+        },
+
+        disable: function ($node) {
+            $node.removeClass(this.alignClass);
+            this.button.set('checked', false);
+        }
+
 
     });
 
 
     // Register this plugin.
-    _Plugin.registry["insert_format"] = function () {
-        return new FormatButton({command: "insert_format"});
+    _Plugin.registry["cell_align"] = function () {
+        return new AlignButton({command: "cell_align"});
     };
 
-    return FormatButton;
+    return AlignButton;
 });

@@ -180,7 +180,21 @@ div.action {
 
 .ioctable th, .iocaccounting th {
     background-color: #AAA;
+    text-align: left;
 }
+
+.ioctable table .centeralign {
+    text-align: center !important;
+}
+
+.ioctable table .leftalign {
+    text-align: left !important;
+}
+
+.ioctable table .rightalign {
+    text-align: right !important;
+}
+
 
 .ioctable th, .iocaccounting th, .ioctable td, .iocaccounting td {
     border: 1px solid black;

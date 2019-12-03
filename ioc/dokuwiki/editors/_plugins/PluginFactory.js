@@ -15,6 +15,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableDelete',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableInsert',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoToggleTableHeader',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableAlign',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiLink',
@@ -53,6 +54,7 @@ define([
              DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
              DojoTableCellMerge, DojoTableDelete,
              DojoTableInsert, DojoToggleTableHeader,
+             DojoTableAlign,
              /*DojoSound, */
              DojoWikiBlock, DojoWikiLink,
              DojoComment, AceFireEvent, AceFireDojoEvent,
@@ -138,6 +140,9 @@ define([
 
             'insertTable': DojoTableInsert,
             'ToggleTableHeader' : DojoToggleTableHeader,
+            'TableAlignLeft' : DojoTableAlign,
+            'TableAlignRight' : DojoTableAlign,
+            'TableAlignCenter' : DojoTableAlign,
             'MergeCells': DojoTableCellMerge,
             'TableDelete': DojoTableDelete,
 
@@ -485,6 +490,27 @@ define([
             type: 'ToggleTableHeader',
             title: localization["table-toggle-header"],
             icon: 'IocToggleTableHeader',
+        },
+
+        'TableAlignLeft': {
+            type: 'TableAlign',
+            title: localization["table-toggle-header"], // TODO: afegir text
+            icon: 'IocTableAlignLeft', // TODO: Canviar icona
+            align: 'left'
+        },
+
+        'TableAlignRight': {
+            type: 'TableAlign',
+            title: localization["table-toggle-header"], // TODO: afegir text
+            icon: 'IocTableAlignRight', // TODO: Canviar icona
+            align: 'right'
+        },
+
+        'TableAlignCenter': {
+            type: 'TableAlign',
+            title: localization["table-toggle-header"], // TODO: afegir text
+            icon: 'IocTableAlignCenter', // TODO: Canviar icona
+            align: 'center'
         },
 
         'insertTable': {

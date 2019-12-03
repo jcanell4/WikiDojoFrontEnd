@@ -46,9 +46,6 @@ define([
              _Plugin, EnterKeyHandling, html, rangeapi, RichText, dijit, TablePlugins) {
 
 
-
-
-
     return declare([Editor, AbstractIocEditor], {
 
             editorType: 'Dojo',
@@ -86,8 +83,6 @@ define([
                 ];
 
 
-
-
                 // Extra plugins
                 var plugins = this.getPlugins([
                     // 'TestDropdown'
@@ -111,7 +106,12 @@ define([
 
                     // plugins dojox
                     'insertTable',
+
                     'ToggleTableHeader', //plugin propi
+                    'TableAlignLeft', //plugin propi
+                    'TableAlignCenter', //plugin propi
+                    'TableAlignRight', //plugin propi
+
                     // 'modifyTable',
                     'insertTableRowBefore',
                     'insertTableRowAfter',
@@ -125,7 +125,6 @@ define([
                     'MergeCells',
                     'TableDelete',
                     'InsertSound',
-
 
 
                     'NewContent',
@@ -150,8 +149,6 @@ define([
                     'CancelButton',
                     'DocumentPreviewButton',
                     'ViewSource',
-
-
 
 
                 ]);
@@ -232,19 +229,19 @@ define([
                 }
             },
 
-            generateNodeState: function(node) {
+            generateNodeState: function (node) {
 
-                var $node =jQuery(node);
+                var $node = jQuery(node);
 
                 // si el node te id ="dijitEditorBody" retorna ''
-                if ($node.attr('id')==='dijitEditorBody') {
+                if ($node.attr('id') === 'dijitEditorBody') {
                     return '';
                 } else {
                     var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
                     var pre = this.generateNodeState($node.parent());
 
-                    if (pre.length>0) {
-                        state = pre +'-' + state;
+                    if (pre.length > 0) {
+                        state = pre + '-' + state;
                     }
 
                     return state;
@@ -283,7 +280,7 @@ define([
 
                     var started = false;
 
-                    $node.children().each(function() {
+                    $node.children().each(function () {
 
                         if (jQuery.contains(this, startNode) || this === startNode) {
                             started = true;
@@ -314,6 +311,18 @@ define([
                 }
             },
 
+            forceChange: function () {
+                this.emit('change', {newValue: this.get('value')});
+            },
+
+
+            forceUpdateCursor: function () {
+                var selection = this.getSelection();
+                var currentState = this.generateNodeState(selection.startNode);
+
+                this.emit('changeCursor', {state: currentState, $node: selection.$node, node: selection.node});
+            },
+
             _enableChangeDetector: function () {
                 this.$iframe = jQuery("iframe#" + this.domNode.id + "_iframe");
 
@@ -328,11 +337,11 @@ define([
 
                 this.internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document; // ie compatibility
 
-                var updateCursorState = function() {
+                var updateCursorState = function () {
                     var selection = this.getSelection();
                     var currentState = this.generateNodeState(selection.startNode);
 
-                    this.emit('changeCursor', {state: currentState, $node : selection.$node, node: selection.node});
+                    this.emit('changeCursor', {state: currentState, $node: selection.$node, node: selection.node});
 
                 }.bind(this);
 
@@ -341,7 +350,14 @@ define([
                     $editorContainer.on('input keyup', callback);
                     $editorContainer.on('input keyup click mouseup ', updateCursorState);
                     this.changeDetectorEnabled = true;
+
+                    $editorContainer.on('dragstart drop', function (e) {
+                        e.preventDefault();
+                        return false;
+                    });
                 }
+
+
             },
 
             resetOriginalContentState: function () {
@@ -567,13 +583,15 @@ define([
                 }
             },
 
-            startup: function() {
+            startup: function () {
                 this.inherited(arguments); // a la superclasse es crea la toolbar
 
                 if (this.disabled) {
                     jQuery(this.toolbar.domNode).css('display', 'none');
                     this.resize();
                 }
+
+
 
             }
 
