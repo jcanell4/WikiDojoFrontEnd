@@ -194,6 +194,7 @@ define([
             $delete.on('click', function (e) {
                 e.preventDefault();
                 $node.remove();
+                context.editor.forceChange();
             });
 
 
