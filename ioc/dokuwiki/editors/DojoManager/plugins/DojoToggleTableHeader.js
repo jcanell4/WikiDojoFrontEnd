@@ -82,6 +82,31 @@ define([
 
             $oldNode.replaceWith($newNode[0]);
 
+            this.editor.setCursorToNodePosition($newNode.get(0));
+
+            // INICI: CODI ESPECIAL PER CANVIAR LA SELECCIÓ (duplicat a DojoWikiLink)
+                // var $contents = jQuery(this.editor.iframe).contents();
+                // var backup = window.getSelection;
+                // window.getSelection = document.getSelection;
+                //
+                // var sel = dijit.range.getSelection(this.editor.internalDocument);
+                // this.editor.focus();
+                // var el = $newNode.get(0);
+                //
+                //
+                //
+                // var range = document.createRange();
+                // range.setStart(el, 0);
+                // range.collapse(true);
+                // sel.removeAllRanges();
+                // sel.addRange(range);
+                //
+                // // Restaurem la funció
+                // window.getSelection = backup;
+
+            // FI: CODI ESPECIAL PER CANVIAR LA SELECCIÓ
+
+
             this.editor.forceUpdateCursor();
             this.editor.forceChange();
         },

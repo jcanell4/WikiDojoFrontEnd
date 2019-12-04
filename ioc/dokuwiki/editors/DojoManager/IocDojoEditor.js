@@ -591,10 +591,27 @@ define([
                     this.resize();
                 }
 
+            },
 
 
+            setCursorToNodePosition(node) {
+
+                var backup = window.getSelection;
+                window.getSelection = document.getSelection;
+
+                var sel = dijit.range.getSelection(this.internalDocument);
+                this.focus();
+                // var el = node;
+
+                var range = document.createRange();
+                range.setStart(node, 0);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+
+                // Restaurem la funció
+                window.getSelection = backup;
             }
-
         }
     )
 });

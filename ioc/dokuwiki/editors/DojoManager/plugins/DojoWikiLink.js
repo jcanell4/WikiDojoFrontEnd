@@ -40,23 +40,8 @@ define([
             var $contents = jQuery(this.editor.iframe).contents();
 
             if (previousId) {
-                // ALERTA! aquesta funció la sobreescriu el patcher globalment però el plugin Range necesita la original (que es troba també a document)
-                var backup = window.getSelection;
-                window.getSelection = document.getSelection;
-
-                var sel = dijit.range.getSelection(this.editor.internalDocument);
-                this.editor.focus();
-                var el = $contents.find('[data-ioc-id="' + previousId + '"]').get(0); // aquesta es la part que s'eliminarà
-
-                var range = document.createRange();
-                range.setStart(el, 0);
-                range.collapse(true);
-                sel.removeAllRanges();
-                sel.addRange(range);
-
-                // Restaurem la funció
-                window.getSelection = backup;
-
+                var node = $contents.find('[data-ioc-id="' + previousId + '"]').get(0); // aquesta es la part que s'eliminarà
+                this.editor.setCursorToNodePosition(node);
             }
 
             var dialogManager = this.editor.dispatcher.getDialogManager();
@@ -64,6 +49,8 @@ define([
             this.previousId = previousId;
 
             data[0].options = this._getLinkIds(this.target);
+
+            console.log("es pasen els nous links?", data[0].options);
 
             var dialog = dialogManager.getDialog('form', this.editor.id, {
                 title: this.title,
@@ -88,9 +75,14 @@ define([
             var linkIds = [];
                 $targets.each(function() {
 
+                    var $this = jQuery(this);
                     // Si no s'ha especificat un ID ho ignorem
-                    if (this.name) {
-                        linkIds.push(this.name);
+                    if ($this.html()) {
+
+                        var text = ($this.text().replace('ID: ', '')).trim();
+
+                        $this.attr('name', text);
+                        linkIds.push(text);
                     }
 
                 });
@@ -129,26 +121,20 @@ define([
                e.preventDefault();
             });
 
-            $node.css('cursor', 'default');
+
 
             this.inherited(arguments);
+
+            $node.css('cursor', 'default');
+
+            $node.find('a').css('cursor', 'pointer');
+
+            console.log("node:", $node);
+            console.log("children?:", $node.find('a'));
+            console.log("html?:", $node.html());
 
         },
 
-        _callback: function (data) {
-            this.inherited(arguments);
-
-            // El link afegit s'ha de deshabilitar
-            // var $contents = jQuery(this.editor.iframe).contents();
-
-            // var $node = $contents.find('[data-ioc-id="' + this.lastId + '"]');
-
-            // $node .on('click', function(e) {
-            //     // Desactivat
-            //     e.preventDefault();
-            // });
-
-        }
 
     });
 
