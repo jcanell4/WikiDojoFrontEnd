@@ -284,6 +284,7 @@ define([
             title: localization["ioc-insert-figure-link-button"],
             prompt: localization["ioc-insert-figure-link-prompt"],
             target: 'data-ioc-figure',
+            type: 'figure',
             icon: 'IocInsertFigureLinkSyntax',
             category: localization["category-ioc"],
             htmlTemplate: '<a data-ioc-link data-ioc-id="ioc_link_figure_${id}" href="#${target}" data-ioc-block-json="${json}">${target}</a>',
@@ -300,17 +301,18 @@ define([
         'InsertTableLinkSyntax': {
             title: localization["ioc-insert-table-link-button"],
             prompt: localization["ioc-insert-table-link-prompt"],
-            target: 'data-ioc-table',
+            target: 'data-dw-box="table"',
+            type: 'table',
             icon: 'IocInsertTableLinkSyntax',
             category: localization["category-ioc"],
-            htmlTemplate: '<a data-ioc-link data-ioc-id="ioc_link_table_${id}" href="#${target}" data-ioc-block-json="${json}">${target}</a>',
+            htmlTemplate: '<a contenteditable="false" data-ioc-link="table" data-ioc-id="ioc_link_table_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp', // si no afegim un espai no es pot continuar escrivint
             data: [
                 {
                     'name': 'target',
                     'label': localization["ioc-insert-label-table"],
                     'value': '',
-                    'placeholder': localization["ioc-insert-placeholder-select"],
-                    'type': 'select'
+                    // 'placeholder': localization["ioc-insert-placeholder-select"],
+                    'type': 'select',
                 }]
         },
 

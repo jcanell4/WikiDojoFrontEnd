@@ -303,6 +303,7 @@ define([
             },
 
             _getFormDialog: function (refId, params) {
+
                 params.single = true;
 
                 params.buttons =[
@@ -351,7 +352,6 @@ define([
                             data.json = JSON.stringify(data.json);
 
                             data.json = data.json.split('"').join('&quot');
-
 
                             params.callback(data);
                         }

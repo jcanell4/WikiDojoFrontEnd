@@ -144,6 +144,12 @@ div.action {
     clear: both;
 }
 
+a {
+    text-decoration: none;
+}
+
+
+
 .action a {
     font-style: italic;
     float: right;
@@ -152,6 +158,14 @@ div.action {
     font-size: small;
     border-bottom: 1px dotted dodgerblue;
     color: dodgerblue;
+}
+
+a[data-ioc-link] .action a {
+    float: inherit;
+}
+
+a[data-ioc-link] div.action {
+    display: inline;
 }
 
 /* extrets del plugin en lloc del template */

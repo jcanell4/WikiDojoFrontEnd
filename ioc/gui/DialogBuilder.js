@@ -128,12 +128,16 @@ define([
             var $label = jQuery('<label for="' + item.name + '">' + item.label + ':</label>');
             var $select = jQuery('<select name="' + item.name + '" class="form-control">');
 
-
-
-            var $option = jQuery('<option value="'+item.placeholder+'">'+item.placeholder+'</option>');
-            $select.append($option);
+            if (item.placeholder) {
+                var $option = jQuery('<option value="'+item.placeholder+'">'+item.placeholder+'</option>');
+                $select.append($option);
+            }
 
             for (var i=0; i<item.options.length || 0; i++) {
+                if (item.options[i] === item.placeholder) {
+                    continue;
+                }
+
                 $option = jQuery('<option value="'+item.options[i]+'">'+item.options[i]+'</option>');
                 $select.append($option);
             }

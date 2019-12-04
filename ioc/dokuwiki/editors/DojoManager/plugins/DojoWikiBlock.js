@@ -51,6 +51,8 @@ define([
 
         process: function () {
 
+            console.log("Process?");
+
             if (this.data.length > 0) {
                 this._showDialog(this.data);
             } else {
@@ -65,7 +67,6 @@ define([
             var dialogManager = this.editor.dispatcher.getDialogManager();
 
             this.previousId = previousId;
-
 
 
             var dialog = dialogManager.getDialog('form', this.editor.id, {
@@ -85,6 +86,8 @@ define([
         },
 
         _callback: function (data) {
+
+
             var volatileId = false;
 
             if (data.id === undefined) {
@@ -99,14 +102,13 @@ define([
             var $html = jQuery(html);
             $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
             var id = jQuery(html).attr('data-ioc-id');
-            var text= '';
+            var text = '';
 
             if (this.previousId) {
                 var $contents = jQuery(this.editor.iframe).contents();
-                text = $contents.find('[data-ioc-id="'+this.previousId+'"] .editable-text').html();
 
+                text = $contents.find('[data-ioc-id="' + this.previousId + '"] .editable-text').html();
                 $contents.find('[data-ioc-id="' + this.previousId + '"]').remove();
-
             }
 
             // Si un node opcional es buit l'eliminem
@@ -126,10 +128,13 @@ define([
             $node.attr('data-ioc-block-' + this.normalize(this.title), true);
 
 
+            this.lastId = id;
+
             // S'ha de restaurar el text aquí
-            if (text && text.length>0) {
+            if (text && text.length > 0) {
                 $node.find('.editable-text').html(text);
-            };
+            }
+            ;
 
 
             this._addHandlers($node);
@@ -145,12 +150,16 @@ define([
             // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
             $node.find('.no-render').remove();
 
+
             var context = this;
 
             var $actions = jQuery('<div class="no-render action" >');
 
-            var $edit = jQuery('<a contenteditable="false" style="float:right;">editar</a>');
-            var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
+            // var $edit = jQuery('<a contenteditable="false" style="float:right;">editar</a>');
+            // var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
+
+            var $edit = jQuery('<a contenteditable="false">editar</a>');
+            var $delete = jQuery('<a contenteditable="false"">eliminar</a>');
 
             if (this.data.length > 0) {
                 $actions.append($edit);
@@ -161,14 +170,23 @@ define([
             $node.append($actions);
 
             $edit.on('click', function (e) {
+
+                var previousId = jQuery(this).parent().parent().attr('data-ioc-id');
+                console.log(previousId);
+
+
                 e.preventDefault();
-                // $node.trigger('click');
 
                 var json = $node.attr('data-ioc-block-json');
 
-                json = json.split('&quot').join('"');
+                var data = null;
 
-                var data = JSON.parse(json);
+                if (json) {
+                    json = json.split('&quot').join('"');
+                    data = JSON.parse(json);
+                } else {
+                    data = context.data;
+                }
 
                 context._showDialog(data, $node.attr('data-ioc-id'));
             });
