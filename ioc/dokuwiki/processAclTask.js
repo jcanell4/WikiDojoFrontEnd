@@ -16,6 +16,7 @@ define([
     ,"dojo/dom-form"
     ,"ioc/wiki30/Request"
 ], function(on, dom, query,event, domform, Request){
+    
     var requestUpdateAcl = new Request();
 
     var res = function(id, params){
@@ -39,6 +40,19 @@ define([
             handle.remove();
         });
 
+        var handle = on(form, "button[type=submit]:click", function(e){
+            //enviar
+            var queryString = "";
+            var data = domform.toQuery(this.form);
+            data += "&" + this.name + "="+ domform.fieldToObject(this);
+            if (data){
+              queryString = data;
+            }
+            requestUpdateAcl.sendRequest(queryString);
+            event.stop(e);
+            handle.remove();
+        });
+
         // capturar el clic sobre el botó Actualitzar a la graella
         var form = query(params.updateSelector);
         var handle = on(form, "input[type=submit]:click", function(e){
@@ -49,7 +63,15 @@ define([
             handle.remove();
         });
 
+        var handle = on(form, "button[type=submit]:click", function(e){
+            //enviar
+            var data = this.name + "="+ domform.fieldToObject(this);
+            requestUpdateAcl.sendForm(this.form, data);
+            event.stop(e);
+            handle.remove();
+        });
 
     };
+    
     return res;
 });
