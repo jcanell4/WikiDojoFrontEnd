@@ -100,6 +100,10 @@ define([
                         $input = this._createSelect(item);
                         break;
 
+                    case 'image':
+                        $input = this._createImage(item);
+                        break;
+
                     default:
                         $input = this._createInput(item);
 
@@ -129,16 +133,16 @@ define([
             var $select = jQuery('<select name="' + item.name + '" class="form-control">');
 
             if (item.placeholder) {
-                var $option = jQuery('<option value="'+item.placeholder+'">'+item.placeholder+'</option>');
+                var $option = jQuery('<option value="' + item.placeholder + '">' + item.placeholder + '</option>');
                 $select.append($option);
             }
 
-            for (var i=0; i<item.options.length || 0; i++) {
+            for (var i = 0; i < item.options.length || 0; i++) {
                 if (item.options[i] === item.placeholder) {
                     continue;
                 }
 
-                $option = jQuery('<option value="'+item.options[i]+'">'+item.options[i]+'</option>');
+                $option = jQuery('<option value="' + item.options[i] + '">' + item.options[i] + '</option>');
                 $select.append($option);
             }
 
@@ -147,8 +151,142 @@ define([
             $input.append($label);
             $input.append($select);
 
-
             return $input;
+        },
+
+        _createImage: function (item) {
+            // console.log("DialogBuilder#_createImage", item);
+
+            var value = item.value? item.value.split('&inner-quot').join('"') : '';
+
+
+            // 2 elements: botó per seleccionar imatge i secció per mostrar la imatge
+            var $html = jQuery('<div></div>');
+
+            var innerValue = item.value ? item.value : '';
+
+            var $hidden = jQuery('<input type="hidden" name="' + item.name + '" value="' +  innerValue + '"/>');
+            $html.append($hidden);
+
+            var $label = '<label for="' + item.name + '">' + item.label + ':</label>';
+            $html.append($label);
+            var $button = jQuery('<input type="button" value="' + item.label + '" class="form-control"/>');
+            $html.append($button);
+
+            var $imgContainer = jQuery('<div id="img_' + item.name + '"></div>');
+            $html.append($imgContainer);
+
+            $imgContainer.css('text-align', 'center');
+            $imgContainer.css('padding', '15px');
+            $imgContainer.css('height', '100px');
+
+            if (value) {
+                var $img = jQuery(value);
+                $img.css('width', 'auto');
+                $img.css('height', '100%');
+                $imgContainer.append($img);
+            }
+
+            var context = this;
+
+            $button.on('click', function (e) {
+
+                // TODO: Obrir el selector d'imatges, el retorn s'ha de desar en altre camp del DojoMediaFormatFigure que es fará servir per insertar la imatge al node
+
+
+                var edid = 'textarea_' + item.name + '_media';
+
+
+                // eliminem qualsevol textarea anterior. Alternativa: si existeix deixar aquest i no crear cap de nou
+                jQuery('textarea#' + edid).remove();
+                clearInterval(timer);
+
+                // Afegim un de nou
+                var $textarea = jQuery('<textarea>').attr('id', edid);
+                $textarea.css('display', 'none');
+
+                jQuery('body').append($textarea);
+
+
+                // Canvia al textarea es fa mitjançant expresions regulars directament sobre el text,
+                // no es dispara cap event
+
+
+                timer = setInterval(function () {
+                    var value = $textarea.val();
+                    if (value.length > 0) {
+                        clearInterval(timer);
+                        // this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
+
+
+
+
+                        var html = context.wikiImageToHTML(value);
+
+                        $hidden.val(html);
+
+                        var $img = jQuery(html);
+                        $img.css('width', 'auto');
+                        $img.css('height', '100%');
+
+                        // Eliminem el contingut;
+                        $imgContainer.html('');
+                        $imgContainer.append($img);
+
+                        timer = null;
+                        $textarea.remove();
+                    }
+
+                }, 0.1);
+
+                tb_mediapopup(
+                    null,
+                    {
+                        name: 'mediaselect', // name per la segona opció de window.open()
+                        options: 'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes', // options pel tercer paràmetre de la funció window.open()
+                        url: 'lib/exe/mediamanager.php?ns='
+                    },
+                    edid
+                );
+
+
+            });
+
+            return $html
+        },
+
+
+        wikiImageToHTML: function (value) {
+            // Entrada: {{:0xb6mp.jpg?200|}};
+
+            // var reg = new RegExp('{{:(.*)\\?');
+            var reg = new RegExp('{{:(.*?)(?:[\\?\\|\\}])');
+            var file = value.match(reg);
+
+            var width = value.match(/\?(.*?)\|/);
+
+            var tok = '' // Es necessari el tok per canviar la mida, si no es pasa dona error 412 però aquesta
+            // informació no es passa desde la finestra. De totes maneres no cal passar el paràmetre, la mida
+            // la podem ajustar directament a la etiqueta
+
+            var url = 'lib/exe/fetch.php?'
+                // +'w=' + width[1]
+                + 'media=' + file[1];
+            // +'&media=' + file[1];
+            // +'&tok=' + tok;
+
+            var id = file[1] + Date.now();
+
+            var auxWidth = width ? 'width:' + width[1] + 'px;' : '';
+
+            var html = '<img data-ioc-media data-ioc-id="' + id + '" src="' + url + '"/ style="'+ auxWidth +'">'; // TODO: cal ficar alt o títol?
+
+
+            // TODO: Alineació desde el botó: hi han tres combinacions posibles que depén de les etiquetes (però no es fan servir a la wiki):
+            // {{ wiki:dokuwiki-128.png}}
+            // {{wiki:dokuwiki-128.png }}
+            // {{ wiki:dokuwiki-128.png }}
+            return html;
         },
 
 

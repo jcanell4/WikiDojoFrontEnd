@@ -72,7 +72,7 @@ define([
                     this.getPlugin('HTMLHeader3'),
                     this.getPlugin('HTMLHeader4'),
                     this.getPlugin('HTMLHeader5'),
-                    this.getPlugin('HTMLHeader6'),
+                    // this.getPlugin('HTMLHeader6'),
                     // this.getPlugin('HTMLLink'),
                     // this.getPlugin('HTMLLinkExternal'),
 
@@ -99,8 +99,8 @@ define([
 
 
                     // plugins propis
-                    'InsertHrSyntax',
-                    'InsertMediaSyntax',
+                    // 'InsertHrSyntax', // Desactivada la ratlla, no es troba a la wiki actual
+                    // 'InsertMediaSyntax', // TODO: Dividir entre el de figura i el de imatge lateral
                     'InsertSpecialCharacter',
 
 
@@ -127,7 +127,7 @@ define([
                     'InsertSound',
 
 
-                    'NewContent',
+                    // 'NewContent', // Desactivat temporalment
 
                     'InsertFigureSyntax', // nou
 

@@ -7,7 +7,8 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoReplaceFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoClearFormat',
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatFigure',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoInternalLink',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoPicker',
 
@@ -51,7 +52,9 @@ define([
     'dojo/text!./../DojoManager/css/editorPlugins.css', // Copiat de dojox/editor/resources
 
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
-             DojoClearFormat, DojoMediaFormat, DojoInternalLink, DojoPicker,
+             DojoClearFormat,
+             DojoMediaFormatFigure,
+             DojoInternalLink, DojoPicker,
              DojoTableCellMerge, DojoTableDelete,
              DojoTableInsert, DojoToggleTableHeader,
              DojoTableAlign,
@@ -100,7 +103,8 @@ define([
 
             // Botons del desplegable IOC
             'NewContent': DojoFormat,
-            'InsertFigureSyntax': DojoWikiBlock,
+            // 'InsertFigureSyntax': DojoWikiBlock,
+            'InsertFigureSyntax': DojoMediaFormatFigure,
             //'InsertFigureLinkSyntax': DojoFormat,
             'InsertFigureLinkSyntax': DojoWikiLink,
             'InsertTableSyntax': DojoWikiBlock,
@@ -115,7 +119,7 @@ define([
             'InsertQuoteSyntax': DojoWikiBlock,
             'InsertAccountingSyntax': DojoWikiBlock,
 
-            'InsertMediaSyntax': DojoMediaFormat,
+            // 'InsertMediaSyntax': DojoMediaFormat,
             'InsertInternalLinkSyntax': DojoInternalLink,
             'InsertSpecialCharacter': DojoPicker,
             'InsertHrSyntax': DojoFormatBlock,
@@ -317,10 +321,10 @@ define([
         },
 
 
-        'InsertMediaSyntax': {
-            title: localization["ioc-insert-media-button"],
-            icon: 'IocMedia',
-        },
+        // 'InsertMediaSyntax': {
+        //     title: localization["ioc-insert-media-button"],
+        //     icon: 'IocMedia',
+        // },
 
         'InsertInternalLinkSyntax': {
             title: localization["ioc-insert-link-button"],
@@ -555,6 +559,11 @@ define([
                     'label': localization["ioc-insert-label-footer"],
                     'value': '',
                     'placeholder': localization["ioc-insert-placeholder-footer"],
+                },
+                {
+                    'name': 'image',
+                    'type': 'image',
+                    'label': localization["ioc-insert-media-button"],
                 }
             ],
             htmlTemplate: '<div class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
@@ -562,9 +571,8 @@ define([
             '<strong>Títol:</strong> <span>${title}</span><br>' +
             '<strong>Peu:</strong> ${footer}</br>' +
             '</div>' +
-            '<p class="editable-text">' + localization["ioc-insert-figure-sample"] + '</p>' +
+            '<div data-dw-figure contenteditable="false" style="text-align: center; margin:0 auto;"></div>' +
             '</div>',
-
             icon: 'IocInsertFigureSyntax',
             category: localization["category-ioc"]
         },

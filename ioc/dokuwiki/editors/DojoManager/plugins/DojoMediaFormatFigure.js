@@ -1,10 +1,11 @@
 define([
     "dojo/_base/declare",
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
     "dojo/string"
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string) {
+], function (declare, AbstractParseableDojoPlugin, DojoMediaFormat, lang, _Plugin, string) {
 
     /*
      Al node generat per aquest plugin trobem dos tipus d'atributs propis:
@@ -23,7 +24,7 @@ define([
      */
 
 
-    var WikiBlockButton = declare(AbstractParseableDojoPlugin, {
+    var WikiBlockButton = declare([AbstractParseableDojoPlugin, DojoMediaFormat], {
 
         init: function (args) {
             this.inherited(arguments);
@@ -50,8 +51,6 @@ define([
         },
 
         process: function () {
-
-            // console.log("Process?");
 
             if (this.data.length > 0) {
                 this._showDialog(this.data);
@@ -87,7 +86,6 @@ define([
 
         _callback: function (data) {
 
-
             var volatileId = false;
 
             if (data.id === undefined) {
@@ -100,6 +98,7 @@ define([
             var html = string.substitute(this.htmlTemplate, data);
 
             var $html = jQuery(html);
+
             $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
             var id = jQuery(html).attr('data-ioc-id');
             var text = '';
@@ -127,14 +126,21 @@ define([
             var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
             $node.attr('data-ioc-block-' + this.normalize(this.title), true);
 
+            var $img = jQuery(data.image);
+            $node.find('[data-dw-figure]').append($img);
 
             this.lastId = id;
 
             // S'ha de restaurar el text aquí
             if (text && text.length > 0) {
                 $node.find('.editable-text').html(text);
-            }
-            ;
+            };
+
+            // var auxJson = data.json.split('&quot').join('"');
+            // auxJson = auxJson.split('&inner-quot').join('"');
+
+            // console.log("auxJson amb quotes?", auxJson);
+            // console.log(JSON.parse(auxJson));
 
 
             this._addHandlers($node);
@@ -143,6 +149,8 @@ define([
             if (volatileId) {
                 data.id = undefined;
             }
+
+            $node.prepend(jQuery('<br>'));
         },
 
         _addHandlers: function ($node) {
@@ -172,8 +180,6 @@ define([
             $edit.on('click', function (e) {
 
                 var previousId = jQuery(this).parent().parent().attr('data-ioc-id');
-                console.log(previousId);
-
 
                 e.preventDefault();
 
@@ -212,6 +218,11 @@ define([
 
         // Canviem els espais per guions i eliminem la resta de caràcters conflictius habituals
         normalize: function (string) {
+            if (!string) {
+                console.warn("No es pot normalitzar:", string);
+                return '';
+            }
+
             var normalized = string.split(' ').join('-');
 
             normalized = normalized.toLowerCase().replace(/[ñçàèòáéíóúüï'·]+/g, '');

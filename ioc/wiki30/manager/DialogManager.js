@@ -312,7 +312,6 @@ define([
                         buttonType: this.type.DEFAULT,
                         description: params.ok.text,
                         callback: function(){
-                            // TODO: recuperar tots els valors dels camps i retornar-los com a json
 
                             var $form = jQuery(this.domNode).find('form');
 
@@ -327,11 +326,18 @@ define([
 
                             for (var i=0;i<$inputs.length; i++) {
                                 var $input = jQuery($inputs[i]);
+
+                                if ($input.attr('type') === 'button' || $input.attr('type') === 'submit') {
+                                    continue;
+                                }
+
                                 data.json.push({
                                     'name':$input.attr('name'),
                                     'placeholder':$input.attr('placeholder'),
-                                    'value':$input.val(),
-                                    'label':$form.find('label[for="'+$input.attr('name')+'"]').text().slice(0, -1)
+                                    // 'value':$input.val(),
+                                    'value':$input.val().split('"').join('&inner-quot'),
+                                    'label':$form.find('label[for="'+$input.attr('name')+'"]').text().slice(0, -1),
+                                    'type': $input.val().indexOf('<img')>=0 ? 'image' : null
                                 })
                             }
 
@@ -350,7 +356,6 @@ define([
 
 
                             data.json = JSON.stringify(data.json);
-
                             data.json = data.json.split('"').join('&quot');
 
                             params.callback(data);
