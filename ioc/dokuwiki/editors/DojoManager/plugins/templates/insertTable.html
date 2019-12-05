@@ -7,72 +7,108 @@
 	</span>
     </div>
     <div dojoAttachPoint="containerNode" class="dijitDialogPaneContent">
-        <table class="etdTable">
-            <tr>
-                <td>
-                    <label>${rows}</label>
-                </td>
-                <td>
-                    <span dojoAttachPoint="selectRow" dojoType="dijit.form.TextBox" value="2"></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="inner">
-                    <label>${columns}</label>
-                </td>
-                <td class="inner">
-                    <span dojoAttachPoint="selectCol" dojoType="dijit.form.TextBox" value="2"></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="inner">
-                    <label>${tableId}</label>
-                </td>
-                <td class="inner">
-                    <span dojoAttachPoint="inputTableId" dojoType="dijit.form.TextBox" value="Identificador"></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="inner">
-                    <label>${title}</label>
-                </td>
-                <td class="inner">
-                    <span dojoAttachPoint="inputTitle" dojoType="dijit.form.TextBox" value="Introdueix un títol"></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="inner">
-                    <label>${type}</label>
-                </td>
-                <td class="inner">
-                    <span dojoAttachPoint="inputType" dojoType="dijit.form.TextBox" value="pt_taula"></span>
-                </td>
-            </tr>
+        <style>
+            .dlgInsertTable label {
+                width: 75px;
+                float: inherit;
+                display: inline-block;
+            }
 
-            <!--<tr><td>-->
-            <!--<label>${tableWidth}</label>-->
-            <!--</td><td>-->
-            <!--<span dojoAttachPoint="selectWidth" dojoType="dijit.form.TextBox" value="100"></span>-->
-            <!--</td><td>-->
-            <!--<select dojoAttachPoint="selectWidthType" hasDownArrow="true" dojoType="dijit.form.FilteringSelect">-->
-            <!--<option value="percent">${percent}</option>-->
-            <!--<option value="pixels">${pixels}</option>-->
-            <!--</select></td></tr>	-->
-            <!--<tr><td>-->
-            <!--<label>${borderThickness}</label>-->
-            <!--</td><td>-->
-            <!--<span dojoAttachPoint="selectBorder" dojoType="dijit.form.TextBox" value="1"></span>-->
-            <!--</td><td>-->
-            <!--${pixels}-->
-            <!--</td></tr><tr><td>-->
-            <!--<label>${cellPadding}</label>-->
-            <!--</td><td>-->
-            <!--<span dojoAttachPoint="selectPad" dojoType="dijit.form.TextBox" value="0"></span>-->
-            <!--</td><td class="cellpad"></td></tr><tr><td>-->
-            <!--<label>${cellSpacing}</label>-->
-            <!--</td><td>-->
-            <!--<span dojoAttachPoint="selectSpace" dojoType="dijit.form.TextBox" value="0"></span>-->
-            <!--</td><td class="cellspace"></td></tr>-->
+            .dlgInsertTable .dijitTextBox {
+                width: 50px;
+            }
+
+            .dlgInsertTable .large .dijitTextBox {
+                width: 193px;
+            }
+
+            div.dlgRow {
+                padding: 2px;
+            }
+
+        </style>
+
+        <div class="dlgInsertTable">
+            <div class="dlgRow">
+                <label>${rows}</label>
+                <span dojoAttachPoint="selectRow" dojoType="dijit.form.TextBox" value="2" class="short"></span>
+
+                <label>${columns}</label>
+                <span dojoAttachPoint="selectCol" dojoType="dijit.form.TextBox" value="2" class="short"></span>
+            </div>
+
+            <div class="dlgRow large">
+                <label>${tableId}</label>
+                <span dojoAttachPoint="inputTableId" dojoType="dijit.form.TextBox" value="Identificador"></span>
+            </div>
+
+            <div class="dlgRow large">
+                <label>${title}</label>
+                <span dojoAttachPoint="inputTitle" dojoType="dijit.form.TextBox" value="Introdueix un títol"></span>
+            </div>
+
+            <div class="dlgRow large">
+                <label>${footer}</label>
+                <span dojoAttachPoint="inputFooter" dojoType="dijit.form.TextBox" value=""></span>
+            </div>
+
+            <div class="dlgRow large">
+                <label>${type}</label>
+                <span dojoAttachPoint="inputType" dojoType="dijit.form.TextBox" value="pt_taula"></span>
+            </div>
+
+        </div>
+
+
+        <table class="etdTable">
+
+            <!--<tr>-->
+            <!--<td>-->
+            <!--<label>${rows}</label>-->
+            <!--</td>-->
+            <!--<td>-->
+            <!--<span dojoAttachPoint="selectRow" dojoType="dijit.form.TextBox" value="2" style></span>-->
+            <!--</td>-->
+            <!--<td class="inner">-->
+            <!--<label>${columns}</label>-->
+            <!--</td>-->
+            <!--<td class="inner">-->
+            <!--<span dojoAttachPoint="selectCol" dojoType="dijit.form.TextBox" value="2"></span>-->
+            <!--</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+            <!--<td class="inner">-->
+            <!--<label>${tableId}</label>-->
+            <!--</td>-->
+            <!--<td class="inner" colspan="3">-->
+            <!--<span dojoAttachPoint="inputTableId" dojoType="dijit.form.TextBox" value="Identificador"></span>-->
+            <!--</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+            <!--<td class="inner">-->
+            <!--<label>${title}</label>-->
+            <!--</td>-->
+            <!--<td class="inner" colspan="3">-->
+            <!--<span dojoAttachPoint="inputTitle" dojoType="dijit.form.TextBox" value="Introdueix un títol"></span>-->
+            <!--</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+            <!--<td class="inner">-->
+            <!--<label>${footer}</label>-->
+            <!--</td>-->
+            <!--<td class="inner" colspan="3">-->
+            <!--<span dojoAttachPoint="inputFooter" dojoType="dijit.form.TextBox" value=""></span>-->
+            <!--</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+            <!--<td class="inner">-->
+            <!--<label>${type}</label>-->
+            <!--</td>-->
+            <!--<td class="inner">-->
+            <!--<span dojoAttachPoint="inputType" dojoType="dijit.form.TextBox" value="pt_taula"></span>-->
+            <!--</td>-->
+            <!--</tr>-->
+
         </table>
         <div class="dialogButtonContainer">
             <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onInsert">${buttonInsert}</div>

@@ -31,7 +31,8 @@ define({ root:
 	deleteTableColumnLabel: "Delete Column",
 	
 	colorTableCellTitle: "Background Color Table Cell",
-	tableContextMenuTitle: "Table Context Menu"
+	tableContextMenuTitle: "Table Context Menu",
+	footer: "footer"
 	
 })
 //end v1.x content

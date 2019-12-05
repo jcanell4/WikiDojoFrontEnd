@@ -591,7 +591,7 @@ define([
                     'name': 'footer',
                     'label': localization["ioc-insert-label-footer"],
                     'value': '',
-                    'placeholder': localization["ioc-insert-placeholder-footer"],
+                    'placeholder': '',
                 }
             ],
             htmlTemplate: '<div class="ioctable" data-ioc-id="ioc_table_${id}" data-ioc-table data-ioc-block-json="${json}">' +

@@ -29,6 +29,11 @@ define([
 
         tableId: 'Identificador',
 
+        inputType: '',
+        inputFooter: '',
+        inputTableId: '',
+
+
         postMixInProperties: function () {
             dojo.mixin(this, tableDialogStrings);
             this.inherited(arguments);
@@ -53,6 +58,7 @@ define([
                     + this.inputType.get("value") + "\" data-dw-box=\"table\">\n",
                 info = '<div class="iocinfo"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br>'
                     + '<b contenteditable="false" data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
+                    + '<b contenteditable="false" data-dw-field="footer">Peu:</b> ' + this.inputFooter.get("value") + '<br>'
                     + '</div>',
 
 
@@ -143,6 +149,8 @@ define([
                 tabIndex: "-1",
                 onClick: lang.hitch(this, "process")
             };
+
+            this.footer = args.footer;
 
             this.addButton(config);
 

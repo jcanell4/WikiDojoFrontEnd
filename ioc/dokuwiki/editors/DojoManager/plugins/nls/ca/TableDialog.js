@@ -31,6 +31,7 @@ define(
 	tableContextMenuTitle: "Menú contextual de la taula",
     tableId: "Id",
     title: "Títol",
-	type: "Tipus"
+	type: "Tipus",
+	footer: "Peu"
 })
 );
