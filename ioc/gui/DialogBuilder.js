@@ -180,26 +180,9 @@ define([
             $imgContainer.css('padding', '15px');
             $imgContainer.css('height', '100px');
 
-            if (value) {
-                var $img = jQuery(value);
-
-                // Si no comença per : ho afegim
-
-                if ($img.attr('src')[0] !== ':') {
-                    $img.attr('src', ':' + $img.attr('src'));
-                }
-
-                $img.css('width', 'auto');
-                $img.css('height', '100%');
-                $imgContainer.append($img);
-            }
-
             var context = this;
 
             $button.on('click', function (e) {
-
-                // TODO: Obrir el selector d'imatges, el retorn s'ha de desar en altre camp del DojoMediaFormatFigure que es fará servir per insertar la imatge al node
-
 
                 var edid = 'textarea_' + item.name + '_media';
 
@@ -235,6 +218,7 @@ define([
                         var $img = jQuery(html);
                         $img.css('width', 'auto');
                         $img.css('height', '100%');
+
 
                         // Eliminem el contingut;
                         $imgContainer.html('');

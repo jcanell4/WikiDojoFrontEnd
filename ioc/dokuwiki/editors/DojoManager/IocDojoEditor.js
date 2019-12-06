@@ -122,7 +122,7 @@ define([
                     // 'tableContextMenu', // això no funciona bé, s'aplica tant si hi ha como si no hi ha taula
 
                     // plugin propi taules
-                    'MergeCells',
+                    // 'MergeCells', // desactivat temporalment, no funciona correctament
                     'TableDelete',
                     'InsertSound',
 
@@ -147,7 +147,7 @@ define([
                     'IocComment',
                     'SaveButton',
                     'CancelButton',
-                    'DocumentPreviewButton',
+                    //'DocumentPreviewButton', // Desactivat, ara no funciona
                     'ViewSource',
 
 

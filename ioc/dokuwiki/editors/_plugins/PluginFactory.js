@@ -567,9 +567,9 @@ define([
                 }
             ],
             htmlTemplate: '<div data-dw-box="figure" class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
-            '<div class="iocinfo" contenteditable="false"><a id="${id}" data-dw-link="figure"><strong data-dw-field="id">ID:</strong> ${id}<br></a>' +
-            '<strong data-dw-field="title">Títol:</strong> ${title}<br>' +
-            '<strong data-dw-field="footer">Peu:</strong> ${footer}<br>' +
+            '<div class="iocinfo"><a id="${id}" data-dw-link="figure"><strong contenteditable="false" data-dw-field="id">ID:</strong> ${id}<br></a>' +
+            '<strong contenteditable="false" data-dw-field="title">Títol:</strong> ${title}<br>' +
+            '<strong contenteditable="false" data-dw-field="footer">Peu:</strong> ${footer}<br>' +
             '</div>' +
             //'<div data-dw-figure contenteditable="false" style="text-align: center; margin:0 auto;"></div>' +
             '</div>',

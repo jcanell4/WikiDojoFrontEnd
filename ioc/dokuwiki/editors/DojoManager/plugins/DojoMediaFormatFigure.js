@@ -48,6 +48,24 @@ define([
             };
 
             this.addButton(config);
+
+            this.button.set('disabled', true);
+
+            this.editor.on('changeCursor', this.updateCursorState.bind(this));
+        },
+
+        updateCursorState: function (e) {
+
+            // console.log(e);
+
+            // només es permet inserir images fora de contenidors
+            if (e.state && e.state !== 'p') {
+                this.button.set('disabled', true);
+            } else {
+                this.button.set('disabled', false);
+            }
+
+
         },
 
         process: function () {
@@ -93,6 +111,8 @@ define([
                 volatileId = true;
             }
 
+            this.id = data.id;
+
             // el json es genera al DialogManager#_getFormDialog()
 
             var html = string.substitute(this.htmlTemplate, data);
@@ -126,9 +146,9 @@ define([
             var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
             $node.attr('data-ioc-block-' + this.normalize(this.title), true);
 
-            var $img = jQuery(data.image);
-            //$node.find('[data-dw-figure]').append($img);
             $node.find('img').remove();
+
+            var $img = jQuery(data.image);
             $node.append($img);
 
 
@@ -137,26 +157,37 @@ define([
             // S'ha de restaurar el text aquí
             if (text && text.length > 0) {
                 $node.find('.editable-text').html(text);
-            };
-
-            // var auxJson = data.json.split('&quot').join('"');
-            // auxJson = auxJson.split('&inner-quot').join('"');
-
-            // console.log("auxJson amb quotes?", auxJson);
-            // console.log(JSON.parse(auxJson));
-
+            }
 
             this._addHandlers($node);
+
+            var $prev = $node.prev();
+            var $next = $node.next();
+
+            if ($prev.length === 0 || !$prev.is('p')) {
+                // Afegim un salt de línia com a separador
+                console.log("inserint paràgraf anterior");
+                $node.before(jQuery('<p>&nbsp;</p>'));
+            }
+
+            if ($next.length === 0 || !$next().is('p')) {
+                // Afegim un salt de línia com a separador
+                console.log("inserint paràgraf posterior");
+                $node.after(jQuery('<p>&nbsp;</p>'));
+            }
+
+
+
 
             // Com que el valor de data.id pot venir de this.data si s'asigna un cop es queda fixat per a tots els nous elements generats
             if (volatileId) {
                 data.id = undefined;
             }
-
-            //$node.prepend(jQuery('<br>')); // això no funciona correctament perque s'afegeixen sempre els salts de líni i s'ha d'ignorar si ja hi ha un salt
         },
 
         _addHandlers: function ($node) {
+
+            console.log("adding handlers");
 
             // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
             $node.find('.no-render').remove();
@@ -169,36 +200,97 @@ define([
             // var $edit = jQuery('<a contenteditable="false" style="float:right;">editar</a>');
             // var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
 
-            var $edit = jQuery('<a contenteditable="false">editar</a>');
+            // var $edit = jQuery('<a contenteditable="false">editar</a>');
             var $delete = jQuery('<a contenteditable="false"">eliminar</a>');
 
-            if (this.data.length > 0) {
-                $actions.append($edit);
-            }
+            // if (this.data.length > 0) {
+            //     $actions.append($edit);
+            // }
 
             $actions.append($delete);
 
             $node.append($actions);
 
-            $edit.on('click', function (e) {
+            // var context = this;
 
-                var previousId = jQuery(this).parent().parent().attr('data-ioc-id');
+            // TODO: molt similar al Dialog Builder
+            $node.find('img').on('click', function (e) {
 
-                e.preventDefault();
 
-                var json = $node.attr('data-ioc-block-json');
+                var edid = 'textarea_' + context.id + '_media';
 
-                var data = null;
 
-                if (json) {
-                    json = json.split('&quot').join('"');
-                    data = JSON.parse(json);
-                } else {
-                    data = context.data;
-                }
+                // eliminem qualsevol textarea anterior. Alternativa: si existeix deixar aquest i no crear cap de nou
+                jQuery('textarea#' + edid).remove();
+                clearInterval(timer);
 
-                context._showDialog(data, $node.attr('data-ioc-id'));
+                // Afegim un de nou
+                var $textarea = jQuery('<textarea>').attr('id', edid);
+                $textarea.css('display', 'none');
+
+                jQuery('body').append($textarea);
+
+
+                // Canvia al textarea es fa mitjançant expresions regulars directament sobre el text,
+                // no es dispara cap event
+
+                var $img = jQuery(this);
+
+
+                timer = setInterval(function () {
+                    var value = $textarea.val();
+                    if (value.length > 0) {
+                        clearInterval(timer);
+                        // this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
+
+                        var html = context.wikiImageToHTML(value);
+
+                        // $hidden.val(html);
+
+                        var $auxImg = jQuery(html);
+                        $img.attr('src', $auxImg.attr('src'));
+                        $img.attr('_djrealurl', $auxImg.attr('src')); // si no es canvia aquest també no funciona
+
+                        timer = null;
+                        $textarea.remove();
+                        context.editor.forceChange();
+                    }
+
+                }, 0.1);
+
+                tb_mediapopup(
+                    null,
+                    {
+                        name: 'mediaselect', // name per la segona opció de window.open()
+                        options: 'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes', // options pel tercer paràmetre de la funció window.open()
+                        url: 'lib/exe/mediamanager.php?ns='
+                    },
+                    edid
+                );
+
+
             });
+
+
+            // $edit.on('click', function (e) {
+            //
+            //     var previousId = jQuery(this).parent().parent().attr('data-ioc-id');
+            //
+            //     e.preventDefault();
+            //
+            //     var json = $node.attr('data-ioc-block-json');
+            //
+            //     var data = null;
+            //
+            //     if (json) {
+            //         json = json.split('&quot').join('"');
+            //         data = JSON.parse(json);
+            //     } else {
+            //         data = context.data;
+            //     }
+            //
+            //     context._showDialog(data, $node.attr('data-ioc-id'));
+            // });
 
             $delete.on('click', function (e) {
                 e.preventDefault();
@@ -209,9 +301,50 @@ define([
 
         },
 
+        // TODO: duplicat al Dialog Builder
+        wikiImageToHTML: function (value) {
+            // Entrada: {{:0xb6mp.jpg?200|}};
+
+            // var reg = new RegExp('{{:(.*)\\?');
+            var reg = new RegExp('{{:(.*?)(?:[\\?\\|\\}])');
+            var file = value.match(reg);
+
+            var width = value.match(/\?(.*?)\|/);
+
+            var tok = '' // Es necessari el tok per canviar la mida, si no es pasa dona error 412 però aquesta
+            // informació no es passa desde la finestra. De totes maneres no cal passar el paràmetre, la mida
+            // la podem ajustar directament a la etiqueta
+
+            var url = 'lib/exe/fetch.php?'
+                // +'w=' + width[1]
+                + 'media=' + file[1];
+            // +'&media=' + file[1];
+            // +'&tok=' + tok;
+
+            var id = file[1] + Date.now();
+
+            var auxWidth = width ? 'width:' + width[1] + 'px;' : '';
+
+            var html = '<img data-ioc-media data-ioc-id="' + id + '" src="' + url + '"/ style="' + auxWidth + '">'; // TODO: cal ficar alt o títol?
+
+
+            // TODO: Alineació desde el botó: hi han tres combinacions posibles que depén de les etiquetes (però no es fan servir a la wiki):
+            // {{ wiki:dokuwiki-128.png}}
+            // {{wiki:dokuwiki-128.png }}
+            // {{ wiki:dokuwiki-128.png }}
+            return html;
+        },
+
         parse: function () {
 
-            var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-block-' + this.normalize(this.title) + ']');
+            console.log("parsing!");
+
+
+            // var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-block-' + this.normalize(this.title) + ']');
+            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-box="figure"]');
+
+
+            console.log("Query cercat:", '[data-ioc-block-' + this.normalize(this.title) + ']');
             var context = this;
 
             $nodes.each(function () {

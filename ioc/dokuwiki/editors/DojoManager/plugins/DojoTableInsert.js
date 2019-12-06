@@ -45,7 +45,6 @@ define([
         },
 
         onInsert: function () {
-            console.log("insert");
 
             var rows = this.selectRow.get("value") || 1,
                 cols = this.selectCol.get("value") || 1,
@@ -89,7 +88,24 @@ define([
             //console.log(t);
             this.onBuildTable({htmlText: t, id: _id});
 
-            // var $node = jQuery(this.plugin.editor.iframe).contents().find('#box_' + _id).find('[data-dw-field]');
+            var $node = jQuery(this.plugin.editor.iframe).contents().find('#box_' + _id);
+
+            var $prev = $node.prev();
+            var $next = $node.next();
+
+            console.log($node, $prev, $next);
+
+            if ($prev.length === 0 || !$prev.is('p')) {
+                // Afegim un salt de línia com a separador
+                console.log("inserint paràgraf anterior");
+                $node.before(jQuery('<p>&nbsp;</p>'));
+            }
+
+            if ($next.length === 0 || !$next().is('p')) {
+                // Afegim un salt de línia com a separador
+                console.log("inserint paràgraf posterior");
+                $node.after(jQuery('<p>&nbsp;</p>'));
+            }
 
             // this.plugin._addHandlers($node/*, this*/);
 
@@ -125,13 +141,8 @@ define([
                 dojo.disconnect(c);
 
                 this.editor.focus();
-                var res = this.editor.execCommand('inserthtml', obj.htmlText);
+                this.editor.execCommand('inserthtml', obj.htmlText);
 
-                // commenting this line, due to msg below
-                //var td = this.editor.query("td", this.editor.byId(obj.id));
-
-                //HMMMM.... This throws a security error now. didn't used to.
-                //this.editor.selectElement(td);
             });
         },
 
@@ -179,47 +190,6 @@ define([
         process: function () {
             this.modTable();
         },
-
-        // parse: function () {
-        //
-        //     var $nodes = jQuery(this.editor.iframe).contents().find('.ioc-comment-block');
-        //     var context = this;
-        //
-        //     $nodes.each(function () {
-        //         context._addHandlers(jQuery(this)/*, context*/);
-        //     });
-        //
-        // },
-        //
-        // _addHandlers: function ($nodes/*, context*/) {
-        //     console.log("Adding handlers (fields?)", $nodes);
-        //
-        //     $nodes.each(function () {
-        //         var $node = jQuery(this);
-        //         console.log($node);
-        //         // Els events keypress no funcionen
-        //         // $node.on('keypress keydown keyup paste cut', function (e) {
-        //         //     e.preventDefault();
-        //         //     e.stopPropagation();
-        //         //     alert("Ignorem event");
-        //         // });
-        //
-        //
-        //         // $node.on('click dblclick', function (e) {
-        //         //     console.log(e);
-        //         //     e.preventDefault();
-        //         //     e.stopPropagation();
-        //         //     alert("Ignorem event");
-        //         // });
-        //
-        //         // $node.keypress(function (e) {
-        //         //     e.preventDefault();
-        //         //     e.stopPropagation();
-        //         //     alert("Ignorem event específic");
-        //         // });
-        //     });
-        // },
-
 
     });
 
