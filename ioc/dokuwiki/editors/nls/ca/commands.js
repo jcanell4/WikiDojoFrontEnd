@@ -146,8 +146,8 @@ define(
         'ioc-insert-example-prompt': 'Introdueix el títol:',
 
         // 'ioc-insert-placeholder-select': '-- Selecciona un element --',
-        'ioc-insert-label-table': 'Selecciona una taula de la llista:',
-        'ioc-insert-label-figure': 'Selecciona una figura de la llista:',
+        'ioc-insert-label-table': 'Selecciona una taula de la llista',
+        'ioc-insert-label-figure': 'Selecciona una figura de la llista',
 
         'ioc-insert-figure-link-prompt': 'Afegeix un enllaç a una figura.',
         'ioc-insert-table-link-prompt': 'Afegeix un enllaç a una taula.',

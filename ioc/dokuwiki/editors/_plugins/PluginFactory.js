@@ -8,6 +8,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoClearFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatFigure',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatLateral',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoInternalLink',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoPicker',
@@ -54,6 +55,7 @@ define([
 ], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
              DojoClearFormat,
              DojoMediaFormatFigure,
+             DojoMediaFormatLateral,
              DojoInternalLink, DojoPicker,
              DojoTableCellMerge, DojoTableDelete,
              DojoTableInsert, DojoToggleTableHeader,
@@ -105,6 +107,7 @@ define([
             'NewContent': DojoFormat,
             // 'InsertFigureSyntax': DojoWikiBlock,
             'InsertFigureSyntax': DojoMediaFormatFigure,
+            'InsertMediaSyntax': DojoMediaFormatLateral,
             //'InsertFigureLinkSyntax': DojoFormat,
             'InsertFigureLinkSyntax': DojoWikiLink,
             'InsertTableSyntax': DojoWikiBlock,
@@ -143,10 +146,10 @@ define([
             'Clear': DojoClearFormat,
 
             'insertTable': DojoTableInsert,
-            'ToggleTableHeader' : DojoToggleTableHeader,
-            'TableAlignLeft' : DojoTableAlign,
-            'TableAlignRight' : DojoTableAlign,
-            'TableAlignCenter' : DojoTableAlign,
+            'ToggleTableHeader': DojoToggleTableHeader,
+            'TableAlignLeft': DojoTableAlign,
+            'TableAlignRight': DojoTableAlign,
+            'TableAlignCenter': DojoTableAlign,
             'MergeCells': DojoTableCellMerge,
             'TableDelete': DojoTableDelete,
 
@@ -287,11 +290,11 @@ define([
         'InsertFigureLinkSyntax': {
             title: localization["ioc-insert-figure-link-button"],
             prompt: localization["ioc-insert-figure-link-prompt"],
-            target: 'data-ioc-figure',
+            target: 'data-dw-box="figure"',
             type: 'figure',
             icon: 'IocInsertFigureLinkSyntax',
             category: localization["category-ioc"],
-            htmlTemplate: '<a data-ioc-link data-ioc-id="ioc_link_figure_${id}" href="#${target}" data-ioc-block-json="${json}">${target}</a>',
+            htmlTemplate: '<a contenteditable="false" data-ioc-link="figure" data-ioc-id="ioc_link_figure_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp;',
             data: [
                 {
                     'name': 'target',
@@ -309,7 +312,7 @@ define([
             type: 'table',
             icon: 'IocInsertTableLinkSyntax',
             category: localization["category-ioc"],
-            htmlTemplate: '<a contenteditable="false" data-ioc-link="table" data-ioc-id="ioc_link_table_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp', // si no afegim un espai no es pot continuar escrivint
+            htmlTemplate: '<a contenteditable="false" data-ioc-link="table" data-ioc-id="ioc_link_table_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp;', // si no afegim un espai no es pot continuar escrivint
             data: [
                 {
                     'name': 'target',
@@ -537,6 +540,30 @@ define([
             icon: 'IocTableDelete',
         },
 
+        'InsertMediaSyntax': {
+            title: localization["ioc-insert-media-button"],
+            prompt: localization["ioc-insert-figure-prompt"],
+            data: [
+                {
+                    'name': 'title',
+                    'label': localization["ioc-insert-label-title"],
+                    'value': '',
+                    'placeholder': localization["ioc-insert-placeholder-title"],
+                },
+                {
+                    'name': 'image',
+                    'type': 'image',
+                    'label': localization["ioc-insert-media-button"],
+                }
+            ],
+            htmlTemplate: '<div data-dw-lateral="image" class="imgb" data-ioc-id="ioc_figure_${id}">'
+            + '<img src="${image}" class="media" title="${title}" alt="${title}" width="200"/>'
+            + '<div class="title">${title}</div>'
+            + '</div>',
+            icon: 'IocMedia',
+            // category: localization["category-ioc"]
+        },
+
         'InsertFigureSyntax': {
             title: localization["ioc-insert-figure-button"],
             prompt: localization["ioc-insert-figure-prompt"],
@@ -603,9 +630,9 @@ define([
                 }
             ],
             htmlTemplate: '<div data-dw-box="figure" class="ioctable" data-ioc-id="ioc_table_${id}" data-ioc-table data-ioc-block-json="${json}">' +
-            '<div class="iocinfo" contenteditable="false"><a id="${id}" ><strong>ID:</strong> ${id}<br></a>' +
-            '<strong>Títol:</strong> <span>${title}</span><br>' +
-            '<strong>Peu:</strong> ${footer}</br>' +
+            '<div class="iocinfo" contenteditable="false"><a id="${id}" data-dw-link="table"><strong contenteditable="false">ID:</strong> ${id}<br></a>' +
+            '<strong contenteditable="false">Títol:</strong> <span>${title}</span><br>' +
+            '<strong contenteditable="false">Peu:</strong> ${footer}</br>' +
             '</div>' +
             '<p class="editable-text">' + localization["ioc-insert-table-sample"] + '</p>' +
             '</div>',

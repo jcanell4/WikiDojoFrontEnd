@@ -50,8 +50,6 @@ define([
 
             data[0].options = this._getLinkIds(this.target);
 
-            console.log("es pasen els nous links?", data[0].options);
-
             var dialog = dialogManager.getDialog('form', this.editor.id, {
                 title: this.title,
                 message: this.prompt, // TODO: localitzar

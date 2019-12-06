@@ -1,0 +1,82 @@
+define([
+    "dojo/_base/declare",
+    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatFigure',
+    "dojo/_base/lang",
+    "dijit/_editor/_Plugin",
+    "dojo/string"
+], function (declare, AbstractParseableDojoPlugin, DojoMediaFormatFigure, lang, _Plugin, string) {
+
+    /*
+     Al node generat per aquest plugin trobem dos tipus d'atributs propis:
+        * Tipus de bloc, aquests son generics i permet agrupar-los, per exemple les taules normals i de contabilitat son data-ioc-table:
+            - data-ioc-table
+            - data-ioc-figure
+            - data-ioc-etc
+
+        * Tipus de plugin, aquests son individuals per cada configuració del plugin i permeten discriminar entre els elements del mateix tipus per obrir el dialeg corresponent al botó (es generen a partir del títol del botó), per exemple:
+             - data-ioc-block-sintaxi-de-taula
+             - data-ioc-block-sintaxi-de-quote
+
+     Nota: pel correcte funcionament s'ha de generar un ID únic per cada element, aquest es genera automàticament
+     en base al timestamp si no es troba l'atribut id a les dades. En cas contrari no funcionaran correctament les opcions
+     d'editar i eliminar.
+     */
+
+
+    var WikiMediaFormatLateral = declare([AbstractParseableDojoPlugin, DojoMediaFormatFigure], {
+
+        init: function (args) {
+            this.inherited(arguments);
+            this.button.set('disabled', false);
+        },
+
+        _callback: function (data) {
+            // console.log("data", data);
+
+            if (!data.image || !data.title) {
+                alert("La imatge i el títol son obligatoris");
+                return;
+            }
+
+            var volatileId = false;
+
+            if (data.id === undefined) {
+                data.id = Date.now();
+                volatileId = true;
+            }
+
+            this.id = data.id;
+
+            data.image = jQuery(data.image).attr('src');
+
+            var html = string.substitute(this.htmlTemplate, data);
+
+            var $html = jQuery(html);
+
+            $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
+            var id = jQuery(html).attr('data-ioc-id');
+
+
+            this.editor.execCommand('inserthtml', html);
+
+            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
+
+            this._addHandlers($node);
+
+
+            if (volatileId) {
+                data.id = undefined;
+            }
+        },
+
+    });
+
+
+    // Register this plugin.
+    _Plugin.registry["insert_wiki_block"] = function () {
+        return new WikiMediaFormatLateral({command: "insert_media_lateral"});
+    };
+
+    return WikiMediaFormatLateral;
+});

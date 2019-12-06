@@ -100,7 +100,7 @@ define([
 
                     // plugins propis
                     // 'InsertHrSyntax', // Desactivada la ratlla, no es troba a la wiki actual
-                    // 'InsertMediaSyntax', // TODO: Dividir entre el de figura i el de imatge lateral
+                    'InsertMediaSyntax', // Correspón a la imatge lateral
                     'InsertSpecialCharacter',
 
 

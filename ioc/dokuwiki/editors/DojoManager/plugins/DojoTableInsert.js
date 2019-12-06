@@ -51,11 +51,11 @@ define([
                 _id = "tbl_" + (new Date().getTime()),
 
 
-                // TODO: Afegir abans l'apertura de la taula
+                // TODO: això és el que es troba al template? el template no es fa servir?
 
-                pre = '<div id="box_' + _id + '" class="ioctable ' + this.inputType.get("value") + '" data-dw-type="'
-                    + this.inputType.get("value") + "\" data-dw-box=\"table\">\n",
-                info = '<div class="iocinfo"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br>'
+                pre = '<div data-dw-box="table" id="box_' + _id + '" class="ioctable ' + this.inputType.get("value")
+                    + '" data-dw-type="' + this.inputType.get("value") + "\">\n",
+                info = '<div class="iocinfo"><a id="' + this.inputTableId.get("value")+ '" data-dw-link="table"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br></a>'
                     + '<b contenteditable="false" data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
                     + '<b contenteditable="false" data-dw-field="footer">Peu:</b> ' + this.inputFooter.get("value") + '<br>'
                     + '</div>',
@@ -93,8 +93,6 @@ define([
             var $prev = $node.prev();
             var $next = $node.next();
 
-            console.log($node, $prev, $next);
-
             if ($prev.length === 0 || !$prev.is('p')) {
                 // Afegim un salt de línia com a separador
                 console.log("inserint paràgraf anterior");
@@ -106,8 +104,6 @@ define([
                 console.log("inserint paràgraf posterior");
                 $node.after(jQuery('<p>&nbsp;</p>'));
             }
-
-            // this.plugin._addHandlers($node/*, this*/);
 
         },
 

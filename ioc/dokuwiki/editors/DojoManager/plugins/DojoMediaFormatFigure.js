@@ -24,7 +24,7 @@ define([
      */
 
 
-    var WikiBlockButton = declare([AbstractParseableDojoPlugin, DojoMediaFormat], {
+    var WikiMediaFormatFigure = declare([AbstractParseableDojoPlugin, DojoMediaFormat], {
 
         init: function (args) {
             this.inherited(arguments);
@@ -104,6 +104,12 @@ define([
 
         _callback: function (data) {
 
+            console.log('data', data);
+            if (!data.image) {
+                alert("No s'ha afegit cap imatge.");
+                return;
+            }
+
             var volatileId = false;
 
             if (data.id === undefined) {
@@ -170,7 +176,7 @@ define([
                 $node.before(jQuery('<p>&nbsp;</p>'));
             }
 
-            if ($next.length === 0 || !$next().is('p')) {
+            if ($next.length === 0 || !$next.is('p')) {
                 // Afegim un salt de línia com a separador
                 console.log("inserint paràgraf posterior");
                 $node.after(jQuery('<p>&nbsp;</p>'));
@@ -187,8 +193,6 @@ define([
 
         _addHandlers: function ($node) {
 
-            console.log("adding handlers");
-
             // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
             $node.find('.no-render').remove();
 
@@ -201,7 +205,7 @@ define([
             // var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
 
             // var $edit = jQuery('<a contenteditable="false">editar</a>');
-            var $delete = jQuery('<a contenteditable="false"">eliminar</a>');
+            var $delete = jQuery('<a contenteditable="false">eliminar</a>');
 
             // if (this.data.length > 0) {
             //     $actions.append($edit);
@@ -325,7 +329,7 @@ define([
 
             var auxWidth = width ? 'width:' + width[1] + 'px;' : '';
 
-            var html = '<img data-ioc-media data-ioc-id="' + id + '" src="' + url + '"/ style="' + auxWidth + '">'; // TODO: cal ficar alt o títol?
+            var html = '<img data-ioc-media data-ioc-id="' + id + '" src="' + url + '"/ style="' + auxWidth + '"/>'; // TODO: cal ficar alt o títol?
 
 
             // TODO: Alineació desde el botó: hi han tres combinacions posibles que depén de les etiquetes (però no es fan servir a la wiki):
@@ -337,14 +341,11 @@ define([
 
         parse: function () {
 
-            console.log("parsing!");
-
-
             // var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-block-' + this.normalize(this.title) + ']');
             var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-box="figure"]');
 
 
-            console.log("Query cercat:", '[data-ioc-block-' + this.normalize(this.title) + ']');
+            // console.log("Query cercat:", '[data-ioc-block-' + this.normalize(this.title) + ']');
             var context = this;
 
             $nodes.each(function () {
@@ -372,8 +373,8 @@ define([
 
     // Register this plugin.
     _Plugin.registry["insert_wiki_block"] = function () {
-        return new WikiBlockButton({command: "insert_wiki_block"});
+        return new WikiMediaFormatFigure({command: "insert_media_figure"});
     };
 
-    return WikiBlockButton;
+    return WikiMediaFormatFigure;
 });

@@ -159,7 +159,7 @@ define([
             // var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
 
             var $edit = jQuery('<a contenteditable="false">editar</a>');
-            var $delete = jQuery('<a contenteditable="false"">eliminar</a>');
+            var $delete = jQuery('<a contenteditable="false">eliminar</a>');
 
             if (this.data.length > 0) {
                 $actions.append($edit);
@@ -172,7 +172,7 @@ define([
             $edit.on('click', function (e) {
 
                 var previousId = jQuery(this).parent().parent().attr('data-ioc-id');
-                console.log(previousId);
+                // console.log(previousId);
 
 
                 e.preventDefault();
