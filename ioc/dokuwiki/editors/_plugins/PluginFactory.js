@@ -566,12 +566,12 @@ define([
                     'label': localization["ioc-insert-media-button"],
                 }
             ],
-            htmlTemplate: '<div class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
-            '<div class="iocinfo" contenteditable="false"><a id="${id}" ><strong>ID:</strong> ${id}<br></a>' +
-            '<strong>Títol:</strong> <span>${title}</span><br>' +
-            '<strong>Peu:</strong> ${footer}</br>' +
+            htmlTemplate: '<div data-dw-box="figure" class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
+            '<div class="iocinfo" contenteditable="false"><a id="${id}" data-dw-link="figure"><strong data-dw-field="id">ID:</strong> ${id}<br></a>' +
+            '<strong data-dw-field="title">Títol:</strong> ${title}<br>' +
+            '<strong data-dw-field="footer">Peu:</strong> ${footer}<br>' +
             '</div>' +
-            '<div data-dw-figure contenteditable="false" style="text-align: center; margin:0 auto;"></div>' +
+            //'<div data-dw-figure contenteditable="false" style="text-align: center; margin:0 auto;"></div>' +
             '</div>',
             icon: 'IocInsertFigureSyntax',
             category: localization["category-ioc"]
@@ -602,7 +602,7 @@ define([
                     'placeholder': '',
                 }
             ],
-            htmlTemplate: '<div class="ioctable" data-ioc-id="ioc_table_${id}" data-ioc-table data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div data-dw-box="figure" class="ioctable" data-ioc-id="ioc_table_${id}" data-ioc-table data-ioc-block-json="${json}">' +
             '<div class="iocinfo" contenteditable="false"><a id="${id}" ><strong>ID:</strong> ${id}<br></a>' +
             '<strong>Títol:</strong> <span>${title}</span><br>' +
             '<strong>Peu:</strong> ${footer}</br>' +

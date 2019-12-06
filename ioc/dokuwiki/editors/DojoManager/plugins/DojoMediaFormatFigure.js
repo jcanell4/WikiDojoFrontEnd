@@ -127,7 +127,10 @@ define([
             $node.attr('data-ioc-block-' + this.normalize(this.title), true);
 
             var $img = jQuery(data.image);
-            $node.find('[data-dw-figure]').append($img);
+            //$node.find('[data-dw-figure]').append($img);
+            $node.find('img').remove();
+            $node.append($img);
+
 
             this.lastId = id;
 
@@ -150,7 +153,7 @@ define([
                 data.id = undefined;
             }
 
-            $node.prepend(jQuery('<br>'));
+            //$node.prepend(jQuery('<br>')); // això no funciona correctament perque s'afegeixen sempre els salts de líni i s'ha d'ignorar si ja hi ha un salt
         },
 
         _addHandlers: function ($node) {

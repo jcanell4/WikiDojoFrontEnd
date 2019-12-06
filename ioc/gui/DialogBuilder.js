@@ -182,6 +182,13 @@ define([
 
             if (value) {
                 var $img = jQuery(value);
+
+                // Si no comença per : ho afegim
+
+                if ($img.attr('src')[0] !== ':') {
+                    $img.attr('src', ':' + $img.attr('src'));
+                }
+
                 $img.css('width', 'auto');
                 $img.css('height', '100%');
                 $imgContainer.append($img);

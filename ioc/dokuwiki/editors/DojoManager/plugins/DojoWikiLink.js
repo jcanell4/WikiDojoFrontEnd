@@ -121,18 +121,9 @@ define([
                e.preventDefault();
             });
 
-
-
             this.inherited(arguments);
-
             $node.css('cursor', 'default');
-
             $node.find('a').css('cursor', 'pointer');
-
-            console.log("node:", $node);
-            console.log("children?:", $node.find('a'));
-            console.log("html?:", $node.html());
-
         },
 
 
