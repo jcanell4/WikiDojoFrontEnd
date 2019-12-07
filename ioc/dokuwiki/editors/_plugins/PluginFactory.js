@@ -238,7 +238,7 @@ define([
                     'placeholder': localization["ioc-insert-sound-prompt"]
                 }],
 
-            htmlTemplate: '<div contenteditable="false" data-dw-block="sound" data-sound-id="${id}" data-ioc-id="ioc_sound_${id}" data-ioc-block-json="${json}" contenteditable="false">' +
+            htmlTemplate: '<div contenteditable="false" data-dw-block="sound" data-sound-id="${id}" data-ioc-id="ioc_sound_${id}" data-ioc-block-json="${json}">' +
             '<iframe width="100%" height="20" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${id}?secret_token=none&color=%230066cc&inverse=false&auto_play=false&show_user=true"></iframe>' +
             '</div>',
             category: localization["category-ioc"]
@@ -556,12 +556,12 @@ define([
                     'label': localization["ioc-insert-media-button"],
                 }
             ],
-            htmlTemplate: '<div data-dw-lateral="image" class="imgb" data-ioc-id="ioc_figure_${id}">'
+            htmlTemplate: '<div class="imgb" data-dw-lateral="image" data-ioc-id="ioc_figure_${id}">'
             + '<img src="${image}" class="media" title="${title}" alt="${title}" width="200"/>'
             + '<div class="title">${title}</div>'
             + '</div>',
             icon: 'IocMedia',
-            // category: localization["category-ioc"]
+            category: localization["category-ioc"]
         },
 
         'InsertFigureSyntax': {
@@ -593,7 +593,7 @@ define([
                     'label': localization["ioc-insert-media-button"],
                 }
             ],
-            htmlTemplate: '<div data-dw-box="figure" class="iocfigure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="iocfigure" data-dw-box="figure" data-ioc-id="ioc_figure_${id}" data-ioc-figure data-ioc-block-json="${json}">' +
             '<div class="iocinfo"><a id="${id}" data-dw-link="figure"><strong contenteditable="false" data-dw-field="id">ID:</strong> ${id}<br></a>' +
             '<strong contenteditable="false" data-dw-field="title">Títol:</strong> ${title}<br>' +
             '<strong contenteditable="false" data-dw-field="footer">Peu:</strong> ${footer}<br>' +
@@ -629,7 +629,7 @@ define([
                     'placeholder': '',
                 }
             ],
-            htmlTemplate: '<div data-dw-box="figure" class="ioctable" data-ioc-id="ioc_table_${id}" data-ioc-table data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="ioctable" data-dw-box="figure" data-ioc-id="ioc_table_${id}" data-ioc-table data-ioc-block-json="${json}">' +
             '<div class="iocinfo" contenteditable="false"><a id="${id}" data-dw-link="table"><strong contenteditable="false">ID:</strong> ${id}<br></a>' +
             '<strong contenteditable="false">Títol:</strong> <span>${title}</span><br>' +
             '<strong contenteditable="false">Peu:</strong> ${footer}</br>' +
@@ -687,9 +687,9 @@ define([
                 'value': '',
                 'placeholder': 'Introduceix el títol'
             }],
-            htmlTemplate: '<div class="ioctext" data-ioc-id="ioc_text_${id}" data-ioc-text data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="ioctext" data-dw-box-text="text" data-ioc-id="ioc_text_${id}" data-ioc-text data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="ioctitle" data-ioc-optional>${title}</p>' +
+            '<p class="ioctitle" data-dw-field="title" data-ioc-optional>${title}</p>' +
             '<p class="editable-text">' + localization["ioc-insert-text-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertTextSyntax',
@@ -707,9 +707,9 @@ define([
                 'value': '',
                 'placeholder': localization["ioc-insert-placeholder-title"],
             }],
-            htmlTemplate: '<div class="ioctextl" data-ioc-id="ioc_textl_${id}" data-ioc-textl data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="ioctextl" data-dw-box-text="textl" data-ioc-id="ioc_textl_${id}" data-ioc-textl data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="ioctitle" data-ioc-optional>${title}</p>' +
+            '<p class="ioctitle" data-dw-field="title" data-ioc-optional>${title}</p>' +
             '<p class="editable-text">' + localization["ioc-insert-text-large-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertTextLargeSyntax',
@@ -726,9 +726,9 @@ define([
                 'value': '',
                 'placeholder': localization["ioc-insert-placeholder-title"],
             }],
-            htmlTemplate: '<div class="iocexample" data-ioc-id="ioc_example_${id}" data-ioc-example data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="iocexample" data-dw-box-text="example" data-ioc-id="ioc_example_${id}" data-ioc-example data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
-            '<p class="ioctitle" data-ioc-optional>${title}</p>' +
+            '<p class="ioctitle" data-dw-field="title" data-ioc-optional>${title}</p>' +
             '<p class="editable-text">' + localization["ioc-insert-example-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertExampleSyntax',
@@ -740,7 +740,7 @@ define([
             // prompt: localization["ioc-insert-note-prompt"],
             sample: localization["ioc-insert-note-sample"],
             data: [],
-            htmlTemplate: '<div class="iocnote" data-ioc-id="ioc_note_${id}" data-ioc-note data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="iocnote" data-dw-box-text="note" data-ioc-id="ioc_note_${id}" data-ioc-note data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
             '<p class="editable-text">' + localization["ioc-insert-note-sample"] + '</p>' +
             '</div></div>',
@@ -753,7 +753,7 @@ define([
             //prompt: localization["ioc-insert-reference-prompt"],
             sample: localization["ioc-insert-reference-sample"],
             data: [],
-            htmlTemplate: '<div class="iocreference" data-ioc-id="ioc_reference_${id}" data-ioc-reference data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="iocreference" data-dw-box-text="reference" data-ioc-id="ioc_reference_${id}" data-ioc-reference data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
             '<p class="editable-text">' + localization["ioc-insert-reference-sample"] + '</p>' +
             '</div></div>',
@@ -766,7 +766,7 @@ define([
             //prompt: localization["ioc-insert-important-prompt"],
             sample: localization["ioc-insert-important-sample"],
             data: [],
-            htmlTemplate: '<div class="iocimportant" data-ioc-id="ioc_important_${id}" data-ioc-important data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="iocimportant" data-dw-box-text="reference" data-ioc-id="ioc_important_${id}" data-ioc-important data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
             '<p class="editable-text">' + localization["ioc-insert-important-sample"] + '</p>' +
             '</div></div>',
@@ -779,7 +779,7 @@ define([
             //prompt: localization["ioc-insert-quote-prompt"],
             sample: localization["ioc-insert-quote-sample"],
             data: [],
-            htmlTemplate: '<div class="iocquote" data-ioc-id="ioc_quote_${id}" data-ioc-important data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="iocquote" data-dw-box-text="quote" data-ioc-id="ioc_quote_${id}" data-ioc-important data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
             '<p class="editable-text">' + localization["ioc-insert-quote-sample"] + '</p>' +
             '</div></div>',

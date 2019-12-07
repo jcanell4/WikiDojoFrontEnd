@@ -28,7 +28,7 @@ define([
 
         init: function (args) {
             this.inherited(arguments);
-            this.button.set('disabled', false);
+            // this.button.set('disabled', false);
         },
 
         _callback: function (data) {

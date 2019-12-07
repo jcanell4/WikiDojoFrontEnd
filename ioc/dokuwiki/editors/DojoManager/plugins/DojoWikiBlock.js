@@ -160,8 +160,14 @@ define([
             // var $edit = jQuery('<a contenteditable="false" style="float:right;">editar</a>');
             // var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
 
+            // ALERTA: Desactivat el edit via parse (és pot editar el títol directament sobre el document).
+            // la edició permetria eliminar o afegir el títol, però requereix la informació del dialeg i aquesta
+            // no és accesible desde el parse.
+
             var $edit = jQuery('<a contenteditable="false">editar</a>');
             var $delete = jQuery('<a contenteditable="false">eliminar</a>');
+
+            // console.log("this.data?", this.data);
 
             if (this.data.length > 0) {
                 $actions.append($edit);
@@ -205,6 +211,13 @@ define([
         parse: function () {
 
             var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-block-' + this.normalize(this.title) + ']');
+
+            if ($nodes.length === 0) {
+                $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-box-text]');
+            } else {
+                console.warn('S\'ha detectat l\'ús de data-ioc-block-');
+            }
+
             var context = this;
 
             // console.log("parsing nodes:", $nodes)

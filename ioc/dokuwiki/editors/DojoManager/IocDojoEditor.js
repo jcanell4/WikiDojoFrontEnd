@@ -65,8 +65,8 @@ define([
                     // 'bold'
                     this.getPlugin('HTMLItalic'),
                     this.getPlugin('HTMLUnderline'),
-                    this.getPlugin('HTMLCode'),
-                    this.getPlugin('HTMLStrikethrough'),
+                    // this.getPlugin('HTMLCode'), // Desactivat temporalment
+                    // this.getPlugin('HTMLStrikethrough'), // No utilitzat a la wiki, no implementat als translators
                     this.getPlugin('HTMLHeader1'),
                     this.getPlugin('HTMLHeader2'),
                     this.getPlugin('HTMLHeader3'),
@@ -100,7 +100,6 @@ define([
 
                     // plugins propis
                     // 'InsertHrSyntax', // Desactivada la ratlla, no es troba a la wiki actual
-                    'InsertMediaSyntax', // Correspón a la imatge lateral
                     'InsertSpecialCharacter',
 
 
@@ -113,8 +112,8 @@ define([
                     'TableAlignRight', //plugin propi
 
                     // 'modifyTable',
-                    'insertTableRowBefore',
-                    'insertTableRowAfter',
+                    'insertTableRowBefore', // no funciona, només afegeix la columna del principi
+                    'insertTableRowAfter', // no funciona, només afegeix la columna del principi
                     'insertTableColumnBefore',
                     'insertTableColumnAfter',
                     'deleteTableRow',
@@ -129,7 +128,8 @@ define([
 
                     // 'NewContent', // Desactivat temporalment
 
-                    'InsertFigureSyntax', // nou
+                    'InsertMediaSyntax', // Correspón a la imatge lateral
+                    'InsertFigureSyntax', // nou, correspón a les figures
 
 
                     'InsertFigureLinkSyntax',
@@ -142,8 +142,8 @@ define([
                     'InsertReferenceSyntax',
                     'InsertImportantSyntax',
                     'InsertQuoteSyntax',
-                    'InsertAccountingSyntax',
-                    // 'IocSoundFormatButton',
+                    // 'InsertAccountingSyntax', // Desactivat tempralment, no s'ha comprovat
+
                     'IocComment',
                     'SaveButton',
                     'CancelButton',
