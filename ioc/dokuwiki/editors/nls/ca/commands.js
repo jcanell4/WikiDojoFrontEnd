@@ -123,7 +123,7 @@ define(
         'table-delete': 'Eliminar taula',
 
         'ioc-insert-sound-button': 'Insertar so',
-        'ioc-insert-sound-sample': 'identificador_so',
+        // 'ioc-insert-sound-sample': 'identificador_so',
         'ioc-insert-sound-prompt': 'Introdueix l\'identificador del so:',
 
         'ioc-insert-figure-prompt': 'Introdueix les dades de la figura:',

@@ -226,8 +226,7 @@ define([
 
         'InsertSound': { // pel Dojo Editor
             title: localization["ioc-insert-sound-button"],
-            propmt: localization["ioc-insert-sound-prompt"],
-            sample: localization["ioc-insert-sound-sample"],
+            prompt: localization["ioc-insert-sound-prompt"],
             icon: 'IocSound',
 
             data: [ // clau: etiqueta
@@ -235,12 +234,12 @@ define([
                     'name': 'id',
                     'label': 'Id',
                     'value': '',
-                    'placeholder': 'Introduceix l\'identificador'
+                    'placeholder': localization["ioc-insert-sound-prompt"]
                 }],
 
-            htmlTemplate: "<div data-ioc-id=\"ioc_sound_${id}\" data-ioc-sound data-ioc-block-json=\"${json}\" contenteditable=\"false\">" +
-            "<iframe width=\"100%\" height=\"20\" scrolling=\"no\" frameborder=\"no\" src=\"https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${id}?secret_token=none&color=%230066cc&inverse=false&auto_play=false&show_user=true\"></iframe>" +
-            "</div>",
+            htmlTemplate: '<div contenteditable="false" data-dw-block="sound" data-sound-id="${id}" data-ioc-id="ioc_sound_${id}" data-ioc-block-json="${json}" contenteditable="false">' +
+            '<iframe width="100%" height="20" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${id}?secret_token=none&color=%230066cc&inverse=false&auto_play=false&show_user=true"></iframe>' +
+            '</div>',
             category: localization["category-ioc"]
         },
 
@@ -737,7 +736,7 @@ define([
 
         'InsertNoteSyntax': {
             title: localization["ioc-insert-note-button"],
-            // propmt: localization["ioc-insert-note-prompt"],
+            // prompt: localization["ioc-insert-note-prompt"],
             sample: localization["ioc-insert-note-sample"],
             data: [],
             htmlTemplate: '<div class="iocnote" data-ioc-id="ioc_note_${id}" data-ioc-note data-ioc-block-json="${json}">' +
@@ -750,7 +749,7 @@ define([
 
         'InsertReferenceSyntax': {
             title: localization["ioc-insert-reference-button"],
-            //propmt: localization["ioc-insert-reference-prompt"],
+            //prompt: localization["ioc-insert-reference-prompt"],
             sample: localization["ioc-insert-reference-sample"],
             data: [],
             htmlTemplate: '<div class="iocreference" data-ioc-id="ioc_reference_${id}" data-ioc-reference data-ioc-block-json="${json}">' +
@@ -763,7 +762,7 @@ define([
 
         'InsertImportantSyntax': {
             title: localization["ioc-insert-important-button"],
-            //propmt: localization["ioc-insert-important-prompt"],
+            //prompt: localization["ioc-insert-important-prompt"],
             sample: localization["ioc-insert-important-sample"],
             data: [],
             htmlTemplate: '<div class="iocimportant" data-ioc-id="ioc_important_${id}" data-ioc-important data-ioc-block-json="${json}">' +
@@ -776,7 +775,7 @@ define([
 
         'InsertQuoteSyntax': {
             title: localization["ioc-insert-quote-button"],
-            //propmt: localization["ioc-insert-quote-prompt"],
+            //prompt: localization["ioc-insert-quote-prompt"],
             sample: localization["ioc-insert-quote-sample"],
             data: [],
             htmlTemplate: '<div class="iocquote" data-ioc-id="ioc_quote_${id}" data-ioc-important data-ioc-block-json="${json}">' +
