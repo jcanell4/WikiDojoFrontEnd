@@ -20,6 +20,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableAlign',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiLink',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
@@ -61,7 +62,7 @@ define([
              DojoTableInsert, DojoToggleTableHeader,
              DojoTableAlign,
              /*DojoSound, */
-             DojoWikiBlock, DojoWikiLink,
+             DojoWikiBlock, DojoWikiSound, DojoWikiLink,
              DojoComment, AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview, DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
@@ -153,7 +154,7 @@ define([
             'MergeCells': DojoTableCellMerge,
             'TableDelete': DojoTableDelete,
 
-            'InsertSound': DojoWikiBlock,
+            'InsertSound': DojoWikiSound,
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',

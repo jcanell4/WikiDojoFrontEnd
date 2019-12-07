@@ -70,6 +70,19 @@ define([
             }
         },
 
+        parse: function () {
+
+            // var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-block-' + this.normalize(this.title) + ']');
+            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-lateral="image"]');
+
+
+            // console.log("Query cercat:", '[data-ioc-block-' + this.normalize(this.title) + ']');
+            var context = this;
+
+            $nodes.each(function () {
+                context._addHandlers(jQuery(this)/*, context*/);
+            });
+        },
     });
 
 

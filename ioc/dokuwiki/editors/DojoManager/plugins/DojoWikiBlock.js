@@ -139,6 +139,8 @@ define([
 
             this._addHandlers($node);
 
+            this.editor.forceChange();
+
             // Com que el valor de data.id pot venir de this.data si s'asigna un cop es queda fixat per a tots els nous elements generats
             if (volatileId) {
                 data.id = undefined;
@@ -204,6 +206,8 @@ define([
 
             var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-block-' + this.normalize(this.title) + ']');
             var context = this;
+
+            // console.log("parsing nodes:", $nodes)
 
             $nodes.each(function () {
                 context._addHandlers(jQuery(this)/*, context*/);
