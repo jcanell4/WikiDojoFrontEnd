@@ -63,11 +63,11 @@ define(function () {
 
         _generatePaginationRow = function (lessButton, moreButton, page) {
             var html = '<tr><td style="text-align: center;" colspan="3">';
-            html += lessButton ? lessButton : '<<';
+            html += lessButton ? lessButton : '  ';
             html += ' ';
             html += page;
             html += ' ';
-            html += moreButton? moreButton : '>>';
+            html += moreButton? moreButton : '  ';
             html += '</td></tr>';
 
             return html;
@@ -78,6 +78,7 @@ define(function () {
 
         var id = contentTool.docId,
             ns = data.docId,
+            amount=data.totalamount,
             html = '',
             linkRev,
             linkTime,
@@ -100,14 +101,14 @@ define(function () {
 
         linkCurrent = '?id=' + ns;
 
-        if (data.position && data.position > -1) {
-            var lessButton = _generatePreviousButton(id, ns, Math.max(-1, data.position - data.amount));
+        if (data.position && data.position > 0) {
+            var lessButton = _generatePreviousButton(id, ns, Math.max(0, data.position - data.maxamount));
         }
 
         if (data.show_more_button) {
-            var moreButton = _generateNextButton(id, ns, Math.max(0, data.position) + data.amount);
+            var moreButton = _generateNextButton(id, ns, Math.max(0, data.position) + data.maxamount);
         }
-        var page = Math.floor(Math.max(data.position, 0) / data.amount) + 1;
+        var page = "(" + (Math.max(data.position, 0)+1) + "-" + (data.position+data.amount) + ")";
 
         if (data.call_view)
             call_view = ' data-call="' + data.call_view + '"';
@@ -118,6 +119,8 @@ define(function () {
 
         delete(data.position);
         delete(data.amount);
+        delete(data.maxamount);
+        delete(data.totalamount);
         delete(data.show_more_button);
         delete(data.docId);
         delete(data.urlBase);
@@ -144,7 +147,7 @@ define(function () {
         html += _generateHtmlForSummary(revision_actual);
         html += '</tr>';
 
-        if (page > 1) 
+        if (lessButton || moreButton) 
             html+=_generatePaginationRow(lessButton, moreButton, page);
 
         for (var i = 0; i < sortable.length; i++) {
@@ -162,13 +165,13 @@ define(function () {
             html += '</tr>';
         }
 
-        if (page > 1) 
+        if (lessButton || moreButton) 
             html+=_generatePaginationRow(lessButton, moreButton, page);
 
         html += '</table>';
         html += '</form>';
 
-        contentTool.set("title", "Revisions(" + sortable.length + ")");
+        contentTool.set("title", "Revisions(" + amount + ")");
 
         return html;
     };
