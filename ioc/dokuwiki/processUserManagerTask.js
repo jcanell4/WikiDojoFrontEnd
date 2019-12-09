@@ -24,30 +24,19 @@ define([
 
         // capturar el clic sobre el botons
         var forms = query(params.formsSelector);
+        var func  = function(e){
+            if (this.name !== params.exportCsvName) {
+                requestUpdate.sendForm(
+                        this.form,
+                        this.name + "="+ domform.fieldToObject(this)
+                );
+                event.stop(e);
+                handle.remove();
+            }   
+        };
         for (var i = 0; i < forms.length; i++) {
-            var handle = on(forms[i], "input[name*=fn]:click", function(e){
-                //enviar
-                // el botó ExportCSV no passa per Ajax
-                if (this.name !== params.exportCsvName) {
-                    requestUpdate.sendForm(
-                            this.form,
-                            this.name + "="+ domform.fieldToObject(this)
-                    );
-                    event.stop(e);
-                    handle.remove();
-                }   
-            });
-
-            var handle = on(forms[i], "button[name*=fn]:click", function(e) {
-                if (this.name !== params.exportCsvName) { //el botó ExportCSV no Ajax
-                    requestUpdate.sendForm(
-                            this.form,
-                            this.name + "="+ domform.fieldToObject(this)
-                    );
-                    event.stop(e);
-                    handle.remove();
-                }   
-            });
+            var handle = on(forms[i], "input[name*=fn]:click", func);
+            var handle = on(forms[i], "button[name*=fn]:click", func);
 
             // capturar el clic sobre els enllaços dels usuaris <a>
             var handle = on(forms[i], "tr.user_info a:click", function(e){

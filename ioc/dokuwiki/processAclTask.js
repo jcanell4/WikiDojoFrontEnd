@@ -27,7 +27,7 @@ define([
 
         // capturar el clic sobre el botó Desa/Actualitza/Suprimeix
         var form = query(params.saveSelector);
-        var handle = on(form, "input[type=submit]:click", function(e){
+        var fDesa = function(e){
             //enviar
             var queryString = "";
             var data = domform.toQuery(this.form);
@@ -38,39 +38,21 @@ define([
             requestUpdateAcl.sendRequest(queryString);
             event.stop(e);
             handle.remove();
-        });
-
-        var handle = on(form, "button[type=submit]:click", function(e){
-            //enviar
-            var queryString = "";
-            var data = domform.toQuery(this.form);
-            data += "&" + this.name + "="+ domform.fieldToObject(this);
-            if (data){
-              queryString = data;
-            }
-            requestUpdateAcl.sendRequest(queryString);
-            event.stop(e);
-            handle.remove();
-        });
+        };
+        var handle = on(form, "input[type=submit]:click", fDesa);
+        var handle = on(form, "button[type=submit]:click", fDesa);
 
         // capturar el clic sobre el botó Actualitzar a la graella
         var form = query(params.updateSelector);
-        var handle = on(form, "input[type=submit]:click", function(e){
+        var fACtualitzar = function(e){
             //enviar
             var data = this.name + "="+ domform.fieldToObject(this);
             requestUpdateAcl.sendForm(this.form, data);
             event.stop(e);
             handle.remove();
-        });
-
-        var handle = on(form, "button[type=submit]:click", function(e){
-            //enviar
-            var data = this.name + "="+ domform.fieldToObject(this);
-            requestUpdateAcl.sendForm(this.form, data);
-            event.stop(e);
-            handle.remove();
-        });
-
+        };
+        var handle = on(form, "input[type=submit]:click", fACtualitzar);
+        var handle = on(form, "button[type=submit]:click", fACtualitzar);
     };
     
     return res;
