@@ -134,6 +134,7 @@ define([
             'HTMLUnderline': 'underline',
             'HTMLCode': DojoFormatBlock,
             'HTMLStrikethrough': 'strikethrough',
+            'HTMLHeader0': DojoFormat,
             'HTMLHeader1': DojoFormat,
             'HTMLHeader2': DojoFormat,
             'HTMLHeader3': DojoFormat,
@@ -144,7 +145,7 @@ define([
             'HTMLLinkExternal': DojoFormat,
 
             'ViewSource': ViewSource,
-            'Clear': DojoClearFormat,
+            'ClearFormat': DojoClearFormat,
 
             'insertTable': DojoTableInsert,
             'ToggleTableHeader': DojoToggleTableHeader,
@@ -389,6 +390,15 @@ define([
             close: '</del>',
             sample: localization["ioc-insert-strikethrough-button"],
             icon: 'IocStrikethrough',
+        },
+
+        'HTMLHeader0': {
+            title: localization["ioc-insert-header0-button"],
+            open: '<p>',
+            close: '</p>',
+            sample: '',
+            icon: 'IocHeader0',
+            category: localization["category-header"]
         },
 
         'HTMLHeader1': {

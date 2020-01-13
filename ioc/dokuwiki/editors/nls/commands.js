@@ -145,9 +145,9 @@ define({ root:
 
         // 'ioc-insert-placeholder-select': '-- Select an item --',
         'ioc-insert-label-table': 'Select a table from the list:',
-        'ioc-insert-label-figure': 'Select a figure from the list:'
+        'ioc-insert-label-figure': 'Select a figure from the list:',
 
-
+        'clear-format' : 'Clear format'
 
 
     }),

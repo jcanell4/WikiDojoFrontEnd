@@ -100,6 +100,7 @@ define(
 
 
         'ioc-insert-header-sample': 'Encapçalament',
+        'ioc-insert-header0-button': 'Elimina caçalera',
         'ioc-insert-header1-button': 'Sintaxi d\'encapçalament nivell 1',
         'ioc-insert-header2-button': 'Sintaxi d\'encapçalament nivell 2',
         'ioc-insert-header3-button': 'Sintaxi d\'encapçalament nivell 3',
@@ -151,6 +152,8 @@ define(
 
         'ioc-insert-figure-link-prompt': 'Afegeix un enllaç a una figura.',
         'ioc-insert-table-link-prompt': 'Afegeix un enllaç a una taula.',
+
+        'clear-format' : 'Elimina el format'
     })
 );
 

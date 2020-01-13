@@ -67,6 +67,8 @@ define([
                     this.getPlugin('HTMLUnderline'),
                     // this.getPlugin('HTMLCode'), // Desactivat temporalment
                     // this.getPlugin('HTMLStrikethrough'), // No utilitzat a la wiki, no implementat als translators
+                    this.getPlugin('ClearFormat'),
+                    this.getPlugin('HTMLHeader0'),
                     this.getPlugin('HTMLHeader1'),
                     this.getPlugin('HTMLHeader2'),
                     this.getPlugin('HTMLHeader3'),
@@ -149,6 +151,7 @@ define([
                     'CancelButton',
                     //'DocumentPreviewButton', // Desactivat, ara no funciona
                     'ViewSource',
+
 
 
                 ]);
