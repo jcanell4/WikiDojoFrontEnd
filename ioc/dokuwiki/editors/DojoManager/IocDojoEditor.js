@@ -28,7 +28,7 @@ define([
     "dijit/layout/_LayoutWidget",
     "dijit/form/ToggleButton",
     "dijit/_editor/_Plugin",
-    "dijit/_editor/plugins/EnterKeyHandling",
+    // "dijit/_editor/plugins/EnterKeyHandling",
     "dijit/_editor/html",
     "dijit/_editor/range",
     "dijit/_editor/RichText",
@@ -43,7 +43,7 @@ define([
              array, Deferred, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
-             _Plugin, EnterKeyHandling, html, rangeapi, RichText, dijit, TablePlugins) {
+             _Plugin, /*EnterKeyHandling,*/ html, rangeapi, RichText, dijit, TablePlugins) {
 
 
     return declare([Editor, AbstractIocEditor], {

@@ -6,10 +6,13 @@ define([
     'dojo/dom',
     'dojo/dom-style',
     'dojo/dom-geometry',
+    "dijit/_editor/plugins/EnterKeyHandling",
     // 'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/IocSoundFormatButtonPlugin',
     // 'dojox/editor/plugins/InsertEntity',
-], function (declare, AbstractIocFacade, Editor, AlwaysShowToolbar, dom, style, geometry/*, CommentsDialog, IocSoundFormatButtonPlugin*/) {
+], function (declare, AbstractIocFacade, Editor, AlwaysShowToolbar, dom, style, geometry,
+             EnterKeyHandling
+             /*, CommentsDialog, IocSoundFormatButtonPlugin*/) {
     return declare([AbstractIocFacade], {
 
         editor: null,
@@ -40,7 +43,10 @@ define([
                 dispatcher: this.dispatcher,
                 components: [], // string[],
                 TOOLBAR_ID: this.TOOLBAR_ID,
-                readOnly: args.readOnly
+                readOnly: args.readOnly,
+                extraPlugins: [
+                    {name:"dijit._editor.plugins.EnterKeyHandling", blockNodeForEnter: 'P'}
+                ]
             }, dom.byId(args.containerId));
 
             if (args.TOOLBAR_ID) {
