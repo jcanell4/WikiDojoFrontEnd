@@ -10,12 +10,12 @@
 */
 define([
      "dojo/on"
-    ,"dojo/dom"
     ,"dojo/query"
     ,"dojo/_base/event"
     ,"dojo/dom-form"
     ,"ioc/wiki30/Request"
-], function(on, dom, query,event, domform, Request){
+], function(on, query, event, domform, Request){
+    
     var requestUpdateAcl = new Request();
 
     var res = function(id, params){
@@ -26,30 +26,39 @@ define([
 
         // capturar el clic sobre el botó Desa/Actualitza/Suprimeix
         var form = query(params.saveSelector);
-        var handle = on(form, "input[type=submit]:click", function(e){
+        var fDesa = function(e){
             //enviar
-            var queryString = "";
-            var data = domform.toQuery(this.form);
-            data += "&" + this.name + "="+ domform.fieldToObject(this);
-            if (data){
-              queryString = data;
-            }
+            var queryString = domform.toQuery(this.form);
+            queryString += "&" + this.name + "=" + domform.fieldToObject(this);
             requestUpdateAcl.sendRequest(queryString);
             event.stop(e);
-            handle.remove();
+        };
+        var handle1 = on(form, "input[type=submit]:click", function(e){
+            fDesa(e);
+            handle1.remove();
+        });
+        var handle2 = on(form, "button[type=submit]:click", function(e){
+            fDesa(e);
+            handle2.remove();
         });
 
         // capturar el clic sobre el botó Actualitzar a la graella
         var form = query(params.updateSelector);
-        var handle = on(form, "input[type=submit]:click", function(e){
+        var fACtualitzar = function(e){
             //enviar
-            var data = this.name + "="+ domform.fieldToObject(this);
+            var data = this.name + "=" + domform.fieldToObject(this);
             requestUpdateAcl.sendForm(this.form, data);
             event.stop(e);
-            handle.remove();
+        };
+        var handle1 = on(form, "input[type=submit]:click", function(e){
+            fACtualitzar(e);
+            handle1.remove();
         });
-
-
+        var handle2 = on(form, "button[type=submit]:click", function(e){
+            fACtualitzar(e);
+            handle2.remove();
+        });
     };
+    
     return res;
 });
