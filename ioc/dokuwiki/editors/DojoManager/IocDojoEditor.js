@@ -151,7 +151,7 @@ define([
                     'CancelButton',
                     //'DocumentPreviewButton', // Desactivat, ara no funciona
                     'ViewSource',
-
+                    'DojoSafePaste'
 
 
                 ]);
@@ -349,6 +349,9 @@ define([
                 }.bind(this);
 
 
+
+                var context = this;
+
                 if ($editorContainer.length > 0) {
                     $editorContainer.on('input keyup', callback);
                     $editorContainer.on('input keyup click mouseup ', updateCursorState);
@@ -358,6 +361,23 @@ define([
                         e.preventDefault();
                         return false;
                     });
+
+
+                    // Es bloqueja el parse, s'ha de fer servir plugins que interceptin aquest esdeveniment i el processin
+                    $editorContainer.on('paste', function (e) {
+                        console.log(e);
+
+                        var pastedData = e.originalEvent.clipboardData.getData('text');
+                        console.log('Text: ', pastedData);
+
+                        console.log('Html: ', e.originalEvent.clipboardData.getData('text/html'));
+
+                        context.emit('safePaste', e);
+
+                        e.preventDefault();
+                        return true;
+                    });
+
                 }
 
 

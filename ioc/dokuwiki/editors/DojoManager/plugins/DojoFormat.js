@@ -1,6 +1,6 @@
 define([
     "dojo/_base/declare",
-    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
+    "ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin",
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
     "dojo/string"

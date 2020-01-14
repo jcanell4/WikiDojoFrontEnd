@@ -25,6 +25,8 @@ define([
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoSafePaste',
+
     'ioc/dokuwiki/editors/AceManager/plugins/AceFireEvent',
     'ioc/dokuwiki/editors/AceManager/plugins/AceFireDojoEvent', // TODO: Fer versió pel dojo
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFireEvent',
@@ -63,7 +65,9 @@ define([
              DojoTableAlign,
              /*DojoSound, */
              DojoWikiBlock, DojoWikiSound, DojoWikiLink,
-             DojoComment, AceFireEvent, AceFireDojoEvent,
+             DojoComment,
+             DojoSafePaste,
+             AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview, DojoDocumentPreview,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
@@ -156,6 +160,8 @@ define([
             'TableDelete': DojoTableDelete,
 
             'InsertSound': DojoWikiSound,
+
+            'DojoSafePaste': DojoSafePaste,
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -795,6 +801,12 @@ define([
             '</div></div>',
             icon: 'IocInsertQuoteSyntax',
             category: localization["category-ioc"]
+        },
+
+        'DojoSafePaste': {
+            type: 'DojoSafePaste',
+            // title: localization["clear-format"],
+            // icon: 'ClearFormat',
         },
 
     };
