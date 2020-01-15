@@ -38,6 +38,7 @@ define([
 
         process: function (html) {
             this.editor.execCommand('inserthtml', html);
+            this.editor.reparse();
         },
 
         // fa el canvi de les entitats html pels valors correspondents i converteix cada línia en un paràgraf

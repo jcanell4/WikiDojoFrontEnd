@@ -34,6 +34,8 @@ define([
 
         _processFull: function () {
 
+            //
+
             var formId = 'form_' + this.editor.id + '_internal_link';
             var textareaId = 'textarea_' + this.editor.id + '_internal_link';
 

@@ -100,6 +100,7 @@ define([
             var counter = 0;
 
             $nodes.each(function () {
+
                 // Afegim els ids
                 var nodeId = 'link_' + context.type + '_' + counter++;
 

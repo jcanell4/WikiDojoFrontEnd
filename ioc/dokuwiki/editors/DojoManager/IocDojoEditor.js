@@ -9,6 +9,7 @@ define([
     'ioc/dokuwiki/editors/_plugins/AbstractIocPlugin',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoToolbarDropdown',
+    'ioc/dokuwiki/editors/DojoManager/plugins/CustomLinkDialog',
 
     // ALERTA[Xavi] Necessari pel addPlugin (només per depurar)
     "dojo/_base/array", // array.forEach
@@ -40,6 +41,7 @@ define([
              registry,
              IocToolbar,
              AbstractIocPlugin, DojoToolbarDropdown,
+             CustomLinkDialog,
              array, Deferred, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
@@ -94,7 +96,8 @@ define([
 
 
                     // plugins Dojo
-                    'createLink',
+                    // 'createLink',
+                    'customCreateLink',
                     'unlink',
                     'insertOrderedList',
                     'insertUnorderedList',
@@ -209,12 +212,18 @@ define([
                 this._parsePlugins();
             },
 
-
+            // @private
             _addPluginParser: function (plugin) {
                 // console.log("IocDojoEditor#_addPluginParser", plugin);
                 this._pluginsToParse.push(plugin);
             },
 
+            // Aquest és el mètode públic que ha de cridar-se si es necessari fer un re-parse (per exemple en enganxar html)
+            reparse: function () {
+                this._parsePlugins();
+            },
+
+            // @private
             _parsePlugins: function () {
                 // console.log("IocDojoEditor#_parsePlugins", this._pluginsToParse[i]);
 
