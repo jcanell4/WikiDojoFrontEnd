@@ -22,9 +22,14 @@ define([
                 console.log("TXT:", pastedDataTxt);
                 console.log("HTML:", pastedDataHtml);
 
-                // TODO: habilitar el sanejament
-                context.process(pastedDataTxt);
-                //this.process(this.sanitize(pastedDataHtml));
+                if (pastedDataHtml.trim().startsWith('<meta charset=') || (pastedDataHtml.trim().startsWith('<html'))) {
+                    // Es tracta de contingut html enganxat des de una altra aplicació
+                    context.process(context.sanitize(pastedDataTxt));
+                } else {
+                    // S'enganxa codi del propi editor, no cal sanejar
+                    context.process(pastedDataHtml);
+                }
+
 
             });
 
@@ -35,17 +40,21 @@ define([
             this.editor.execCommand('inserthtml', html);
         },
 
-        sanitize: function (rawHtml) {
-            // TODO parsejar el contingut html
-            // descargar el head
-            // descartar les classes css
-            // descartar etiquetes (sense eliminar el contingut):
-            //      span
-            // processat especial:
-            //      taules
+        // fa el canvi de les entitats html pels valors correspondents i converteix cada línia en un paràgraf
+        sanitize: function (rawText) {
+            var html = '';
 
+            var encodedStr = rawText.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+                return '&#'+i.charCodeAt(0)+';';
+            });
 
-            return rawHtml;
+            var lines = encodedStr.split("\n");
+
+            for (var i = 0; i < lines.length; i++) {
+                html += "<p>" + lines[i].trim() + "</p>\n";
+            }
+
+            return html;
         }
 
     });
