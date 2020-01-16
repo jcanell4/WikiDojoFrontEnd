@@ -140,7 +140,7 @@ define([
             infoManager: null,
             
             requestedState:null,
-
+            
             /**
              * Afegeix al hash de processadors els processadors, les característiques del objecte passat com argument i
              * inicialitza els arrays per emmagatzemar els handlers.
@@ -177,6 +177,7 @@ define([
                 this.globalState = GlobalState;
                 this.updateViewHandlers = new Array();
                 this.reloadStateHandlers = new Array();
+                this._updatePropertyControl = new Array();
 
                 this.infoManager = new InfoManager(this);
                 this.changesManager = new ChangesManager(this);
@@ -241,18 +242,23 @@ define([
              */
             startup: function () {
             },
+            
+            initUpdateWidgetProperty: function(widget, property, value){
+                if(!this._updatePropertyControl[widget+"_"+property]){
+                    this.changeWidgetProperty(widget, property, value);
+                    this._updatePropertyControl[widget+"_"+property]=true;
+                }
+            },
 
             /**
              * Recorre el array de UpdateViewHandlers i crida al métode update() de cadascun.
              */
             updateFromState: function () {
+                this._updatePropertyControl = new Array();
                 if (this.updateViewHandlers) {
                     for(var i=this.updateViewHandlers.length-1; i>=0; i--){
                         this.updateViewHandlers[i].update();
                     }
-//                    array.forEach(this.updateViewHandlers, function (handler) {
-//                        handler.update();
-//                    });
                 }
             },
 

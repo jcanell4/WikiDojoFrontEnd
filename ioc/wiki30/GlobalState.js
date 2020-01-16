@@ -57,6 +57,8 @@ define([
 
         title: "",
         
+        userState: null,
+        
         /** @type {InfoStorage} */
         infoStorage: {
             timer: {
@@ -250,6 +252,37 @@ define([
          */
         setInfoStorage: function (infoStorage) {
             this.infoStorage = infoStorage;
+        },
+
+
+        /**
+         * Retorna el magatzem del userSate.
+         *
+         * @param {key} key del userSate
+         * 
+         * @returns {userState[key]} o {userState} si {key} és undefined
+         */
+        getUserState: function (key) {
+            var ret;
+            if(key===undefined){
+                ret = this.userState;
+            }else{
+                ret = this.userState[key];
+            }
+            return ret;
+        },
+
+        /**
+         * Modifica el valor del magatzem del userState passat com argument com l'actual.
+         * @param {key} key del userSate
+         * @param {key} valor a modificar per la key passada
+         *
+         */
+        setUserState: function (key, value) {
+            if(this.userState==null){
+                this.userState={};
+            }
+            this.userState[key] = value;
         },
 
 
