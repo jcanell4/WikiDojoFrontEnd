@@ -26,37 +26,37 @@ define([
 
         // capturar el clic sobre el botó Desa/Actualitza/Suprimeix
         var form = query(params.saveSelector);
-        var fDesa = function(e){
+        var fDesa = function(objThis, e){
             //enviar
-            var queryString = domform.toQuery(this.form);
-            queryString += "&" + this.name + "=" + domform.fieldToObject(this);
+            var queryString = domform.toQuery(objThis.form);
+            queryString += "&" + objThis.name + "=" + domform.fieldToObject(objThis);
             requestUpdateAcl.sendRequest(queryString);
             event.stop(e);
         };
         var handle1 = on(form, "input[type=submit]:click", function(e){
-            fDesa(e);
+            fDesa(this, e);
             handle1.remove();
         });
         var handle2 = on(form, "button[type=submit]:click", function(e){
-            fDesa(e);
+            fDesa(this, e);
             handle2.remove();
         });
 
         // capturar el clic sobre el botó Actualitzar a la graella
         var form = query(params.updateSelector);
-        var fACtualitzar = function(e){
+        var fACtualitzar = function(objThis, e){
             //enviar
-            var data = this.name + "=" + domform.fieldToObject(this);
-            requestUpdateAcl.sendForm(this.form, data);
+            var data = objThis.name + "=" + domform.fieldToObject(objThis);
+            requestUpdateAcl.sendForm(objThis.form, data);
             event.stop(e);
         };
-        var handle1 = on(form, "input[type=submit]:click", function(e){
-            fACtualitzar(e);
-            handle1.remove();
+        var handle3 = on(form, "input[type=submit]:click", function(e){
+            fACtualitzar(this, e);
+            handle3.remove();
         });
-        var handle2 = on(form, "button[type=submit]:click", function(e){
-            fACtualitzar(e);
-            handle2.remove();
+        var handle4 = on(form, "button[type=submit]:click", function(e){
+            fACtualitzar(this, e);
+            handle4.remove();
         });
     };
     
