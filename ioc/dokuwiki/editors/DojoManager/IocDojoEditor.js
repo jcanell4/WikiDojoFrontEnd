@@ -241,6 +241,13 @@ define([
                 }
             },
 
+            getCurrentNodeState: function () {
+                var selection = this.getSelection();
+                var currentState = this.generateNodeState(selection.startNode);
+
+                return currentState;
+            },
+
             generateNodeState: function (node) {
 
                 var $node = jQuery(node);
@@ -264,7 +271,9 @@ define([
             getSelection: function () {
                 // Normalment el node seleccionat serà de tipus text, en aquest cas s'enviarà el parent
 
-                var node = this.internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
+                var internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document;
+
+                var node = internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
 
                 var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
 
@@ -276,8 +285,8 @@ define([
 
 
                 // isCollapsed: true es que només inclou 1 node, false inclou més d'un node? <-- no serveix, es true quan hi han múltiples nodes en 1 sol block
-                var startNode = this.internalDocument.getSelection().getRangeAt(0).startContainer;
-                var endNode = this.internalDocument.getSelection().getRangeAt(0).endContainer;
+                var startNode = internalDocument.getSelection().getRangeAt(0).startContainer;
+                var endNode = internalDocument.getSelection().getRangeAt(0).endContainer;
 
                 startNode = startNode.nodeType === 3 ? startNode.parentElement : startNode;
                 endNode = endNode.nodeType === 3 ? endNode.parentElement : endNode;
@@ -356,7 +365,6 @@ define([
                     this.emit('changeCursor', {state: currentState, $node: selection.$node, node: selection.node});
 
                 }.bind(this);
-
 
 
                 var context = this;

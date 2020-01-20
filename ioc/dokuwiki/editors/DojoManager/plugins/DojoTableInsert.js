@@ -99,11 +99,13 @@ define([
                 $node.before(jQuery('<p>&nbsp;</p>'));
             }
 
-            if ($next.length === 0 || !$next().is('p')) {
+            if ($next.length === 0 || !$next.is('p')) {
                 // Afegim un salt de línia com a separador
                 console.log("inserint paràgraf posterior");
                 $node.after(jQuery('<p>&nbsp;</p>'));
             }
+
+
 
         },
 
@@ -130,7 +132,7 @@ define([
         alwaysAvailable: true,
 
         modTable: function () {
-            var w = new EditorTableDialog({plugin: this});
+            var w = new EditorTableDialog({plugin: this, editor: this.editor});
             w.show();
 
             var c = dojo.connect(w, "onBuildTable", this, function (obj) {
