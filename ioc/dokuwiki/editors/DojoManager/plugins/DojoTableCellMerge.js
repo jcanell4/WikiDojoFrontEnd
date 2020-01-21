@@ -2,7 +2,8 @@ define([
     "dojo/_base/declare",
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
     "dijit/_editor/_Plugin",
-    "dojox/editor/plugins/TablePlugins",
+    // "dojox/editor/plugins/TablePlugins",
+    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins",
     "dojo/_base/lang",
 ], function (declare, AbstractDojoPlugin, _Plugin, TablePlugins, lang) {
 

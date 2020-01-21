@@ -34,8 +34,8 @@ define([
     "dijit/_editor/range",
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
-    "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
-    // ioc/dokuwiki/editors/DojoManager/plugins/IocDojoTablePlugins"
+    // "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
+    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins"
 
 ], function (AbstractIocEditor, declare, Editor,
              registry,
@@ -126,7 +126,7 @@ define([
                     // 'tableContextMenu', // això no funciona bé, s'aplica tant si hi ha como si no hi ha taula
 
                     // plugin propi taules
-                    // 'MergeCells', // desactivat temporalment, no funciona correctament
+                    'MergeCells', // desactivat temporalment, no funciona correctament
                     'TableDelete',
                     'InsertSound',
 
