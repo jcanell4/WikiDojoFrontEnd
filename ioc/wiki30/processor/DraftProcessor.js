@@ -21,6 +21,7 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                this.dispatcher = dispatcher;
                 // console.log("DraftProcessor#process", value);
                     this._processDialog(value, dispatcher);
             },
@@ -160,7 +161,7 @@ define([
 
 
             _buildQuery: function (value) {
-                // console.log("DraftProcessor#_buildQuery", value);
+                console.log("DraftProcessor#_buildQuery", value);
                 var query = '';
 
                 switch (value.params.type) {
@@ -191,7 +192,7 @@ define([
             },
 
             _getDocumentQuery: function () {
-                return this.query + '&recover_draft=false';
+                return this.query + '&recover_draft=false&contentFormat=' + this.dispatcher.getGlobalState().userState['editor'];
             },
 
             _setActionType: function (value) {
