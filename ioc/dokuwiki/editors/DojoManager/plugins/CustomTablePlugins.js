@@ -340,6 +340,11 @@ define([
             //	We go ahead and use it for other code for convenience
             //
             var tds = this.editor.query("td", tbl);
+            var ths = this.editor.query("th", tbl);
+
+            tds = tds.concat(ths);
+
+
             // console.log("prep:", tds, tbl);
             if(!tds[0].id){
                 tds.forEach(function(td, i){
@@ -711,18 +716,23 @@ define([
                 // is inconsistent in the browsers (and painful), so going by ids is simpler.
                 var text = e._sCall("getSelectedHtml", [null]);
                 var str = text.match(/id="*\w*"*/g);
+
+                // PROBLEMA: quan s'afegeix la capçalera no s'afeggeix el id!
+                console.log("**A**", text, str);
+
                 dojo.forEach(str, function(a){
                     var id = a.substring(3, a.length);
                     if(id.charAt(0) == "\"" && id.charAt(id.length - 1) == "\""){
                         id = id.substring(1, id.length - 1);
                     }
                     var node = e.byId(id);
-                    if(node && node.tagName.toLowerCase() == "td"){
+                    if(node && (node.tagName.toLowerCase() == "td" || node.tagName.toLowerCase() == "th")){
                         cells.push(node);
                     }
                 }, this);
 
                 if(!cells.length){
+                    console.log("**B**");
                     //May just be in a cell (cursor point, or selection in a cell), so look upwards.
                     //for a cell container.
                     var sel = dijit.range.getSelection(e.window);

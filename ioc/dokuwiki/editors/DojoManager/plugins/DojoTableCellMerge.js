@@ -36,6 +36,7 @@ define([
         updateCursorState: function (e) {
 
             var selectedCells = this.getSelectedCells();
+            console.log("Selected Cells:", selectedCells);
 
             if (selectedCells.length > 1) {
                 this.button.set('disabled', false);
