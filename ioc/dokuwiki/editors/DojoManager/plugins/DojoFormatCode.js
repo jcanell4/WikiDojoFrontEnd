@@ -122,8 +122,6 @@ define([
                 var $container = jQuery('<p></p>');
                 $container.html(content);
 
-                console.log("root", $root);
-
                 $root.replaceWith($container);
             }
         }
