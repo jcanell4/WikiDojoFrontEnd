@@ -137,6 +137,7 @@ define([
             'HTMLBold': 'bold',
             'HTMLItalic': 'italic',
             'HTMLUnderline': 'underline',
+            'HTMLMonospace': DojoFormat,
             'HTMLCode': DojoFormatCode,
             'HTMLStrikethrough': 'strikethrough',
             'HTMLHeader0': DojoFormat,
@@ -382,6 +383,14 @@ define([
             close: '</ins>',
             sample: localization["ioc-insert-underline-button"],
             icon: 'IocUnderline',
+        },
+
+        'HTMLMonospace': {
+            title: localization["ioc-insert-monospace-button"],
+            open: '<code>',
+            close: '</code>',
+            sample: localization["ioc-insert-monospace-button"],
+            icon: 'IocMonospace',
         },
 
         'HTMLCode': {

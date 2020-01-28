@@ -67,7 +67,8 @@ define([
                     // 'bold'
                     this.getPlugin('HTMLItalic'),
                     this.getPlugin('HTMLUnderline'),
-                    this.getPlugin('HTMLCode'), // Desactivat temporalment
+                    this.getPlugin('HTMLMonospace'),
+                    this.getPlugin('HTMLCode'),
                     // this.getPlugin('HTMLStrikethrough'), // No utilitzat a la wiki, no implementat als translators
                     this.getPlugin('ClearFormat'),
                     this.getPlugin('HTMLHeader0'),
@@ -76,7 +77,6 @@ define([
                     this.getPlugin('HTMLHeader3'),
                     this.getPlugin('HTMLHeader4'),
                     this.getPlugin('HTMLHeader5'),
-                    // this.getPlugin('HTMLHeader6'),
                     // this.getPlugin('HTMLLink'),
                     // this.getPlugin('HTMLLinkExternal'),
 
