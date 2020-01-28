@@ -6,6 +6,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoReplaceFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatCode',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoClearFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatFigure',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatLateral',
@@ -55,7 +56,7 @@ define([
     // CSS
     'dojo/text!./../DojoManager/css/editorPlugins.css', // Copiat de dojox/editor/resources
 
-], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
+], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock, DojoFormatCode,
              DojoClearFormat,
              DojoMediaFormatFigure,
              DojoMediaFormatLateral,
@@ -136,7 +137,7 @@ define([
             'HTMLBold': 'bold',
             'HTMLItalic': 'italic',
             'HTMLUnderline': 'underline',
-            'HTMLCode': DojoFormatBlock,
+            'HTMLCode': DojoFormatCode,
             'HTMLStrikethrough': 'strikethrough',
             'HTMLHeader0': DojoFormat,
             'HTMLHeader1': DojoFormat,
@@ -385,9 +386,9 @@ define([
 
         'HTMLCode': {
             title: localization["ioc-insert-code-button"],
-            tag: 'pre',
+            tags: ['pre', 'code'],
             sample: localization["ioc-insert-code-button"],
-            icon: 'IocCode',
+            icon: 'IocCode'
         },
 
         'HTMLStrikethrough': {

@@ -15,9 +15,7 @@ define([
             this.htmlTemplate = args.open + "${content}" + args.close;
 
             this.content = args.sample;
-            this.tag = args.tag;
-            this.clearFormat = args.clearFormat;
-            this.sample = args.sample;
+            this.tags = args.tags;
 
             var config = {
                 label: args.title,
@@ -43,8 +41,18 @@ define([
         },
 
         updateCursorState: function (e) {
-d
-            if (e.state.indexOf(this.tag) > -1) {
+
+            if (e.state.indexOf('-') > -1 && e.state.indexOf(this.tags[0]) === -1) {
+                // hi ha més d'un estat i no es tracta d'aquest.
+                // ALERTA! Només comprovem un tag, si hi ha més tipus de bloc s'ha d'ampliar
+                this.button.set('disabled', true);
+            } else {
+                this.button.set('disabled', false);
+            }
+
+            // console.log("State:", e.state);
+
+            if (e.state.indexOf(this.tags[0]) > -1) {
                 this.button.set('checked', true);
             } else {
                 this.button.set('checked', false);
@@ -53,15 +61,17 @@ d
 
         process: function () {
 
-
-            // TODO: habilitar el sistema per selecció múltiple
-
             // ALERTA: En aquest punt el botó encara no ha canviat d'estat en ser premut
             // console.log("Estat del botó:", this.button.get('checked'));
 
             if (this.empty) {
 
-                this.editor.execCommand('inserthtml', '<' +this.tag+'/>');
+                var html = this.sample;
+                for (var i = this.tags.length - 1; i >= 0; i--) {
+                    html = '<' + this.tags[i] + '>' + html + '</' + this.tags[i] + '>';
+                }
+
+                this.editor.execCommand('inserthtml', html);
 
             } else if (!this.button.get('checked')) {
                 // console.log("Removing block");
@@ -75,54 +85,54 @@ d
 
         addBlock: function () {
             var selection = this.editor.getSelection();
+            // console.log("Selection", selection);
 
             for (var i = 0; i < selection.nodes.length; i++) {
                 var $node = jQuery(selection.nodes[i]);
-                var $newNode = jQuery('<' + this.tag + '>');
+                var $newNode = jQuery('<' + this.tags[0] + '>');
+                var $child = $newNode;
 
-                if (this.clearFormat) {
-                    $newNode.html($node.text());
-                } else {
-                    $newNode.html($node.html());
+                for (i = 1; i < this.tags.length; i++) {
+                    var $previous = $child;
+                    $child = jQuery('<' + this.tags[i] + '>');
+                    $previous.append($child);
+                    // console.log("Afegit child", $child);
                 }
 
+                $child.html($node.text());
                 $node.empty();
 
-                $node.append($newNode);
+                if ($node.attr('id') === 'dijitEditorBody') {
+                    $node.append($newNode);
+                } else {
+                    $node.replaceWith($newNode);
+                }
 
             }
         },
 
         removeBlock: function () {
             var selection = this.editor.getSelection();
-
             for (var i = 0; i < selection.nodes.length; i++) {
+
                 var $node = jQuery(selection.nodes[i]);
-                // console.log("Unwrapping node:", $node, $node.html());
+                var $root = $node.parent(this.tags[0]);
 
-                if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()) {
-                    // Cas 1: l'element seleccionat es el que té la etiqueta
-                    $node.contents().unwrap();
+                var content = $node.text();
+                var $container = jQuery('<p></p>');
+                $container.html(content);
 
-                } else {
-                    // Cas 2: Múltiples nodes poden contenir la etiqueta
-                    $node.find(this.tag).each(function () {
-                        jQuery(this).contents().unwrap();
-                    });
+                console.log("root", $root);
 
-                    // Cas 3: Un node superior conté la etiqueta
-                    $node.closest(this.tag).each(function() {
-                        jQuery(this).contents().unwrap();
-                    });
-                }
+                $root.replaceWith($container);
             }
         }
     });
 
 
     // Register this plugin.
-    _Plugin.registry["insert_format"] = function () {
-        return new FormatButton({command: "insert_format"});
+    _Plugin.registry["insert_code"] = function () {
+        return new FormatButton({command: "insert_code"});
     };
 
     return FormatButton;

@@ -1,4 +1,4 @@
-define([
+ define([
     "dojo/_base/declare",
     "ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin",
     "dojo/_base/lang",

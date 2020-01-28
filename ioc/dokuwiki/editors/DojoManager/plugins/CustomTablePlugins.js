@@ -717,8 +717,6 @@ define([
                 var text = e._sCall("getSelectedHtml", [null]);
                 var str = text.match(/id="*\w*"*/g);
 
-                // PROBLEMA: quan s'afegeix la capçalera no s'afeggeix el id!
-                console.log("**A**", text, str);
 
                 dojo.forEach(str, function(a){
                     var id = a.substring(3, a.length);
@@ -732,7 +730,6 @@ define([
                 }, this);
 
                 if(!cells.length){
-                    console.log("**B**");
                     //May just be in a cell (cursor point, or selection in a cell), so look upwards.
                     //for a cell container.
                     var sel = dijit.range.getSelection(e.window);

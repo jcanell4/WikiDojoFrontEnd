@@ -184,7 +184,7 @@ define([
                             , ptimer);
                         ptimer.contentTool.getContainer().selectChild(ptimer.contentTool);
                         self.contador += 1;
-                        console.log("DataContentProcessor#_initTimer#onExpire:contador =", self.contador);
+                        // console.log("DataContentProcessor#_initTimer#onExpire:contador =", self.contador);
                         dialog.show();
                         // b) Si no hi ha canvis, es cancel·la sense avís previ, però a mé 
                         //                  de l'html s'envia també una alerta informant del fet
