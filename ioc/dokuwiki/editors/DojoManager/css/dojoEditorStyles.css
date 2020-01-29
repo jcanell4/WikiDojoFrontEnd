@@ -495,3 +495,47 @@ pre {
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;
 }
+
+ol {
+    font-weight: bold;
+}
+
+ol ol {
+    list-style-type: upper-roman;
+}
+
+ol ol ol {
+    list-style-type: lower-alpha;
+}
+
+ol ol ol ol {
+    list-style-type: lower-greek;
+}
+
+ol li, ol ol li, ol ol ol li, ol ol ol li {
+    font-weight: normal;
+}
+
+/* això posa el nombre de la llista en negreta */
+ol, ul {
+    margin:0 0 1.5em;
+    padding:0;
+    counter-reset:item;
+}
+
+ol>li  ul>li {
+    margin:0;
+    padding:0 0 0 2em;
+    text-indent:-2em;
+    list-style-type:none;
+    counter-increment:item;
+}
+
+ol>li:before, ul>li:before {
+    display:inline-block;
+    width:1.5em;
+    padding-right:0.5em;
+    font-weight:bold;
+    text-align:right;
+    content:counter(item) ".";
+}
