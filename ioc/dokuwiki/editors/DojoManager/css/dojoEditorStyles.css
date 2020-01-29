@@ -523,7 +523,7 @@ ol, ul {
     counter-reset:item;
 }
 
-ol>li  ul>li {
+ol>li, ul>li {
     margin:0;
     padding:0 0 0 2em;
     text-indent:-2em;
