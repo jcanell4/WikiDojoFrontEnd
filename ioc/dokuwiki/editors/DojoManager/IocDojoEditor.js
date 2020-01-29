@@ -35,7 +35,7 @@ define([
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
     // "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
-    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins"
+    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins",
 
 ], function (AbstractIocEditor, declare, Editor,
              registry,
@@ -101,6 +101,8 @@ define([
                     'unlink',
                     'insertOrderedList',
                     'insertUnorderedList',
+                    'indent',
+                    'outdent',
 
 
                     // plugins propis

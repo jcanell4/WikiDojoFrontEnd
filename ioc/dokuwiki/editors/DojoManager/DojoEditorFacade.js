@@ -8,13 +8,16 @@ define([
     'dojo/dom-geometry',
     // "dijit/_editor/plugins/EnterKeyHandling", // Això no es tracta com un plugin, només cal carregar-lo
     'ioc/dokuwiki/editors/DojoManager/plugins/CustomKeyHandling',
+    // 'dojox/editor/plugins/NormalizeIndentOutdent'
+    'ioc/dokuwiki/editors/DojoManager/plugins/CustomNormalizeIndentOutdent'
 
     // 'ioc/dokuwiki/editors/DojoManager/plugins/CommentsDialog',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/IocSoundFormatButtonPlugin',
     // 'dojox/editor/plugins/InsertEntity',
 ], function (declare, AbstractIocFacade, Editor, AlwaysShowToolbar, dom, style, geometry,
              // EnterKeyHandling
-             EnterKeyHandling
+             EnterKeyHandling,
+             NormalizeIndentOutdent
              /*, CommentsDialog, IocSoundFormatButtonPlugin*/) {
     return declare([AbstractIocFacade], {
 
@@ -48,7 +51,8 @@ define([
                 TOOLBAR_ID: this.TOOLBAR_ID,
                 readOnly: args.readOnly,
                 extraPlugins: [
-                    {name:"dijit._editor.plugins.CustomKeyHandling", blockNodeForEnter: 'P'}
+                    {name:"dijit._editor.plugins.CustomKeyHandling", blockNodeForEnter: 'P'},
+                    {name:"dojox.editor.plugins.NormalizeIndentOutdent"}
                 ]
             }, dom.byId(args.containerId));
 
