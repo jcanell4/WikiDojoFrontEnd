@@ -60,10 +60,12 @@ define([
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
             }
 
+            //
+            // args.content += '<p>&nbsp;</p>';
+
             this.editor.value = args.content;
 
             this.editor.originalContent = args.originalContent || args.content;
-
 
             this.editor.on('change', function (newContent) {
                 //console.log("Editor change");

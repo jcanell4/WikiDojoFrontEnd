@@ -174,7 +174,7 @@ define([
             if(tbl){
                 // tds = dojo.query("td", tbl);
 
-                console.log("jQuery:", jQuery(tbl).find('td, th').get());
+                // console.log("jQuery:", jQuery(tbl).find('td, th').get());
 
                 tds = jQuery(tbl).find('td, th').get();
 
@@ -346,7 +346,7 @@ define([
 
 
             // console.log("prep:", tds, tbl);
-            if(!tds[0].id){
+            if(tds.length>0 && !tds[0].id){
                 tds.forEach(function(td, i){
                     if(!td.id){
                         td.id = "tdid"+i+this.getTimeStamp();

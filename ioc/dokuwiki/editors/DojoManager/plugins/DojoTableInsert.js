@@ -139,6 +139,9 @@ define([
             var c = dojo.connect(w, "onBuildTable", this, function (obj) {
                 dojo.disconnect(c);
 
+
+                console.log("insertant taula", obj.htmlText);
+
                 this.editor.focus();
                 this.editor.execCommand('inserthtml', obj.htmlText);
 
