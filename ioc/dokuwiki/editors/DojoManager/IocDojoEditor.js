@@ -154,7 +154,7 @@ define([
                     'IocComment',
                     'SaveButton',
                     'CancelButton',
-                    //'DocumentPreviewButton', // Desactivat, ara no funciona
+                    'DocumentPreviewButton', // Desactivat, ara no funciona
                     'ViewSource',
                     'DojoSafePaste'
 

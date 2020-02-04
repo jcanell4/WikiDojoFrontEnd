@@ -30,7 +30,9 @@ define([
         },
 
         _processFull:function() {
-            this.documentPreviewComponent.send();
+            this.documentPreviewComponent.send(
+                {contentFormat: 'Dojo'}
+            );
         }
 
 
