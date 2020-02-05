@@ -148,7 +148,7 @@ a {
 
 
 
-.action a {
+.action a, .action span {
     font-style: italic;
     float: right;
     margin-left: 5px;
@@ -156,6 +156,8 @@ a {
     font-size: 9px;
     border-bottom: 1px dotted dodgerblue;
     color: dodgerblue;
+    display: inline;
+    cursor: pointer;
 }
 
 a[data-ioc-link] .action a {
@@ -541,5 +543,9 @@ ol>li:before, ul>li:before {
 }
 
 p {
-    height: 1px;
+    min-height: 1px;
+}
+
+#dijitEditorBody {
+    word-wrap: break-word;
 }

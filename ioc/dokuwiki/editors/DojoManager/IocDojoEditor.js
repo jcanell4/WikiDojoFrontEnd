@@ -36,7 +36,6 @@ define([
     "dijit/main", // dijit._scopeName
     // "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
     "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins",
-    "ioc/dokuwiki/editors/DojoManager/plugins/CustomAutoAddEndParagraph",
 
 ], function (AbstractIocEditor, declare, Editor,
              registry,
@@ -48,8 +47,7 @@ define([
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
              _Plugin, /*EnterKeyHandling,*/ html, rangeapi, RichText, dijit,
 
-             TablePlugins,
-             CustomAutoAddEndParagraph
+             TablePlugins
 ) {
 
 
@@ -98,7 +96,7 @@ define([
 
                     // plugins propis
                     'InsertInternalLinkSyntax',
-                    'customAutoAddEndParagraph',
+                    'DojoActionAddParagraph',
 
                     // plugins Dojo
                     // 'createLink',
@@ -359,7 +357,7 @@ define([
                     // ALERTA! Si això funciona afegir també un callback pel click aquí
                     // s'ha d'aprofitar per fer un update de la posició del cursor, actualitzar el tipus de bloc i fer un update dels plugins per canviar l'estat dels botons
 
-                    console.log("Cridat el callback de ChangeDectector, llençan l'event 'changed'");
+                    // console.log("Cridat el callback de ChangeDectector, llençan l'event 'changed'");
 
                     this.emit('change', {newValue: this.get('value')});
 
@@ -419,29 +417,19 @@ define([
             },
 
             isChanged: function () {
-                console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
-
-                // if (this.get('value') !== this.originalContent) {
-                //     console.log("|" + this.get('value') + "|");
-                //     console.log("/////////////////////////////");
-                //     console.log("|" + this.originalContent + "|");
-                // }
-
+                // console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
 
                 // TESTS: eliminicació manual de tags
                 var processedValue = this.get('value').trim();
 
-
-                processedValue = processedValue.replace(/ id=".*?"/gi, '');
+                //processedValue = processedValue.replace(/ id=".*?"/gi, '');
                 processedValue = processedValue.replace(/<br \/>/gi, '<br>');
                 processedValue = processedValue.replace(/<tbody.*?>/gi, '');
                 processedValue = processedValue.replace(/<\/tbody>/gi, '');
 
-
-
-                console.log("value:", processedValue);
-                console.log("original:", this.originalContent.trim());
-                console.log("Són iguals?", this.get('value').trim() === this.originalContent.trim());
+                // console.log("value:", processedValue);
+                // console.log("original:", this.originalContent.trim());
+                // console.log("Són iguals?", this.get('value').trim() === this.originalContent.trim());
 
                 return processedValue !== this.originalContent.trim();
             },

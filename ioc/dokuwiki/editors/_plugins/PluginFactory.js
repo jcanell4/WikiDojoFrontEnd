@@ -23,6 +23,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiLink',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActionAddParagraph',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -66,6 +67,7 @@ define([
              DojoTableAlign,
              /*DojoSound, */
              DojoWikiBlock, DojoWikiSound, DojoWikiLink,
+             DojoActionAddParagraph,
              DojoComment,
              DojoSafePaste,
              AceFireEvent, AceFireDojoEvent,
@@ -164,6 +166,7 @@ define([
             'InsertSound': DojoWikiSound,
 
             'DojoSafePaste': DojoSafePaste,
+            'DojoActionAddParagraph' : DojoActionAddParagraph
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -483,6 +486,13 @@ define([
             type: 'ReadonlyBlocksToggle',
             title: localization["ioc-readonly-toggle"],
             icon: 'IocReadonly'
+            // category: 'C',
+        },
+
+        'DojoActionAddParagraph': {
+            type: 'DojoActionAddParagraph',
+            label: localization["ioc-action-add-paragraph"],
+            placeholder: localization["ioc-action-add-paragraph-placeholder"],
             // category: 'C',
         },
 

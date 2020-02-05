@@ -161,7 +161,7 @@ define([
 
 
             _buildQuery: function (value) {
-                console.log("DraftProcessor#_buildQuery", value);
+                // console.log("DraftProcessor#_buildQuery", value);
                 var query = '';
 
                 switch (value.params.type) {

@@ -11,12 +11,14 @@ define([
     "dijit/_WidgetsInTemplateMixin",
     "dojo/text!./templates/insertTable.html",
     "dojo/i18n!./nls/TableDialog",
+    'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
 
 ], function (declare, AbstractDojoPlugin, _Plugin, TablePlugins, Dialog,
              lang, _WidgetBase,
              _TemplatedMixin, _WidgetsInTemplateMixin,
              insertTableTemplate,
-             tableDialogStrings
+             tableDialogStrings,
+             localization
 ) {
 
 
@@ -102,10 +104,21 @@ define([
 
             if ($next.length === 0 || !$next.is('p')) {
                 // Afegim un salt de línia com a separador
-                console.log("inserint paràgraf posterior");
                 $node.after(jQuery('<p>&nbsp;</p>'));
             }
 
+            // Aquest codi és el mateix que es troba a DojoActionAddParagraph, s'ha de duplicar perquè
+            // aquesta classe hereta de la taula original de dojo, no es propia i no fa servir el nostre
+            // sistema de parse
+            var $aux = jQuery('<div class="no-render action"><span>' + localization["ioc-action-add-paragraph"] + '</span></div>');
+
+
+            $aux.on('click', function () {
+                // Afegim un salt de línia com a separador
+                // console.log("inserint paràgraf anterior");
+                $node.after(jQuery('<p>' + localization["ioc-action-add-paragraph-placeholder"] + '</p>'));
+            });
+            $node.append($aux);
 
 
         },
@@ -123,10 +136,11 @@ define([
             });
         },
 
-        // onBuildTable: function (tableText) {
-        //     //stub
-        //     // console.log("tableText:", tableText);
-        // }
+        onBuildTable: function (tableText) {
+            //stub
+            // console.log("tableText:", tableText);
+            // alert("taula construida");
+        }
     });
 
     var InsertTable = declare("dojox.editor.plugins.InsertTable", [TablePlugins, AbstractDojoPlugin], {
@@ -140,7 +154,7 @@ define([
                 dojo.disconnect(c);
 
 
-                console.log("insertant taula", obj.htmlText);
+                // console.log("insertant taula", obj.htmlText);
 
                 this.editor.focus();
                 this.editor.execCommand('inserthtml', obj.htmlText);

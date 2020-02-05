@@ -147,9 +147,10 @@ define({ root:
         'ioc-insert-label-table': 'Select a table from the list:',
         'ioc-insert-label-figure': 'Select a figure from the list:',
 
-        'clear-format' : 'Clear format'
+        'clear-format' : 'Clear format',
 
-
+        'ioc-action-add-paragraph' : 'Add empty paragraph',
+        'ioc-action-add-paragraph-placeholder' : '',
     }),
 //end v1.x content
 

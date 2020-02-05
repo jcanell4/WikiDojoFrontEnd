@@ -153,7 +153,10 @@ define(
         'ioc-insert-figure-link-prompt': 'Afegeix un enllaç a una figura.',
         'ioc-insert-table-link-prompt': 'Afegeix un enllaç a una taula.',
 
-        'clear-format' : 'Elimina el format'
+        'clear-format' : 'Elimina el format',
+
+        'ioc-action-add-paragraph' : 'Afegeix paràgraf buit',
+        'ioc-action-add-paragraph-placeholder' : '',
     })
 );
 
