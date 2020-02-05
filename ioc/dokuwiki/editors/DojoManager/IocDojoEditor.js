@@ -171,41 +171,6 @@ define([
                     arguments[0].extraPlugins = plugins;
                 }
 
-                // console.log("arguments?", arguments[1].id);
-                // this.createToolbars(arguments[1].id);
-
-
-                /// TEST Nova toolbar
-                //     var $container = jQuery('#topBloc');
-                //     $container.append(jQuery('<span id="toolbarXXX"></span>'));
-                //
-                //
-                //
-                //     this.toolbars['A'] = new IocToolbar({}, "toolbarXXX");
-
-                // array.forEach(["Cut", "Copy", "Paste"], function(label){
-                //     console.log("inici");
-                //     var button = new Button({
-                //         // note: should always specify a label, for accessibility reasons.
-                //         // Just set showLabel=false if you don't want it to be displayed normally
-                //         label: label,
-                //         showLabel: false,
-                //         iconClass: "dijitEditorIcon dijitEditorIcon"+label
-                //     });
-                //
-                //     button.startup();
-                //
-                //     console.log("Afegit el botó", button);
-                //
-                //     toolbar.addChild(button);
-                //
-                //     console.log("Afegit a la barra");
-                // });
-                //
-                // this.new_toolbar.startup();
-
-                /// FI TEST Nova toolbar
-
 
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
 
@@ -410,28 +375,33 @@ define([
             resetOriginalContentState: function () {
                 // console.log("IocDojoEditor#resetOriginalContentState");
                 this.originalContent = this.get('value');
+
             },
 
             getOriginalValue: function () {
                 return this.originalContent;
             },
 
+
+
             isChanged: function () {
                 // console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
 
-                // TESTS: eliminicació manual de tags
-                var processedValue = this.get('value').trim();
+                // console.error("Trace");
 
-                //processedValue = processedValue.replace(/ id=".*?"/gi, '');
-                processedValue = processedValue.replace(/<br \/>/gi, '<br>');
-                processedValue = processedValue.replace(/<tbody.*?>/gi, '');
-                processedValue = processedValue.replace(/<\/tbody>/gi, '');
+                // TESTS: eliminicació manual de tags <-- Si es fa això desprès no funciona el cancel, perquè el que es guarda como a "ResetOriginalContentState" sí que conté els BR originals, ids, etc.
+                // var processedValue = this.get('value').trim();
+                //
+                // //processedValue = processedValue.replace(/ id=".*?"/gi, '');
+                // processedValue = processedValue.replace(/<br \/>/gi, '<br>');
+                // processedValue = processedValue.replace(/<tbody.*?>/gi, '');
+                // processedValue = processedValue.replace(/<\/tbody>/gi, '');
 
                 // console.log("value:", processedValue);
                 // console.log("original:", this.originalContent.trim());
                 // console.log("Són iguals?", this.get('value').trim() === this.originalContent.trim());
 
-                return processedValue !== this.originalContent.trim();
+                return this.get('value').trim() !== this.originalContent.trim();
             },
 
             /**
@@ -535,31 +505,6 @@ define([
 
             },
 
-            // createToolbars: function (id) {
-            //     // Proves, divs amagas al document per afegir els botons desplegables.
-            //     var categories = ['A', 'B'];
-            //
-            //     console.log("this id?", id);
-            //     for (var i in categories) {
-            //         var $wrapper = jQuery('<div style="width:auto;height:auto;background-color:red;position:fixed;top:100px"></div>');
-            //         var $toolbar = jQuery('<div></div>');
-            //         $toolbar.attr('id', id + '_dropdown_toolbar_'+categories[i]);
-            //         // $toolbar.css('display', 'none');
-            //         jQuery($wrapper).append($toolbar);
-            //         jQuery('body').append($wrapper);
-            //         console.log("Afegit element:", id + '_dropdown_toolbar_'+categories[i]);
-            //         console.log("Trobat?", jQuery('#' + id + '_dropdown_toolbar_'+categories[i]))
-            //
-            //     }
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            // },
-
             createToolbar: function (category) {
                 // TODO: Crear el node on s'afegirà la toolbar
                 // TODO: Crear el botó que desplegarà la toolbar flotant i afegirlo a this.toolbar (la barra principal)
@@ -574,18 +519,6 @@ define([
                 $toolbar.attr('id', toolbarId);
                 // $toolbar.css('display', 'none');
                 jQuery('body').append($toolbar);
-
-                // var $container = jQuery('#topBloc');
-                // var $container = jQuery('#test-toolbar');
-                // $container.append(jQuery('<span id="'+toolbarId+'"></span>'));
-
-
-                // var toolbarContainer = registry.byId('test-toolbar');
-                // toolbarContainer.set('content', '<span id="'+toolbarId+'"></span>');
-
-                // alert("Això es visible?");
-
-                // var node = jQuery('<span id="'+toolbarId + '"</span>');
 
 
                 this.toolbars[category] = new IocToolbar({}, toolbarId);

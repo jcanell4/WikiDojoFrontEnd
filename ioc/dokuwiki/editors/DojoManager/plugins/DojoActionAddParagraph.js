@@ -53,7 +53,7 @@ define([
                     return true;
                 }
 
-                var $aux = jQuery('<div class="no-render action"><span>' + context.label + '</span></div>');
+                var $aux = jQuery('<div class="no-render action" contenteditable="false"><span>' + context.label + '</span></div>');
 
                 context._addHandlers($aux);
 

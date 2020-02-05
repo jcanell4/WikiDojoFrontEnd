@@ -110,7 +110,7 @@ define([
             // Aquest codi és el mateix que es troba a DojoActionAddParagraph, s'ha de duplicar perquè
             // aquesta classe hereta de la taula original de dojo, no es propia i no fa servir el nostre
             // sistema de parse
-            var $aux = jQuery('<div class="no-render action"><span>' + localization["ioc-action-add-paragraph"] + '</span></div>');
+            var $aux = jQuery('<div class="no-render action" contenteditable="false"><span>' + localization["ioc-action-add-paragraph"] + '</span></div>');
 
 
             $aux.on('click', function () {
