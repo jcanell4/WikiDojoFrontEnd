@@ -227,6 +227,12 @@ define([
                     return '';
                 } else {
                     var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
+
+                    if ($node.attr('class') === 'iocinfo') {
+                        state = state + "-iocinfo";
+                    }
+
+
                     var pre = this.generateNodeState($node.parent());
 
                     if (pre.length > 0) {
