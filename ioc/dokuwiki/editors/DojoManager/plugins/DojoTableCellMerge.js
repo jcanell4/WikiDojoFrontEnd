@@ -49,18 +49,48 @@ define([
             var selectedCells = this.getSelectedCells();
             // jQuery(this.getSelectedCells()[0]).attr('colspan', 2);
 
-
             var $firstCell = jQuery(selectedCells[0]);
             // var $previousRow = $firstCell.parent()[0];
+            // console.log("selectedCells", selectedCells);
+
             var cols = $firstCell.attr('colspan') ? $firstCell.attr('colspan') : 1;
             var rows = 1;
             var maxCols = cols;
             var maxRows = $firstCell.attr('rowspan') ? $firstCell.attr('rowspan') : 1;
 
+
+            // El recorregut de les cel·les seleccionades es fa d'esquerra a dreta i d'adalt cap avall
+
+            // PROVES amb taula 4x4
+            // 4X4: selecció merge col0+col1        OK
+            // 4X4: selecció merge col1+col2        OK
+            // 4X4: selecció merge col2+col3        OK
+            // 4X4: selecció merge row0             FAIL: colspan 1
+            // 4X4: selecció merge row1             FAIL: colspan 1
+            // 4X4: selecció merge row4             FAIL: colspan 1
+            // 4X4: selecció merge row1+row2        OK
+            // 4X4: selecció merge row0+row1        OK
+            // 4X4: selecció merge row2+row3        OK
+            // 4X4: selecció merge row0+row1 (sense primera columna)        OK
+            // 4X4: selecció merge row1+row2 (sense primera columna)        OK
+            // 4X4: selecció merge row2+row3 (sense primera columna)        OK
+            // 4X4: selecció merge row0+row1 (sense ultima columna)        OK
+            // 4X4: selecció merge row1+row2 (sense ultima columna)        OK
+            // 4X4: selecció merge row2+row3 (sense ultima columna)        OK
+            // 4X4: selecció merge row (col0+col1)  Fail: colspan 1
+            // 4X4: selecció merge row (col1+col2)  Fail: colspan 1
+            // 4X4: selecció merge row (col2+col3)  Fail: colspan 1
+
+            // si només hi ha una fila: fail
+
+
+
+
             var previousRows = [];
             previousRows.push($firstCell.parent()[0]);
 
-            // El recorregut de les cel·les seleccionades es fa d'esquerra a dreta i d'adalt cap avall
+            // Comença al 1 perquè s'afegeix al previousRows automàticament
+
             for (var i = 1; i < selectedCells.length; i++) {
                 var $selectedCell = jQuery(selectedCells[i]);
 
@@ -73,6 +103,7 @@ define([
                     }
 
 
+                    // console.log("cols",cols);
                 } else {
                     // ALERTA[Xavi] si es fa un merge amb una cel·la amb rowspawn el càlcul no serà correcte
                     // - calcular un valor auxiliar com a maxrows
@@ -85,13 +116,15 @@ define([
                     rows++;
                     previousRows.push($selectedCell.parent()[0]);
 
-                    if (cols > maxCols) {
-                        maxCols = cols;
-                    }
 
-                    cols = 1;
-                    console.log("rows:", rows);
 
+                    // cols = 1;
+                    // console.log("rows:", rows);
+
+                }
+
+                if (cols > maxCols) {
+                    maxCols = cols;
                 }
 
                 maxRows = Math.max(rows, maxRows);
@@ -99,6 +132,8 @@ define([
 
                 $selectedCell.remove();
             }
+
+            // console.log("Colspan, rowspawn:", maxCols, maxRows);
 
             $firstCell.attr('colspan', maxCols);
             $firstCell.attr('rowspan', maxRows);
