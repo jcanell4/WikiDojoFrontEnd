@@ -123,6 +123,8 @@ define(
         'merge-cells': 'Fusionar cel·les',
         'table-delete': 'Eliminar taula',
 
+        'delete': 'Eliminar',
+
         'ioc-insert-sound-button': 'Insertar so',
         // 'ioc-insert-sound-sample': 'identificador_so',
         'ioc-insert-sound-prompt': 'Introdueix l\'identificador del so:',

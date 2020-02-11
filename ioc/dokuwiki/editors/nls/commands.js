@@ -114,6 +114,8 @@ define({ root:
         'merge-cells': 'Merge cells',
         'table-delete': 'Delete table',
 
+        'delete': 'Delete',
+
 
 
         'ioc-insert-sound-button': 'Insert sound',
