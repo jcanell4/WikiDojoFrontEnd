@@ -27,7 +27,6 @@ define([
         // Cerquem la caixa o l'últim node que no sigui l'arrel del document
         getBoxNode = function ($node) {
 
-        console.log("Original $node:", $node)
             var $candidateNode = $node.closest('[data-dw-box]');
 
             if ($candidateNode.length === 0) {
@@ -35,7 +34,7 @@ define([
 
                 // afegim un comptador per si es detecta algún problema que no es penji el navegador
                 var counter = 0;
-                while ($candidateNode.parent().attr('id') !== 'dijitEditorBody' && counter <10) {
+                while ($candidateNode.parent().attr('id') !== 'dijitEditorBody' && counter < 10) {
                     $candidateNode = $candidateNode.parent();
                     counter++;
                 }
