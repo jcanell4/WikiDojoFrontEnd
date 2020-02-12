@@ -152,7 +152,7 @@ define([
                     'InsertReferenceSyntax',
                     'InsertImportantSyntax',
                     'InsertQuoteSyntax',
-                    // 'InsertAccountingSyntax', // Desactivat tempralment, no s'ha comprovat
+                    'InsertAccountingSyntax', // Desactivat tempralment, no s'ha comprovat
 
                     'IocComment',
                     'SaveButton',

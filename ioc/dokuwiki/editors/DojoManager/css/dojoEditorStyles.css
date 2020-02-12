@@ -549,3 +549,11 @@ p {
 #dijitEditorBody {
     word-wrap: break-word;
 }
+
+.iocaccounting {
+    /*background-color: rgba(46, 131, 255, 0.3);*/
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='50px' width='110px'><text x='0' y='10' fill='lightsteelblue' font-size='14'>COMBTABILITAT</text></svg>") no-repeat;
+    background-position-x: right;
+
+
+}

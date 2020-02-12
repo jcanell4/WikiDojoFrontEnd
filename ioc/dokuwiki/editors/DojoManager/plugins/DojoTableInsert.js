@@ -35,7 +35,7 @@ define([
         inputType: '',
         inputFooter: '',
         inputTableId: '',
-
+        boxType: '',
 
         postMixInProperties: function () {
             dojo.mixin(this, tableDialogStrings);
@@ -54,9 +54,9 @@ define([
                 _id = "tbl_" + (new Date().getTime()),
 
 
-                // TODO: això és el que es troba al template? el template no es fa servir?
+                // El template conté la informació a mostrar pel dialog, aquesta es la que s'insereix al document
 
-                pre = '<div data-dw-box="table" id="box_' + _id + '" class="ioctable ' + this.inputType.get("value")
+                pre = '<div data-dw-box="' + this.boxType.get("value") + '" id="box_' + _id + '" class="ioctable ' + this.inputType.get("value")
                     + '" data-dw-type="' + this.inputType.get("value") + "\">\n",
                 info = '<div class="iocinfo"><a id="' + this.inputTableId.get("value")+ '" data-dw-link="table"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br></a>'
                     + '<b contenteditable="false" data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
@@ -121,6 +121,12 @@ define([
             $node.append($aux);
 
 
+            // Eliminem el listener per editar els enllaços del info (que no han de tractar-se com enllaços)
+            $node.find('[data-dw-link]').on('dblclick', function(e) {
+                e.preventDefault();
+                return false;
+            })
+
         },
 
         onCancel: function () {
@@ -147,7 +153,7 @@ define([
         alwaysAvailable: true,
 
         modTable: function () {
-            var w = new EditorTableDialog({plugin: this, editor: this.editor});
+            var w = new EditorTableDialog({plugin: this, editor: this.editor, boxType: this.boxType});
             w.show();
 
             var c = dojo.connect(w, "onBuildTable", this, function (obj) {
@@ -174,7 +180,8 @@ define([
                 showLabel: false,
                 iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + args.icon,
                 tabIndex: "-1",
-                onClick: lang.hitch(this, "process")
+                onClick: lang.hitch(this, "process"),
+
             };
 
             this.footer = args.footer;

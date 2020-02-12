@@ -501,14 +501,16 @@ define([
             title: localization["ioc-table-editor"],
             icon: 'IocTable',
             category: 'WikiTable',
-            tableType: 'normal'
+            tableType: 'normal',
+            boxType: 'table',
         },
         'TableEditorMultiline': {
             type: 'TableEditorMultiline',
             title: localization["ioc-table-editor-multiline"],
             icon: 'IocTable',
             category: 'WikiTable',
-            tableType: 'multiline'
+            tableType: 'multiline',
+            boxType: 'table',
         },
         'TableEditorAccounting': {
             type: 'TableEditorAccounting',
@@ -516,6 +518,7 @@ define([
             icon: 'IocTable',
             category: 'WikiTable',
             tableType: 'accounting',
+            boxType: 'accounting',
         },
 
         'ViewSource': {
@@ -710,7 +713,8 @@ define([
             '</div>',
 
             icon: 'IocInsertAccountingSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc"],
+            boxType: 'accounting',
         },
 
         'InsertTextSyntax': {
