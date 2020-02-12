@@ -1,10 +1,14 @@
 define([
     "dojo/_base/declare",
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    "dojo/string"
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string) {
+    "dojo/string",
+
+
+], function (declare, AbstractParseableDojoPlugin, dojoActions, lang, _Plugin, string) {
+
 
     /*
      Al node generat per aquest plugin trobem dos tipus d'atributs propis:
@@ -165,7 +169,7 @@ define([
             // no és accesible desde el parse.
 
             var $edit = jQuery('<a contenteditable="false">editar</a>');
-            var $delete = jQuery('<a contenteditable="false">eliminar</a>');
+            //var $delete = jQuery('<a contenteditable="false">eliminar</a>');
 
             // console.log("this.data?", this.data);
 
@@ -173,7 +177,7 @@ define([
                 $actions.append($edit);
             }
 
-            $actions.append($delete);
+            //$actions.append($delete);
 
             $node.append($actions);
 
@@ -199,12 +203,14 @@ define([
                 context._showDialog(data, $node.attr('data-ioc-id'));
             });
 
-            $delete.on('click', function (e) {
-                e.preventDefault();
-                $node.remove();
-                context.editor.forceChange();
-            });
+            // $delete.on('click', function (e) {
+            //     e.preventDefault();
+            //     $node.remove();
+            //     context.editor.forceChange();
+            // });
 
+            console.log(dojoActions);
+            dojoActions.deleteAction($node, context.editor);
 
         },
 

@@ -1,13 +1,16 @@
+/**
+ * Aquest mòdul exposa funcions per afegir accions comunes a diferentes elements.
+ */
+
 define([
     "dojo/_base/declare",
-    // 'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
     "dojo/string",
     "dijit/_editor/range",
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
-], function (declare, DojoWikiBlock, lang, _Plugin, string, range, localization) {
+], function (declare, lang, _Plugin, string, range, localization) {
+
 
     var getAndAddActionContainer = function ($node) {
             var $container = getBoxNode($node).find('.action');
@@ -21,8 +24,25 @@ define([
             return $container;
         },
 
+        // Cerquem la caixa o l'últim node que no sigui l'arrel del document
         getBoxNode = function ($node) {
-            return $node.closest('[data-dw-box]');
+
+        console.log("Original $node:", $node)
+            var $candidateNode = $node.closest('[data-dw-box]');
+
+            if ($candidateNode.length === 0) {
+                $candidateNode = $node;
+
+                // afegim un comptador per si es detecta algún problema que no es penji el navegador
+                var counter = 0;
+                while ($candidateNode.parent().attr('id') !== 'dijitEditorBody' && counter <10) {
+                    $candidateNode = $candidateNode.parent();
+                    counter++;
+                }
+
+            }
+
+            return $candidateNode;
         },
 
         addParagraphAction = function ($node, editor) {
