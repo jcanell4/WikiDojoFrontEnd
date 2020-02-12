@@ -22,7 +22,9 @@ define([
                 console.log("TXT:", pastedDataTxt);
                 console.log("HTML:", pastedDataHtml);
 
-                if (pastedDataHtml.trim().startsWith('<meta charset=') || (pastedDataHtml.trim().startsWith('<html'))) {
+                if (pastedDataHtml.trim().startsWith('<') && (pastedDataHtml.trim().endsWith('>'))) {
+                    // Això no funciona correctament a chrome i no funciona en absolut amb safari
+                // if (pastedDataHtml.trim().startsWith('<meta charset=') || (pastedDataHtml.trim().startsWith('<html'))) {
                     // Es tracta de contingut html enganxat des de una altra aplicació
                     context.process(context.sanitize(pastedDataTxt));
                 } else {
@@ -37,6 +39,8 @@ define([
         },
 
         process: function (html) {
+            console.log("Que s'envia pere enganxar?", html)
+            // this.editor.execCommand('inserthtml', html);
             this.editor.execCommand('inserthtml', html);
             this.editor.reparse();
         },
