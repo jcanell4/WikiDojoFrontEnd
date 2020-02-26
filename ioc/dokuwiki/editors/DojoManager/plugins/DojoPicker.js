@@ -33,7 +33,8 @@ define([
                 block : false,
                 title : args.title,
                 type: 'picker',
-                list : args.list
+                list : args.list,
+                class : args.class ? args.class : ''
             };
 
             this.edid = 'textarea_' + this.editor.id + '_picker';
