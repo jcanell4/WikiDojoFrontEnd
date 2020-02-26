@@ -677,7 +677,8 @@ define([
             '</div>',
 
             icon: 'IocInsertTableSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc"],
+            boxType: 'tables',
         },
 
         'InsertAccountingSyntax': {
