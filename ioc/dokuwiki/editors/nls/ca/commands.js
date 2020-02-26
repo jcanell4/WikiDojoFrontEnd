@@ -118,10 +118,10 @@ define(
         'ioc-table-editor-accounting':  'Editor de taules accounting',
 
         'table-insert': 'Insertar taula',
-        'table-toggle-header' : 'Alternar capçalera',
-        'table-align-right' : 'Aliniar cel·la dreta',
-        'table-align-left' : 'Aliniar cel·la esquerra',
-        'table-align-center' : 'Aliniar cel·la centre',
+        'table-toggle-header' : 'Alternar entre cel·la i capçalera',
+        'table-align-right' : 'Aliniar cel·la a la dreta',
+        'table-align-left' : 'Aliniar cel·la a la esquerra',
+        'table-align-center' : 'Aliniar cel·la al centre',
         'merge-cells': 'Fusionar cel·les',
         'table-delete': 'Eliminar taula',
 
