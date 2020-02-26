@@ -73,7 +73,7 @@ define([
                     this.getPlugin('HTMLMonospace'),
                     this.getPlugin('HTMLCode'),
                     // this.getPlugin('HTMLStrikethrough'), // No utilitzat a la wiki, no implementat als translators
-                    this.getPlugin('ClearFormat'),
+                    //this.getPlugin('ClearFormat'),
                     this.getPlugin('HTMLHeader0'),
                     this.getPlugin('HTMLHeader1'),
                     this.getPlugin('HTMLHeader2'),
@@ -152,7 +152,6 @@ define([
                     'InsertReferenceSyntax',
                     'InsertImportantSyntax',
                     'InsertQuoteSyntax',
-                    'InsertAccountingSyntax', // Desactivat tempralment, no s'ha comprovat
 
                     'IocComment',
                     'SaveButton',
