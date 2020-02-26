@@ -735,7 +735,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-text-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertTextSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
 
@@ -755,7 +755,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-text-large-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertTextLargeSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertExampleSyntax': {
@@ -774,7 +774,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-example-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertExampleSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertNoteSyntax': {
@@ -787,7 +787,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-note-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertNoteSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertReferenceSyntax': {
@@ -800,7 +800,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-reference-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertReferenceSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertImportantSyntax': {
@@ -813,7 +813,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-important-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertImportantSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertQuoteSyntax': {
@@ -826,7 +826,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-quote-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertQuoteSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'DojoSafePaste': {

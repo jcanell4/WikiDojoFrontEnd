@@ -9,7 +9,8 @@ define(
         'enable-wrapper' : 'Activar/Desactivar embolcall',
 
         // Categories
-        'category-ioc': 'IOC',
+        'category-ioc': 'Elements',
+        'category-ioc-style': 'Estils',
         'category-header': 'Capçalera',
         'category-WikiTable': 'Taules',
 
@@ -36,44 +37,44 @@ define(
 
         // Botons Estils IOC
         'ioc-new-content-button': 'Nou contingut',
-        'ioc-new-content-sample': 'Incloure la sintaxis de contingut nou',
+        'ioc-new-content-sample': 'Incloure contingut nou',
 
         'ioc-insert-figure-button': 'Sintaxis de figura',
         'ioc-insert-figure-sample': 'Incloure la figura',
 
-        'ioc-insert-figure-link-button': 'Sintaxis d\'enllaç a figura',
-        'ioc-insert-figure-link-sample': 'Incloure la sintaxis d\'enllaç a figura',
+        'ioc-insert-figure-link-button': 'Enllaç a figura',
+        'ioc-insert-figure-link-sample': 'Incloure enllaç a figura',
 
-        'ioc-insert-table-button': 'Sintaxi de taula',
-        'ioc-insert-table-sample': 'Incloure la sintaxis de taula',
+        'ioc-insert-table-button': 'Taula',
+        'ioc-insert-table-sample': 'Incloure taula',
 
-        'ioc-insert-table-link-button': 'Sintaxi d\'enllaç a taula',
-        'ioc-insert-table-link-sample': 'Incloure la sintaxis d\'enllaç a taula',
+        'ioc-insert-table-link-button': 'Enllaç a taula',
+        'ioc-insert-table-link-sample': 'Incloure enllaç a taula',
 
-        'ioc-insert-text-button': 'Sintaxi de text complementari',
-        'ioc-insert-text-sample': 'Incloure la sintaxis de text complementari',
+        'ioc-insert-text-button': 'Text complementari',
+        'ioc-insert-text-sample': 'Incloure text complementari',
 
-        'ioc-insert-text-large-button': 'Sintaxi de text complementari llarg',
-        'ioc-insert-text-large-sample': 'Incloure la sintaxis de text complementari llarg',
+        'ioc-insert-text-large-button': 'Text complementari llarg',
+        'ioc-insert-text-large-sample': 'Incloure text complementari llarg',
 
-        'ioc-insert-example-button': 'Sintaxi d\'exemple',
-        'ioc-insert-example-sample': 'Incloure la sintaxis d\'exemple',
+        'ioc-insert-example-button': 'Exemple',
+        'ioc-insert-example-sample': 'Incloure exemple',
 
-        'ioc-insert-note-button': 'Sintaxi de nota',
-        'ioc-insert-note-sample': 'Incloure la sintaxis de nota',
+        'ioc-insert-note-button': 'Nota',
+        'ioc-insert-note-sample': 'Incloure nota',
 
-        'ioc-insert-reference-button': 'Sintaxi de referència',
-        'ioc-insert-reference-sample': 'Incloure la sintaxis de referència',
+        'ioc-insert-reference-button': 'Referència',
+        'ioc-insert-reference-sample': 'Incloure referència',
 
-        'ioc-insert-important-button': 'Sintaxi de important',
-        'ioc-insert-important-sample': 'Incloure la sintaxis de important',
+        'ioc-insert-important-button': 'Important',
+        'ioc-insert-important-sample': 'Incloure text important',
 
-        'ioc-insert-quote-button': 'Sintaxi de quote',
-        'ioc-insert-quote-sample': 'Incloure la sintaxis de quote',
+        'ioc-insert-quote-button': 'Citació',
+        'ioc-insert-quote-sample': 'Incloure citació',
 
 
-        'ioc-insert-accounting-button': 'Sintaxi d\'assentament contable',
-        'ioc-insert-accounting-sample': 'Incloure la sintaxis d\'un assentament contable',
+        // 'ioc-insert-accounting-button': 'Sintaxi d\'assentament contable',
+        // 'ioc-insert-accounting-sample': 'Incloure la sintaxis d\'un assentament contable',
 
 
         // Basic toolbar butons
