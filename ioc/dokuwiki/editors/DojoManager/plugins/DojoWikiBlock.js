@@ -50,8 +50,26 @@ define([
                 onClick: lang.hitch(this, "process")
             };
 
+            this.editor.on('changeCursor', this.updateCursorState.bind(this));
+
             this.addButton(config);
         },
+
+
+        updateCursorState: function (e) {
+            console.log("state:", e.state);
+
+            // Si hi ha algun guió es que es troba a més d'un node de profunditat, en principi l'unic node que es pot
+            // trobar es 'p', en qualsevol cas no es pot afegir.
+            if (e.state.indexOf('-') > -1) {
+                // this.button.set('checked', false);
+                this.button.setDisabled(true);
+            } else {
+                // this.button.set('checked', true);
+                this.button.setDisabled(false);
+            }
+        },
+
 
         process: function () {
 

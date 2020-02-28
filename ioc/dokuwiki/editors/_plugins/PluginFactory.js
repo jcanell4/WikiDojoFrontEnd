@@ -813,7 +813,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-important-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertImportantSyntax',
-            category: localization["category-ioc-style"]
+            category: localization["category-ioc"]
         },
 
         'InsertQuoteSyntax': {
@@ -826,7 +826,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-quote-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertQuoteSyntax',
-            category: localization["category-ioc-style"]
+            category: localization["category-ioc"]
         },
 
         'DojoSafePaste': {

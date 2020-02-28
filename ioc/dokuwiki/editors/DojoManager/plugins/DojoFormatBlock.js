@@ -43,7 +43,7 @@ define([
         },
 
         updateCursorState: function (e) {
-d
+
             if (e.state.indexOf(this.tag) > -1) {
                 this.button.set('checked', true);
             } else {

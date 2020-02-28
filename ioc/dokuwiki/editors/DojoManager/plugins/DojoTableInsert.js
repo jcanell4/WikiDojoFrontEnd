@@ -202,10 +202,11 @@ define([
             // console.log(e);
 
             if (e.$node) {
-                if (e.$node.closest('table, [data-dw-box]').length > 0) {
-                    this.button.set('disabled', true);
+//                if (e.$node.closest('table, [data-dw-box]').length > 0) {
+                if (e.state.indexOf('-') > -1) {
+                    this.button.setDisabled(true);
                 } else {
-                    this.button.set('disabled', false);
+                    this.button.setDisabled(false);
                 }
 
             }
