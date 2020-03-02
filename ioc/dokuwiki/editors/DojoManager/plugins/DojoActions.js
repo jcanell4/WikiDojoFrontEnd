@@ -73,7 +73,8 @@ define([
 
 
             if ($aux.length === 0) {
-                $aux = jQuery('<span class="delete">' + localization["delete"] + '</span>');
+                //$aux = jQuery('<span class="delete">' + localization["delete"] + '</span>');
+                $aux = jQuery('<span class="iocDeleteIcon actionIcon"></span>');
                 $container.append($aux);
             }
 

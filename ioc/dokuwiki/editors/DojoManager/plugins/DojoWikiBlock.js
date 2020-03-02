@@ -174,60 +174,23 @@ define([
             // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
             $node.find('.no-render').remove();
 
+            console.log("Quin es el parent?", $node.parent());
+            console.log("Quin es el node?", $node);
+            // $node.parent().css('border', '1px dotted dodgerblue;');
+            $node.css('border-width', '1px');
+            $node.css('border-style', 'dotted');
+            $node.css('border-color', 'dodgerblue');
+            $node.css('padding', '5px');
+            //console.log("quin es el css?", jQuery($node.get(0)).css());
+
+
 
             var context = this;
 
             var $actions = jQuery('<div class="no-render action" >');
 
-            // var $edit = jQuery('<a contenteditable="false" style="float:right;">editar</a>');
-            // var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
-
-            // ALERTA: Desactivat el edit via parse (és pot editar el títol directament sobre el document).
-            // la edició permetria eliminar o afegir el títol, però requereix la informació del dialeg i aquesta
-            // no és accesible desde el parse.
-
-            var $edit = jQuery('<a contenteditable="false">editar</a>');
-            //var $delete = jQuery('<a contenteditable="false">eliminar</a>');
-
-            // console.log("this.data?", this.data);
-
-            if (this.data.length > 0) {
-                $actions.append($edit);
-            }
-
-            //$actions.append($delete);
-
             $node.append($actions);
 
-            $edit.on('click', function (e) {
-
-                var previousId = jQuery(this).parent().parent().attr('data-ioc-id');
-                // console.log(previousId);
-
-
-                e.preventDefault();
-
-                var json = $node.attr('data-ioc-block-json');
-
-                var data = null;
-
-                if (json) {
-                    json = json.split('&quot').join('"');
-                    data = JSON.parse(json);
-                } else {
-                    data = context.data;
-                }
-
-                context._showDialog(data, $node.attr('data-ioc-id'));
-            });
-
-            // $delete.on('click', function (e) {
-            //     e.preventDefault();
-            //     $node.remove();
-            //     context.editor.forceChange();
-            // });
-
-            console.log(dojoActions);
             dojoActions.deleteAction($node, context.editor);
 
         },

@@ -161,7 +161,7 @@ a {
 }
 
 a[data-ioc-link] .action a {
-    float: inherit;
+    float: none;
 }
 
 a[data-ioc-link] div.action {
@@ -555,4 +555,21 @@ p {
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='50px' width='110px'><text x='0' y='10' fill='lightsteelblue' font-size='14'>COMBTABILITAT</text></svg>") no-repeat;
     background-position-x: right;
 
+}
+
+/* ICONS */
+.action span.actionIcon {
+    float: none;
+    display: inline-block;
+    position: relative;
+    bottom: -3px;
+    width: 16px;
+    height: 16px;
+    border: 0 !important;
+    background-size: cover;
+
+}
+
+.iocDeleteIcon {
+    background-image: url("./images/trash.png");
 }
