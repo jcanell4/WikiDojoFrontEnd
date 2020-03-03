@@ -56,7 +56,9 @@ define([
 
                 // El template conté la informació a mostrar pel dialog, aquesta es la que s'insereix al document
 
-                pre = '<div data-dw-box="' + this.boxType.get("value") + '" id="box_' + _id + '" class="ioctable ' + this.inputType.get("value")
+                pre = '<div data-dw-box="' + this.boxType.get("value") + '" id="box_' + _id + '" class="ioctable'
+                    + ' ' +this.inputType.get("value")
+                    + ' ioc' +this.boxType.get("value")
                     + '" data-dw-type="' + this.inputType.get("value") + "\">\n",
                 info = '<div class="iocinfo"><a id="' + this.inputTableId.get("value")+ '" data-dw-link="table"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br></a>'
                     + '<b contenteditable="false" data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
