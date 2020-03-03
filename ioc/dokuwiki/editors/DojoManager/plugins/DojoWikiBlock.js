@@ -57,7 +57,7 @@ define([
 
 
         updateCursorState: function (e) {
-            console.log("state:", e.state);
+            // console.log("state:", e.state);
 
             // Si hi ha algun guió es que es troba a més d'un node de profunditat, en principi l'unic node que es pot
             // trobar es 'p', en qualsevol cas no es pot afegir.
@@ -174,8 +174,8 @@ define([
             // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
             $node.find('.no-render').remove();
 
-            console.log("Quin es el parent?", $node.parent());
-            console.log("Quin es el node?", $node);
+            // console.log("Quin es el parent?", $node.parent());
+            // console.log("Quin es el node?", $node);
             // $node.parent().css('border', '1px dotted dodgerblue;');
             $node.css('border-width', '1px');
             $node.css('border-style', 'dotted');

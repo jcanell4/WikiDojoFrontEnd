@@ -81,7 +81,8 @@ define([
             var selection = this.editor.getSelection();
 
             for (var i = 0; i < selection.nodes.length; i++) {
-                var $node = jQuery(selection.nodes[i]);
+                // var $node = jQuery(selection.nodes[i]);
+                var $node = this.searchRootNode(selection.nodes[i]);
                 var $newNode = jQuery('<' + this.tag + '>');
 
                 if (this.clearFormat) {
@@ -103,12 +104,14 @@ define([
         removeBlock: function () {
             var selection = this.editor.getSelection();
 
-            console.log("State on removeblock:", this.editor.getCurrentNodeState());
+            // console.log("State on removeblock:", this.editor.getCurrentNodeState());
 
 
 
             for (var i = 0; i < selection.nodes.length; i++) {
-                var $node = jQuery(selection.nodes[i]);
+                var $node = this.searchRootNode(selection.nodes[i]);
+
+                // var $node = jQuery(selection.nodes[i]);
                 // console.log("Unwrapping node:", $node, $node.html());
 
 
@@ -124,11 +127,11 @@ define([
                     //$node.contents().wrap('p'), $node.contents().unwrap();
                     var $newNode = jQuery('<p>');
 
-                    console.log("Node:", $node);
+                    // console.log("Node:", $node);
 
                     $newNode.append($node.html());
 
-                    console.log("Newnode:", $newNode);
+                    // console.log("Newnode:", $newNode);
 
                     $node.replaceWith($newNode);
 
@@ -153,6 +156,18 @@ define([
                 //     });
                 // }
             }
+
+        },
+
+        searchRootNode: function (node) {
+            var $node = jQuery(node);
+
+            while ($node.parent().attr('id') !== 'dijitEditorBody') {
+                $node = $node.parent();
+            }
+
+
+            return $node;
 
         }
     });

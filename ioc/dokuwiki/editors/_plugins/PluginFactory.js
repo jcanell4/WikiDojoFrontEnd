@@ -430,7 +430,8 @@ define([
             icon: 'IocHeader1',
             category: localization["category-header"],
             tag: 'h1',
-            groupPattern: 'h.?'
+            groupPattern: 'h.\d?',
+            clearFormat: true
         },
 
         'HTMLHeader2': {
@@ -441,7 +442,8 @@ define([
             icon: 'IocHeader2',
             category: localization["category-header"],
             tag: 'h2',
-            groupPattern: 'h.?'
+            groupPattern: 'h.\d?',
+            clearFormat: true
 
         },
 
@@ -453,7 +455,8 @@ define([
             icon: 'IocHeader3',
             category: localization["category-header"],
             tag: 'h3',
-            groupPattern: 'h.?'
+            groupPattern: 'h.\d?',
+            clearFormat: true
         },
 
         'HTMLHeader4': {
@@ -464,7 +467,8 @@ define([
             icon: 'IocHeader4',
             category: localization["category-header"],
             tag: 'h4',
-            groupPattern: 'h.?'
+            groupPattern: 'h.\d?',
+            clearFormat: true
         },
 
         'HTMLHeader5': {
@@ -475,17 +479,9 @@ define([
             icon: 'IocHeader5',
             category: localization["category-header"],
             tag: 'h5',
-            groupPattern: 'h.?'
+            groupPattern: 'h.\d?',
+            clearFormat: true
         },
-
-        // 'HTMLHeader6': {
-        //     title: localization["ioc-insert-header6-button"],
-        //     open: '<h6>',
-        //     close: '</h6>',
-        //     sample: localization["ioc-insert-header-sample"],
-        //     icon: 'IocHeader6',
-        //     category: localization["category-header"]
-        // },
 
         'HTMLLinkExternal': {
             title: localization["ioc-insert-link-external-button"],
