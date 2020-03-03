@@ -142,13 +142,13 @@ define([
             'HTMLMonospace': DojoFormat,
             'HTMLCode': DojoFormatCode,
             'HTMLStrikethrough': 'strikethrough',
-            'HTMLHeader0': DojoFormat,
-            'HTMLHeader1': DojoFormat,
-            'HTMLHeader2': DojoFormat,
-            'HTMLHeader3': DojoFormat,
-            'HTMLHeader4': DojoFormat,
-            'HTMLHeader5': DojoFormat,
-            'HTMLHeader6': DojoFormat,
+            'HTMLHeader0': DojoFormatBlock,
+            'HTMLHeader1': DojoFormatBlock,
+            'HTMLHeader2': DojoFormatBlock,
+            'HTMLHeader3': DojoFormatBlock,
+            'HTMLHeader4': DojoFormatBlock,
+            'HTMLHeader5': DojoFormatBlock,
+            //'HTMLHeader6': DojoFormat,
             'HTMLLink': DojoFormat,
             'HTMLLinkExternal': DojoFormat,
 
@@ -395,6 +395,7 @@ define([
             close: '</code>',
             sample: localization["ioc-insert-monospace-button"],
             icon: 'IocMonospace',
+            tag: 'code'
         },
 
         'HTMLCode': {
@@ -427,7 +428,9 @@ define([
             close: '</h1>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader1',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h1',
+            groupPattern: 'h.?'
         },
 
         'HTMLHeader2': {
@@ -436,7 +439,10 @@ define([
             close: '</h2>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader2',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h2',
+            groupPattern: 'h.?'
+
         },
 
         'HTMLHeader3': {
@@ -445,7 +451,9 @@ define([
             close: '</h3>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader3',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h3',
+            groupPattern: 'h.?'
         },
 
         'HTMLHeader4': {
@@ -454,7 +462,9 @@ define([
             close: '</h4>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader4',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h4',
+            groupPattern: 'h.?'
         },
 
         'HTMLHeader5': {
@@ -463,7 +473,9 @@ define([
             close: '</h5>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader5',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h5',
+            groupPattern: 'h.?'
         },
 
         // 'HTMLHeader6': {

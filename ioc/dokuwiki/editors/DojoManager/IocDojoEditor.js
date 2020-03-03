@@ -74,7 +74,7 @@ define([
                     this.getPlugin('HTMLCode'),
                     // this.getPlugin('HTMLStrikethrough'), // No utilitzat a la wiki, no implementat als translators
                     //this.getPlugin('ClearFormat'),
-                    this.getPlugin('HTMLHeader0'),
+                    // this.getPlugin('HTMLHeader0'), // Aquest ja no es necessari, ara les capçaleras són tipus toggle
                     this.getPlugin('HTMLHeader1'),
                     this.getPlugin('HTMLHeader2'),
                     this.getPlugin('HTMLHeader3'),
@@ -219,10 +219,19 @@ define([
 
             generateNodeState: function (node) {
 
+                // console.error("Node?", node);
+
+                if (!node ) {
+                    return 'state unknown'
+                }
+
+
                 var $node = jQuery(node);
 
+
+
                 // si el node te id ="dijitEditorBody" retorna ''
-                if ($node.attr('id') === 'dijitEditorBody') {
+                if ($node.attr('id') === 'dijitEditorBody' || $node.prop("tagName").toLowerCase() === 'body') {
                     return '';
                 } else {
                     var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
@@ -247,6 +256,19 @@ define([
                 // Normalment el node seleccionat serà de tipus text, en aquest cas s'enviarà el parent
 
                 var internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document;
+
+                var nodeSelected = internalDocument.getSelection().rangeCount>0;
+
+                if (!nodeSelected) {
+                    return {
+                        container: null,
+                        startNode: null,
+                        endNode: null,
+                        nodes: [],
+                        $node: jQuery('')
+                    }
+                }
+
 
                 var node = internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
 
@@ -602,6 +624,8 @@ define([
 
                 // Restaurem la funció
                 window.getSelection = backup;
+
+                this.forceUpdateCursor();
             },
 
             _stripTrailingEmptyNodes: function(node) {

@@ -19,6 +19,8 @@ define([
             this.clearFormat = args.clearFormat;
             this.sample = args.sample;
 
+            this.groupPattern = args.groupPattern ? new RegExp(args.groupPattern) : false;
+
             var config = {
                 label: args.title,
                 ownerDocument: this.editor.ownerDocument,
@@ -61,19 +63,21 @@ define([
 
             if (this.empty) {
 
-                this.editor.execCommand('inserthtml', '<' +this.tag+'/>');
+                this.editor.execCommand('inserthtml', '<' + this.tag + '/>');
 
-            } else if (!this.button.get('checked')) {
-                // console.log("Removing block");
-                this.removeBlock()
             } else {
-                // console.log("Adding block");
-                this.addBlock();
-            }
 
+
+                if (this.button.get('checked')) {
+                    this.addBlock();
+                } else {
+                    this.removeBlock();
+                }
+            }
         },
 
         addBlock: function () {
+
             var selection = this.editor.getSelection();
 
             for (var i = 0; i < selection.nodes.length; i++) {
@@ -88,7 +92,10 @@ define([
 
                 $node.empty();
 
-                $node.append($newNode);
+                //$node.append($newNode);
+                $node.replaceWith($newNode);
+
+                this.editor.setCursorToNodePosition($newNode.get(0));
 
             }
         },
@@ -96,26 +103,57 @@ define([
         removeBlock: function () {
             var selection = this.editor.getSelection();
 
+            console.log("State on removeblock:", this.editor.getCurrentNodeState());
+
+
+
             for (var i = 0; i < selection.nodes.length; i++) {
                 var $node = jQuery(selection.nodes[i]);
                 // console.log("Unwrapping node:", $node, $node.html());
 
-                if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()) {
-                    // Cas 1: l'element seleccionat es el que té la etiqueta
-                    $node.contents().unwrap();
 
-                } else {
-                    // Cas 2: Múltiples nodes poden contenir la etiqueta
-                    $node.find(this.tag).each(function () {
-                        jQuery(this).contents().unwrap();
-                    });
+                // ALERTA! només cal comprovar el node actual, s'ignoren altres nodes
+                //this.editor.setCursorToNodePosition($node.get(0));
 
-                    // Cas 3: Un node superior conté la etiqueta
-                    $node.closest(this.tag).each(function() {
-                        jQuery(this).contents().unwrap();
-                    });
+
+                if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()
+                    // console.log("UNWRAP pel tag");
+                    // $node.contents().unwrap();
+                    || (this.groupPattern && this.groupPattern.test($node.prop('tagName').toLowerCase()))) {
+                    // console.log("UNWRAP pel pattern");
+                    //$node.contents().wrap('p'), $node.contents().unwrap();
+                    var $newNode = jQuery('<p>');
+
+                    console.log("Node:", $node);
+
+                    $newNode.append($node.html());
+
+                    console.log("Newnode:", $newNode);
+
+                    $node.replaceWith($newNode);
+
+                    this.editor.setCursorToNodePosition($newNode.get(0));
+
                 }
+
+
+                // if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()) {
+                //     // Cas 1: l'element seleccionat es el que té la etiqueta
+                //     $node.contents().unwrap();
+                //
+                // } else {
+                //     // Cas 2: Múltiples nodes poden contenir la etiqueta
+                //     $node.find(this.tag).each(function () {
+                //         jQuery(this).contents().unwrap();
+                //     });
+                //
+                //     // Cas 3: Un node superior conté la etiqueta
+                //     $node.closest(this.tag).each(function() {
+                //         jQuery(this).contents().unwrap();
+                //     });
+                // }
             }
+
         }
     });
 
