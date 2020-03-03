@@ -556,7 +556,7 @@ p {
     background-position-x: right;
 
 }
-p
+
 /* ICONS */
 .action span.actionIcon {
     float: none;
@@ -572,4 +572,22 @@ p
 
 .iocDeleteIcon {
     background-image: url("./images/trash.png");
+}
+
+pre code {
+    background-color: #f9f9f9;
+    padding: 0.5em;
+    border: 1px dashed #8cacbb;
+    display: block;
+}
+
+pre code div.no-render.action {
+    border-bottom: 1px dashed #8cacbb;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+pre code label {
+    font-weight: bold;
+    padding-left:15px;
 }

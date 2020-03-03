@@ -63,6 +63,16 @@
 
         updateCursorState: function (e) {
 
+            if (e.state.indexOf('pre') > -1) {
+                this.button.setDisabled(true);
+                this.button.set('checked', false);
+                return;
+
+            } else {
+                this.button.setDisabled(false);
+            }
+
+
             if (e.state.indexOf(this.tag) > -1) {
                 this.button.set('checked', true);
             } else {

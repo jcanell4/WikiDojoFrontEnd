@@ -109,6 +109,9 @@ define([
                 }
 
             }
+
+            this.addActionButtons($newNode);
+
         },
 
         removeBlock: function () {
@@ -119,11 +122,77 @@ define([
                 var $root = $node.parent(this.tags[0]);
 
                 var content = $node.text();
-                var $container = jQuery('<p></p>');
-                $container.html(content);
 
+                var lines = content.split("\n");
+
+                var $container = jQuery('<p></p>');
+                $container.html(lines[0]);
                 $root.replaceWith($container);
+
+                var $prev = $container;
+
+                for (var i = 1; i < lines.length; i++) {
+                    var $row = jQuery('<p></p>');
+                    $row.html(lines[i]);
+                    $row.insertAfter($prev);
+                    $prev = $row;
+                }
             }
+        },
+
+        addActionButtons: function ($node) {
+
+
+            var $container = jQuery('<div class="no-render action" contenteditable="false"></div>');
+
+            var $code = $node.find('code');
+
+            if ($code.length <0) {
+                $code.append(jQuery('<br />'));
+            }
+
+            $code.prepend($container);
+
+
+            var $labelLang = jQuery('<label>Llenguatge:</label>');
+            var $input = jQuery('<input type="text" />');
+
+            $labelLang.append($input);
+
+            $input.on('input change', function (e) {
+                $code.attr('data-dw-lang', jQuery(this).val());
+            });
+
+            var $select = jQuery('<select></select>');
+            var $option1 = jQuery('<option value="code">Codi</option>');
+            var $option2 = jQuery('<option value="file">Fitxer</option>');
+
+            var $labelType = jQuery('<label>Tipus:</label>');
+            $labelType.append($select);
+
+            $select.append($option1);
+            $select.append($option2);
+
+            $container.append($labelLang);
+            $container.append($labelType);
+
+            $select.on('input change', function (e) {
+                var $this = jQuery(this);
+
+                if ($this.val() === 'file') {
+                    $code.removeAttr('data-dw-lang');
+                    $input.prop('disabled', true);
+                    $code.attr('data-dw-file', true);
+
+                } else {
+                    $code.attr('data-dw-lang', $input.val());
+                    $input.prop('disabled', false);
+                    $code.removeAttr('data-dw-file');
+                }
+
+
+            });
+
         }
     });
 
