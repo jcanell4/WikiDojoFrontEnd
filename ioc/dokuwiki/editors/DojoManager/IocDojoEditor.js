@@ -35,7 +35,7 @@ define([
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
     // "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
-    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins",
+    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins"
 
 ], function (AbstractIocEditor, declare, Editor,
              registry,
@@ -79,7 +79,7 @@ define([
                     this.getPlugin('HTMLHeader2'),
                     this.getPlugin('HTMLHeader3'),
                     this.getPlugin('HTMLHeader4'),
-                    this.getPlugin('HTMLHeader5'),
+                    this.getPlugin('HTMLHeader5')
                     // this.getPlugin('HTMLLink'),
                     // this.getPlugin('HTMLLinkExternal'),
 
@@ -305,7 +305,7 @@ define([
                     endNode: endNode,
                     nodes: nodes,
                     $node: $node
-                }
+                };
             },
 
             forceChange: function () {
@@ -502,8 +502,7 @@ define([
                         if (!this.toolbars[plugin.category]) {
                             this.createToolbar(plugin.category);
                         }
-
-                        plugin.setToolbar(this.toolbars[plugin.category])
+                        plugin.setToolbar(this.toolbars[plugin.category]);
                     } else {
                         plugin.setToolbar(this.toolbar);
                     }
@@ -586,7 +585,7 @@ define([
             },
 
 
-            setCursorToNodePosition(node) {
+            setCursorToNodePosition: function(node) {
 
                 var backup = window.getSelection;
                 window.getSelection = document.getSelection;
@@ -612,5 +611,5 @@ define([
                 return node;
             }
         }
-    )
+    );
 });

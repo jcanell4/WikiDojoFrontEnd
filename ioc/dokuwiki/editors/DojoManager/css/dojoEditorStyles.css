@@ -528,7 +528,7 @@ ol, ul {
 ol>li, ul>li {
     margin:0;
     padding:0 0 0 2em;
-    text-indent:-2em;n
+    text-indent:-2em;
     list-style-type:none;
     counter-increment:item;
 }
