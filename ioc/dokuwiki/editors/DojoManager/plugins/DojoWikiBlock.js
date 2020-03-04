@@ -180,7 +180,7 @@ define([
             $node.css('border-width', '1px');
             $node.css('border-style', 'dotted');
             $node.css('border-color', 'dodgerblue');
-            $node.css('padding', '5px');
+            // $node.css('padding', '5px');
             //console.log("quin es el css?", jQuery($node.get(0)).css());
 
 
