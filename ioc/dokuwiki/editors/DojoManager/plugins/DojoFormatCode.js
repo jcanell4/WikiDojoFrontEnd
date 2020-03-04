@@ -213,7 +213,7 @@ define([
 
         _addHandlers: function ($node) {
 
-            console.log("Afegint botons", $node);
+            // console.log("Afegint botons", $node);
 
             // s'ha de passar el pre
             this.addActionButtons($node.closest('pre'));

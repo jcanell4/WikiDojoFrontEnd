@@ -1,42 +1,42 @@
- define([
+define([
     "dojo/_base/declare",
-    "ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock",
-    //"ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin",
+    // "ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock",
+    "ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin",
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
     "dojo/string",
-     "dijit/form/ToggleButton"
+    "dijit/form/ToggleButton"
 ], function (declare, AbstractDojoPlugin, lang, _Plugin, string, ToggleButton) {
 
     var FormatButton = declare(AbstractDojoPlugin, {
 
-        // init: function(args) {
-        //     this.inherited(arguments);
-        //
-        //     this.htmlTemplate = args.open + "${content}" + args.close;
-        //
-        //     this.content = args.sample;
-        //     this.tag = args.tag;
-        //
-        //     var config = {
-        //         label: args.title,
-        //         ownerDocument: this.editor.ownerDocument,
-        //         dir: this.editor.dir,
-        //         lang: this.editor.lang,
-        //         showLabel: false,
-        //         iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + args.icon,
-        //         tabIndex: "-1",
-        //         onClick: lang.hitch(this, "process")
-        //     };
-        //
-        //
-        //
-        //     this.addButton(config);
-        //
-        //     if (this.tag) {
-        //         this.editor.on('changeCursor', this.updateCursorState.bind(this));
-        //     }
-        // },
+        init: function(args) {
+            this.inherited(arguments);
+
+            this.htmlTemplate = args.open + "${content}" + args.close;
+
+            this.content = args.sample;
+            this.tag = args.tag;
+
+            var config = {
+                label: args.title,
+                ownerDocument: this.editor.ownerDocument,
+                dir: this.editor.dir,
+                lang: this.editor.lang,
+                showLabel: false,
+                iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + args.icon,
+                tabIndex: "-1",
+                onClick: lang.hitch(this, "process")
+            };
+
+
+
+            this.addButton(config);
+
+            if (this.tag) {
+                this.editor.on('changeCursor', this.updateCursorState.bind(this));
+            }
+        },
 
         process: function () {
 
@@ -45,12 +45,19 @@
                 var args = {content: this._getSelectionText() || this.content};
                 this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
 
-
             } else {
-                this.inherited(arguments)
+
+                var selection = this.editor.getSelection();
+
+                for (var i = 0; i < selection.nodes.length; i++) {
+                    var $node = jQuery(selection.nodes[i]);
+
+                    $node.closest(this.tag).each(function () {
+                        jQuery(this).contents().unwrap();
+                    });
+                }
 
             }
-
         },
 
         addButton: function (config) {
@@ -63,6 +70,7 @@
 
         updateCursorState: function (e) {
 
+            // No es pot aplicar format dins d'un block de codi
             if (e.state.indexOf('pre') > -1) {
                 this.button.setDisabled(true);
                 this.button.set('checked', false);
