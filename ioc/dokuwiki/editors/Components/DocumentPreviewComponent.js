@@ -15,7 +15,7 @@ define([
             var urlBase = this._getUrlBase(),
                 dataToSend = {
                     call: "preview",
-                    wikitext: this._getCurrentContent(),
+                    wikitext: this._getCurrentContent()
                 };
 
             if (extraData) {
@@ -38,11 +38,11 @@ define([
             var id = dispatcher.getGlobalState().getCurrentId(),
                 contentTool = dispatcher.getContentCache(id).getMainContentTool();
 
-            return contentTool.requester.get("defaultUrlBase")
+            return contentTool.requester.get("defaultUrlBase");
         },
 
 
-        _addExtraDataToObject(object, data) {
+        _addExtraDataToObject: function(object, data) {
             for (var attrname in data) {
                 object[attrname] = data[attrname];
             }
