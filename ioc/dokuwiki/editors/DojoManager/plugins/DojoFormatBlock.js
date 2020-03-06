@@ -104,19 +104,12 @@ define([
         removeBlock: function () {
             var selection = this.editor.getSelection();
 
-            // console.log("State on removeblock:", this.editor.getCurrentNodeState());
-
+            console.log("State on removeblock:", this.editor.getCurrentNodeState());
+            console.log("Selection:", selection);
 
 
             for (var i = 0; i < selection.nodes.length; i++) {
                 var $node = this.searchRootNode(selection.nodes[i]);
-
-                // var $node = jQuery(selection.nodes[i]);
-                // console.log("Unwrapping node:", $node, $node.html());
-
-
-                // ALERTA! només cal comprovar el node actual, s'ignoren altres nodes
-                //this.editor.setCursorToNodePosition($node.get(0));
 
 
                 if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()
@@ -139,22 +132,6 @@ define([
 
                 }
 
-
-                // if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()) {
-                //     // Cas 1: l'element seleccionat es el que té la etiqueta
-                //     $node.contents().unwrap();
-                //
-                // } else {
-                //     // Cas 2: Múltiples nodes poden contenir la etiqueta
-                //     $node.find(this.tag).each(function () {
-                //         jQuery(this).contents().unwrap();
-                //     });
-                //
-                //     // Cas 3: Un node superior conté la etiqueta
-                //     $node.closest(this.tag).each(function() {
-                //         jQuery(this).contents().unwrap();
-                //     });
-                // }
             }
 
         },
