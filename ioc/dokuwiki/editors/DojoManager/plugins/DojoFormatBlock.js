@@ -132,22 +132,6 @@ define([
 
                 }
 
-
-                // if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()) {
-                //     // Cas 1: l'element seleccionat es el que té la etiqueta
-                //     $node.contents().unwrap();
-                //
-                // } else {
-                //     // Cas 2: Múltiples nodes poden contenir la etiqueta
-                //     $node.find(this.tag).each(function () {
-                //         jQuery(this).contents().unwrap();
-                //     });
-                //
-                //     // Cas 3: Un node superior conté la etiqueta
-                //     $node.closest(this.tag).each(function() {
-                //         jQuery(this).contents().unwrap();
-                //     });
-                // }
             }
 
         },
