@@ -120,7 +120,7 @@ define([
                 +'href="/dokuwiki_30/doku.php?id=' + tokens[0] + '" title="' + tokens[0] + '" '
                 + 'class="'+this.linkClass+'">' + title
 
-                + '</a>'; // TODO: pasar la URL base desde servidor, com? el JSINFO?
+                + '</a>&nbsp;'; // TODO: pasar la URL base desde servidor, com? el JSINFO?
         },
 
         _addHandlers: function($node) {
@@ -137,7 +137,9 @@ define([
                     dw_linkwiz.$entry =jQuery('<input>');
                 }
 
-                dw_linkwiz.$entry.val($this.attr('data-dw-ns'));
+                // Només s'afegeix el valor si es troba dins d'un espai de noms
+                var value = $this.attr('data-dw-ns');
+                dw_linkwiz.$entry.val(value.indexOf(':') === -1 ? '' : value);
 
                 context._openEditor();
             })

@@ -52,7 +52,7 @@ define([
         //		String used for templating the HTML to insert at the desired point.
         htmlTemplate: "<a href=\"${urlInput}\" _djrealurl=\"${urlInput}\"" +
         " target=\"${targetSelect}\"" +
-        ">${textInput}</a>",
+        ">${textInput}</a>&nbsp;",
 
         // tag: [protected] String
         //		Tag used for the link type.
