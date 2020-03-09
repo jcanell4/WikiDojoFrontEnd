@@ -55,7 +55,6 @@ define([
 
         process: function () {
 
-
             // TODO: habilitar el sistema per selecció múltiple
 
             // ALERTA: En aquest punt el botó encara no ha canviat d'estat en ser premut
@@ -104,10 +103,6 @@ define([
         removeBlock: function () {
             var selection = this.editor.getSelection();
 
-            console.log("State on removeblock:", this.editor.getCurrentNodeState());
-            console.log("Selection:", selection);
-
-
             for (var i = 0; i < selection.nodes.length; i++) {
                 var $node = this.searchRootNode(selection.nodes[i]);
 
@@ -139,10 +134,16 @@ define([
         searchRootNode: function (node) {
             var $node = jQuery(node);
 
+            if ($node.attr('id') === 'dijitEditorBody') {
+                var $placeholderNode =jQuery('<p>');
+                $placeholderNode.text(this.sample);
+                $node.prepend($placeholderNode);
+                return $placeholderNode;
+            }
+
             while ($node.parent().attr('id') !== 'dijitEditorBody') {
                 $node = $node.parent();
             }
-
 
             return $node;
 
