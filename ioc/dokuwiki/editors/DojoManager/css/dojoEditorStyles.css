@@ -550,12 +550,12 @@ p {
     word-wrap: break-word;
 }
 
-.iocaccounting {
-    /*background-color: rgba(46, 131, 255, 0.3);*/
-    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='50px' width='110px'><text x='0' y='10' fill='lightsteelblue' font-size='14'>COMBTABILITAT</text></svg>") no-repeat;
-    background-position-x: right;
+/*.iocaccounting {*/
+    /*!*background-color: rgba(46, 131, 255, 0.3);*!*/
+    /*background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='50px' width='110px'><text x='0' y='10' fill='lightsteelblue' font-size='14'>COMBTABILITAT</text></svg>") no-repeat;*/
+    /*background-position-x: right;*/
 
-}
+/*}*/
 
 /* ICONS */
 .action span.actionIcon {
@@ -567,12 +567,16 @@ p {
     height: 16px;
     border: 0 !important;
     background-size: cover;
-
 }
 
-.iocDeleteIcon {
+.actionIcon.iocDeleteIcon {
     background-image: url("./images/trash.png");
 }
+
+.actionIcon.iocAddParagraphIcon {
+    background-image: url("./images/addParagraph1.png");
+}
+
 
 pre code {
     background-color: #f9f9f9;
@@ -590,4 +594,22 @@ pre code div.no-render.action {
 pre code label {
     font-weight: bold;
     padding-left:15px;
+}
+
+.ioctable .no-render.action, .iocaccounting .no-render.action {
+    border-top: 1px dashed #8cacbb;
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.ioctable .no-render.action label, .iocaccounting .no-render.action label{
+   font-weight: bold;
+}
+
+
+.ioctable .no-render.action select, .iocaccounting .no-render.action select,
+.ioctable .no-render.action input, .iocaccounting .no-render.action input
+{
+    margin-left: 5px;
+    margin-right:10px;
 }

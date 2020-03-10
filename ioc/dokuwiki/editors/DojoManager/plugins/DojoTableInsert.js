@@ -1,6 +1,7 @@
 define([
     "dojo/_base/declare",
-    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
+    "ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin",
     "dijit/_editor/_Plugin",
     // "dojox/editor/plugins/CustomTablePlugins",
     "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins",
@@ -12,14 +13,79 @@ define([
     "dojo/text!./templates/insertTable.html",
     "dojo/i18n!./nls/TableDialog",
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
 
 ], function (declare, AbstractDojoPlugin, _Plugin, TablePlugins, Dialog,
              lang, _WidgetBase,
              _TemplatedMixin, _WidgetsInTemplateMixin,
              insertTableTemplate,
              tableDialogStrings,
-             localization
+             localization,
+             dojoActions
 ) {
+
+
+    // Alerta, com que no es té accéss al plugin desde la crida del insertTable, hem de fer servir una funció privada que es accesible per totes les classes aquí declarada per afegir les accions.
+    var addActions = function ($node) {
+        var $aux = dojoActions.getActionContainer($node);
+
+        var $labelLang = jQuery('<label>Estil:</label>');
+        var $input = jQuery('<input type="text" />');
+
+
+        $labelLang.append($input);
+
+
+        $input.on('input change', function (e) {
+
+            var $this = jQuery(this);
+            var old = $node.attr('data-dw-type');
+            $node.removeClass(old);
+
+            var value = $this.val();
+            console.log("input change detected: old/new", old);
+            value.replace(/ /g, '-');
+
+
+            $node.attr('data-dw-type', $this.val());
+            $node.addClass($this.val());
+        });
+
+
+        var $select = jQuery('<select></select>');
+        var $option1 = jQuery('<option value="table">Taula</option>');
+        var $option2 = jQuery('<option value="accounting">Comptabilitat</option>');
+
+        var $labelType = jQuery('<label>Tipus:</label>');
+        $labelType.append($select);
+
+        $select.append($option1);
+        $select.append($option2);
+
+
+        $aux.prepend($labelLang);
+        $aux.prepend($labelType);
+
+
+        $select.on('input change', function (e) {
+            $node.attr('data-dw-box', $select.val());
+        });
+
+        // Inicialitzem els valors amb els continguts anteriors
+        $input.val($node.attr('data-dw-type'));
+        $select.val($node.attr('data-dw-box'));
+        $select.trigger('change');
+
+
+        dojoActions.addParagraphAction($node);
+        dojoActions.deleteAction($node);
+
+        // Eliminem el listener per editar els enllaços del info (que no han de tractar-se com enllaços)
+        $node.find('[data-dw-link]').on('dblclick', function (e) {
+            e.preventDefault();
+            return false;
+        })
+    };
 
 
     var EditorTableDialog = declare("dojox.editor.plugins.EditorTableDialog", [Dialog, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -57,10 +123,10 @@ define([
                 // El template conté la informació a mostrar pel dialog, aquesta es la que s'insereix al document
 
                 pre = '<div data-dw-box="' + this.boxType.get("value") + '" id="box_' + _id + '" class="ioctable'
-                    + ' ' +this.inputType.get("value")
-                    + ' ioc' +this.boxType.get("value")
+                    + ' ' + this.inputType.get("value")
+                    + ' ioc' + this.boxType.get("value")
                     + '" data-dw-type="' + this.inputType.get("value") + "\">\n",
-                info = '<div class="iocinfo"><a id="' + this.inputTableId.get("value")+ '" data-dw-link="table"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br></a>'
+                info = '<div class="iocinfo"><a id="' + this.inputTableId.get("value") + '" data-dw-link="table"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br></a>'
                     + '<b contenteditable="false" data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
                     + '<b contenteditable="false" data-dw-field="footer">Peu:</b> ' + this.inputFooter.get("value") + '<br>'
                     + '</div>',
@@ -100,7 +166,6 @@ define([
 
             if ($prev.length === 0 || !$prev.is('p')) {
                 // Afegim un salt de línia com a separador
-                console.log("inserint paràgraf anterior");
                 $node.before(jQuery('<p>&nbsp;</p>'));
             }
 
@@ -109,25 +174,11 @@ define([
                 $node.after(jQuery('<p>&nbsp;</p>'));
             }
 
-            // Aquest codi és el mateix que es troba a DojoActionAddParagraph, s'ha de duplicar perquè
-            // aquesta classe hereta de la taula original de dojo, no es propia i no fa servir el nostre
-            // sistema de parse
-            var $aux = jQuery('<div class="no-render action" contenteditable="false"><span>' + localization["ioc-action-add-paragraph"] + '</span></div>');
+
+            addActions($node);
 
 
-            $aux.on('click', function () {
-                // Afegim un salt de línia com a separador
-                // console.log("inserint paràgraf anterior");
-                $node.after(jQuery('<p>' + localization["ioc-action-add-paragraph-placeholder"] + '</p>'));
-            });
-            $node.append($aux);
 
-
-            // Eliminem el listener per editar els enllaços del info (que no han de tractar-se com enllaços)
-            $node.find('[data-dw-link]').on('dblclick', function(e) {
-                e.preventDefault();
-                return false;
-            })
 
         },
 
@@ -147,7 +198,7 @@ define([
         onBuildTable: function (tableText) {
             //stub
             // console.log("tableText:", tableText);
-            // alert("taula construida");
+
         }
     });
 
@@ -217,6 +268,23 @@ define([
             this.modTable();
         },
 
+        parse: function () {
+            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-box="accounting"], [data-dw-box="table"]');
+            var context = this;
+
+            $nodes.each(function () {
+                context._addHandlers(jQuery(this)/*, context*/);
+            });
+
+        },
+
+        _addHandlers: function ($node) {
+            // console.log("Quin es el node que rebem?", $node);
+
+            addActions($node);
+
+
+        }
     });
 
 

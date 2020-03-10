@@ -51,7 +51,8 @@ define([
             var $aux = $container.find('.add-paragraph');
 
             if ($aux.length === 0) {
-                $aux = jQuery('<span class="add-paragraph">' + localization["ioc-action-add-paragraph"] + '</span>');
+                // $aux = jQuery('<span class="add-paragraph">' + localization["ioc-action-add-paragraph"] + '</span>');
+                $aux = jQuery('<span class="iocAddParagraphIcon actionIcon add-paragraph" title="'+localization["ioc-action-add-paragraph"]+'"></span>');
                 $container.append($aux);
             }
 
@@ -74,7 +75,7 @@ define([
 
             if ($aux.length === 0) {
                 //$aux = jQuery('<span class="delete">' + localization["delete"] + '</span>');
-                $aux = jQuery('<span class="iocDeleteIcon actionIcon"></span>');
+                $aux = jQuery('<span class="iocDeleteIcon actionIcon" title="'+localization["delete"]+'"></span>');
                 $container.append($aux);
             }
 
@@ -92,6 +93,8 @@ define([
     return {
         addParagraphAction: addParagraphAction,
 
-        deleteAction: deleteAction
+        deleteAction: deleteAction,
+
+        getActionContainer: getAndAddActionContainer
     };
 });

@@ -132,7 +132,7 @@ define([
 
                     // plugin propi taules
                     'MergeCells', // desactivat temporalment, no funciona correctament
-                    'TableDelete',
+                    // 'TableDelete', // desactivat, s'ha afegit un action a la caixa
                     'InsertSound',
 
 
