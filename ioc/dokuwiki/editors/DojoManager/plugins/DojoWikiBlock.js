@@ -109,7 +109,6 @@ define([
 
         _callback: function (data) {
 
-
             var volatileId = false;
 
             if (data.id === undefined) {
@@ -127,6 +126,7 @@ define([
             var text = '';
 
             if (this.previousId) {
+
                 var $contents = jQuery(this.editor.iframe).contents();
 
                 text = $contents.find('[data-ioc-id="' + this.previousId + '"] .editable-text').html();

@@ -302,8 +302,8 @@ define([
         'InsertFigureLinkSyntax': {
             title: localization["ioc-insert-figure-link-button"],
             prompt: localization["ioc-insert-figure-link-prompt"],
-            target: 'data-dw-box="figure"',
-            type: 'figure',
+            targets: ['data-dw-box="figure"'],
+            types: ['figure'],
             icon: 'IocInsertFigureLinkSyntax',
             category: localization["category-ioc"],
             htmlTemplate: '<a contenteditable="false" data-ioc-link="figure" data-ioc-id="ioc_link_figure_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp;',
@@ -320,8 +320,9 @@ define([
         'InsertTableLinkSyntax': {
             title: localization["ioc-insert-table-link-button"],
             prompt: localization["ioc-insert-table-link-prompt"],
-            target: 'data-dw-box="table"',
-            type: 'table',
+            //target: 'data-dw-box="table"',
+            targets: ['data-dw-box="table"', 'data-dw-box="accounting"'],
+            types: ['table', 'accounting'],
             icon: 'IocInsertTableLinkSyntax',
             category: localization["category-ioc"],
             htmlTemplate: '<a contenteditable="false" data-ioc-link="table" data-ioc-id="ioc_link_table_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp;', // si no afegim un espai no es pot continuar escrivint

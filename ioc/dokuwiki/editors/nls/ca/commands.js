@@ -28,7 +28,7 @@ define(
         'ioc-comment-cancel-button': 'Cancel·lar',
 
         // IOC Sound Plugin
-        'ioc-sound-button': 'Afegir format de so',
+        'ioc-sound-button': 'Afegir so',
         'ioc-sound-sample': 'identificador del so:clau',
 
 
@@ -39,7 +39,7 @@ define(
         'ioc-new-content-button': 'Nou contingut',
         'ioc-new-content-sample': 'Incloure contingut nou',
 
-        'ioc-insert-figure-button': 'Sintaxis de figura',
+        'ioc-insert-figure-button': 'Afegir figura',
         'ioc-insert-figure-sample': 'Incloure la figura',
 
         'ioc-insert-figure-link-button': 'Enllaç a figura',
