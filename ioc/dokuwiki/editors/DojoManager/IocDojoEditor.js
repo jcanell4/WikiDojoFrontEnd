@@ -626,7 +626,7 @@ define([
             },
 
 
-            setCursorToNodePosition(node) {
+            setCursorToNodePosition: function(node) {
 
                 var backup = window.getSelection;
                 window.getSelection = document.getSelection;
