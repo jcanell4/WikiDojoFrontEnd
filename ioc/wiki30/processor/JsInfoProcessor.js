@@ -33,7 +33,12 @@ define([
                 if (Object.keys(value).length>0) {
                    permission.isadmin = value['isadmin'];
                    permission.ismanager = value['ismanager'];
-                   permission.isprojectmanager = value['isprojectmanager'];
+//                   permission.isprojectmanager = value['isprojectmanager'];
+                   if(value['permission']){
+                       Object.keys(value['permission']).forEach(function(key){
+                           permission[key] = value['permission'][key];
+                       });
+                   }
                 }
             },
 

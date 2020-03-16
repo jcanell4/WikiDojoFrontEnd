@@ -6,6 +6,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoReplaceFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatBlock',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoFormatCode',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoClearFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatFigure',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatLateral',
@@ -22,6 +23,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiLink',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActionAddParagraph',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoComment',
 
@@ -55,7 +57,7 @@ define([
     // CSS
     'dojo/text!./../DojoManager/css/editorPlugins.css', // Copiat de dojox/editor/resources
 
-], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock,
+], function (EventFactory, AceFormat, DojoFormat, DojoReplaceFormat, DojoFormatBlock, DojoFormatCode,
              DojoClearFormat,
              DojoMediaFormatFigure,
              DojoMediaFormatLateral,
@@ -65,6 +67,7 @@ define([
              DojoTableAlign,
              /*DojoSound, */
              DojoWikiBlock, DojoWikiSound, DojoWikiLink,
+             DojoActionAddParagraph,
              DojoComment,
              DojoSafePaste,
              AceFireEvent, AceFireDojoEvent,
@@ -136,15 +139,16 @@ define([
             'HTMLBold': 'bold',
             'HTMLItalic': 'italic',
             'HTMLUnderline': 'underline',
-            'HTMLCode': DojoFormatBlock,
+            'HTMLMonospace': DojoFormat,
+            'HTMLCode': DojoFormatCode,
             'HTMLStrikethrough': 'strikethrough',
-            'HTMLHeader0': DojoFormat,
-            'HTMLHeader1': DojoFormat,
-            'HTMLHeader2': DojoFormat,
-            'HTMLHeader3': DojoFormat,
-            'HTMLHeader4': DojoFormat,
-            'HTMLHeader5': DojoFormat,
-            'HTMLHeader6': DojoFormat,
+            'HTMLHeader0': DojoFormatBlock,
+            'HTMLHeader1': DojoFormatBlock,
+            'HTMLHeader2': DojoFormatBlock,
+            'HTMLHeader3': DojoFormatBlock,
+            'HTMLHeader4': DojoFormatBlock,
+            'HTMLHeader5': DojoFormatBlock,
+            //'HTMLHeader6': DojoFormat,
             'HTMLLink': DojoFormat,
             'HTMLLinkExternal': DojoFormat,
 
@@ -162,6 +166,7 @@ define([
             'InsertSound': DojoWikiSound,
 
             'DojoSafePaste': DojoSafePaste,
+            'DojoActionAddParagraph' : DojoActionAddParagraph
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -297,8 +302,8 @@ define([
         'InsertFigureLinkSyntax': {
             title: localization["ioc-insert-figure-link-button"],
             prompt: localization["ioc-insert-figure-link-prompt"],
-            target: 'data-dw-box="figure"',
-            type: 'figure',
+            targets: ['data-dw-box="figure"'],
+            types: ['figure'],
             icon: 'IocInsertFigureLinkSyntax',
             category: localization["category-ioc"],
             htmlTemplate: '<a contenteditable="false" data-ioc-link="figure" data-ioc-id="ioc_link_figure_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp;',
@@ -315,8 +320,9 @@ define([
         'InsertTableLinkSyntax': {
             title: localization["ioc-insert-table-link-button"],
             prompt: localization["ioc-insert-table-link-prompt"],
-            target: 'data-dw-box="table"',
-            type: 'table',
+            //target: 'data-dw-box="table"',
+            targets: ['data-dw-box="table"', 'data-dw-box="accounting"'],
+            types: ['table', 'accounting'],
             icon: 'IocInsertTableLinkSyntax',
             category: localization["category-ioc"],
             htmlTemplate: '<a contenteditable="false" data-ioc-link="table" data-ioc-id="ioc_link_table_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp;', // si no afegim un espai no es pot continuar escrivint
@@ -347,6 +353,7 @@ define([
         'InsertSpecialCharacter': {
             title: localization["ioc-insert-special-character-button"],
             icon: 'IocSpecialChars',
+            class: 'symbols',
             list: ['À', 'à', 'Á', 'á', 'Â', 'â', 'Ã', 'ã', 'Ä', 'ä', 'Ǎ', 'ǎ', 'Ă', 'ă', 'Å', 'å', 'Ā', 'ā', 'Ą', 'ą', 'Æ', 'æ', 'Ć', 'ć', 'Ç', 'ç', 'Č', 'č', 'Ĉ', 'ĉ', 'Ċ', 'ċ', 'Ð', 'đ', 'ð', 'Ď', 'ď', 'È', 'è', 'É', 'é', 'Ê', 'ê', 'Ë', 'ë', 'Ě', 'ě', 'Ē', 'ē', 'Ė', 'ė', 'Ę', 'ę', 'Ģ', 'ģ', 'Ĝ', 'ĝ', 'Ğ', 'ğ', 'Ġ', 'ġ', 'Ĥ', 'ĥ', 'Ì', 'ì', 'Í', 'í', 'Î', 'î', 'Ï', 'ï', 'Ǐ', 'ǐ', 'Ī', 'ī', 'İ', 'ı', 'Į', 'į', 'Ĵ', 'ĵ', 'Ķ', 'ķ', 'Ĺ', 'ĺ', 'Ļ', 'ļ', 'Ľ', 'ľ', 'Ł', 'ł', 'Ŀ', 'ŀ', 'Ń', 'ń', 'Ñ', 'ñ', 'Ņ', 'ņ', 'Ň', 'ň', 'Ò', 'ò', 'Ó', 'ó', 'Ô', 'ô', 'Õ', 'õ', 'Ö', 'ö', 'Ǒ', 'ǒ', 'Ō', 'ō', 'Ő', 'ő', 'Œ', 'œ', 'Ø', 'ø', 'Ŕ', 'ŕ', 'Ŗ', 'ŗ', 'Ř', 'ř', 'Ś', 'ś', 'Ş', 'ş', 'Š', 'š', 'Ŝ', 'ŝ', 'Ţ', 'ţ', 'Ť', 'ť', 'Ù', 'ù', 'Ú', 'ú', 'Û', 'û', 'Ü', 'ü', 'Ǔ', 'ǔ', 'Ŭ', 'ŭ', 'Ū', 'ū', 'Ů', 'ů', 'ǖ', 'ǘ', 'ǚ', 'ǜ', 'Ų', 'ų', 'Ű', 'ű', 'Ŵ', 'ŵ', 'Ý', 'ý', 'Ÿ', 'ÿ', 'Ŷ', 'ŷ', 'Ź', 'ź', 'Ž', 'ž', 'Ż', 'ż', 'Þ', 'þ', 'ß', 'Ħ', 'ħ', '¿', '¡', '¢', '£', '¤', '¥', '€', '¦', '§', 'ª', '¬', '¯', '°', '±', '÷', '‰', '¼', '½', '¾', '¹', '²', '³', 'µ', '¶', '†', '‡', '·', '•', 'º', '∀', '∂', '∃', 'Ə', 'ə', '∅', '∇', '∈', '∉', '∋', '∏', '∑', '‾', '−', '∗', '×', '⁄', '√', '∝', '∞', '∠', '∧', '∨', '∩', '∪', '∫', '∴', '∼', '≅', '≈', '≠', '≡', '≤', '≥', '⊂', '⊃', '⊄', '⊆', '⊇', '⊕', '⊗', '⊥', '⋅', '◊', '℘', 'ℑ', 'ℜ', 'ℵ', '♠', '♣', '♥', '♦', 'α', 'β', 'Γ', 'γ', 'Δ', 'δ', 'ε', 'ζ', 'η', 'Θ', 'θ', 'ι', 'κ', 'Λ', 'λ', 'μ', 'Ξ', 'ξ', 'Π', 'π', 'ρ', 'Σ', 'σ', 'Τ', 'τ', 'υ', 'Φ', 'φ', 'χ', 'Ψ', 'ψ', 'Ω', 'ω', '★', '☆', '☎', '☚', '☛', '☜', '☝', '☞', '☟', '☹', '☺', '✔', '✘', '„', '“', '”', '‚', '‘', '’', '«', '»', '‹', '›', '—', '–', '…', '←', '↑', '→', '↓', '↔', '⇐', '⇑', '⇒', '⇓', '⇔', '©', '™', '®', '′', '″', '[', ']', '{', '}', '~', '(', ')', '%', '§', '$', '#', '|', '@']
 
         },
@@ -383,11 +390,20 @@ define([
             icon: 'IocUnderline',
         },
 
+        'HTMLMonospace': {
+            title: localization["ioc-insert-monospace-button"],
+            open: '<code>',
+            close: '</code>',
+            sample: localization["ioc-insert-monospace-button"],
+            icon: 'IocMonospace',
+            tag: 'code'
+        },
+
         'HTMLCode': {
             title: localization["ioc-insert-code-button"],
-            tag: 'pre',
+            tags: ['pre', 'code'],
             sample: localization["ioc-insert-code-button"],
-            icon: 'IocCode',
+            icon: 'IocCode'
         },
 
         'HTMLStrikethrough': {
@@ -413,7 +429,10 @@ define([
             close: '</h1>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader1',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h1',
+            groupPattern: 'h.\d?',
+            clearFormat: true
         },
 
         'HTMLHeader2': {
@@ -422,7 +441,11 @@ define([
             close: '</h2>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader2',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h2',
+            groupPattern: 'h.\d?',
+            clearFormat: true
+
         },
 
         'HTMLHeader3': {
@@ -431,7 +454,10 @@ define([
             close: '</h3>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader3',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h3',
+            groupPattern: 'h.\d?',
+            clearFormat: true
         },
 
         'HTMLHeader4': {
@@ -440,7 +466,10 @@ define([
             close: '</h4>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader4',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h4',
+            groupPattern: 'h.\d?',
+            clearFormat: true
         },
 
         'HTMLHeader5': {
@@ -449,17 +478,11 @@ define([
             close: '</h5>',
             sample: localization["ioc-insert-header-sample"],
             icon: 'IocHeader5',
-            category: localization["category-header"]
+            category: localization["category-header"],
+            tag: 'h5',
+            groupPattern: 'h.\d?',
+            clearFormat: true
         },
-
-        // 'HTMLHeader6': {
-        //     title: localization["ioc-insert-header6-button"],
-        //     open: '<h6>',
-        //     close: '</h6>',
-        //     sample: localization["ioc-insert-header-sample"],
-        //     icon: 'IocHeader6',
-        //     category: localization["category-header"]
-        // },
 
         'HTMLLinkExternal': {
             title: localization["ioc-insert-link-external-button"],
@@ -476,19 +499,28 @@ define([
             // category: 'C',
         },
 
+        'DojoActionAddParagraph': {
+            type: 'DojoActionAddParagraph',
+            label: localization["ioc-action-add-paragraph"],
+            placeholder: localization["ioc-action-add-paragraph-placeholder"],
+            // category: 'C',
+        },
+
         'TableEditor': {
             type: 'TableEditor',
             title: localization["ioc-table-editor"],
             icon: 'IocTable',
             category: 'WikiTable',
-            tableType: 'normal'
+            tableType: 'normal',
+            boxType: 'table',
         },
         'TableEditorMultiline': {
             type: 'TableEditorMultiline',
             title: localization["ioc-table-editor-multiline"],
             icon: 'IocTable',
             category: 'WikiTable',
-            tableType: 'multiline'
+            tableType: 'multiline',
+            boxType: 'table',
         },
         'TableEditorAccounting': {
             type: 'TableEditorAccounting',
@@ -496,6 +528,7 @@ define([
             icon: 'IocTable',
             category: 'WikiTable',
             tableType: 'accounting',
+            boxType: 'accounting',
         },
 
         'ViewSource': {
@@ -654,7 +687,8 @@ define([
             '</div>',
 
             icon: 'IocInsertTableSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc"],
+            boxType: 'tables',
         },
 
         'InsertAccountingSyntax': {
@@ -690,7 +724,8 @@ define([
             '</div>',
 
             icon: 'IocInsertAccountingSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc"],
+            boxType: 'accounting',
         },
 
         'InsertTextSyntax': {
@@ -709,7 +744,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-text-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertTextSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
 
@@ -729,7 +764,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-text-large-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertTextLargeSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertExampleSyntax': {
@@ -748,7 +783,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-example-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertExampleSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertNoteSyntax': {
@@ -761,7 +796,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-note-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertNoteSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertReferenceSyntax': {
@@ -774,7 +809,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-reference-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertReferenceSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertImportantSyntax': {
@@ -787,7 +822,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-important-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertImportantSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertQuoteSyntax': {
@@ -800,7 +835,7 @@ define([
             '<p class="editable-text">' + localization["ioc-insert-quote-sample"] + '</p>' +
             '</div></div>',
             icon: 'IocInsertQuoteSyntax',
-            category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'DojoSafePaste': {

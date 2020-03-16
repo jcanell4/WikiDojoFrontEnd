@@ -1,10 +1,14 @@
 define([
     "dojo/_base/declare",
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    "dojo/string"
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string) {
+    "dojo/string",
+
+
+], function (declare, AbstractParseableDojoPlugin, dojoActions, lang, _Plugin, string) {
+
 
     /*
      Al node generat per aquest plugin trobem dos tipus d'atributs propis:
@@ -46,8 +50,26 @@ define([
                 onClick: lang.hitch(this, "process")
             };
 
+            this.editor.on('changeCursor', this.updateCursorState.bind(this));
+
             this.addButton(config);
         },
+
+
+        updateCursorState: function (e) {
+            // console.log("state:", e.state);
+
+            // Si hi ha algun guió es que es troba a més d'un node de profunditat, en principi l'unic node que es pot
+            // trobar es 'p', en qualsevol cas no es pot afegir.
+            if (e.state.indexOf('-') > -1) {
+                // this.button.set('checked', false);
+                this.button.setDisabled(true);
+            } else {
+                // this.button.set('checked', true);
+                this.button.setDisabled(false);
+            }
+        },
+
 
         process: function () {
 
@@ -87,7 +109,6 @@ define([
 
         _callback: function (data) {
 
-
             var volatileId = false;
 
             if (data.id === undefined) {
@@ -105,6 +126,7 @@ define([
             var text = '';
 
             if (this.previousId) {
+
                 var $contents = jQuery(this.editor.iframe).contents();
 
                 text = $contents.find('[data-ioc-id="' + this.previousId + '"] .editable-text').html();
@@ -152,59 +174,24 @@ define([
             // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
             $node.find('.no-render').remove();
 
+            // console.log("Quin es el parent?", $node.parent());
+            // console.log("Quin es el node?", $node);
+            // $node.parent().css('border', '1px dotted dodgerblue;');
+            $node.css('border-width', '1px');
+            $node.css('border-style', 'dotted');
+            $node.css('border-color', 'dodgerblue');
+            // $node.css('padding', '5px');
+            //console.log("quin es el css?", jQuery($node.get(0)).css());
+
+
 
             var context = this;
 
             var $actions = jQuery('<div class="no-render action" >');
 
-            // var $edit = jQuery('<a contenteditable="false" style="float:right;">editar</a>');
-            // var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
-
-            // ALERTA: Desactivat el edit via parse (és pot editar el títol directament sobre el document).
-            // la edició permetria eliminar o afegir el títol, però requereix la informació del dialeg i aquesta
-            // no és accesible desde el parse.
-
-            var $edit = jQuery('<a contenteditable="false">editar</a>');
-            var $delete = jQuery('<a contenteditable="false">eliminar</a>');
-
-            // console.log("this.data?", this.data);
-
-            if (this.data.length > 0) {
-                $actions.append($edit);
-            }
-
-            $actions.append($delete);
-
             $node.append($actions);
 
-            $edit.on('click', function (e) {
-
-                var previousId = jQuery(this).parent().parent().attr('data-ioc-id');
-                // console.log(previousId);
-
-
-                e.preventDefault();
-
-                var json = $node.attr('data-ioc-block-json');
-
-                var data = null;
-
-                if (json) {
-                    json = json.split('&quot').join('"');
-                    data = JSON.parse(json);
-                } else {
-                    data = context.data;
-                }
-
-                context._showDialog(data, $node.attr('data-ioc-id'));
-            });
-
-            $delete.on('click', function (e) {
-                e.preventDefault();
-                $node.remove();
-                context.editor.forceChange();
-            });
-
+            dojoActions.deleteAction($node, context.editor);
 
         },
 

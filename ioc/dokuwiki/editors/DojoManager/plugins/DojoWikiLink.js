@@ -17,9 +17,9 @@ define([
             this.htmlTemplate = args.htmlTemplate;
             this.data = args.data;
             this.title = args.title;
-            this.target = args.target;
-            this.type = args.type;
-
+            //this.target = args.target;
+            this.targets = args.targets;
+            this.types = args.types;
 
             var config = {
                 label: args.title,
@@ -48,7 +48,28 @@ define([
 
             this.previousId = previousId;
 
-            data[0].options = this._getLinkIds(this.target);
+            data[0].options = [];
+
+            for (var i=0; i<this.targets.length; i++) {
+                data[0].options = data[0].options.concat(this._getLinkIds(this.targets[i]));
+            }
+
+            var selectedOption;
+            // Cerquem el index corresponent al node previous
+            if (node) {
+                for (i = 0; i < data[0].options.length; i++) {
+
+                    if ('#' + data[0].options[i] === jQuery(node).attr('href')) {
+                        selectedOption = data[0].options[i];
+                        break;
+                    }
+                }
+            }
+
+            if (selectedOption) {
+                data[0].value = selectedOption;
+            }
+
 
             var dialog = dialogManager.getDialog('form', this.editor.id, {
                 title: this.title,
@@ -92,21 +113,23 @@ define([
         parse: function () {
 
             // No modifiquem el pare perque no tinc clar a quines classes afecta
-
-            var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-link="' + this.type +'"]');
-            var context = this;
-
-
             var counter = 0;
 
-            $nodes.each(function () {
+            for (var i=0; i<this.types.length; i++) {
+                var type = this.types[i];
+                var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-link="' + type +'"]');
+                var context = this;
 
-                // Afegim els ids
-                var nodeId = 'link_' + context.type + '_' + counter++;
+                $nodes.each(function () {
 
-                jQuery(this).attr('data-ioc-id', nodeId);
-                context._addHandlers(jQuery(this)/*, context*/);
-            });
+                    // Afegim els ids
+                    var nodeId = 'link_' + type + '_' + counter++;
+
+                    jQuery(this).attr('data-ioc-id', nodeId);
+                    context._addHandlers(jQuery(this)/*, context*/);
+                });
+            }
+
         },
 
         _addHandlers: function ($node) {
@@ -118,6 +141,19 @@ define([
             $node.on('click', function (e) {
                // Desactivem el click al node
                e.preventDefault();
+            });
+
+            var context = this;
+
+            $node.on('dblclick', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                //context.editor.setCursorToNodePosition(this);
+
+                // TODO, obtenir el previousId;
+                context._showDialog(context.data, jQuery(this).attr('data-ioc-id'));
+                //this._showDialog(this.data, previousId);
             });
 
             this.inherited(arguments);

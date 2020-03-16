@@ -52,7 +52,7 @@ define([
         //		String used for templating the HTML to insert at the desired point.
         htmlTemplate: "<a href=\"${urlInput}\" _djrealurl=\"${urlInput}\"" +
         " target=\"${targetSelect}\"" +
-        ">${textInput}</a>",
+        ">${textInput}</a>&nbsp;",
 
         // tag: [protected] String
         //		Tag used for the link type.
@@ -433,53 +433,10 @@ define([
             }
         },
 
-        // ALERTA[Xavi]
-        // Afegit per corregir la icona del botó
-
-        // _initButton: function(){
-        //     this.inherited(arguments);
-        //
-        //     // Setup to lazy create TooltipDialog first time the button is clicked
-        //     this.button.loadDropDown = lang.hitch(this, "_loadDropDown");
-        //
-        //     this._connectTagEvents();
-        //
-        // },
-
         _initButton: function(){
             this.command = 'createLink';
 
             this.inherited(arguments);
-
-            // summary:
-            //		Initialize the button or other widget that will control this plugin.
-            //		This code only works for plugins controlling built-in commands in the editor.
-            // tags:
-            //		protected extension
-            // if(this.command.length){
-            //     var label = this.getLabel('createLink'),
-            //         editor = this.editor,
-            //         className = this.iconClassPrefix + " " + this.iconClassPrefix + 'CreateLink';
-            //     if(!this.button){
-            //         var props = lang.mixin({
-            //             label: label,
-            //             ownerDocument: editor.ownerDocument,
-            //             dir: editor.dir,
-            //             lang: editor.lang,
-            //             showLabel: false,
-            //             iconClass: className,
-            //             dropDown: this.dropDown,
-            //             tabIndex: "-1"
-            //         }, this.params || {});
-            //         this.button = new this.buttonClass(props);
-            //     }
-            // }
-
-            // if(this.get("disabled") && this.button){
-            //     this.button.set("disabled", this.get("disabled"));
-            // }
-
-
 
             // resta del codi original del _initButton
 

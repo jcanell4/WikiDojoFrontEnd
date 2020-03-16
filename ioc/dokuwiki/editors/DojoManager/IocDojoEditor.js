@@ -34,8 +34,8 @@ define([
     "dijit/_editor/range",
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
-    "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
-    // ioc/dokuwiki/editors/DojoManager/plugins/IocDojoTablePlugins"
+    // "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
+    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins"
 
 ], function (AbstractIocEditor, declare, Editor,
              registry,
@@ -45,7 +45,10 @@ define([
              array, Deferred, domAttr, domClass, domGeometry, domStyle,
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
-             _Plugin, /*EnterKeyHandling,*/ html, rangeapi, RichText, dijit, TablePlugins) {
+             _Plugin, /*EnterKeyHandling,*/ html, rangeapi, RichText, dijit,
+
+             TablePlugins
+) {
 
 
     return declare([Editor, AbstractIocEditor], {
@@ -67,16 +70,16 @@ define([
                     // 'bold'
                     this.getPlugin('HTMLItalic'),
                     this.getPlugin('HTMLUnderline'),
-                    // this.getPlugin('HTMLCode'), // Desactivat temporalment
+                    this.getPlugin('HTMLMonospace'),
+                    this.getPlugin('HTMLCode'),
                     // this.getPlugin('HTMLStrikethrough'), // No utilitzat a la wiki, no implementat als translators
-                    this.getPlugin('ClearFormat'),
-                    this.getPlugin('HTMLHeader0'),
+                    //this.getPlugin('ClearFormat'),
+                    // this.getPlugin('HTMLHeader0'), // Aquest ja no es necessari, ara les capçaleras són tipus toggle
                     this.getPlugin('HTMLHeader1'),
                     this.getPlugin('HTMLHeader2'),
                     this.getPlugin('HTMLHeader3'),
                     this.getPlugin('HTMLHeader4'),
-                    this.getPlugin('HTMLHeader5'),
-                    // this.getPlugin('HTMLHeader6'),
+                    this.getPlugin('HTMLHeader5')
                     // this.getPlugin('HTMLLink'),
                     // this.getPlugin('HTMLLinkExternal'),
 
@@ -93,7 +96,7 @@ define([
 
                     // plugins propis
                     'InsertInternalLinkSyntax',
-
+                    'DojoActionAddParagraph',
 
                     // plugins Dojo
                     // 'createLink',
@@ -101,6 +104,8 @@ define([
                     'unlink',
                     'insertOrderedList',
                     'insertUnorderedList',
+                    'indent',
+                    'outdent',
 
 
                     // plugins propis
@@ -126,8 +131,8 @@ define([
                     // 'tableContextMenu', // això no funciona bé, s'aplica tant si hi ha como si no hi ha taula
 
                     // plugin propi taules
-                    // 'MergeCells', // desactivat temporalment, no funciona correctament
-                    'TableDelete',
+                    'MergeCells', // desactivat temporalment, no funciona correctament
+                    // 'TableDelete', // desactivat, s'ha afegit un action a la caixa
                     'InsertSound',
 
 
@@ -147,12 +152,11 @@ define([
                     'InsertReferenceSyntax',
                     'InsertImportantSyntax',
                     'InsertQuoteSyntax',
-                    // 'InsertAccountingSyntax', // Desactivat tempralment, no s'ha comprovat
 
                     'IocComment',
                     'SaveButton',
                     'CancelButton',
-                    //'DocumentPreviewButton', // Desactivat, ara no funciona
+                    'DocumentPreviewButton', // Desactivat, ara no funciona
                     'ViewSource',
                     'DojoSafePaste'
 
@@ -165,41 +169,6 @@ define([
                 } else {
                     arguments[0].extraPlugins = plugins;
                 }
-
-                // console.log("arguments?", arguments[1].id);
-                // this.createToolbars(arguments[1].id);
-
-
-                /// TEST Nova toolbar
-                //     var $container = jQuery('#topBloc');
-                //     $container.append(jQuery('<span id="toolbarXXX"></span>'));
-                //
-                //
-                //
-                //     this.toolbars['A'] = new IocToolbar({}, "toolbarXXX");
-
-                // array.forEach(["Cut", "Copy", "Paste"], function(label){
-                //     console.log("inici");
-                //     var button = new Button({
-                //         // note: should always specify a label, for accessibility reasons.
-                //         // Just set showLabel=false if you don't want it to be displayed normally
-                //         label: label,
-                //         showLabel: false,
-                //         iconClass: "dijitEditorIcon dijitEditorIcon"+label
-                //     });
-                //
-                //     button.startup();
-                //
-                //     console.log("Afegit el botó", button);
-                //
-                //     toolbar.addChild(button);
-                //
-                //     console.log("Afegit a la barra");
-                // });
-                //
-                // this.new_toolbar.startup();
-
-                /// FI TEST Nova toolbar
 
 
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
@@ -241,15 +210,37 @@ define([
                 }
             },
 
+            getCurrentNodeState: function () {
+                var selection = this.getSelection();
+                var currentState = this.generateNodeState(selection.startNode);
+
+                return currentState;
+            },
+
             generateNodeState: function (node) {
+
+                // console.error("Node?", node);
+
+                if (!node ) {
+                    return 'state unknown'
+                }
+
 
                 var $node = jQuery(node);
 
+
+
                 // si el node te id ="dijitEditorBody" retorna ''
-                if ($node.attr('id') === 'dijitEditorBody') {
+                if ($node.attr('id') === 'dijitEditorBody' || $node.prop("tagName").toLowerCase() === 'body') {
                     return '';
                 } else {
                     var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
+
+                    if ($node.attr('class') === 'iocinfo') {
+                        state = state + "-iocinfo";
+                    }
+
+
                     var pre = this.generateNodeState($node.parent());
 
                     if (pre.length > 0) {
@@ -264,7 +255,22 @@ define([
             getSelection: function () {
                 // Normalment el node seleccionat serà de tipus text, en aquest cas s'enviarà el parent
 
-                var node = this.internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
+                var internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document;
+
+                var nodeSelected = internalDocument.getSelection().rangeCount>0;
+
+                if (!nodeSelected) {
+                    return {
+                        container: null,
+                        startNode: null,
+                        endNode: null,
+                        nodes: [],
+                        $node: jQuery('')
+                    }
+                }
+
+
+                var node = internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
 
                 var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
 
@@ -276,8 +282,8 @@ define([
 
 
                 // isCollapsed: true es que només inclou 1 node, false inclou més d'un node? <-- no serveix, es true quan hi han múltiples nodes en 1 sol block
-                var startNode = this.internalDocument.getSelection().getRangeAt(0).startContainer;
-                var endNode = this.internalDocument.getSelection().getRangeAt(0).endContainer;
+                var startNode = internalDocument.getSelection().getRangeAt(0).startContainer;
+                var endNode = internalDocument.getSelection().getRangeAt(0).endContainer;
 
                 startNode = startNode.nodeType === 3 ? startNode.parentElement : startNode;
                 endNode = endNode.nodeType === 3 ? endNode.parentElement : endNode;
@@ -320,7 +326,7 @@ define([
                     endNode: endNode,
                     nodes: nodes,
                     $node: $node
-                }
+                };
             },
 
             forceChange: function () {
@@ -343,6 +349,8 @@ define([
                     // ALERTA! Si això funciona afegir també un callback pel click aquí
                     // s'ha d'aprofitar per fer un update de la posició del cursor, actualitzar el tipus de bloc i fer un update dels plugins per canviar l'estat dels botons
 
+                    // console.log("Cridat el callback de ChangeDectector, llençan l'event 'changed'");
+
                     this.emit('change', {newValue: this.get('value')});
 
                 }.bind(this);
@@ -356,7 +364,6 @@ define([
                     this.emit('changeCursor', {state: currentState, $node: selection.$node, node: selection.node});
 
                 }.bind(this);
-
 
 
                 var context = this;
@@ -395,20 +402,31 @@ define([
             resetOriginalContentState: function () {
                 // console.log("IocDojoEditor#resetOriginalContentState");
                 this.originalContent = this.get('value');
+
             },
 
             getOriginalValue: function () {
                 return this.originalContent;
             },
 
-            isChanged: function () {
-                //console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
 
-                // if (this.get('value') !== this.originalContent) {
-                //     console.log("|" + this.get('value') + "|");
-                //     console.log("/////////////////////////////");
-                //     console.log("|" + this.originalContent + "|");
-                // }
+
+            isChanged: function () {
+                // console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
+
+                // console.error("Trace");
+
+                // TESTS: eliminicació manual de tags <-- Si es fa això desprès no funciona el cancel, perquè el que es guarda como a "ResetOriginalContentState" sí que conté els BR originals, ids, etc.
+                // var processedValue = this.get('value').trim();
+                //
+                // //processedValue = processedValue.replace(/ id=".*?"/gi, '');
+                // processedValue = processedValue.replace(/<br \/>/gi, '<br>');
+                // processedValue = processedValue.replace(/<tbody.*?>/gi, '');
+                // processedValue = processedValue.replace(/<\/tbody>/gi, '');
+
+                // console.log("value:", processedValue);
+                // console.log("original:", this.originalContent.trim());
+                // console.log("Són iguals?", this.get('value').trim() === this.originalContent.trim());
 
                 return this.get('value').trim() !== this.originalContent.trim();
             },
@@ -505,39 +523,13 @@ define([
                         if (!this.toolbars[plugin.category]) {
                             this.createToolbar(plugin.category);
                         }
-
-                        plugin.setToolbar(this.toolbars[plugin.category])
+                        plugin.setToolbar(this.toolbars[plugin.category]);
                     } else {
                         plugin.setToolbar(this.toolbar);
                     }
                 }
 
             },
-
-            // createToolbars: function (id) {
-            //     // Proves, divs amagas al document per afegir els botons desplegables.
-            //     var categories = ['A', 'B'];
-            //
-            //     console.log("this id?", id);
-            //     for (var i in categories) {
-            //         var $wrapper = jQuery('<div style="width:auto;height:auto;background-color:red;position:fixed;top:100px"></div>');
-            //         var $toolbar = jQuery('<div></div>');
-            //         $toolbar.attr('id', id + '_dropdown_toolbar_'+categories[i]);
-            //         // $toolbar.css('display', 'none');
-            //         jQuery($wrapper).append($toolbar);
-            //         jQuery('body').append($wrapper);
-            //         console.log("Afegit element:", id + '_dropdown_toolbar_'+categories[i]);
-            //         console.log("Trobat?", jQuery('#' + id + '_dropdown_toolbar_'+categories[i]))
-            //
-            //     }
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            // },
 
             createToolbar: function (category) {
                 // TODO: Crear el node on s'afegirà la toolbar
@@ -553,18 +545,6 @@ define([
                 $toolbar.attr('id', toolbarId);
                 // $toolbar.css('display', 'none');
                 jQuery('body').append($toolbar);
-
-                // var $container = jQuery('#topBloc');
-                // var $container = jQuery('#test-toolbar');
-                // $container.append(jQuery('<span id="'+toolbarId+'"></span>'));
-
-
-                // var toolbarContainer = registry.byId('test-toolbar');
-                // toolbarContainer.set('content', '<span id="'+toolbarId+'"></span>');
-
-                // alert("Això es visible?");
-
-                // var node = jQuery('<span id="'+toolbarId + '"</span>');
 
 
                 this.toolbars[category] = new IocToolbar({}, toolbarId);
@@ -643,7 +623,16 @@ define([
 
                 // Restaurem la funció
                 window.getSelection = backup;
+
+                this.forceUpdateCursor();
+            },
+
+            _stripTrailingEmptyNodes: function(node) {
+
+                // buit, això és el que fa que es perdin totes les etiquetes buides a l'editor en teoría, es conserva
+                // al HTML però no es mostren a l'editor
+                return node;
             }
         }
-    )
+    );
 });

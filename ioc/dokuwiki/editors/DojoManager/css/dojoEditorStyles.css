@@ -148,7 +148,7 @@ a {
 
 
 
-.action a {
+.action a, .action span {
     font-style: italic;
     float: right;
     margin-left: 5px;
@@ -156,10 +156,12 @@ a {
     font-size: 9px;
     border-bottom: 1px dotted dodgerblue;
     color: dodgerblue;
+    display: inline;
+    cursor: pointer;
 }
 
 a[data-ioc-link] .action a {
-    float: inherit;
+    float: none;
 }
 
 a[data-ioc-link] div.action {
@@ -444,7 +446,7 @@ div.dokuwiki #toc__inside ul {
 
 .ioctext p, .ioctextl p, .iocquote p, .iocexample p, .iocimportant p, .iocreference p, .iocnote p {
     margin-bottom: 0px !important;
-    width: 100% !important;
+    width: auto !important;
     float: none;
 }
 
@@ -488,3 +490,126 @@ div.iocContainer {
     color: #444444
 }
 
+pre {
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;
+}
+
+/*ol {*/
+    /*font-weight: bold;*/
+/*}*/
+
+/*ol ol li {*/
+    /*list-style-type: upper-roman;*/
+/*}*/
+
+/*ol ol ol li {*/
+    /*list-style-type: lower-alpha;*/
+/*}*/
+
+/*ol ol ol ol li {*/
+    /*list-style-type: lower-greek;*/
+/*}*/
+
+/*ol li, ol ol li, ol ol ol li, ol ol ol li {*/
+    /*font-weight: normal;*/
+/*}*/
+
+/*!* això posa el nombre de la llista en negreta *!*/
+/*ol {*/
+    /*margin:0 0 1.5em;*/
+    /*padding:0;*/
+    /*counter-reset:item;*/
+/*}*/
+
+/*ol>li {*/
+    /*margin:0;*/
+    /*padding:0 0 0 2em;*/
+    /*text-indent:-2em;*/
+    /*list-style-type:none;*/
+    /*counter-increment:item;*/
+/*}*/
+
+/*ol>li:before {*/
+    /*display:inline-block;*/
+    /*width:1.5em;*/
+    /*padding-right:0.5em;*/
+    /*font-weight:bold;*/
+    /*text-align:right;*/
+    /*content:counter(item) ".";*/
+/*}*/
+
+p {
+    min-height: 1px;
+}
+
+#dijitEditorBody {
+    word-wrap: break-word;
+}
+
+/*.iocaccounting {*/
+    /*!*background-color: rgba(46, 131, 255, 0.3);*!*/
+    /*background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='50px' width='110px'><text x='0' y='10' fill='lightsteelblue' font-size='14'>COMBTABILITAT</text></svg>") no-repeat;*/
+    /*background-position-x: right;*/
+
+/*}*/
+
+/* ICONS */
+.action span.actionIcon {
+    float: none;
+    display: inline-block;
+    position: relative;
+    bottom: -3px;
+    width: 16px;
+    height: 16px;
+    border: 0 !important;
+    background-size: cover;
+}
+
+.actionIcon.iocDeleteIcon {
+    background-image: url("./images/trash.png");
+}
+
+.actionIcon.iocAddParagraphIcon {
+    background-image: url("./images/addParagraph1.png");
+}
+
+
+pre code {
+    background-color: #f9f9f9;
+    padding: 0.5em;
+    border: 1px dashed #8cacbb;
+    display: block;
+}
+
+pre code div.no-render.action {
+    border-bottom: 1px dashed #8cacbb;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+pre code label {
+    font-weight: bold;
+    padding-left:15px;
+}
+
+.ioctable .no-render.action, .iocaccounting .no-render.action {
+    border-top: 1px dashed #8cacbb;
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.ioctable .no-render.action label, .iocaccounting .no-render.action label{
+   font-weight: bold;
+}
+
+
+.ioctable .no-render.action select, .iocaccounting .no-render.action select,
+.ioctable .no-render.action input, .iocaccounting .no-render.action input
+{
+    margin-left: 5px;
+    margin-right:10px;
+}

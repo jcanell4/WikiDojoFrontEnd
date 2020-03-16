@@ -9,7 +9,8 @@ define(
         'enable-wrapper' : 'Activar/Desactivar embolcall',
 
         // Categories
-        'category-ioc': 'IOC',
+        'category-ioc': 'Elements',
+        'category-ioc-style': 'Estils',
         'category-header': 'Capçalera',
         'category-WikiTable': 'Taules',
 
@@ -27,7 +28,7 @@ define(
         'ioc-comment-cancel-button': 'Cancel·lar',
 
         // IOC Sound Plugin
-        'ioc-sound-button': 'Afegir format de so',
+        'ioc-sound-button': 'Afegir so',
         'ioc-sound-sample': 'identificador del so:clau',
 
 
@@ -36,44 +37,44 @@ define(
 
         // Botons Estils IOC
         'ioc-new-content-button': 'Nou contingut',
-        'ioc-new-content-sample': 'Incloure la sintaxis de contingut nou',
+        'ioc-new-content-sample': 'Incloure contingut nou',
 
-        'ioc-insert-figure-button': 'Sintaxis de figura',
+        'ioc-insert-figure-button': 'Afegir figura',
         'ioc-insert-figure-sample': 'Incloure la figura',
 
-        'ioc-insert-figure-link-button': 'Sintaxis d\'enllaç a figura',
-        'ioc-insert-figure-link-sample': 'Incloure la sintaxis d\'enllaç a figura',
+        'ioc-insert-figure-link-button': 'Enllaç a figura',
+        'ioc-insert-figure-link-sample': 'Incloure enllaç a figura',
 
-        'ioc-insert-table-button': 'Sintaxi de taula',
-        'ioc-insert-table-sample': 'Incloure la sintaxis de taula',
+        'ioc-insert-table-button': 'Taula',
+        'ioc-insert-table-sample': 'Incloure taula',
 
-        'ioc-insert-table-link-button': 'Sintaxi d\'enllaç a taula',
-        'ioc-insert-table-link-sample': 'Incloure la sintaxis d\'enllaç a taula',
+        'ioc-insert-table-link-button': 'Enllaç a taula',
+        'ioc-insert-table-link-sample': 'Incloure enllaç a taula',
 
-        'ioc-insert-text-button': 'Sintaxi de text complementari',
-        'ioc-insert-text-sample': 'Incloure la sintaxis de text complementari',
+        'ioc-insert-text-button': 'Text complementari',
+        'ioc-insert-text-sample': 'Incloure text complementari',
 
-        'ioc-insert-text-large-button': 'Sintaxi de text complementari llarg',
-        'ioc-insert-text-large-sample': 'Incloure la sintaxis de text complementari llarg',
+        'ioc-insert-text-large-button': 'Text complementari llarg',
+        'ioc-insert-text-large-sample': 'Incloure text complementari llarg',
 
-        'ioc-insert-example-button': 'Sintaxi d\'exemple',
-        'ioc-insert-example-sample': 'Incloure la sintaxis d\'exemple',
+        'ioc-insert-example-button': 'Exemple',
+        'ioc-insert-example-sample': 'Incloure exemple',
 
-        'ioc-insert-note-button': 'Sintaxi de nota',
-        'ioc-insert-note-sample': 'Incloure la sintaxis de nota',
+        'ioc-insert-note-button': 'Nota',
+        'ioc-insert-note-sample': 'Incloure nota',
 
-        'ioc-insert-reference-button': 'Sintaxi de referència',
-        'ioc-insert-reference-sample': 'Incloure la sintaxis de referència',
+        'ioc-insert-reference-button': 'Referència',
+        'ioc-insert-reference-sample': 'Incloure referència',
 
-        'ioc-insert-important-button': 'Sintaxi de important',
-        'ioc-insert-important-sample': 'Incloure la sintaxis de important',
+        'ioc-insert-important-button': 'Important',
+        'ioc-insert-important-sample': 'Incloure text important',
 
-        'ioc-insert-quote-button': 'Sintaxi de quote',
-        'ioc-insert-quote-sample': 'Incloure la sintaxis de quote',
+        'ioc-insert-quote-button': 'Citació',
+        'ioc-insert-quote-sample': 'Incloure citació',
 
 
-        'ioc-insert-accounting-button': 'Sintaxi d\'assentament contable',
-        'ioc-insert-accounting-sample': 'Incloure la sintaxis d\'un assentament contable',
+        // 'ioc-insert-accounting-button': 'Sintaxi d\'assentament contable',
+        // 'ioc-insert-accounting-sample': 'Incloure la sintaxis d\'un assentament contable',
 
 
         // Basic toolbar butons
@@ -84,8 +85,10 @@ define(
         'ioc-insert-italic-sample' : 'Cursiva',
         'ioc-insert-underline-button' : 'Subratllat',
         'ioc-insert-underline-sample' : 'Subratllat',
-        'ioc-insert-code-button' : 'Codi',
-        'ioc-insert-code-sample' : 'Codi',
+        'ioc-insert-monospace-button' : 'Monoespai',
+        'ioc-insert-monospace-sample' : 'Monoespai',
+        'ioc-insert-code-button' : 'Bloc de Codi',
+        'ioc-insert-code-sample' : 'Bloc de Codi',
         'ioc-insert-strikethrough-button' : 'Text barrat',
         'ioc-insert-strikethrough-sample' : 'Text barrat',
         'ioc-insert-link-button' : 'Enllaç intern',
@@ -116,12 +119,14 @@ define(
         'ioc-table-editor-accounting':  'Editor de taules accounting',
 
         'table-insert': 'Insertar taula',
-        'table-toggle-header' : 'Alternar capçalera',
-        'table-align-right' : 'Aliniar cel·la dreta',
-        'table-align-left' : 'Aliniar cel·la esquerra',
-        'table-align-center' : 'Aliniar cel·la centre',
+        'table-toggle-header' : 'Alternar entre cel·la i capçalera',
+        'table-align-right' : 'Aliniar cel·la a la dreta',
+        'table-align-left' : 'Aliniar cel·la a la esquerra',
+        'table-align-center' : 'Aliniar cel·la al centre',
         'merge-cells': 'Fusionar cel·les',
         'table-delete': 'Eliminar taula',
+
+        'delete': 'Eliminar',
 
         'ioc-insert-sound-button': 'Insertar so',
         // 'ioc-insert-sound-sample': 'identificador_so',
@@ -153,7 +158,10 @@ define(
         'ioc-insert-figure-link-prompt': 'Afegeix un enllaç a una figura.',
         'ioc-insert-table-link-prompt': 'Afegeix un enllaç a una taula.',
 
-        'clear-format' : 'Elimina el format'
+        'clear-format' : 'Elimina el format',
+
+        'ioc-action-add-paragraph' : 'Afegeix paràgraf buit',
+        'ioc-action-add-paragraph-placeholder' : '',
     })
 );
 

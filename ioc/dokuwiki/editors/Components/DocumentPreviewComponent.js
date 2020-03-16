@@ -8,7 +8,7 @@ define([
     return declare(RequestComponent, {
 
 
-        send: function () {
+        send: function (extraData) {
 
             cookie("IOCForceScriptLoad", 1);
 
@@ -17,6 +17,10 @@ define([
                     call: "preview",
                     wikitext: this._getCurrentContent()
                 };
+
+            if (extraData) {
+                dataToSend = this._addExtraDataToObject(dataToSend, extraData);
+            }
 
             this.inherited(arguments, [urlBase, dataToSend]);
         },
@@ -34,9 +38,16 @@ define([
             var id = dispatcher.getGlobalState().getCurrentId(),
                 contentTool = dispatcher.getContentCache(id).getMainContentTool();
 
-            return contentTool.requester.get("defaultUrlBase")
+            return contentTool.requester.get("defaultUrlBase");
         },
 
 
+        _addExtraDataToObject: function(object, data) {
+            for (var attrname in data) {
+                object[attrname] = data[attrname];
+            }
+
+            return object;
+        }
     });
 });

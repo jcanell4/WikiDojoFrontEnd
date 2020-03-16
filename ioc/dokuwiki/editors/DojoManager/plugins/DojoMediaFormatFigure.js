@@ -4,8 +4,10 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    "dojo/string"
-], function (declare, AbstractParseableDojoPlugin, DojoMediaFormat, lang, _Plugin, string) {
+    "dojo/string",
+    'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
+], function (declare, AbstractParseableDojoPlugin, DojoMediaFormat, lang, _Plugin, string, localization, dojoActions) {
 
     /*
      Al node generat per aquest plugin trobem dos tipus d'atributs propis:
@@ -193,32 +195,31 @@ define([
 
         _addHandlers: function ($node) {
 
-            // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
-            $node.find('.no-render').remove();
+            // ALERTA! Aquest és el problema, s'elimina el contenidor .no-render i per això es perd el action del paràgraph
+            // Això es fa també a un altre parell de plugins (com a mínim a bloc)
 
+            //$node.find('.no-render').remove();
 
             var context = this;
 
-            var $actions = jQuery('<div class="no-render action" >');
-
-            // var $edit = jQuery('<a contenteditable="false" style="float:right;">editar</a>');
-            // var $delete = jQuery('<a contenteditable="false" style="float:right;">eliminar</a>');
-
-            // var $edit = jQuery('<a contenteditable="false">editar</a>');
-            var $delete = jQuery('<a contenteditable="false">eliminar</a>');
-
-            // if (this.data.length > 0) {
-            //     $actions.append($edit);
+            // var $container = $node.find('.action');
+            //
+            // if ($container.length === 0) {
+            //     $container = jQuery('<div class="no-render action" >');
+            //     $node.append($container);
             // }
 
-            $actions.append($delete);
+            // var $delete = $container.find('.delete');
+            //
+            // if ($delete.length === 0) {
+            //     $delete = jQuery('<a contenteditable="false" class="delete">eliminar</a>');
+            //     $container.prepend($delete);
+            // }
 
-            $node.append($actions);
 
-            // var context = this;
+            $node.find('img').off('dblclick');
 
-            // TODO: molt similar al Dialog Builder
-            $node.find('img').on('click', function (e) {
+            $node.find('img').on('dblclick', function (e) {
 
 
                 var edid = 'textarea_' + context.id + '_media';
@@ -239,6 +240,8 @@ define([
                 // no es dispara cap event
 
                 var $img = jQuery(this);
+
+                $img.attr('contenteditable', false);
 
 
                 timer = setInterval(function () {
@@ -272,36 +275,19 @@ define([
                     edid
                 );
 
-
             });
-
-
-            // $edit.on('click', function (e) {
             //
-            //     var previousId = jQuery(this).parent().parent().attr('data-ioc-id');
+            // $delete.off('click');
             //
+            // $delete.on('click', function (e) {
             //     e.preventDefault();
+            //     $node.remove();
+            //     context.editor.forceChange();
             //
-            //     var json = $node.attr('data-ioc-block-json');
-            //
-            //     var data = null;
-            //
-            //     if (json) {
-            //         json = json.split('&quot').join('"');
-            //         data = JSON.parse(json);
-            //     } else {
-            //         data = context.data;
-            //     }
-            //
-            //     context._showDialog(data, $node.attr('data-ioc-id'));
             // });
 
-            $delete.on('click', function (e) {
-                e.preventDefault();
-                $node.remove();
-                context.editor.forceChange();
-            });
-
+            dojoActions.deleteAction($node, context.editor);
+            dojoActions.addParagraphAction($node, context.editor);
 
         },
 

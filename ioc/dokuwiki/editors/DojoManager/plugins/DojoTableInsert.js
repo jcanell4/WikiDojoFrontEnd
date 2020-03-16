@@ -1,8 +1,10 @@
 define([
     "dojo/_base/declare",
-    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
+    "ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin",
     "dijit/_editor/_Plugin",
-    "dojox/editor/plugins/TablePlugins",
+    // "dojox/editor/plugins/CustomTablePlugins",
+    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins",
     "dijit/Dialog",
     "dojo/_base/lang",
     "dijit/_WidgetBase",
@@ -10,13 +12,80 @@ define([
     "dijit/_WidgetsInTemplateMixin",
     "dojo/text!./templates/insertTable.html",
     "dojo/i18n!./nls/TableDialog",
+    'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
 
 ], function (declare, AbstractDojoPlugin, _Plugin, TablePlugins, Dialog,
              lang, _WidgetBase,
              _TemplatedMixin, _WidgetsInTemplateMixin,
              insertTableTemplate,
-             tableDialogStrings
+             tableDialogStrings,
+             localization,
+             dojoActions
 ) {
+
+
+    // Alerta, com que no es té accéss al plugin desde la crida del insertTable, hem de fer servir una funció privada que es accesible per totes les classes aquí declarada per afegir les accions.
+    var addActions = function ($node) {
+        var $aux = dojoActions.getActionContainer($node);
+
+        var $labelLang = jQuery('<label>Estil:</label>');
+        var $input = jQuery('<input type="text" />');
+
+
+        $labelLang.append($input);
+
+
+        $input.on('input change', function (e) {
+
+            var $this = jQuery(this);
+            var old = $node.attr('data-dw-type');
+            $node.removeClass(old);
+
+            var value = $this.val();
+            console.log("input change detected: old/new", old);
+            value.replace(/ /g, '-');
+
+
+            $node.attr('data-dw-type', $this.val());
+            $node.addClass($this.val());
+        });
+
+
+        var $select = jQuery('<select></select>');
+        var $option1 = jQuery('<option value="table">Taula</option>');
+        var $option2 = jQuery('<option value="accounting">Comptabilitat</option>');
+
+        var $labelType = jQuery('<label>Tipus:</label>');
+        $labelType.append($select);
+
+        $select.append($option1);
+        $select.append($option2);
+
+
+        $aux.prepend($labelLang);
+        $aux.prepend($labelType);
+
+
+        $select.on('input change', function (e) {
+            $node.attr('data-dw-box', $select.val());
+        });
+
+        // Inicialitzem els valors amb els continguts anteriors
+        $input.val($node.attr('data-dw-type'));
+        $select.val($node.attr('data-dw-box'));
+        $select.trigger('change');
+
+
+        dojoActions.addParagraphAction($node);
+        dojoActions.deleteAction($node);
+
+        // Eliminem el listener per editar els enllaços del info (que no han de tractar-se com enllaços)
+        $node.find('[data-dw-link]').on('dblclick', function (e) {
+            e.preventDefault();
+            return false;
+        })
+    };
 
 
     var EditorTableDialog = declare("dojox.editor.plugins.EditorTableDialog", [Dialog, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -32,7 +101,7 @@ define([
         inputType: '',
         inputFooter: '',
         inputTableId: '',
-
+        boxType: '',
 
         postMixInProperties: function () {
             dojo.mixin(this, tableDialogStrings);
@@ -51,11 +120,13 @@ define([
                 _id = "tbl_" + (new Date().getTime()),
 
 
-                // TODO: això és el que es troba al template? el template no es fa servir?
+                // El template conté la informació a mostrar pel dialog, aquesta es la que s'insereix al document
 
-                pre = '<div data-dw-box="table" id="box_' + _id + '" class="ioctable ' + this.inputType.get("value")
+                pre = '<div data-dw-box="' + this.boxType.get("value") + '" id="box_' + _id + '" class="ioctable'
+                    + ' ' + this.inputType.get("value")
+                    + ' ioc' + this.boxType.get("value")
                     + '" data-dw-type="' + this.inputType.get("value") + "\">\n",
-                info = '<div class="iocinfo"><a id="' + this.inputTableId.get("value")+ '" data-dw-link="table"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br></a>'
+                info = '<div class="iocinfo"><a id="' + this.inputTableId.get("value") + '" data-dw-link="table"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br></a>'
                     + '<b contenteditable="false" data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
                     + '<b contenteditable="false" data-dw-field="footer">Peu:</b> ' + this.inputFooter.get("value") + '<br>'
                     + '</div>',
@@ -95,15 +166,19 @@ define([
 
             if ($prev.length === 0 || !$prev.is('p')) {
                 // Afegim un salt de línia com a separador
-                console.log("inserint paràgraf anterior");
                 $node.before(jQuery('<p>&nbsp;</p>'));
             }
 
-            if ($next.length === 0 || !$next().is('p')) {
+            if ($next.length === 0 || !$next.is('p')) {
                 // Afegim un salt de línia com a separador
-                console.log("inserint paràgraf posterior");
                 $node.after(jQuery('<p>&nbsp;</p>'));
             }
+
+
+            addActions($node);
+
+
+
 
         },
 
@@ -120,21 +195,25 @@ define([
             });
         },
 
-        // onBuildTable: function (tableText) {
-        //     //stub
-        //     // console.log("tableText:", tableText);
-        // }
+        onBuildTable: function (tableText) {
+            //stub
+            // console.log("tableText:", tableText);
+
+        }
     });
 
     var InsertTable = declare("dojox.editor.plugins.InsertTable", [TablePlugins, AbstractDojoPlugin], {
         alwaysAvailable: true,
 
         modTable: function () {
-            var w = new EditorTableDialog({plugin: this});
+            var w = new EditorTableDialog({plugin: this, editor: this.editor, boxType: this.boxType});
             w.show();
 
             var c = dojo.connect(w, "onBuildTable", this, function (obj) {
                 dojo.disconnect(c);
+
+
+                // console.log("insertant taula", obj.htmlText);
 
                 this.editor.focus();
                 this.editor.execCommand('inserthtml', obj.htmlText);
@@ -154,7 +233,8 @@ define([
                 showLabel: false,
                 iconClass: this.iconClassPrefix + " " + this.iconClassPrefix + args.icon,
                 tabIndex: "-1",
-                onClick: lang.hitch(this, "process")
+                onClick: lang.hitch(this, "process"),
+
             };
 
             this.footer = args.footer;
@@ -173,10 +253,11 @@ define([
             // console.log(e);
 
             if (e.$node) {
-                if (e.$node.closest('table, [data-dw-box]').length > 0) {
-                    this.button.set('disabled', true);
+//                if (e.$node.closest('table, [data-dw-box]').length > 0) {
+                if (e.state.indexOf('-') > -1) {
+                    this.button.setDisabled(true);
                 } else {
-                    this.button.set('disabled', false);
+                    this.button.setDisabled(false);
                 }
 
             }
@@ -187,6 +268,23 @@ define([
             this.modTable();
         },
 
+        parse: function () {
+            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-box="accounting"], [data-dw-box="table"]');
+            var context = this;
+
+            $nodes.each(function () {
+                context._addHandlers(jQuery(this)/*, context*/);
+            });
+
+        },
+
+        _addHandlers: function ($node) {
+            // console.log("Quin es el node que rebem?", $node);
+
+            addActions($node);
+
+
+        }
     });
 
 

@@ -58,9 +58,14 @@ define([
             var id = jQuery(html).attr('data-ioc-id');
 
 
+
+
             this.editor.execCommand('inserthtml', html);
 
             var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
+            $node.attr('contenteditable', false);
+            $node.find('.title').attr('contenteditable', true);
+
 
             this._addHandlers($node);
 
@@ -73,7 +78,7 @@ define([
         parse: function () {
 
             // var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-block-' + this.normalize(this.title) + ']');
-            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-lateral="image"]');
+                var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-lateral="image"]');
 
 
             // console.log("Query cercat:", '[data-ioc-block-' + this.normalize(this.title) + ']');
