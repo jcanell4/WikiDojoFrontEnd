@@ -46,99 +46,75 @@ define([
         },
 
         process: function () {
+
             var selectedCells = this.getSelectedCells();
-            // jQuery(this.getSelectedCells()[0]).attr('colspan', 2);
+
+            // console.log("Cel·las seleccionades:", selectedCells);
+
+            var $parent;
+
+            var cols = 0;
+            var rows = 1;
+
+            var mergeDetected = false;
+
+            // 1: Primer cálculem el nombre de files i col·lumnes i comprovem que no contingui cap altre cel·la fusionada
+
+            for (var i = 0; i < selectedCells.length; i++) {
+                var $cell = jQuery(selectedCells[i]);
+
+                if (!$parent) {
+                    // és la primera cel·la
+                    $parent = $cell.parent();
+                }
+
+                // 2. per les següents comprovem si el parent és el TRParent o no
+                if (jQuery.contains($parent.get(0), $cell.get(0))) {
+                    //      2.1 si ho és, es la mateixa fila, Cols++
+                    cols++;
+                } else {
+                    //      2.2 si no ho és, es una nova fila, Rows++;
+                    $parent = $cell.parent();
+                    cols = 1;
+                    rows++;
+                }
+
+                if ($cell.attr('data-ioc-merged')) {
+                    mergeDetected = true;
+                    break;
+                }
+            }
+
+
+            if (mergeDetected) {
+                console.log("Merge detectat, no es pot fusionar");
+                alert("No es poden fusionar cel·las que ja han estat fusionades");
+
+                return;
+            }
 
             var $firstCell = jQuery(selectedCells[0]);
-            // var $previousRow = $firstCell.parent()[0];
-            // console.log("selectedCells", selectedCells);
-
-            var cols = $firstCell.attr('colspan') ? $firstCell.attr('colspan') : 1;
-            var rows = 1;
-            var maxCols = cols;
-            var maxRows = $firstCell.attr('rowspan') ? $firstCell.attr('rowspan') : 1;
-
-
-            // El recorregut de les cel·les seleccionades es fa d'esquerra a dreta i d'adalt cap avall
-
-            // PROVES amb taula 4x4
-            // 4X4: selecció merge col0+col1        OK
-            // 4X4: selecció merge col1+col2        OK
-            // 4X4: selecció merge col2+col3        OK
-            // 4X4: selecció merge row0             FAIL: colspan 1
-            // 4X4: selecció merge row1             FAIL: colspan 1
-            // 4X4: selecció merge row4             FAIL: colspan 1
-            // 4X4: selecció merge row1+row2        OK
-            // 4X4: selecció merge row0+row1        OK
-            // 4X4: selecció merge row2+row3        OK
-            // 4X4: selecció merge row0+row1 (sense primera columna)        OK
-            // 4X4: selecció merge row1+row2 (sense primera columna)        OK
-            // 4X4: selecció merge row2+row3 (sense primera columna)        OK
-            // 4X4: selecció merge row0+row1 (sense ultima columna)        OK
-            // 4X4: selecció merge row1+row2 (sense ultima columna)        OK
-            // 4X4: selecció merge row2+row3 (sense ultima columna)        OK
-            // 4X4: selecció merge row (col0+col1)  Fail: colspan 1
-            // 4X4: selecció merge row (col1+col2)  Fail: colspan 1
-            // 4X4: selecció merge row (col2+col3)  Fail: colspan 1
-
-            // si només hi ha una fila: fail
-
-
-
 
             var previousRows = [];
             previousRows.push($firstCell.parent()[0]);
 
-            // Comença al 1 perquè s'afegeix al previousRows automàticament
-
+            // 2: Eliminem totes les cel·les excepte la primera (esquina superior esquerra)
             for (var i = 1; i < selectedCells.length; i++) {
+
                 var $selectedCell = jQuery(selectedCells[i]);
 
-                if (previousRows.indexOf($selectedCell.parent()[0]) > -1) {
-
-                    if ($selectedCell.attr('colspan')) {
-                        cols += $selectedCell.attr('colspan');
-                    } else {
-                        cols++;
-                    }
-
-
-                    // console.log("cols",cols);
-                } else {
-                    // ALERTA[Xavi] si es fa un merge amb una cel·la amb rowspawn el càlcul no serà correcte
-                    // - calcular un valor auxiliar com a maxrows
-
-
-                    if ($selectedCell.attr('rowspan')) {
-                        maxRows = Math.max(rows + $selectedCell.attr('rowspan'), maxRows);
-                    }
-
-                    rows++;
-                    previousRows.push($selectedCell.parent()[0]);
-
-
-
-                    // cols = 1;
-                    // console.log("rows:", rows);
-
-                }
-
-                if (cols > maxCols) {
-                    maxCols = cols;
-                }
-
-                maxRows = Math.max(rows, maxRows);
-
-
+                // console.log("Eliminada ce·la", $selectedCell);
                 $selectedCell.remove();
             }
 
-            // console.log("Colspan, rowspawn:", maxCols, maxRows);
-
-            $firstCell.attr('colspan', maxCols);
-            $firstCell.attr('rowspan', maxRows);
+            // 3: Afegim el colspanw, rowspan i data-ioc-merged a la cel·la restant
+            $firstCell.prop('colspan', cols);
+            $firstCell.prop('rowspan', rows);
             $firstCell.attr('data-ioc-merged', true);
 
+            // console.log(cols, rows);
+
+            this.editor.forceChange();
 
             this.makeColumnsEven();
         }
@@ -213,20 +189,21 @@ define([
 
                     var merged = false;
 
-                    for (var i=o.trIndex; i>=0; i--) {
+                    for (var i = o.trIndex; i >= 0; i--) {
 
-                        for (var j=0; j<o.trs[i].cells.length; j++){
+                        for (var j = 0; j < o.trs[i].cells.length; j++) {
                             var td = o.trs[i].cells[j];
 
 
-                            var rowspan = Number(jQuery(td).attr('rowspan'));
+                            var rowspan = Number(jQuery(td).prop('rowspan'));
 
                             if (rowspan) {
-                                if ( o.trIndex>=i && o.trIndex <=i+rowspan-1) {
+                                if (o.trIndex >= i && o.trIndex <= i + rowspan - 1) {
                                     merged = true;
                                 }
                             }
-                        };
+                        }
+                        ;
                     }
 
 
