@@ -194,7 +194,7 @@ define([
 
             // @private
             _parsePlugins: function () {
-                // console.log("IocDojoEditor#_parsePlugins", this._pluginsToParse[i]);
+                // console.error("IocDojoEditor#_parsePlugins", this._pluginsToParse);
 
                 for (var i = 0; i < this._pluginsToParse.length; i++) {
                     this._pluginsToParse[i].parse();
@@ -272,6 +272,7 @@ define([
 
                 var node = internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
 
+                console.log("Node selecccionat:", node);
                 var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
 
 

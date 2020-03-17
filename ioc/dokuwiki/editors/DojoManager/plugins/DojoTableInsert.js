@@ -29,6 +29,8 @@ define([
     var addActions = function ($node, editor) {
         var $aux = dojoActions.getActionContainer($node);
 
+        $aux.empty();
+
         var $labelLang = jQuery('<label>Estil:</label>');
         var $input = jQuery('<input type="text" />');
 
@@ -79,7 +81,7 @@ define([
 
         dojoActions.addParagraphAfterAction($node, editor);
         dojoActions.addParagraphBeforeAction($node, editor);
-        dojoActions.deleteAction($node);
+        dojoActions.deleteAction($node, editor);
 
         // Eliminem el listener per editar els enllaços del info (que no han de tractar-se com enllaços)
         $node.find('[data-dw-link]').on('dblclick', function (e) {

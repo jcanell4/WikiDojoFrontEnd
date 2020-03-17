@@ -4,8 +4,9 @@ define([
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
     "dojo/string",
-    "dijit/form/ToggleButton"
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button) {
+    "dijit/form/ToggleButton",
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
+], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, dojoActions) {
 
     var FormatButton = declare(AbstractParseableDojoPlugin, {
 
@@ -66,7 +67,7 @@ define([
 
             if (this.empty) {
 
-                var html = this.sample;
+                var html = this.sample + "\n";
                 for (var i = this.tags.length - 1; i >= 0; i--) {
                     html = '<' + this.tags[i] + '>' + html + '</' + this.tags[i] + '>';
                 }
@@ -143,14 +144,20 @@ define([
         addActionButtons: function ($node) {
 
 
-            var $container = jQuery('<div class="no-render action" contenteditable="false"></div>');
-
             var $code = $node.find('code');
 
-            if ($code.length <0) {
+            if ($code.length < 0) {
                 $code.append(jQuery('<br />'));
             }
 
+            var $container = $node.find('.no-render.action');
+
+            if ($container.length !== 0) {
+                // Ja s'han afegit, no cal fer res <-- ho eliminem per si s'ha enganxat i no conté els handlers
+                $container.remove();
+            }
+
+            $container = jQuery('<div class="no-render action" contenteditable="false"></div>');
             $code.prepend($container);
 
 
@@ -197,6 +204,11 @@ define([
             $input.val($code.attr('data-dw-lang'));
             $select.val($code.attr('data-dw-file') ? 'file' : 'code');
             $select.trigger('change');
+
+
+            dojoActions.addParagraphAfterAction($node, this.editor);
+            dojoActions.addParagraphBeforeAction($node, this.editor);
+            dojoActions.deleteAction($node, this.editor);
 
         },
 

@@ -98,6 +98,7 @@ define([
             var $aux = $container.find('.delete');
 
 
+
             if ($aux.length === 0) {
                 //$aux = jQuery('<span class="delete">' + localization["delete"] + '</span>');
                 $aux = jQuery('<span class="iocDeleteIcon actionIcon" title="'+localization["delete"]+'"></span>');
@@ -109,6 +110,15 @@ define([
 
             $aux.on('click', function (e) {
                 e.preventDefault();
+
+
+                // TODO: aclarar quin és l'element a eliminar
+                console.log(jQuery(getBoxNode($node)));
+
+                if (!confirm("Eliminar?")) {
+                    return;
+                }
+
                 getBoxNode($node).remove();
                 editor.forceChange();
             });
