@@ -191,6 +191,8 @@ define([
 
             $node.append($actions);
 
+            dojoActions.addParagraphAfterAction($node, context.editor);
+            dojoActions.addParagraphBeforeAction($node, context.editor);
             dojoActions.deleteAction($node, context.editor);
 
         },

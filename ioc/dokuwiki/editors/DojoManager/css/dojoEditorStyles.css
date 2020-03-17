@@ -140,6 +140,8 @@ p.editable-text:last-child {
 
 div.action {
     clear: both;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 a {

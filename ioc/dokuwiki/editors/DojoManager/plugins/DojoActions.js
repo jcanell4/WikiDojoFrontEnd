@@ -121,9 +121,9 @@ define([
 
         addParagraphBeforeAction: addParagraphBeforeAction,
 
-
         deleteAction: deleteAction,
 
         getActionContainer: getAndAddActionContainer
+
     };
 });
