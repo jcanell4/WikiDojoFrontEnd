@@ -574,7 +574,12 @@ p {
 }
 
 .actionIcon.iocAddParagraphIcon {
-    background-image: url("./images/addParagraph1.png");
+    background-image: url("./images/addParagraph2.png");
+}
+
+
+.actionIcon.iocAddParagraphBeforeIcon {
+    background-image: url("./images/addParagraphBefore2.png");
 }
 
 

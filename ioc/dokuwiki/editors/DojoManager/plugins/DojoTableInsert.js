@@ -26,7 +26,7 @@ define([
 
 
     // Alerta, com que no es té accéss al plugin desde la crida del insertTable, hem de fer servir una funció privada que es accesible per totes les classes aquí declarada per afegir les accions.
-    var addActions = function ($node) {
+    var addActions = function ($node, editor) {
         var $aux = dojoActions.getActionContainer($node);
 
         var $labelLang = jQuery('<label>Estil:</label>');
@@ -77,7 +77,8 @@ define([
         $select.trigger('change');
 
 
-        dojoActions.addParagraphAction($node);
+        dojoActions.addParagraphAfterAction($node, editor);
+        dojoActions.addParagraphBeforeAction($node, editor);
         dojoActions.deleteAction($node);
 
         // Eliminem el listener per editar els enllaços del info (que no han de tractar-se com enllaços)
@@ -175,7 +176,7 @@ define([
             }
 
 
-            addActions($node);
+            addActions($node, this.plugin.editor);
 
 
 

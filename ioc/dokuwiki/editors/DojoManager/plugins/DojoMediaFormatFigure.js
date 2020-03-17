@@ -287,7 +287,8 @@ define([
             // });
 
             dojoActions.deleteAction($node, context.editor);
-            dojoActions.addParagraphAction($node, context.editor);
+            dojoActions.addParagraphAfterAction($node, context.editor);
+            dojoActions.addParagraphBeforeAction($node, context.editor);
 
         },
 

@@ -37,7 +37,8 @@ define([
 
                 var $node = jQuery(this);
 
-                dojoActions.addParagraphAction($node, context.editor)
+                dojoActions.addParagraphAfterAction($node, context.editor);
+                dojoActions.addParagraphBeforeAction($node, context.editor);
 
             });
 

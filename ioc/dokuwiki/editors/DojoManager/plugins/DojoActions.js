@@ -44,15 +44,15 @@ define([
             return $candidateNode;
         },
 
-        addParagraphAction = function ($node, editor) {
+        addParagraphAfterAction = function ($node, editor) {
 
             var $container = getAndAddActionContainer($node);
 
-            var $aux = $container.find('.add-paragraph');
+            var $aux = $container.find('.add-paragraph-after');
 
             if ($aux.length === 0) {
                 // $aux = jQuery('<span class="add-paragraph">' + localization["ioc-action-add-paragraph"] + '</span>');
-                $aux = jQuery('<span class="iocAddParagraphIcon actionIcon add-paragraph" title="'+localization["ioc-action-add-paragraph"]+'"></span>');
+                $aux = jQuery('<span class="iocAddParagraphIcon actionIcon add-paragraph-after" title="'+localization["ioc-action-add-paragraph"]+'"></span>');
                 $container.append($aux);
             }
 
@@ -64,6 +64,31 @@ define([
 
                 $box.after(jQuery('<p></p>'));
                 editor.forceChange();
+
+            });
+        },
+
+        addParagraphBeforeAction = function ($node, editor) {
+
+            var $container = getAndAddActionContainer($node);
+
+            var $aux = $container.find('.add-paragraph-before');
+
+            if ($aux.length === 0) {
+                // $aux = jQuery('<span class="add-paragraph">' + localization["ioc-action-add-paragraph"] + '</span>');
+                $aux = jQuery('<span class="iocAddParagraphBeforeIcon actionIcon add-paragraph-before" title="'+localization["ioc-action-add-paragraph-before"]+'"></span>');
+                $container.append($aux);
+            }
+
+            $aux.off('click');
+            $aux.on('click', function (e) {
+                e.preventDefault();
+
+                var $box = getBoxNode($node);
+
+                $box.before(jQuery('<p></p>'));
+                editor.forceChange();
+
             });
         },
 
@@ -91,7 +116,11 @@ define([
 
 
     return {
-        addParagraphAction: addParagraphAction,
+
+        addParagraphAfterAction: addParagraphAfterAction,
+
+        addParagraphBeforeAction: addParagraphBeforeAction,
+
 
         deleteAction: deleteAction,
 
