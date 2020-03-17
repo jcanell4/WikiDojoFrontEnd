@@ -127,6 +127,7 @@ define(
         'table-delete': 'Eliminar taula',
 
         'delete': 'Eliminar',
+        'confirm-delete': 'Estàs segur que vols eliminar',
 
         'ioc-insert-sound-button': 'Insertar so',
         // 'ioc-insert-sound-sample': 'identificador_so',

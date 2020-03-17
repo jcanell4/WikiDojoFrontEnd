@@ -81,7 +81,7 @@ define([
 
         dojoActions.addParagraphAfterAction($node, editor);
         dojoActions.addParagraphBeforeAction($node, editor);
-        dojoActions.deleteAction($node, editor);
+        dojoActions.deleteAction($node, editor, 'taula');
 
         // Eliminem el listener per editar els enllaços del info (que no han de tractar-se com enllaços)
         $node.find('[data-dw-link]').on('dblclick', function (e) {
@@ -177,11 +177,10 @@ define([
                 $node.after(jQuery('<p>&nbsp;</p>'));
             }
 
+            console.log(this);
+            console.log(this.plugin);
 
-            addActions($node, this.plugin.editor);
-
-
-
+            addActions($node, this.editor);
 
         },
 
@@ -284,7 +283,7 @@ define([
         _addHandlers: function ($node) {
             // console.log("Quin es el node que rebem?", $node);
 
-            addActions($node);
+            addActions($node, this.editor);
 
 
         }

@@ -193,7 +193,7 @@ define([
 
             dojoActions.addParagraphAfterAction($node, context.editor);
             dojoActions.addParagraphBeforeAction($node, context.editor);
-            dojoActions.deleteAction($node, context.editor);
+            dojoActions.deleteAction($node, context.editor, 'bloc');
 
         },
 

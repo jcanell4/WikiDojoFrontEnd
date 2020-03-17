@@ -22,15 +22,22 @@ define([
                 console.log("TXT:", pastedDataTxt);
                 console.log("HTML:", pastedDataHtml);
 
-                if (pastedDataHtml.trim().startsWith('<') && (pastedDataHtml.trim().endsWith('>'))) {
-                    // Això no funciona correctament a chrome i no funciona en absolut amb safari
-                // if (pastedDataHtml.trim().startsWith('<meta charset=') || (pastedDataHtml.trim().startsWith('<html'))) {
-                    // Es tracta de contingut html enganxat des de una altra aplicació
-                    context.process(context.sanitize(pastedDataTxt));
-                } else {
-                    // S'enganxa codi del propi editor, no cal sanejar
-                    context.process(pastedDataHtml);
-                }
+                // ALERTA! Això no funciona i provoca diversos errors com per exemple:
+                //      afegeix paràgrafs dintre d'una cel·la en copiar i enganxar cel·les
+                //      enganxa el contingut fora dels blocks de text
+
+                // if (pastedDataHtml.trim().startsWith('<') && (pastedDataHtml.trim().endsWith('>'))) {
+                //     // Això no funciona correctament a chrome i no funciona en absolut amb safari
+                // // if (pastedDataHtml.trim().startsWith('<meta charset=') || (pastedDataHtml.trim().startsWith('<html'))) {
+                //     // Es tracta de contingut html enganxat des de una altra aplicació
+                //     context.process(context.sanitize(pastedDataTxt));
+                // } else {
+                //     // S'enganxa codi del propi editor, no cal sanejar
+                //     context.process(pastedDataHtml);
+                // }
+
+                // això només processa text pla però funciona en tots els casos
+                context.process(pastedDataTxt);
 
 
             });
@@ -39,7 +46,8 @@ define([
         },
 
         process: function (html) {
-            console.log("Que s'envia pere enganxar?", html)
+            console.log("Que s'envia pere enganxar?", html);
+
             // this.editor.execCommand('inserthtml', html);
             this.editor.execCommand('inserthtml', html);
             this.editor.reparse();

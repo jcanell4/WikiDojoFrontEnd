@@ -92,7 +92,7 @@ define([
             });
         },
 
-        deleteAction = function ($node, editor) {
+        deleteAction = function ($node, editor, elementType) {
 
             var $container = getAndAddActionContainer($node);
             var $aux = $container.find('.delete');
@@ -111,11 +111,9 @@ define([
             $aux.on('click', function (e) {
                 e.preventDefault();
 
+                // console.log(jQuery(getBoxNode($node)));
 
-                // TODO: aclarar quin és l'element a eliminar
-                console.log(jQuery(getBoxNode($node)));
-
-                if (!confirm("Eliminar?")) {
+                if (!confirm(localization["confirm-delete"] + " (" + elementType + ")?")) {
                     return;
                 }
 

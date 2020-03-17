@@ -272,7 +272,7 @@ define([
 
                 var node = internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
 
-                console.log("Node selecccionat:", node);
+                // console.log("Node selecccionat:", node);
                 var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
 
 

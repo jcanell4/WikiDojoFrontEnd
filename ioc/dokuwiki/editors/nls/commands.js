@@ -115,6 +115,7 @@ define({ root:
         'table-delete': 'Delete table',
 
         'delete': 'Delete',
+        'confirm-delete': 'Delete element',
 
 
 
