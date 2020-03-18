@@ -43,7 +43,26 @@ define([
         },
 
         _addHandlers: function ($node/*, context*/) {
-            // console.log("Adding handlers", $node, context);
+            console.log("Adding handlers", $node);
+
+
+            // Si el node no te ID s'ha de genera una Id i una referència
+            if (!$node.attr('id')) {
+                console.log("No s'ha trobat id");
+
+                var time = Date.now();
+                $node.attr('id', 'ioc-comment-' + time);
+
+                var ref = this._referenceFromDate(time);
+                var reference = "*";
+                reference += " ("+ref+")";
+
+                var $reference = $node.find('[data-reference]');
+                $reference.html(reference);
+
+                $node.find('.ioc-comment-main b').html('Ref. ' + ref);
+            }
+
             var $replyNode = $node.find('textarea.reply');
             var $buttons = $node.find('button[data-action]');
             var $removeButtons = $node.find('[data-button="remove"]');
@@ -121,15 +140,18 @@ define([
 
         process: function () {
             this.editor.beginEditing();
-            var reference = this._getSelectionText();
+
+            // No agafem la selecció perquè això no es posible a DW
+            // var reference = this._getSelectionText();
+            var reference = "*";
 
             var time = Date.now();
 
             var ref = this._referenceFromDate(time);
 
-            if (!reference) {
-                reference = "*"
-            }
+            // if (!reference) {
+            //     reference = "*"
+            // }
 
             reference += " ("+ref+")";
 
@@ -277,7 +299,7 @@ define([
 
                 $content.html($textarea.val().replace(new RegExp('\n', 'g'), '<br>'));
                 $commentNode.find('.ioc-comment-main textarea.reply').focus();
-                $signature.html('<span>(editat)</span>' + SIG); // TODO[Xavi] Localitzar el "editat"
+                $signature.html(SIG);
 
                 context.editor.endEditing();
             });
