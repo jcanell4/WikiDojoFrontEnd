@@ -394,6 +394,10 @@ define([
                         e.preventDefault();
                         return true;
                     });
+                    //
+                    // $editorContainer.on('delete', function (e) {
+                    //    alert("delete");
+                    // });
 
                 }
 
