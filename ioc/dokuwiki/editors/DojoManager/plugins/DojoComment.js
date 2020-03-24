@@ -43,7 +43,7 @@ define([
         },
 
         _addHandlers: function ($node/*, context*/) {
-            console.log("Adding handlers", $node);
+            // console.log("Adding handlers", $node);
 
 
             // Si el node no te ID s'ha de genera una Id i una referència
