@@ -18,8 +18,6 @@ define([
 
     // var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
 
-    document.createElement('ioc-note');
-
 
     var CommentsDialog = declare([AbstractParseableDojoPlugin], {
 
@@ -43,15 +41,36 @@ define([
             };
 
             this.addButton(config);
+
+            this.button.set('disabled', false);
+
+            this.editor.on('changeCursor', this.updateCursorState.bind(this));
+
+        },
+
+        updateCursorState: function (e) {
+
+            // console.log(e);
+
+            if (e.$node) {
+//                if (e.$node.closest('table, [data-dw-box]').length > 0) {
+                if (e.state.indexOf('div') > -1) {
+                    this.button.setDisabled(true);
+                } else {
+                    this.button.setDisabled(false);
+                }
+
+            }
+
         },
 
         _addHandlers: function ($node/*, context*/) {
-            console.log("Adding handlers", $node);
+            // console.log("Adding handlers", $node);
 
 
             // Si el node no te ID s'ha de genera una Id i una referència
             if (!$node.attr('id')) {
-                console.log("No s'ha trobat id");
+                // console.log("No s'ha trobat id");
 
                 var time = Date.now();
                 $node.attr('id', 'ioc-comment-' + time);
@@ -136,12 +155,14 @@ define([
             // ALERTA! això és necessari per reenganxar el contingut del paràgraf quan hi ha una nota enmig
             var auxNode = $node.parent().get(0).nextSibling;
 
-            // console.log("Quin és el node següent-previ?", auxNode);
-            // console.log("Quin és el node següent-previ? content", auxNode.textContent);
+            // console.log("Quin és el node següent?", auxNode);
+            // console.log("Quin és el contingut del node següent?", auxNode.textContent);
 
-            if (auxNode && auxNode.nodeType === 3) {
+            if (auxNode && auxNode.nodeType === 3 /*&& auxNode.textContent.trim() !== ''*/) {
+                // console.log("Contingut detectat, corregim el text");
                 $node.after(auxNode);
             } else {
+                // console.log("No s'ha trobat node següent, afegim un espai");
                 $node.after("&nbsp;");
             }
 
@@ -262,17 +283,26 @@ define([
 
         resolve: function ($node) {
             this.editor.beginEditing();
-            var $reference = $node.find('.ioc-comment-reference');
 
-            var ref = $reference.attr('data-reference');
+            // console.log("$next node before remove?", $node.get(0).previousSibling);
+            // console.log("$next node after remove?", $node.get(0).nextSibling);
+            var previous = $node.get(0).previousSibling;
+            var next = $node.get(0).nextSibling;
 
-            if ($reference.html() != '* (' + ref + ')') {
-                var text = $reference.html().replace('(' + ref + ')', '');
+            // Eliminem els espais anterior i posterior si es un únic node de text, aquest salts s'afegeixen
+            // automàticament i no son controlats per nosaltres
 
-                jQuery(document.createTextNode(text)).insertBefore($node);
+            if (previous.textContent.trim() === '') {
+                jQuery(previous).remove();
+            }
+
+            if (next.textContent.trim() === '') {
+                jQuery(next).remove();
             }
 
             $node.remove();
+
+
             this.editor.endEditing();
         },
 

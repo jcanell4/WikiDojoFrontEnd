@@ -247,6 +247,9 @@ define([
                         state = pre + '-' + state;
                     }
 
+
+                    // console.log("current state", state);
+
                     return state;
                 }
 
@@ -273,7 +276,7 @@ define([
                 var node = internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
 
                 // console.log("Node selecccionat:", node);
-                var $node = node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
+                var $node = node && node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
 
 
                 // console.log("jQuery:", $node);
