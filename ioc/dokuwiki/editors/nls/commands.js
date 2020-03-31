@@ -5,6 +5,8 @@ define({ root:
         'cancel-button': 'Cancel',
         'save-button': 'Save',
         'document-preview': 'Preview document',
+        'switch-editor-ace': 'Switch to ACE editor',
+        'switch-editor-dojo': 'Switch to HTML editor',
         'enable-ace': 'Activate/Deactivate ACE',
         'enable-wrapper': 'Activate/Deactivate wrap',
 

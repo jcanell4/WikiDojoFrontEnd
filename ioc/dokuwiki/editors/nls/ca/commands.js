@@ -5,6 +5,9 @@ define(
         'cancel-button': 'Tornar',
         'save-button': 'Desar',
         'document-preview': 'Previsualitzar el document',
+        'switch-editor-ace': 'Canviar a editor ACE',
+        'switch-editor-dojo': 'Canviar a editor HTML',
+
         'enable-ace': 'Activar/Desactivar ACE',
         'enable-wrapper' : 'Activar/Desactivar embolcall',
 

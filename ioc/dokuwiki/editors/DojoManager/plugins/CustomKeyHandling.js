@@ -94,7 +94,7 @@ define([
             var isIocInfo = this.editor.getCurrentNodeState().indexOf('iocinfo') > -1;
             var state = this.editor.getCurrentNodeState();
 
-            if (state.indexOf('pre') !== -1) {
+            if (state.indexOf('pre') !== -1 || state.indexOf('editable-text') !== -1) {
                 return true;
 
             } else if (state.indexOf('table') === -1 && !isIocInfo) {

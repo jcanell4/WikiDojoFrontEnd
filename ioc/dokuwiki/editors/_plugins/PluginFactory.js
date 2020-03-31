@@ -36,6 +36,9 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceDocumentPreview',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoDocumentPreview',
 
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/AceSwitchEditor', // TODO: Implementar!
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoSwitchEditor',
+
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableACE',
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableWrapper',
 
@@ -72,6 +75,7 @@ define([
              DojoSafePaste,
              AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview, DojoDocumentPreview,
+             /*AceSwitchEditor,*/ DojoSwitchEditor,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
              ViewSource, LinkDialog,
@@ -91,6 +95,7 @@ define([
             'CancelButton': AceFireEvent,
             'SaveButton': AceFireEvent,
             'DocumentPreviewButton': AceDocumentPreview,
+            // 'SwitchEditorButton': AceSwitchEditor, // TODO: Implementar
             'EnableACE': AceEnableACE,
             'EnableWrapper': AceEnableWrapper,
             'LatexPreview': AceLatexPreview,
@@ -110,6 +115,8 @@ define([
             'CancelButton': DojoFireEvent,
             'SaveButton': DojoFireEvent,
             'DocumentPreviewButton': DojoDocumentPreview,
+
+            'SwitchEditorButton': DojoSwitchEditor,
 
             // Botons del desplegable IOC
             'NewContent': DojoFormat,
@@ -263,6 +270,16 @@ define([
             icon: 'IocDocumentPreview',
             // category: 'B'
         },
+
+        // TODO
+        'SwitchEditorButton': {
+            type: 'DocumentPreview',
+            title: localization["switch-editor-dojo"],
+            icon: 'IocSwitchEditorAce',
+            // category: 'B'
+        },
+
+
 
         'IocComment': {
             type: 'IocComment',

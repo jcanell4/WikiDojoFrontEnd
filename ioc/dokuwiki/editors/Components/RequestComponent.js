@@ -23,6 +23,10 @@ define([
                 originalDataToSend = requester.get("dataToSend"),
                 originalUrlBase = requester.get("urlBase");
 
+
+            console.log("Data to send:", dataToSend);
+
+
             requester.set('dataToSend', dataToSend);
             requester.set('urlBase', urlBase);
 

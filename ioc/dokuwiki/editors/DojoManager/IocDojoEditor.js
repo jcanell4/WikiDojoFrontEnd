@@ -143,7 +143,6 @@ define([
 
 
                     'InsertFigureLinkSyntax',
-                    // 'InsertTableSyntax',
                     'InsertTableLinkSyntax',
                     'InsertTextSyntax',
                     'InsertTextLargeSyntax',
@@ -156,9 +155,10 @@ define([
                     'IocComment',
                     'SaveButton',
                     'CancelButton',
-                    'DocumentPreviewButton', // Desactivat, ara no funciona
+                    'DocumentPreviewButton',
                     'ViewSource',
-                    'DojoSafePaste'
+                    'DojoSafePaste',
+                    'SwitchEditorButton',
 
 
                 ]);
@@ -239,6 +239,9 @@ define([
                     if ($node.attr('class') === 'iocinfo') {
                         state = state + "-iocinfo";
                     }
+                    if ($node.attr('class') === 'editable-text') {
+                        state = state + "-editable-text";
+                    }
 
 
                     var pre = this.generateNodeState($node.parent());
@@ -248,7 +251,7 @@ define([
                     }
 
 
-                    // console.log("current state", state);
+                    console.log("current state", state);
 
                     return state;
                 }
