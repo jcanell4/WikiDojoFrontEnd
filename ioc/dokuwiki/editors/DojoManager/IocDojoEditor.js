@@ -217,6 +217,18 @@ define([
                 return currentState;
             },
 
+            getCurrentNode: function () {
+                var selection = this.getSelection();
+                return jQuery(selection.startNode)
+            },
+
+            getPreviousNode: function () {
+                var selection = this.getSelection();
+                // console.log(jQuery(selection.startNode).prev());
+                return jQuery(selection.startNode).prev();
+            },
+
+
             generateNodeState: function (node) {
 
                 // console.error("Node?", node);
@@ -236,6 +248,7 @@ define([
                 } else {
                     var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
 
+                    // ALERTA! si el nombre de classes especial creix més caldria implementar-ho com un array
                     if ($node.attr('class') === 'iocinfo') {
                         state = state + "-iocinfo";
                     }
@@ -243,15 +256,13 @@ define([
                         state = state + "-editable-text";
                     }
 
-
                     var pre = this.generateNodeState($node.parent());
 
                     if (pre.length > 0) {
                         state = pre + '-' + state;
                     }
 
-
-                    console.log("current state", state);
+                    // console.log("current state", state);
 
                     return state;
                 }
@@ -276,7 +287,12 @@ define([
                 }
 
 
-                var node = internalDocument.getSelection().getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
+                var documentSelection = internalDocument.getSelection();
+
+                // console.log("Document selection:", documentSelection);
+
+
+                var node = documentSelection.getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
 
                 // console.log("Node selecccionat:", node);
                 var $node = node && node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
@@ -289,8 +305,8 @@ define([
 
 
                 // isCollapsed: true es que només inclou 1 node, false inclou més d'un node? <-- no serveix, es true quan hi han múltiples nodes en 1 sol block
-                var startNode = internalDocument.getSelection().getRangeAt(0).startContainer;
-                var endNode = internalDocument.getSelection().getRangeAt(0).endContainer;
+                var startNode = documentSelection.getRangeAt(0).startContainer;
+                var endNode = documentSelection.getRangeAt(0).endContainer;
 
                 startNode = startNode.nodeType === 3 ? startNode.parentElement : startNode;
                 endNode = endNode.nodeType === 3 ? endNode.parentElement : endNode;
@@ -328,6 +344,7 @@ define([
                 }
 
                 return {
+                    documentSelection: documentSelection,
                     container: node,
                     startNode: startNode,
                     endNode: endNode,

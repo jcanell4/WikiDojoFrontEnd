@@ -187,7 +187,7 @@ define([
 
             var context = this;
 
-            var $actions = jQuery('<div class="no-render action" >');
+            var $actions = jQuery('<div class="no-render action" contenteditable="false">');
 
             $node.append($actions);
 

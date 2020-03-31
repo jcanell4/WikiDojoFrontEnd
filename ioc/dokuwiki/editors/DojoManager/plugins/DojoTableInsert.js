@@ -283,6 +283,12 @@ define([
         _addHandlers: function ($node) {
             // console.log("Quin es el node que rebem?", $node);
 
+            $node.prop('contenteditable', false);
+            $node.find('table').prop('contenteditable', true);
+            $node.find('.iocinfo').prop('contenteditable', true);
+
+
+
             addActions($node, this.editor);
 
 

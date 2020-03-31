@@ -216,6 +216,8 @@ define([
             //     $container.prepend($delete);
             // }
 
+            $node.prop('contenteditable', false);
+            $node.find('.iocinfo').prop('contenteditable', true);
 
             $node.find('img').off('dblclick');
 
@@ -334,6 +336,8 @@ define([
 
             // console.log("Query cercat:", '[data-ioc-block-' + this.normalize(this.title) + ']');
             var context = this;
+
+
 
             $nodes.each(function () {
                 context._addHandlers(jQuery(this)/*, context*/);
