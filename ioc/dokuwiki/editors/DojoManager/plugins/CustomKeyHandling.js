@@ -46,6 +46,16 @@ define([
                     return false;
                 }
 
+                // Codi per controlar la eliminació dels elements amb data-delete-block
+                if (($previousNode.attr('data-delete-block') || $currentNode.attr('data-delete-block')
+                    /*|| ($previousNode.length === 0 && $currentNode.parent().hasClass('ioccontent'))*/)
+                    && selection.documentSelection.anchorOffset === 0) {
+                    // No es permet eliminar nodes amb camps
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+
 
                 var wipe = false;
 

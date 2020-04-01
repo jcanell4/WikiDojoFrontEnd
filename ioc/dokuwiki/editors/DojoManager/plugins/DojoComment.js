@@ -12,9 +12,10 @@ define([
     "dojo/text!./templates/CommentFragment.html",
     "dojo/text!./templates/CommentFragmentReply.html",
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
 
 ], function (declare, AbstractParseableDojoPlugin,
-             /*i18n,*/ lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply, localization) {
+             /*i18n,*/ lang, has, focus, _Plugin, Button, string, DialogBuilder, template, templateReply, localization, dojoActions) {
 
     // var strings = i18n.getLocalization("ioc.dokuwiki.editors.DojoManager", "commands");
 
@@ -24,7 +25,7 @@ define([
         htmlTemplate: template,
         replyTemplate: templateReply,
 
-        init : function (args) {
+        init: function (args) {
             this.inherited(arguments);
 
             this.editor.customUndo = true;
@@ -77,7 +78,7 @@ define([
 
                 var ref = this._referenceFromDate(time);
                 var reference = "*";
-                reference += " ("+ref+")";
+                reference += " (" + ref + ")";
 
                 var $reference = $node.find('[data-reference]');
                 $reference.html(reference);
@@ -145,7 +146,6 @@ define([
             var $commentBody = $node.find('.ioc-comment-body');
 
 
-
             $commentBody.on('click', function (e) {
                 $node.find('textarea.reply').focus();
 
@@ -166,16 +166,23 @@ define([
                 $node.after("&nbsp;");
             }
 
+            // var $commentBody = $node.find('ioc-coment-body');
 
+            var $actions = jQuery('<div class="no-render action" contenteditable="false">');
+
+            $commentBody.append($actions);
+
+            dojoActions.addParagraphAfterAction($actions, this.editor);
+            dojoActions.addParagraphBeforeAction($actions, this.editor);
 
 
         },
 
-        parse: function() {
+        parse: function () {
             var $nodes = jQuery(this.editor.iframe).contents().find('.ioc-comment-block');
             var context = this;
 
-            $nodes.each(function() {
+            $nodes.each(function () {
                 $nodes.find('.viewComment').css('display', 'inherit');
                 $nodes.find('.editComment').css('display', 'none');
                 context._addHandlers(jQuery(this)/*, context*/);
@@ -198,17 +205,17 @@ define([
             //     reference = "*"
             // }
 
-            reference += " ("+ref+")";
+            reference += " (" + ref + ")";
 
             var args = {
                 id: "ioc-comment-" + Date.now(),
                 reference: reference,
                 ref: ref,
                 resolveBtnTitle: localization['ioc-comment-resolve-title'],
-                resolveBtn : localization['ioc-comment-resolve-button'],
-                textareaPlaceholder : localization['ioc-comment-textarea-placeholder'],
-                replyBtnTitle : localization['ioc-comment-reply-title'],
-                replyBtn : localization['ioc-comment-reply-button']
+                resolveBtn: localization['ioc-comment-resolve-button'],
+                textareaPlaceholder: localization['ioc-comment-textarea-placeholder'],
+                replyBtnTitle: localization['ioc-comment-reply-title'],
+                replyBtn: localization['ioc-comment-reply-button']
                 // signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
             };
 
@@ -229,7 +236,7 @@ define([
         },
 
         // ALERTA[Xavi] es genera la referència a partir de la data, simplificant el nombre: limitant a 1 per segon, comptant a partir del 1 de gener del 2017
-        _referenceFromDate: function(time) {
+        _referenceFromDate: function (time) {
             time = time - 1483228800000; // 2017-1-1
 
             return Math.floor(time / 1000);
@@ -306,7 +313,7 @@ define([
             this.editor.endEditing();
         },
 
-        addEditCommentHandler: function($commentNode) {
+        addEditCommentHandler: function ($commentNode) {
             var context = this;
             var $editNode = $commentNode.find('.editComment');
             var $viewNode = $commentNode.find('.viewComment');
@@ -328,16 +335,16 @@ define([
 
             });
 
-            $textarea.on('focus', function() {
+            $textarea.on('focus', function () {
                 context.editor.beginEditing();
             });
 
-            $textarea.on('blur', function() {
+            $textarea.on('blur', function () {
                 context.editor.endEditing();
             });
 
 
-            $textarea.on('click', function(e) {
+            $textarea.on('click', function (e) {
                 // context.editor.beginEditing();
                 // context.$forcedTextArea = $textarea;
                 // context.$forcedTextArea.focus();
@@ -345,7 +352,7 @@ define([
                 // context.editor.endEditing();
             });
 
-            $saveButton.on('click', function() {
+            $saveButton.on('click', function () {
 
                 context.editor.beginEditing();
                 $editNode.css('display', 'none');
@@ -358,7 +365,7 @@ define([
                 context.editor.endEditing();
             });
 
-            $cancelButton.on('click', function() {
+            $cancelButton.on('click', function () {
                 $editNode.css('display', 'none');
                 $viewNode.css('display', 'inherit');
                 $commentNode.find('.ioc-comment-main textarea.reply').focus();
@@ -366,7 +373,7 @@ define([
             });
 
 
-            return  function() {
+            return function () {
                 context.editor.beginEditing();
 
                 $editNode.css('display', 'inherit');
@@ -380,7 +387,7 @@ define([
         addRemoveCommentHandler: function ($commentNode) {
             var context = this;
 
-            return  function() {
+            return function () {
                 context.editor.beginEditing();
                 $commentNode.remove();
                 context.editor.endEditing();

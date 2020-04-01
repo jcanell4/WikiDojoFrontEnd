@@ -44,6 +44,27 @@ define([
             return $candidateNode;
         },
 
+        // @param isElement es opcional
+        addHighlighter = function($node, isElement) {
+            var $box;
+
+            if (isElement) {
+                $box = $node.parent('.action').parent();
+
+
+            } else {
+                $box = getBoxNode($node);
+            }
+
+            $node.on('mouseover', function() {
+                $box.addClass('box-highlight');
+            });
+
+            $node.on('mouseout', function() {
+                $box.removeClass('box-highlight');
+            });
+        };
+
         addParagraphAfterAction = function ($node, editor) {
 
             var $container = getAndAddActionContainer($node);
@@ -66,6 +87,10 @@ define([
                 editor.forceChange();
 
             });
+
+            addHighlighter($aux);
+
+
         },
 
         addParagraphBeforeAction = function ($node, editor) {
@@ -90,6 +115,8 @@ define([
                 editor.forceChange();
 
             });
+
+            addHighlighter($aux);
         },
 
         deleteAction = function ($node, editor, elementType) {
@@ -118,9 +145,6 @@ define([
                 }
 
                 switch (elementType) {
-                    case 'bloc':
-                        getBoxNode($node).remove();
-                        break;
 
                     case 'element':
                         if ($node.next().is('br')) {
@@ -129,11 +153,17 @@ define([
                         $node.remove();
 
                         break;
+
+                    default:
+                        getBoxNode($node).remove();
                 }
 
                 editor.forceChange();
 
             });
+
+            addHighlighter($aux, elementType === 'element');
+
         };
 
 

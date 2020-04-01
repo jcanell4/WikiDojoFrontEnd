@@ -620,3 +620,11 @@ pre code label {
     margin-left: 5px;
     margin-right:10px;
 }
+
+/*[data-dw-box]:hover,*/
+/*[data-dw-box-text]:hover,*/
+/*[data-ioc-link]:hover {*/
+.box-highlight {
+    background-color: #FEEFB3;
+    /*border: 2px dotted dodgerblue;*/
+}
