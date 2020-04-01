@@ -83,12 +83,12 @@ define([
                 var $reference = $node.find('[data-reference]');
                 $reference.html(reference);
 
-                var counter = $node.attr('data-note-counter');
+                // var counter = $node.attr('data-note-counter');
 
-                var $body = jQuery(this.editor.iframe).contents().find('div[data-note-counter="' + counter + '"]');
+                // var $body = jQuery(this.editor.iframe).contents().find('div[data-note-counter="' + counter + '"]');
 
                 // Ens asegurem que es troba dins del note, com que 'ioc-note' és un element propi quan es troba dins d'un element de block (com <p> per exemple) es separen els elements incorrectament
-                $node.append($body);
+                // $node.append($body);
 
                 $node.find('.ioc-comment-main b').html('Ref. ' + ref);
             }
@@ -152,19 +152,19 @@ define([
                 e.preventDefault();
             });
 
-            // ALERTA! això és necessari per reenganxar el contingut del paràgraf quan hi ha una nota enmig
-            var auxNode = $node.parent().get(0).nextSibling;
+            // ALERTA! això ERA necessari per reenganxar el contingut del paràgraf quan hi ha una nota enmig
+            // var auxNode = $node.parent().get(0).nextSibling;
 
             // console.log("Quin és el node següent?", auxNode);
             // console.log("Quin és el contingut del node següent?", auxNode.textContent);
 
-            if (auxNode && auxNode.nodeType === 3 /*&& auxNode.textContent.trim() !== ''*/) {
-                // console.log("Contingut detectat, corregim el text");
-                $node.after(auxNode);
-            } else {
-                // console.log("No s'ha trobat node següent, afegim un espai");
-                $node.after("&nbsp;");
-            }
+            // if (auxNode && auxNode.nodeType === 3 /*&& auxNode.textContent.trim() !== ''*/) {
+            //     // console.log("Contingut detectat, corregim el text");
+            //     $node.after(auxNode);
+            // } else {
+            //     // console.log("No s'ha trobat node següent, afegim un espai");
+            //     $node.after("&nbsp;");
+            // }
 
             // var $commentBody = $node.find('ioc-coment-body');
 

@@ -20,14 +20,12 @@ define([
             editor.addKeyHandler(13, 1, 0, h); // ctrl+enter
 
 
-
-            editor.addKeyHandler(8, 0, 0, function(e) {
+            editor.addKeyHandler(8, 0, 0, function (e) {
 
                 // console.log("detectat esborrar", e, editor.getCurrentNodeState());
                 var selection = editor.getSelection();
                 // ALERTA! només es compten com a nodes els blocks, no els inline
                 console.log(selection);
-
 
 
                 var $previousNode = editor.getPreviousNode();
@@ -47,9 +45,9 @@ define([
                 }
 
                 // Codi per controlar la eliminació dels elements amb data-delete-block
-                if (($previousNode.attr('data-delete-block') || $currentNode.attr('data-delete-block')
-                    /*|| ($previousNode.length === 0 && $currentNode.parent().hasClass('ioccontent'))*/)
-                    && selection.documentSelection.anchorOffset === 0) {
+
+                if (($previousNode.attr('data-delete-block') && selection.documentSelection.anchorOffset === 0) || $currentNode.attr('data-delete-block')
+                /*|| ($previousNode.length === 0 && $currentNode.parent().hasClass('ioccontent'))*/) {
                     // No es permet eliminar nodes amb camps
                     e.preventDefault();
                     e.stopPropagation();
@@ -60,17 +58,17 @@ define([
                 var wipe = false;
 
 
-                for (var i =0; i<selection.nodes.length; i++) {
+                for (var i = 0; i < selection.nodes.length; i++) {
                     var node = selection.nodes[i];
                     // console.log("tagname:", node.tagName);
 
                     // console.log("Comprovant si hi ha més d'un node", selection.nodes.length > 1 && jQuery(node).attr('data-dw-field'));
-                   if (selection.nodes.length > 1 && jQuery(node).attr('data-dw-field')) {
-                       alert("No es poden eliminar blocs, fes servir la icona d'eliminació corresponent");
-                       e.preventDefault();
-                       e.stopPropagation();
-                       return false;
-                   }
+                    if (selection.nodes.length > 1 && jQuery(node).attr('data-dw-field')) {
+                        alert("No es poden eliminar blocs, fes servir la icona d'eliminació corresponent");
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
 
                     // if (jQuery(node).parent().hasClass('action')) {
                     //     // alert("No es poden eliminar blocs, fes servir la icona d'eliminació corresponent");
@@ -79,7 +77,7 @@ define([
                     //     return false;
                     // }
 
-                    if (selection.nodes.length>1 && !ALLOWED_DELETE.includes(node.tagName.toLowerCase())) {
+                    if (selection.nodes.length > 1 && !ALLOWED_DELETE.includes(node.tagName.toLowerCase())) {
                         alert("No es poden eliminar blocs, fes servir la icona d'eliminació corresponent");
                         e.preventDefault();
                         e.stopPropagation();
