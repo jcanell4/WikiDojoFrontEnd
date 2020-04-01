@@ -117,8 +117,22 @@ define([
                     return;
                 }
 
-                getBoxNode($node).remove();
+                switch (elementType) {
+                    case 'bloc':
+                        getBoxNode($node).remove();
+                        break;
+
+                    case 'element':
+                        if ($node.next().is('br')) {
+                            $node.next().remove();
+                        }
+                        $node.remove();
+
+                        break;
+                }
+
                 editor.forceChange();
+
             });
         };
 

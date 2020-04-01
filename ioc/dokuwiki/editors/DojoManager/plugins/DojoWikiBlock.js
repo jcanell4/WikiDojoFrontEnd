@@ -29,6 +29,8 @@ define([
 
     var WikiBlockButton = declare(AbstractParseableDojoPlugin, {
 
+        elementType : 'bloc',
+
         init: function (args) {
             this.inherited(arguments);
 
@@ -171,17 +173,14 @@ define([
 
         _addHandlers: function ($node) {
 
+
+
             // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
             $node.find('.no-render').remove();
 
-            // console.log("Quin es el parent?", $node.parent());
-            // console.log("Quin es el node?", $node);
-            // $node.parent().css('border', '1px dotted dodgerblue;');
-            $node.css('border-width', '1px');
-            $node.css('border-style', 'dotted');
-            $node.css('border-color', 'dodgerblue');
-            // $node.css('padding', '5px');
-            //console.log("quin es el css?", jQuery($node.get(0)).css());
+            // $node.css('border-width', '1px');
+            // $node.css('border-style', 'dotted');
+            // $node.css('border-color', 'dodgerblue');
 
 
 
@@ -191,9 +190,12 @@ define([
 
             $node.append($actions);
 
-            dojoActions.addParagraphAfterAction($node, context.editor);
-            dojoActions.addParagraphBeforeAction($node, context.editor);
-            dojoActions.deleteAction($node, context.editor, 'bloc');
+            if (!$node.attr('data-ioc-link')) {
+                dojoActions.addParagraphAfterAction($node, context.editor);
+                dojoActions.addParagraphBeforeAction($node, context.editor);
+
+            }
+            dojoActions.deleteAction($node, context.editor, this.elementType);
 
         },
 

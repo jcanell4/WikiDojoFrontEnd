@@ -8,7 +8,10 @@ define([
     "dijit/_editor/range"
 ], function (declare, DojoWikiBlock, lang, _Plugin, string, range) {
 
+
     var WikiBlockButton = declare(DojoWikiBlock, {
+
+        elementType : 'element',
 
         init: function (args) {
             this.inherited(arguments);
