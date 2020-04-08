@@ -22,7 +22,7 @@
 
 .ioc-comment-body {
     position: relative;
-    max-width: 400px;
+    max-width: 350px;
 }
 
 .ioc-comment textarea {
@@ -35,6 +35,11 @@
     margin: 5px;
     padding: 10px;
     border-radius: 5px;
+    display: inline-block;
+}
+
+span.replyContent {
+    display: inline-block;
 }
 
 .ioc-comment-reply:nth-child(even) {

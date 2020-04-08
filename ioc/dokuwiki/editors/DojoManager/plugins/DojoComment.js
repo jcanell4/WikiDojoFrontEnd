@@ -68,7 +68,6 @@ define([
         _addHandlers: function ($node/*, context*/) {
             // console.log("Adding handlers", $node);
 
-
             // Si el node no te ID s'ha de genera una Id i una referència
             if (!$node.attr('id')) {
                 // console.log("No s'ha trobat id");
@@ -168,7 +167,7 @@ define([
 
             // var $commentBody = $node.find('ioc-coment-body');
 
-            var $actions = jQuery('<div class="no-render action" contenteditable="false">');
+            var $actions = jQuery('<span class="no-render action" contenteditable="false">');
 
             $commentBody.append($actions);
 
@@ -223,10 +222,14 @@ define([
             // Comprovem si es pot insertar en aquest punt
             // iframe= document.getElementById('my');
 
+            // Obtenim el node on es troba el cursor
+            // var $container = this.editor.getCurrentNode();
+
             var htmlCode = string.substitute(this.htmlTemplate, args);
             this.editor.execCommand('inserthtml', htmlCode); //ALERTA[Xavi] S'afegeix la referència per evitar esborrar el text ressaltat
 
             var $node = jQuery(this.editor.iframe).contents().find('#' + args.id);
+
             $node.find('textarea').focus();
 
             this._addHandlers($node/*, this*/);
@@ -314,6 +317,8 @@ define([
         },
 
         addEditCommentHandler: function ($commentNode) {
+
+
             var context = this;
             var $editNode = $commentNode.find('.editComment');
             var $viewNode = $commentNode.find('.viewComment');
