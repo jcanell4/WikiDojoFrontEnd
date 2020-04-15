@@ -31,7 +31,7 @@ define([
 
         _processFull:function() {
             this.documentPreviewComponent.send(
-                {contentFormat: 'Dojo'}
+                {contentFormat: 'DOJO'}
             );
         }
 

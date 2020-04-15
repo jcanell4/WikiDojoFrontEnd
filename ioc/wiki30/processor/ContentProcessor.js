@@ -80,6 +80,7 @@ define([
              * @private
              */
             _loadTab: function (content, dispatcher, args) {
+                // console.log("ContentProcessor#_loadTab", content)
                 var container = registry.byId(dispatcher.containerNodeId);
                 this.addContent(content, dispatcher, container);
 
@@ -124,7 +125,12 @@ define([
                     position = 0,
                     refreshContent;
 
-                if (oldContentTool) {
+                var differentFormat = oldContentTool && content.format && oldContentTool.editorType.toLowerCase() === content.format.toLowerCase();
+
+                console.log("El format es diferent?", differentFormat);
+
+
+                if (differentFormat) {
                     refreshContent = this.isRefreshableContent(oldContentTool.type);
                 } else {
                     refreshContent = false;

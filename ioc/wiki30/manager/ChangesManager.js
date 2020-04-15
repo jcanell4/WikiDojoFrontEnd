@@ -37,7 +37,8 @@ define([
                  * @returns {boolean} - Cert si hi han hagut canvis o Fals en cas contrari
                  */
                 isContentChanged: function (id) {
-                    return this._getContentTool(id).isContentChanged();
+
+                    return this._getContentTool(id)? this._getContentTool(id).isContentChanged() : false;
                 },
 
                 /**

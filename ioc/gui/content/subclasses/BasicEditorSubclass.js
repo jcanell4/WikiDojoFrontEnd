@@ -279,11 +279,13 @@ define([
                 // console.log("BasicEditorSubclass#addEditors", this.editorType);
                 // this.editor = this.createEditor({id : this.id}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
 
-                this.editor = this.createEditor({id:this.id, content: this.content.content || this.originalContent, originalContent: this.originalContent}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (ACE)
+                this.editor = this.createEditor({id:this.id, content: this.content.content || this.originalContent, originalContent: this.originalContent}, this.editorType);
+
                 //console.log("Content Format:", this.editor.getContentFormat());
             },
 
             createEditor: function(config, type) {
+                console.log("Editor Type:", type);
 
                 switch (type) {
                     case "Dojo":

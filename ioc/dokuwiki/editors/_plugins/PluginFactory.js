@@ -865,7 +865,7 @@ define([
 
 
     var getPlugin = function (name, editorType) {
-        // console.log("PluginFactory#getPlugin", name, editorType);
+        // console.log("PluginFactory#getPlugin", name, editorType, plugins);
 
         if (plugins[editorType][name]) {
             return {

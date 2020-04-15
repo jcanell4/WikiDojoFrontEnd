@@ -22,10 +22,13 @@ define([
             this.dispatcher.getContentCache(id).getMainContentTool()._removeAllDrafts();
 
 
+            // ALERTA! sempre es descarta l'esborrany perquè correspondrà a l'editor actual i no al nou
             var urlBase = this._getUrlBase() + '?call=edit',
                 dataToSend = {
-                    do: "edit",
+                    do: 'edit',
                     id: id,
+                    format: this.format,
+                    recover_draft: 'false'
                 };
 
             if (extraData) {

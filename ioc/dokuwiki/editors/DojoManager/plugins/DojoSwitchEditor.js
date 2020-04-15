@@ -9,6 +9,7 @@ define([
     var DojoSwitchEditor = declare(AbstractDojoPlugin, {
 
         init: function(args) {
+
             this.inherited(arguments);
 
             this.switchEditorComponent= new SwitchEditorComponent(this.editor.dispatcher);

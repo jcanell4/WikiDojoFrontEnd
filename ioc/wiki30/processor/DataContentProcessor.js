@@ -7,7 +7,8 @@ define([
 ], function (declare, ContentProcessor, contentToolFactory, registry, EventFactory) {
 
     var editorsByFormat = {
-        'html':'Dojo'
+        'html':'Dojo',
+        'ACE' : 'ACE'
     };
 
 
@@ -111,7 +112,7 @@ define([
          * @protected
          */
         createContentTool: function (content, dispatcher) {
-            // console.log("Content?", content);
+            // console.log("DataContentProcessor#createContentTool", content);
 
             var args = {
                 ns: content.ns,
@@ -134,6 +135,8 @@ define([
             if (content.autosaveTimer) {
                 args["autosaveTimer"] = content.autosaveTimer;
             }
+
+            console.log("Ha arribat el format?", content.format, editorsByFormat[content.format]);
 
             if (content.format !== undefined && editorsByFormat[content.format]) {
                 args.editorType = editorsByFormat[content.format];

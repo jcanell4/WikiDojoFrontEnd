@@ -941,7 +941,7 @@ define([
 
             initializePlugin: function (_plugin) {
 
-                console.log("IocAceEditor#initializePlugin#_plugin", _plugin.config);
+                // console.log("IocAceEditor#initializePlugin#_plugin", _plugin.config);
                 var plugin = new _plugin.plugin();
                 this.plugins.push(plugin);
                 plugin.setEditor(this);

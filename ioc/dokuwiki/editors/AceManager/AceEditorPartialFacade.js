@@ -38,7 +38,6 @@ define([
         },
 
         fillEditorContainer: function () {
-            // console.log("fillEditorContainer");
             var viewNode,
                 p,
                 $view = jQuery('#view_' + this.id);

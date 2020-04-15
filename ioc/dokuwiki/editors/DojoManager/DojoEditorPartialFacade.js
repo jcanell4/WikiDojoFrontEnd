@@ -12,6 +12,7 @@ define([
         TOOLBAR_ID: 'partial-editor',
 
         fillEditorContainer: function() {
+
             var viewNode,
                 p,
                 $view =jQuery('#' + this.viewId);

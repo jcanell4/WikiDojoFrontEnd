@@ -24,7 +24,7 @@ define([
                 originalUrlBase = requester.get("urlBase");
 
 
-            console.log("Data to send:", dataToSend);
+            // console.log("Data to send:", dataToSend);
 
 
             requester.set('dataToSend', dataToSend);
