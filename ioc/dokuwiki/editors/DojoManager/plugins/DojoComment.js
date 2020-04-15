@@ -55,7 +55,7 @@ define([
 
             if (e.$node) {
 //                if (e.$node.closest('table, [data-dw-box]').length > 0) {
-                if (e.state.indexOf('div') > -1) {
+                if (e.state.indexOf('div') > -1 && e.state.indexOf('table') === -1) {
                     this.button.setDisabled(true);
                 } else {
                     this.button.setDisabled(false);

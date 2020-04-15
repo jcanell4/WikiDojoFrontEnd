@@ -57,6 +57,43 @@ define([
 
             contentFormat: 'Dojo',
 
+            // provem a sobreescriure la inserció de llistes ordendanes i desordenades (originalment a RichText.js)
+            _insertorderedlistImpl: function(argument){
+                // summary:
+                //		This function implements the insertorderedlist command
+                // argument:
+                //		arguments to the exec command, if any.
+                // tags:
+                //		protected
+
+                var applied = false;
+                if(has("ie")){
+                    applied = this._adaptIEList("insertorderedlist", argument);
+                }
+                if(!applied){
+                    applied = this.document.execCommand("insertorderedlist", false, argument);
+                }
+                return applied;
+            },
+
+            _insertunorderedlistImpl: function(argument){
+                // summary:
+                //		This function implements the insertunorderedlist command
+                // argument:
+                //		arguments to the exec command, if any.
+                // tags:
+                //		protected
+
+                var applied = false;
+                if(has("ie")){
+                    applied = this._adaptIEList("insertunorderedlist", argument);
+                }
+                if(!applied){
+                    applied = this.document.execCommand("insertunorderedlist", false, argument);
+                }
+                return applied;
+            },
+
             constructor: function (args) {
                 this.changeDetectorEnabled = false;
                 this._pluginsToParse = [];
@@ -287,21 +324,21 @@ define([
                 }
 
 
-                var documentSelection = internalDocument.getSelection();
+                try {
+                    var documentSelection = internalDocument.getSelection();
+                    var node = documentSelection.getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
+                    var $node = node && node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
 
-                // console.log("Document selection:", documentSelection);
-
-
-                var node = documentSelection.getRangeAt(0).commonAncestorContainer; // aquest node conté tots els nodes de la selecció
-
-                // console.log("Node selecccionat:", node);
-                var $node = node && node.nodeType === 3 ? jQuery(node).parent() : jQuery(node);
-
-
-                // console.log("jQuery:", $node);
-
-                // console.log("Informació total de la selecció:", this.internalDocument.getSelection());
-                // console.log("Informació del rang at 0:", this.internalDocument.getSelection().getRangeAt(0));
+                } catch (e) {
+                    // Es tracta d'un node protegit, no es pot seleccionar
+                    return {
+                        container: null,
+                        startNode: null,
+                        endNode: null,
+                        nodes: [],
+                        $node: jQuery('')
+                    }
+                }
 
 
                 // isCollapsed: true es que només inclou 1 node, false inclou més d'un node? <-- no serveix, es true quan hi han múltiples nodes en 1 sol block
