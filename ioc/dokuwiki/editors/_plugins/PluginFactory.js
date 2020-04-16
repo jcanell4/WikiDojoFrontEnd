@@ -48,6 +48,7 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceTestReadonlyPlugin', // Test readonly
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceTableEditorPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceSwitchEditorPlugin',
 
 
     'dijit/_editor/plugins/ViewSource',
@@ -77,7 +78,7 @@ define([
              DojoFireEvent, AceDocumentPreview, DojoDocumentPreview,
              /*AceSwitchEditor,*/ DojoSwitchEditor,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
-             AceTableEditor,
+             AceTableEditor, AceSwitchEditor,
              ViewSource, LinkDialog,
              localization,
              editorPluginsCSS) {
@@ -105,7 +106,8 @@ define([
             'ReadonlyBlocksToggle': AceReadonlyBlocksToggle,
             'TableEditor': AceTableEditor,
             'TableEditorMultiline': AceTableEditor,
-            'TableEditorAccounting': AceTableEditor
+            'TableEditorAccounting': AceTableEditor,
+            'SwitchEditorButton' : AceSwitchEditor
         },
 
         'Dojo': {
@@ -271,7 +273,7 @@ define([
             // category: 'B'
         },
 
-        // TODO
+
         'SwitchEditorButton': {
             type: 'DocumentPreview',
             title: localization["switch-editor-dojo"],

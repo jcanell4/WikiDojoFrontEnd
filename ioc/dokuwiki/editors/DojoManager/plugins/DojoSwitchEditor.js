@@ -1,9 +1,9 @@
 define([
     "dojo/_base/declare",
-    'ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin',
+    "ioc/dokuwiki/editors/DojoManager/plugins/AbstractDojoPlugin",
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    'ioc/dokuwiki/editors/Components/SwitchEditorComponent', // TODO: Canviar pel nou component
+    "ioc/dokuwiki/editors/Components/SwitchEditorComponent",
 ], function (declare, AbstractDojoPlugin, lang, _Plugin, SwitchEditorComponent) {
 
     var DojoSwitchEditor = declare(AbstractDojoPlugin, {

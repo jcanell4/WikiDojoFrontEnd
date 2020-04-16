@@ -542,7 +542,8 @@ define([
                             'EnableACE',
                             'EnableWrapper',
                             'SaveButton',
-                            'CancelButton'
+                            'CancelButton',
+                            'SwitchEditorButton'
                         ]
                     );
                     plugins = this.getPlugins(pluginNames)
