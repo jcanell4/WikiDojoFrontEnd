@@ -100,7 +100,13 @@ define([
                     // console.log("Afegit child", $child);
                 }
 
+                if ($node.text().length === 0) {
+                    $node.text("&nbsp;");
+                }
+
                 $child.html($node.text());
+
+
                 $node.empty();
 
                 if ($node.attr('id') === 'dijitEditorBody') {

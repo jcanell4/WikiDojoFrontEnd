@@ -45,7 +45,7 @@ define([
 
         handleEnterKey: function (e) {
 
-            // console.log("handleEnterKey:", e, this.editor.getCurrentNodeState());
+            console.log("handleEnterKey:", e, this.editor.getCurrentNodeState());
 
 
             // Si es troba dintre de una taula s'ha de procedir normalmente, no cal controlar que sigue un enter perquè això es fa al parent onKeyPressed
@@ -58,7 +58,10 @@ define([
             // Problema: quan es troba l'últim ol o ul es posa com a <div></p>, ho hem de gestionar
             // ALERTA! Només cal gestionar-lo quan el ol/ul es troba al principi i no hi ha cap més
 
-            if ((state.indexOf('ol') === 0 || state.indexOf('ul') === 0) && state.substr(3).indexOf('ol') === -1 && state.substr(3).indexOf('ul') === -1) {
+            if (isIocInfo) {
+                return false;
+
+            } else if ((state.indexOf('ol') === 0 || state.indexOf('ul') === 0) && state.substr(3).indexOf('ol') === -1 && state.substr(3).indexOf('ul') === -1) {
 
                 //var ret = this.inherited(arguments);
                 var $node = this.editor.getCurrentNode();
@@ -92,16 +95,39 @@ define([
                 return false;
 
 
-            } else if (state.indexOf('pre') !== -1 || state.indexOf('editable-text') !== -1) {
+            } else if (state.indexOf('pre') !== -1) {
+
+                var internalDocument = this.editor.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document;
+
+                if (internalDocument.getSelection) {
+
+                    var selection = internalDocument.getSelection(),
+                        range = selection.getRangeAt(0),
+                        br = document.createElement("br"),
+                        textNode = document.createTextNode("\u00a0"); //Passing " " directly will not end up being shown correctly
+                    range.deleteContents();//required or not?
+                    range.insertNode(br);
+                    range.collapse(false);
+                    range.insertNode(textNode);
+                    range.selectNodeContents(textNode);
+
+                    selection.removeAllRanges();
+                    this.editor.setCursorToNodePosition(textNode);
+                    // selection.addRange(range);
+                    return false;
+                }
+
+                return false;
+
+            } else if (state.indexOf('editable-text') !== -1) {
+
                 return true;
 
-            } else if (state.indexOf('table') === -1 && !isIocInfo) {
+                // } else if (state.indexOf('table') === -1 && !isIocInfo) {
+            } else if (state.indexOf('table') === -1) {
 
                 return this.inherited(arguments);
 
-
-            } else if (isIocInfo) {
-                return false;
             } else {
                 return true;
             }
@@ -222,7 +248,6 @@ define([
 
             // Continuem normalment
             return true;
-
 
 
         }

@@ -286,7 +286,7 @@ define([
                     var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
 
                     // ALERTA! si el nombre de classes especial creix més caldria implementar-ho com un array
-                    if ($node.attr('class') === 'iocinfo') {
+                    if ($node.attr('class') === 'iocinfo' || $node.attr('data-dw-field')) {
                         state = state + "-iocinfo";
                     }
                     if ($node.attr('class') === 'editable-text') {
