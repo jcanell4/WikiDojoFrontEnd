@@ -45,7 +45,7 @@ define([
 
         handleEnterKey: function (e) {
 
-            console.log("handleEnterKey:", e, this.editor.getCurrentNodeState());
+            // console.log("handleEnterKey:", e, this.editor.getCurrentNodeState());
 
 
             // Si es troba dintre de una taula s'ha de procedir normalmente, no cal controlar que sigue un enter perquè això es fa al parent onKeyPressed
@@ -53,7 +53,7 @@ define([
             var isIocInfo = this.editor.getCurrentNodeState().indexOf('iocinfo') > -1;
             var state = this.editor.getCurrentNodeState();
 
-            console.log("Estat:", state);
+            // console.log("Estat:", state);
 
             // Problema: quan es troba l'últim ol o ul es posa com a <div></p>, ho hem de gestionar
             // ALERTA! Només cal gestionar-lo quan el ol/ul es troba al principi i no hi ha cap més
@@ -97,6 +97,7 @@ define([
 
             } else if (state.indexOf('pre') !== -1) {
 
+                // Hack per fer que funcioni el salt de línia dintre del bloc de codi a Google Chrome (compatible amb altres navegadors)
                 var internalDocument = this.editor.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document;
 
                 if (internalDocument.getSelection) {
@@ -144,23 +145,31 @@ define([
             // Es considera buit si:
             // és buit
             if (html.length === 0) {
-                console.log("Length = 0");
                 return true;
             }
 
             // el contingut del node és '<br>' amb qualsevol cuantitat d'espais al davant o &nbsp;
             if (html === '<br>' || html === '<br />') {
-                console.log("Hi ha un BR");
                 return true;
             }
 
-            // el contingut es un <span>
-            if (jQuery(html).prop('tagName').toLowerCase() === 'span') {
-                console.log("Es un span");
-                return true;
-            }
 
-            console.log(" No es buit:", html, jQuery(html));
+
+            try {
+                // això pot fallar degut al plugin de jQuery Sizzle que està inclos a la DW (falla quan html no conté cap node html)
+                var $html = jQuery(html);
+
+                if ($html.length > 1) {
+                    return false;
+                }
+                if ($html.length === 1 && jQuery(html).prop('tagName').toLowerCase() === 'span') {
+                    return true;
+                }
+
+            } catch (e) {
+                // Si ha fallat es que el html es un contingut no html, per consegüent no és buit
+                return false;
+            }
 
             return false;
         },

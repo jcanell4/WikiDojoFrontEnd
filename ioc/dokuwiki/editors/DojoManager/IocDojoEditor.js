@@ -72,6 +72,9 @@ define([
                 }
                 if(!applied){
                     applied = this.document.execCommand("insertorderedlist", false, argument);
+
+                    this._fixListRootNode();
+
                 }
                 return applied;
             },
@@ -90,9 +93,40 @@ define([
                 }
                 if(!applied){
                     applied = this.document.execCommand("insertunorderedlist", false, argument);
+
+                    this._fixListRootNode();
+
                 }
                 return applied;
             },
+
+        _fixListRootNode: function() {
+            var $node = this.getCurrentNode();
+
+            console.log("Node:", $node);
+
+
+            // Cerquem el node pare, no funciona el or al selector
+            // var $parent = $node.parent('div');
+
+            var $closest = $node.closest('p');
+
+            // console.log("parent:", $parent);
+            console.log("closest:", $closest);
+
+
+            if ($closest.length >0) {
+                // alert('detectat un parágraf que embolcalla la llista');
+
+                var $auxNode = $closest.children();
+                $closest.before($auxNode);
+                $closest.remove();
+
+
+                this.setCursorToNodePosition($node.get(0));
+            }
+
+        },
 
             constructor: function (args) {
                 this.changeDetectorEnabled = false;
@@ -671,7 +705,11 @@ define([
             },
 
 
-            setCursorToNodePosition: function(node) {
+            setCursorToNodePosition: function($node) {
+
+                if (!$node || $node.length === 0) {
+                    return;
+                }
 
                 var backup = window.getSelection;
                 window.getSelection = document.getSelection;
@@ -681,7 +719,9 @@ define([
                 // var el = node;
 
                 var range = document.createRange();
-                range.setStart(node, 0);
+                console.log("range?", range);
+                console.log("node?", $node);
+                range.setStart($node, 0);
                 range.collapse(true);
                 sel.removeAllRanges();
                 sel.addRange(range);
