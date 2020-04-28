@@ -46,7 +46,6 @@ define([
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
              _Plugin, /*EnterKeyHandling,*/ html, rangeapi, RichText, dijit,
-
              TablePlugins
 ) {
 
@@ -57,8 +56,15 @@ define([
 
             contentFormat: 'Dojo',
 
+            onKeyDown: function (/* Event */ e) {
+                console.log("Intercepted, aquí es pot control·lar el tab");
+
+                this.inherited(arguments);
+            },
+
+
             // provem a sobreescriure la inserció de llistes ordendanes i desordenades (originalment a RichText.js)
-            _insertorderedlistImpl: function(argument){
+            _insertorderedlistImpl: function (argument) {
                 // summary:
                 //		This function implements the insertorderedlist command
                 // argument:
@@ -67,10 +73,10 @@ define([
                 //		protected
 
                 var applied = false;
-                if(has("ie")){
+                if (has("ie")) {
                     applied = this._adaptIEList("insertorderedlist", argument);
                 }
-                if(!applied){
+                if (!applied) {
                     applied = this.document.execCommand("insertorderedlist", false, argument);
 
                     this._fixListRootNode();
@@ -79,7 +85,7 @@ define([
                 return applied;
             },
 
-            _insertunorderedlistImpl: function(argument){
+            _insertunorderedlistImpl: function (argument) {
                 // summary:
                 //		This function implements the insertunorderedlist command
                 // argument:
@@ -88,10 +94,10 @@ define([
                 //		protected
 
                 var applied = false;
-                if(has("ie")){
+                if (has("ie")) {
                     applied = this._adaptIEList("insertunorderedlist", argument);
                 }
-                if(!applied){
+                if (!applied) {
                     applied = this.document.execCommand("insertunorderedlist", false, argument);
 
                     this._fixListRootNode();
@@ -100,33 +106,34 @@ define([
                 return applied;
             },
 
-        _fixListRootNode: function() {
-            var $node = this.getCurrentNode();
+            _fixListRootNode: function () {
+                var $node = this.getCurrentNode();
 
-            console.log("Node:", $node);
-
-
-            // Cerquem el node pare, no funciona el or al selector
-            // var $parent = $node.parent('div');
-
-            var $closest = $node.closest('p');
-
-            // console.log("parent:", $parent);
-            console.log("closest:", $closest);
+                console.log("Node:", $node);
 
 
-            if ($closest.length >0) {
-                // alert('detectat un parágraf que embolcalla la llista');
+                // Cerquem el node pare, no funciona el or al selector
+                // var $parent = $node.parent('div');
 
-                var $auxNode = $closest.children();
-                $closest.before($auxNode);
-                $closest.remove();
+                var $closest = $node.closest('p');
+
+                // console.log("parent:", $parent);
+                console.log("closest:", $closest);
 
 
-                this.setCursorToNodePosition($node.get(0));
-            }
+                if ($closest.length > 0) {
+                    // alert('detectat un parágraf que embolcalla la llista');
 
-        },
+                    var $auxNode = $closest.children();
+                    $closest.before($auxNode);
+                    $closest.remove();
+
+
+                    this.setCursorToNodePosition($node.get(0));
+                }
+
+            },
+
 
             constructor: function (args) {
                 this.changeDetectorEnabled = false;
@@ -304,13 +311,12 @@ define([
 
                 // console.error("Node?", node);
 
-                if (!node ) {
+                if (!node) {
                     return 'state unknown'
                 }
 
 
                 var $node = jQuery(node);
-
 
 
                 // si el node te id ="dijitEditorBody" retorna ''
@@ -345,7 +351,7 @@ define([
 
                 var internalDocument = this.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document;
 
-                var nodeSelected = internalDocument.getSelection().rangeCount>0;
+                var nodeSelected = internalDocument.getSelection().rangeCount > 0;
 
                 if (!nodeSelected) {
                     return {
@@ -507,7 +513,6 @@ define([
             getOriginalValue: function () {
                 return this.originalContent;
             },
-
 
 
             isChanged: function () {
@@ -705,7 +710,7 @@ define([
             },
 
 
-            setCursorToNodePosition: function($node) {
+            setCursorToNodePosition: function ($node) {
 
                 if (!$node || $node.length === 0) {
                     return;
@@ -732,7 +737,7 @@ define([
                 this.forceUpdateCursor();
             },
 
-            _stripTrailingEmptyNodes: function(node) {
+            _stripTrailingEmptyNodes: function (node) {
 
                 // buit, això és el que fa que es perdin totes les etiquetes buides a l'editor en teoría, es conserva
                 // al HTML però no es mostren a l'editor
