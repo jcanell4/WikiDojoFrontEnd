@@ -302,7 +302,7 @@ define([
             // Eliminem els espais anterior i posterior si es un únic node de text, aquest salts s'afegeixen
             // automàticament i no son controlats per nosaltres
 
-            if (previous.textContent.trim() === '') {
+            if (previous && previous.textContent.trim() === '') {
                 jQuery(previous).remove();
             }
 

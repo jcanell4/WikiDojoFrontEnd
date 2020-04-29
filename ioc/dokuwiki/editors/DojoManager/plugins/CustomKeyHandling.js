@@ -175,16 +175,14 @@ define([
         },
 
         handleDeleteKey: function (e) {
-            // console.log("detectat esborrar", e, editor.getCurrentNodeState());
             var selection = this.editor.getSelection();
-            // ALERTA! només es compten com a nodes els blocks, no els inline
-            console.log(selection);
+            // console.log(selection);
 
+            // ALERTA! només es compten com a nodes els blocks, no els inline
 
             var $previousNode = this.editor.getPreviousNode();
             var $currentNode = this.editor.getCurrentNode();
             // console.log($previousNode, $currentNode);
-
 
             // Codi per controlar la eliminació dels continguts de les caixes: ioccontent i data-dw-field
 
@@ -222,13 +220,6 @@ define([
                     e.stopPropagation();
                     return false;
                 }
-
-                // if (jQuery(node).parent().hasClass('action')) {
-                //     // alert("No es poden eliminar blocs, fes servir la icona d'eliminació corresponent");
-                //     e.preventDefault();
-                //     e.stopPropagation();
-                //     return false;
-                // }
 
                 if (selection.nodes.length > 1 && !ALLOWED_DELETE.includes(node.tagName.toLowerCase())) {
                     alert("No es poden eliminar blocs, fes servir la icona d'eliminació corresponent");

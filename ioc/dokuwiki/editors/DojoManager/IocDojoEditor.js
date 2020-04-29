@@ -58,9 +58,7 @@ define([
 
             onKeyDown: function (/* Event */ e) {
                 if (e.keyCode === 9) { // Tab
-
                     console.log("Intercepted, aquí es pot control·lar el tab", e);
-
                 }
 
                 this.inherited(arguments);
