@@ -68,18 +68,25 @@ define([
             }
 
 
-            // ALERTA! Això fa el canvi original
-            this.inherited(arguments);
-
             if (isRoot) {
 
                 if (navigator.userAgent.indexOf("Firefox") > -1) {
+
+                    // Important! No cridar al inherited
+
                     console.log("Firefox");
                     this._outdentImplFirefox($node, isLastNode, $pendingList)
                 } else {
                     console.log("altre");
+
+                    this.inherited(arguments);
                     this._outdentImplGeneral($node, isLastNode, $pendingList)
                 }
+            } else {
+
+                // ALERTA! Això fa el canvi original
+                this.inherited(arguments);
+
             }
 
 
@@ -189,113 +196,56 @@ define([
             }
 
 
-
         },
 
         _outdentImplFirefox: function ($originalNode, isLastNode, $pendingList) {
 
-            alert("unimplemented");
-            return;
-
-// Eliminem el node anterior
-
-            $originalNode.remove();
-
-            // obtenim el nou node
-            var $node = this.editor.getCurrentNode();
-            // contemplem 2 casos
-            // 		- el node es de text (FF)
-            // 		- el node es un span
+            console.log("Quin és el original node?", $originalNode);
+            console.log("Quin és el original node html?", $originalNode.html());
 
 
-            if ($node.attr('id') === "dijitEditorBody") {
-                // console.log("El outdent node es el propi de l'editor, no fem res més");
-                return;
+            var listType = $originalNode.parent().prop('tagName').toLowerCase();
+
+            // Separem els elements de llista a continuació, aniran en una nova llista del mateix tipus
+            var $child = $originalNode.next();
+            var $splittedList = jQuery('<' + listType + '>');
+
+            while ($child.length > 0) {
+                var $nextChild = $child.next();
+                $splittedList.append($child);
+                $child = $nextChild;
             }
 
 
-            // var html = '<p>' + content + '<p>';
-            // var html = '<p> ** ' + $node.html().trim() + ' ** <p>';
-            var html = '<p>' + $node.html().trim() + '<p>';
+            // El node es l'element li
+            // ALERTA! No comprovem si hi ha llista niuada
 
-            // Eliminem els salts de línia ja que pot ser que s'hagin afegit automàticament
-            html.replace(/<br ?\/?>/g, '');
+            var $newNode = jQuery('<p>');
+            $newNode.html($originalNode.html());
+            $originalNode.replaceWith($newNode);
+            $newNode.parent().after($newNode);
 
-
-            var $currentNode;
-
-
-            if (isLastNode) {
-                var $newNode = jQuery(html);
-
-                $node.after($newNode);
-
-                // this.editor.setCursorToNodePosition($node.prev());
-
-                $node.remove();
+            if ($splittedList.children().length > 0) {
+                $newNode.after($splittedList);
+            }
 
 
-                // var $currentNode = this.editor.getCurrentNode();
-                $currentNode = $newNode.next();
+            // Si la llista conté una llista interna movem els elements o creem una nova llista si es de diferent tipus
 
+            console.log("pendinglist:", $pendingList);
+
+
+            var pendingListType = $pendingList.prop('tagName').toLowerCase();
+
+
+            var nextTagName = $newNode.next() ? $newNode.next().prop('tagName').toLowerCase() : '';
+
+            if ($newNode.next().length === 0 || pendingListType != listType || (nextTagName !== 'ol' && nextTagName !== 'ul')) {
+                $newNode.after($pendingList)
             } else {
-
-                console.log("Eliminant $node (html):", $node.html());
-
-                $node.remove();
-
-
-                this.editor.execCommand('inserthtml', html);
-
-                $currentNode = this.editor.getCurrentNode();
+                $newNode.next().prepend($pendingList.children());
             }
 
-
-            // var $prev = $currentNode.prev();
-
-
-            // Reafegim la llista interna
-            // if ($innerList.length > 0) {
-            if ($pendingList.length > 0) {
-
-                var listType = $pendingList.prop('tagName').toLowerCase();
-
-                // Cas 1, el node següent és un UL o un OL
-                if ($currentNode.next().prop("tagName").toLowerCase() === listType) {
-
-                    $currentNode.next().prepend($pendingList.children());
-
-                    // alert("Reafegint Cas 1");
-
-                } else {
-                    // El tipus no coincideix, s'afegeix com a llista indpeendent a continuació
-                    $pendingList.insertAfter(jQuery($currentNode.get(0)));
-
-                    // alert("Reafegint Cas 2");
-
-                }
-
-            }
-
-
-            // Això esperem que passi sempre
-            if ($currentNode.html().length === 0 && $currentNode.prop('tagName').toLowerCase() !== 'body') {
-                // En alguns casos s'afegeix automàticament un node br
-                if ($currentNode.next().prop("tagName").toLowerCase() === 'br') {
-                    $currentNode.next().remove();
-                }
-
-                var $next = $currentNode.next();
-
-                // En alguns casos queda un contenidor ul/ol orfa
-                if ((isLastNode)
-                    && ($next.prop("tagName").toLowerCase() === 'ul' || $next.prop("tagName").toLowerCase() === 'ol')
-                    && $next.children().length === 0) {
-                    $next.remove();
-                }
-
-                $currentNode.remove();
-            }
 
 
         },
