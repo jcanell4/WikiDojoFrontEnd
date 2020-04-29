@@ -36,13 +36,7 @@ define([
             }
         },
 
-
         _outdentImpl: function () {
-
-            // Prova de la resolució directa
-            // this.editor.document.execCommand('outdent');
-            // return;
-
 
             var $node = this.editor.getCurrentNode();
             var isLastNode = $node.next().length === 0;
@@ -79,108 +73,228 @@ define([
 
             if (isRoot) {
 
-                // Eliminem el node anterior
+                if (navigator.userAgent.indexOf("Firefox") > -1) {
+                    console.log("Firefox");
+                    this._outdentImplFirefox($node, isLastNode, $pendingList)
+                } else {
+                    console.log("altre");
+                    this._outdentImplGeneral($node, isLastNode, $pendingList)
+                }
+            }
+
+
+        },
+
+
+        _outdentImplGeneral: function ($originalNode, isLastNode, $pendingList) {
+
+            // Eliminem el node anterior
+
+            $originalNode.remove();
+
+            // obtenim el nou node
+            var $node = this.editor.getCurrentNode();
+            // contemplem 2 casos
+            // 		- el node es de text (FF)
+            // 		- el node es un span
+
+
+            if ($node.attr('id') === "dijitEditorBody") {
+                // console.log("El outdent node es el propi de l'editor, no fem res més");
+                return;
+            }
+
+
+            // var html = '<p>' + content + '<p>';
+            // var html = '<p> ** ' + $node.html().trim() + ' ** <p>';
+            var html = '<p>' + $node.html().trim() + '<p>';
+
+            // Eliminem els salts de línia ja que pot ser que s'hagin afegit automàticament
+            html.replace(/<br ?\/?>/g, '');
+
+
+            var $currentNode;
+
+
+            if (isLastNode) {
+                var $newNode = jQuery(html);
+
+                $node.after($newNode);
+
+                // this.editor.setCursorToNodePosition($node.prev());
 
                 $node.remove();
 
-                // obtenim el nou node
-                var $node = this.editor.getCurrentNode();
-                // contemplem 2 casos
-                // 		- el node es de text (FF)
-                // 		- el node es un span
+
+                // var $currentNode = this.editor.getCurrentNode();
+                $currentNode = $newNode.next();
+
+            } else {
+
+                console.log("Eliminant $node (html):", $node.html());
+
+                $node.remove();
 
 
-                if ($node.attr('id') === "dijitEditorBody") {
-                    // console.log("El outdent node es el propi de l'editor, no fem res més");
-                    return;
-                }
+                this.editor.execCommand('inserthtml', html);
+
+                $currentNode = this.editor.getCurrentNode();
+            }
 
 
-                // var html = '<p>' + content + '<p>';
-                // var html = '<p> ** ' + $node.html().trim() + ' ** <p>';
-                var html = '<p>' + $node.html().trim() + '<p>';
-
-                // Eliminem els salts de línia ja que pot ser que s'hagin afegit automàticament
-                html.replace(/<br ?\/?>/g, '');
+            // var $prev = $currentNode.prev();
 
 
-                var $currentNode;
+            // Reafegim la llista interna
+            // if ($innerList.length > 0) {
+            if ($pendingList.length > 0) {
 
+                var listType = $pendingList.prop('tagName').toLowerCase();
 
-                if (isLastNode) {
-                    var $newNode = jQuery(html);
+                // Cas 1, el node següent és un UL o un OL
+                if ($currentNode.next().prop("tagName").toLowerCase() === listType) {
 
-                    $node.after($newNode);
+                    $currentNode.next().prepend($pendingList.children());
 
-                    // this.editor.setCursorToNodePosition($node.prev());
-
-                    $node.remove();
-
-
-                    // var $currentNode = this.editor.getCurrentNode();
-                    $currentNode = $newNode.next();
+                    // alert("Reafegint Cas 1");
 
                 } else {
+                    // El tipus no coincideix, s'afegeix com a llista indpeendent a continuació
+                    $pendingList.insertAfter(jQuery($currentNode.get(0)));
 
-                    console.log("Eliminant $node (html):", $node.html());
-
-                    $node.remove();
-
-
-                    this.editor.execCommand('inserthtml', html);
-
-                    $currentNode = this.editor.getCurrentNode();
-                }
-
-
-                // var $prev = $currentNode.prev();
-
-
-                // Reafegim la llista interna
-                if ($innerList.length > 0) {
-
-                    var listType = $pendingList.prop('tagName').toLowerCase();
-
-                    // Cas 1, el node següent és un UL o un OL
-                    if ($currentNode.next().prop("tagName").toLowerCase() === listType) {
-
-                        $currentNode.next().prepend($innerList.children());
-
-                        // alert("Reafegint Cas 1");
-
-                    } else {
-                        // El tipus no coincideix, s'afegeix com a llista indpeendent a continuació
-                        $pendingList.insertAfter(jQuery($currentNode.get(0)));
-
-                        // alert("Reafegint Cas 2");
-
-                    }
+                    // alert("Reafegint Cas 2");
 
                 }
 
+            }
 
-                // Això esperem que passi sempre
-                if ($currentNode.html().length === 0 && $currentNode.prop('tagName').toLowerCase() !== 'body') {
-                    // En alguns casos s'afegeix automàticament un node br
-                    if ($currentNode.next().prop("tagName").toLowerCase() === 'br') {
-                        $currentNode.next().remove();
-                    }
 
-                    var $next = $currentNode.next();
-
-                    // En alguns casos queda un contenidor ul/ol orfa
-                    if ((isLastNode)
-                        && ($next.prop("tagName").toLowerCase() === 'ul' || $next.prop("tagName").toLowerCase() === 'ol')
-                        && $next.children().length === 0) {
-                        $next.remove();
-                    }
-
-                    $currentNode.remove();
+            // Això esperem que passi sempre
+            if ($currentNode.html().length === 0 && $currentNode.prop('tagName').toLowerCase() !== 'body') {
+                // En alguns casos s'afegeix automàticament un node br
+                if ($currentNode.next().prop("tagName").toLowerCase() === 'br') {
+                    $currentNode.next().remove();
                 }
 
+                var $next = $currentNode.next();
 
-                // alert("Processat root outdent");
+                // En alguns casos queda un contenidor ul/ol orfa
+                if ((isLastNode)
+                    && ($next.prop("tagName").toLowerCase() === 'ul' || $next.prop("tagName").toLowerCase() === 'ol')
+                    && $next.children().length === 0) {
+                    $next.remove();
+                }
 
+                $currentNode.remove();
+            }
+
+
+
+        },
+
+        _outdentImplFirefox: function ($originalNode, isLastNode, $pendingList) {
+
+            alert("unimplemented");
+            return;
+
+// Eliminem el node anterior
+
+            $originalNode.remove();
+
+            // obtenim el nou node
+            var $node = this.editor.getCurrentNode();
+            // contemplem 2 casos
+            // 		- el node es de text (FF)
+            // 		- el node es un span
+
+
+            if ($node.attr('id') === "dijitEditorBody") {
+                // console.log("El outdent node es el propi de l'editor, no fem res més");
+                return;
+            }
+
+
+            // var html = '<p>' + content + '<p>';
+            // var html = '<p> ** ' + $node.html().trim() + ' ** <p>';
+            var html = '<p>' + $node.html().trim() + '<p>';
+
+            // Eliminem els salts de línia ja que pot ser que s'hagin afegit automàticament
+            html.replace(/<br ?\/?>/g, '');
+
+
+            var $currentNode;
+
+
+            if (isLastNode) {
+                var $newNode = jQuery(html);
+
+                $node.after($newNode);
+
+                // this.editor.setCursorToNodePosition($node.prev());
+
+                $node.remove();
+
+
+                // var $currentNode = this.editor.getCurrentNode();
+                $currentNode = $newNode.next();
+
+            } else {
+
+                console.log("Eliminant $node (html):", $node.html());
+
+                $node.remove();
+
+
+                this.editor.execCommand('inserthtml', html);
+
+                $currentNode = this.editor.getCurrentNode();
+            }
+
+
+            // var $prev = $currentNode.prev();
+
+
+            // Reafegim la llista interna
+            // if ($innerList.length > 0) {
+            if ($pendingList.length > 0) {
+
+                var listType = $pendingList.prop('tagName').toLowerCase();
+
+                // Cas 1, el node següent és un UL o un OL
+                if ($currentNode.next().prop("tagName").toLowerCase() === listType) {
+
+                    $currentNode.next().prepend($pendingList.children());
+
+                    // alert("Reafegint Cas 1");
+
+                } else {
+                    // El tipus no coincideix, s'afegeix com a llista indpeendent a continuació
+                    $pendingList.insertAfter(jQuery($currentNode.get(0)));
+
+                    // alert("Reafegint Cas 2");
+
+                }
+
+            }
+
+
+            // Això esperem que passi sempre
+            if ($currentNode.html().length === 0 && $currentNode.prop('tagName').toLowerCase() !== 'body') {
+                // En alguns casos s'afegeix automàticament un node br
+                if ($currentNode.next().prop("tagName").toLowerCase() === 'br') {
+                    $currentNode.next().remove();
+                }
+
+                var $next = $currentNode.next();
+
+                // En alguns casos queda un contenidor ul/ol orfa
+                if ((isLastNode)
+                    && ($next.prop("tagName").toLowerCase() === 'ul' || $next.prop("tagName").toLowerCase() === 'ol')
+                    && $next.children().length === 0) {
+                    $next.remove();
+                }
+
+                $currentNode.remove();
             }
 
 
