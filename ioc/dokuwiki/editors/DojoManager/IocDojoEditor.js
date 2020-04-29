@@ -57,7 +57,11 @@ define([
             contentFormat: 'Dojo',
 
             onKeyDown: function (/* Event */ e) {
-                console.log("Intercepted, aquí es pot control·lar el tab");
+                if (e.keyCode === 9) { // Tab
+
+                    console.log("Intercepted, aquí es pot control·lar el tab", e);
+
+                }
 
                 this.inherited(arguments);
             },

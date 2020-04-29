@@ -36,6 +36,7 @@ define([
             }
         },
 
+        // Aquesta implementació reemplaça completament la implementació del navegador per Outdent
         _outdentImpl: function () {
 
             var $node = this.editor.getCurrentNode();
@@ -59,29 +60,32 @@ define([
 
             if (isRoot && $innerList.length > 0) {
 
-                // ALERTA, aquí no tenim encara la posició final de la inserció, només fem el detach per reafegir-lo després
+                // ALERTA, aquí no tenim encara la posició final de la inserció, només fem el detach per reafegir-la després
 
                 $pendingList = jQuery($innerList.get(0));
                 $pendingList.detach();
-
 
             }
 
 
             if (isRoot) {
 
-                if (navigator.userAgent.indexOf("Firefox") > -1) {
+                // ALERTA! la implementació de chrome es podria desactivar, la implementació general funciona correctament
+                // però he detectat algún cas en que s'afegeix un paràgraf buit en afegir un nou element a una llista
+                // després de dividir-la.
+
+                if (navigator.userAgent.indexOf("Chrome") > -1) {
+
+                    this.inherited(arguments);
+                    this._outdentImplChrome($node, isLastNode, $pendingList)
+
+                } else {
 
                     // Important! No cridar al inherited
 
-                    console.log("Firefox");
-                    this._outdentImplFirefox($node, isLastNode, $pendingList)
-                } else {
-                    console.log("altre");
-
-                    this.inherited(arguments);
                     this._outdentImplGeneral($node, isLastNode, $pendingList)
                 }
+
             } else {
 
                 // ALERTA! Això fa el canvi original
@@ -92,33 +96,24 @@ define([
 
         },
 
-
-        _outdentImplGeneral: function ($originalNode, isLastNode, $pendingList) {
+        // Aquesta implementació depén de que s'hagi cridat abans al _outdentImpl i s'hagi executat el Outdent del navegador.
+        _outdentImplChrome: function ($originalNode, isLastNode, $pendingList) {
 
             // Eliminem el node anterior
-
             $originalNode.remove();
 
             // obtenim el nou node
             var $node = this.editor.getCurrentNode();
-            // contemplem 2 casos
-            // 		- el node es de text (FF)
-            // 		- el node es un span
-
 
             if ($node.attr('id') === "dijitEditorBody") {
                 // console.log("El outdent node es el propi de l'editor, no fem res més");
                 return;
             }
 
-
-            // var html = '<p>' + content + '<p>';
-            // var html = '<p> ** ' + $node.html().trim() + ' ** <p>';
             var html = '<p>' + $node.html().trim() + '<p>';
 
             // Eliminem els salts de línia ja que pot ser que s'hagin afegit automàticament
             html.replace(/<br ?\/?>/g, '');
-
 
             var $currentNode;
 
@@ -127,33 +122,18 @@ define([
                 var $newNode = jQuery(html);
 
                 $node.after($newNode);
-
-                // this.editor.setCursorToNodePosition($node.prev());
-
                 $node.remove();
-
-
-                // var $currentNode = this.editor.getCurrentNode();
                 $currentNode = $newNode.next();
 
             } else {
 
-                console.log("Eliminant $node (html):", $node.html());
-
                 $node.remove();
-
-
                 this.editor.execCommand('inserthtml', html);
-
                 $currentNode = this.editor.getCurrentNode();
             }
 
 
-            // var $prev = $currentNode.prev();
-
-
             // Reafegim la llista interna
-            // if ($innerList.length > 0) {
             if ($pendingList.length > 0) {
 
                 var listType = $pendingList.prop('tagName').toLowerCase();
@@ -163,14 +143,9 @@ define([
 
                     $currentNode.next().prepend($pendingList.children());
 
-                    // alert("Reafegint Cas 1");
-
                 } else {
                     // El tipus no coincideix, s'afegeix com a llista indpeendent a continuació
                     $pendingList.insertAfter(jQuery($currentNode.get(0)));
-
-                    // alert("Reafegint Cas 2");
-
                 }
 
             }
@@ -198,10 +173,7 @@ define([
 
         },
 
-        _outdentImplFirefox: function ($originalNode, isLastNode, $pendingList) {
-
-            console.log("Quin és el original node?", $originalNode);
-            console.log("Quin és el original node html?", $originalNode.html());
+        _outdentImplGeneral: function ($originalNode, isLastNode, $pendingList) {
 
 
             var listType = $originalNode.parent().prop('tagName').toLowerCase();
@@ -216,10 +188,6 @@ define([
                 $child = $nextChild;
             }
 
-
-            // El node es l'element li
-            // ALERTA! No comprovem si hi ha llista niuada
-
             var $newNode = jQuery('<p>');
             $newNode.html($originalNode.html());
             $originalNode.replaceWith($newNode);
@@ -229,14 +197,8 @@ define([
                 $newNode.after($splittedList);
             }
 
-
             // Si la llista conté una llista interna movem els elements o creem una nova llista si es de diferent tipus
-
-            console.log("pendinglist:", $pendingList);
-
-
             var pendingListType = $pendingList.prop('tagName').toLowerCase();
-
 
             var nextTagName = $newNode.next() ? $newNode.next().prop('tagName').toLowerCase() : '';
 
@@ -245,8 +207,6 @@ define([
             } else {
                 $newNode.next().prepend($pendingList.children());
             }
-
-
 
         },
 
