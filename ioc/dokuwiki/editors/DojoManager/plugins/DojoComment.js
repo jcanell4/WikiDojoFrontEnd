@@ -109,37 +109,34 @@ define([
             $replyNode.on('keypress keydown keyup', function (e) {
                 $replyNode.focus();
 
-                if (e.keyCode == 13 || e.charCode == 13) {
+                if (e.keyCode === 13 || e.charCode === 13) {
                     e.stopPropagation();
                 }
 
             });
 
-            $removeButtons.each(function () {
-                var $button = jQuery(this);
-                var $commentNode = $button.closest('.ioc-comment-reply');
-                var $toolbar = $button.closest('.ioc-comment-toolbar');
+            // TODO: només s'ha d'afegir les toolbars de l'últim element
 
-                var user = $commentNode.attr('data-user');
-                if (user == context.editor.dispatcher.getGlobalState().userId) {
-                    $button.on('click', context.addRemoveCommentHandler($commentNode).bind(context));
-                    $toolbar.css('display', 'inherit');
-                } else {
 
-                    $toolbar.css('display', 'none');
-                }
-            });
+            var $toolbars = $node.find('.ioc-comment-toolbar');
+            $toolbars.css('display', 'none');
 
-            $editButtons.each(function () {
-                var $button = jQuery(this);
-                var $commentNode = $button.closest('.ioc-comment-reply');
+            var $lastToolbar = $node.find('.ioc-comment-toolbar').last();
 
-                var user = $commentNode.attr('data-user');
 
-                if (user == context.editor.dispatcher.getGlobalState().userId) {
-                    $button.on('click', context.addEditCommentHandler($commentNode).bind(context));
-                }
-            });
+            if ($lastToolbar.length > 0) {
+                $lastToolbar.css('display', 'inherit');
+
+                var $removeButton = $lastToolbar.find('[data-button="remove"]');
+                var $editButton = $lastToolbar.find('[data-button="edit"]');
+
+                var $commentNode = $removeButton.closest('.ioc-comment-reply');
+
+                $removeButton.on('click', context.addRemoveCommentHandler($commentNode).bind(context));
+                $editButton.on('click', context.addEditCommentHandler($commentNode).bind(context));
+
+
+            }
 
 
             var $commentBody = $node.find('.ioc-comment-body');
@@ -329,6 +326,8 @@ define([
 
             var $saveButton = $commentNode.find('button[data-action-reply="save"]');
             var $cancelButton = $commentNode.find('button[data-action-reply="cancel"]');
+
+            $editNode.css('display', 'none');
 
 
             $textarea.on('keypress keydown keyup', function (e) {
