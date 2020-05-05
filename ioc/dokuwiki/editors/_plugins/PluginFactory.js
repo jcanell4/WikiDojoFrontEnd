@@ -836,7 +836,7 @@ define([
             //prompt: localization["ioc-insert-important-prompt"],
             sample: localization["ioc-insert-important-sample"],
             data: [],
-            htmlTemplate: '<div class="iocimportant" data-dw-box-text="reference" data-ioc-id="ioc_important_${id}" data-ioc-important data-ioc-block-json="${json}">' +
+            htmlTemplate: '<div class="iocimportant" data-dw-box-text="important" data-ioc-id="ioc_important_${id}" data-ioc-important data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
             '<p class="editable-text">' + localization["ioc-insert-important-sample"] + '</p>' +
             '</div></div>',
