@@ -232,30 +232,8 @@ define([
         _addHandlers: function ($node) {
 
             // console.log("Afegint botons", $node);
-
-            // s'ha de passar el pre
             this.addActionButtons($node.closest('pre'));
 
-            // // ALERTA[Xavi] ens assegurem que s'esborre el node al premer les tecles delete o backspace
-            // $node.on('keyup', function (e) {
-            //     var $this = jQuery(this);
-            //     console.log("keyup!", e.keyCode);
-            //
-            //     switch (e.keyCode) {
-            //         case 8:  // Backspace
-            //         case 46:  // Delete
-            //             console.log("Backspace/delete pressed");
-            //             $this.off();
-            //             $this.remove();
-            //             break;
-            //     }
-            // });
-            //
-            // //Codi de prova, per ara no es necessari gestionar el click, però ens assegurem que funciona
-            // $node.on('click', function (e) {
-            //
-            //     console.log('click',this);
-            // });
         }
     });
 
