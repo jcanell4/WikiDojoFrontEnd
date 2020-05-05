@@ -215,6 +215,9 @@ define([
             dojoActions.addParagraphAfterAction($node, this.editor);
             dojoActions.addParagraphBeforeAction($node, this.editor);
             dojoActions.deleteAction($node, this.editor, "bloc de codi"); // TODO: Localitzar
+            dojoActions.setupContainer($node, $container);
+
+
 
         },
 

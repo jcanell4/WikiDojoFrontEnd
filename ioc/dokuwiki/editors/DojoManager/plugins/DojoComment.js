@@ -170,7 +170,7 @@ define([
 
             dojoActions.addParagraphAfterAction($actions, this.editor);
             dojoActions.addParagraphBeforeAction($actions, this.editor);
-
+            dojoActions.setupContainer($node, $actions);
 
         },
 

@@ -196,6 +196,7 @@ define([
 
             }
             dojoActions.deleteAction($node, context.editor, this.elementType);
+            dojoActions.setupContainer($node, $actions);
 
         },
 

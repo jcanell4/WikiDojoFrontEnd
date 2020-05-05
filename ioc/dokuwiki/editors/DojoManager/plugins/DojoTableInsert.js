@@ -82,6 +82,7 @@ define([
         dojoActions.addParagraphAfterAction($node, editor);
         dojoActions.addParagraphBeforeAction($node, editor);
         dojoActions.deleteAction($node, editor, 'taula');
+        dojoActions.setupContainer($node, $node.find('.no-render.action'));
 
         // Eliminem el listener per editar els enllaços del info (que no han de tractar-se com enllaços)
         $node.find('[data-dw-link]').on('dblclick', function (e) {

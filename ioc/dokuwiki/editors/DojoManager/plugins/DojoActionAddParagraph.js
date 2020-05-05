@@ -39,7 +39,7 @@ define([
 
                 dojoActions.addParagraphAfterAction($node, context.editor);
                 dojoActions.addParagraphBeforeAction($node, context.editor);
-
+                dojoActions.setupContainer($node, $node.find('.no-render.action'));
             });
 
         },

@@ -63,7 +63,7 @@ define([
             $node.on('mouseout', function() {
                 $box.removeClass('box-highlight');
             });
-        };
+        },
 
         addParagraphAfterAction = function ($node, editor) {
 
@@ -162,9 +162,35 @@ define([
 
             });
 
+
             addHighlighter($aux, elementType === 'element');
 
+        },
+
+        setupContainer = function($node, $container) {
+            $container.css('display', 'none');
+
+
+
+            $node.on('mouseover', function() {
+                $container.css('display', 'block');
+            });
+
+            $node.on('mouseleave', function(e) {
+                // console.log("e", e);
+                // console.log("e", e.relatedTarget);
+
+                // Quan es fa click a un despelgable el relatedTarget es null, ho comprovem per ignorar l'amagament en
+                // aquest cas
+                if (e.relatedTarget) {
+                    $container.css('display', 'none');
+                }
+
+
+            });
         };
+
+
 
 
     return {
@@ -175,7 +201,9 @@ define([
 
         deleteAction: deleteAction,
 
-        getActionContainer: getAndAddActionContainer
+        getActionContainer: getAndAddActionContainer,
+
+        setupContainer: setupContainer
 
     };
 });
