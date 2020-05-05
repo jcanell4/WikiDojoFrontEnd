@@ -671,3 +671,7 @@ pre code label {
     background-color: #FEEFB3;
     /*border: 2px dotted dodgerblue;*/
 }
+
+.video {
+    text-align: center;
+}
