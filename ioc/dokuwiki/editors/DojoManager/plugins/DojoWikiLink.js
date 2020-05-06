@@ -148,6 +148,7 @@ define([
 
             var context = this;
 
+            $node.off('dblclick');
             $node.on('dblclick', function(e) {
                 e.preventDefault();
                 e.stopPropagation();

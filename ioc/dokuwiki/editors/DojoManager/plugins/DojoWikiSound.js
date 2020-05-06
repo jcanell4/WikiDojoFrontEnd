@@ -3,8 +3,9 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    "dojo/string"
-], function (declare, DojoWikiBlock, lang, _Plugin, string) {
+    "dojo/string",
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
+], function (declare, DojoWikiBlock, lang, _Plugin, string, dojoActions) {
 
     /*
      Al node generat per aquest plugin trobem dos tipus d'atributs propis:
@@ -37,10 +38,14 @@ define([
         },
 
         _addHandlers: function ($node) {
-            // TODO: obrir el dialeg per editar
-            this.inherited(arguments);
-        }
 
+            this.inherited(arguments);
+
+            // PROBLEMA: no es captura el doble click dins del frame, hem d'afegir una icona
+            // TODO: Convertir això en un dojoAction?
+
+            dojoActions.addEditAction($node, this);
+        }
 
     });
 

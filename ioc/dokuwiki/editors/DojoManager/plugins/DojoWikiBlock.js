@@ -129,14 +129,14 @@ define([
 
             $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
             var id = jQuery(html).attr('data-ioc-id');
-            var text = '';
+            // var text = '';
+
+            var $previousNode;
 
             if (this.previousId) {
-
-                var $contents = jQuery(this.editor.iframe).contents();
-
-                text = $contents.find('[data-ioc-id="' + this.previousId + '"] .editable-text').html();
-                $contents.find('[data-ioc-id="' + this.previousId + '"]').remove();
+                console.log("quin es el previous id?", this.previousId);
+                $previousNode = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + this.previousId + '"]');
+                console.log("previous node?", $previousNode);
             }
 
             // Si un node opcional es buit l'eliminem
@@ -152,21 +152,28 @@ define([
 
             this.editor.execCommand('inserthtml', html);
 
-            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
-            console.log("Hi ha títol?", this.title);
+            console.log("html afegit", html);
+            console.log("Id?", id);
 
-            console.log("que es això?", this);
+            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
 
             $node.attr('data-ioc-block-' + this.normalize(this.title), true);
 
 
-            this.lastId = id;
+            if ($previousNode) {
+                console.log("Previous node definit:", $previousNode);
+                console.log("Nou node: ", $node);
+                alert("Sense replace");
+                $previousNode.remove();
+                // $previousNode.replaceWith($node);
+            }
 
             // S'ha de restaurar el text aquí
-            if (text && text.length > 0) {
-                $node.find('.editable-text').html(text);
-            }
-            ;
+            // if (text && text.length > 0) {
+            //     $node.find('.editable-text').html(text);
+            // }
+
+
 
 
             this._addHandlers($node);

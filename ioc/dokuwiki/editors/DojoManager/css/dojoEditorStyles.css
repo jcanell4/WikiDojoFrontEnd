@@ -583,6 +583,10 @@ p {
     background-image: url("./images/trash.png");
 }
 
+.actionIcon.iocAddEditIcon {
+    background-image: url("./images/edit.png");
+}
+
 .actionIcon.iocAddParagraphIcon {
     background-image: url("./images/addParagraph2.png");
 }

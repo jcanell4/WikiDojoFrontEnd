@@ -316,7 +316,7 @@ define([
                 'large' : '520x406'
             },
 
-            htmlTemplate: '<div contenteditable="false" data-dw-block="video" data-video-id="${id}" data-ioc-id="ioc_video_${id}" data-ioc-block-json="${json}" data-video-size="${size}" data-video-type="${origin}" data-video-title="${title}">' +
+            htmlTemplate: '<div contenteditable="false" data-dw-block="video" data-video-id="${id}" data-ioc-id="ioc_video_${id}${unique}" data-ioc-block-json="${json}" data-video-size="${size}" data-video-type="${origin}" data-video-title="${title}">' +
             '<iframe src="${url}" width="${width}" height="${height}"></iframe>' +
             '</div>',
             category: localization["category-ioc"]

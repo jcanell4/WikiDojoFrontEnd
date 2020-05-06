@@ -3,8 +3,9 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    "dojo/string"
-], function (declare, DojoWikiBlock, lang, _Plugin, string) {
+    "dojo/string",
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
+], function (declare, DojoWikiBlock, lang, _Plugin, string, dojoActions) {
 
 
     // var urls = {
@@ -35,6 +36,8 @@ define([
             data.width = size[0];
             data.height = size[1];
 
+            data.unique = Date.now();
+
             console.log("data", data);
 
 
@@ -54,9 +57,44 @@ define([
 
 
         _addHandlers: function ($node) {
-            // TODO: obrir el dialeg per editar
             this.inherited(arguments);
+
+            dojoActions.addEditAction($node, this);
         },
+
+        getEditData:function($node) {
+            // TODO: obtener del node!
+
+            for (var key in this.data) {
+
+                var item = this.data[key];
+
+                switch (item.name) {
+                    case 'title':
+                        item.value = $node.attr('data-video-title');
+                        break;
+
+                    case 'id':
+
+                        var $id = $node.attr('data-video-id');
+                        $id = $id.split('|')[0];
+                        item.value = $id.split('?')[0];
+                        break;
+
+                    case 'origin':
+                        item.value = $node.attr('data-video-type');
+                        break;
+
+                    case 'size':
+                        item.value = $node.attr('data-video-size');
+                        break;
+                }
+            }
+
+            console.log("Data actualizat:", this.data);
+
+            return this.data;
+        }
 
     });
 

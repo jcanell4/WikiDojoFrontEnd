@@ -45,7 +45,7 @@ define([
         },
 
         // @param isElement es opcional
-        addHighlighter = function($node, isElement) {
+        addHighlighter = function ($node, isElement) {
             var $box;
 
             if (isElement) {
@@ -56,11 +56,11 @@ define([
                 $box = getBoxNode($node);
             }
 
-            $node.on('mouseover', function() {
+            $node.on('mouseover', function () {
                 $box.addClass('box-highlight');
             });
 
-            $node.on('mouseout', function() {
+            $node.on('mouseout', function () {
                 $box.removeClass('box-highlight');
             });
         },
@@ -73,7 +73,7 @@ define([
 
             if ($aux.length === 0) {
                 // $aux = jQuery('<span class="add-paragraph">' + localization["ioc-action-add-paragraph"] + '</span>');
-                $aux = jQuery('<span class="iocAddParagraphIcon actionIcon add-paragraph-after" title="'+localization["ioc-action-add-paragraph"]+'"></span>');
+                $aux = jQuery('<span class="iocAddParagraphIcon actionIcon add-paragraph-after" title="' + localization["ioc-action-add-paragraph"] + '"></span>');
                 $container.append($aux);
             }
 
@@ -101,7 +101,7 @@ define([
 
             if ($aux.length === 0) {
                 // $aux = jQuery('<span class="add-paragraph">' + localization["ioc-action-add-paragraph"] + '</span>');
-                $aux = jQuery('<span class="iocAddParagraphBeforeIcon actionIcon add-paragraph-before" title="'+localization["ioc-action-add-paragraph-before"]+'"></span>');
+                $aux = jQuery('<span class="iocAddParagraphBeforeIcon actionIcon add-paragraph-before" title="' + localization["ioc-action-add-paragraph-before"] + '"></span>');
                 $container.append($aux);
             }
 
@@ -125,10 +125,9 @@ define([
             var $aux = $container.find('.delete');
 
 
-
             if ($aux.length === 0) {
                 //$aux = jQuery('<span class="delete">' + localization["delete"] + '</span>');
-                $aux = jQuery('<span class="iocDeleteIcon actionIcon delete" title="'+localization["delete"]+'"></span>');
+                $aux = jQuery('<span class="iocDeleteIcon actionIcon delete" title="' + localization["delete"] + '"></span>');
                 $container.append($aux);
             }
 
@@ -167,16 +166,15 @@ define([
 
         },
 
-        setupContainer = function($node, $container) {
+        setupContainer = function ($node, $container) {
             $container.css('display', 'none');
 
 
-
-            $node.on('mouseover', function() {
+            $node.on('mouseover', function () {
                 $container.css('display', 'block');
             });
 
-            $node.on('mouseleave', function(e) {
+            $node.on('mouseleave', function (e) {
                 // console.log("e", e);
                 // console.log("e", e.relatedTarget);
 
@@ -188,9 +186,46 @@ define([
 
 
             });
+        },
+
+        addEditAction = function ($node, context) {
+
+
+            var $container = getAndAddActionContainer($node);
+
+            var $aux = $container.find('.add-edit');
+
+            if ($aux.length === 0) {
+                // $aux = jQuery('<span class="add-paragraph">' + localization["ioc-action-add-paragraph"] + '</span>');
+                $aux = jQuery('<span class="iocAddEditIcon actionIcon add-edit" title="' + localization["ioc-action-add-edit"] + '"></span>');
+                $container.append($aux);
+            }
+
+            $aux.off('click');
+            $aux.on('click', function(e) {
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                // console.log("$this?", $this);
+                // console.log("Json?", $this.attr('json'));
+                //
+                // console.log("parsed?", JSON.parse($this.attr('json')));
+
+                var $id = $node.attr('data-ioc-id');
+                $id = $id.split('|')[0];
+                $id = $id.split('?')[0];
+
+                console.log("hi ha id per pasar com a previous?", $id);
+
+
+
+                context._showDialog(context.getEditData($node), $id);
+
+            });
+
+            addHighlighter($aux);
         };
-
-
 
 
     return {
@@ -198,6 +233,8 @@ define([
         addParagraphAfterAction: addParagraphAfterAction,
 
         addParagraphBeforeAction: addParagraphBeforeAction,
+
+        addEditAction: addEditAction,
 
         deleteAction: deleteAction,
 
