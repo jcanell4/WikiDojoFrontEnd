@@ -621,7 +621,8 @@ pre code div.no-render.action {
     position: relative
 }
 
-[data-dw-block] .no-render.action, [data-dw-box-text] .no-render.action {
+[data-dw-block] .no-render.action, [data-dw-box-text] .no-render.action,
+.imgb .no-render.action {
     /*border-bottom: 1px dashed #8cacbb;*/
     top: -15px;
 }
@@ -672,6 +673,6 @@ pre code label {
     /*border: 2px dotted dodgerblue;*/
 }
 
-.video {
+.video, [data-dw-block="video"] {
     text-align: center;
 }

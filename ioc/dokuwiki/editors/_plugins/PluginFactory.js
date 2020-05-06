@@ -22,6 +22,7 @@ define([
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiSound',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiVideo',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiLink',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoActionAddParagraph',
 
@@ -70,7 +71,7 @@ define([
              DojoTableInsert, DojoToggleTableHeader,
              DojoTableAlign,
              /*DojoSound, */
-             DojoWikiBlock, DojoWikiSound, DojoWikiLink,
+             DojoWikiBlock, DojoWikiSound, DojoWikiVideo, DojoWikiLink,
              DojoActionAddParagraph,
              DojoComment,
              DojoSafePaste,
@@ -92,6 +93,7 @@ define([
     var plugins = {
         'ACE': {
             'IocSoundFormatButton': AceFormat,
+            'IocVideoFormatButton': AceFormat,
             // 'TestFormatButton' : AceFormat,
             'CancelButton': AceFireEvent,
             'SaveButton': AceFireEvent,
@@ -107,11 +109,11 @@ define([
             'TableEditor': AceTableEditor,
             'TableEditorMultiline': AceTableEditor,
             'TableEditorAccounting': AceTableEditor,
-            'SwitchEditorButton' : AceSwitchEditor
+            'SwitchEditorButton': AceSwitchEditor
         },
 
         'Dojo': {
-            'IocSoundFormatButton': DojoFormat,
+            //'IocSoundFormatButton': DojoFormat,
             // 'TestFormatButton' : DojoFormat,
             'IocComment': DojoComment,
             'CancelButton': DojoFireEvent,
@@ -173,9 +175,10 @@ define([
             'TableDelete': DojoTableDelete,
 
             'InsertSound': DojoWikiSound,
+            'InsertVideo': DojoWikiVideo,
 
             'DojoSafePaste': DojoSafePaste,
-            'DojoActionAddParagraph' : DojoActionAddParagraph
+            'DojoActionAddParagraph': DojoActionAddParagraph
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -245,7 +248,6 @@ define([
             category: localization["category-ioc"]
         },
 
-
         'InsertSound': { // pel Dojo Editor
             title: localization["ioc-insert-sound-button"],
             prompt: localization["ioc-insert-sound-prompt"],
@@ -266,6 +268,61 @@ define([
         },
 
 
+        'InsertVideo': { // pel Dojo Editor
+            title: localization["ioc-insert-video-button"],
+            prompt: localization["ioc-insert-video-prompt"],
+            icon: 'IocSound',
+
+            data: [ // clau: etiqueta
+                {
+                    'name': 'title',
+                    'label': localization["ioc-insert-label-title"],
+                    'value': '',
+                    'placeholder': localization["ioc-insert-placeholder-title"]
+                },
+                {
+                    'name': 'id',
+                    'label': localization['ioc-insert-label-id'],
+                    'value': '',
+                    'placeholder': localization["ioc-insert-placeholder-id"]
+                },
+                {
+                    'name': 'origin',
+                    'label': 'Origen',
+                    'value': '',
+                    'type' : 'select',
+                    'options' : ['vimeo', 'youtube', 'dailymotion'],
+                    // 'placeholder': localization["ioc-insert-video-prompt"]
+                },
+                {
+                    'name': 'size',
+                    'label': 'Mida',
+                    'value': '',
+                    'type' : 'select',
+                    'options' : ['small', 'medium', 'large'],
+                    // 'placeholder': localization["ioc-insert-video-prompt"]
+                }
+            ],
+
+            urls: {
+                'vimeo': 'https://player.vimeo.com/video/${id}',
+                'youtube': 'https://www.youtube.com/embed/${id}?controls=1',
+                'dailymotion': 'https://www.dailymotion.com/embed/video/${id}'
+            },
+
+            sizes: {
+                'medium' : '425x350',
+                'small' : '255x210',
+                'large' : '520x406'
+            },
+
+            htmlTemplate: '<div contenteditable="false" data-dw-block="video" data-video-id="${id}" data-ioc-id="ioc_video_${id}" data-ioc-block-json="${json}" data-video-size="${size}" data-video-type="${origin}" data-video-title="${title}">' +
+            '<iframe src="${url}" width="${width}" height="${height}"></iframe>' +
+            '</div>',
+            category: localization["category-ioc"]
+        },
+
+
         'DocumentPreviewButton': {
             type: 'DocumentPreview',
             title: localization["document-preview"],
@@ -280,7 +337,6 @@ define([
             icon: 'IocSwitchEditorAce',
             // category: 'B'
         },
-
 
 
         'IocComment': {

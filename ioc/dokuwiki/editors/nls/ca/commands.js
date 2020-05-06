@@ -136,6 +136,10 @@ define(
         // 'ioc-insert-sound-sample': 'identificador_so',
         'ioc-insert-sound-prompt': 'Introdueix l\'identificador del so:',
 
+        'ioc-insert-video-button': 'Insertar video',
+        'ioc-insert-video-prompt': 'Introdueix l\'identificador del video:',
+
+
         'ioc-insert-figure-prompt': 'Introdueix les dades de la figura:',
 
         'ioc-insert-label-id': 'Id',

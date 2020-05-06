@@ -109,6 +109,10 @@ define([
             dialog.show();
         },
 
+        _substitute: function(template, data) {
+            return string.substitute(template, data);
+        },
+
         _callback: function (data) {
 
             var volatileId = false;
@@ -119,10 +123,10 @@ define([
             }
 
             // el json es genera al DialogManager#_getFormDialog()
-
-            var html = string.substitute(this.htmlTemplate, data);
+            var html = this._substitute(this.htmlTemplate, data);
 
             var $html = jQuery(html);
+
             $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
             var id = jQuery(html).attr('data-ioc-id');
             var text = '';
@@ -149,6 +153,10 @@ define([
             this.editor.execCommand('inserthtml', html);
 
             var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
+            console.log("Hi ha títol?", this.title);
+
+            console.log("que es això?", this);
+
             $node.attr('data-ioc-block-' + this.normalize(this.title), true);
 
 

@@ -214,6 +214,7 @@ define([
                     'MergeCells', // desactivat temporalment, no funciona correctament
                     // 'TableDelete', // desactivat, s'ha afegit un action a la caixa
                     'InsertSound',
+                    'InsertVideo',
 
 
                     // 'NewContent', // Desactivat temporalment
