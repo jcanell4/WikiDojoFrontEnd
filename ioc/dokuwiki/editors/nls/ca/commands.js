@@ -34,6 +34,8 @@ define(
         'ioc-sound-button': 'Afegir so',
         'ioc-sound-sample': 'identificador del so:clau',
 
+        // IOC Video Plugin
+
 
         // Latex Preview Plugin
         'ioc-latex-preview': 'Previsualització Latex',
@@ -138,7 +140,6 @@ define(
 
         'ioc-insert-video-button': 'Insertar video',
         'ioc-insert-video-prompt': 'Introdueix l\'identificador del video:',
-
 
         'ioc-insert-figure-prompt': 'Introdueix les dades de la figura:',
 

@@ -49,6 +49,7 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceTestReadonlyPlugin', // Test readonly
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceTableEditorPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceVideoPlugin',
     'ioc/dokuwiki/editors/AceManager/plugins/AceSwitchEditorPlugin',
 
 
@@ -79,7 +80,9 @@ define([
              DojoFireEvent, AceDocumentPreview, DojoDocumentPreview,
              /*AceSwitchEditor,*/ DojoSwitchEditor,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
-             AceTableEditor, AceSwitchEditor,
+             AceTableEditor,
+             AceVideoPlugin,
+             AceSwitchEditor,
              ViewSource, LinkDialog,
              localization,
              editorPluginsCSS) {
@@ -93,7 +96,7 @@ define([
     var plugins = {
         'ACE': {
             'IocSoundFormatButton': AceFormat,
-            'IocVideoFormatButton': AceFormat,
+            'IocVideoFormatButton': AceVideoPlugin,
             // 'TestFormatButton' : AceFormat,
             'CancelButton': AceFireEvent,
             'SaveButton': AceFireEvent,
@@ -266,12 +269,50 @@ define([
             '</div>',
             category: localization["category-ioc"]
         },
+        'IocVideoFormatButton': { // Pel AceEditor
+            title: localization["ioc-insert-video-button"],
+            prompt: localization["ioc-insert-video-prompt"],
+            type: 'VideoPlugin',
+            template: '{{${origin}>${id}?${size}|${title}}}',
+            icon: 'IocVideo',
+            data: [ // clau: etiqueta
+                {
+                    'name': 'title',
+                    'label': localization["ioc-insert-label-title"],
+                    'value': '',
+                    'placeholder': localization["ioc-insert-placeholder-title"]
+                },
+                {
+                    'name': 'id',
+                    'label': localization['ioc-insert-label-id'],
+                    'value': '',
+                    'placeholder': localization["ioc-insert-placeholder-id"]
+                },
+                {
+                    'name': 'origin',
+                    'label': 'Origen',
+                    'value': '',
+                    'type' : 'select',
+                    'options' : ['vimeo', 'youtube', 'dailymotion'],
+                    // 'placeholder': localization["ioc-insert-video-prompt"]
+                },
+                {
+                    'name': 'size',
+                    'label': 'Mida',
+                    'value': '',
+                    'type' : 'select',
+                    'options' : ['small', 'medium', 'large'],
+                    // 'placeholder': localization["ioc-insert-video-prompt"]
+                }
+            ],
 
+
+        },
 
         'InsertVideo': { // pel Dojo Editor
             title: localization["ioc-insert-video-button"],
             prompt: localization["ioc-insert-video-prompt"],
-            icon: 'IocSound',
+            icon: 'IocVideo',
 
             data: [ // clau: etiqueta
                 {

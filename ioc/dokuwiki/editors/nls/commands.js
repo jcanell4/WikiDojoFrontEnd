@@ -125,6 +125,10 @@ define({ root:
         'ioc-insert-sound-sample': 'sound_id',
         'ioc-insert-sound-prompt': 'Enter sound id:',
 
+        'ioc-insert-video-button': 'Insert video',
+        'ioc-insert-video-prompt': 'Enter video id:',
+
+
         'ioc-insert-figure-prompt': 'Enter id, title and foot for the figure:',
 
         'ioc-insert-label-id': 'Id',

@@ -533,6 +533,7 @@ define([
                     pluginNames = pluginNames.concat(
                         [
                             'IocSoundFormatButton',
+                            'IocVideoFormatButton',
                             'DocumentPreviewButton',
                             'LatexPreview',
                             'TestReadonlyPlugin',
