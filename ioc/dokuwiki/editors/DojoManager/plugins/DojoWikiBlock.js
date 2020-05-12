@@ -75,7 +75,7 @@ define([
 
         process: function () {
 
-            // console.log("Process?");
+            console.log("Process data", this.data);
 
             if (this.data.length > 0) {
                 this._showDialog(this.data);
@@ -149,13 +149,115 @@ define([
                 }
             );
 
+            var $node;
 
-            this.editor.execCommand('inserthtml', html);
+            if ($previousNode) {
+                var $cursor = jQuery('<div>esborrar</div>');
+                $cursor.insertBefore($previousNode);
 
-            console.log("html afegit", html);
-            console.log("Id?", id);
+                this.editor.setCursorToNodePosition($cursor.get(0));
 
-            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
+                $node = jQuery(html);
+                $previousNode.replaceWith($node);
+                $cursor.remove();
+
+
+            } else {
+                this.editor.execCommand('inserthtml', html);
+                $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
+
+            }
+
+
+            //this.editor.execCommand('inserthtml', html);
+
+            // var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
+
+            $node.attr('data-ioc-block-' + this.normalize(this.title), true);
+
+
+            // if ($previousNode) {
+            //     console.log("Previous node definit:", $previousNode);
+            //     console.log("Nou node: ", $node);
+            //     alert("Sense replace");
+            //     $previousNode.remove();
+            //     // $previousNode.replaceWith($node);
+            // }
+
+
+
+
+
+
+            this._addHandlers($node);
+
+            this.editor.forceChange();
+
+            // Com que el valor de data.id pot venir de this.data si s'asigna un cop es queda fixat per a tots els nous elements generats
+            if (volatileId) {
+                data.id = undefined;
+            }
+        },
+
+        //AQUEST FUNCIONAVA PEL VIDEO
+        _callbackOLD: function (data) {
+
+            var volatileId = false;
+
+            if (data.id === undefined) {
+                data.id = Date.now();
+                volatileId = true;
+            }
+
+            // el json es genera al DialogManager#_getFormDialog()
+            var html = this._substitute(this.htmlTemplate, data);
+            var id = this._substitute("ioc_video_${id}${unique}", data);
+            console.log("Generated ID:", id);
+
+            var $html = jQuery(html);
+
+            $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
+
+
+            // var text = '';
+
+            var $previousNode;
+
+            if (this.previousId) {
+                console.log("quin es el previous id?", this.previousId);
+                $previousNode = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + this.previousId + '"]');
+                console.log("previous node?", $previousNode);
+            }
+
+            // Si un node opcional es buit l'eliminem
+            $html.find('[data-ioc-optional]').each(function () {
+                    var $this = jQuery(this);
+
+                    if ($this.text().length === 0) {
+                        $this.remove();
+                    }
+                }
+            );
+
+            var $node;
+
+            if ($previousNode) {
+                var $cursor = jQuery('<div>esborrar</div>');
+                $cursor.insertBefore($previousNode);
+
+                this.editor.setCursorToNodePosition($cursor.get(0));
+
+
+                $node = jQuery(html);
+                $previousNode.replaceWith($node);
+
+
+
+            } else {
+                this.editor.execCommand('inserthtml', html);
+                $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
+
+            }
 
             $node.attr('data-ioc-block-' + this.normalize(this.title), true);
 
@@ -163,9 +265,9 @@ define([
             if ($previousNode) {
                 console.log("Previous node definit:", $previousNode);
                 console.log("Nou node: ", $node);
-                alert("Sense replace");
                 $previousNode.remove();
                 // $previousNode.replaceWith($node);
+                $cursor.remove();
             }
 
             // S'ha de restaurar el text aquí
@@ -188,8 +290,6 @@ define([
 
         _addHandlers: function ($node) {
 
-
-
             // Eliminem tots els elements 'no-render' ja que aquests són elements que s'afegeixen dinàmicament.
             $node.find('.no-render').remove();
 
@@ -211,6 +311,7 @@ define([
 
             }
             dojoActions.deleteAction($node, context.editor, this.elementType);
+
             dojoActions.setupContainer($node, $actions);
 
         },

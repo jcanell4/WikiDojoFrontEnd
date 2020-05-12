@@ -285,7 +285,6 @@ define([
             },
 
             createEditor: function(config, type) {
-                console.log("Editor Type:", type);
 
                 switch (type) {
                     case "Dojo":

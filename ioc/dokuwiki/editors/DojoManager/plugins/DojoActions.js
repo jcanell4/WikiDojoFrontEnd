@@ -219,6 +219,7 @@ define([
                 console.log("hi ha id per pasar com a previous?", $id);
 
 
+                console.log("Mostrant dialeg per node:", $node);
 
                 context._showDialog(context.getEditData($node), $id);
 

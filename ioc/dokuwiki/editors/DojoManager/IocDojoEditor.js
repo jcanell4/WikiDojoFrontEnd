@@ -713,9 +713,9 @@ define([
             },
 
 
-            setCursorToNodePosition: function ($node) {
+            setCursorToNodePosition: function (node) {
 
-                if (!$node || $node.length === 0) {
+                if (!node || node.length === 0) {
                     return;
                 }
 
@@ -728,8 +728,8 @@ define([
 
                 var range = document.createRange();
                 console.log("range?", range);
-                console.log("node?", $node);
-                range.setStart($node, 0);
+                console.log("node?", node);
+                range.setStart(node, 0);
                 range.collapse(true);
                 sel.removeAllRanges();
                 sel.addRange(range);

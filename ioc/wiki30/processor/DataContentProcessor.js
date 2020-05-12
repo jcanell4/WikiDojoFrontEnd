@@ -136,7 +136,7 @@ define([
                 args["autosaveTimer"] = content.autosaveTimer;
             }
 
-            console.log("Ha arribat el format?", content.format, editorsByFormat[content.format]);
+            // console.log("Ha arribat el format?", content.format, editorsByFormat[content.format]);
 
             if (content.format !== undefined && editorsByFormat[content.format]) {
                 args.editorType = editorsByFormat[content.format];
