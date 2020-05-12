@@ -407,6 +407,9 @@ div.dokuwiki #toc__inside ul {
     margin: 1em auto;
 }
 
+
+
+
 .ioctextl .ioccontent p.ioctitle {
     margin-bottom: 2em !important;
 }
@@ -672,10 +675,13 @@ pre code label {
 /*[data-dw-box]:hover,*/
 /*[data-dw-box-text]:hover,*/
 /*[data-ioc-link]:hover {*/
-.box-highlight {
+.box-highlight, .box-highlight .ioctextl, .box-highlight .iocexample, .box-highlight .iocimportant, .box-highlight .iocquote,
+.box-highlight .iocnote, .box-highlight .iocreference, .box-highlight .ioccontent {
     background-color: #FEEFB3;
-    /*border: 2px dotted dodgerblue;*/
+    border-radius: 5px;
 }
+
+
 
 .video, [data-dw-block="video"] {
     text-align: center;
