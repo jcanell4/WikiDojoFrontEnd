@@ -681,8 +681,11 @@ pre code label {
     border-radius: 5px;
 }
 
+.iocgif img {
+    max-width: 100%
+}
 
-
-.video, [data-dw-block="video"] {
+.video, [data-dw-block="video"], .iocgif {
+    width: 73%;
     text-align: center;
 }

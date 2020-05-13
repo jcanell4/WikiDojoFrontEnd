@@ -10,6 +10,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoClearFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatFigure',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatLateral',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatGif',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoInternalLink',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoPicker',
@@ -67,6 +68,7 @@ define([
              DojoClearFormat,
              DojoMediaFormatFigure,
              DojoMediaFormatLateral,
+             DojoMediaFormatGif,
              DojoInternalLink, DojoPicker,
              DojoTableCellMerge, DojoTableDelete,
              DojoTableInsert, DojoToggleTableHeader,
@@ -130,6 +132,7 @@ define([
             // 'InsertFigureSyntax': DojoWikiBlock,
             'InsertFigureSyntax': DojoMediaFormatFigure,
             'InsertMediaSyntax': DojoMediaFormatLateral,
+            'InsertGif': DojoMediaFormatGif,
             //'InsertFigureLinkSyntax': DojoFormat,
             'InsertFigureLinkSyntax': DojoWikiLink,
             'InsertTableSyntax': DojoWikiBlock,
@@ -793,6 +796,16 @@ define([
             //'<div data-dw-figure contenteditable="false" style="text-align: center; margin:0 auto;"></div>' +
             '</div>',
             icon: 'IocInsertFigureSyntax',
+            category: localization["category-ioc"]
+        },
+
+        'InsertGif': {
+            title: localization["ioc-insert-figure-button"],
+            prompt: localization["ioc-insert-figure-prompt"],
+            sample: localization["ioc-insert-figure-sample"],
+            // htmlTemplate: '<div class="iocgif"><img src="${url}" alt="${title}" title="${title}" width="${width}" height="${height}"/></div>',
+            htmlTemplate: '<div class="iocgif"><img src="${url}" alt="${title}" title="${title}"/></div>',
+            icon: 'IocGif',
             category: localization["category-ioc"]
         },
 

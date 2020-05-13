@@ -215,6 +215,7 @@ define([
                     // 'TableDelete', // desactivat, s'ha afegit un action a la caixa
                     'InsertSound',
                     'InsertVideo',
+                    'InsertGif',
 
 
                     // 'NewContent', // Desactivat temporalment
