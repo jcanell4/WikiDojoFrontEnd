@@ -142,7 +142,7 @@ define([
              * @param params
              */
             _getDefaultDialog: function (refId, params) {
-                // console.log("_getDefaultDialog", params);
+                // console.log("_getDefaultDialog", refId, params);
                 var title = params.title;
                 //if (params.id) title += ": " + params.id;
 
@@ -303,6 +303,7 @@ define([
             },
 
             _getFormDialog: function (refId, params) {
+                // console.error("_getFormDialog", params);
 
                 params.single = true;
 

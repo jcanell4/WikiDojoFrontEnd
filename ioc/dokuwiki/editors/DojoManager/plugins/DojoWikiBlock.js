@@ -29,7 +29,7 @@ define([
 
     var WikiBlockButton = declare(AbstractParseableDojoPlugin, {
 
-        elementType : 'bloc',
+        elementType: 'bloc',
 
         init: function (args) {
             this.inherited(arguments);
@@ -90,9 +90,18 @@ define([
 
             this.previousId = previousId;
 
+            if (!previousId) {
+                for (var i = 0; i < data.length; i++) {
+                    data[i].value = '';
+                }
+            }
+
+
+
 
             var dialog = dialogManager.getDialog('form', this.editor.id, {
                 title: this.title,
+                id: previousId || Math.random(),
                 message: this.prompt, // TODO: localitzar
                 data: data,
                 ok: {
@@ -109,7 +118,7 @@ define([
             return dialog;
         },
 
-        _substitute: function(template, data) {
+        _substitute: function (template, data) {
             return string.substitute(template, data);
         },
 
@@ -183,10 +192,6 @@ define([
             // }
 
 
-
-
-
-
             this._addHandlers($node);
 
             this.editor.forceChange();
@@ -206,7 +211,6 @@ define([
             // $node.css('border-width', '1px');
             // $node.css('border-style', 'dotted');
             // $node.css('border-color', 'dodgerblue');
-
 
 
             var context = this;
