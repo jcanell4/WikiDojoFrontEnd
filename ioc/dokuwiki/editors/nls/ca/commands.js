@@ -139,7 +139,7 @@ define(
         'ioc-insert-sound-prompt': 'Introdueix l\'identificador del so:',
 
         'ioc-insert-video-button': 'Insertar video',
-        'ioc-insert-video-prompt': 'Introdueix l\'identificador del video:',
+        'ioc-insert-video-prompt': 'Introdueix l\'identificador i origen del video o enganxa la url en qualsevol camp:',
 
         'ioc-insert-figure-prompt': 'Introdueix les dades de la figura:',
 

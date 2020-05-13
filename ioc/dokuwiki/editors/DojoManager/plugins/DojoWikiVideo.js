@@ -22,6 +22,7 @@ define([
 
             this.urls = args.urls;
             this.sizes = args.sizes;
+            this.origins = args.origins;
         },
 
         _substitute: function (template, data) {
@@ -29,16 +30,13 @@ define([
             // 2 - substituir el ID a la URL
             // 3 - Afegir la URL al data
 
-            var url = string.substitute(this.urls[data.origin], data);
-            data.url = url;
+            data.url = string.substitute(this.urls[data.origin], data);
 
             var size = this.sizes[data.size].split('x');
             data.width = size[0];
             data.height = size[1];
 
             data.unique = Date.now();
-
-            console.log("data", data);
 
 
             return string.substitute(template, data);
@@ -91,9 +89,49 @@ define([
                 }
             }
 
-            console.log("Data actualizat:", this.data);
-
             return this.data;
+        },
+
+        _showDialog: function(data, previousId) {
+            var dialog = this.inherited(arguments);
+
+            var context = this;
+            var $dialog = jQuery(dialog.domNode);
+
+            // ALERTA: Codi duplicat al AceVidePlugin
+
+            // ALERTA! En aquest punt sembla que encara no s'han creat els camps i no son accessibles, afegim el listener
+            // al dialeg
+
+            $dialog.on('paste', function (e) {
+                var clipboardData, pastedData;
+                var $origin = $dialog.find('[name="origin"]');
+                var $id = $dialog.find('[name="id"]');
+
+                clipboardData = e.originalEvent.clipboardData || e.clipboardData || window.clipboardData;
+                pastedData = clipboardData.getData('Text');
+
+                // Do whatever with pasteddata
+                // console.log("Pasted data:", pastedData);
+
+
+                for (var i = 0; i < context.origins.length; i++) {
+
+                    var $matches = pastedData.match(context.origins[i].pattern);
+                    if ($matches && $matches.length > 1) {
+
+                        $origin.val(context.origins[i].origin);
+                        $id.val($matches[1]);
+
+                        // Només s'interrompt l'event si s'ha trobat un id vàlid
+                        e.stopPropagation();
+                        e.preventDefault();
+                        break;
+                    }
+                }
+
+
+            });
         }
 
     });

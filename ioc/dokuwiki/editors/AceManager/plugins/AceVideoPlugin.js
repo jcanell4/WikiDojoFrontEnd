@@ -12,24 +12,13 @@ define([
             this.prompt = args.prompt;
             this.data = args.data;
             this.template = args.template;
+            this.origins = args.origins;
 
-            // this.uniqueId = "UNIQUE ID " + Date.now();
 
             var config = args;
             if (args.icon.indexOf(".png") === -1) {
                 config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
             }
-
-            console.log("Config?", config);
-
-            // var config = {
-            //     type: args.type,
-            //     title: args.title,
-            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-            //     category: args.category
-            // };
-
-            // this.addButton(config);
 
             this.addButton(config, this.process);
 
@@ -100,6 +89,35 @@ define([
                 callback: saveCallback
             });
 
+
+            var $dialog = jQuery(dialog.domNode);
+
+            // ALERTA! En aquest punt sembla que encara no s'han creat els camps i no son accessibles, afegim el listener
+            // al dialeg
+
+            $dialog.on('paste', function (e) {
+                var clipboardData, pastedData;
+                var $origin = $dialog.find('[name="origin"]');
+                var $id = $dialog.find('[name="id"]');
+
+                clipboardData = e.originalEvent.clipboardData || e.clipboardData || window.clipboardData;
+                pastedData = clipboardData.getData('Text');
+
+                for (var i = 0; i < context.origins.length; i++) {
+
+                    var $matches = pastedData.match(context.origins[i].pattern);
+                    if ($matches && $matches.length > 1) {
+                        $origin.val(context.origins[i].origin);
+                        $id.val($matches[1]);
+
+                        // Només s'interrompt l'event si s'ha trobat un id vàlid
+                        e.stopPropagation();
+                        e.preventDefault();
+                        break;
+                    }
+                }
+
+            });
 
             dialog.show();
 

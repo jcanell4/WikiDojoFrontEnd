@@ -207,19 +207,9 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                // console.log("$this?", $this);
-                // console.log("Json?", $this.attr('json'));
-                //
-                // console.log("parsed?", JSON.parse($this.attr('json')));
-
                 var $id = $node.attr('data-ioc-id');
                 $id = $id.split('|')[0];
                 $id = $id.split('?')[0];
-
-                console.log("hi ha id per pasar com a previous?", $id);
-
-
-                console.log("Mostrant dialeg per node:", $node);
 
                 context._showDialog(context.getEditData($node), $id);
 

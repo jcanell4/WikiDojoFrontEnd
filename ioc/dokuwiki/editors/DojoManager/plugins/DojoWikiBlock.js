@@ -75,8 +75,6 @@ define([
 
         process: function () {
 
-            console.log("Process data", this.data);
-
             if (this.data.length > 0) {
                 this._showDialog(this.data);
             } else {
@@ -107,6 +105,8 @@ define([
             });
 
             dialog.show();
+
+            return dialog;
         },
 
         _substitute: function(template, data) {
@@ -134,9 +134,7 @@ define([
             var $previousNode;
 
             if (this.previousId) {
-                console.log("quin es el previous id?", this.previousId);
                 $previousNode = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + this.previousId + '"]');
-                console.log("previous node?", $previousNode);
             }
 
             // Si un node opcional es buit l'eliminem

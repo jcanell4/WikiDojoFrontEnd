@@ -275,6 +275,20 @@ define([
             type: 'VideoPlugin',
             template: '{{${origin}>${id}?${size}|${title}}}',
             icon: 'IocVideo',
+            origins: [
+                {
+                    origin: 'youtube',
+                    pattern: /v=(.*?)(?:\?|$)/,
+                },
+                {
+                    origin: 'vimeo',
+                    pattern: /vimeo\.com\/(.*?)(?:\?|$)/,
+                },
+                {
+                    origin: 'dailymotion',
+                    pattern: /dailymotion\.com\/video\/(.*?)(?:\?|$)/,
+                }
+            ],
             data: [ // clau: etiqueta
                 {
                     'name': 'title',
@@ -292,16 +306,16 @@ define([
                     'name': 'origin',
                     'label': 'Origen',
                     'value': '',
-                    'type' : 'select',
-                    'options' : ['vimeo', 'youtube', 'dailymotion'],
+                    'type': 'select',
+                    'options': ['vimeo', 'youtube', 'dailymotion'],
                     // 'placeholder': localization["ioc-insert-video-prompt"]
                 },
                 {
                     'name': 'size',
                     'label': 'Mida',
                     'value': '',
-                    'type' : 'select',
-                    'options' : ['small', 'medium', 'large'],
+                    'type': 'select',
+                    'options': ['small', 'medium', 'large'],
                     // 'placeholder': localization["ioc-insert-video-prompt"]
                 }
             ],
@@ -313,7 +327,20 @@ define([
             title: localization["ioc-insert-video-button"],
             prompt: localization["ioc-insert-video-prompt"],
             icon: 'IocVideo',
-
+            origins: [
+                {
+                    origin: 'youtube',
+                    pattern: /v=(.*?)(?:\?|$)/,
+                },
+                {
+                    origin: 'vimeo',
+                    pattern: /vimeo\.com\/(.*?)(?:\?|$)/,
+                },
+                {
+                    origin: 'dailymotion',
+                    pattern: /dailymotion\.com\/video\/(.*?)(?:\?|$)/,
+                }
+            ],
             data: [ // clau: etiqueta
                 {
                     'name': 'title',
@@ -331,16 +358,16 @@ define([
                     'name': 'origin',
                     'label': 'Origen',
                     'value': '',
-                    'type' : 'select',
-                    'options' : ['vimeo', 'youtube', 'dailymotion'],
+                    'type': 'select',
+                    'options': ['vimeo', 'youtube', 'dailymotion'],
                     // 'placeholder': localization["ioc-insert-video-prompt"]
                 },
                 {
                     'name': 'size',
                     'label': 'Mida',
                     'value': '',
-                    'type' : 'select',
-                    'options' : ['small', 'medium', 'large'],
+                    'type': 'select',
+                    'options': ['small', 'medium', 'large'],
                     // 'placeholder': localization["ioc-insert-video-prompt"]
                 }
             ],
@@ -352,9 +379,9 @@ define([
             },
 
             sizes: {
-                'medium' : '425x350',
-                'small' : '255x210',
-                'large' : '520x406'
+                'medium': '425x350',
+                'small': '255x210',
+                'large': '520x406'
             },
 
             htmlTemplate: '<div contenteditable="false" data-dw-block="video" data-video-id="${id}" data-ioc-id="ioc_video_${id}${unique}" data-ioc-block-json="${json}" data-video-size="${size}" data-video-type="${origin}" data-video-title="${title}">' +

@@ -727,8 +727,7 @@ define([
                 // var el = node;
 
                 var range = document.createRange();
-                console.log("range?", range);
-                console.log("node?", node);
+
                 range.setStart(node, 0);
                 range.collapse(true);
                 sel.removeAllRanges();

@@ -8,6 +8,7 @@ define([
 
     var editorsByFormat = {
         'html':'Dojo',
+        'Dojo':'Dojo',
         'ACE' : 'ACE'
     };
 
