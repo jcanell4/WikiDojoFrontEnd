@@ -9,24 +9,20 @@ define([
 
 
         send: function (extraData) {
-            // alert("TODO: Implementar petició per canviar d'editor");
-            // return;
-
-            // cookie("IOCForceScriptLoad", 1);
 
             // Eliminem els esborranys, si no s'elimina la petició és interceptada pel comparador de draft/document
             // i es perd el paràmetre amb el contentFormat
             var id = this.dispatcher.getGlobalState().getCurrentId();
+            var ns = this.dispatcher.getGlobalState().getCurrentNs();
 
             // Eliminem tots els esborranys abans d'enviar la petició
             this.dispatcher.getContentCache(id).getMainContentTool()._removeAllDrafts();
-
 
             // ALERTA! sempre es descarta l'esborrany perquè correspondrà a l'editor actual i no al nou
             var urlBase = this._getUrlBase() + '?call=edit',
                 dataToSend = {
                     do: 'edit',
-                    id: id,
+                    id: ns,
                     format: this.format,
                     recover_draft: 'false'
                 };

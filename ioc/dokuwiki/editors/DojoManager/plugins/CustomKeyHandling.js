@@ -8,6 +8,10 @@ define([
         "p", "h1", "h2", "h3", "h4", "h5", "li", "ol", "ul"
     ];
 
+    var FULL_NODE_DELETE_BY_CLASS = [
+        'iocgif'
+        ];
+
     var CustomKeyHandling = declare("dijit._editor.plugins.CustomKeyHandling", EnterKeyHandling, {
 
         setEditor: function (editor) {
@@ -175,6 +179,7 @@ define([
         },
 
         handleDeleteKey: function (e) {
+
             var selection = this.editor.getSelection();
             // console.log(selection);
 
@@ -247,6 +252,16 @@ define([
             // }
 
             // Continuem normalment
+
+            for (var i=0; i < FULL_NODE_DELETE_BY_CLASS.length; i++) {
+                if (jQuery(node).hasClass(FULL_NODE_DELETE_BY_CLASS[i])) {
+                    jQuery(node).remove();
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }
+
             return true;
 
 

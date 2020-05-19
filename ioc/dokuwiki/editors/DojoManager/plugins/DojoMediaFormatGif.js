@@ -35,7 +35,9 @@ define([
             this.addButton(config);
         },
 
-        _processFull: function () {
+
+
+        _showDialog: function ($previousNode) {
             //this.documentPreviewComponent.send();
             // Opció 1: cridar directament a tb_mediapopup(btn, props, edid)
 
@@ -66,7 +68,7 @@ define([
                     clearInterval(timer);
                     // this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
 
-                    context.insertHtml(value);
+                    context.insertHtml(value, $previousNode);
 
 
                     // context.editor.execCommand('inserthtml', value);
@@ -87,31 +89,31 @@ define([
                 edid
             );
 
+        },
 
-            // Opció 2: copiar el codi de la funció:
-
-            // function tb_mediapopup(btn, props, edid) {
-            //     console.log("tb_mediapopup", btn,props, edid, NS)
-            //     console.log("Obrint el mediapopup:", DOKU_BASE+props.url+encodeURIComponent(NS)+'&edid='+encodeURIComponent(edid))
-            //     window.open(
-            //         DOKU_BASE+props.url+encodeURIComponent(NS)+'&edid='+encodeURIComponent(edid),
-            //         props.name,
-            //         props.options);
-            //     return false;
-            // }
+        _processFull: function () {
+            this._showDialog();
 
         },
 
-        insertHtml: function (value) {
+        insertHtml: function (value, $previousNode) {
 
-            console.log("retornat del popup", value);
-            alert("Blquejada la inserció del html pel gif");
+
             var html = this.wikiImageToHTML(value);
-            this.editor.execCommand('inserthtml', html);
-            var id = jQuery(html).attr('data-ioc-id');
 
-            // ALERTA: Per alguna raó el .find() no troba els id normals d'html, per això es fa servir atribut propi
-            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id +'"]');
+
+            if ($previousNode) {
+                $node = jQuery(html);
+                $previousNode.replaceWith($node);
+            } else {
+                this.editor.execCommand('inserthtml', html);
+                var id = jQuery(html).attr('data-ioc-id');
+
+                // ALERTA: Per alguna raó el .find() no troba els id normals d'html, per això es fa servir atribut propi
+                var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id +'"]');
+            }
+
+            this.editor.forceChange();
 
             // TODO: Afegir aquí els botons que calguin
 
@@ -126,7 +128,12 @@ define([
 
 
             var chunks = file[1].split('|');
-            file[1] = chunks[0];
+            var ns = chunks[0];
+
+            // Si es troba a l'arrel cal incloure els :
+            if (ns.indexOf(':') === -1) {
+                ns = ':' + ns;
+            }
 
             var title = '';
             if (chunks.length>1) {
@@ -134,23 +141,18 @@ define([
             }
 
 
-            var width = value.match(/\?(.*?)\|/);
 
-
-            console.log("file:", file[1]);
-            console.log("width:", width[1]);
-
-            var tok = '' // Es necessari el tok per canviar la mida, si no es pasa dona error 412 però aquesta
+            var tok = ''; // Es necessari el tok per canviar la mida, si no es pasa dona error 412 però aquesta
             // informació no es passa desde la finestra. De totes maneres no cal passar el paràmetre, la mida
             // la podem ajustar directament a la etiqueta
 
             var url = 'lib/exe/fetch.php?'
                 // +'w=' + width[1]
-                + 'media=' + file[1];
+                + 'media=' + ns;
             // +'&media=' + file[1];
             // +'&tok=' + tok;
 
-            var id = file[1] + Date.now();
+            var id = ns + Date.now();
 
             // var html = '<img data-ioc-media data-ioc-id="' + id + '" src="' + url + '"/ style="width:' + width[1] + 'px;">'; // TODO: cal ficar alt o títol?
 
@@ -159,14 +161,15 @@ define([
                 var data = {
                     url : url,
                     id: id,
-                    title: title
+                    title: title,
+                    ns: ns
                 };
 
             return string.substitute(this.template, data);
         },
 
         parse: function () {
-            var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-media]');
+            var $nodes = jQuery(this.editor.iframe).contents().find('.iocgif');
             var context = this;
 
             $nodes.each(function () {
@@ -176,25 +179,16 @@ define([
         },
 
         _addHandlers: function ($node) {
-            // ALERTA[Xavi] ens assegurem que s'esborre el node al premer les tecles delete o backspace
-            $node.on('keyup', function (e) {
-                var $this = jQuery(this);
-                console.log("keyup!", e.keyCode);
 
-                switch (e.keyCode) {
-                    case 8:  // Backspace
-                    case 46:  // Delete
-                        console.log("Backspace/delete pressed");
-                        $this.off();
-                        $this.remove();
-                        break;
-                }
-            });
+            // ALERTA! No es pot controalr si es prem la tecla d'esborrar aquí perque el keypress es gestionat pel editor
 
-            //Codi de prova, per ara no es necessari gestionar el click, però ens assegurem que funciona
-            $node.on('click', function (e) {
+            var context = this;
 
-                console.log('click',this);
+            $node.on('dblclick', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                context._showDialog(jQuery(this));
             });
         }
 

@@ -230,6 +230,10 @@ define([
             return this.currentTabId;
         },
 
+        getCurrentNs: function () {
+            return this.currentTabId.split('_').join(':');
+        },
+
         // ALERTA[Xavi] en molts punts s'assigna aquest valor directament
         setCurrentId: function(id) {
             this.currentTabId = id;
@@ -524,7 +528,7 @@ define([
         },
 
         updateSessionStorage: function () {
-             console.log("GlobalState#updateSessionStorage", this);
+             // console.log("GlobalState#updateSessionStorage", this);
             // Update del sessionStorage, això és el que es fa ara en recarregar la pàgina
 
             if (this.pages && this.pages[""]) {

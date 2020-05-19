@@ -60,6 +60,9 @@ define([
                 if (e.keyCode === 9) { // Tab
                     console.log("Intercepted, aquí es pot control·lar el tab", e);
                 }
+                // else {
+                //     console.log("tecla detectada:", e.keyCode);
+                // }
 
                 this.inherited(arguments);
             },
