@@ -294,12 +294,6 @@ define([
             ],
             data: [ // clau: etiqueta
                 {
-                    'name': 'title',
-                    'label': localization["ioc-insert-label-title"],
-                    'value': '',
-                    'placeholder': localization["ioc-insert-placeholder-title"]
-                },
-                {
                     'name': 'id',
                     'label': localization['ioc-insert-label-id'],
                     'value': '',
@@ -346,12 +340,6 @@ define([
             ],
             data: [ // clau: etiqueta
                 {
-                    'name': 'title',
-                    'label': localization["ioc-insert-label-title"],
-                    'value': '',
-                    'placeholder': localization["ioc-insert-placeholder-title"]
-                },
-                {
                     'name': 'id',
                     'label': localization['ioc-insert-label-id'],
                     'value': '',
@@ -382,12 +370,12 @@ define([
             },
 
             sizes: {
-                'medium': '425x350',
-                'small': '255x210',
-                'large': '520x406'
+                'medium': '425x239',
+                'small': '255x143.4',
+                'large': '520x292.5'
             },
 
-            htmlTemplate: '<div contenteditable="false" data-dw-block="video" data-video-id="${id}" data-ioc-id="ioc_video_${id}${unique}" data-ioc-block-json="${json}" data-video-size="${size}" data-video-type="${origin}" data-video-title="${title}">' +
+            htmlTemplate: '<div contenteditable="false" data-dw-block="video" data-video-id="${id}" data-ioc-id="ioc_video_${id}${unique}" data-ioc-block-json="${json}" data-video-size="${size}" data-video-type="${origin}">' +
             '<iframe src="${url}" width="${width}" height="${height}"></iframe>' +
             '</div>',
             category: localization["category-ioc"]
