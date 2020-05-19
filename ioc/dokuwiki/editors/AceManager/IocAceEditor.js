@@ -255,6 +255,7 @@ define([
                         }
 
                         if (!editorRegistry[textareaId]) {
+                            // ALERTA! això es normal en el cas dels popups
                             console.warn("Error: can't find an editor with textarea id: " + textareaId);
                         } else {
                             context = editorRegistry[textareaId];
@@ -534,6 +535,7 @@ define([
                         [
                             'IocSoundFormatButton',
                             'IocVideoFormatButton',
+                            'IocGifFormatButton',
                             'DocumentPreviewButton',
                             'LatexPreview',
                             'TestReadonlyPlugin',

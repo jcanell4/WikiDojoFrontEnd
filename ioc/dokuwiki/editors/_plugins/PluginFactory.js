@@ -51,6 +51,7 @@ define([
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceTableEditorPlugin',
     'ioc/dokuwiki/editors/AceManager/plugins/AceVideoPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceGifPlugin',
     'ioc/dokuwiki/editors/AceManager/plugins/AceSwitchEditorPlugin',
 
 
@@ -84,6 +85,7 @@ define([
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
              AceVideoPlugin,
+             AceGifPlugin,
              AceSwitchEditor,
              ViewSource, LinkDialog,
              localization,
@@ -99,6 +101,7 @@ define([
         'ACE': {
             'IocSoundFormatButton': AceFormat,
             'IocVideoFormatButton': AceVideoPlugin,
+            'IocGifFormatButton': AceGifPlugin,
             // 'TestFormatButton' : AceFormat,
             'CancelButton': AceFireEvent,
             'SaveButton': AceFireEvent,
@@ -785,6 +788,16 @@ define([
             '</div>',
             icon: 'IocInsertFigureSyntax',
             category: localization["category-ioc"]
+        },
+
+        'IocGifFormatButton': {
+            title: localization["ioc-insert-figure-button"],
+            // prompt: localization["ioc-insert-figure-prompt"],
+            // sample: localization["ioc-insert-figure-sample"],
+            // htmlTemplate: '<div class="iocgif"><img src="${url}" alt="${title}" title="${title}" width="${width}" height="${height}"/></div>',
+            type: 'GifPlugin',
+            template: '{{iocgif>${id}}}',
+            icon: 'IocGif',
         },
 
         'InsertGif': {
