@@ -186,9 +186,11 @@ a[data-ioc-link] div.action {
 
 .ioctextl, .iocexample, .iocimportant, .iocquote, .iocfigure, .ioctable, .iocaccounting {
     width: 73% !important;
+    position: relative;
 }
 
 .ioctable, .iocaccounting {
+    position: relative;
     margin-left: auto !important;
     margin-right: auto !important;
 }
@@ -348,8 +350,11 @@ div.dokuwiki #toc__inside ul {
 }
 
 .ioctable .iocinfo, .iocaccounting .iocinfo {
-    margin: 2em auto 0 auto;
+    /*margin: 2em auto 0 auto;*/
+    margin: 0 auto;
 }
+
+
 
 /* COLUMN B */
 
@@ -624,6 +629,11 @@ pre code div.no-render.action {
     text-align: right;
 }
 
+.iocfigure .no-render.action {
+    top:0;
+}
+
+
 [data-dw-block], [data-dw-box-text] {
     position: relative
 }
@@ -655,9 +665,16 @@ pre code label {
 }
 
 .ioctable .no-render.action, .iocaccounting .no-render.action {
-    border-top: 1px dashed #8cacbb;
+    /*border-top: 1px dashed #8cacbb;*/
     margin-top: 5px;
     padding-top: 5px;
+
+    top: -5px;
+    transform: translateY(-100%);
+}
+
+.ioctable .no-render.action label, .iocaccounting .no-render.action label{
+    padding: 5px;
 }
 
 .ioctable .no-render.action label, .iocaccounting .no-render.action label{

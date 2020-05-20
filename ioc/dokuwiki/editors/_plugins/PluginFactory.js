@@ -899,7 +899,7 @@ define([
             '<div class="ioccontent">' +
             '<p class="ioctitle" data-dw-field="title" data-ioc-optional>${title}</p>' +
             '<p class="editable-text">' + localization["ioc-insert-text-large-sample"] + '</p>' +
-            '</div></div>',
+            '</div></div><p>&nbsp;</p>',
             icon: 'IocInsertTextLargeSyntax',
             category: localization["category-ioc-style"]
         },
