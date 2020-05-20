@@ -288,7 +288,7 @@ define([
                 },
                 {
                     origin: 'vimeo',
-                    pattern: /vimeo\.com\/(.*?)(?:\?|$)/,
+                    pattern: /vimeo\.com\/(?:video\/)?(.*?)(?:\?|$)/,
                 },
                 {
                     origin: 'dailymotion',
