@@ -18,19 +18,30 @@ define([
     var WikiBlockButton = declare(DojoWikiBlock, {
 
         init: function (args) {
+
             this.inherited(arguments);
 
-            this.urls = args.urls;
+            // this.urls = args.urls;
             this.sizes = args.sizes;
             this.origins = args.origins;
+
+            // Actualitzem el valor del data (que es fa servir per generar el dialog amb la llista d'origens
+            for (var i = 0; i < this.data.length; i++) {
+                if (this.data[i].name === 'origin') {
+                    this.data[i].options = [];
+
+                    for (var origin in this.origins) {
+                        this.data[i].options.push(origin);
+                    }
+
+                    break;
+                }
+            }
+
         },
 
         _substitute: function (template, data) {
-            // 1 - obtenir la URL
-            // 2 - substituir el ID a la URL
-            // 3 - Afegir la URL al data
-
-            data.url = string.substitute(this.urls[data.origin], data);
+            data.url = string.substitute(this.origins[data.origin].url_template, data);
 
             var size = this.sizes[data.size].split('x');
             data.width = size[0];
@@ -60,7 +71,7 @@ define([
             dojoActions.addEditAction($node, this);
         },
 
-        getEditData:function($node) {
+        getEditData: function ($node) {
             // TODO: obtener del node!
 
             for (var key in this.data) {
@@ -92,7 +103,7 @@ define([
             return this.data;
         },
 
-        _showDialog: function(data, previousId) {
+        _showDialog: function (data, previousId) {
             var dialog = this.inherited(arguments);
 
             var context = this;
@@ -103,6 +114,7 @@ define([
             // ALERTA! En aquest punt sembla que encara no s'han creat els camps i no son accessibles, afegim el listener
             // al dialeg
 
+
             $dialog.on('paste', function (e) {
                 var clipboardData, pastedData;
                 var $origin = $dialog.find('[name="origin"]');
@@ -111,16 +123,11 @@ define([
                 clipboardData = e.originalEvent.clipboardData || e.clipboardData || window.clipboardData;
                 pastedData = clipboardData.getData('Text');
 
-                // Do whatever with pasteddata
-                // console.log("Pasted data:", pastedData);
+                for (var origin in context.origins) {
 
-
-                for (var i = 0; i < context.origins.length; i++) {
-
-                    var $matches = pastedData.match(context.origins[i].pattern);
+                    var $matches = pastedData.match(context.origins[origin].pattern);
                     if ($matches && $matches.length > 1) {
-
-                        $origin.val(context.origins[i].origin);
+                        $origin.val(origin);
                         $id.val($matches[1]);
 
                         // Només s'interrompt l'event si s'ha trobat un id vàlid
@@ -129,7 +136,6 @@ define([
                         break;
                     }
                 }
-
 
             });
         }

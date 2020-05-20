@@ -14,6 +14,17 @@ define([
             this.template = args.template;
             this.origins = args.origins;
 
+            for (var i = 0; i < this.data.length; i++) {
+                if (this.data[i].name === 'origin') {
+                    this.data[i].options = [];
+
+                    for (var origin in this.origins) {
+                        this.data[i].options.push(origin);
+                    }
+
+                    break;
+                }
+            }
 
             var config = args;
             if (args.icon.indexOf(".png") === -1) {
@@ -72,6 +83,7 @@ define([
             var context = this;
 
             var saveCallback = function (data) {
+
                 context.editor.session.insert(context.editor.editor.getCursorPosition(), string.substitute(context.template, data));
 
             };
@@ -103,11 +115,11 @@ define([
                 clipboardData = e.originalEvent.clipboardData || e.clipboardData || window.clipboardData;
                 pastedData = clipboardData.getData('Text');
 
-                for (var i = 0; i < context.origins.length; i++) {
+                for (var origin in context.origins) {
 
-                    var $matches = pastedData.match(context.origins[i].pattern);
+                    var $matches = pastedData.match(context.origins[origin].pattern);
                     if ($matches && $matches.length > 1) {
-                        $origin.val(context.origins[i].origin);
+                        $origin.val(origin);
                         $id.val($matches[1]);
 
                         // Només s'interrompt l'event si s'ha trobat un id vàlid

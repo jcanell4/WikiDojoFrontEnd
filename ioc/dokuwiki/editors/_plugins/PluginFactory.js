@@ -279,22 +279,24 @@ define([
             title: localization["ioc-insert-video-button"],
             prompt: localization["ioc-insert-video-prompt"],
             type: 'VideoPlugin',
-            template: '{{${origin}>${id}?${size}|${title}}}',
+            template: '{{${origin}>${id}?${size}}}',
             icon: 'IocVideo',
-            origins: [
-                {
-                    origin: 'youtube',
+            // TODO: Obtenir del JSINFO
+            origins: {
+                'youtube': {
                     pattern: /v=(.*?)(?:\?|$)/,
+                    // url_template: 'https://player.vimeo.com/video/${id}'
                 },
-                {
-                    origin: 'vimeo',
-                    pattern: /vimeo\.com\/(?:video\/)?(.*?)(?:\?|$)/,
+                'vimeo': {
+                    pattern: /vimeo\.com\/(.*?)(?:\?|$)/,
+                    // url_template: 'https://www.youtube.com/embed/${id}?controls=1'
                 },
-                {
-                    origin: 'dailymotion',
+                'dailymotion': {
                     pattern: /dailymotion\.com\/video\/(.*?)(?:\?|$)/,
+                    // url_template: 'https://www.dailymotion.com/embed/video/${id}'
                 }
-            ],
+            },
+
             data: [ // clau: etiqueta
                 {
                     'name': 'id',
@@ -307,16 +309,14 @@ define([
                     'label': 'Origen',
                     'value': '',
                     'type': 'select',
-                    'options': ['vimeo', 'youtube', 'dailymotion'],
-                    // 'placeholder': localization["ioc-insert-video-prompt"]
                 },
                 {
                     'name': 'size',
                     'label': 'Mida',
                     'value': '',
                     'type': 'select',
-                    'options': ['small', 'medium', 'large'],
-                    // 'placeholder': localization["ioc-insert-video-prompt"]
+                    // TODO: Generar a partir del JSINFO
+                    'options': ['small', 'medium', 'large']
                 }
             ],
 
@@ -327,51 +327,45 @@ define([
             title: localization["ioc-insert-video-button"],
             prompt: localization["ioc-insert-video-prompt"],
             icon: 'IocVideo',
-            origins: [
-                {
-                    origin: 'youtube',
+            // TODO: Obtenir del JSINFO
+            origins: {
+                'youtube': {
                     pattern: /v=(.*?)(?:\?|$)/,
+                    url_template: 'https://player.vimeo.com/video/${id}'
                 },
-                {
-                    origin: 'vimeo',
+                'vimeo': {
                     pattern: /vimeo\.com\/(.*?)(?:\?|$)/,
+                    url_template: 'https://www.youtube.com/embed/${id}?controls=1'
                 },
-                {
-                    origin: 'dailymotion',
+                'dailymotion': {
                     pattern: /dailymotion\.com\/video\/(.*?)(?:\?|$)/,
+                    url_template: 'https://www.dailymotion.com/embed/video/${id}'
                 }
-            ],
+            }
+            ,
             data: [ // clau: etiqueta
                 {
                     'name': 'id',
                     'label': localization['ioc-insert-label-id'],
                     'value': '',
-                    'placeholder': localization["ioc-insert-placeholder-id"]
+                    'placeholder': localization["ioc-insert-placeholder-id"],
                 },
                 {
                     'name': 'origin',
                     'label': 'Origen',
                     'value': '',
                     'type': 'select',
-                    'options': ['vimeo', 'youtube', 'dailymotion'],
-                    // 'placeholder': localization["ioc-insert-video-prompt"]
                 },
                 {
                     'name': 'size',
                     'label': 'Mida',
                     'value': '',
                     'type': 'select',
+                    // TODO: Generar a partir del JSINFO
                     'options': ['small', 'medium', 'large'],
-                    // 'placeholder': localization["ioc-insert-video-prompt"]
                 }
             ],
-
-            urls: {
-                'vimeo': 'https://player.vimeo.com/video/${id}',
-                'youtube': 'https://www.youtube.com/embed/${id}?controls=1',
-                'dailymotion': 'https://www.dailymotion.com/embed/video/${id}'
-            },
-
+            // TODO: Obtenir del JSINFO
             sizes: {
                 'medium': '425x239',
                 'small': '255x143.4',
