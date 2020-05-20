@@ -100,8 +100,7 @@ define([
             var context = this;
 
             var saveCallback = function (data) {
-
-                context.editor.session.insert(context.editor.editor.getCursorPosition(), string.substitute(context.template, data));
+                context._getEditor().editor.session.insert(context.editor.editor.getCursorPosition(), string.substitute(context.template, data));
 
             };
 
