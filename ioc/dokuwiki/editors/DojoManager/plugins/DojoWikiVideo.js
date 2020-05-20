@@ -7,23 +7,27 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
 ], function (declare, DojoWikiBlock, lang, _Plugin, string, dojoActions) {
 
-
-    // var urls = {
-    //     'vimeo' : 'https://player.vimeo.com/video/{$id}',
-    //     'youtube' : 'https://www.youtube.com/embed/{$id}?controls=1',
-    //     'dailymotion' : 'https://www.dailymotion.com/embed/video/{$id}'
-    // };
-
-
     var WikiBlockButton = declare(DojoWikiBlock, {
 
         init: function (args) {
 
             this.inherited(arguments);
 
-            // this.urls = args.urls;
-            this.sizes = args.sizes;
-            this.origins = args.origins;
+            // Actualitzem el valor del data (que es fa servir per generar el dialog amb la llista de mides
+            this.sizes = this.origins = JSINFO.shared_constants.ONLINE_VIDEO_CONFIG['sizes'];
+            for (var i = 0; i < this.data.length; i++) {
+                if (this.data[i].name === 'size') {
+                    this.data[i].options = [];
+
+                    for (var size in this.sizes) {
+                        this.data[i].options.push(size);
+                    }
+
+                    break;
+                }
+            }
+
+            this.origins = this.origins = JSINFO.shared_constants.ONLINE_VIDEO_CONFIG['origins'];
 
             // Actualitzem el valor del data (que es fa servir per generar el dialog amb la llista d'origens
             for (var i = 0; i < this.data.length; i++) {
@@ -48,7 +52,6 @@ define([
             data.height = size[1];
 
             data.unique = Date.now();
-
 
             return string.substitute(template, data);
         },
@@ -125,8 +128,10 @@ define([
 
                 for (var origin in context.origins) {
 
-                    var $matches = pastedData.match(context.origins[origin].pattern);
+                    var $matches = pastedData.match(new RegExp(context.origins[origin].pattern));
+
                     if ($matches && $matches.length > 1) {
+
                         $origin.val(origin);
                         $id.val($matches[1]);
 

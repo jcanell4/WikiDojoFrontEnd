@@ -12,7 +12,22 @@ define([
             this.prompt = args.prompt;
             this.data = args.data;
             this.template = args.template;
-            this.origins = args.origins;
+
+            this.sizes = this.origins = JSINFO.shared_constants.ONLINE_VIDEO_CONFIG['sizes'];
+
+            for (var i = 0; i < this.data.length; i++) {
+                if (this.data[i].name === 'size') {
+                    this.data[i].options = [];
+
+                    for (var size in this.sizes) {
+                        this.data[i].options.push(size);
+                    }
+
+                    break;
+                }
+            }
+
+            this.origins = JSINFO.shared_constants.ONLINE_VIDEO_CONFIG['origins'];
 
             for (var i = 0; i < this.data.length; i++) {
                 if (this.data[i].name === 'origin') {
@@ -25,6 +40,8 @@ define([
                     break;
                 }
             }
+
+
 
             var config = args;
             if (args.icon.indexOf(".png") === -1) {
@@ -117,8 +134,10 @@ define([
 
                 for (var origin in context.origins) {
 
-                    var $matches = pastedData.match(context.origins[origin].pattern);
+                    var $matches = pastedData.match(new RegExp(context.origins[origin].pattern));
+
                     if ($matches && $matches.length > 1) {
+
                         $origin.val(origin);
                         $id.val($matches[1]);
 

@@ -172,7 +172,6 @@ define([
             } else {
                 this.editor.execCommand('inserthtml', html);
                 $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
-
             }
 
 

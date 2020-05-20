@@ -281,22 +281,7 @@ define([
             type: 'VideoPlugin',
             template: '{{${origin}>${id}?${size}}}',
             icon: 'IocVideo',
-            // TODO: Obtenir del JSINFO
-            origins: {
-                'youtube': {
-                    pattern: /v=(.*?)(?:\?|$)/,
-                    // url_template: 'https://player.vimeo.com/video/${id}'
-                },
-                'vimeo': {
-                    pattern: /vimeo\.com\/(.*?)(?:\?|$)/,
-                    // url_template: 'https://www.youtube.com/embed/${id}?controls=1'
-                },
-                'dailymotion': {
-                    pattern: /dailymotion\.com\/video\/(.*?)(?:\?|$)/,
-                    // url_template: 'https://www.dailymotion.com/embed/video/${id}'
-                }
-            },
-
+            // els origens s'obtenen del JSINFO
             data: [ // clau: etiqueta
                 {
                     'name': 'id',
@@ -316,7 +301,7 @@ define([
                     'value': '',
                     'type': 'select',
                     // TODO: Generar a partir del JSINFO
-                    'options': ['small', 'medium', 'large']
+                    // 'options': ['small', 'medium', 'large']
                 }
             ],
 
@@ -328,21 +313,22 @@ define([
             prompt: localization["ioc-insert-video-prompt"],
             icon: 'IocVideo',
             // TODO: Obtenir del JSINFO
-            origins: {
-                'youtube': {
-                    pattern: /v=(.*?)(?:\?|$)/,
-                    url_template: 'https://player.vimeo.com/video/${id}'
-                },
-                'vimeo': {
-                    pattern: /vimeo\.com\/(.*?)(?:\?|$)/,
-                    url_template: 'https://www.youtube.com/embed/${id}?controls=1'
-                },
-                'dailymotion': {
-                    pattern: /dailymotion\.com\/video\/(.*?)(?:\?|$)/,
-                    url_template: 'https://www.dailymotion.com/embed/video/${id}'
-                }
-            }
-            ,
+            // els origens s'obtenen del JSINFO
+            // origins: {
+            //     'youtube': {
+            //         pattern: /v=(.*?)(?:\?|$)/,
+            //         url_template: 'https://player.vimeo.com/video/${id}'
+            //     },
+            //     'vimeo': {
+            //         pattern: /vimeo\.com\/(.*?)(?:\?|$)/,
+            //         url_template: 'https://www.youtube.com/embed/${id}?controls=1'
+            //     },
+            //     'dailymotion': {
+            //         pattern: /dailymotion\.com\/video\/(.*?)(?:\?|$)/,
+            //         url_template: 'https://www.dailymotion.com/embed/video/${id}'
+            //     }
+            // }
+            // ,
             data: [ // clau: etiqueta
                 {
                     'name': 'id',
@@ -362,15 +348,15 @@ define([
                     'value': '',
                     'type': 'select',
                     // TODO: Generar a partir del JSINFO
-                    'options': ['small', 'medium', 'large'],
+                    // 'options': ['small', 'medium', 'large'],
                 }
             ],
-            // TODO: Obtenir del JSINFO
-            sizes: {
-                'medium': '425x239',
-                'small': '255x143.4',
-                'large': '520x292.5'
-            },
+            // // TODO: Obtenir del JSINFO
+            // sizes: {
+            //     'medium': '425x239',
+            //     'small': '255x143.4',
+            //     'large': '520x292.5'
+            // },
 
             htmlTemplate: '<div contenteditable="false" data-dw-block="video" data-video-id="${id}" data-ioc-id="ioc_video_${id}${unique}" data-ioc-block-json="${json}" data-video-size="${size}" data-video-type="${origin}">' +
             '<iframe src="${url}" width="${width}" height="${height}"></iframe>' +
