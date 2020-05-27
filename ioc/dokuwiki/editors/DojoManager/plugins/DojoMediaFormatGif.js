@@ -1,11 +1,12 @@
 define([
     "dojo/_base/declare",
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatFigure',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
     "dojo/string",
-], function (declare, AbstractParseableDojoPlugin, /*DojoMediaFormatFigure,*/ lang, _Plugin, string) {
+], function (declare, AbstractParseableDojoPlugin, dojoActions, /*DojoMediaFormatFigure,*/ lang, _Plugin, string) {
 
     var TIMER_INTERVAL = 0.1;
     var timer = null;
@@ -36,14 +37,13 @@ define([
         },
 
 
-
         _showDialog: function ($previousNode) {
             //this.documentPreviewComponent.send();
             // Opció 1: cridar directament a tb_mediapopup(btn, props, edid)
 
             // obtenir el id del document
 
-            var edid = 'textarea_' + this.editor.id+'_media';
+            var edid = 'textarea_' + this.editor.id + '_media';
 
 
             // eliminem qualsevol textarea anterior. Alternativa: si existeix deixar aquest i no crear cap de nou
@@ -101,17 +101,24 @@ define([
 
             var html = this.wikiImageToHTML(value);
 
+            // Fem servir el mateix sistema que al DojoWikiBlock, creem un node com a ancla
+            this.editor.execCommand('insertparagraph');
+            $previousNode = jQuery(this.editor.getCurrentNode()[0]);
+
+
+            var $node;
+
 
             if ($previousNode) {
                 $node = jQuery(html);
                 $previousNode.replaceWith($node);
-            } else {
-                this.editor.execCommand('inserthtml', html);
-                var id = jQuery(html).attr('data-ioc-id');
-
-                // ALERTA: Per alguna raó el .find() no troba els id normals d'html, per això es fa servir atribut propi
-                var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id +'"]');
-            }
+            } // else {
+            //     this.editor.execCommand('inserthtml', html);
+            //     var id = jQuery(html).attr('data-ioc-id');
+            //
+            //     // ALERTA: Per alguna raó el .find() no troba els id normals d'html, per això es fa servir atribut propi
+            //     var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id +'"]');
+            // }
 
             this.editor.forceChange();
 
@@ -136,10 +143,9 @@ define([
             }
 
             var title = '';
-            if (chunks.length>1) {
+            if (chunks.length > 1) {
                 title = chunks[1];
             }
-
 
 
             var tok = ''; // Es necessari el tok per canviar la mida, si no es pasa dona error 412 però aquesta
@@ -158,12 +164,12 @@ define([
 
             // '<div class="iocgif"><img src="${url}" alt="${title}" title="${title}" "/></div>',
 
-                var data = {
-                    url : url,
-                    id: id,
-                    title: title,
-                    ns: ns
-                };
+            var data = {
+                url: url,
+                id: id,
+                title: title,
+                ns: ns
+            };
 
             return string.substitute(this.template, data);
         },
@@ -180,9 +186,17 @@ define([
 
         _addHandlers: function ($node) {
 
+            console.log("Afegint handlers a media format gif. node:", $node);
+
             // ALERTA! No es pot controalr si es prem la tecla d'esborrar aquí perque el keypress es gestionat pel editor
 
             var context = this;
+
+            $node.find('.no-render').remove();
+
+            var $actions = jQuery('<div class="no-render action" contenteditable="false">');
+
+            $node.append($actions);
 
             $node.on('dblclick', function (e) {
                 e.preventDefault();
@@ -190,6 +204,11 @@ define([
 
                 context._showDialog(jQuery(this));
             });
+
+            dojoActions.addParagraphAfterAction($node, context.editor);
+            dojoActions.addParagraphBeforeAction($node, context.editor);
+            dojoActions.deleteAction($node, context.editor, this.elementType);
+            dojoActions.setupContainer($node, $actions);
         }
 
     });

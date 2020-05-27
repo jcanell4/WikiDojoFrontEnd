@@ -138,7 +138,6 @@ define([
             'InsertGif': DojoMediaFormatGif,
             //'InsertFigureLinkSyntax': DojoFormat,
             'InsertFigureLinkSyntax': DojoWikiLink,
-            'InsertTableSyntax': DojoWikiBlock,
             // 'InsertTableLinkSyntax': DojoFormat,
             'InsertTableLinkSyntax': DojoWikiLink,
             'InsertTextSyntax': DojoWikiBlock,
@@ -899,7 +898,7 @@ define([
             '<div class="ioccontent">' +
             '<p class="ioctitle" data-dw-field="title" data-ioc-optional>${title}</p>' +
             '<p class="editable-text">' + localization["ioc-insert-text-large-sample"] + '</p>' +
-            '</div></div><p>&nbsp;</p>',
+            '</div></div>',
             icon: 'IocInsertTextLargeSyntax',
             category: localization["category-ioc-style"]
         },
@@ -957,7 +956,7 @@ define([
             htmlTemplate: '<div class="iocimportant" data-dw-box-text="important" data-ioc-id="ioc_important_${id}" data-ioc-important data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
             '<p class="editable-text">' + localization["ioc-insert-important-sample"] + '</p>' +
-            '</div></div>',
+            '</div></div></div>',
             icon: 'IocInsertImportantSyntax',
             category: localization["category-ioc-style"]
         },
@@ -970,7 +969,7 @@ define([
             htmlTemplate: '<div class="iocquote" data-dw-box-text="quote" data-ioc-id="ioc_quote_${id}" data-ioc-important data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
             '<p class="editable-text">' + localization["ioc-insert-quote-sample"] + '</p>' +
-            '</div></div>',
+            '</div></div></div>',
             icon: 'IocInsertQuoteSyntax',
             category: localization["category-ioc-style"]
         },
