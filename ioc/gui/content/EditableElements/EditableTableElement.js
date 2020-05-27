@@ -4,19 +4,19 @@ define([
     "ioc/store/IocDataGrid",
     // "dojox/grid/DataGrid",
     "dojox/grid/cells",
-    "dojox/grid/cells/dijit",
+    // "dojox/grid/cells/dijit",
     "ioc/store/IocMemory",
     "ioc/store/IocObjectStore",
     // "dojo/store/Memory",
     // "dojo/data/ObjectStore",
     "dijit/form/Button",
-    "dojox/grid/_Events",
+    // "dojox/grid/_Events",
     // "dijit/form/Textarea"
-    // "dijit/form/NumberTextBox",
+    "dijit/form/NumberTextBox",
     "dijit/form/NumberSpinner", // això fa el mateix que el NumberTextBox però afegint les fletxes
     "ioc/gui/content/EditableElements/ZoomableCell"
 
-], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell) {
+], function (declare, AbstractEditableElement, DataGrid, cells, Memory, ObjectStore, Button, NumberTextBox, NumberSpinner, ZoomableCell) {
 
     var ADD_ROW = "add_row",
         ADD_DEFAULT_ROW = "add_default_row",
@@ -702,7 +702,6 @@ define([
                                     });
                                 };
                                 cell.formatter = function (datum) {
-
                                     // Format the value in store, so as to be displayed.
                                     var d = !datum ? (new Date()) : dojo.date.locale.parse(datum, {
                                         selector: 'date',
@@ -714,10 +713,30 @@ define([
                                     });
                                 };
                                 break;
-                            case 'number':
+                                
+                            case 'decimal':
                                 cell.type = cells._Widget;
                                 cell.widgetClass = NumberTextBox;
+//                                cell.widgetProps = {constraints: {places: 2, locale:'es'}}
+//                                cell.getValue = function () {
+//                                    var value = this.widget.get('value'); console.log ("decimal.getValue", dojo.number.parse(value.toString(), {places: 2}));
+//                                    return this.widget.get('value').toString();
+//                                }
+                                cell.formatter = function (value, row, attr) {
+                                    if (attr.constraints === undefined || attr.constraints === null) 
+                                        constraints = {places: 2};
+                                    else
+                                        constraints = JSON.parse(attr.constraints);
+//                                    console.log ("decimal.formatter", value, dojo.number.format(value, constraints));
+                                    return dojo.number.format(value, constraints);
+                                }
                                 break;
+                                
+                            case 'number':
+                                cell.type = cells._Widget;
+                                cell.widgetClass = NumberSpinner;
+                                break;
+                                
                             case 'select':
                                 cell.type = dojox.grid.cells.Select;
                                 cell.options = field['options'] || ['Error. No options added to default view'];
