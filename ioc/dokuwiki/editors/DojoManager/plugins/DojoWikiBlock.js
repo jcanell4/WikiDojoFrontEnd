@@ -156,7 +156,7 @@ define([
                 }
             );
 
-            var $node;
+            var $nodeCursor;
 
             if ($previousNode) {
                 var $cursor = jQuery('<div>esborrar</div>');
@@ -164,34 +164,27 @@ define([
 
                 this.editor.setCursorToNodePosition($cursor.get(0));
 
-                $node = jQuery(html);
-                $previousNode.replaceWith($node);
+                $nodeCursor = jQuery(html);
+                $previousNode.replaceWith($nodeCursor);
+
+
                 $cursor.remove();
 
 
+
             } else {
-                this.editor.execCommand('inserthtml', html);
 
-                console.log("Html:", html);
-                $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
-                console.log("$node html", $node.html());
+                // Inserim un node per fer servir d'ancla per inserir el nou contingut, execCommand('inserthtml') és inconsistent entre navegadors
+                this.editor.execCommand('insertparagraph');
+                $previousNode = jQuery(this.editor.getCurrentNode()[0]);
+                $cursor = $previousNode.prev();
+                $cursor.replaceWith($html);
+
+
+                var $node = $html;
+
+
             }
-
-
-            //this.editor.execCommand('inserthtml', html);
-
-            // var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
-
-            $node.attr('data-ioc-block-' + this.normalize(this.title), true);
-
-
-            // if ($previousNode) {
-            //     console.log("Previous node definit:", $previousNode);
-            //     console.log("Nou node: ", $node);
-            //     alert("Sense replace");
-            //     $previousNode.remove();
-            //     // $previousNode.replaceWith($node);
-            // }
 
 
             this._addHandlers($node);

@@ -14,7 +14,7 @@ define([
             this.inherited(arguments);
 
             // Actualitzem el valor del data (que es fa servir per generar el dialog amb la llista de mides
-            this.sizes = this.origins = JSINFO.shared_constants.ONLINE_VIDEO_CONFIG['sizes'];
+            this.sizes = JSINFO.shared_constants.ONLINE_VIDEO_CONFIG['sizes'];
             for (var i = 0; i < this.data.length; i++) {
                 if (this.data[i].name === 'size') {
                     this.data[i].options = [];
@@ -27,7 +27,7 @@ define([
                 }
             }
 
-            this.origins = this.origins = JSINFO.shared_constants.ONLINE_VIDEO_CONFIG['origins'];
+            this.origins = JSINFO.shared_constants.ONLINE_VIDEO_CONFIG['origins'];
 
             // Actualitzem el valor del data (que es fa servir per generar el dialog amb la llista d'origens
             for (var i = 0; i < this.data.length; i++) {
