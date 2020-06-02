@@ -729,7 +729,7 @@ define([
                                         constraints = JSON.parse(attr.constraints);
 //                                    console.log ("decimal.formatter", value, dojo.number.format(value, constraints));
                                     return dojo.number.format(value, constraints);
-                                }
+                                };
                                 break;
                                 
                             case 'number':
