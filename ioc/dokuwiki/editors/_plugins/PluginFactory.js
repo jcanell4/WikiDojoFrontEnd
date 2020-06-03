@@ -22,6 +22,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableAlign',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiBlock',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoNewContent',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiSound',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiVideo',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWikiLink',
@@ -75,7 +76,7 @@ define([
              DojoTableInsert, DojoToggleTableHeader,
              DojoTableAlign,
              /*DojoSound, */
-             DojoWikiBlock, DojoWikiSound, DojoWikiVideo, DojoWikiLink,
+             DojoWikiBlock, DojoNewContent, DojoWikiSound, DojoWikiVideo, DojoWikiLink,
              DojoActionAddParagraph,
              DojoComment,
              DojoSafePaste,
@@ -131,7 +132,7 @@ define([
             'SwitchEditorButton': DojoSwitchEditor,
 
             // Botons del desplegable IOC
-            'NewContent': DojoFormat,
+            'NewContent': DojoNewContent,
             // 'InsertFigureSyntax': DojoWikiBlock,
             'InsertFigureSyntax': DojoMediaFormatFigure,
             'InsertMediaSyntax': DojoMediaFormatLateral,
@@ -412,7 +413,7 @@ define([
             close: '</newcontent>',
             sample: localization["ioc-new-content-sample"],
             icon: 'IocNewContent',
-            category: localization["category-ioc"]
+            // category: localization["category-ioc"]
         },
 
         'InsertFigureLinkSyntax': {

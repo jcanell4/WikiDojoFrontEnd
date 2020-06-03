@@ -715,3 +715,8 @@ pre code label {
     width: 73%;
     text-align: center;
 }
+
+newcontent {
+    border-left: 3px solid #66CD00;
+    display: block;
+}
