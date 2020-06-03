@@ -711,6 +711,7 @@ pre code label {
 }
 
 .video, [data-dw-block="video"], .iocgif {
+    position: relative;
     width: 73%;
     text-align: center;
 }
