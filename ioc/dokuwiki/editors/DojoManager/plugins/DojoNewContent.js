@@ -84,6 +84,11 @@ define([
                     $node = $node.parent();
                 }
 
+                // Aquest cas es dona quan hi ha una selecció múltiple d'elements que comparteixen arrél,
+                // com per exemple els elements d'una llista
+                if ($node.prop("tagName").toLowerCase() === "newcontent") {
+                    return;
+                }
 
                 // Quan es perd el focus del document la selecció retorna el node del document, en aquest cas
                 // s'ha d'ignorar
@@ -112,82 +117,7 @@ define([
             this.editor.forceChange();
 
 
-        },
-
-
-        // addBlock: function () {
-        //
-        //     var selection = this.editor.getSelection();
-        //
-        //     for (var i = 0; i < selection.nodes.length; i++) {
-        //         // var $node = jQuery(selection.nodes[i]);
-        //         var $node = this.searchRootNode(selection.nodes[i]);
-        //         var $newNode = jQuery('<' + this.tag + '>');
-        //
-        //         if (this.clearFormat) {
-        //             $newNode.html($node.text());
-        //         } else {
-        //             $newNode.html($node.html());
-        //         }
-        //
-        //         $node.empty();
-        //
-        //         //$node.append($newNode);
-        //         $node.replaceWith($newNode);
-        //
-        //         this.editor.setCursorToNodePosition($newNode.get(0));
-        //
-        //     }
-        // },
-        //
-        // removeBlock: function () {
-        //     var selection = this.editor.getSelection();
-        //
-        //     for (var i = 0; i < selection.nodes.length; i++) {
-        //         var $node = this.searchRootNode(selection.nodes[i]);
-        //
-        //
-        //         if ($node.prop('tagName').toLowerCase() === this.tag.toLowerCase()
-        //             // console.log("UNWRAP pel tag");
-        //             // $node.contents().unwrap();
-        //             || (this.groupPattern && this.groupPattern.test($node.prop('tagName').toLowerCase()))) {
-        //             // console.log("UNWRAP pel pattern");
-        //             //$node.contents().wrap('p'), $node.contents().unwrap();
-        //             var $newNode = jQuery('<p>');
-        //
-        //             // console.log("Node:", $node);
-        //
-        //             $newNode.append($node.html());
-        //
-        //             // console.log("Newnode:", $newNode);
-        //
-        //             $node.replaceWith($newNode);
-        //
-        //             this.editor.setCursorToNodePosition($newNode.get(0));
-        //
-        //         }
-        //
-        //     }
-        //
-        // },
-
-        // searchRootNode: function (node) {
-        //     var $node = jQuery(node);
-        //
-        //     if ($node.attr('id') === 'dijitEditorBody') {
-        //         var $placeholderNode =jQuery('<p>');
-        //         $placeholderNode.text(this.sample);
-        //         $node.prepend($placeholderNode);
-        //         return $placeholderNode;
-        //     }
-        //
-        //     while ($node.parent().attr('id') !== 'dijitEditorBody') {
-        //         $node = $node.parent();
-        //     }
-        //
-        //     return $node;
-        //
-        // }
+        }
     });
 
 
