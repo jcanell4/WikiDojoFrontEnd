@@ -413,7 +413,7 @@ define([
             close: '</newcontent>',
             sample: localization["ioc-new-content-sample"],
             icon: 'IocNewContent',
-            // category: localization["category-ioc"]
+            category: localization["category-ioc-style"]
         },
 
         'InsertFigureLinkSyntax': {
