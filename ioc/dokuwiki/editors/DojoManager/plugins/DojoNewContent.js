@@ -59,24 +59,11 @@ define([
 
         process: function () {
 
-            // TODO: habilitar el sistema per selecció múltiple
-
-            // ALERTA: En aquest punt el botó encara no ha canviat d'estat en ser premut
-            // console.log("Estat del botó:", this.button.get('checked'));
-
-            // if (this.empty) {
-            //
-            //     this.editor.execCommand('inserthtml', '<' + this.tag + '/>');
-            //
-            // } else {
-            //
-            //
             if (this.button.get('checked')) {
                 this.addBlock();
             } else {
                 this.removeBlock();
             }
-            // }
         },
 
         addBlock: function () {
@@ -84,14 +71,33 @@ define([
             console.log("Selection nodes?", selection.nodes);
 
             for (var i = 0; i < selection.nodes.length; i++) {
-                console.log("i:", i);
+
                 var $node = jQuery(selection.nodes[i]);
+
+                if ($node.attr('id') === 'dijitEditorBody') {
+                    continue;
+                }
+
+                // TODO: Cal cercar el node arrel
+
+                while ($node.parent().attr('id')!== 'dijitEditorBody') {
+                    $node = $node.parent();
+                }
+
+
+                // Quan es perd el focus del document la selecció retorna el node del document, en aquest cas
+                // s'ha d'ignorar
+
+
+
                 $node.wrap("<newcontent></newcontent>")
                 console.log("Node wrapped:", $node);
             }
 
+            this.editor.forceChange();
 
         },
+
         removeBlock: function () {
             var selection = this.editor.getSelection();
             console.log("Selection nodes?", selection.nodes);
@@ -103,6 +109,7 @@ define([
                 console.log("Node unwrapped:", $node);
             }
 
+            this.editor.forceChange();
 
 
         },

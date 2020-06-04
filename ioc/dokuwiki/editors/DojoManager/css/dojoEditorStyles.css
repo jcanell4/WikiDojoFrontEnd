@@ -717,6 +717,10 @@ pre code label {
 }
 
 newcontent {
-    border-left: 3px solid #66CD00;
     display: block;
 }
+
+newcontent, newcontent .iocnote, newcontent .iocreference, newcontent .ioctext {
+    border-left: 3px solid #66CD00;
+}
+
