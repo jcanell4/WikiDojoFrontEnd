@@ -14,11 +14,24 @@ define([
     // "dijit/form/Textarea"
     // "dijit/form/NumberTextBox",
     "dijit/form/NumberSpinner", // això fa el mateix que el NumberTextBox però afegint les fletxes
-    "ioc/gui/content/EditableElements/ZoomableCell"
+    "ioc/gui/content/EditableElements/ZoomableCell",
+    "dijit/Dialog",
+    "dijit/_TemplatedMixin",
+    "dijit/_WidgetsInTemplateMixin",
+    "dojo/text!./templates/importTableDialog.html",
+    // "dojo/i18n!./nls/TableDialog",
+    "dojo/on",
 
-], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell) {
+    // Carregats pel template
+    "dijit/form/TextBox",
+    "dijit/form/Textarea",
 
-    var ADD_ROW = "add_row",
+], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell, Dialog, _TemplatedMixin, _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings*/
+             on
+) {
+
+    var ADD_IMPORT = "add_import",
+        ADD_ROW = "add_row",
         ADD_DEFAULT_ROW = "add_default_row",
         ADD_DEFAULT_ROW_BEFORE = "add_default_row_before",
         ADD_DEFAULT_ROW_AFTER = "add_default_row_after",
@@ -35,39 +48,70 @@ define([
     };
 
 
+    function clickElem(elem) {
+        // Thx user1601638 on Stack Overflow (6/6/2018 - https://stackoverflow.com/questions/13405129/javascript-create-and-save-file )
+        var eventMouse = document.createEvent("MouseEvents");
+        eventMouse.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+        elem.dispatchEvent(eventMouse)
+    }
+
+    function openFile(func) {
+        readFile = function (e) {
+            var file = e.target.files[0];
+            if (!file) {
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var contents = e.target.result;
+                fileInput.func(contents)
+                document.body.removeChild(fileInput)
+            };
+            reader.readAsText(file)
+        };
+        var fileInput = document.createElement("input");
+        fileInput.type = 'file';
+        fileInput.style.display = 'none';
+        fileInput.onchange = readFile;
+        fileInput.func = func;
+        document.body.appendChild(fileInput)
+        clickElem(fileInput)
+    }
+
+
     // TODO: si augmenta el nombre de funcions s'ha d'extreure a un mòdul
     var wiocclFunctions = {
 
         iffieldisequal: function (params/*field, value, valueIfTrue, valueIfFalse*/) {
-            var field=params[0], value=params[1], valueIfTrue=params[2], valueIfFalse=params[3];
+            var field = params[0], value = params[1], valueIfTrue = params[2], valueIfFalse = params[3];
             var ret;
-            var $input = jQuery("#"+field);
-            if($input.val()==value){
+            var $input = jQuery("#" + field);
+            if ($input.val() == value) {
                 ret = valueIfTrue;
-            }else{
+            } else {
                 ret = valueIfFalse;
             }
             return ret;
         },
         copy: function (defaultValue, previousField) {
             var ret;
-            
-            if (!previousField) {
-                console.warn("No s'ha trobat el valor previ del camp");
-                return defaultValue;
-            }
-            
-            return previousField;
-        },
-        inc: function (defaultValue, previousField) {
-            var ret;
-            
+
             if (!previousField) {
                 console.warn("No s'ha trobat el valor previ del camp");
                 return defaultValue;
             }
 
-            if(typeof previousField == "string"){
+            return previousField;
+        },
+        inc: function (defaultValue, previousField) {
+            var ret;
+
+            if (!previousField) {
+                console.warn("No s'ha trobat el valor previ del camp");
+                return defaultValue;
+            }
+
+            if (typeof previousField === "string") {
                 var numberRegex = /(\d)+/gi;
                 var matches = previousField.match(numberRegex);
                 if (matches != null) {
@@ -75,12 +119,12 @@ define([
                 } else {
                     ret = defaultValue;
                 }
-            }else if(typeof previousField == "number"){
+            } else if (typeof previousField === "number") {
                 ret = previousField + 1;
-            }else{
+            } else {
                 ret = defaultValue;
             }
-            
+
             return ret;
         },
 
@@ -92,6 +136,240 @@ define([
         }
 
     };
+
+    var ImportTableDialog = declare("dojox.editor.plugins.EditableTableImportDialog", [Dialog, _TemplatedMixin, _WidgetsInTemplateMixin], {
+        // summary:
+        //		Dialog box with options for table creation
+
+        baseClass: "EditorTableDialog",
+
+        templateString: insertTableTemplate,
+
+        tableId: 'Identificador',
+
+        inputType: '',
+        inputFooter: '',
+        inputTableId: '',
+        boxType: '',
+
+
+        // TODO: pasar a un fitxer nls
+        importTableTitle: "Importar dades",
+        buttonCancel: "Cancel·lar",
+        buttonImport: "Importar",
+        buttonReplace: "Reemplaçar",
+        buttonLoad: "Carregar fitxer",
+        rowSeparatorLabel: "Separador files",
+        colSeparatorLabel: "Separador columnes",
+        regexColSeparatorLabel: "Separar columnes per expressió regular ",
+        regexRowSeparatorLabel: "Separar files per expressió regular ",
+        dataToImport: "Dades a importar",
+
+        // postMixInProperties: function () {
+        //     dojo.mixin(this, tableDialogStrings);
+        //     this.inherited(arguments);
+        // },
+
+        postCreate: function () {
+            dojo.addClass(this.domNode, this.baseClass); //FIXME - why isn't Dialog accepting the baseClass?
+            this.inherited(arguments);
+
+
+            var context = this;
+
+            on(this.regexColSeparator, "input,change", function (evt) {
+                console.log("input || change!");
+
+                if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
+                    context.colSeparator.set('disabled', false);
+                    context.rowSeparator.set('disabled', false);
+                } else {
+                    context.colSeparator.set('disabled', true);
+                    context.rowSeparator.set('disabled', true);
+                }
+
+            });
+
+            on(this.regexRowSeparator, "input,change", function (evt) {
+                console.log("input || change!");
+
+                if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
+                    context.colSeparator.set('disabled', false);
+                    context.rowSeparator.set('disabled', false);
+                } else {
+                    context.colSeparator.set('disabled', true);
+                    context.rowSeparator.set('disabled', true);
+                }
+
+            });
+        },
+
+        onInsert: function () {
+
+            var rows = this.selectRow.get("value") || 1,
+                cols = this.selectCol.get("value") || 1,
+                _id = "tbl_" + (new Date().getTime()),
+
+
+                // El template conté la informació a mostrar pel dialog, aquesta es la que s'insereix al document
+
+                pre = '<div data-dw-box="' + this.boxType.get("value") + '" id="box_' + _id + '" class="ioctable'
+                    + ' ' + this.inputType.get("value")
+                    + ' ioc' + this.boxType.get("value")
+                    + '" data-dw-type="' + this.inputType.get("value") + "\">\n",
+                info = '<div class="iocinfo"><a id="' + this.inputTableId.get("value") + '" data-dw-link="table"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br></a>'
+                    + '<b contenteditable="false" data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
+                    + '<b contenteditable="false" data-dw-field="footer">Peu:</b> ' + this.inputFooter.get("value") + '<br>'
+                    + '</div>',
+
+
+                t = pre + info + '<table id="' + _id + '" width="100%">\n';
+
+            // post = '</div>';
+
+
+            for (var r = 0; r < rows; r++) {
+                t += '\t<tr>\n';
+                for (var c = 0; c < cols; c++) {
+                    t += '\t\t<td width="' + (Math.floor(100 / cols)) + '%">&nbsp;</td>\n';
+                }
+                t += '\t</tr>\n';
+            }
+
+            t += '</table></div>';
+
+            var cl = dojo.connect(this, "onHide", function () {
+                dojo.disconnect(cl);
+                var self = this;
+                setTimeout(function () {
+                    self.destroyRecursive();
+                }, 10);
+            });
+            this.hide();
+
+            //console.log(t);
+            this.onBuildTable({htmlText: t, id: _id});
+
+            var $node = jQuery(this.plugin.editor.iframe).contents().find('#box_' + _id);
+
+            var $prev = $node.prev();
+            var $next = $node.next();
+
+            if ($prev.length === 0 || !$prev.is('p')) {
+                // Afegim un salt de línia com a separador
+                $node.before(jQuery('<p>&nbsp;</p>'));
+            }
+
+            if ($next.length === 0 || !$next.is('p')) {
+                // Afegim un salt de línia com a separador
+                $node.after(jQuery('<p>&nbsp;</p>'));
+            }
+
+            console.log(this);
+            console.log(this.plugin);
+
+            addActions($node, this.editor);
+
+        },
+
+        onCancel: function () {
+            // summary:
+            //		Function to clean up memory so that the dialog is destroyed
+            //		when closed.
+            var c = dojo.connect(this, "onHide", function () {
+                dojo.disconnect(c);
+                var self = this;
+                setTimeout(function () {
+                    self.destroyRecursive();
+                }, 10);
+            });
+        },
+
+        onBuildTable: function (tableText) {
+            //stub
+            // console.log("tableText:", tableText);
+
+        },
+
+        onReplace: function () {
+            this.table.clear();
+            this.onImport();
+        },
+
+        onImport: function () {
+            // Dividim el contingut en files
+            var contents = this.inputDataToImport.get('value').split('\\n').join('\n');
+            ;
+
+            console.log('hi ha un \n literal?', contents, contents.indexOf('\\n'));
+
+
+            // TODO: Si regexSeparator.length > 0 s'ha de fer servir la expressió regular en lloc del import simple
+
+
+            // Si el separador es buit es fa servir el salt de línia
+            var rowSeparator = this.rowSeparator.get('value') ? this.rowSeparator.get('value') : "\n";
+            var colSeparator = this.colSeparator.get('value');
+
+            // Convertiem en expressió regular els separadors, en cas contrari no funciona el salta de línia
+            rowSeparator = new RegExp(rowSeparator, 'gms');
+
+
+            // var rows = contents.split("\n");
+            console.log("row separator:", rowSeparator);
+            var rows = contents.split(rowSeparator);
+
+            console.log("rows", rows);
+
+
+            for (var i = 0; i < rows.length; i++) {
+                var data = {};
+                var j = 0;
+
+                // var cols = rows[i].split(";");
+                console.log("col separator:", colSeparator);
+                var cols = rows[i].split(colSeparator);
+
+                console.log("Fields?", this.table.args.fields);
+
+                for (var key in this.table.args.fields) {
+                    console.log("col?", cols[j]);
+
+
+                    if (j === cols.length) {
+                        console.error("Import error: no value for field [" + key + "]. Aborting.");
+                        break;
+                    }
+
+                    data[key] = cols[j];
+                    j++;
+                }
+
+                console.log("Afegint row:", data);
+
+                this.table.addRow(data);
+                // this.hide();
+                this.destroyRecursive();
+            }
+
+
+        },
+
+        onLoadFile: function () {
+            var context = this;
+            //
+            openFile(function (contents) {
+
+                console.log("File content:", contents);
+
+                context.inputDataToImport.set('value', contents);
+
+
+            });
+        }
+
+    });
+
 
     return declare([AbstractEditableElement],
         {
@@ -114,12 +392,19 @@ define([
                 this.actionCallbacks = {};
 
                 this.actionCallbacks[ADD_ROW] = this._addRowCallback.bind(this);
+                this.actionCallbacks[ADD_IMPORT] = this._addImportCallback.bind(this);
                 this.actionCallbacks[ADD_DEFAULT_ROW] = this._addDefaultRowCallback.bind(this);
                 this.actionCallbacks[ADD_DEFAULT_ROW_AFTER] = this._addDefaultRowAfterCallback.bind(this);
                 this.actionCallbacks[ADD_DEFAULT_ROW_BEFORE] = this._addDefaultRowBeforeCallback.bind(this);
                 this.actionCallbacks[ADD_MULTIPLE_DEFAULT_ROWS] = this._addMultipleDefaultRowsCallback.bind(this);
                 this.actionCallbacks[SET_MULTIPLE_DEFAULT_ROWS] = this._setMultipleDefaultRowsCallback.bind(this);
                 this.actionCallbacks[REMOVE_ROWS] = this._removeRowCallback.bind(this);
+            },
+
+            _showDialog: function () {
+
+                var w = new ImportTableDialog({plugin: this, editor: this.editor, boxType: this.boxType, table: this});
+                w.show();
             },
 
             _replaceNodeContent: function (args) {
@@ -206,12 +491,10 @@ define([
                 }];
 
 
-
                 if (this.args.layout) {
                     gridLayout = this.mergeLayout(gridLayout, this.args.layout);
                     this.columns = gridLayout[0].cells;
                 }
-
 
 
                 this.setupCells(gridLayout[0]);
@@ -319,8 +602,10 @@ define([
                     this.updateField();
                 }.bind(this));
 
-
                 var actions = this.args.actions ? this.args.actions : defaultActions;
+                // TODO[Xavi] Determinar si el import ha de ser configurat explicitament al servidor firstView.json
+                actions['add_import'] = "Importar";
+
                 this.initializeButtons(actions, $toolbar[0]);
 
                 this.updateField();
@@ -406,7 +691,7 @@ define([
 //                    newRow[name] = newRow[name].replace(fieldRegex, value);
 
 //CODI MILLORAT PER TAL QUE TRACTI MÚLTIPLES TOKENS EN EL MATEIX DEFAULT
-                    for(var iToken=0; iToken<tokens.length; iToken++){
+                    for (var iToken = 0; iToken < tokens.length; iToken++) {
                         // Extraïem la funció
                         var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
                         var functionTokens = functionRegex.exec(tokens[iToken]);
@@ -415,7 +700,7 @@ define([
                         var func = functionTokens[1].toLowerCase();
 
                         // El segón token conté els paràmetres
-                        var params = JSON.parse("["+functionTokens[2]+"]");
+                        var params = JSON.parse("[" + functionTokens[2] + "]");
 
                         var value;
 
@@ -542,6 +827,56 @@ define([
                 });
             },
 
+            _addImportCallback: function () {
+
+                this._showDialog();
+
+                // TODO: Moure això del import al dialog
+
+
+                // var context = this;
+                //
+                // openFile(function (contents) {
+                //     // TODO: fer el parse del fitxer
+                //     console.log("File content:", contents);
+                //
+                //     // Dividim el contingut en files
+                //     var rows = contents.split("\n");
+                //
+                //     console.log("rows", rows);
+                //
+                //
+                //     for (var i=0; i < rows.length; i++) {
+                //         var data = {};
+                //         var j=0;
+                //
+                //         var cols = rows[i].split(";");
+                //
+                //         console.log("Fields?", context.args.fields);
+                //
+                //         for (var key in context.args.fields) {
+                //             console.log("col?", cols[j]);
+                //
+                //
+                //             if (j  === cols.length) {
+                //                 console.error("Import error: no value for field ["+key+"]. Aborting.");
+                //                 break;
+                //             }
+                //
+                //             data[key] = cols[j];
+                //             j++;
+                //         }
+                //
+                //         console.log("Afegint row:", data);
+                //         context.addRow(data);
+                //     }
+                //
+                //
+                // });
+
+            },
+
+
             _addRowCallback: function () {
 
                 var value;
@@ -653,7 +988,7 @@ define([
 
                 var originalValues;
 
-                if (typeof this.args.data.value ==="string") {
+                if (typeof this.args.data.value === "string") {
                     originalValues = JSON.parse(this.args.data.value);
                 } else {
                     originalValues = this.args.data.value;
@@ -661,6 +996,7 @@ define([
 
                 for (var i = 0; i < indexes.length; i++) {
                     originalValues.splice(indexes[i].id, 1);
+                    console.log("Eliminant item:", indexes[i]);
                     this.dataStore.deleteItem(indexes[i]);
                 }
 
@@ -669,6 +1005,44 @@ define([
                 this.dataStore.save();
 
                 this.updateField();
+            },
+
+            clear: function () {
+                console.log("store:", this.dataStore);
+
+                var originalValues;
+
+                if (typeof this.args.data.value === "string") {
+                    originalValues = JSON.parse(this.args.data.value);
+                } else {
+                    originalValues = this.args.data.value;
+                }
+
+
+                for (var i = 0; i < this.dataStore.objectStore.data.length; i++) {
+                    var item = this.dataStore.objectStore.data[i];
+                    originalValues.splice(item.id, 1);
+                    this.dataStore.deleteItem(item);
+                    console.log("eliminant id", item);
+                }
+
+                this.args.data.value = originalValues;
+
+                this.dataStore.save();
+
+                this.updateField();
+
+                //
+                // for (var i = 0; i < indexes.length; i++) {
+                //     originalValues.splice(indexes[i].id, 1);
+                //     this.dataStore.deleteItem(indexes[i]);
+                // }
+                //
+                // this.args.data.value = originalValues;
+                //
+                // this.dataStore.save();
+                //
+                // this.updateField();
             },
 
             // Copia els paràmetres de configuració a la cel·la

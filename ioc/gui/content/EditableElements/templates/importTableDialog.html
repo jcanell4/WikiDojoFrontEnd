@@ -1,0 +1,136 @@
+<div class="dijitDialog" tabindex="-1" role="dialog" aria-labelledby="${id}_title">
+    <div dojoAttachPoint="titleBar" class="dijitDialogTitleBar">
+        <span dojoAttachPoint="titleNode" class="dijitDialogTitle" id="${id}_title">${importTableTitle}</span>
+        <span dojoAttachPoint="closeButtonNode" class="dijitDialogCloseIcon" dojoAttachEvent="onclick: onCancel"
+              title="${buttonCancel}">
+		<span dojoAttachPoint="closeText" class="closeText" title="${buttonCancel}">x</span>
+	</span>
+    </div>
+    <div dojoAttachPoint="containerNode" class="dijitDialogPaneContent">
+        <style>
+            .dlgImportTable label {
+                width: 75px;
+                float: inherit;
+                display: inline-block;
+            }
+
+            .dlgImportTable .textarea label {
+                width: 100%;
+            }
+
+            .dlgImportTable .dlgRow.textarea textarea {
+                width: 100%;
+            }
+
+            .dlgImportTable .dlgRow.textarea.multiline textarea {
+                min-height: 100px;
+            }
+
+            .dlgImportTable .dijitTextBox {
+                /*width: 50px;*/
+                width: auto;
+            }
+
+            .dlgImportTable .large .dijitTextBox {
+                width: 193px;
+            }
+
+            div.dlgRow {
+                padding: 2px;
+            }
+
+            .col3 {
+                width: 32.3333%;
+                margin-right: 1%;
+                display: block;
+                float: left;
+
+            }
+
+            .col3:last-child {
+                margin-right: 0;
+                margin-left: 1%;
+            }
+
+            .col2 {
+                width: 49%;
+                margin-right: 1%;
+                display: block;
+                float: left;
+            }
+
+            .col2:last-child {
+                margin-right: 0;
+                margin-left: 1%;
+            }
+
+            fieldset {
+                width: 50%;
+                float: left;
+            }
+
+            legend {
+                font-weight: bold;
+            }
+
+        </style>
+
+        <div class="dlgImportTable">
+
+            <fieldset>
+                <legend>CSV Import</legend>
+                <div class="dlgRow">
+                    <div class="col3">
+                        <label>${rowSeparatorLabel}</label>
+                        <span dojoAttachPoint="rowSeparator" dojoType="dijit.form.TextBox" value="\n"
+                              class="short"></span>
+                    </div>
+                    <div class="col3">
+                        <label>${colSeparatorLabel}</label>
+                        <span dojoAttachPoint="colSeparator" dojoType="dijit.form.TextBox" value=";"
+                              class="short"></span>
+                    </div>
+
+                    <div class="col3">
+                        <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onLoadFile">${buttonLoad}</div>
+                    </div>
+                </div>
+
+            </fieldset>
+
+
+            <fieldset>
+                <legend>RegEx Import (desactiva els separadors per fila i columna CSV)</legend>
+                <div class="dlgRow textarea">
+                    <div class="col2">
+                        <label>${regexColSeparatorLabel}</label>
+                        <span dojoAttachPoint="regexColSeparator" dojoType="dijit.form.Textarea" value=""></span>
+                    </div>
+
+                    <div class="col2">
+                        <label>${regexRowSeparatorLabel}</label>
+                        <span dojoAttachPoint="regexRowSeparator" dojoType="dijit.form.Textarea" value=""></span>
+                    </div>
+
+                </div>
+            </fieldset>
+
+            <div class="dlgRow large textarea multiline">
+                <label>${dataToImport}</label>
+                <span dojoAttachPoint="inputDataToImport" dojoType="dijit.form.Textarea" rows="4" value=""></span>
+            </div>
+
+
+        </div>
+
+
+        <table class="etdTable">
+
+        </table>
+        <div class="dialogButtonContainer">
+            <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onReplace">${buttonReplace}</div>
+            <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onImport">${buttonImport}</div>
+            <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onCancel">${buttonCancel}</div>
+        </div>
+    </div>
+</div>

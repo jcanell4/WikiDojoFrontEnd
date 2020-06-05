@@ -1,0 +1,80 @@
+<div class="dijitDialog" tabindex="-1" role="dialog" aria-labelledby="${id}_title">
+    <div dojoAttachPoint="titleBar" class="dijitDialogTitleBar">
+        <span dojoAttachPoint="titleNode" class="dijitDialogTitle" id="${id}_title">${importTableTitle}</span>
+        <span dojoAttachPoint="closeButtonNode" class="dijitDialogCloseIcon" dojoAttachEvent="onclick: onCancel"
+              title="${buttonCancel}">
+		<span dojoAttachPoint="closeText" class="closeText" title="${buttonCancel}">x</span>
+	</span>
+    </div>
+    <div dojoAttachPoint="containerNode" class="dijitDialogPaneContent">
+        <style>
+            .dlgInsertTable label {
+                width: 75px;
+                float: inherit;
+                display: inline-block;
+            }
+
+            .dlgInsertTable .dijitTextBox {
+                width: 50px;
+            }
+
+            .dlgInsertTable .large .dijitTextBox {
+                width: 193px;
+            }
+
+            div.dlgRow {
+                padding: 2px;
+            }
+
+        </style>
+
+        <div class="dlgInsertTable">
+            <!--<div class="dlgRow">-->
+                <!--<label>${rows}</label>-->
+                <!--<span dojoAttachPoint="selectRow" dojoType="dijit.form.TextBox" value="2" class="short"></span>-->
+
+                <!--<label>${columns}</label>-->
+                <!--<span dojoAttachPoint="selectCol" dojoType="dijit.form.TextBox" value="2" class="short"></span>-->
+            <!--</div>-->
+
+            <!--<div class="dlgRow large">-->
+                <!--<label>${tableId}</label>-->
+                <!--<span dojoAttachPoint="inputTableId" dojoType="dijit.form.TextBox" value="Identificador"></span>-->
+            <!--</div>-->
+
+            <!--<div class="dlgRow large">-->
+                <!--<label>${title}</label>-->
+                <!--<span dojoAttachPoint="inputTitle" dojoType="dijit.form.TextBox" value="Introdueix un títol"></span>-->
+            <!--</div>-->
+
+            <!--<div class="dlgRow large">-->
+                <!--<label>${footer}</label>-->
+                <!--<span dojoAttachPoint="inputFooter" dojoType="dijit.form.TextBox" value=""></span>-->
+            <!--</div>-->
+
+            <!--<div class="dlgRow large">-->
+                <!--<label>${type}</label>-->
+                <!--<span dojoAttachPoint="inputType" dojoType="dijit.form.TextBox" value="pt_taula"></span>-->
+            <!--</div>-->
+
+            <!--<div class="dlgRow large">-->
+                <!--<label>${type}</label>-->
+                <!--<select dojoAttachPoint="boxType" dojoType="dijit.form.ComboBox" value="table">-->
+                    <!--<option selected>table</option>-->
+                    <!--<option>accounting</option>-->
+                <!--</select>-->
+
+            <!--</div>-->
+
+        </div>
+
+
+        <table class="etdTable">
+
+        </table>
+        <div class="dialogButtonContainer">
+            <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onInsert">${buttonImport}</div>
+            <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onCancel">${buttonCancel}</div>
+        </div>
+    </div>
+</div>
