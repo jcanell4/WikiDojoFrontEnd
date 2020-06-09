@@ -9,7 +9,7 @@
     <div dojoAttachPoint="containerNode" class="dijitDialogPaneContent">
         <style>
             .dlgImportTable label {
-                width: 75px;
+                /*width: 75px;*/
                 float: inherit;
                 display: inline-block;
             }
@@ -39,21 +39,13 @@
                 padding: 2px;
             }
 
-            .col3 {
-                width: 32.3333%;
-                margin-right: 1%;
-                display: block;
-                float: left;
-
-            }
-
-            .col3:last-child {
+            .col2:last-child {
                 margin-right: 0;
                 margin-left: 1%;
             }
 
             .col2 {
-                width: 49%;
+                width: 130px;
                 margin-right: 1%;
                 display: block;
                 float: left;
@@ -65,60 +57,71 @@
             }
 
             fieldset {
-                width: 50%;
+                width: 280px;
                 float: left;
+                padding: 5px;
+                margin: 2px;
             }
 
             legend {
                 font-weight: bold;
             }
 
+            .loadButton {
+                float: right;
+                display: block;
+            }
+
         </style>
 
         <div class="dlgImportTable">
 
-            <fieldset>
-                <legend>CSV Import</legend>
+            <fieldset data-dojo-type="dijit/Fieldset" data-dojo-props="open: false">
+                <legend>${csvImportLegend}</legend>
                 <div class="dlgRow">
-                    <div class="col3">
+                    <div class="col2">
                         <label>${rowSeparatorLabel}</label>
-                        <span dojoAttachPoint="rowSeparator" dojoType="dijit.form.TextBox" value="\n"
+                        <span dojoAttachPoint="csvRowSeparator" dojoType="dijit.form.TextBox" value="\n"
                               class="short"></span>
                     </div>
-                    <div class="col3">
+                    <div class="col2">
                         <label>${colSeparatorLabel}</label>
-                        <span dojoAttachPoint="colSeparator" dojoType="dijit.form.TextBox" value=";"
+                        <span dojoAttachPoint="csvColSeparator" dojoType="dijit.form.TextBox" value=";"
                               class="short"></span>
                     </div>
 
-                    <div class="col3">
-                        <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onLoadFile">${buttonLoad}</div>
-                    </div>
                 </div>
 
             </fieldset>
 
 
-            <fieldset>
-                <legend>RegEx Import (desactiva els separadors per fila i columna CSV)</legend>
+            <fieldset data-dojo-type="dijit/Fieldset" data-dojo-props="open: false">
+                <legend>${regexImportLegend}</legend>
                 <div class="dlgRow textarea">
-                    <div class="col2">
-                        <label>${regexColSeparatorLabel}</label>
-                        <span dojoAttachPoint="regexColSeparator" dojoType="dijit.form.Textarea" value=""></span>
-                    </div>
 
                     <div class="col2">
                         <label>${regexRowSeparatorLabel}</label>
                         <span dojoAttachPoint="regexRowSeparator" dojoType="dijit.form.Textarea" value=""></span>
                     </div>
 
+                    <div class="col2">
+                        <label>${regexColSeparatorLabel}</label>
+                        <span dojoAttachPoint="regexColSeparator" dojoType="dijit.form.Textarea" value=""></span>
+                    </div>
+
                 </div>
             </fieldset>
+
+            <div class="loadButton">
+                <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onLoadFile">${buttonLoad}</div>
+            </div>
+
 
             <div class="dlgRow large textarea multiline">
                 <label>${dataToImport}</label>
                 <span dojoAttachPoint="inputDataToImport" dojoType="dijit.form.Textarea" rows="4" value=""></span>
             </div>
+
 
 
         </div>

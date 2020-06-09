@@ -25,6 +25,7 @@ define([
     // Carregats pel template
     "dijit/form/TextBox",
     "dijit/form/Textarea",
+    "dijit/Fieldset"
 
 ], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell, Dialog, _TemplatedMixin, _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings*/
              on
@@ -154,6 +155,8 @@ define([
 
 
         // TODO: pasar a un fitxer nls
+        csvImportLegend: "Importació via CSV",
+        regexImportLegend: "Importació via RegEx",
         importTableTitle: "Importar dades",
         buttonCancel: "Cancel·lar",
         buttonImport: "Importar",
@@ -161,8 +164,8 @@ define([
         buttonLoad: "Carregar fitxer",
         rowSeparatorLabel: "Separador files",
         colSeparatorLabel: "Separador columnes",
-        regexColSeparatorLabel: "Separar columnes per expressió regular ",
-        regexRowSeparatorLabel: "Separar files per expressió regular ",
+        regexRowSeparatorLabel: "Separador files",
+        regexColSeparatorLabel: "Separador columnes",
         dataToImport: "Dades a importar",
 
         // postMixInProperties: function () {
@@ -174,31 +177,48 @@ define([
             dojo.addClass(this.domNode, this.baseClass); //FIXME - why isn't Dialog accepting the baseClass?
             this.inherited(arguments);
 
-
             var context = this;
 
+            this.csvColSeparator.set('value', this.data.csvColSeparator);
+            this.csvRowSeparator.set('value', this.data.csvRowSeparator);
+            this.regexColSeparator.set('value', this.data.regexColSeparator);
+            this.regexRowSeparator.set('value', this.data.regexRowSeparator);
+
+
+            if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
+                context.csvColSeparator.set('disabled', false);
+                context.csvRowSeparator.set('disabled', false);
+                context.useRegex = false;
+            } else {
+                context.csvColSeparator.set('disabled', true);
+                context.csvRowSeparator.set('disabled', true);
+                context.useRegex = true;
+            }
+
             on(this.regexColSeparator, "input,change", function (evt) {
-                console.log("input || change!");
 
                 if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
-                    context.colSeparator.set('disabled', false);
-                    context.rowSeparator.set('disabled', false);
+                    context.csvColSeparator.set('disabled', false);
+                    context.csvRowSeparator.set('disabled', false);
+                    context.useRegex = false;
                 } else {
-                    context.colSeparator.set('disabled', true);
-                    context.rowSeparator.set('disabled', true);
+                    context.csvColSeparator.set('disabled', true);
+                    context.csvRowSeparator.set('disabled', true);
+                    context.useRegex = true;
                 }
 
             });
 
             on(this.regexRowSeparator, "input,change", function (evt) {
-                console.log("input || change!");
 
                 if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
-                    context.colSeparator.set('disabled', false);
-                    context.rowSeparator.set('disabled', false);
+                    context.csvColSeparator.set('disabled', false);
+                    context.csvRowSeparator.set('disabled', false);
+                    context.useRegex = false;
                 } else {
-                    context.colSeparator.set('disabled', true);
-                    context.rowSeparator.set('disabled', true);
+                    context.csvColSeparator.set('disabled', true);
+                    context.csvRowSeparator.set('disabled', true);
+                    context.useRegex = true;
                 }
 
             });
@@ -298,75 +318,116 @@ define([
 
         onImport: function () {
             // Dividim el contingut en files
-            var contents = this.inputDataToImport.get('value').split('\\n').join('\n');
-            ;
-
-            console.log('hi ha un \n literal?', contents, contents.indexOf('\\n'));
-
+            var content = this.inputDataToImport.get('value').split('\\n').join('\n');
 
             // TODO: Si regexSeparator.length > 0 s'ha de fer servir la expressió regular en lloc del import simple
 
 
-            // Si el separador es buit es fa servir el salt de línia
-            var rowSeparator = this.rowSeparator.get('value') ? this.rowSeparator.get('value') : "\n";
-            var colSeparator = this.colSeparator.get('value');
+            var extractedData;
 
-            // Convertiem en expressió regular els separadors, en cas contrari no funciona el salta de línia
-            rowSeparator = new RegExp(rowSeparator, 'gms');
-
-
-            // var rows = contents.split("\n");
-            console.log("row separator:", rowSeparator);
-            var rows = contents.split(rowSeparator);
-
-            console.log("rows", rows);
-
-
-            for (var i = 0; i < rows.length; i++) {
-                var data = {};
-                var j = 0;
-
-                // var cols = rows[i].split(";");
-                console.log("col separator:", colSeparator);
-                var cols = rows[i].split(colSeparator);
-
-                console.log("Fields?", this.table.args.fields);
-
-                for (var key in this.table.args.fields) {
-                    console.log("col?", cols[j]);
-
-
-                    if (j === cols.length) {
-                        console.error("Import error: no value for field [" + key + "]. Aborting.");
-                        break;
-                    }
-
-                    data[key] = cols[j];
-                    j++;
-                }
-
-                console.log("Afegint row:", data);
-
-                this.table.addRow(data);
-                // this.hide();
-                this.destroyRecursive();
+            if (this.useRegex) {
+                extractedData = this._extractRegex(content);
+            } else {
+                extractedData = this._extractSimple(content);
             }
 
+            for (var i = 0; i < extractedData.length; i++) {
+                this.table.addRow(extractedData[i]);
+            }
 
+            this.destroyRecursive();
+
+        },
+
+        _extractSimple: function (content) {
+            // Si el separador es buit es fa servir el salt de línia
+            var rowSeparator = this.csvRowSeparator.get('value') ? this.csvRowSeparator.get('value') : "\n";
+            var colSeparator = this.csvColSeparator.get('value');
+
+            // Convertiem en expressió regular el separador, en cas contrari no funciona el salt de línia
+            rowSeparator = new RegExp(rowSeparator, 'gms');
+
+            var rows = content.split(rowSeparator);
+
+            var extractedData = [];
+
+            for (var i = 0; i < rows.length; i++) {
+
+                var cols = rows[i].split(colSeparator);
+
+                extractedData.push(this._makeObjectData(cols));
+
+            }
+
+            return extractedData;
+        },
+
+        _makeObjectData: function(cols) {
+            var data = {};
+
+            var j = 0;
+
+            for (var key in this.table.args.fields) {
+
+                if (j === cols.length) {
+                    console.error("Import error: no value for field [" + key + "]. Aborting.");
+                    break;
+                }
+
+                data[key] = cols[j];
+                j++;
+            }
+
+            return data;
+        },
+
+        _extractRegex: function(content) {
+            var extractedData = [];
+
+            // Si el separador es buit es fa servir el salt de línia
+            var rowSeparator = this.regexRowSeparator.get('value') ? this.regexRowSeparator.get('value') : "\n";
+            var colSeparator = this.regexColSeparator.get('value');
+
+            // Convertiem en expressió regular el separador, en cas contrari no funciona el salt de línia
+            rowSeparator = new RegExp(rowSeparator, 'gms');
+
+            var rows = content.split(rowSeparator);
+
+            for (var i = 0; i < rows.length; i++) {
+                var regex = new RegExp(colSeparator, 'gm');
+
+                if (rows[i].length === 0) {
+                    continue;
+                }
+
+                var matches = regex.exec(rows[i]);
+
+                var cols = [];
+
+                for (var j = 1; j < matches.length; j++) {
+                    cols.push(matches[j]);
+                }
+
+                extractedData.push(this._makeObjectData(cols));
+
+            }
+
+            return extractedData;
         },
 
         onLoadFile: function () {
             var context = this;
-            //
+
             openFile(function (contents) {
 
-                console.log("File content:", contents);
+                // console.log("File content:", contents);
 
                 context.inputDataToImport.set('value', contents);
 
 
             });
         }
+
 
     });
 
@@ -375,12 +436,15 @@ define([
         {
             defaultRow: null,
 
+            actionData: {},
+
             init: function (args) {
                 // console.log("EditableTableElement#init", args);
                 this.inherited(arguments);
                 this.fieldToCol = {};
                 this.colToField = {};
                 this.colToName = {};
+                this.actionData = {};
 
                 // this.defaultDisplay = 'table';
 
@@ -403,7 +467,13 @@ define([
 
             _showDialog: function () {
 
-                var w = new ImportTableDialog({plugin: this, editor: this.editor, boxType: this.boxType, table: this});
+                var w = new ImportTableDialog({
+                    plugin: this,
+                    editor: this.editor,
+                    boxType: this.boxType,
+                    table: this,
+                    data: this.actionData[ADD_IMPORT]
+                });
                 w.show();
             },
 
@@ -603,8 +673,6 @@ define([
                 }.bind(this));
 
                 var actions = this.args.actions ? this.args.actions : defaultActions;
-                // TODO[Xavi] Determinar si el import ha de ser configurat explicitament al servidor firstView.json
-                actions['add_import'] = "Importar";
 
                 this.initializeButtons(actions, $toolbar[0]);
 
@@ -615,18 +683,33 @@ define([
             initializeButtons: function (actions, toolbarNode) {
 
                 for (var action in actions) {
-                    this.initializeButton(actions[action], toolbarNode, this.actionCallbacks[action]);
+
+                    if (typeof actions[action] === "string") {
+                        this.initializeButtonSimple(actions[action], toolbarNode, this.actionCallbacks[action]);
+                    } else {
+                        this.initializeButtonComplex(action, actions[action], toolbarNode, this.actionCallbacks[action]);
+                    }
+
+
                 }
 
             },
 
-            initializeButton: function (label, toolbarNode, callback) {
+            initializeButtonSimple: function (label, toolbarNode, callback) {
                 var button = new Button({
                     label: label,
                     onClick: callback
                 });
                 button.placeAt(toolbarNode);
                 button.startup();
+            },
+
+            initializeButtonComplex: function (actionId, action, toolbarNode, callback) {
+
+                this.initializeButtonSimple(action.button_label, toolbarNode, callback);
+
+                this.actionData[actionId] = action.data;
+
             },
 
 
@@ -1008,7 +1091,6 @@ define([
             },
 
             clear: function () {
-                console.log("store:", this.dataStore);
 
                 var originalValues;
 
@@ -1023,7 +1105,7 @@ define([
                     var item = this.dataStore.objectStore.data[i];
                     originalValues.splice(item.id, 1);
                     this.dataStore.deleteItem(item);
-                    console.log("eliminant id", item);
+                    // console.log("eliminant id", item);
                 }
 
                 this.args.data.value = originalValues;
@@ -1032,17 +1114,6 @@ define([
 
                 this.updateField();
 
-                //
-                // for (var i = 0; i < indexes.length; i++) {
-                //     originalValues.splice(indexes[i].id, 1);
-                //     this.dataStore.deleteItem(indexes[i]);
-                // }
-                //
-                // this.args.data.value = originalValues;
-                //
-                // this.dataStore.save();
-                //
-                // this.updateField();
             },
 
             // Copia els paràmetres de configuració a la cel·la
