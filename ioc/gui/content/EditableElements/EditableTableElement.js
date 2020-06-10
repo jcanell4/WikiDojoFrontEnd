@@ -172,8 +172,12 @@ define([
         //     dojo.mixin(this, tableDialogStrings);
         //     this.inherited(arguments);
         // },
+        validated: false,
 
         postCreate: function () {
+
+            this.validated = false;
+
             dojo.addClass(this.domNode, this.baseClass); //FIXME - why isn't Dialog accepting the baseClass?
             this.inherited(arguments);
 
@@ -325,17 +329,23 @@ define([
 
             var extractedData;
 
+            this.validated = true;
+
             if (this.useRegex) {
                 extractedData = this._extractRegex(content);
             } else {
                 extractedData = this._extractSimple(content);
             }
 
-            for (var i = 0; i < extractedData.length; i++) {
-                this.table.addRow(extractedData[i]);
+            if (this.validated) {
+                for (var i = 0; i < extractedData.length; i++) {
+                    this.table.addRow(extractedData[i]);
+                    this.destroyRecursive();
+                }
+            } else {
+                alert("Error de validació: no es pot construir una taula a partir d'aquestes dades");
             }
 
-            this.destroyRecursive();
 
         },
 
@@ -353,6 +363,10 @@ define([
 
             for (var i = 0; i < rows.length; i++) {
 
+                if (rows[i].length === 0) {
+                    continue;
+                }
+
                 var cols = rows[i].split(colSeparator);
 
                 extractedData.push(this._makeObjectData(cols));
@@ -362,26 +376,84 @@ define([
             return extractedData;
         },
 
-        _makeObjectData: function(cols) {
+        _makeObjectData: function (cols) {
             var data = {};
+
+            if (cols.length !== Object.keys(this.table.args.fields).length) {
+                this.validated = false;
+                console.error("Import error: col number (" + cols.length + ") is different from field number (" + Object.keys(this.table.args.fields).length + ")");
+                return data;
+            }
 
             var j = 0;
 
             for (var key in this.table.args.fields) {
 
+                // console.log("Field data:", key, this.table.args.fields[key]);
+
                 if (j === cols.length) {
-                    console.error("Import error: no value for field [" + key + "]. Aborting.");
+                    console.error("Import error: missing value for field [" + key + "]. Aborting.");
+                    this.validated = false;
                     break;
                 }
 
-                data[key] = cols[j];
+                var value = cols[j].trim();
+
+                switch (this.table.args.fields[key].type) {
+
+                    case "number":
+
+                        if (isNaN(cols[j])) {
+                            console.error("Import error: " + value + " is not a number");
+                            this.validated = false;
+                            return {};
+                        }
+
+                        value = Number(value);
+
+                        break;
+
+                    case "select":
+                        if (this.table.args.fields[key].options.indexOf(value) === -1) {
+                            console.error("Import error: " + cols[j] + " is not a valid option:", this.table.args.fields[key].options);
+                            this.validated = false;
+                            return {};
+                        }
+
+                        break;
+
+                    case "bool":
+
+                        if (value === "true" || value === "1") {
+                            value = true;
+                        } else if (value === "false" || value === "0") {
+                            value = false;
+                        } else {
+                            console.error("Import error: " + value + " is not boolean option:", this.table.args.fields[key].options);
+                            this.validated = false;
+                            return {};
+                        }
+
+                        break;
+
+                    case "date":
+                        // TODO[Xavi] considerar si això és necessari, les datas probablement no s'importen perque canvien cada semestre
+                        console.warn("Alert: currently dates are not validated");
+                        break;
+
+                    case "string": // intentional fall-through
+                    default:
+                    // si es tipus string sempre es correcte
+                }
+
+                data[key] = value;
                 j++;
             }
 
             return data;
         },
 
-        _extractRegex: function(content) {
+        _extractRegex: function (content) {
             var extractedData = [];
 
             // Si el separador es buit es fa servir el salt de línia
@@ -404,6 +476,12 @@ define([
 
                 var cols = [];
 
+                if (matches === null) {
+                    console.error("Import error: can't extract row from string. Aborting.", rows[i]);
+                    this.validated = false;
+                    return [];
+                }
+
                 for (var j = 1; j < matches.length; j++) {
                     cols.push(matches[j]);
                 }
@@ -415,19 +493,16 @@ define([
             return extractedData;
         },
 
+        // És crida desde el template
         onLoadFile: function () {
             var context = this;
 
             openFile(function (contents) {
 
-                // console.log("File content:", contents);
-
                 context.inputDataToImport.set('value', contents);
-
 
             });
         }
-
 
     });
 
@@ -914,49 +989,6 @@ define([
 
                 this._showDialog();
 
-                // TODO: Moure això del import al dialog
-
-
-                // var context = this;
-                //
-                // openFile(function (contents) {
-                //     // TODO: fer el parse del fitxer
-                //     console.log("File content:", contents);
-                //
-                //     // Dividim el contingut en files
-                //     var rows = contents.split("\n");
-                //
-                //     console.log("rows", rows);
-                //
-                //
-                //     for (var i=0; i < rows.length; i++) {
-                //         var data = {};
-                //         var j=0;
-                //
-                //         var cols = rows[i].split(";");
-                //
-                //         console.log("Fields?", context.args.fields);
-                //
-                //         for (var key in context.args.fields) {
-                //             console.log("col?", cols[j]);
-                //
-                //
-                //             if (j  === cols.length) {
-                //                 console.error("Import error: no value for field ["+key+"]. Aborting.");
-                //                 break;
-                //             }
-                //
-                //             data[key] = cols[j];
-                //             j++;
-                //         }
-                //
-                //         console.log("Afegint row:", data);
-                //         context.addRow(data);
-                //     }
-                //
-                //
-                // });
-
             },
 
 
@@ -1187,9 +1219,7 @@ define([
                         }
 
                     } else {
-                        console.error(i, cell);
-                        console.error("No s'ha trobat?", cell.name, this.args.fields[cell.name])
-                        console.error(this.args.fields);
+                        console.error("Can't find data for the column", cell.name, this.args.fields[cell.name])
                     }
                 }
 
