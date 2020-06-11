@@ -15,6 +15,7 @@ define([
     // "dijit/form/NumberTextBox",
     "dijit/form/NumberSpinner", // això fa el mateix que el NumberTextBox però afegint les fletxes
     "ioc/gui/content/EditableElements/ZoomableCell",
+    "ioc/gui/content/EditableElements/ConditionalSelectCell",
     "dijit/Dialog",
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
@@ -27,7 +28,7 @@ define([
     "dijit/form/Textarea",
     "dijit/Fieldset"
 
-], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell, Dialog, _TemplatedMixin, _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings*/
+], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell, ConditionalSelectCell, Dialog, _TemplatedMixin, _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings*/
              on
 ) {
 
@@ -414,6 +415,7 @@ define([
                         break;
 
                     case "select":
+
                         if (this.table.args.fields[key].options.indexOf(value) === -1) {
                             console.error("Import error: " + cols[j] + " is not a valid option:", this.table.args.fields[key].options);
                             this.validated = false;
@@ -439,6 +441,10 @@ define([
                     case "date":
                         // TODO[Xavi] considerar si això és necessari, les datas probablement no s'importen perque canvien cada semestre
                         console.warn("Alert: currently dates are not validated");
+                        break;
+
+                    case "textarea": // intentional fall-through
+                        value = value.split("\\\\ ").join("\n");
                         break;
 
                     case "string": // intentional fall-through
@@ -514,7 +520,11 @@ define([
             actionData: {},
 
             init: function (args) {
-                // console.log("EditableTableElement#init", args);
+                // console.error("EditableTableElement#init: formValues", args.context.formValues);
+
+                this.dataSource = args.context;
+
+
                 this.inherited(arguments);
                 this.fieldToCol = {};
                 this.colToField = {};
@@ -523,7 +533,8 @@ define([
 
                 // this.defaultDisplay = 'table';
 
-                this.initializeCallbacks()
+                this.initializeCallbacks();
+
 
             },
 
@@ -753,6 +764,17 @@ define([
 
                 this.updateField();
                 this.widgetInitialized = true;
+
+
+                // TEST[Xavi]! eliminar, això no és necessari aquí
+
+
+                if (this.dataSource.getValue('einesAprenentatge')) {
+                    // ALERTA! Sabem que aquest camp es una taula
+                    console.log("TEST: Valor del camp einesAprenentatge", JSON.parse(this.dataSource.getValue('einesAprenentatge')));
+                }
+
+
             },
 
             initializeButtons: function (actions, toolbarNode) {
@@ -1205,6 +1227,12 @@ define([
                                 cell.widgetClass = ZoomableCell;
                                 break;
 
+                            case 'conditionalselect':
+                                alert("conditionalselect");
+                                cell.type = cells._Widget;
+                                cell.widgetClass = ConditionalSelectCell;
+                                break;
+
                             case 'boolean':
                             case 'bool':
                                 cell.type = dojox.grid.cells.Bool;
@@ -1423,6 +1451,16 @@ define([
                 if (this.context.forceCheckChanges) {
                     this.context.forceCheckChanges();
                 }
+            },
+
+            // @override
+            getValue: function () {
+                if (this.$field) {
+                    return this.$field.val();
+                } else {
+                    console.error("No hi ha $field:", this.$field);
+                }
+
             },
 
             normalizeData: function (data) {

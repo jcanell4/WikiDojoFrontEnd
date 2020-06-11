@@ -15,6 +15,24 @@ define([
      */
     return declare([ChangesManagerCentralSubclass], {
 
+        registerFormEditableElement: function(key, element) {
+            this.formEditableElements[key] = element;
+        },
+
+        // Retorna el valor corresponent a un editable element previament enregistrat
+        getValue: function (fieldKey) {
+
+            if (this.formEditableElements[fieldKey] !== undefined) {
+
+                // console.log("formEditableElements", this.formEditableElements);
+                return this.formEditableElements[fieldKey].getValue();
+            } else {
+                console.warn("No s'ha trobat cap camp vinculat a la clau: ", fieldKey, this.formEditableElements[fieldKey]);
+                return "";
+            }
+
+        },
+
         /**
          * El contingut original inicial s'ha de passar a través del constructor 
          * dins dels arguments com a propietat originalContent.
@@ -24,7 +42,8 @@ define([
             this._setOriginalContent(args.originalContent);
             this.hasChanges = false;
             this.contentToolFactory = args.contentToolFactory;
-            this.editableElements = [];
+            this.editableElements = []; // ALERTA! [Xavi] Es fa servir en algun lloc?
+            this.formEditableElements = {}; // Utilitzat per consultar els elements dels formularis (per exemple als projectes)
             this.externalContent = {};
         },
 

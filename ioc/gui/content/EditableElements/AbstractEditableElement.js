@@ -113,6 +113,10 @@ define([
                 throw new Error("La funció update ha de ser implementada per la subclasse");
             },
 
+            getValue: function () {
+                throw new Error("La funció getValue ha de ser implementada per la subclasse");
+            },
+
             _createIcon: function () {
 
                 // Afegim un contenidor per l'icona i l'input

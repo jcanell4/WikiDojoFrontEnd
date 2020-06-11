@@ -33,6 +33,11 @@ define([
 
     return function (data, context, $content) {
 
+        console.log(data.formValues);
+
+        // Afegim al context sigui quin sigui els formValues per fer-ho accessible per a tots els editableElements
+        context.formValues = data.formValues;
+
         // ALERTA[Xavi] si no arriba un objecte jquery suposem que es tracta d'objectes DOM o HTML i fem la conversió.
         if (!$content instanceof jQuery) {
             $content = jQuery($content);
@@ -73,7 +78,11 @@ define([
             config.name = id;
             config.formId = formId;
 
-            editableElementsFactory.createElement(type, config);
+
+            // Afegim els elements creats relacionats per la clau
+            context.registerFormEditableElement(id, editableElementsFactory.createElement(type, config));
+
+
         }
 
 
