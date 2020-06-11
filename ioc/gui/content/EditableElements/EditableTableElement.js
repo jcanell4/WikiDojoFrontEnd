@@ -574,7 +574,6 @@ define([
 
             },
 
-            // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
             createWidget: function () {
 
                 var tableData = this.htmlToJson(this.$node);
@@ -774,6 +773,9 @@ define([
                     console.log("TEST: Valor del camp einesAprenentatge", JSON.parse(this.dataSource.getValue('einesAprenentatge')));
                 }
 
+
+
+                this.grid.edit.setDataSource(args.context);
 
             },
 
@@ -1228,7 +1230,6 @@ define([
                                 break;
 
                             case 'conditionalselect':
-                                alert("conditionalselect");
                                 cell.type = cells._Widget;
                                 cell.widgetClass = ConditionalSelectCell;
                                 break;
@@ -1458,7 +1459,7 @@ define([
                 if (this.$field) {
                     return this.$field.val();
                 } else {
-                    console.error("No hi ha $field:", this.$field);
+                    // console.error("No hi ha $field:", this.$field);
                 }
 
             },

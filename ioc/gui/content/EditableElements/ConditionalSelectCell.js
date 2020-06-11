@@ -3,9 +3,8 @@ define([
     "dijit/form/Textarea",
     "dojox/form/CheckedMultiSelect",
     'dojo/text!dojox/form/resources/CheckedMultiSelect.css',
-    // "dojo/dom-style", // domStyle.set
-    // 'ioc/gui/content/EditableElements/ConditionalSelectCellElement'
-], function(declare, TextArea, CheckedMultiSelect, css/*, domStyle, ConditionalSelectCellElement*/){
+    'ioc/gui/content/EditableElements/ConditionalSelectCellElement'
+], function(declare, TextArea, CheckedMultiSelect, css, ConditionalSelectCellElement){
 
 	// module:
 	//		dijit/form/Textarea
@@ -16,11 +15,16 @@ define([
 
 	return declare("ioc.conditionalselectcell", [TextArea], {
 
+        startup: function() {
+            this.inherited(arguments);
+            if (!this.widgetInitialized) {
+                this.createWidget();
+            }
+        },
 
 		buildRendering: function(){
 			this.inherited(arguments);
 
-			alert("TODO: configurar el ConditionalSelectCell");
 			// TODO[Xavi] EL camp real és un textarea, s'ha d'injectar una icona com la lupa però en lloc de mostrar
            // un editor cal mostrar un dialeg per seleccionar els camps, mostrará un CheckedMultiSelect amb les opcions i un botó per desar
 
@@ -35,15 +39,12 @@ define([
 
 
 
-
-
-			//domStyle.set(this.textbox, { backgroundColor: 'red', zIndex: 0, overflowY: 'auto' }); // Test
-
 			// Aquest element s'injecta en lloc del textbox original
-            // new ConditionalSelectCellElement({
-             //    node: this.textbox,
-             //    alwaysDisplayIcon: true
-            // });
+            new ConditionalSelectCellElement({
+                node: this.textbox,
+                alwaysDisplayIcon: true,
+                src: this
+            });
 
 		},
 

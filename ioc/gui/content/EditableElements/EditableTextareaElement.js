@@ -16,8 +16,7 @@ define([
             // Això es crida en fer click al botó d'editar
 
             createWidget: function () {
-                // TODO[Xavi]: exposar com id de l'element directament
-                // TODO[Xavi]: generar un element ocult amb aquesta informació
+
                 this.args.id = ('' + Date.now() + Math.random()).replace('.', '-'); // id única
 
                 var args = this.args;
