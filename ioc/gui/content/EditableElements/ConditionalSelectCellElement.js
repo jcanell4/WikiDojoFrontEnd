@@ -1,135 +1,173 @@
 define([
     'dojo/_base/declare',
-    'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/gui/content/EditableElements/ZoomableFormElement',
-    'ioc/dokuwiki/editors/AceManager/toolbarManager',
+    "dojox/form/CheckedMultiSelect",
+    'dojo/text!dojox/form/resources/CheckedMultiSelect.css',
+], function (declare, ZoomableFormElement, CheckedMultiSelect, css) {
 
-    // 'ioc/wiki30/dispatcherSingleton',
+    css += "\n";
+    css += "div.checkContainer .dojoxCheckedMultiSelectWrapper {height: auto;}\n";
+    css += "div.checkContainer {margin-top: 15px; margin-bottom: 15px;}\n";
 
-], function (declare, AceFacade, ZoomableFormElement, toolbarManager/*, contentToolFactory*//*, getDispatcher*/) {
-
+    var cssStyle = document.createElement('style');
+    cssStyle.innerHTML = css;
+    document.head.appendChild(cssStyle);
 
     var lastFocusedElement;
-
-    var DIALOG_DEFAULT_HEIGHT = 600;
-    var DIALOG_DEFAULT_WIDTH = 800;
-
 
     return declare([ZoomableFormElement],
         {
 
-            constructor: function(args) {
+            constructor: function (args) {
                 this.src = args.src;
             },
 
             _zoom: function (event) {
 
+                this.src.gridData.grid.ignoreApply = true;
+
                 // ALERTA! Aquest objecte es creat pel ConditionalSelectCell que és el que rep la injecció del IocEditManager
                 console.warn("**************");
                 console.warn(this.src.gridData);
-                console.warn(this.src.datasource.formEditableElements); // Prova d'accéss al datasource
+                console.warn(this.src.datasource);
                 console.warn(this.src.gridData.cell.config); // Config
                 console.warn(this.src.gridData.grid.getItem(this.src.gridData.rowIndex)); // fila
                 console.warn("**************");
+
+
+                var options = [];
+
+                // Exemple de dades a cell.config
+                //     "datasource": "activitatsAprenentatge",
+                //     "filterByKeySource": "unitat",
+                //     "filterByKeyOwn": "unitat formativa",
+                //     "labelFields": ["unitat", "descripció"],
+                //     "labelSeparator": ",",
+                //     "outputFields": ["unitat", "periode"],
+                //     "outputSeparator": [";"],
+                //     "outputMultiSeparator": [","],
+                //     "hierarchySeparator": "."
+
+                var config = this.src.gridData.cell.config;
+                var fieldSource = JSON.parse(this.src.datasource.getValue(config.fieldsource));
+                var fieldOwn = JSON.parse(this.src.datasource.getValue(this.src.gridData.grid.sourceId));
+                var rowOwn = fieldOwn[this.src.gridData.rowIndex];
+
+                for (var i = 0; i < fieldSource.length; i++) {
+
+                    // ALERTA! == intencionat perquè un valor pot ser enter i l'altre string
+                    if (fieldSource[i][config.filterByKeySource] == rowOwn[config.filterByKeyOwn]) {
+                        var labelItems = [];
+                        var outputItems = [];
+
+                        for (var j=0; j < config.labelFields.length; j++) {
+                            labelItems.push(fieldSource[i][config.labelFields[j]]);
+                        }
+
+                        for (var j=0; j < config.outputFields.length; j++) {
+                            outputItems.push(fieldSource[i][config.outputFields[j]]);
+                        }
+
+                        options.push(
+                            {
+                                label: labelItems.join(config.labelSeparator),
+                                value: outputItems.join(config.outputMultiseparator)
+                            }
+                        );
+                    }
+                }
 
                 event.preventDefault();
                 this.setEditionState(true);
                 var fieldId = this.$field.attr('data-form-editor-button') || Date.now();
 
-                var dialogManager = this.context.dispatcher.getDialogManager();
+                var dispatcher;
 
-                var args = {
+                require(["ioc/wiki30/dispatcherSingleton", "ioc/gui/content/contentToolFactory"], function (getDispatcher) {
+                    dispatcher = getDispatcher();
+                });
+
+
+                var dialogManager = dispatcher.getDialogManager();
+
+                var params = {
                     id: "auxWidget" + fieldId,
-                    title: this.context.title,
-                    dispatcher: this.context.dispatcher,
+                    multiple: config.outputFields.length>1,
+                    baseClass: 'checkContainer',
+                    options: options, // per mostrar
                 };
 
-                var editorWidget = this.context.contentToolFactory.generate(this.context.contentToolFactory.generation.BASE, args);
-                var toolbarId = 'DialogToolbar' + (Date.now() + Math.random()); // id única
+                var checkMultiSelectWidget = new CheckedMultiSelect(params);
 
+                // Seleccionem les opcions anteriors
+                var auxOptions = checkMultiSelectWidget.getOptions();
+                var selectedOptions = this.$field.val().split(config.outputSeparator);
+                var optionsToUpdate = [];
+
+                for (var i=0; i < auxOptions.length; i++) {
+                    for (var j=0; j<selectedOptions.length; j++) {
+                        // == intencionat, per si es dona el cas de que un sigui nombre i l'altre string
+                        if (auxOptions[i].value == selectedOptions[j]) {
+                            auxOptions[i].selected = true;
+                            optionsToUpdate.push(auxOptions);
+                        }
+                    }
+                }
+
+                checkMultiSelectWidget.updateOption(optionsToUpdate);
 
                 var $container = jQuery('<div>');
-                var $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
-                var $textarea = jQuery('<textarea id="textarea_' + args.id + '" style="width:100%;height:200px" name="wikitext"></textarea>');
+                $container.text('Selecciona:');
 
-                $textarea.css('display', 'none');
-                $container.append($toolbar);
-                $container.append($textarea);
-
+                var context = this;
 
                 var saveCallback = function () {
-                    var value =editor.getValue();
 
+                    var value = checkMultiSelectWidget.getValue().join(config.outputSeparator);
 
-                    if (this.args.saveCallback) {
-                        this.args.saveCallback(value);
+                    // TODO: eliminar els resultats redundants per jerarquía
 
-                    } else {
-                        // Aquest es el comportament per defecte, vàlid quan es treballa amb elements HTML
-                        this.$field.val(value);
-                        this.$field.trigger('input');
-                    }
+                    context.$field.val(value);
 
+                    this.src.gridData.grid.ignoreApply = false;
                     this.setEditionState(false);
-                    toolbarManager.delete(toolbarId);
-
-                    //this.clearExternalContent(); // Esborrant
+                    this.src.gridData.grid.edit.apply();
 
                     dialog.onHide();
-                    // console.log("Desant al node el nou contingut", editor.getValue(), this.$field, this.$field.val());
 
                 }.bind(this);
 
                 var cancelCallback = function () {
+                    this.src.gridData.grid.ignoreApply = false;
                     this.setEditionState(false);
-                    toolbarManager.delete(toolbarId);
-
-
-                    // això només es crida si es passa un cancelCallback com argument al constructor.
-                    if (this.args.cancelCallback) {
-                        this.args.cancelCallback();
-                    }
-
-                    this.clearExternalContent(); // Esborrant
+                    this.src.gridData.grid.edit.apply();
 
                     dialog.onHide();
                 }.bind(this);
 
-                var changeCallback = function(e) {
-
-                    if (editor.isChanged()) {
-                        // console.log("changeCallback:", e);
-                        this.setExternalContent(e.newContent);
-                    } else {
-                        this.clearExternalContent();
-                    }
-
-                }.bind(this);
-
                 var dialogParams = {
-                    title: "Editar cel·la", //TODO[Xavi] Localitzar
+                    title: "Editar cel·la",
+                    baseClass: 'checkContainer',
                     message: '',
                     single: true,
                     sections: [
                         $container,
-                        {widget: editorWidget}
+                        {widget: checkMultiSelectWidget},
                     ],
                     buttons: [
                         {
                             id: 'accept',
-                            description: 'Desar', // TODO[Xavi] Localitzar
+                            description: 'Desar',
                             buttonType: 'default',
                             callback: saveCallback
                         },
                         {
                             id: 'cancel',
-                            description: 'Cancel·lar', // TODO[Xavi] Localitzar
+                            description: 'Cancel·lar',
                             buttonType: 'default',
                             callback: cancelCallback
                         }
                     ],
-                    height: DIALOG_DEFAULT_HEIGHT,
-                    width: DIALOG_DEFAULT_WIDTH
                 };
 
                 var dialog = dialogManager.getDialog(dialogManager.type.DEFAULT, this.context.ns, dialogParams);
@@ -137,33 +175,7 @@ define([
                 dialog.show();
                 dialog.resize();
 
-                toolbarManager.createToolbar(toolbarId , 'simple');
-
-                var editor = new AceFacade({
-                    id: args.id,
-                    auxId: args.id,
-                    containerId: 'editor_widget_container_' + args.id, // editorWidget.id
-                    textareaId: 'textarea_' + args.id,
-                    theme: JSINFO.plugin_aceeditor.colortheme,
-                    wraplimit: JSINFO.plugin_aceeditor.wraplimit,
-                    wrapMode: true,
-                    dispatcher: this.context.dispatcher,
-                    content: this.$field.val(),
-                    originalContent: this.$field.val(),
-                    TOOLBAR_ID: toolbarId ,
-                    plugins: ['SaveDialogEditorButton', 'CancelDialogEditorButton'] // Plugins que ha de contenir la toolbar
-                });
-
-                editor.setHeight(DIALOG_DEFAULT_HEIGHT - 137); //137 es la diferencia entre l'alçada de l'editor i el contenidor tenint en compte la toolbar i la barra inferior de botons
-
-                editor.editor.on('CancelDialog', cancelCallback);
-                editor.editor.on('SaveDialog', saveCallback);
-                editor.on('change', changeCallback);
-
                 this.originalContent = this.$field.val();
-
-                //this.context.setFireEventHandler('post_cancel_project', cancelCallback);
-
 
             },
 
@@ -172,19 +184,10 @@ define([
                 // Això hauria de ser un contenttool, però no es aplicable en el cas de les cel·les perquè les crea el DataGrid
                 var context = {
                     title: "Edició de cel·la", // TODO: Localitzar
-                    ns: "zoomable-cell-element", // No el fem servir
-                    //setFireEventHandler: function() {/* no fem res*/}
                 };
 
 
                 this.context = context;
-
-                // ALERTA[Xavi] Important, el require es syncron, fins que no s'executa no continua la execució!
-                require(["ioc/wiki30/dispatcherSingleton", "ioc/gui/content/contentToolFactory"], function(getDispatcher, contentToolFactory) {
-                    context.dispatcher = getDispatcher();
-                    context.contentToolFactory = contentToolFactory;
-                });
-
 
                 this.$field = jQuery(args.node);
                 this.args = args;
@@ -209,14 +212,6 @@ define([
                 }.bind(this));
 
             },
-
-            setExternalContent: function (content) {
-                this.$field.val(content);
-            },
-
-            clearExternalContent: function() {
-                this.$field.val(this.originalContent);
-            }
 
         });
 

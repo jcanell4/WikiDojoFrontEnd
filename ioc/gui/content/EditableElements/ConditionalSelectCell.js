@@ -1,17 +1,15 @@
 define([
 	"dojo/_base/declare", // declare
     "dijit/form/Textarea",
-    "dojox/form/CheckedMultiSelect",
-    'dojo/text!dojox/form/resources/CheckedMultiSelect.css',
-    'ioc/gui/content/EditableElements/ConditionalSelectCellElement'
-], function(declare, TextArea, CheckedMultiSelect, css, ConditionalSelectCellElement){
+    // "dojox/form/CheckedMultiSelect",
+    // 'dojo/text!dojox/form/resources/CheckedMultiSelect.css',
+    'ioc/gui/content/EditableElements/ConditionalSelectCellElement',
+    'dojo/dom-construct'
+], function(declare, TextArea, /*CheckedMultiSelect, css,*/ ConditionalSelectCellElement){
 
 	// module:
 	//		dijit/form/Textarea
 
-    var cssStyle = document.createElement('style');
-    cssStyle.innerHTML= css;
-    document.head.appendChild(cssStyle);
 
 	return declare("ioc.conditionalselectcell", [TextArea], {
 
@@ -36,8 +34,6 @@ define([
             //      descripció = id composta + descripció de la taula original
             //      Si el value del widget original (contingut del textarea) es diferent de 0 s'han d'agafar els ids compostos i marcar aquests al widget.
             //      En desar es guardan tots els valors checked separats per coma (id compostos)
-
-
 
 			// Aquest element s'injecta en lloc del textbox original
             new ConditionalSelectCellElement({

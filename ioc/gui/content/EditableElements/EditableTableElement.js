@@ -443,7 +443,7 @@ define([
                         console.warn("Alert: currently dates are not validated");
                         break;
 
-                    case "textarea": // intentional fall-through
+                    case "textarea":
                         value = value.split("\\\\ ").join("\n");
                         break;
 
@@ -675,7 +675,7 @@ define([
                     escapeHTMLInData: false,
                     // height: "500px",
                     height: height + 'px', // la alçada de cada fila
-
+                    sourceId: args.data.id
                 });
 
 
@@ -708,8 +708,8 @@ define([
                 // Sobreescrita de _EditManager.js
                 grid.edit.apply = function () {
 
-                    if (jQuery(document.activeElement).hasClass('ace_text-input')) {
-                        // console.log("És un dialeg, no fem res");
+                    // Això permet mantener la cel·la en edició quan s'obre un dialeg
+                    if (grid.ignoreApply || jQuery(document.activeElement).hasClass('ace_text-input')) {
                         return;
                     }
 
@@ -764,17 +764,6 @@ define([
                 this.updateField();
                 this.widgetInitialized = true;
 
-
-                // TEST[Xavi]! eliminar, això no és necessari aquí
-
-
-                if (this.dataSource.getValue('einesAprenentatge')) {
-                    // ALERTA! Sabem que aquest camp es una taula
-                    console.log("TEST: Valor del camp einesAprenentatge", JSON.parse(this.dataSource.getValue('einesAprenentatge')));
-                }
-
-
-
                 this.grid.edit.setDataSource(args.context);
 
             },
@@ -788,7 +777,6 @@ define([
                     } else {
                         this.initializeButtonComplex(action, actions[action], toolbarNode, this.actionCallbacks[action]);
                     }
-
 
                 }
 

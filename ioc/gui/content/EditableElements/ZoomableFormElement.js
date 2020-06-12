@@ -15,6 +15,10 @@ define([
     return declare([AbstractEditableElement],
         {
 
+            // constructor: function() {
+            //     console.log("constructor");
+            // },
+
             show: function (shouldDisplay) {
                 var visibility = '';
 
@@ -66,6 +70,7 @@ define([
                 }.bind(this));
 
                 this.$icon.on('click', this._zoom.bind(this));
+
 
                 // console.log("Afegida icona de zoom pel node:", this.$field);
 

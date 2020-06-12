@@ -8,7 +8,6 @@ define([
             editionState : false,
 
             constructor: function (args) {
-
                 this.init(args);
             },
 

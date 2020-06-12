@@ -48,7 +48,7 @@ define([
 
 
                 var saveCallback = function () {
-                    var value =editor.getValue();
+                    var value = editor.getValue();
 
 
                     if (this.args.saveCallback) {
