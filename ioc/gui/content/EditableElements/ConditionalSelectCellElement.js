@@ -60,11 +60,11 @@ define([
                         var labelItems = [];
                         var outputItems = [];
 
-                        for (var j=0; j < config.labelFields.length; j++) {
+                        for (var j = 0; j < config.labelFields.length; j++) {
                             labelItems.push(fieldSource[i][config.labelFields[j]]);
                         }
 
-                        for (var j=0; j < config.outputFields.length; j++) {
+                        for (var j = 0; j < config.outputFields.length; j++) {
                             outputItems.push(fieldSource[i][config.outputFields[j]]);
                         }
 
@@ -104,8 +104,8 @@ define([
                 var selectedOptions = this.$field.val().split(config.outputSeparator);
                 var optionsToUpdate = [];
 
-                for (var i=0; i < auxOptions.length; i++) {
-                    for (var j=0; j<selectedOptions.length; j++) {
+                for (var i = 0; i < auxOptions.length; i++) {
+                    for (var j = 0; j < selectedOptions.length; j++) {
                         // == intencionat, per si es dona el cas de que un sigui nombre i l'altre string
                         if (auxOptions[i].value == selectedOptions[j]) {
                             auxOptions[i].selected = true;
@@ -123,11 +123,84 @@ define([
 
                 var saveCallback = function () {
 
-                    var value = checkMultiSelectWidget.getValue().join(config.outputSeparator);
+                    var value = checkMultiSelectWidget.getValue();
+                    var processedValue;
+
 
                     // TODO: eliminar els resultats redundants per jerarquía
 
-                    context.$field.val(value);
+                    if (config.hierarchySeparator) {
+
+                        var hierarchy = {};
+
+                        for (var i = 0; i < value.length; i++) {
+                            var decomposedValue = value[i].split(config.hierarchySeparator);
+
+
+                            var addElementToHierarchy = function (key, subobject, elementsrestants) {
+
+                                if (subobject[key] === undefined) {
+                                    subobject[key] = {};
+                                }
+
+
+                                if (elementsrestants.length > 0) {
+                                    addElementToHierarchy(elementsrestants.shift(), subobject[key], elementsrestants)
+                                } else {
+                                    subobject[key]['leaf'] = true;
+                                }
+
+                            };
+
+                            addElementToHierarchy(decomposedValue.shift(), hierarchy, decomposedValue);
+
+                        }
+
+                        var parsedValues = [];
+
+                        // entrada:
+                        // 1
+                        //   1
+                        //     99
+                        //   2
+                        // 2
+                        //   1
+                        //
+                        // sortida:
+                        //  1
+                        //  2.1
+
+
+                        var parseObject = function (obj, value) {
+
+                            for (var key in obj) {
+                                var candidateValue = value;
+
+                                if (candidateValue.length > 0) {
+                                    candidateValue += config.hierarchySeparator;
+                                }
+                                candidateValue += key;
+
+                                if (obj[key].leaf) {
+                                    // Si troba una fulla l'afegeix i deixa de parsejar
+                                    parsedValues.push(candidateValue);
+                                } else {
+                                    parseObject(obj[key], candidateValue);
+                                }
+
+                            }
+                        };
+
+                        parseObject(hierarchy, "");
+
+                        processedValue = parsedValues.join(config.outputSeparator)
+
+
+                    } else {
+                        processedValue = value.join(config.outputSeparator)
+                    }
+
+                    context.$field.val(processedValue);
 
                     this.src.gridData.grid.ignoreApply = false;
                     this.setEditionState(false);
