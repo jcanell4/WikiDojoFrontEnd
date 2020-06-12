@@ -765,6 +765,7 @@ define([
                 this.widgetInitialized = true;
 
                 this.grid.edit.setDataSource(args.context);
+                this.grid.edit.setParentElement(this);
 
             },
 

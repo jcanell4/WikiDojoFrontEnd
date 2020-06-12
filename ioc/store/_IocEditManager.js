@@ -64,5 +64,9 @@ define([
             this.datasource = datasource;
         },
 
+        setParentElement: function(element) {
+            this.parentElement = element;
+        }
+
     });
 });

@@ -1,17 +1,15 @@
 define([
-	"dojo/_base/declare", // declare
+    "dojo/_base/declare", // declare
     "dijit/form/Textarea",
-    // "dojox/form/CheckedMultiSelect",
-    // 'dojo/text!dojox/form/resources/CheckedMultiSelect.css',
     'ioc/gui/content/EditableElements/ConditionalSelectCellElement',
     'dojo/dom-construct'
-], function(declare, TextArea, /*CheckedMultiSelect, css,*/ ConditionalSelectCellElement){
+], function (declare, TextArea, ConditionalSelectCellElement) {
 
-	// module:
-	//		dijit/form/Textarea
+    // module:
+    //		dijit/form/Textarea
 
 
-	return declare("ioc.conditionalselectcell", [TextArea], {
+    return declare("ioc.conditionalselectcell", [TextArea], {
 
         // startup: function() {
         //     this.inherited(arguments);
@@ -20,29 +18,58 @@ define([
         //     }
         // },
 
-		buildRendering: function(){
-			this.inherited(arguments);
+        buildRendering: function () {
+            this.inherited(arguments);
 
-			// TODO[Xavi] EL camp real és un textarea, s'ha d'injectar una icona com la lupa però en lloc de mostrar
-           // un editor cal mostrar un dialeg per seleccionar els camps, mostrará un CheckedMultiSelect amb les opcions i un botó per desar
-
-
-
-            // El checked:
-            //      S'ha d'omplir amb els dades obtingudes de la taula original
-            //      value = id composta
-            //      descripció = id composta + descripció de la taula original
-            //      Si el value del widget original (contingut del textarea) es diferent de 0 s'han d'agafar els ids compostos i marcar aquests al widget.
-            //      En desar es guardan tots els valors checked separats per coma (id compostos)
-
-			// Aquest element s'injecta en lloc del textbox original
+            // Aquest element s'injecta en lloc del textbox original
             new ConditionalSelectCellElement({
                 node: this.textbox,
                 alwaysDisplayIcon: true,
                 src: this
             });
 
-		},
+            var context = this;
 
-	});
+
+            jQuery(this.textbox).on('change input', function (e) {
+
+                var config = context.gridData.cell.config;
+
+                // Cal fer la comprovació aquí perque el gridData no es disponible durant la creació del widget
+                if (!config.validationRegex) {
+                    return;
+                }
+
+                var tokens = jQuery(this).val().split(config.outputSeparator)
+
+                var validated = true;
+
+                for (var i = 0; i < tokens.length; i++) {
+
+                    if (tokens[i].length === 0) {
+                        continue;
+                    }
+
+                    var pattern = new RegExp(config.validationRegex, 'g');
+
+                    if (!pattern.test(tokens[i])) {
+                        validated = false;
+                        break;
+                    }
+                }
+
+                if (!validated) {
+                    jQuery(context.domNode).css('border', '1px solid red');
+                    jQuery(context.domNode).css('background-color', 'pink');
+                } else {
+                    jQuery(context.domNode).css('border', 'none');
+                    jQuery(context.domNode).css('background-color', 'white');
+                }
+
+            });
+
+
+        },
+
+    });
 });

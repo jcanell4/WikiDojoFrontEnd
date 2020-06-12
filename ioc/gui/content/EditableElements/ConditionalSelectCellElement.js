@@ -27,12 +27,12 @@ define([
                 this.src.gridData.grid.ignoreApply = true;
 
                 // ALERTA! Aquest objecte es creat pel ConditionalSelectCell que és el que rep la injecció del IocEditManager
-                console.warn("**************");
-                console.warn(this.src.gridData);
-                console.warn(this.src.datasource);
-                console.warn(this.src.gridData.cell.config); // Config
-                console.warn(this.src.gridData.grid.getItem(this.src.gridData.rowIndex)); // fila
-                console.warn("**************");
+                // console.warn("**************");
+                // console.warn(this.src.gridData);
+                // console.warn(this.src.datasource);
+                // console.warn(this.src.gridData.cell.config); // Config
+                // console.warn(this.src.gridData.grid.getItem(this.src.gridData.rowIndex)); // fila
+                // console.warn("**************");
 
 
                 var options = [];
@@ -47,6 +47,7 @@ define([
                 //     "outputSeparator": [";"],
                 //     "outputMultiSeparator": [","],
                 //     "hierarchySeparator": "."
+                //     "validationRegex": ""
 
                 var config = this.src.gridData.cell.config;
                 var fieldSource = JSON.parse(this.src.datasource.getValue(config.fieldsource));
