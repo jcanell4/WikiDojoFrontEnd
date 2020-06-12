@@ -92,7 +92,7 @@ define([
 
                 var params = {
                     id: "auxWidget" + fieldId,
-                    multiple: config.outputFields.length>1,
+                    multiple: config.multiple,
                     baseClass: 'checkContainer',
                     options: options, // per mostrar
                 };
