@@ -15,12 +15,12 @@ define([
 
 	return declare("ioc.conditionalselectcell", [TextArea], {
 
-        startup: function() {
-            this.inherited(arguments);
-            if (!this.widgetInitialized) {
-                this.createWidget();
-            }
-        },
+        // startup: function() {
+        //     this.inherited(arguments);
+        //     if (!this.widgetInitialized) {
+        //         this.createWidget();
+        //     }
+        // },
 
 		buildRendering: function(){
 			this.inherited(arguments);

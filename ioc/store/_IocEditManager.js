@@ -43,12 +43,7 @@ define([
                 // console.log("Widget?", cellInfo.widget);
 
                 if (cellInfo.widget) {
-                    console.log("Widget?", cellInfo.widget);
-                    console.log("Test", cellInfo.widget.test);
-
                     clearInterval(timerId);
-
-                    console.log("formEditableElements",context.datasource.formEditableElements);
 
                     // ALERTA! No fem servir un setter perquè no tots els EditableElement fan servir aquesta informació
                     cellInfo.widget.datasource = context.datasource;
@@ -58,14 +53,6 @@ define([
                         colIndex: inCell.index,
                         grid: context.grid
                     };
-
-                    console.log("Col:", cellInfo.widget.gridData.colIndex);
-                    console.log("Row:", cellInfo.widget.gridData.rowIndex);
-
-
-                    console.log("Grid?", cellInfo.widget.gridData.grid);
-                    // TODO: Inyectar la informació
-                    alert("Works!");
                 }
             }, 500);
 

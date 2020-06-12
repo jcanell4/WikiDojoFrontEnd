@@ -19,15 +19,7 @@ define([
         {
 
             constructor: function(args) {
-                console.log("Hi ha src?", args.src, args);
                 this.src = args.src;
-            },
-
-            _createIcon: function () {
-                this.inherited(arguments);
-
-                console.log("Icon:", this.$icon);
-                console.log("Field:", this.$field);
             },
 
             _zoom: function (event) {
@@ -38,27 +30,11 @@ define([
                 console.warn(this.src.datasource.formEditableElements); // Prova d'accéss al datasource
                 console.warn(this.src.gridData.cell.config); // Config
                 console.warn(this.src.gridData.grid.getItem(this.src.gridData.rowIndex)); // fila
-
-
                 console.warn("**************");
-
-
-
-
-                console.log("Parents Icon?", this.$icon.parent(), this.$icon.parent().parent(), this.$icon.parent().parent().parent());
-                console.log("Parents Field?", this.$field.parent(), this.$field.parent().parent(), this.$field.parent().parent().parent());
-
-
 
                 event.preventDefault();
                 this.setEditionState(true);
                 var fieldId = this.$field.attr('data-form-editor-button') || Date.now();
-
-                console.log("Quin es el field id?", fieldId);
-                console.log("Es pot accedir a la info del row?", this.$field);
-
-
-                console.log("this", this);
 
                 var dialogManager = this.context.dispatcher.getDialogManager();
 
@@ -192,10 +168,6 @@ define([
             },
 
             init: function (args) {
-                console.log("hi ha grid?", this.grid);
-
-                console.error("Init:", args);
-
 
                 // Això hauria de ser un contenttool, però no es aplicable en el cas de les cel·les perquè les crea el DataGrid
                 var context = {
@@ -235,10 +207,6 @@ define([
 
                     this.show(true);
                 }.bind(this));
-
-
-                // Això no funciona perque la taula real no es aquesta, es crea una taula per cada fila i tampoc conté cap informació respecte a la cel
-                console.log("**node parent:", this.$field.parent(), this.$field.parent().parent(), this.$field.parent().parent().parent());
 
             },
 
