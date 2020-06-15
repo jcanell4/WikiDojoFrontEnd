@@ -28,7 +28,7 @@ define([
         process:function() {
 
             this.switchEditorComponent.send(
-                {contentFormat: 'Dojo'}
+                {editorType: 'DOJO'}
             );
         }
 

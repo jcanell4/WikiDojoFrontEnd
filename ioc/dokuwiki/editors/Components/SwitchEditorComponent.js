@@ -11,7 +11,7 @@ define([
         send: function (extraData) {
 
             // Eliminem els esborranys, si no s'elimina la petició és interceptada pel comparador de draft/document
-            // i es perd el paràmetre amb el contentFormat
+            // i es perd el paràmetre amb el editorType
             var id = this.dispatcher.getGlobalState().getCurrentId();
             var ns = this.dispatcher.getGlobalState().getCurrentNs();
 

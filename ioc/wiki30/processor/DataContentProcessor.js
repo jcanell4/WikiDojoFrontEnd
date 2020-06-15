@@ -7,8 +7,8 @@ define([
 ], function (declare, ContentProcessor, contentToolFactory, registry, EventFactory) {
 
     var editorsByFormat = {
-        'html':'Dojo',
-        'Dojo':'Dojo',
+        'html':'DOJO',
+        'DOJO':'DOJO',
         'ACE' : 'ACE'
     };
 

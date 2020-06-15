@@ -52,9 +52,7 @@ define([
 
     return declare([Editor, AbstractIocEditor], {
 
-            editorType: 'Dojo',
-
-            contentFormat: 'Dojo',
+            editorType: 'DOJO',
 
             onKeyDown: function (/* Event */ e) {
                 if (e.keyCode === 9) { // Tab

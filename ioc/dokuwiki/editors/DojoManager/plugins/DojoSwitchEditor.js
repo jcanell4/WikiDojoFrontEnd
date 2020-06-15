@@ -33,7 +33,7 @@ define([
         _processFull:function() {
             
             this.switchEditorComponent.send(
-                {contentFormat: 'ACE'}
+                {editorType: 'ACE'}
             );
         }
 

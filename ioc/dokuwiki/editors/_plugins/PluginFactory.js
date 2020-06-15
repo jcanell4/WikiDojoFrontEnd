@@ -121,7 +121,7 @@ define([
             'SwitchEditorButton': AceSwitchEditor
         },
 
-        'Dojo': {
+        'DOJO': {
             //'IocSoundFormatButton': DojoFormat,
             // 'TestFormatButton' : DojoFormat,
             'IocComment': DojoComment,

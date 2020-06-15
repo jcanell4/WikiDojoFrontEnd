@@ -192,7 +192,7 @@ define([
             },
 
             _getDocumentQuery: function () {
-                return this.query + '&recover_draft=false&contentFormat=' + this.dispatcher.getGlobalState().userState['editor'];
+                return this.query + '&recover_draft=false&editorType=' + this.dispatcher.getGlobalState().userState['editor'];
             },
 
             _setActionType: function (value) {

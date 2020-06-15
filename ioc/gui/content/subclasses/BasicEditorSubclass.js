@@ -167,7 +167,7 @@ define([
 //                values.wikitext = jQuery.trim(text);
                 values.wikitext = text;
 
-                values.contentFormat = this.getEditor().getContentFormat();
+                values.editorType = this.getEditor().getContentFormat();
 
                 var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
 
@@ -286,8 +286,10 @@ define([
 
             createEditor: function(config, type) {
 
+                console.log("SructuredDocumentSubclass#createEditor", config, type);
+
                 switch (type) {
-                    case "Dojo":
+                    case "DOJO":
                         return this.createDojoEditor(config);
 
                     case "ACE": // fall-through intencionat

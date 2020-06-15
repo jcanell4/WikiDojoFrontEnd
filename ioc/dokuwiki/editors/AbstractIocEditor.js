@@ -87,10 +87,10 @@ define([
         },
 
         getContentFormat: function () {
-            if (!this.contentFormat) {
+            if (!this.editorType) {
                 throw new Error("ContentFormat no definit");
             } else {
-                return this.contentFormat;
+                return this.editorType;
             }
         }
 

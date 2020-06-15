@@ -196,7 +196,7 @@ define([
 
             query += this._generateLastLocalDraftTimesParam(chunkId);
 
-            query += "&contentFormat=" + this.dispatcher.getGlobalState().userState['editor'];
+            query += "&editorType=" + this.dispatcher.getGlobalState().userState['editor'];
 
             return query;
         },
@@ -225,7 +225,7 @@ define([
             this.mixin(values, rebuildText);
 
             //afegim el format de l'editor
-            values["contentFormat"] = this.getEditor(header_id).getContentFormat();
+            values["editorType"] = this.getEditor(header_id).getContentFormat();
 
             var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
 
@@ -1015,9 +1015,10 @@ define([
 
         // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
         createEditor: function (config, type) {
-            // console.log("SructuredDocumentSubclass#createEditor", config, type);
+            console.log("SructuredDocumentSubclass#createEditor", config, type);
+
             switch (type) {
-                case "Dojo":
+                case "DOJO":
                     return this.createDojoEditor(config);
 
                 case "ACE": // fall-through intencionat
