@@ -137,10 +137,10 @@ define([
                 args["autosaveTimer"] = content.autosaveTimer;
             }
 
-            // console.log("Ha arribat el format?", content.format, editorsByFormat[content.format]);
+            // console.log("Ha arribat el format?", content.editorType, editorsByFormat[content.editorType]);
 
-            if (content.format !== undefined && editorsByFormat[content.format]) {
-                args.editorType = editorsByFormat[content.format];
+            if (content.editorType !== undefined && editorsByFormat[content.editorType]) {
+                args.editorType = editorsByFormat[content.editorType];
 
             } else if (dispatcher.getGlobalState().userState) {
                 // console.log("No hi ha modificador d'editor, utilitzant el de l'usuari");
