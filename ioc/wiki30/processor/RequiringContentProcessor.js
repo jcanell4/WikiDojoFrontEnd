@@ -6,6 +6,12 @@ define([
     'ioc/gui/DialogBuilder'
 ], function (declare, ContentProcessor, contentToolFactory, registry, DialogBuilder) {
 
+    var editorsByFormat = {
+        'html': 'Dojo',
+        'Dojo': 'Dojo',
+        'ACE': 'ACE'
+    };
+
     return declare([ContentProcessor],
         /**
          * Aquesta classe s'encarrega de processar les dades i generar un document editable.
@@ -29,29 +35,31 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
+                console.log("RequiringContentProcesor#process", value);
+
                 var ret = this.inherited(arguments);
 
-                if(value.action==="dialog"){
+                if (value.action === "dialog") {
                     var timer;
                     var contentTool = registry.byId(value.id);
 
-                    value.timer.onExpire = function(params){
+                    value.timer.onExpire = function (params) {
                         dispatcher.getEventManager().fireEvent(
-                                value.timer.eventOnExpire, params);
-                       };                        
+                            value.timer.eventOnExpire, params);
+                    };
 
-                    value.timer.onCancel = function(params){
+                    value.timer.onCancel = function (params) {
                         dispatcher.getEventManager().fireEvent(
-                                value.timer.eventOnCancel, params);
-                       };                        
-                    
+                            value.timer.eventOnCancel, params);
+                    };
+
                     this._initTimer(value, contentTool);
                     this._processTimerDialog(value, contentTool, dispatcher);
-                }else if(value.action==="refresh"){
+                } else if (value.action === "refresh") {
                     var contentTool = registry.byId(value.id);
                     contentTool.refreshTimer(value.timer.timeout, value.timer.paramsOnExpire);
                 }
-                
+
                 return ret;
             },
 
@@ -64,11 +72,12 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
+                console.log("RequiringContentProcesor#updateState");
                 this.inherited(arguments);
-                if(value.requiring_type==="full"){
+                if (value.requiring_type === "full") {
                     dispatcher.getGlobalState().getContent(value.id)["action"] = "edit"; //ALERTA. TODO [Josep] Cal posr requiring i canviar la funció d'updating
-                }else{
-                    dispatcher.getGlobalState().getContent(value.id)["action"] = "sec_edit"; 
+                } else {
+                    dispatcher.getGlobalState().getContent(value.id)["action"] = "sec_edit";
                 }
                 dispatcher.getGlobalState().getContent(value.id).readonly = true;
             },
@@ -84,8 +93,12 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
-//                console.log(content);
+                console.log("RequiringContentProcesor#createContentTool", content);
 
+                // Només l'editor ACE suporta la edició parcial.
+                if (content.content.format !== undefined && content.content.format !== editorsByFormat['ACE']) {
+                    return this._createFullContentTool(content, dispatcher);
+                }
 
                 switch (content.requiring_type) {
                     case 'full':
@@ -95,32 +108,35 @@ define([
                         return this._createStructuredContentTool(content, dispatcher);
 
                 }
-                //console.log("Type?:", content.type);
-
 
             },
 
 
-            _createFullContentTool: function (content, dispatcher) {
+            _createFullContentTool: function (data, dispatcher) {
+                console.log("RequiringContentProcesor#createFullContentTool", content);
                 var args = {
-                    ns: content.ns,
-                    id: content.id,
-                    title: content.title,
-                    content: content.content,
+                    ns: data.ns,
+                    id: data.id,
+                    title: data.title,
+                    content: data.content,
                     closable: true,
                     dispatcher: dispatcher,
-                    originalContent: content.content.text,
+                    originalContent: data.content.text,
                     type: 'requiring',
                     locked: true,
                     readonly: true,
-                    rev: content.rev
+                    rev: data.rev
                 };
+
+                if (data.content.format && editorsByFormat[data.content.format]) {
+                    args.editorType = editorsByFormat[data.content.format];
+                }
 
                 return contentToolFactory.generate(contentToolFactory.generation.REQUIRING, args);
             },
 
             _createStructuredContentTool: function (content, dispatcher) {
-                //console.log("RequiringContentProcessor#_createStructuredContentTool", content);
+                console.log("RequiringContentProcesor#createStructuredContentTool");
 
                 var args = {
                     ns: content.ns,
@@ -139,9 +155,10 @@ define([
             },
 
 
-            _updateContentTool: function(contentTool, content) { //
+            _updateContentTool: function (contentTool, content) { //
+                console.log("RequiringContentProcesor#updateContentTool");
                 //if (content.type === "requiring_partial") {
-                    contentTool.updateDocument(content.content);
+                contentTool.updateDocument(content.content);
                 //} else {
                 //
                 //    contentTool.updateDocument(content);
@@ -149,57 +166,59 @@ define([
             },
 
 
-            _initTimer: function(params, contentTool){
-                //console.log("RequiringContentProcessor#_initTimer", params);
-                if(params.timer.onCancel){
+            _initTimer: function (params, contentTool) {
+                console.log("RequiringContentProcessor#_initTimer", params);
+                if (params.timer.onCancel) {
                     contentTool.initTimer({
-                            onExpire: params.timer.onExpire,
-                            paramsOnExpire: params.timer.paramsOnExpire,
-                            onCancel: params.timer.onCancel,
-                            paramsOnCancel: params.timer.paramsOnCancel
-                        });
-                }else{
+                        onExpire: params.timer.onExpire,
+                        paramsOnExpire: params.timer.paramsOnExpire,
+                        onCancel: params.timer.onCancel,
+                        paramsOnCancel: params.timer.paramsOnCancel
+                    });
+                } else {
                     contentTool.initTimer({
-                            onExpire: params.timer.onExpire,
-                            paramsOnExpire: params.timer.paramsOnExpire
-                        });
+                        onExpire: params.timer.onExpire,
+                        paramsOnExpire: params.timer.paramsOnExpire
+                    });
                 }
             },
-            
-            _processTimerDialog: function(params, contentTool, dispatcher){
+
+            _processTimerDialog: function (params, contentTool, dispatcher) {
+                console.log("RequiringContentProcesor#_processTimerDialog", params);
                 var refId = "requiring_timer",
-                       generateDialog = function(func){
-                            var dialogParams = {
-                                dispatcher: dispatcher,
-                                id: "DlgRequiringTimer",
-                                ns: params.ns, 
-                                title: params.dialog.title,
-                                message: params.dialog.message,
-                                closable: true
-                            };
-                            var builder =  new DialogBuilder(dialogParams),
-                                    dialogManager = dispatcher.getDialogManager(),
-                                    dlg;
-
-                            dlg = dialogManager.getDialog(refId, builder.getId());
-                            if(!dlg){
-                                var button = {
-                                    id: refId + '_ok',
-                                    buttonType: 'default',
-                                    description: params.dialog.ok.text,
-                                    callback: func
-                                };
-                                builder.addButton(button.buttonType, button);
-                                builder.addCancelDialogButton({description: params.dialog.cancel.text});
-
-                                dlg = builder.build();
-                                dialogManager.addDialog(refId, dlg);
-                            }
-
-                            dlg.show();            
+                    generateDialog = function (func) {
+                        var dialogParams = {
+                            dispatcher: dispatcher,
+                            id: "DlgRequiringTimer",
+                            ns: params.ns,
+                            title: params.dialog.title,
+                            message: params.dialog.message,
+                            closable: true
                         };
-                
-                generateDialog(function(){
+                        var builder = new DialogBuilder(dialogParams),
+                            dialogManager = dispatcher.getDialogManager(),
+                            dlg;
+
+                        dlg = dialogManager.getDialog(refId, builder.getId());
+                        if (!dlg) {
+                            var button = {
+                                id: refId + '_ok',
+                                buttonType: 'default',
+                                description: params.dialog.ok.text,
+                                callback: func
+                            };
+                            builder.addButton(button.buttonType, button);
+                            builder.addCancelDialogButton({description: params.dialog.cancel.text});
+
+                            dlg = builder.build();
+                            dialogManager.addDialog(refId, dlg);
+                        }
+
+                        dlg.show();
+                    };
+
+                generateDialog(function () {
+                    console.log("RequiringContentProcesor#generateDialog");
                     contentTool.startTimer(params.timer.timeout);
                 });
             },
@@ -207,7 +226,7 @@ define([
             // ALERTA[Xavi] Compte, a aquest processor es generen diferents tipus de ContentTool i llavors la implementació original no funciona, sempre es crea un de nou
 
             isRefreshableContent: function (oldType) {
-//                console.log("ContentProcessor#isRefreshableContent", oldType);
+               console.log("ContentProcessor#isRefreshableContent", oldType);
 
                 if ((oldType === 'requiring' || oldType === "requiring_partial")) {
 //                    console.log('ContentProcessor#isRefreshableContent', true);

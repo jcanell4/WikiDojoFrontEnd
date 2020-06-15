@@ -451,6 +451,7 @@ define([
             // Funcions originalment al Container
 
             initContainer: function (id, textareaId) {
+                console.log("IocAceEditor#initContainer", id, textareaId);
 
                 var element = jQuery('<div>'),
                     // textarea = jQuery(this.dokuWrapper.textarea),
@@ -477,6 +478,9 @@ define([
                 }
 
                 wrapper.append(element).insertAfter(textarea).hide();
+
+                console.log("Existeix el wrapper?", wrapper);
+                console.log("Existeix el textarea?", textarea);
 
                 this.$elementContainer = element;
                 this.$wrapper = wrapper;
