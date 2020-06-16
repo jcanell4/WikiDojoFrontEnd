@@ -245,6 +245,8 @@ define([
                     'DojoSafePaste',
                     'SwitchEditorButton',
 
+                    'NewContent',
+
 
                 ]);
 

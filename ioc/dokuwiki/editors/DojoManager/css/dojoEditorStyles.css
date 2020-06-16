@@ -711,6 +711,16 @@ pre code label {
 }
 
 .video, [data-dw-block="video"], .iocgif {
+    position: relative;
     width: 73%;
     text-align: center;
 }
+
+newcontent {
+    display: block;
+}
+
+newcontent, newcontent .iocnote, newcontent .iocreference, newcontent .ioctext {
+    border-left: 3px solid #66CD00;
+}
+

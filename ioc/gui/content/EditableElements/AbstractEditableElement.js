@@ -8,7 +8,6 @@ define([
             editionState : false,
 
             constructor: function (args) {
-
                 this.init(args);
             },
 
@@ -111,6 +110,10 @@ define([
             // Actualitza el contingut intern de l'element
             updateField: function() {
                 throw new Error("La funció update ha de ser implementada per la subclasse");
+            },
+
+            getValue: function () {
+                throw new Error("La funció getValue ha de ser implementada per la subclasse");
             },
 
             _createIcon: function () {

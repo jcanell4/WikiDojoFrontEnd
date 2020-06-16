@@ -14,11 +14,26 @@ define([
     // "dijit/form/Textarea"
     "dijit/form/NumberTextBox",
     "dijit/form/NumberSpinner", // això fa el mateix que el NumberTextBox però afegint les fletxes
-    "ioc/gui/content/EditableElements/ZoomableCell"
+    "ioc/gui/content/EditableElements/ZoomableCell",
+    "ioc/gui/content/EditableElements/ConditionalSelectCell",
+    "dijit/Dialog",
+    "dijit/_TemplatedMixin",
+    "dijit/_WidgetsInTemplateMixin",
+    "dojo/text!./templates/importTableDialog.html",
+    // "dojo/i18n!./nls/TableDialog",
+    "dojo/on",
 
-], function (declare, AbstractEditableElement, DataGrid, cells, Memory, ObjectStore, Button, NumberTextBox, NumberSpinner, ZoomableCell) {
+    // Carregats pel template
+    "dijit/form/TextBox",
+    "dijit/form/Textarea",
+    "dijit/Fieldset"
 
-    var ADD_ROW = "add_row",
+], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell, ConditionalSelectCell, Dialog, _TemplatedMixin, _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings*/
+             on
+) {
+
+    var ADD_IMPORT = "add_import",
+        ADD_ROW = "add_row",
         ADD_DEFAULT_ROW = "add_default_row",
         ADD_DEFAULT_ROW_BEFORE = "add_default_row_before",
         ADD_DEFAULT_ROW_AFTER = "add_default_row_after",
@@ -35,39 +50,70 @@ define([
     };
 
 
+    function clickElem(elem) {
+        // Thx user1601638 on Stack Overflow (6/6/2018 - https://stackoverflow.com/questions/13405129/javascript-create-and-save-file )
+        var eventMouse = document.createEvent("MouseEvents");
+        eventMouse.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+        elem.dispatchEvent(eventMouse)
+    }
+
+    function openFile(func) {
+        readFile = function (e) {
+            var file = e.target.files[0];
+            if (!file) {
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var contents = e.target.result;
+                fileInput.func(contents)
+                document.body.removeChild(fileInput)
+            };
+            reader.readAsText(file)
+        };
+        var fileInput = document.createElement("input");
+        fileInput.type = 'file';
+        fileInput.style.display = 'none';
+        fileInput.onchange = readFile;
+        fileInput.func = func;
+        document.body.appendChild(fileInput)
+        clickElem(fileInput)
+    }
+
+
     // TODO: si augmenta el nombre de funcions s'ha d'extreure a un mòdul
     var wiocclFunctions = {
 
         iffieldisequal: function (params/*field, value, valueIfTrue, valueIfFalse*/) {
-            var field=params[0], value=params[1], valueIfTrue=params[2], valueIfFalse=params[3];
+            var field = params[0], value = params[1], valueIfTrue = params[2], valueIfFalse = params[3];
             var ret;
-            var $input = jQuery("#"+field);
-            if($input.val()==value){
+            var $input = jQuery("#" + field);
+            if ($input.val() == value) {
                 ret = valueIfTrue;
-            }else{
+            } else {
                 ret = valueIfFalse;
             }
             return ret;
         },
         copy: function (defaultValue, previousField) {
             var ret;
-            
-            if (!previousField) {
-                console.warn("No s'ha trobat el valor previ del camp");
-                return defaultValue;
-            }
-            
-            return previousField;
-        },
-        inc: function (defaultValue, previousField) {
-            var ret;
-            
+
             if (!previousField) {
                 console.warn("No s'ha trobat el valor previ del camp");
                 return defaultValue;
             }
 
-            if(typeof previousField == "string"){
+            return previousField;
+        },
+        inc: function (defaultValue, previousField) {
+            var ret;
+
+            if (!previousField) {
+                console.warn("No s'ha trobat el valor previ del camp");
+                return defaultValue;
+            }
+
+            if (typeof previousField === "string") {
                 var numberRegex = /(\d)+/gi;
                 var matches = previousField.match(numberRegex);
                 if (matches != null) {
@@ -75,12 +121,12 @@ define([
                 } else {
                     ret = defaultValue;
                 }
-            }else if(typeof previousField == "number"){
+            } else if (typeof previousField === "number") {
                 ret = previousField + 1;
-            }else{
+            } else {
                 ret = defaultValue;
             }
-            
+
             return ret;
         },
 
@@ -93,20 +139,402 @@ define([
 
     };
 
+    var ImportTableDialog = declare("dojox.editor.plugins.EditableTableImportDialog", [Dialog, _TemplatedMixin, _WidgetsInTemplateMixin], {
+        // summary:
+        //		Dialog box with options for table creation
+
+        baseClass: "EditorTableDialog",
+
+        templateString: insertTableTemplate,
+
+        tableId: 'Identificador',
+
+        inputType: '',
+        inputFooter: '',
+        inputTableId: '',
+        boxType: '',
+
+
+        // TODO: pasar a un fitxer nls
+        csvImportLegend: "Importació via CSV",
+        regexImportLegend: "Importació via RegEx",
+        importTableTitle: "Importar dades",
+        buttonCancel: "Cancel·lar",
+        buttonImport: "Importar",
+        buttonReplace: "Reemplaçar",
+        buttonLoad: "Carregar fitxer",
+        rowSeparatorLabel: "Separador files",
+        colSeparatorLabel: "Separador columnes",
+        regexRowSeparatorLabel: "Separador files",
+        regexColSeparatorLabel: "Separador columnes",
+        dataToImport: "Dades a importar",
+
+        // postMixInProperties: function () {
+        //     dojo.mixin(this, tableDialogStrings);
+        //     this.inherited(arguments);
+        // },
+        validated: false,
+
+        postCreate: function () {
+
+            this.validated = false;
+
+            dojo.addClass(this.domNode, this.baseClass); //FIXME - why isn't Dialog accepting the baseClass?
+            this.inherited(arguments);
+
+            var context = this;
+
+            this.csvColSeparator.set('value', this.data.csvColSeparator);
+            this.csvRowSeparator.set('value', this.data.csvRowSeparator);
+            this.regexColSeparator.set('value', this.data.regexColSeparator);
+            this.regexRowSeparator.set('value', this.data.regexRowSeparator);
+
+
+            if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
+                context.csvColSeparator.set('disabled', false);
+                context.csvRowSeparator.set('disabled', false);
+                context.useRegex = false;
+            } else {
+                context.csvColSeparator.set('disabled', true);
+                context.csvRowSeparator.set('disabled', true);
+                context.useRegex = true;
+            }
+
+            on(this.regexColSeparator, "input,change", function (evt) {
+
+                if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
+                    context.csvColSeparator.set('disabled', false);
+                    context.csvRowSeparator.set('disabled', false);
+                    context.useRegex = false;
+                } else {
+                    context.csvColSeparator.set('disabled', true);
+                    context.csvRowSeparator.set('disabled', true);
+                    context.useRegex = true;
+                }
+
+            });
+
+            on(this.regexRowSeparator, "input,change", function (evt) {
+
+                if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
+                    context.csvColSeparator.set('disabled', false);
+                    context.csvRowSeparator.set('disabled', false);
+                    context.useRegex = false;
+                } else {
+                    context.csvColSeparator.set('disabled', true);
+                    context.csvRowSeparator.set('disabled', true);
+                    context.useRegex = true;
+                }
+
+            });
+        },
+
+        onInsert: function () {
+
+            var rows = this.selectRow.get("value") || 1,
+                cols = this.selectCol.get("value") || 1,
+                _id = "tbl_" + (new Date().getTime()),
+
+
+                // El template conté la informació a mostrar pel dialog, aquesta es la que s'insereix al document
+
+                pre = '<div data-dw-box="' + this.boxType.get("value") + '" id="box_' + _id + '" class="ioctable'
+                    + ' ' + this.inputType.get("value")
+                    + ' ioc' + this.boxType.get("value")
+                    + '" data-dw-type="' + this.inputType.get("value") + "\">\n",
+                info = '<div class="iocinfo"><a id="' + this.inputTableId.get("value") + '" data-dw-link="table"><b contenteditable="false" data-dw-field="id">ID:</b> ' + this.inputTableId.get("value") + '<br></a>'
+                    + '<b contenteditable="false" data-dw-field="title">Títol:</b> ' + this.inputTitle.get("value") + '<br>'
+                    + '<b contenteditable="false" data-dw-field="footer">Peu:</b> ' + this.inputFooter.get("value") + '<br>'
+                    + '</div>',
+
+
+                t = pre + info + '<table id="' + _id + '" width="100%">\n';
+
+            // post = '</div>';
+
+
+            for (var r = 0; r < rows; r++) {
+                t += '\t<tr>\n';
+                for (var c = 0; c < cols; c++) {
+                    t += '\t\t<td width="' + (Math.floor(100 / cols)) + '%">&nbsp;</td>\n';
+                }
+                t += '\t</tr>\n';
+            }
+
+            t += '</table></div>';
+
+            var cl = dojo.connect(this, "onHide", function () {
+                dojo.disconnect(cl);
+                var self = this;
+                setTimeout(function () {
+                    self.destroyRecursive();
+                }, 10);
+            });
+            this.hide();
+
+            //console.log(t);
+            this.onBuildTable({htmlText: t, id: _id});
+
+            var $node = jQuery(this.plugin.editor.iframe).contents().find('#box_' + _id);
+
+            var $prev = $node.prev();
+            var $next = $node.next();
+
+            if ($prev.length === 0 || !$prev.is('p')) {
+                // Afegim un salt de línia com a separador
+                $node.before(jQuery('<p>&nbsp;</p>'));
+            }
+
+            if ($next.length === 0 || !$next.is('p')) {
+                // Afegim un salt de línia com a separador
+                $node.after(jQuery('<p>&nbsp;</p>'));
+            }
+
+            console.log(this);
+            console.log(this.plugin);
+
+            addActions($node, this.editor);
+
+        },
+
+        onCancel: function () {
+            // summary:
+            //		Function to clean up memory so that the dialog is destroyed
+            //		when closed.
+            var c = dojo.connect(this, "onHide", function () {
+                dojo.disconnect(c);
+                var self = this;
+                setTimeout(function () {
+                    self.destroyRecursive();
+                }, 10);
+            });
+        },
+
+        onBuildTable: function (tableText) {
+            //stub
+            // console.log("tableText:", tableText);
+
+        },
+
+        onReplace: function () {
+            this.table.clear();
+            this.onImport();
+        },
+
+        onImport: function () {
+            // Dividim el contingut en files
+            var content = this.inputDataToImport.get('value').split('\\n').join('\n');
+
+            // TODO: Si regexSeparator.length > 0 s'ha de fer servir la expressió regular en lloc del import simple
+
+
+            var extractedData;
+
+            this.validated = true;
+
+            if (this.useRegex) {
+                extractedData = this._extractRegex(content);
+            } else {
+                extractedData = this._extractSimple(content);
+            }
+
+            if (this.validated) {
+                for (var i = 0; i < extractedData.length; i++) {
+                    this.table.addRow(extractedData[i]);
+                    this.destroyRecursive();
+                }
+            } else {
+                alert("Error de validació: no es pot construir una taula a partir d'aquestes dades");
+            }
+
+
+        },
+
+        _extractSimple: function (content) {
+            // Si el separador es buit es fa servir el salt de línia
+            var rowSeparator = this.csvRowSeparator.get('value') ? this.csvRowSeparator.get('value') : "\n";
+            var colSeparator = this.csvColSeparator.get('value');
+
+            // Convertiem en expressió regular el separador, en cas contrari no funciona el salt de línia
+            rowSeparator = new RegExp(rowSeparator, 'gms');
+
+            var rows = content.split(rowSeparator);
+
+            var extractedData = [];
+
+            for (var i = 0; i < rows.length; i++) {
+
+                if (rows[i].length === 0) {
+                    continue;
+                }
+
+                var cols = rows[i].split(colSeparator);
+
+                extractedData.push(this._makeObjectData(cols));
+
+            }
+
+            return extractedData;
+        },
+
+        _makeObjectData: function (cols) {
+            var data = {};
+
+            if (cols.length !== Object.keys(this.table.args.fields).length) {
+                this.validated = false;
+                console.error("Import error: col number (" + cols.length + ") is different from field number (" + Object.keys(this.table.args.fields).length + ")");
+                return data;
+            }
+
+            var j = 0;
+
+            for (var key in this.table.args.fields) {
+
+                // console.log("Field data:", key, this.table.args.fields[key]);
+
+                if (j === cols.length) {
+                    console.error("Import error: missing value for field [" + key + "]. Aborting.");
+                    this.validated = false;
+                    break;
+                }
+
+                var value = cols[j].trim();
+
+                switch (this.table.args.fields[key].type) {
+
+                    case "number":
+
+                        if (isNaN(cols[j])) {
+                            console.error("Import error: " + value + " is not a number");
+                            this.validated = false;
+                            return {};
+                        }
+
+                        value = Number(value);
+
+                        break;
+
+                    case "select":
+
+                        if (this.table.args.fields[key].options.indexOf(value) === -1) {
+                            console.error("Import error: " + cols[j] + " is not a valid option:", this.table.args.fields[key].options);
+                            this.validated = false;
+                            return {};
+                        }
+
+                        break;
+
+                    case "bool":
+
+                        if (value === "true" || value === "1") {
+                            value = true;
+                        } else if (value === "false" || value === "0") {
+                            value = false;
+                        } else {
+                            console.error("Import error: " + value + " is not boolean option:", this.table.args.fields[key].options);
+                            this.validated = false;
+                            return {};
+                        }
+
+                        break;
+
+                    case "date":
+                        // TODO[Xavi] considerar si això és necessari, les datas probablement no s'importen perque canvien cada semestre
+                        console.warn("Alert: currently dates are not validated");
+                        break;
+
+                    case "textarea":
+                        value = value.split("\\\\ ").join("\n");
+                        break;
+
+                    case "string": // intentional fall-through
+                    default:
+                    // si es tipus string sempre es correcte
+                }
+
+                data[key] = value;
+                j++;
+            }
+
+            return data;
+        },
+
+        _extractRegex: function (content) {
+            var extractedData = [];
+
+            // Si el separador es buit es fa servir el salt de línia
+            var rowSeparator = this.regexRowSeparator.get('value') ? this.regexRowSeparator.get('value') : "\n";
+            var colSeparator = this.regexColSeparator.get('value');
+
+            // Convertiem en expressió regular el separador, en cas contrari no funciona el salt de línia
+            rowSeparator = new RegExp(rowSeparator, 'gms');
+
+            var rows = content.split(rowSeparator);
+
+            for (var i = 0; i < rows.length; i++) {
+                var regex = new RegExp(colSeparator, 'gm');
+
+                if (rows[i].length === 0) {
+                    continue;
+                }
+
+                var matches = regex.exec(rows[i]);
+
+                var cols = [];
+
+                if (matches === null) {
+                    console.error("Import error: can't extract row from string. Aborting.", rows[i]);
+                    this.validated = false;
+                    return [];
+                }
+
+                for (var j = 1; j < matches.length; j++) {
+                    cols.push(matches[j]);
+                }
+
+                extractedData.push(this._makeObjectData(cols));
+
+            }
+
+            return extractedData;
+        },
+
+        // És crida desde el template
+        onLoadFile: function () {
+            var context = this;
+
+            openFile(function (contents) {
+
+                context.inputDataToImport.set('value', contents);
+
+            });
+        }
+
+    });
+
+
     return declare([AbstractEditableElement],
         {
             defaultRow: null,
 
+            actionData: {},
+
             init: function (args) {
-                // console.log("EditableTableElement#init", args);
+                // console.error("EditableTableElement#init: formValues", args.context.formValues);
+
+                this.dataSource = args.context;
+
+
                 this.inherited(arguments);
                 this.fieldToCol = {};
                 this.colToField = {};
                 this.colToName = {};
+                this.actionData = {};
 
                 // this.defaultDisplay = 'table';
 
-                this.initializeCallbacks()
+                this.initializeCallbacks();
+
 
             },
 
@@ -114,12 +542,25 @@ define([
                 this.actionCallbacks = {};
 
                 this.actionCallbacks[ADD_ROW] = this._addRowCallback.bind(this);
+                this.actionCallbacks[ADD_IMPORT] = this._addImportCallback.bind(this);
                 this.actionCallbacks[ADD_DEFAULT_ROW] = this._addDefaultRowCallback.bind(this);
                 this.actionCallbacks[ADD_DEFAULT_ROW_AFTER] = this._addDefaultRowAfterCallback.bind(this);
                 this.actionCallbacks[ADD_DEFAULT_ROW_BEFORE] = this._addDefaultRowBeforeCallback.bind(this);
                 this.actionCallbacks[ADD_MULTIPLE_DEFAULT_ROWS] = this._addMultipleDefaultRowsCallback.bind(this);
                 this.actionCallbacks[SET_MULTIPLE_DEFAULT_ROWS] = this._setMultipleDefaultRowsCallback.bind(this);
                 this.actionCallbacks[REMOVE_ROWS] = this._removeRowCallback.bind(this);
+            },
+
+            _showDialog: function () {
+
+                var w = new ImportTableDialog({
+                    plugin: this,
+                    editor: this.editor,
+                    boxType: this.boxType,
+                    table: this,
+                    data: this.actionData[ADD_IMPORT]
+                });
+                w.show();
             },
 
             _replaceNodeContent: function (args) {
@@ -133,7 +574,6 @@ define([
 
             },
 
-            // ALERTA! De moment només canvia aquest, la resta es igual, es pot moure cap amun en la jerarquia.
             createWidget: function () {
 
                 var tableData = this.htmlToJson(this.$node);
@@ -206,12 +646,10 @@ define([
                 }];
 
 
-
                 if (this.args.layout) {
                     gridLayout = this.mergeLayout(gridLayout, this.args.layout);
                     this.columns = gridLayout[0].cells;
                 }
-
 
 
                 this.setupCells(gridLayout[0]);
@@ -237,7 +675,7 @@ define([
                     escapeHTMLInData: false,
                     // height: "500px",
                     height: height + 'px', // la alçada de cada fila
-
+                    sourceId: args.data.id
                 });
 
 
@@ -270,8 +708,8 @@ define([
                 // Sobreescrita de _EditManager.js
                 grid.edit.apply = function () {
 
-                    if (jQuery(document.activeElement).hasClass('ace_text-input')) {
-                        // console.log("És un dialeg, no fem res");
+                    // Això permet mantener la cel·la en edició quan s'obre un dialeg
+                    if (grid.ignoreApply || jQuery(document.activeElement).hasClass('ace_text-input')) {
                         return;
                     }
 
@@ -319,29 +757,47 @@ define([
                     this.updateField();
                 }.bind(this));
 
-
                 var actions = this.args.actions ? this.args.actions : defaultActions;
+
                 this.initializeButtons(actions, $toolbar[0]);
 
                 this.updateField();
                 this.widgetInitialized = true;
+
+                this.grid.edit.setDataSource(args.context);
+                this.grid.edit.setParentElement(this);
+
             },
 
             initializeButtons: function (actions, toolbarNode) {
 
                 for (var action in actions) {
-                    this.initializeButton(actions[action], toolbarNode, this.actionCallbacks[action]);
+
+                    if (typeof actions[action] === "string") {
+                        this.initializeButtonSimple(actions[action], toolbarNode, this.actionCallbacks[action]);
+                    } else {
+                        this.initializeButtonComplex(action, actions[action], toolbarNode, this.actionCallbacks[action]);
+                    }
+
                 }
 
             },
 
-            initializeButton: function (label, toolbarNode, callback) {
+            initializeButtonSimple: function (label, toolbarNode, callback) {
                 var button = new Button({
                     label: label,
                     onClick: callback
                 });
                 button.placeAt(toolbarNode);
                 button.startup();
+            },
+
+            initializeButtonComplex: function (actionId, action, toolbarNode, callback) {
+
+                this.initializeButtonSimple(action.button_label, toolbarNode, callback);
+
+                this.actionData[actionId] = action.data;
+
             },
 
 
@@ -406,7 +862,7 @@ define([
 //                    newRow[name] = newRow[name].replace(fieldRegex, value);
 
 //CODI MILLORAT PER TAL QUE TRACTI MÚLTIPLES TOKENS EN EL MATEIX DEFAULT
-                    for(var iToken=0; iToken<tokens.length; iToken++){
+                    for (var iToken = 0; iToken < tokens.length; iToken++) {
                         // Extraïem la funció
                         var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
                         var functionTokens = functionRegex.exec(tokens[iToken]);
@@ -415,7 +871,7 @@ define([
                         var func = functionTokens[1].toLowerCase();
 
                         // El segón token conté els paràmetres
-                        var params = JSON.parse("["+functionTokens[2]+"]");
+                        var params = JSON.parse("[" + functionTokens[2] + "]");
 
                         var value;
 
@@ -542,6 +998,13 @@ define([
                 });
             },
 
+            _addImportCallback: function () {
+
+                this._showDialog();
+
+            },
+
+
             _addRowCallback: function () {
 
                 var value;
@@ -653,7 +1116,7 @@ define([
 
                 var originalValues;
 
-                if (typeof this.args.data.value ==="string") {
+                if (typeof this.args.data.value === "string") {
                     originalValues = JSON.parse(this.args.data.value);
                 } else {
                     originalValues = this.args.data.value;
@@ -661,6 +1124,7 @@ define([
 
                 for (var i = 0; i < indexes.length; i++) {
                     originalValues.splice(indexes[i].id, 1);
+                    console.log("Eliminant item:", indexes[i]);
                     this.dataStore.deleteItem(indexes[i]);
                 }
 
@@ -669,6 +1133,32 @@ define([
                 this.dataStore.save();
 
                 this.updateField();
+            },
+
+            clear: function () {
+
+                var originalValues;
+
+                if (typeof this.args.data.value === "string") {
+                    originalValues = JSON.parse(this.args.data.value);
+                } else {
+                    originalValues = this.args.data.value;
+                }
+
+
+                for (var i = 0; i < this.dataStore.objectStore.data.length; i++) {
+                    var item = this.dataStore.objectStore.data[i];
+                    originalValues.splice(item.id, 1);
+                    this.dataStore.deleteItem(item);
+                    // console.log("eliminant id", item);
+                }
+
+                this.args.data.value = originalValues;
+
+                this.dataStore.save();
+
+                this.updateField();
+
             },
 
             // Copia els paràmetres de configuració a la cel·la
@@ -747,6 +1237,11 @@ define([
                                 cell.widgetClass = ZoomableCell;
                                 break;
 
+                            case 'conditionalselect':
+                                cell.type = cells._Widget;
+                                cell.widgetClass = ConditionalSelectCell;
+                                break;
+
                             case 'boolean':
                             case 'bool':
                                 cell.type = dojox.grid.cells.Bool;
@@ -761,9 +1256,7 @@ define([
                         }
 
                     } else {
-                        console.error(i, cell);
-                        console.error("No s'ha trobat?", cell.name, this.args.fields[cell.name])
-                        console.error(this.args.fields);
+                        console.error("Can't find data for the column", cell.name, this.args.fields[cell.name])
                     }
                 }
 
@@ -967,6 +1460,16 @@ define([
                 if (this.context.forceCheckChanges) {
                     this.context.forceCheckChanges();
                 }
+            },
+
+            // @override
+            getValue: function () {
+                if (this.$field) {
+                    return this.$field.val();
+                } else {
+                    // console.error("No hi ha $field:", this.$field);
+                }
+
             },
 
             normalizeData: function (data) {
