@@ -4,13 +4,13 @@ define([
     "ioc/store/IocDataGrid",
     // "dojox/grid/DataGrid",
     "dojox/grid/cells",
-    // "dojox/grid/cells/dijit",
+    "dojox/grid/cells/dijit",
     "ioc/store/IocMemory",
     "ioc/store/IocObjectStore",
     // "dojo/store/Memory",
     // "dojo/data/ObjectStore",
     "dijit/form/Button",
-    // "dojox/grid/_Events",
+    "dojox/grid/_Events",
     // "dijit/form/Textarea"
     "dijit/form/NumberTextBox",
     "dijit/form/NumberSpinner", // això fa el mateix que el NumberTextBox però afegint les fletxes
@@ -28,7 +28,7 @@ define([
     "dijit/form/Textarea",
     "dijit/Fieldset"
 
-], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, ZoomableCell, ConditionalSelectCell, Dialog, _TemplatedMixin, _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings*/
+], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, NumberSpinner, ZoomableCell, ConditionalSelectCell, Dialog, _TemplatedMixin, _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings*/
              on
 ) {
 
