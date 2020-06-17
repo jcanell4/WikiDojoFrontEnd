@@ -523,22 +523,6 @@ define([
 
 
             isChanged: function () {
-                // console.log("IocDojoEditor#isChanged", this.get('value').length, this.originalContent.length);
-
-                // console.error("Trace");
-
-                // TESTS: eliminicació manual de tags <-- Si es fa això desprès no funciona el cancel, perquè el que es guarda como a "ResetOriginalContentState" sí que conté els BR originals, ids, etc.
-                // var processedValue = this.get('value').trim();
-                //
-                // //processedValue = processedValue.replace(/ id=".*?"/gi, '');
-                // processedValue = processedValue.replace(/<br \/>/gi, '<br>');
-                // processedValue = processedValue.replace(/<tbody.*?>/gi, '');
-                // processedValue = processedValue.replace(/<\/tbody>/gi, '');
-
-                // console.log("value:", processedValue);
-                // console.log("original:", this.originalContent.trim());
-                // console.log("Són iguals?", this.get('value').trim() === this.originalContent.trim());
-
                 return this.get('value').trim() !== this.originalContent.trim();
             },
 

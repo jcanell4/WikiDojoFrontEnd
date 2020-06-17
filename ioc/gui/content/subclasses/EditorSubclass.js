@@ -56,7 +56,7 @@ define([
                 var diffFromOriginal = this.getEditor().isChanged(),
                     diffFromLastCheck = this.isLastCheckedContentChanged();
 
-                if (diffFromOriginal && diffFromLastCheck) { // No es fa el refresc si encara no s'ha produt cap canvi
+                if (diffFromOriginal && diffFromLastCheck) { // No es fa el refresc si encara no s'ha produït cap canvi
                     this.onDocumentRefreshed();
                 }
 
@@ -66,6 +66,10 @@ define([
                 }
 
                 return diffFromOriginal;
+            },
+
+            isContentChangedRaw: function () {
+                return this.hasChanges;
             },
 
             /**

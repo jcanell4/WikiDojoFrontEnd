@@ -44,6 +44,11 @@ define([
                     console.error("Sense implementar isContentChanged()");
                 },
 
+                isContentChangedRaw: function () {
+                    // Per defecte fa el mateix, així només cal implementar-lo en casos especials com els documents
+                    return this.isContentChanged();
+                },
+
                 /**
                  * Reinicialitza l'estat del contingut establint el valor del contingut original igual al del contingut
                  * actual.

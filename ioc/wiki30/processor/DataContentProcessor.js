@@ -170,7 +170,7 @@ define([
             contentTool.initTimer({
                 onExpire: function (ptimer) {
                     // a) Si hi ha canvis:
-                    if (ptimer.contentTool.isContentChanged()) {
+                    if (ptimer.contentTool.isContentChangedRaw()) {
                         //          1) enviar demanda de bloqueig
                         ptimer.contentTool.fireEvent(ptimer.contentTool.eventName.REFRESH_EDITION);
                         //          2) Mostrar diàleg no closable informant 
