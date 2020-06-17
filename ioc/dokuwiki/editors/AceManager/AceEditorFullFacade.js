@@ -114,20 +114,21 @@ define([
             return this.editor.isChanged();
         },
 
-
         fillEditorContainer: function () {
+
             var contentNode = dom.byId(this.id),
-                h = geometry.getContentBox(contentNode).h;
+                h = geometry.getContentBox(contentNode).h,
+                messageHeight = this._getImportantMessageHeight(contentNode);
 
 
-            this.setHeight(Math.max(h));
+            this.setHeight(h - messageHeight);
         },
 
         setHeight: function (height) {
             // console.log("AceEditorFullFacade#setHeight", height);
             var min = this.MIN_HEIGHT,
                 contentNode = dom.byId(this.id),
-                h = geometry.getContentBox(contentNode).h,
+                h = geometry.getContentBox(contentNode).h - this._getImportantMessageHeight(contentNode),
                 max = h - this.VERTICAL_MARGIN,
                 normalizedHeight = Math.max(min, Math.min(height, max));
 

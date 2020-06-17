@@ -159,7 +159,20 @@ define([
             render: function () {
                 //console.log("AbstractContentTool#render", this);
                 this.updating = true;
-                this.set('content', this.renderEngine(this.data, this));
+                var content = this.renderEngine(this.data, this);
+
+                if (content !== false) {
+                    this.set('content', content);
+                }
+
+                // ALERTA[Xavi] actualment això només s'utilitza en els editors de text bloquejats per mostrar el missatge
+                // d'alerta sobre l'editor.
+
+                if (this.data.message) {
+                    this.setImportantMessage(this.data.message);
+                }
+
+                // this.set('content', this.renderEngine(this.data, this));
                 this.updating = false;
             },
 

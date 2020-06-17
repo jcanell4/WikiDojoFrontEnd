@@ -30,6 +30,8 @@ define([
         constructor: function (args) {
             // console.log("DojoEditorFacade#constructor", args);
 
+            this.id = args.id;
+
             this.viewId = args.viewId;
             this.dispatcher = args.dispatcher;
 
@@ -96,24 +98,21 @@ define([
         fillEditorContainer: function () {
             // var contentNode = this.editor.domNode,
             var contentNode = this.containerNode,
-                h = geometry.getContentBox(contentNode).h;
+                containerHeight = geometry.getContentBox(contentNode).h;
 
-            // console.log("DojoEditorFacade#fillEditorContainer", contentNode, h);
-            this.setHeight(h);
+            this.setHeight(containerHeight - this._getImportantMessageHeight(contentNode));
         },
 
         setHeight: function (height) {
             // console.log("DojoEditorFacade#setHeight", height);
 
             var min = this.MIN_HEIGHT,
-                // contentNode = this.editor.domNode,
                 contentNode = this.containerNode,
                 h = geometry.getContentBox(contentNode).h,
-                max = h - this.VERTICAL_MARGIN,
+                max = h - this.VERTICAL_MARGIN - this._getImportantMessageHeight(contentNode),
                 normalizedHeight = Math.max(min, Math.min(height, max));
 
             this.editor.resize({h: normalizedHeight});
-            // this.editor.resize({height: normalizedHeight+ 'px'});
         },
 
 

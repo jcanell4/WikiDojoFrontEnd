@@ -1,7 +1,8 @@
 define([
     'dojo/Evented',
-    'dojo/_base/declare'
-], function (Evented, declare) {
+    'dojo/_base/declare',
+    'dojo/dom-geometry',
+], function (Evented, declare, geometry) {
     return declare([Evented], {
 
         /**
@@ -69,6 +70,18 @@ define([
          */
         getReadOnly: function() {
             throw new Error('Method not implemented');
+        },
+
+        _getImportantMessageHeight:function(containerNode) {
+            var $messageNode = jQuery(containerNode).find('.requiringMessage');
+
+            var messageHeight = 0;
+
+            if ($messageNode.length > 0) {
+                messageHeight = geometry.getContentBox($messageNode.get(0)).h;
+            }
+
+            return messageHeight
         },
 
         /**

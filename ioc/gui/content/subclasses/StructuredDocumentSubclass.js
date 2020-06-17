@@ -336,6 +336,7 @@ define([
                 ret += "&projectSourceType=" + contentCache.projectSourceType;
             }
 
+            ret += "&editorType=" + this.dispatcher.getGlobalState().userState['editor'];
 
             return ret;
         },

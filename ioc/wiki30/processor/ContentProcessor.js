@@ -125,13 +125,11 @@ define([
                     position = 0,
                     refreshContent;
 
-                var sameFormat = oldContentTool && content.format && oldContentTool.editorType.toLowerCase() === content.format.toLowerCase();
-
+                var sameFormat = oldContentTool && content.editorType && oldContentTool.editorType.toLowerCase() === content.editorType.toLowerCase();
 
                 // console.log("oldContentTool", oldContentTool ? oldContentTool.editorType : '-');
-                // console.log("content.format", content ? content.format : '-');
+                // console.log("content.editorType", content ? content.editorType : '-');
                 // console.log("És el mateix format?", sameFormat);
-
 
                 if (sameFormat) {
                     refreshContent = this.isRefreshableContent(oldContentTool.type);

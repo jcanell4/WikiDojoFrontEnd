@@ -276,7 +276,6 @@ define([
 
             // Afegeix un editorAce per cada editor actiu
             addEditors: function (editor) {
-                console.log("BasicEditorSubclass#addEditors type", this.editorType);
                 // this.editor = this.createEditor({id : this.id}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
 
                 this.editor = this.createEditor({id:this.id, content: this.content.content || this.originalContent, originalContent: this.originalContent}, this.editorType);
@@ -286,7 +285,7 @@ define([
 
             createEditor: function(config, type) {
 
-                console.log("BasicSubclass#createEditor type", type);
+                // console.log("BasicSubclass#createEditor type", type);
 
                 switch (type) {
                     case "DOJO":
@@ -300,8 +299,10 @@ define([
             },
 
             createDojoEditor: function(config) {
+
                 return new DojoEditorFacade(
                     {
+                        id: config.id,
                         containerId:'editor_' + config.id,
                         textareaId:'textarea_' + config.id,
                         dispatcher: this.dispatcher,
@@ -412,6 +413,23 @@ define([
             getCurrentEditor: function() {
 
                 return this.editor;
+            },
+
+            setImportantMessage: function (message) {
+
+                var $message = jQuery(this.domNode).find('.requiringMessage');
+
+                if ($message.length === 0) {
+                    $message = jQuery("<div class='requiringMessage'>" + message + "</div>");
+                    jQuery(this.domNode).prepend($message)
+                } else {
+                    $message.html(message);
+                }
+
+                this.fillEditorContainer();
+
+
+                // alert("TODO. Delegar als editors (facades)");
             }
         });
 });

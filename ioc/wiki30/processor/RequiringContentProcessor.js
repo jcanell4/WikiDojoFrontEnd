@@ -7,8 +7,8 @@ define([
 ], function (declare, ContentProcessor, contentToolFactory, registry, DialogBuilder) {
 
     var editorsByFormat = {
-        'html': 'Dojo',
-        'Dojo': 'Dojo',
+        'html': 'DOJO',
+        'DOJO': 'DOJO',
         'ACE': 'ACE'
     };
 
@@ -35,7 +35,8 @@ define([
              * @override
              */
             process: function (value, dispatcher) {
-                console.log("RequiringContentProcesor#process", value);
+
+                // console.log("RequiringContentProcesor#process", value);
 
                 var ret = this.inherited(arguments);
 
@@ -72,7 +73,7 @@ define([
              * @override
              */
             updateState: function (dispatcher, value) {
-                console.log("RequiringContentProcesor#updateState");
+                // console.log("RequiringContentProcesor#updateState");
                 this.inherited(arguments);
                 if (value.requiring_type === "full") {
                     dispatcher.getGlobalState().getContent(value.id)["action"] = "edit"; //ALERTA. TODO [Josep] Cal posr requiring i canviar la funció d'updating
@@ -93,7 +94,7 @@ define([
              * @protected
              */
             createContentTool: function (content, dispatcher) {
-                console.log("RequiringContentProcesor#createContentTool", content);
+                // console.log("RequiringContentProcesor#createContentTool", content);
 
                 // Només l'editor ACE suporta la edició parcial.
                 if (content.content.format !== undefined && content.content.format !== editorsByFormat['ACE']) {
@@ -113,7 +114,7 @@ define([
 
 
             _createFullContentTool: function (data, dispatcher) {
-                console.log("RequiringContentProcesor#createFullContentTool", content);
+                // console.log("RequiringContentProcesor#createFullContentTool", content);
                 var args = {
                     ns: data.ns,
                     id: data.id,
@@ -125,12 +126,9 @@ define([
                     type: 'requiring',
                     locked: true,
                     readonly: true,
-                    rev: data.rev
+                    rev: data.rev,
+                    editorType: this._getEditorType(content, dispatcher)
                 };
-
-                if (data.content.format && editorsByFormat[data.content.format]) {
-                    args.editorType = editorsByFormat[data.content.format];
-                }
 
                 return contentToolFactory.generate(contentToolFactory.generation.REQUIRING, args);
             },
@@ -149,25 +147,45 @@ define([
                     type: 'requiring_partial',
                     locked: true,
                     readonly: true,
+                    editorType: this._getEditorType(content, dispatcher)
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
             },
 
+            _getEditorType: function(content, dispatcher) {
+                var editorType;
+
+                // Igual que al DataContentProcessor. Repetit al _createFullContentTool
+                if (content.editorType !== undefined && editorsByFormat[content.editorType]) {
+                    editorType = editorsByFormat[content.editorType];
+
+                } else if (dispatcher.getGlobalState().userState) {
+                    // console.log("No hi ha modificador d'editor, utilitzant el de l'usuari");
+                    editorType = dispatcher.getGlobalState().userState['editor'];
+                }
+
+                return editorType;
+
+            },
+
 
             _updateContentTool: function (contentTool, content) { //
-                console.log("RequiringContentProcesor#updateContentTool");
-                //if (content.type === "requiring_partial") {
-                contentTool.updateDocument(content.content);
-                //} else {
-                //
-                //    contentTool.updateDocument(content);
-                //}
+                // console.log("RequiringContentProcesor#updateContentTool", content);
+
+                var newContent = {
+                    content: content.content,
+                    message: content.content.requiring.message
+                };
+
+                contentTool.updateDocument(newContent);
             },
 
 
             _initTimer: function (params, contentTool) {
-                console.log("RequiringContentProcessor#_initTimer", params);
+
+                // console.log("RequiringContentProcessor#_initTimer", params);
+
                 if (params.timer.onCancel) {
                     contentTool.initTimer({
                         onExpire: params.timer.onExpire,
@@ -184,7 +202,9 @@ define([
             },
 
             _processTimerDialog: function (params, contentTool, dispatcher) {
-                console.log("RequiringContentProcesor#_processTimerDialog", params);
+
+                // console.log("RequiringContentProcesor#_processTimerDialog", params);
+
                 var refId = "requiring_timer",
                     generateDialog = function (func) {
                         var dialogParams = {
@@ -218,7 +238,7 @@ define([
                     };
 
                 generateDialog(function () {
-                    console.log("RequiringContentProcesor#generateDialog");
+                    // console.log("RequiringContentProcesor#generateDialog");
                     contentTool.startTimer(params.timer.timeout);
                 });
             },
@@ -226,7 +246,7 @@ define([
             // ALERTA[Xavi] Compte, a aquest processor es generen diferents tipus de ContentTool i llavors la implementació original no funciona, sempre es crea un de nou
 
             isRefreshableContent: function (oldType) {
-               console.log("ContentProcessor#isRefreshableContent", oldType);
+               // console.log("ContentProcessor#isRefreshableContent", oldType);
 
                 if ((oldType === 'requiring' || oldType === "requiring_partial")) {
 //                    console.log('ContentProcessor#isRefreshableContent', true);

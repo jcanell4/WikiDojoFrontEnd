@@ -23,7 +23,7 @@ define([
                 dataToSend = {
                     do: 'edit',
                     id: ns,
-                    format: this.format,
+                    editorType: this.editorType,
                     recover_draft: 'false'
                 };
 
