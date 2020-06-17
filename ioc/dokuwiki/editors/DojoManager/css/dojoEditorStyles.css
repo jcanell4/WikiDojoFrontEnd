@@ -80,6 +80,23 @@ div.editComment {
 span.ioc-comment-toolbar {
     float: right;
     color: #9F6000;
+    display: none;
+}
+
+.editComment {
+    display: none;
+}
+
+textarea.reply {
+    display: none;
+}
+
+button[data-action="reply"] {
+    display: none;
+}
+
+button[data-action="resolve"] {
+    display: none;
 }
 
 span.ioc-comment-toolbar-button {

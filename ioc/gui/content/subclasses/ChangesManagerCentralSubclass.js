@@ -77,7 +77,7 @@ define([
          * @protected
          */
         onDocumentChanged: function () {
-            console.log("onDocumentChanged");
+            // console.log("onDocumentChanged");
 
             this.dispatchEvent(this.eventName.DOCUMENT_CHANGED, {id: this.id}, true); //La línia de dalt equival ara, al true
 
@@ -89,7 +89,7 @@ define([
         },
 
         onDocumentRefreshed: function () {
-            console.log("onDocumentRefreshed");
+            // console.log("onDocumentRefreshed");
             this.dispatchEvent(this.eventName.DOCUMENT_REFRESHED, {id: this.id}, true); //La línia de dalt equival ara, al true
         },
 

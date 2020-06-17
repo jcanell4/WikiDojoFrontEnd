@@ -279,6 +279,14 @@ define([
 
             // @private
             _parsePlugins: function () {
+
+                if (this.disabled) {
+                    return;
+                }
+
+
+                // TODO[Xavi] Pels comentaris això no és suficient, s'han d'amagar els botons i els textarea
+
                 // console.error("IocDojoEditor#_parsePlugins", this._pluginsToParse);
 
                 for (var i = 0; i < this._pluginsToParse.length; i++) {
@@ -476,7 +484,7 @@ define([
 
                 var context = this;
 
-                if ($editorContainer.length > 0) {
+                if ($editorContainer.length > 0 && !this.disabled) {
                     $editorContainer.on('input keyup', callback);
                     $editorContainer.on('input keyup click mouseup ', updateCursorState);
                     this.changeDetectorEnabled = true;

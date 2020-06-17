@@ -66,6 +66,7 @@ define([
         },
 
         _addHandlers: function ($node/*, context*/) {
+
             // console.log("Adding handlers", $node);
 
             // Si el node no te ID s'ha de genera una Id i una referència
@@ -94,9 +95,22 @@ define([
 
             var $replyNode = $node.find('textarea.reply');
             var $buttons = $node.find('button[data-action]');
-            var $removeButtons = $node.find('[data-button="remove"]');
-            var $editButtons = $node.find('[data-button="edit"]');
+            // var $removeButtons = $node.find('[data-button="remove"]');
+            // var $editButtons = $node.find('[data-button="edit"]');
             var context = this;
+
+
+            // Mostrem els botons ocultats pel mode readonly
+            $replyNode.css('display', 'inherit');
+
+            console.log('reply btb?', $node.find('button[data-action="reply"]'));
+            $node.find('button[data-action="reply"]').css('display', 'inherit');
+
+            console.log('resolve?', $node.find('button[data-action="resolve"]'));
+            $node.find('button[data-action="resolve"]').css('display', 'inherit');
+
+
+
 
             $buttons.on('click', function (e) {
                 var $button = jQuery(this);
@@ -143,7 +157,12 @@ define([
 
 
             $commentBody.on('click', function (e) {
-                $node.find('textarea.reply').focus();
+
+                console.log("e", e);
+
+                if (!jQuery(e.srcElement).attr(data-button)) {
+                    $node.find('textarea.reply').focus();
+                }
 
                 e.preventDefault();
             });
@@ -175,6 +194,7 @@ define([
         },
 
         parse: function () {
+
             var $nodes = jQuery(this.editor.iframe).contents().find('.ioc-comment-block');
             var context = this;
 
@@ -315,7 +335,6 @@ define([
 
         addEditCommentHandler: function ($commentNode) {
 
-
             var context = this;
             var $editNode = $commentNode.find('.editComment');
             var $viewNode = $commentNode.find('.viewComment');
@@ -327,7 +346,7 @@ define([
             var $saveButton = $commentNode.find('button[data-action-reply="save"]');
             var $cancelButton = $commentNode.find('button[data-action-reply="cancel"]');
 
-            $editNode.css('display', 'none');
+            // $editNode.css('display', 'none');
 
 
             $textarea.on('keypress keydown keyup', function (e) {
@@ -385,6 +404,8 @@ define([
 
                 $textarea.val($content.html().replace(new RegExp('<br>', 'g'), '\n'));
                 $textarea.focus();
+
+                console.log("Textarea?", $textarea);
             };
         },
 
