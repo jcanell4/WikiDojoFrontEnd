@@ -117,7 +117,8 @@ define([
                 if (data.discardChanges || isAuto) {
                     dataToSend = this.getQueryForceCancel(); // el paràmetre no es fa servir
                 }
-                else if (data.discardChanges === undefined && this.isContentChanged()) {
+                // else if (data.discardChanges === undefined && this.isContentChanged()) {
+                else if (data.discardChanges === undefined && this.isContentChangedRaw()) {
                     var cancelDialog = this._generateDiscardDialog();
                     if (cancelDialog)
                         cancelDialog.show();
