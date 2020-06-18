@@ -90,7 +90,13 @@ define([
         },
 
         insertHtml: function (value) {
+            console.log(this.editor.getCurrentNodeState());
             var html = this.wikiInternalLinkToHTML(value);
+
+            if (this.editor.getCurrentNodeState().length === 0) {
+                html = '<p>' + html + '</p>';
+            }
+
             this.editor.execCommand('inserthtml', html);
 
             // El id es necessari només quan s'afegeix el handler, per poder cercar-lo un cop afegit.

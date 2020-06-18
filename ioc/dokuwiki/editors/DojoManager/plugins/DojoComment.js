@@ -99,18 +99,12 @@ define([
             // var $editButtons = $node.find('[data-button="edit"]');
             var context = this;
 
-
             // Mostrem els botons ocultats pel mode readonly
             $replyNode.css('display', 'inherit');
 
-            console.log('reply btb?', $node.find('button[data-action="reply"]'));
             $node.find('button[data-action="reply"]').css('display', 'inherit');
 
-            console.log('resolve?', $node.find('button[data-action="resolve"]'));
             $node.find('button[data-action="resolve"]').css('display', 'inherit');
-
-
-
 
             $buttons.on('click', function (e) {
                 var $button = jQuery(this);
@@ -149,16 +143,12 @@ define([
                 $removeButton.on('click', context.addRemoveCommentHandler($commentNode).bind(context));
                 $editButton.on('click', context.addEditCommentHandler($commentNode).bind(context));
 
-
             }
-
 
             var $commentBody = $node.find('.ioc-comment-body');
 
 
             $commentBody.on('click', function (e) {
-
-                console.log("e", e);
 
                 if (!jQuery(e.srcElement).attr(data-button)) {
                     $node.find('textarea.reply').focus();
