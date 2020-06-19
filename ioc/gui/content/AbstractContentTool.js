@@ -162,6 +162,8 @@ define([
                 var content = this.renderEngine(this.data, this);
 
                 if (content !== false) {
+                    // console.log("el redner engine NO ha retornat false");
+                    // console.log("content:", content);
                     this.set('content', content);
                 }
 
@@ -190,8 +192,12 @@ define([
                 if (this.renderEngines) {
                     this.renderEngines.unshift(this.defaultRenderEngineType);
                     this.renderEngine = renderEngineFactory.getRenderEngineMacro(this.renderEngines);
+                    // console.log("this.renderEngines", this.renderEngine);
+
                 } else {
                     this.renderEngine = renderEngineFactory.getRenderEngine(this.type);
+                    // console.log("this.renderEngine", this.type);
+
                 }
 
 

@@ -73,7 +73,7 @@ define([
         },
 
         _getImportantMessageHeight:function(containerNode) {
-            var $messageNode = jQuery(containerNode).find('.requiringMessage');
+            var $messageNode = jQuery(containerNode).find('.importantMessage');
 
             var messageHeight = 0;
 

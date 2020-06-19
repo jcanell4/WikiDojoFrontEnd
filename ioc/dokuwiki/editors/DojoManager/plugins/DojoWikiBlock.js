@@ -37,6 +37,7 @@ define([
             this.prompt = args.prompt;
             this.htmlTemplate = args.htmlTemplate;
             this.data = args.data;
+            this.requiredData = args.requiredData;
             this.sample = args.sample;
             this.title = args.title;
 
@@ -97,8 +98,6 @@ define([
             }
 
 
-
-
             var dialog = dialogManager.getDialog('form', this.editor.id, {
                 title: this.title,
                 id: previousId || Math.random(),
@@ -123,6 +122,14 @@ define([
         },
 
         _callback: function (data) {
+
+            for (var i = 0; i < this.requiredData.length; i++) {
+                var key = this.requiredData[i];
+                if (data[key] === undefined) {
+                    console.warn('Missing data: ' + key);
+                    return;
+                }
+            }
 
             var volatileId = false;
 
@@ -157,8 +164,13 @@ define([
             );
 
             var $nodeCursor;
+            var $node;
+
+            console.log('Current node state', this.editor.getCurrentNodeState());
 
             if ($previousNode) {
+                console.log("Trobat $previousNode", $previousNode);
+
                 var $cursor = jQuery('<div>esborrar</div>');
                 $cursor.insertBefore($previousNode);
 
@@ -171,20 +183,35 @@ define([
                 $cursor.remove();
 
 
-
             } else {
 
                 // Inserim un node per fer servir d'ancla per inserir el nou contingut, execCommand('inserthtml') és inconsistent entre navegadors
-                this.editor.execCommand('insertparagraph');
-                $previousNode = jQuery(this.editor.getCurrentNode()[0]);
-                $cursor = $previousNode.prev();
-                $cursor.replaceWith($html);
 
+                // Problema! això insereix un block complet, no es vàlid en el cas dels links
 
-                var $node = $html;
+                switch (this.elementType) {
+                    case 'element':
+                        console.log("element");
+                        this.editor.execCommand('insertHtml', html);
+                        $node = jQuery(this.editor.getCurrentNode()[0]);
+                        break;
+
+                    case 'bloc':
+                        console.log("bloc");
+                        this.editor.execCommand('insertparagraph');
+                        $previousNode = jQuery(this.editor.getCurrentNode()[0]);
+                        $cursor = $previousNode.prev();
+                        $cursor.replaceWith($html);
+                        $node = $html;
+
+                        break;
+
+                }
 
 
             }
+
+            console.log("$node", $node);
 
 
             this._addHandlers($node);

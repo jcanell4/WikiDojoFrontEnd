@@ -46,13 +46,13 @@ define([
         },
 
         updateCursorState: function (e) {
-            console.log("state?", e.state);
+            // console.log("state?", e.state);
 
             if (e.state.indexOf(this.tag) > -1) {
-                console.log(this.tag, true);
+                // console.log(this.tag, true);
                 this.button.set('checked', true);
             } else {
-                console.log(this.tag, false);
+                // console.log(this.tag, false);
                 this.button.set('checked', false);
             }
         },

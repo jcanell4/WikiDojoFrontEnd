@@ -68,6 +68,7 @@ define([
                 return diffFromOriginal;
             },
 
+            // Només es crida quan es tanca el document o es fa un cancel de la edició per evitar forçar la comprovació de canvis
             isContentChangedRaw: function () {
                 return this.hasChanges;
             },

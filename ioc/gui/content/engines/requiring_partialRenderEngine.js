@@ -132,7 +132,7 @@ define(function () {
 
 
         if(data.requiring){
-            $doc.prepend("<div class='requiringMessage'>"
+            $doc.prepend("<div class='importantMessage'>"
                 +_replace(data.requiring.message, data.requiring.messageReplacements)
                 +"</div>");
         }

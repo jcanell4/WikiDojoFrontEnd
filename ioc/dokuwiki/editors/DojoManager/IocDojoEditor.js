@@ -284,11 +284,6 @@ define([
                     return;
                 }
 
-
-                // TODO[Xavi] Pels comentaris això no és suficient, s'han d'amagar els botons i els textarea
-
-                // console.error("IocDojoEditor#_parsePlugins", this._pluginsToParse);
-
                 for (var i = 0; i < this._pluginsToParse.length; i++) {
                     this._pluginsToParse[i].parse();
                 }

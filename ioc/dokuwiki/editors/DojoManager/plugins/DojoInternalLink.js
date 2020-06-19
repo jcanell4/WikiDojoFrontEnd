@@ -35,7 +35,6 @@ define([
         },
 
 
-
         _processFull: function () {
             this._openEditor();
         },
@@ -90,18 +89,147 @@ define([
         },
 
         insertHtml: function (value) {
-            console.log(this.editor.getCurrentNodeState());
+            // console.log(this.editor.getCurrentNodeState());
             var html = this.wikiInternalLinkToHTML(value);
 
-            if (this.editor.getCurrentNodeState().length === 0) {
-                html = '<p>' + html + '</p>';
+
+            var $currentNode = this.editor.getCurrentNode();
+            // var currentNodeState = this.editor.getCurrentNodeState();
+            var $node;
+
+            // console.log("Current Node?", $currentNode);
+            // El current node és un node buit penjat de l'arrel?
+
+
+
+
+            // return;
+
+            // if (currentNodeState.length === 0) {
+            //
+            //     html = '<p>' + html + '</p>';
+            //
+            // }
+
+
+
+
+
+            // if ($currentNode.prop('tagName').toLowerCase() === 'div') {
+            //
+            //     // TODO: Considerar si es millor eliminar-lo ja que s'actualitzarà el div->p després
+            //     console.log("Dins d'un div");
+            //
+            //     var innerHtml = $currentNode.html().replace('<br>', '');
+            //
+            //     // El node es un div buit, cal fer el canvi per un paràgraf
+            //     if (innerHtml.length === 0) {
+            //         console.log("afegint paràgraf buit");
+            //         var $paragraph = jQuery('<p>');
+            //         $currentNode.after($paragraph);
+            //         this.editor.setCursorToNodePosition($paragraph.get(0));
+            //         $node = jQuery(html);
+            //         $paragraph.html($node);
+            //         $currentNode.remove();
+            //     } else {}
+            //
+            // } else {
+
+                this.editor.execCommand('inserthtml', '<span>anchor</span>');
+                var $anchor = jQuery(this.editor.getCurrentNode());
+                $node = jQuery(html);
+                $anchor.after($node);
+                $anchor.remove();
+
+
+
+
+                // this.editor.execCommand('inserthtml', html);
+
+
+
+
+                // El id es necessari només quan s'afegeix el handler, per poder cercar-lo un cop afegit.
+                // var id = jQuery(html).attr('data-ioc-id');
+                // $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
+
+            // }
+            //
+            //
+            // console.log("$node", $node);
+            // console.log("$currentNode", $currentNode);
+            // console.log("$parent", $currentNode.parent());
+            //
+            // var $parent = $node.parent();
+            //
+            //
+            //
+            // console.log("----------");
+            // console.log("$currentNode.length", $currentNode.length);
+            // console.log("$currentNode tagName", $currentNode.prop('tagName').toLowerCase());
+            // console.log("$node", $node);
+            // console.log("----------");
+            //
+            // //
+            // // // Node inserit directament a l'arrel, sense contenidor
+            // // if ($currentNode.prop('tagName').toLowerCase() === 'p') {
+            // //     // és correcte, no cal fer res
+            // //     console.log("és correcte");
+            // //
+            // // } else if ($parent.attr('id', 'dijitEditorBody')) {
+            // //     console.log("element orfa");
+            // //
+            // //
+            // //     var $paragraph = jQuery('<p>');
+            // //
+            // //     $node.after($paragraph);
+            // //     $paragraph.append($node);
+            // //
+            // // } else if ($currentNode.prop('tagName').toLowerCase() === 'div' && $currentNode.get(0).attributes.length === 0 &&
+            // //     // inserit a un div buit?
+            // //     $currentNode.parent().attr('id', 'dijitEditorBody')) {
+            // //
+            // //     console.log("Es div root");
+            // //     var $replacementNode = jQuery('<p>');
+            // //     $replacementNode.html($currentNode.html());
+            // //     $currentNode.after($replacementNode);
+            // //     $currentNode.remove();
+            // // }
+            //
+            //
+            // $currentNode = $node.parent();
+            //
+            // console.log("$node.parent() ($current actualitzat):", $currentNode.attr('id'), $currentNode );
+            // console.log("El currentNode.parent és el root?", $currentNode.parent().attr('id') === 'dijitEditorBody');
+            // console.log("El currentNode és un div?", $currentNode.prop('tagName').toLowerCase());
+            // console.log("nombre d'atributs del currentNode?", $currentNode.get(0).attributes.length);
+
+            if ($currentNode.attr('id') === 'dijitEditorBody') {
+                // orfe: a Chrome es pot donar quan s'inserta un link i s'ha perdut el focus del document
+
+                var $paragraph = jQuery('<p>');
+                $node.after($paragraph);
+                $paragraph.append($node);
+
+                if ($paragraph.prev().prop('tagName').toLowerCase() === 'p' && $paragraph.prev() && $paragraph.prev().html().length === 0) {
+                    $paragraph.prev().remove();
+                }
+
+
+            } else if ($currentNode.parent().attr('id') === 'dijitEditorBody' &&  $currentNode.prop('tagName').toLowerCase() === 'div' && $currentNode.get(0).attributes.length === 0) {
+
+                var $paragraph = jQuery('<p>');
+                $currentNode.after($paragraph);
+
+                var children = $currentNode.contents();
+
+                for (var i = 0; i<children.length; i++) {
+                    $paragraph.append(jQuery(children));
+                }
+
+                $currentNode.remove();
             }
 
-            this.editor.execCommand('inserthtml', html);
-
-            // El id es necessari només quan s'afegeix el handler, per poder cercar-lo un cop afegit.
-            var id = jQuery(html).attr('data-ioc-id');
-            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id +'"]');
 
             this._addHandlers($node);
 
@@ -123,13 +251,13 @@ define([
                 + 'data-dw-type="internal_link" '
                 + 'data-dw-ns="' + tokens[0] + '" '
                 + 'data-dw-title="' + title + '" '
-                +'href="/dokuwiki_30/doku.php?id=' + tokens[0] + '" title="' + tokens[0] + '" '
-                + 'class="'+this.linkClass+'">' + title
+                + 'href="/dokuwiki_30/doku.php?id=' + tokens[0] + '" title="' + tokens[0] + '" '
+                + 'class="' + this.linkClass + '">' + title
 
                 + '</a>&nbsp;'; // TODO: pasar la URL base desde servidor, com? el JSINFO?
         },
 
-        _addHandlers: function($node) {
+        _addHandlers: function ($node) {
 
             var context = this;
 
@@ -140,7 +268,7 @@ define([
                 var $this = jQuery(this);
 
                 if (!dw_linkwiz.$entry) {
-                    dw_linkwiz.$entry =jQuery('<input>');
+                    dw_linkwiz.$entry = jQuery('<input>');
                 }
 
                 // Només s'afegeix el valor si es troba dins d'un espai de noms

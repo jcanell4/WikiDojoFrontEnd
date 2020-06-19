@@ -218,6 +218,7 @@ define([
     //      dades per plugins (como el DojoWikiBlock). Type es opcional i per ara només discriminar per 'select' que
     //      indica que ha de ser un desplegable. En aquest cas alguns plugins s'utilitza l'atribut 'options' (altres
     //      el generan dinàmicament) per mostrar les opcions disponibles al desplegable.
+    //  requiredData: (només s'utilitza actualmente a DojoWikiBlock) dades a comprovar que estan definides abans de fer un reemplaçament al htmlTemplate. Cal asegurar-se perquè si alguna no es troba en fer la substitució donaria error.
 
     var config = {
         'CancelButton': {
@@ -424,6 +425,7 @@ define([
             icon: 'IocInsertFigureLinkSyntax',
             category: localization["category-ioc"],
             htmlTemplate: '<a contenteditable="false" data-ioc-link="figure" data-ioc-id="ioc_link_figure_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp;',
+            requiredData: ["target"],
             data: [
                 {
                     'name': 'target',
@@ -443,6 +445,7 @@ define([
             icon: 'IocInsertTableLinkSyntax',
             category: localization["category-ioc"],
             htmlTemplate: '<a contenteditable="false" data-ioc-link="table" data-ioc-id="ioc_link_table_${id}" href="#${target}" data-ioc-block-json="${json}" title="${target}">${target}</a>&nbsp;', // si no afegim un espai no es pot continuar escrivint
+            requiredData: ["target"],
             data: [
                 {
                     'name': 'target',

@@ -417,10 +417,10 @@ define([
 
             setImportantMessage: function (message) {
 
-                var $message = jQuery(this.domNode).find('.requiringMessage');
+                var $message = jQuery(this.domNode).find('.importantMessage');
 
                 if ($message.length === 0) {
-                    $message = jQuery("<div class='requiringMessage'>" + message + "</div>");
+                    $message = jQuery("<div class='importantMessage'>" + message + "</div>");
                     jQuery(this.domNode).prepend($message)
                 } else {
                     $message.html(message);

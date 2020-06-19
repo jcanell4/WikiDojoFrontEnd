@@ -18,6 +18,7 @@ define([
 
             this.prompt = args.prompt;
             this.htmlTemplate = args.htmlTemplate;
+            this.requiredData = args.requiredData;
             this.data = args.data;
             this.title = args.title;
             //this.target = args.target;

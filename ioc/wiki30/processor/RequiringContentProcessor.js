@@ -6,11 +6,11 @@ define([
     'ioc/gui/DialogBuilder'
 ], function (declare, ContentProcessor, contentToolFactory, registry, DialogBuilder) {
 
-    var editorsByFormat = {
-        'html': 'DOJO',
-        'DOJO': 'DOJO',
-        'ACE': 'ACE'
-    };
+    // var editorsByFormat = {
+    //     'html': 'DOJO',
+    //     'DOJO': 'DOJO',
+    //     'ACE': 'ACE'
+    // };
 
     return declare([ContentProcessor],
         /**
@@ -97,7 +97,7 @@ define([
                 // console.log("RequiringContentProcesor#createContentTool", content);
 
                 // Només l'editor ACE suporta la edició parcial.
-                if (content.content.format !== undefined && content.content.format !== editorsByFormat['ACE']) {
+                if (content.content.format !== undefined && content.content.format !== 'ACE') {
                     return this._createFullContentTool(content, dispatcher);
                 }
 
@@ -127,27 +127,27 @@ define([
                     locked: true,
                     readonly: true,
                     rev: data.rev,
-                    editorType: this._getEditorType(content, dispatcher)
+                    editorType: this._getEditorType(data, dispatcher)
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.REQUIRING, args);
             },
 
-            _createStructuredContentTool: function (content, dispatcher) {
+            _createStructuredContentTool: function (data, dispatcher) {
                 console.log("RequiringContentProcesor#createStructuredContentTool");
 
                 var args = {
-                    ns: content.ns,
-                    id: content.id,
-                    title: content.title,
-                    content: content.content,
+                    ns: data.ns,
+                    id: data.id,
+                    title: data.title,
+                    content: data.content,
                     closable: true,
                     dispatcher: dispatcher,
-                    rev: content.rev || '',
+                    rev: data.rev || '',
                     type: 'requiring_partial',
                     locked: true,
                     readonly: true,
-                    editorType: this._getEditorType(content, dispatcher)
+                    editorType: this._getEditorType(data, dispatcher)
                 };
 
                 return contentToolFactory.generate(contentToolFactory.generation.STRUCTURED_DOCUMENT, args);
@@ -157,8 +157,8 @@ define([
                 var editorType;
 
                 // Igual que al DataContentProcessor. Repetit al _createFullContentTool
-                if (content.editorType !== undefined && editorsByFormat[content.editorType]) {
-                    editorType = editorsByFormat[content.editorType];
+                if (content.editorType !== undefined ) {
+                    editorType = content.editorType;
 
                 } else if (dispatcher.getGlobalState().userState) {
                     // console.log("No hi ha modificador d'editor, utilitzant el de l'usuari");
