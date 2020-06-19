@@ -18,7 +18,7 @@ define([
             this.origins = args.origins;
 
 
-            var config = args;
+            var config = JSON.parse(JSON.stringify(args));
             if (args.icon.indexOf(".png") === -1) {
                 config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
             }

@@ -5,8 +5,9 @@ define([
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
     "dojo/string",
-    "dijit/_editor/range"
-], function (declare, DojoWikiBlock, lang, _Plugin, string, range) {
+    "dijit/_editor/range",
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoUtils',
+], function (declare, DojoWikiBlock, lang, _Plugin, string, range, DojoUtils) {
 
 
     var WikiBlockButton = declare(DojoWikiBlock, {
@@ -164,6 +165,38 @@ define([
             this.inherited(arguments);
             $node.css('cursor', 'default');
             $node.find('a').css('cursor', 'pointer');
+        },
+
+        _callback: function (data) {
+
+            for (var i = 0; i < this.requiredData.length; i++) {
+                var key = this.requiredData[i];
+                if (data[key] === undefined) {
+                    console.warn('Missing data: ' + key);
+                    return;
+                }
+            }
+
+            var volatileId = false;
+
+            if (data.id === undefined) {
+                data.id = Date.now();
+                volatileId = true;
+            }
+
+            // el json es genera al DialogManager#_getFormDialog()
+            var html = this._substitute(this.htmlTemplate, data);
+
+            var $node = DojoUtils.insertHtmlInline(html, this.editor);
+
+            this._addHandlers($node);
+
+            this.editor.forceChange();
+
+            // Com que el valor de data.id pot venir de this.data si s'asigna un cop es queda fixat per a tots els nous elements generats
+            if (volatileId) {
+                data.id = undefined;
+            }
         },
 
 
