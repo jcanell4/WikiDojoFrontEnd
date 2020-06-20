@@ -8,6 +8,10 @@ define([
 
         init: function (args) {
 
+            if (!this.editor.ALLOW_SWITCH_EDITOR) {
+                return;
+            }
+
             this.switchEditorComponent= new SwitchEditorComponent(this.editor.dispatcher);
 
             var config = JSON.parse(JSON.stringify(args));
@@ -15,12 +19,6 @@ define([
             if (args.icon.indexOf(".png")===-1) {
                 config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
             }
-
-            // var config = {
-            //     type: args.type,
-            //     title: args.title,
-            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png'
-            // };
 
             this.addButton(config, this.process);
         },

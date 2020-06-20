@@ -10,6 +10,7 @@ define([
 ], function (declare, AceEditorFullFacade, toolbarManager, cookie, dom, style, geometry) {
     return declare([AceEditorFullFacade], {
 
+        ALLOW_SWITCH_EDITOR: false,
         TOOLBAR_ID: 'partial-editor',
         VERTICAL_MARGIN: 100,
         MIN_HEIGHT: 200,

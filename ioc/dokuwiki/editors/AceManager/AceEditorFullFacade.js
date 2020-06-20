@@ -12,6 +12,7 @@ define([
 
     return declare([AbstractIocFacade], {
 
+        ALLOW_SWITCH_EDITOR: true,
         TOOLBAR_ID: "full-editor",
         VERTICAL_MARGIN: 25,
         MIN_HEIGHT: 200,
@@ -36,7 +37,8 @@ define([
                 dispatcher: args.dispatcher,
                 plugins: args.plugins,
                 TOOLBAR_ID: this.TOOLBAR_ID,
-                partialDisabled: args.partialDisabled
+                partialDisabled: args.partialDisabled,
+                ALLOW_SWITCH_EDITOR: this.ALLOW_SWITCH_EDITOR
             });
 
             this.dispatcher = args.dispatcher;

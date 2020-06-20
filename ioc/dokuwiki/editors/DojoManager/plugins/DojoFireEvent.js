@@ -26,11 +26,6 @@ define([
 
             this.events = args.event;
 
-            console.log("args.icon:", args.icon);
-            console.log("args", args);
-            console.log("iconClass:", config.iconClass);
-
-
             this.addButton(config);
         },
 

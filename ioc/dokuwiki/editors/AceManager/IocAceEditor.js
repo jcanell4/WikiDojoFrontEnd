@@ -196,6 +196,8 @@ define([
                 'ReadonlyBlocksToggle'
             ],
 
+            ALLOW_SWITCH_EDITOR: null,
+
             /**
              * Inicialitza l'editor.
              *
@@ -205,6 +207,8 @@ define([
              * @see IocAceEditor._default per veure una definició completa del objecte de configuració.
              */
             constructor: function (args) {
+
+                this.ALLOW_SWITCH_EDITOR = args.ALLOW_SWITCH_EDITOR;
 
                 if (args) {
                     args = lang.mixin(this._default, args);

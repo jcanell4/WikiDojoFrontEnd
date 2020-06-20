@@ -375,7 +375,7 @@ define([
 
 
         'SwitchEditorButton': {
-            type: 'DocumentPreview',
+            type: 'SwitchEditor',
             title: localization["switch-editor-dojo"],
             icon: 'IocSwitchEditorAce',
             // category: 'B'
