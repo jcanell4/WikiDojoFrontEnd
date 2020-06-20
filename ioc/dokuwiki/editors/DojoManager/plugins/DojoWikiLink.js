@@ -6,8 +6,8 @@ define([
     "dijit/_editor/_Plugin",
     "dojo/string",
     "dijit/_editor/range",
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoUtils',
-], function (declare, DojoWikiBlock, lang, _Plugin, string, range, DojoUtils) {
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoEditorUtils',
+], function (declare, DojoWikiBlock, lang, _Plugin, string, range, DojoEditorUtils) {
 
 
     var WikiBlockButton = declare(DojoWikiBlock, {
@@ -187,7 +187,7 @@ define([
             // el json es genera al DialogManager#_getFormDialog()
             var html = this._substitute(this.htmlTemplate, data);
 
-            var $node = DojoUtils.insertHtmlInline(html, this.editor);
+            var $node = DojoEditorUtils.insertHtmlInline(html, this.editor);
 
             this._addHandlers($node);
 

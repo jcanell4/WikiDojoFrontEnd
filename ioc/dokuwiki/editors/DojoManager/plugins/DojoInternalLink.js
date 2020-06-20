@@ -4,8 +4,8 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/AbstractParseableDojoPlugin',
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoUtils',
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, DojoUtils) {
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoEditorUtils',
+], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, DojoEditorUtils) {
 
     var TIMER_INTERVAL = 0.1;
     var timer = null;
@@ -93,7 +93,7 @@ define([
             console.log("State?", this.editor.getCurrentNodeState());
             var html = this.wikiInternalLinkToHTML(value);
 
-            var $node = DojoUtils.insertHtmlInline(html, this.editor);
+            var $node = DojoEditorUtils.insertHtmlInline(html, this.editor);
 
             this._addHandlers($node);
         },

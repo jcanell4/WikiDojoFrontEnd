@@ -12,9 +12,9 @@ define([
     "dijit/_editor/_Plugin",
     "dijit/form/DropDownButton",
     "dijit/_editor/range",
-    'ioc/dokuwiki/editors/DojoManager/plugins/DojoUtils',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoEditorUtils',
 ], function(require, declare, domAttr, keys, lang, on, has, query, string,
-            _Widget, _Plugin, DropDownButton, rangeapi, DojoUtils){
+            _Widget, _Plugin, DropDownButton, rangeapi, DojoEditorUtils){
 
     // ALERTA[Xavi] Aquest codi es el mateix de LinkDialog de dojo eliminant la referència a imatges i controlant que
     // no es tracti d'un enllaç intern (data-dw-link="internal_link"). No es pot fer per herencia perque la versió
@@ -295,7 +295,7 @@ define([
 
             // Nova implementació
             var html = string.substitute(this.htmlTemplate, args);
-            DojoUtils.insertHtmlInline(html, this.editor);
+            DojoEditorUtils.insertHtmlInline(html, this.editor);
 
 
             // IE sometimes leaves a blank link, so we need to fix it up.
