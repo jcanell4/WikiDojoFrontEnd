@@ -57,7 +57,6 @@ define([
 
             onKeyDown: function (/* Event */ e) {
                 if (e.keyCode === 9) { // Tab
-                    console.log("Interceptat el tab", e);
 
                     // ALERTA! Els plugins que requereixin interactuar amb el tabulador han de suscriures al on('tabDown')
                     // i filtrar la activació només quan el currentNodeState sigui apropiat

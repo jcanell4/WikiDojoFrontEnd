@@ -422,7 +422,7 @@ define([
 
         onKeyDown: function(evt){
             var key = evt.keyCode;
-            console.log(" -> DOWN:", key);
+            // console.log(" -> DOWN:", key);
             if(key == 16){ this.shiftKeyDown = true;}
             if(key == 9) {
                 var o = this.getTableInfo();
@@ -454,7 +454,7 @@ define([
 
         onKeyUp: function(evt){
             var key = evt.keyCode;
-            console.log(" -> UP:", key)
+            // console.log(" -> UP:", key)
             if(key == 16){ this.shiftKeyDown = false;}
             if(key == 37 || key == 38 || key == 39 || key == 40 ){
                 // user can arrow or tab out of table - need to recheck
