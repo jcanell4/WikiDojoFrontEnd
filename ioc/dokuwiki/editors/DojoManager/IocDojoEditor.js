@@ -56,13 +56,18 @@ define([
 
             onKeyDown: function (/* Event */ e) {
                 if (e.keyCode === 9) { // Tab
-                    console.log("Intercepted, aquí es pot control·lar el tab", e);
-                }
-                // else {
-                //     console.log("tecla detectada:", e.keyCode);
-                // }
+                    console.log("Interceptat el tab", e);
 
-                this.inherited(arguments);
+                    // Els plugins que requereixin interactuar amb el tabulador han de suscriures al on('tabDown')
+                    this.emit('tabPress', {keyCode: e.keyCode});
+                    e.preventDefault();
+
+                } else {
+                    this.inherited(arguments);
+                }
+
+
+
             },
 
 
@@ -257,7 +262,6 @@ define([
 
 
                 this.TOOLBAR_ID = args.TOOLBAR_ID;
-
 
             },
 

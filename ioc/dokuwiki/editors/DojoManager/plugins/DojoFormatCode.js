@@ -8,6 +8,8 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, dojoActions) {
 
+    var TAB_STRING = '  ';
+
     var FormatButton = declare(AbstractParseableDojoPlugin, {
 
         init: function (args) {
@@ -236,6 +238,12 @@ define([
 
             // console.log("Afegint botons", $node);
             this.addActionButtons($node.closest('pre'));
+
+            var context = this;
+
+            this.editor.on('tabPress', function() {
+                context.editor.execCommand('insertText', TAB_STRING);
+            });
 
         }
     });
