@@ -6,12 +6,6 @@ define([
     "ioc/wiki30/manager/EventFactory",
 ], function (declare, ContentProcessor, contentToolFactory, registry, EventFactory) {
 
-    var editorsByFormat = {
-        'html':'DOJO',
-        'DOJO':'DOJO',
-        'ACE' : 'ACE'
-    };
-
 
     /**
      * Aquesta classe s'encarrega de processar les dades i generar un document editable.
@@ -139,8 +133,8 @@ define([
 
             // console.log("Ha arribat el format?", content.editorType, editorsByFormat[content.editorType]);
 
-            if (content.editorType !== undefined && editorsByFormat[content.editorType]) {
-                args.editorType = editorsByFormat[content.editorType];
+            if (content.editorType !== undefined) {
+                args.editorType = content.editorType;
 
             } else if (dispatcher.getGlobalState().userState) {
                 // console.log("No hi ha modificador d'editor, utilitzant el de l'usuari");

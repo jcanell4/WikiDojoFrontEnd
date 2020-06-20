@@ -73,7 +73,12 @@ define([
             // this.addToolbars();
 
             this.addEditionListener();
-            this.addSelectionListener();
+
+            // Només es permet la selecció múltiple per l'editor ACE
+            if (this.editorType === 'ACE') {
+                this.addSelectionListener();
+            }
+
 
             // El post render es crida sempre després d'haver tornat o carregat una nova edició
             this.discardChanges = false;
@@ -146,13 +151,18 @@ define([
                 return;
             }
 
+            if (this.editorType === 'ACE') {
+                this.addPartialEditingHandlers(this.data.id, this.data.chunks)
+            }
 
-            var auxId,
-                context = this;
+        },
 
-            // Al fer doble click s'activa la edició
-            for (var i = 0; i < this.data.chunks.length; i++) {
-                auxId = this.data.id + "_" + this.data.chunks[i].header_id;
+        addPartialEditingHandlers: function (id, chunks) {
+
+            var context = this;
+
+            for (var i = 0; i < chunks.length; i++) {
+                var auxId = id + "_" + chunks[i].header_id;
 
                 jQuery('#container_' + auxId).on('dblclick', function () {
 
@@ -164,20 +174,15 @@ define([
 
                     if (jQuery.inArray(header_id, context.editingChunks) === -1) {
 
-                        //console.log("contex id: ", context.id, "chunk:", section_id);
                         context.fireEvent(context.eventName.EDIT_PARTIAL, {
                             id: context.id,
                             chunk: header_id
                         });
-                        //} else {
-                        //console.log("Ja s'està editant ", header_id);
                     }
 
                 });
             }
-
         },
-
 
         getQueryEdit: function (chunkId) {
             //console.log("StructuredDocumentSubclass#getQueryEdit", chunkId);
@@ -1010,13 +1015,12 @@ define([
                 editor: editor
             };
 
-
             editor.on('change', this._checkChanges.bind(this));
         },
 
         // ALERTA[Xavi] Mateix codi que al BasicEditorSubclass
         createEditor: function (config, type) {
-            console.log("SructuredDocumentSubclass#createEditor", config, type);
+            // console.log("SructuredDocumentSubclass#createEditor", config, type);
 
             switch (type) {
                 case "DOJO":

@@ -59,7 +59,7 @@ define([
 
 
                 $comments.each(function () {
-                    console.log("Processant comentari");
+                    // console.log("Processant comentari");
                     var $comment = jQuery(this);
 
                     // Botons del comentari:
@@ -186,7 +186,7 @@ define([
 
                     $replies.each(function () {
                         var $reply = jQuery(this);
-                        console.log("Processant reply");
+                        // console.log("Processant reply");
                         var signature = jQuery(this).find('span.ioc-signature').text();
                         var match = signature.match(/\[\[(.*?)@/i);
 
