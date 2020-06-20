@@ -35,7 +35,8 @@ define([
     "dijit/_editor/RichText",
     "dijit/main", // dijit._scopeName
     // "dojox/editor/plugins/TablePlugins", // Això cal asegurar que es carrega per poder utilizar els plugins de taules
-    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins"
+    "ioc/dokuwiki/editors/DojoManager/plugins/CustomTablePlugins",
+    "dojo/_base/event"
 
 ], function (AbstractIocEditor, declare, Editor,
              registry,
@@ -46,7 +47,7 @@ define([
              keys, lang, has, string, topic,
              _Container, Toolbar, ToolbarSeparator, _LayoutWidget, ToggleButton,
              _Plugin, /*EnterKeyHandling,*/ html, rangeapi, RichText, dijit,
-             TablePlugins
+             TablePlugins, Event
 ) {
 
 
@@ -58,15 +59,15 @@ define([
                 if (e.keyCode === 9) { // Tab
                     console.log("Interceptat el tab", e);
 
-                    // Els plugins que requereixin interactuar amb el tabulador han de suscriures al on('tabDown')
-                    this.emit('tabPress', {keyCode: e.keyCode});
-                    e.preventDefault();
+                    // ALERTA! Els plugins que requereixin interactuar amb el tabulador han de suscriures al on('tabDown')
+                    // i filtrar la activació només quan el currentNodeState sigui apropiat
+
+                    this.emit('tabPress', e);
+                    Event.stop(e);
 
                 } else {
                     this.inherited(arguments);
                 }
-
-
 
             },
 

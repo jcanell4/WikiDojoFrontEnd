@@ -422,7 +422,7 @@ define([
 
         onKeyDown: function(evt){
             var key = evt.keyCode;
-            //console.log(" -> DOWN:", key);
+            console.log(" -> DOWN:", key);
             if(key == 16){ this.shiftKeyDown = true;}
             if(key == 9) {
                 var o = this.getTableInfo();
@@ -454,7 +454,7 @@ define([
 
         onKeyUp: function(evt){
             var key = evt.keyCode;
-            //console.log(" -> UP:", key)
+            console.log(" -> UP:", key)
             if(key == 16){ this.shiftKeyDown = false;}
             if(key == 37 || key == 38 || key == 39 || key == 40 ){
                 // user can arrow or tab out of table - need to recheck
@@ -897,27 +897,6 @@ define([
             //stub
         }
     });
-
-    // var InsertTable = declare("dojox.editor.plugins.InsertTable", TablePlugins, {
-    //     alwaysAvailable: true,
-    //
-    //     modTable: function(){
-    //         var w = new EditorTableDialog({});
-    //         w.show();
-    //         var c = dojo.connect(w, "onBuildTable", this, function(obj){
-    //             dojo.disconnect(c);
-    //
-    //             this.editor.focus();
-    //             var res = this.editor.execCommand('inserthtml', obj.htmlText);
-    //
-    //             // commenting this line, due to msg below
-    //             //var td = this.editor.query("td", this.editor.byId(obj.id));
-    //
-    //             //HMMMM.... This throws a security error now. didn't used to.
-    //             //this.editor.selectElement(td);
-    //         });
-    //     }
-    // });
 
     var EditorModifyTableDialog = declare([Dialog, _TemplatedMixin, _WidgetsInTemplateMixin], {
 

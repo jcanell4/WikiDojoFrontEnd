@@ -241,8 +241,14 @@ define([
 
             var context = this;
 
-            this.editor.on('tabPress', function() {
-                context.editor.execCommand('insertText', TAB_STRING);
+
+            this.editor.on('tabPress', function(e) {
+                console.log("event?", e);
+
+                if (context.editor.getCurrentNodeState().indexOf('pre') > -1 && context.editor.getCurrentNodeState().indexOf('code') > -1) {
+                    context.editor.execCommand('insertText', TAB_STRING);
+                }
+
             });
 
         }
