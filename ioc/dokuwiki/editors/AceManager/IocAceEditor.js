@@ -1140,7 +1140,7 @@ define([
                 var MAX_ITERATIONS = 200;
                 var currentIterations = 0;
 
-                while (match = re.exec(line)) {
+                while (re && (match = re.exec(line))) {
                     for (var i = 0, len = match.length - 2; i < len; i++) {
                         if (match[i + 1] !== undefined) {
                             rule = state[mapping[i]];
@@ -1159,7 +1159,9 @@ define([
 
                                 re = tokenizer.regExps[currentState];
                                 if (!re) {
-                                    console.error("Error:", currentState, tokenizer.regExps);
+                                    // currentState és una funció
+                                    //console.error("Error:", currentState, tokenizer.regExps);
+                                    continue;
                                 }
 
                                 re.lastIndex = lastIndex;
