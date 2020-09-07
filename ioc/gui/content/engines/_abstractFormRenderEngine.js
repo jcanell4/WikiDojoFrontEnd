@@ -140,6 +140,13 @@ define([
                 cols = field.columns || 12;
 
             switch (field.type) {
+                case 'objectArray':
+                    if(!field.props){
+                        field.props = {"data-editable-element":"table"};
+                    }
+                    if(!field.props["data-editable-element"]){
+                        field.props["data-editable-element"]="table";
+                    }
                 case 'editableObject':
                     $field = this.renderFieldEditableObject(field, fvalues);
                     break;

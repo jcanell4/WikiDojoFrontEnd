@@ -45,8 +45,8 @@ define([
     var DATA_DISPLAY_PATTERN = 'dd/MM/yyyy';
 
     var defaultActions = {
-        ADD_DEFAULT_ROW: "Afegir fila",
-        REMOVE_ROWS: "Eliminar fila"
+        "add_default_row": "Afegir fila",
+        "remove_rows": "Eliminar fila"
     };
 
 
@@ -932,7 +932,7 @@ define([
                 var parsedRow = this.parseRow(this.defaultRow);
 
                 for (var name in parsedRow) {
-                    var field = this.args.fields[name];
+                    var field = this.args.fields?this.args.fields[name]:{};
 
                     if (keyPairs && keyPairs[name]) {
                         data[this.fieldToCol[name]] = keyPairs[name];
@@ -1235,6 +1235,17 @@ define([
                             case 'textarea':
                                 cell.type = cells._Widget;
                                 cell.widgetClass = ZoomableCell;
+                                cell.getValue = function () {
+                                    // Override the default getValue function for dojox.grid.cells.DateTextBox
+                                    var ret = this.widget.get("value");
+                                    return  ret.split("<br>").join("\n");
+                                };
+                                cell.formatter = function (datum) {
+                                    // Format the value in store, so as to be displayed.
+                                    var ret = !datum ? "" : datum.split("\n").join("<br>");
+                                    return ret;
+                                };
+                                break;                                
                                 break;
 
                             case 'conditionalselect':
@@ -1478,7 +1489,7 @@ define([
 
 
                     for (var key in data[i]) {
-                        var type = this.args.fields[key] ? this.args.fields[key].type : '';
+                        var type = (this.args.fields && this.args.fields[key]) ? this.args.fields[key].type : '';
 
 
                         switch (type) {

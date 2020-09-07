@@ -33,8 +33,9 @@ define([
 
                 this.$textarea.attr('id', 'textarea_' + args.id);
 
-
-                this.$node.text(this.$textarea.val());
+                var text = this.$textarea.val().split("<br>").join("\n");
+                
+                this.$node.text(text);
 
                 $container.append($toolbar);
                 $container.append(this.$textarea);
@@ -95,7 +96,8 @@ define([
                 var context = this;
 
                 this.editor.on('change', function (e) {
-                    context.updateTarget(e.newContent);
+                    var text = e.newContent.split("\n").join("<br>");
+                    context.updateTarget(text);
                 });
 
 
