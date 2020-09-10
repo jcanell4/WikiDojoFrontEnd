@@ -160,6 +160,15 @@ define({ root:
 
         'ioc-action-add-paragraph' : 'Add empty paragraph',
         'ioc-action-add-paragraph-placeholder' : '',
+
+        'quiz' : 'Quiz',
+        'quiz-vf' : 'Quiz: true/false',
+        'quiz-choice' : 'Quiz: choice',
+        'quiz-relations' : 'Quiz: relations',
+        'quiz-complete' : 'Quiz: autocomplete',
+
+
+
     }),
 //end v1.x content
 

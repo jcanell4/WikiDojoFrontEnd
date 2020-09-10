@@ -39,8 +39,9 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceDocumentPreview',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoDocumentPreview',
 
-    // 'ioc/dokuwiki/editors/DojoManager/plugins/AceSwitchEditor', // TODO: Implementar!
+    // 'ioc/dokuwiki/editors/DojoManager/plugins/AceSwitchEditor',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoSwitchEditor',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoQuiz',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableACE',
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableWrapper',
@@ -83,6 +84,7 @@ define([
              AceFireEvent, AceFireDojoEvent,
              DojoFireEvent, AceDocumentPreview, DojoDocumentPreview,
              /*AceSwitchEditor,*/ DojoSwitchEditor,
+             DojoQuiz,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
              AceVideoPlugin,
@@ -187,7 +189,12 @@ define([
             'InsertVideo': DojoWikiVideo,
 
             'DojoSafePaste': DojoSafePaste,
-            'DojoActionAddParagraph': DojoActionAddParagraph
+            'DojoActionAddParagraph': DojoActionAddParagraph,
+
+            'DojoQuizVF': DojoQuiz,
+            'DojoQuizChoice': DojoQuiz,
+            'DojoQuizRelations': DojoQuiz,
+            'DojoQuizComplete': DojoQuiz,
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -379,6 +386,38 @@ define([
             title: localization["switch-editor-dojo"],
             icon: 'IocSwitchEditorAce',
             // category: 'B'
+        },
+
+        'DojoQuizVF': {
+            type: 'Quiz',
+            title: localization["quiz-vf"],
+            icon: 'IocQuizVF',
+            category: localization["quiz"],
+            quizType: 'vf'
+        },
+
+        'DojoQuizChoice': {
+            type: 'Quiz',
+            title: localization["quiz-choice"],
+            icon: 'IocQuizChoice',
+            category: localization["quiz"],
+            quizType: 'choice'
+        },
+
+        'DojoQuizRelations': {
+            type: 'Quiz',
+            title: localization["quiz-relations"],
+            icon: 'IocQuizRelations',
+            category: localization["quiz"],
+            quizType: 'relations'
+        },
+
+        'DojoQuizComplete': {
+            type: 'Quiz',
+            title: localization["quiz-complete"],
+            icon: 'IocQuizComplete',
+            category: localization["quiz"],
+            quizType: 'complete'
         },
 
 

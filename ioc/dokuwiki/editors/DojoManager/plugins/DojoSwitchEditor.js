@@ -42,7 +42,7 @@ define([
 
 
     // Register this plugin.
-    _Plugin.registry["document_preview"] = function () {
+    _Plugin.registry["switch_editor"] = function () {
         return new DojoSwitchEditor({command: "switch_editor"});
     };
 

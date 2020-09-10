@@ -171,6 +171,12 @@ define(
 
         'ioc-action-add-paragraph' : 'Afegeix paràgraf buit',
         'ioc-action-add-paragraph-placeholder' : '',
+
+        'quiz' : 'Exercicis',
+        'quiz-vf' : 'Exercici: vertader/fals',
+        'quiz-choice' : "Exercici: tria l'opció correcta",
+        'quiz-relations' : 'Exercici: relacionar',
+        'quiz-complete' : 'Exercici: autocompletar',
     })
 );
 

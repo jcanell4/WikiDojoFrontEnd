@@ -250,6 +250,11 @@ define([
 
                     'NewContent',
 
+                    'DojoQuizVF',
+                    'DojoQuizChoice',
+                    'DojoQuizRelations',
+                    'DojoQuizComplete'
+
 
                 ]);
 
