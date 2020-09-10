@@ -741,3 +741,45 @@ newcontent, newcontent .iocnote, newcontent .iocreference, newcontent .ioctext {
     border-left: 3px solid #66CD00;
 }
 
+.ioc-quiz {
+    border-radius: 5px;
+    padding: 15px;
+    margin: 15px;
+
+    border: 1px solid #8cacbb;
+}
+
+.ioc-quiz table {
+    border-collapse: collapse;
+    margin: 0 auto;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    width: 100%;
+}
+
+.ioc-quiz tr:first-child {
+    width: 100%;
+    background-color: #f9f9f9;
+}
+
+
+td.center {
+    text-align: center;
+    vertical-align:middle;
+}
+
+.ioc-quiz .no-render.action {
+    position: relative;
+}
+
+.extra-solutions {
+    padding-top: 15px;
+}
+
+.extra-solutions textarea {
+    width: 100%;
+}
+
+.extra-solutions label {
+    font-weight: bold;
+}

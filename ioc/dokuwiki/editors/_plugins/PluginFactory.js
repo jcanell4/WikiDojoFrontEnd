@@ -393,7 +393,18 @@ define([
             title: localization["quiz-vf"],
             icon: 'IocQuizVF',
             category: localization["quiz"],
-            quizType: 'vf'
+            quizType: 'vf',
+            heading: 'Marqueu si són vertaderes (V) o falses (F) les opcions següents:',
+            htmlTemplateHeader: "<tr contenteditable=\"false\">"
+            + "<th>Pregunta</th>"
+            + "<th>V</th>"
+            + "<th>F</th>"
+            + "</tr>",
+            htmlTemplateRow: "<tr>"
+            + "<td>pregunta</td>"
+            + '<td class="center" contenteditable="false"><input data-ioc-sol type="radio" name="sol_1"></td>'
+            + '<td class="center" contenteditable="false"><input data-ioc-sol type="radio" name="sol_1"></td>'
+            + "</tr>"
         },
 
         'DojoQuizChoice': {
@@ -401,7 +412,17 @@ define([
             title: localization["quiz-choice"],
             icon: 'IocQuizChoice',
             category: localization["quiz"],
-            quizType: 'choice'
+            quizType: 'choice',
+            heading: "Trieu l'opció correcta.",
+            hasCustomheading: true,
+            htmlTemplateHeader: "<tr contenteditable=\"false\">"
+            + "<th>Pregunta</th>"
+            + "<th>Resposta</th>"
+            + "</tr>",
+            htmlTemplateRow: "<tr>"
+            + "<td>pregunta</td>"
+            + '<td class="center" contenteditable="false"><input type="radio" name="sol_1" data-ioc-sol></td>'
+            + "</tr>"
         },
 
         'DojoQuizRelations': {
@@ -409,7 +430,17 @@ define([
             title: localization["quiz-relations"],
             icon: 'IocQuizRelations',
             category: localization["quiz"],
-            quizType: 'relations'
+            quizType: 'relations',
+            // heading: "Trieu l'opció correcta.",
+            hasCustomheading: true,
+            htmlTemplateHeader: "<tr contenteditable=\"false\">"
+            + "<th>Pregunta</th>"
+            + "<th>Resposta</th>"
+            + "</tr>",
+            htmlTemplateRow: "<tr>"
+            + "<td>pregunta</td>"
+            + '<td class="center" contenteditable="false"><input type="checkbox" data-ioc-sol></td>'
+            + "</tr>"
         },
 
         'DojoQuizComplete': {
@@ -417,7 +448,20 @@ define([
             title: localization["quiz-complete"],
             icon: 'IocQuizComplete',
             category: localization["quiz"],
-            quizType: 'complete'
+            quizType: 'complete',
+            // heading: "Trieu l'opció correcta.",
+            hasCustomheading: true,
+            hasExtraSolutions: true,
+            htmlTemplateHeader: "<tr contenteditable=\"false\">"
+            + "<th>Text previ</th>"
+            + "<th>Solució</th>"
+            + "<th>Text posterior</th>"
+            + "</tr>",
+            htmlTemplateRow: "<tr>"
+            + "<td>Text previ</td>"
+            + "<td data-ioc-sol>solució</td>"
+            + "<td>text posterior</td>"
+            + "</tr>"
         },
 
 

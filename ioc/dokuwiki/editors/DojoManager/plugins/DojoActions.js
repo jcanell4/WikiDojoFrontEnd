@@ -27,6 +27,8 @@ define([
         // Cerquem la caixa o l'últim node que no sigui l'arrel del document
         getBoxNode = function ($node) {
 
+            console.log("el $node és l'arrel?", $node.attr('id') === 'dijitEditorBody', $node);
+
             var $candidateNode = $node.closest('[data-dw-box]');
 
             if ($candidateNode.length === 0) {
@@ -131,11 +133,11 @@ define([
                 $container.append($aux);
             }
 
-
             $aux.off('click');
 
             $aux.on('click', function (e) {
                 e.preventDefault();
+                console.log("click");
 
                 // console.log(jQuery(getBoxNode($node)));
 
@@ -160,6 +162,8 @@ define([
                 editor.forceChange();
 
             });
+
+            console.log("afegit delete", $aux.on('click'));
 
 
             addHighlighter($aux, elementType === 'element');

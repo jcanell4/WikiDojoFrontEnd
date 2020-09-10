@@ -88,7 +88,7 @@ define([
         $node.find('[data-dw-link]').on('dblclick', function (e) {
             e.preventDefault();
             return false;
-        })
+        });
     };
 
 
