@@ -127,7 +127,7 @@ define([
             };
 
 
-            var html = '<div id="${id}" class="ioc-quiz" contenteditable="false">';
+            var html = '<div id="${id}" class="ioc-quiz block-enter" contenteditable="false">';
 
             // Capçalera, ha de contenir un enunciat fixe, un personalitzat o tots dos, no es contempla un exercici
             // sense cap enunciat.
@@ -200,12 +200,6 @@ define([
                 $root.append($extraSolutions);
 
             }
-
-            $root.on('click', function(e) {
-               console.log("click");
-               e.preventDefault();
-            });
-
 
 
             this.addActionButtons($root);

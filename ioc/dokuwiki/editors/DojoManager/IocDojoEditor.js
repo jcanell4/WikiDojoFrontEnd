@@ -336,6 +336,7 @@ define([
 
 
                 var $node = jQuery(node);
+                // console.log("Recuperant estat pel node:", $node);
 
 
                 // si el node te id ="dijitEditorBody" retorna ''
@@ -344,13 +345,15 @@ define([
                 } else {
                     var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
 
-                    // ALERTA! si el nombre de classes especial creix més caldria implementar-ho com un array
-                    if ($node.attr('class') === 'iocinfo' || $node.attr('data-dw-field')) {
+                    // ALERTA! si el nombre de classes especials creix més caldria implementar-ho com un array
+                    if ($node.hasClass('iocinfo') || $node.hasClass('data-dw-field')) {
                         state = state + "-iocinfo";
                     }
-                    if ($node.attr('class') === 'editable-text') {
+
+                    if ($node.hasClass('editable-text')) {
                         state = state + "-editable-text";
                     }
+
 
                     var pre = this.generateNodeState($node.parent());
 

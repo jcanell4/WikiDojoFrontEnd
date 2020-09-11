@@ -227,10 +227,9 @@ define([
             var $aux = $container.find('[data-ioc-action="'+ actionId+'"]');
 
             if ($aux.length === 0) {
-                console.log("Afegint node:", $container, $node);
+                // console.log("Afegint node:", $container, $node);
                 $node.attr('data-ioc-action', actionId);
                 $container.prepend($node);
-                console.log("S'ha afegit?", $container.find('[data-ioc-action="'+ actionId+'"]'));
                 $aux = $node;
             }
 

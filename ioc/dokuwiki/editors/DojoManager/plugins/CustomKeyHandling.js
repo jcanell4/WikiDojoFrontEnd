@@ -10,7 +10,7 @@ define([
 
     var FULL_NODE_DELETE_BY_CLASS = [
         'iocgif'
-        ];
+    ];
 
     var CustomKeyHandling = declare("dijit._editor.plugins.CustomKeyHandling", EnterKeyHandling, {
 
@@ -62,11 +62,8 @@ define([
             // Problema: quan es troba l'últim ol o ul es posa com a <div></p>, ho hem de gestionar
             // ALERTA! Només cal gestionar-lo quan el ol/ul es troba al principi i no hi ha cap més
 
-
-
-
-            if (isIocInfo) {
-                console.log("és ioc info");
+            if (isIocInfo || state.endsWith('block-enter')) {
+                console.log("és ioc info o block-enter");
                 return false;
 
             } else if ((state.indexOf('ol') === 0 || state.indexOf('ul') === 0) && state.substr(3).indexOf('ol') === -1 && state.substr(3).indexOf('ul') === -1) {
@@ -133,7 +130,7 @@ define([
                 return false;
 
             } else if (state.indexOf('editable-text') !== -1 || state.indexOf('textarea') !== -1) {
-                console.log("és un text editable o textarea");
+                console.log("és un text editable o textarea", state);
                 return true;
 
                 // } else if (state.indexOf('table') === -1 && !isIocInfo) {
@@ -166,7 +163,6 @@ define([
             if (html === '<br>' || html === '<br />') {
                 return true;
             }
-
 
 
             try {
@@ -263,7 +259,7 @@ define([
 
             // Continuem normalment
 
-            for (var i=0; i < FULL_NODE_DELETE_BY_CLASS.length; i++) {
+            for (var i = 0; i < FULL_NODE_DELETE_BY_CLASS.length; i++) {
                 if (jQuery(node).hasClass(FULL_NODE_DELETE_BY_CLASS[i])) {
                     jQuery(node).remove();
                     e.preventDefault();
