@@ -800,6 +800,7 @@ td.center {
 
 .extra-solutions textarea {
     width: 100%;
+    padding: 5px;
 }
 
 .extra-solutions [data-ioc-extra-solutions]{

@@ -124,10 +124,11 @@ define([
 
             var args = {
                 id: "ioc-quiz-" + Date.now(),
+                quizType: this.quizType
             };
 
 
-            var html = '<div id="${id}" class="ioc-quiz block-enter" contenteditable="false">';
+            var html = '<div id="${id}" class="ioc-quiz" contenteditable="false" data-quiz-type="${quizType}">';
 
             // Capçalera, ha de contenir un enunciat fixe, un personalitzat o tots dos, no es contempla un exercici
             // sense cap enunciat.
