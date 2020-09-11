@@ -789,12 +789,21 @@ td.center {
     font-style: italic;
 }
 
+.ioc-quiz .editable-text {
+    border: none;
+    font-style: italic;
+}
+
 .extra-solutions {
     padding-top: 15px;
 }
 
 .extra-solutions textarea {
     width: 100%;
+}
+
+.extra-solutions [data-ioc-extra-solutions]{
+    display:none;
 }
 
 .extra-solutions label {

@@ -62,10 +62,16 @@ define([
             // Problema: quan es troba l'últim ol o ul es posa com a <div></p>, ho hem de gestionar
             // ALERTA! Només cal gestionar-lo quan el ol/ul es troba al principi i no hi ha cap més
 
+
+
+
             if (isIocInfo) {
+                console.log("és ioc info");
                 return false;
 
             } else if ((state.indexOf('ol') === 0 || state.indexOf('ul') === 0) && state.substr(3).indexOf('ol') === -1 && state.substr(3).indexOf('ul') === -1) {
+
+                console.log("és una llista");
 
                 //var ret = this.inherited(arguments);
                 var $node = this.editor.getCurrentNode();
@@ -101,6 +107,8 @@ define([
 
             } else if (state.indexOf('pre') !== -1) {
 
+                console.log("és un bloc de codi");
+
                 // Hack per fer que funcioni el salt de línia dintre del bloc de codi a Google Chrome (compatible amb altres navegadors)
                 var internalDocument = this.editor.$iframe.get(0).contentDocument || this.$iframe.get(0).contentWindow.document;
 
@@ -124,16 +132,18 @@ define([
 
                 return false;
 
-            } else if (state.indexOf('editable-text') !== -1) {
-
+            } else if (state.indexOf('editable-text') !== -1 || state.indexOf('textarea') !== -1) {
+                console.log("és un text editable o textarea");
                 return true;
 
                 // } else if (state.indexOf('table') === -1 && !isIocInfo) {
             } else if (state.indexOf('table') === -1) {
+                console.log("no és una taula", state);
 
                 return this.inherited(arguments);
 
             } else {
+                console.log("cap coincidencia");
                 return true;
             }
 

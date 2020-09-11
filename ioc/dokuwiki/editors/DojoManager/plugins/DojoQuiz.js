@@ -8,7 +8,7 @@ define([
     'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, dojoActions, localization) {
 
-    var uniqueRowSuffix= 0;
+    var uniqueRowSuffix = 0;
 
 
     var DojoSwitchEditor = declare(AbstractParseableDojoPlugin, {
@@ -122,42 +122,32 @@ define([
             }
 
 
-
-
             var args = {
                 id: "ioc-quiz-" + Date.now(),
-
-                // resolveBtnTitle: localization['ioc-comment-resolve-title'],
-                // resolveBtn: localization['ioc-comment-resolve-button'],
-                // textareaPlaceholder: localization['ioc-comment-textarea-placeholder'],
-                // replyBtnTitle: localization['ioc-comment-reply-title'],
-                // replyBtn: localization['ioc-comment-reply-button']
-                // signature: SIG, // ALERTA[Xavi] aquesta és una variable global definida per DokuWiki
             };
 
 
-            // var htmlCode = string.substitute(this.htmlTemplate, args);
+            var html = '<div id="${id}" class="ioc-quiz" contenteditable="false">';
 
-            var html = '<div id="${id}" class="ioc-quiz">';
-
-            html += '<div class="no-render" contenteditable="false" data-ioc-bar></div>';
-
-
-
+            // Capçalera, ha de contenir un enunciat fixe, un personalitzat o tots dos, no es contempla un exercici
+            // sense cap enunciat.
+            html += '<div class="editable-text">';
 
             if (this.heading) {
                 args.heading = this.heading;
-                html += '<p contenteditable="false" class="enunciat">${heading}</p>';
+                html += '<div class="enunciat">${heading}</div>';
             }
 
 
             // això només es troba en alguns casos
             if (this.hasCustomheading) {
-                html += '<p class="enunciat editable">Introdueix l\'enunciat.</p>';
+                html += '<div class="enunciat editable" contenteditable="true">Introdueix l\'enunciat.</div>';
             }
 
-            html += "<table class='opcions'>";
+            html += '<div>';
 
+
+            html += "<table class='opcions' contenteditable='true'>";
 
 
             html += this.htmlTemplateHeader;
@@ -165,13 +155,6 @@ define([
 
 
             html += "</table>";
-
-            if (this.hasExtraSolutions) {
-                html += '<div class="extra-solutions">';
-                html += '<label>Introdueix solucions errónies adicionals separades per un salt de línia:</label>'
-                html += '<textarea rows="4" class="extra-solutions editable"></textarea>';
-                html += '</div>';
-            }
 
 
             html += '</div>';
@@ -186,16 +169,44 @@ define([
             var $header = jQuery($newNode.find('tr').get(0));
             $header.append('<th>Accions</th>');
 
-
-
-
-
             $node.after($newNode);
 
 
-
-
             var $root = jQuery($newNode.get(0));
+
+
+            if (this.hasExtraSolutions) {
+                var $extraSolutions = jQuery(
+                    '<div class="extra-solutions editable-text">'
+                    + '<label>Introdueix solucions errónies adicionals separades per un salt de línia:</label>'
+                    + '<textarea rows="4" class="extra-solutions editable"></textarea>'
+                    + '</div>');
+                var $data = jQuery('<pre data-ioc-extra-solutions></pre>');
+
+                $extraSolutions.append($data);
+
+                var $textarea = $extraSolutions.find('textarea');
+
+                $textarea.on('change input', function () {
+                    $data.text(jQuery(this).val());
+                });
+
+                // això no soluciona el problema: si es fa click just al final del texarea es mostra el cursor i permet afegir salts de línia
+                // $extraSolutions.on('click', function() {
+                //     $textarea.focus();
+                //     console.log("Click a extrasolutions");
+                // });
+
+                $root.append($extraSolutions);
+
+            }
+
+            $root.on('click', function(e) {
+               console.log("click");
+               e.preventDefault();
+            });
+
+
 
             this.addActionButtons($root);
 
@@ -207,7 +218,7 @@ define([
 
             var context = this;
 
-            $addRow.on('click', function(e) {
+            $addRow.on('click', function (e) {
                 context.addRow($table);
                 // var $newRow = jQuery(context.htmlTemplateRow);
                 // $table.append($newRow);
@@ -240,16 +251,13 @@ define([
             $deleteCol.append($deleteIcon);
             $newRow.append($deleteCol);
 
-            $deleteIcon.on('click', function() {
+            $deleteIcon.on('click', function () {
                 $newRow.remove();
             });
 
 
-
-
             // TODO: Afegir la columna amb el botó d'eliminar
             $newRow.find('tr').append($deleteCol);
-
 
 
             $table.append($newRow);
