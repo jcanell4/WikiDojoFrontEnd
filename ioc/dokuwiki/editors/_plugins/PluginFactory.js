@@ -400,11 +400,12 @@ define([
             + "<th>V</th>"
             + "<th>F</th>"
             + "</tr>",
-            htmlTemplateRow: "<tr>"
+            htmlTemplateRow: "<tr class='editable'>"
             + "<td>pregunta</td>"
             + '<td class="center" contenteditable="false"><input data-ioc-sol type="radio" name="sol_1"></td>'
             + '<td class="center" contenteditable="false"><input data-ioc-sol type="radio" name="sol_1"></td>'
-            + "</tr>"
+            + "</tr>",
+            uniqueNamePerRow : true
         },
 
         'DojoQuizChoice': {
@@ -419,7 +420,7 @@ define([
             + "<th>Pregunta</th>"
             + "<th>Resposta</th>"
             + "</tr>",
-            htmlTemplateRow: "<tr>"
+            htmlTemplateRow: "<tr class='editable'>"
             + "<td>pregunta</td>"
             + '<td class="center" contenteditable="false"><input type="radio" name="sol_1" data-ioc-sol></td>'
             + "</tr>"
@@ -437,7 +438,7 @@ define([
             + "<th>Pregunta</th>"
             + "<th>Resposta</th>"
             + "</tr>",
-            htmlTemplateRow: "<tr>"
+            htmlTemplateRow: "<tr class='editable'>"
             + "<td>pregunta</td>"
             + '<td class="center" contenteditable="false"><input type="checkbox" data-ioc-sol></td>'
             + "</tr>"
@@ -457,7 +458,7 @@ define([
             + "<th>Solució</th>"
             + "<th>Text posterior</th>"
             + "</tr>",
-            htmlTemplateRow: "<tr>"
+            htmlTemplateRow: "<tr class='editable'>"
             + "<td>Text previ</td>"
             + "<td data-ioc-sol>solució</td>"
             + "<td>text posterior</td>"

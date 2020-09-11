@@ -757,6 +757,11 @@ newcontent, newcontent .iocnote, newcontent .iocreference, newcontent .ioctext {
     width: 100%;
 }
 
+.ioc-quiz table td:last-child {
+    text-align: right;
+    padding-right: 15px;
+}
+
 .ioc-quiz tr:first-child {
     width: 100%;
     background-color: #f9f9f9;
@@ -770,6 +775,18 @@ td.center {
 
 .ioc-quiz .no-render.action {
     position: relative;
+}
+
+.ioc-quiz .actionIcon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    background-size: cover;
+}
+
+.ioc-quiz .editable {
+    background-color: #FEEFB3;
+    font-style: italic;
 }
 
 .extra-solutions {

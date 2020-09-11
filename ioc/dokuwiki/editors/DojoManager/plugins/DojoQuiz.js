@@ -5,7 +5,11 @@ define([
     "dijit/_editor/_Plugin",
     "dojo/string",
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, dojoActions) {
+    'dojo/i18n!ioc/dokuwiki/editors/nls/commands',
+], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, dojoActions, localization) {
+
+    var uniqueRowSuffix= 0;
+
 
     var DojoSwitchEditor = declare(AbstractParseableDojoPlugin, {
 
@@ -19,6 +23,7 @@ define([
             this.hasExtraSolutions = args.hasExtraSolutions;
             this.htmlTemplateHeader = args.htmlTemplateHeader;
             this.htmlTemplateRow = args.htmlTemplateRow;
+            this.uniqueNamePerRow = args.uniqueNamePerRow;
 
             // this.switchEditorComponent= new SwitchEditorComponent(this.editor.dispatcher);
 
@@ -95,19 +100,16 @@ define([
         },
 
         addBlock: function () {
-            console.log("que es this?", this);
 
             var selection = this.editor.getSelection();
-            console.log("Selection", selection);
 
-
-            let $node = jQuery(selection.nodes[0]);
+            var $node = jQuery(selection.nodes[0]);
 
 
             if ($node.attr('id') === 'dijitEditorBody') {
                 // No hi ha cap node seleccionat, afegim un nou node buit que servirar com a cursor per afegir
                 // el quiz al final del document
-                let $auxNode = jQuery('<p></p>');
+                var $auxNode = jQuery('<p></p>');
                 $node.append($auxNode);
                 $node = $auxNode;
 
@@ -138,6 +140,11 @@ define([
 
             var html = '<div id="${id}" class="ioc-quiz">';
 
+            html += '<div class="no-render" contenteditable="false" data-ioc-bar></div>';
+
+
+
+
             if (this.heading) {
                 args.heading = this.heading;
                 html += '<p contenteditable="false" class="enunciat">${heading}</p>';
@@ -146,7 +153,7 @@ define([
 
             // això només es troba en alguns casos
             if (this.hasCustomheading) {
-                html += '<p class="enunciat">Introdueix l\'enunciat.</p>';
+                html += '<p class="enunciat editable">Introdueix l\'enunciat.</p>';
             }
 
             html += "<table class='opcions'>";
@@ -154,68 +161,7 @@ define([
 
 
             html += this.htmlTemplateHeader;
-            html += this.htmlTemplateRow;
-
-
-
-
-            // switch (this.quizType) {
-            //
-            //     case 'vf':
-            //         html += "<tr contenteditable=\"false\">";
-            //         html += "<th>Pregunta</th>";
-            //         html += "<th>V</th>";
-            //         html += "<th>F</th>";
-            //         html += "</tr>";
-            //
-            //         html += "<tr>";
-            //         html += "<td>pregunta</td>";
-            //         html += '<td class="center" contenteditable="false"><input type="radio" name="sol_1"></td>';
-            //         html += '<td class="center" contenteditable="false"><input type="radio" name="sol_1"></td>';
-            //         html += "</tr>";
-            //         break;
-            //
-            //     case 'choice':
-            //         html += "<tr contenteditable=\"false\">";
-            //         html += "<th>Pregunta</th>";
-            //         html += "<th>Resposta</th>";
-            //         html += "</tr>";
-            //
-            //         html += "<tr>";
-            //         html += "<td>opcio</td>";
-            //         html += '<td class="center" contenteditable="false"><input type="radio" name="sol_1"></td>';
-            //         html += "</tr>";
-            //         break;
-            //
-            //     case 'relations':
-            //         html += "<tr contenteditable=\"false\">";
-            //         html += "<th>Pregunta</th>";
-            //         html += "<th>Resposta</th>";
-            //         html += "</tr>";
-            //
-            //         html += "<tr>";
-            //         html += "<td>opcio</td>";
-            //         html += '<td class="center" contenteditable="false"><input type="checkbox"></td>';
-            //         html += "</tr>";
-            //         break;
-            //
-            //     case 'complete':
-            //         html += "<tr contenteditable=\"false\">";
-            //         html += "<th>Text previ</th>";
-            //         html += "<th>Solució</th>";
-            //         html += "<th>Text posterior</th>";
-            //         html += "</tr>";
-            //
-            //         html += "<tr>";
-            //         html += "<td>Text previ</td>";
-            //         html += "<td>solució</td>";
-            //         html += "<td>text posterior</td>";
-            //         html += "</tr>";
-            //         break;
-            //
-            //     default:
-            //         alert("Tipus de quiz desconegut: " + args.quizType);
-            // }
+            // html += this.htmlTemplateRow;
 
 
             html += "</table>";
@@ -223,58 +169,91 @@ define([
             if (this.hasExtraSolutions) {
                 html += '<div class="extra-solutions">';
                 html += '<label>Introdueix solucions errónies adicionals separades per un salt de línia:</label>'
-                html += '<textarea rows="4" class="extra-solutions"></textarea>';
+                html += '<textarea rows="4" class="extra-solutions editable"></textarea>';
                 html += '</div>';
             }
 
 
             html += '</div>';
 
-            // Afegim un paràgraf just desprès. TODO: afegir accions per afegir els paràgrafs anterior, posterior i eliminar
+            // Afegim un paràgraf just desprès.
             html += '<p></p>';
 
 
             var $newNode = jQuery(string.substitute(html, args));
+
+            // Afegim la columna d'eliminar a la capçalera
+            var $header = jQuery($newNode.find('tr').get(0));
+            $header.append('<th>Accions</th>');
+
+
+
+
+
             $node.after($newNode);
 
-            // TODO: Afegir els handlers!
 
 
-            console.log("node:", $node);
-            console.log("new node:", $newNode.html());
 
-            // for (var i = 0; i < selection.nodes.length; i++) {
-            //     var $node = jQuery(selection.nodes[i]);
-            //     var $newNode = jQuery('<' + this.tags[0] + '>');
-            //     var $child = $newNode;
-            //
-            //     for (i = 1; i < this.tags.length; i++) {
-            //         var $previous = $child;
-            //         $child = jQuery('<' + this.tags[i] + '>');
-            //         $previous.append($child);
-            //         // console.log("Afegit child", $child);
-            //     }
-            //
-            //     if ($node.text().length === 0) {
-            //         $node.text("&nbsp;");
-            //     }
-            //
-            //     $child.html($node.text());
-            //
-            //
-            //     $node.empty();
-            //
-            //     if ($node.attr('id') === 'dijitEditorBody') {
-            //         $node.append($newNode);
-            //     } else {
-            //         $node.replaceWith($newNode);
-            //     }
-            //
-            // }
+            var $root = jQuery($newNode.get(0));
 
-            this.addActionButtons(jQuery($newNode.get(0)));
+            this.addActionButtons($root);
+
+            // ALERTA! sempre s'han d'afegir al final perquè al addActionButtons s'elimina tot el contingut de les accions
+            var $addRow = jQuery('<button>Afegir fila</button>');
+
+            var $table = $newNode.find('table');
+
+
+            var context = this;
+
+            $addRow.on('click', function(e) {
+                context.addRow($table);
+                // var $newRow = jQuery(context.htmlTemplateRow);
+                // $table.append($newRow);
+            });
+
+            dojoActions.addCustomAction($root, $addRow, 'add-row');
+
+            // Afegim una primera fila buida
+            this.addRow($table);
 
         },
+
+        addRow($table) {
+            var $newRow = jQuery(this.htmlTemplateRow);
+
+            // TODO: canviar els noms dels camps si és necessari
+
+            var auxName = $table.attr('id');
+
+            if (this.uniqueNamePerRow) {
+                auxName += '_' + uniqueRowSuffix++;
+            }
+
+            $newRow.find('[name]').attr('name', auxName);
+
+
+            var $deleteCol = jQuery('<td contenteditable="false"></td>');
+            var $deleteIcon = jQuery('<span class="iocDeleteIcon actionIcon delete" title="' + localization["delete"] + '"></span>');
+
+            $deleteCol.append($deleteIcon);
+            $newRow.append($deleteCol);
+
+            $deleteIcon.on('click', function() {
+                $newRow.remove();
+            });
+
+
+
+
+            // TODO: Afegir la columna amb el botó d'eliminar
+            $newRow.find('tr').append($deleteCol);
+
+
+
+            $table.append($newRow);
+        }
 
 
     });

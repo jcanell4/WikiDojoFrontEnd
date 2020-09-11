@@ -27,8 +27,6 @@ define([
         // Cerquem la caixa o l'últim node que no sigui l'arrel del document
         getBoxNode = function ($node) {
 
-            console.log("el $node és l'arrel?", $node.attr('id') === 'dijitEditorBody', $node);
-
             var $candidateNode = $node.closest('[data-dw-box]');
 
             if ($candidateNode.length === 0) {
@@ -163,9 +161,6 @@ define([
 
             });
 
-            console.log("afegit delete", $aux.on('click'));
-
-
             addHighlighter($aux, elementType === 'element');
 
         },
@@ -220,7 +215,32 @@ define([
             });
 
             addHighlighter($aux);
+        },
+
+        addCustomAction = function ($root, $node, actionId) {
+
+            console.log($root, $node, actionId);
+
+
+            var $container = getAndAddActionContainer($root);
+
+            var $aux = $container.find('[data-ioc-action="'+ actionId+'"]');
+
+            if ($aux.length === 0) {
+                console.log("Afegint node:", $container, $node);
+                $node.attr('data-ioc-action', actionId);
+                $container.prepend($node);
+                console.log("S'ha afegit?", $container.find('[data-ioc-action="'+ actionId+'"]'));
+                $aux = $node;
+            }
+
+            // la funció s'ha de lligar a la classe que crida addCustomAction
+
+            addHighlighter($aux);
+
+
         };
+
 
 
     return {
@@ -235,7 +255,9 @@ define([
 
         getActionContainer: getAndAddActionContainer,
 
-        setupContainer: setupContainer
+        setupContainer: setupContainer,
+
+        addCustomAction: addCustomAction
 
     };
 });
