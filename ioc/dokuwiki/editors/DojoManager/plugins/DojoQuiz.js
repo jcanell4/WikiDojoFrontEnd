@@ -193,7 +193,7 @@ define([
                     $data.text(jQuery(this).val());
                 });
 
-                $root.prepend($extraSolutions);
+                $root.append($extraSolutions);
 
             }
 
