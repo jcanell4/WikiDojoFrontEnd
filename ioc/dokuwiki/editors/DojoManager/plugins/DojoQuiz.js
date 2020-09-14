@@ -24,6 +24,7 @@ define([
             this.htmlTemplateHeader = args.htmlTemplateHeader;
             this.htmlTemplateRow = args.htmlTemplateRow;
             this.uniqueNamePerRow = args.uniqueNamePerRow;
+            this.rowCount = 0;
 
             // this.switchEditorComponent= new SwitchEditorComponent(this.editor.dispatcher);
 
@@ -241,20 +242,38 @@ define([
             $visibleField.attr('name', auxName);
 
 
-            var $hiddenField = $newRow.find('td.hidden-field');
 
-            $newRow.find('[type="radio"]').on('change input', function() {
-                console.log("Changed!");
+            switch (this.quizType) {
+                case 'vf':
+                    var $hiddenField = $newRow.find('td.hidden-field');
 
-                var $this = jQuery(this);
-                console.log("Value:", $this.val());
+                    $newRow.find('[type="radio"]').on('change input', function() {
+                        $hiddenField.text(jQuery(this).val());
+                    });
 
-                // if ($this.val()) {
-                    $hiddenField.text($this.val());
+                    break;
 
-                // }
-                console.log("hiddenfield text:", $hiddenField.text());
-            });
+                case 'choice':
+                    $newRow.attr('data-row-id', this.rowCount++);
+
+                    $hiddenField = $table.find('.hidden-field');
+
+                    if ($hiddenField.length === 0) {
+                        $table.append('<div class="hidden-field"></div>');
+                        $hiddenField = $table.find('.hidden-field');
+                    }
+
+                    $newRow.find('[type="radio"]').on('change input', function() {
+                        $hiddenField.text($newRow.attr('data-row-id'));
+                    });
+
+
+                    break;
+            }
+
+
+
+
 
 
 

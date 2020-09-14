@@ -787,6 +787,7 @@ td.center {
 .ioc-quiz .editable {
     background-color: #FEEFB3;
     font-style: italic;
+    margin-bottom: 15px;
 }
 
 .ioc-quiz .editable-text {
