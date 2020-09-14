@@ -807,6 +807,10 @@ td.center {
     display:none;
 }
 
+.hidden-field {
+    display:none
+}
+
 .extra-solutions label {
     font-weight: bold;
 }

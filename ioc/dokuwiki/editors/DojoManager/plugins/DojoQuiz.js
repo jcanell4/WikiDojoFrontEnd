@@ -17,7 +17,7 @@ define([
 
             this.inherited(arguments);
 
-            this.heading = args.label;
+            this.heading = args.heading;
             this.hasCustomheading = args.hasCustomheading;
             this.quizType = args.quizType;
             this.hasExtraSolutions = args.hasExtraSolutions;
@@ -148,7 +148,7 @@ define([
             html += '<div>';
 
 
-            html += "<table class='opcions' contenteditable='true'>";
+            html += "<table id='table_" + args.id + "' class='opcions' contenteditable='true'>";
 
 
             html += this.htmlTemplateHeader;
@@ -237,7 +237,25 @@ define([
                 auxName += '_' + uniqueRowSuffix++;
             }
 
-            $newRow.find('[name]').attr('name', auxName);
+            var $visibleField = $newRow.find('[name]');
+            $visibleField.attr('name', auxName);
+
+
+            var $hiddenField = $newRow.find('td.hidden-field');
+
+            $newRow.find('[type="radio"]').on('change input', function() {
+                console.log("Changed!");
+
+                var $this = jQuery(this);
+                console.log("Value:", $this.val());
+
+                // if ($this.val()) {
+                    $hiddenField.text($this.val());
+
+                // }
+                console.log("hiddenfield text:", $hiddenField.text());
+            });
+
 
 
             var $deleteCol = jQuery('<td contenteditable="false"></td>');

@@ -402,10 +402,11 @@ define([
             + "</tr>",
             htmlTemplateRow: "<tr class='editable'>"
             + "<td>pregunta</td>"
-            + '<td class="center" contenteditable="false"><input data-ioc-sol type="radio" name="sol_1"></td>'
-            + '<td class="center" contenteditable="false"><input data-ioc-sol type="radio" name="sol_1"></td>'
+            + '<td class="center" contenteditable="false"><input type="radio" name="sol" value="true"/></td>'
+            + '<td class="center" contenteditable="false"><input type="radio" name="sol" value="false"/></td>'
+            + '<td class="hidden-field"></td>'
             + "</tr>",
-            uniqueNamePerRow : true
+            uniqueNamePerRow: true
         },
 
         'DojoQuizChoice': {
