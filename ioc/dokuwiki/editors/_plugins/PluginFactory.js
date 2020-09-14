@@ -441,7 +441,7 @@ define([
             + "</tr>",
             htmlTemplateRow: "<tr class='editable'>"
             + "<td>pregunta</td>"
-            + '<td class="center" contenteditable="false"><input type="checkbox" data-ioc-sol></td>'
+            + '<td>resposta</td>'
             + "</tr>"
         },
 

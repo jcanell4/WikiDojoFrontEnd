@@ -157,12 +157,9 @@ define([
 
 
             html += "</table>";
-
-
+            html += '</div>';
             html += '</div>';
 
-            // Afegim un paràgraf just desprès.
-            html += '<p></p>';
 
 
             var $newNode = jQuery(string.substitute(html, args));
@@ -173,6 +170,8 @@ define([
 
             $node.after($newNode);
 
+            // // Afegim un paràgraf just desprès.
+            // $newNode.after(jQuery('<p></p>'));
 
             var $root = jQuery($newNode.get(0));
 
