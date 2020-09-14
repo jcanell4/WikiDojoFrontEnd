@@ -418,11 +418,11 @@ define([
             heading: "Trieu l'opció correcta.",
             hasCustomheading: true,
             htmlTemplateHeader: "<tr contenteditable=\"false\">"
-            + "<th>Pregunta</th>"
+            + "<th>Opcio</th>"
             + "<th>Resposta</th>"
             + "</tr>",
             htmlTemplateRow: "<tr class='editable'>"
-            + "<td>pregunta</td>"
+            + "<td>opció</td>"
             + '<td class="center" contenteditable="false"><input type="radio" name="sol_1" data-ioc-sol></td>'
             + "</tr>"
         },

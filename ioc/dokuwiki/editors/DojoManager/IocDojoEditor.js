@@ -346,6 +346,8 @@ define([
                     var state = ($node.attr('data-ioc-state') ? $node.attr('data-ioc-state') : $node.prop("tagName")).toLowerCase();
 
                     // ALERTA! si el nombre de classes especials creix més caldria implementar-ho com un array
+
+                    // ALERTA! si el nombre de classes especials creix més caldria implementar-ho com un array
                     if ($node.hasClass('iocinfo') || $node.hasClass('data-dw-field')) {
                         state = state + "-iocinfo";
                     }

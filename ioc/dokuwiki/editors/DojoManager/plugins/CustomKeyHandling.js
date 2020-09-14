@@ -64,7 +64,7 @@ define([
 
             if (isIocInfo || state.endsWith('block-enter')) {
                 console.log("és ioc info o block-enter");
-                return false;
+                return false
 
             } else if ((state.indexOf('ol') === 0 || state.indexOf('ul') === 0) && state.substr(3).indexOf('ol') === -1 && state.substr(3).indexOf('ul') === -1) {
 

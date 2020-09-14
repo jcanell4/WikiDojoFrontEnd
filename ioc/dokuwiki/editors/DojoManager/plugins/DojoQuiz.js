@@ -137,16 +137,17 @@ define([
 
             if (this.heading) {
                 args.heading = this.heading;
-                html += '<div class="enunciat">${heading}</div>';
+                html += '<div class="enunciat"><div>${heading}</div></div>';
             }
 
 
             // això només es troba en alguns casos
             if (this.hasCustomheading) {
-                html += '<div class="enunciat editable" contenteditable="true">Introdueix l\'enunciat.</div>';
+                html += '<div class="enunciat editable" contenteditable="true"><div>Introdueix l\'enunciat.</div></div>';
             }
 
             html += '<div>';
+
 
 
             html += "<table id='table_" + args.id + "' class='opcions' contenteditable='true'>";
@@ -192,13 +193,7 @@ define([
                     $data.text(jQuery(this).val());
                 });
 
-                // això no soluciona el problema: si es fa click just al final del texarea es mostra el cursor i permet afegir salts de línia
-                // $extraSolutions.on('click', function() {
-                //     $textarea.focus();
-                //     console.log("Click a extrasolutions");
-                // });
-
-                $root.append($extraSolutions);
+                $root.prepend($extraSolutions);
 
             }
 
