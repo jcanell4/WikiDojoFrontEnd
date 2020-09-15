@@ -352,6 +352,10 @@ define([
                         state = state + "-iocinfo";
                     }
 
+                    if ($node.hasClass('block-enter')) {
+                        state = state + "-block-enter";
+                    }
+
                     if ($node.hasClass('editable-text')) {
                         state = state + "-editable-text";
                     }

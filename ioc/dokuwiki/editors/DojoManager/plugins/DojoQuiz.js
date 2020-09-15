@@ -51,29 +51,20 @@ define([
 
         addActionButtons: function ($node) {
 
-
             var $aux = dojoActions.getActionContainer($node);
 
             $aux.empty();
-
 
             dojoActions.addParagraphAfterAction($node, this.editor);
             dojoActions.addParagraphBeforeAction($node, this.editor);
             dojoActions.deleteAction($node, this.editor, 'exercici');
             dojoActions.setupContainer($node, $node.find('.no-render.action'));
 
-
-            // Eliminem el listener per editar els enllaços del info (que no han de tractar-se com enllaços)
-            // $node.find('[data-dw-link]').on('dblclick', function (e) {
-            //     e.preventDefault();
-            //     return false;
-            // })
-
         },
 
 
         parse: function () {
-            var $nodes = jQuery(this.editor.iframe).contents().find('pre code');
+            var $nodes = jQuery(this.editor.iframe).contents().find('.ioc-quiz[data-quiz-type="' + this.quizType +'"]');
             var context = this;
 
             $nodes.each(function () {
@@ -84,19 +75,69 @@ define([
 
         _addHandlers: function ($node) {
 
-            // console.log("Afegint botons", $node);
-            // this.addActionButtons($node.closest('pre'));
-            //
-            // var context = this;
+            this.addActionButtons($node);
+
+            var $data = $node.find('pre[data-ioc-extra-solutions]');
+            var $textarea = $node.find('textarea');
+
+            $textarea.on('change input', function () {
+                $data.text(jQuery(this).val());
+            });
+
+            var $addRow = $node.find('button');
 
 
-            // this.editor.on('tabPress', function(e) {
-            //
-            //     if (context.editor.getCurrentNodeState().indexOf('pre') > -1 && context.editor.getCurrentNodeState().indexOf('code') > -1) {
-            //         context.editor.execCommand('insertText', TAB_STRING);
-            //     }
-            //
-            // });
+            var context = this;
+
+            $addRow.on('click', function (e) {
+                context.addRow(jQuery.find('table'));
+            });
+
+            dojoActions.addCustomAction($node, $addRow, 'add-row');
+
+
+            // TODO: falta el listener per eliminar files
+
+            var $rows = $node.find('tr');
+
+
+            var $deleteIcon = $rows.find('.delete');
+
+            $deleteIcon.on('click', function () {
+                jQuery(this).closest('tr').remove();
+            });
+
+            for (var i = 1; i < $rows.length; i++) {
+                let $row = jQuery($rows[i]);
+                // console.log(i, $row);
+
+
+                var $type = $node.closest('[data-quiz-type]').attr('data-quiz-type');
+
+                // TODO: falten els listeners pels botons vf/choice
+                switch ($type) {
+                    case 'vf':
+
+                        $row.find('[type="radio"]').on('change input', function () {
+                            jQuery(this).closest('tr').find('td.hidden-field').text(jQuery(this).val());
+                        });
+
+                        break;
+
+                    case 'choice':
+
+                        $row.attr('data-row-id', this.rowCount++);
+
+                        $row.find('[type="radio"]').on('change input', function () {
+                            $node.find('.hidden-field').text(jQuery(this).closest('tr').attr('data-row-id'));
+                        });
+
+                        var $checked = $row.find(':checked');
+                        $node.find('.hidden-field').text($checked.closest('tr').attr('data-row-id'));
+
+                        break;
+                }
+            }
 
         },
 
@@ -149,7 +190,6 @@ define([
             html += '<div>';
 
 
-
             html += "<table id='table_" + args.id + "' class='opcions' contenteditable='true'>";
 
 
@@ -160,7 +200,6 @@ define([
             html += "</table>";
             html += '</div>';
             html += '</div>';
-
 
 
             var $newNode = jQuery(string.substitute(html, args));
@@ -236,12 +275,11 @@ define([
             $visibleField.attr('name', auxName);
 
 
-
             switch (this.quizType) {
                 case 'vf':
                     var $hiddenField = $newRow.find('td.hidden-field');
 
-                    $newRow.find('[type="radio"]').on('change input', function() {
+                    $newRow.find('[type="radio"]').on('change input', function () {
                         $hiddenField.text(jQuery(this).val());
                     });
 
@@ -257,18 +295,13 @@ define([
                         $hiddenField = $table.find('.hidden-field');
                     }
 
-                    $newRow.find('[type="radio"]').on('change input', function() {
+                    $newRow.find('[type="radio"]').on('change input', function () {
                         $hiddenField.text($newRow.attr('data-row-id'));
                     });
 
 
                     break;
             }
-
-
-
-
-
 
 
             var $deleteCol = jQuery('<td contenteditable="false"></td>');
@@ -281,21 +314,17 @@ define([
                 $newRow.remove();
             });
 
-
-            // TODO: Afegir la columna amb el botó d'eliminar
             $newRow.find('tr').append($deleteCol);
-
 
             $table.append($newRow);
         }
-
 
     });
 
 
     // Register this plugin.
-    _Plugin.registry["switch_editor"] = function () {
-        return new DojoSwitchEditor({command: "switch_editor"});
+    _Plugin.registry["ioc_quiz"] = function () {
+        return new DojoSwitchEditor({command: "ioc_quiz"});
     };
 
     return DojoSwitchEditor;
