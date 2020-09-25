@@ -9,8 +9,9 @@ define([
     "dojo/store/JsonRest",
     "dijit/form/Form",
     "ioc/wiki30/Request",
-    "ioc/gui/ButtonToListen"
-], function (declare, registry, dom, domConstruct, TextBox, ComboBox, NsTreeContainer, JsonRest, Form, Request, Button) {
+    "ioc/gui/ButtonToListen",
+    "ioc/functions/normalitzaCaracters"
+], function (declare, registry, dom, domConstruct, TextBox, ComboBox, NsTreeContainer, JsonRest, Form, Request, Button, normalitzaCaracters) {
     /**
      * IocFormSection
      * @culpable Rafael
@@ -54,7 +55,7 @@ define([
                 var query, k;
                 var separacio = (w.value.EspaiNoms !== '') ? ':' : '';
                 for (k in w.value) {
-                    w.value[k] = this._normalitzaCaracters(w.value[k]);
+                    w.value[k] = normalitzaCaracters(w.value[k]);
                 } 
 
                 if (w.value.NouProjecte) {
@@ -92,23 +93,6 @@ define([
             return dialogBuilder;
         },
         
-        _normalitzaCaracters: function(cadena) {
-            console.log ("IocFormSection#_normalitzaCaracters 1:", cadena);
-            cadena = cadena.toLowerCase();
-            cadena = cadena.replace(/[áäàâ]/gi,"a");
-            cadena = cadena.replace(/[éèëê]/gi,"e");
-            cadena = cadena.replace(/[íìïî]/gi,"i");
-            cadena = cadena.replace(/[óòöô]/gi,"o");
-            cadena = cadena.replace(/[úùüû]/gi,"u");
-            cadena = cadena.replace(/ç/gi,"c");
-            cadena = cadena.replace(/ñ/gi,"n");
-            cadena = cadena.replace(/[^0-9a-z_]/gi,"_");
-            cadena = cadena.replace(/_+/g,"_");
-            cadena = cadena.replace(/^_+|_+$/g,"");
-            console.log ("newButton#_normalitzaCaracters 2:", cadena);
-            return cadena;
-        },
-
         _getDialogTree: function (treeDataSource, fromRoot, reactClick) {
             var dialogTree = new NsTreeContainer({
                         treeDataSource: treeDataSource,
