@@ -27,7 +27,6 @@ define([
             REFRESH_EDITION: 'refresh',
             REMOVE_DRAFT: 'remove_draft',
             REMOVE_PROJECT_DRAFT: 'remove_project_draft',
-            DUPLICATE_PROJECT: 'duplicate_project',
             RENAME_PROJECT: 'rename_project',
             REMOVE_PROJECT: 'remove_project',
             SAVE: 'save',
