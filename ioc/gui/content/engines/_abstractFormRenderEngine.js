@@ -140,6 +140,8 @@ define([
                 cols = field.columns || 12;
 
             switch (field.type) {
+                case 'array':
+                case 'table':
                 case 'objectArray':
                     if(!field.props){
                         field.props = {"data-editable-element":"table"};
@@ -147,6 +149,8 @@ define([
                     if(!field.props["data-editable-element"]){
                         field.props["data-editable-element"]="table";
                     }
+                case 'editableArray':
+                case 'editableTable':
                 case 'editableObject':
                     $field = this.renderFieldEditableObject(field, fvalues);
                     break;
@@ -468,6 +472,10 @@ define([
                 $field.append($label);
                 $label.html(field.label);
                 $field.attr("title", field.label);
+            }else if(field.label!==""){
+                $field.append($label);
+                $label.html(field.name);
+                $field.attr("title", field.name);
             }
             $field.append($editableObject);
 
@@ -475,6 +483,125 @@ define([
         },
 
         renderFieldTable: function (field, fvalues) {
+            var ret;
+            if(field.type == "array" || field.type=="editableArray"){
+                ret = this._renderFieldTableArray(field, fvalues);
+            }else if(field.type == "table" || field.type=="editableTable"){
+                ret = this._renderFieldTableTable(field, fvalues);
+            }else{
+                ret = this._renderFieldTableObject(field, fvalues);
+            }
+            return ret;
+        },
+        
+        _renderFieldTableArray: function (field, fvalues) {
+            var data;
+            var value = fvalues[field.name] || field.value;
+
+            if(typeof value ==="string"){
+                data = JSON.parse(value);
+            }else{
+                data = value;
+            }
+
+            var $table = jQuery('<table></table>');
+            $table.attr('id', field.id);
+
+            var $body = jQuery('<tbody></tbody>');
+            var dato;
+            
+            // Afegim les files
+            for (var i = 0; i < data.length; i++) {
+                var $row = jQuery('<tr></tr>');
+                var $col = jQuery('<td></td>');
+                
+                if(field.config.typeDef==="date"){
+                    dato = this.convertToDateDMY(data[i]);
+                }else{
+                    dato =  data[i];
+                }
+                
+                $col.attr('data-field', "C0");
+                $col.attr('data-originalValue', data[i]);
+                $col.html(dato);
+                $row.append($col);
+                $body.append($row);
+            }
+
+            $table.append($body);
+
+            if (field.props) {
+                this.addPropsToInput(field.props, $table);
+            }
+            return $table;
+        },
+        
+        _renderFieldTableTable: function (field, fvalues) {
+            var data;
+            var value = fvalues[field.name] || field.value;
+
+            if(typeof value ==="string"){
+                data = JSON.parse(value);
+            }else{
+                data = value;
+            }
+
+            var $table = jQuery('<table></table>');
+            $table.attr('id', field.id);
+
+            var $body = jQuery('<tbody></tbody>');
+            var dato;
+            
+            // Afegim les files
+            for (var i = 0; i < data.length; i++) {
+                var $row = jQuery('<tr></tr>');
+                
+                var $cols = [];
+                // Creem una cel·la buida per cada columna
+                for (var j =0; j<field.config.array_columns; j++) {
+                    var $col = jQuery('<td></td>');
+                    $cols.push($col);
+                }
+
+                for (var key in data[i]) {
+
+                    var colNumber = key;
+
+                    if (!field.config.fields[key]) {
+                        console.error("Key " + key + " not found.", field.config.fields);
+                        continue;
+                    }
+
+                    if(field.config.typeDef==="date"){
+                        dato = this.convertToDateDMY(data[i][key]);
+                    }else {
+                        dato = data[i][key];
+                    }
+                    //tratamiento especial para los campos de fecha de las tablas
+
+                    $cols[colNumber].attr('data-field', "C"+key);
+                    $cols[colNumber].attr('data-originalValue', data[i][key]);
+                    $cols[colNumber].html(dato);
+
+                    //$col = jQuery('<td data-field="'+key+'" data-originalvalue="' + data[i][key] + '">' + dato + '</td>');
+                }
+
+                for (var j=0; j<field.config.array_columns; j++) {
+                    $row.append($cols[j]);
+                }
+                
+                $body.append($row);
+            }
+
+            $table.append($body);
+
+            if (field.props) {
+                this.addPropsToInput(field.props, $table);
+            }
+            return $table;            
+        },
+        
+        _renderFieldTableObject: function (field, fvalues) {
             // console.log("render table:", field, fvalues);
             var data;
             var value = fvalues[field.name] || field.value;
@@ -527,12 +654,12 @@ define([
                 }
 
                 var $col = jQuery('<th '+extra+'>' + fieldName  + '</th>');
-                
+
                 var witdth = this.getLayoudDataIfExists(key, field.config.layout, "width");
                 if(witdth){
                     $col.css("width", witdth);
                 }
-                    
+
                 //var $col = jQuery('<th >' + key + '</th>');
 
                 // ALERTA[Xavi]! Posem la primera fila com a readonly manualment.
