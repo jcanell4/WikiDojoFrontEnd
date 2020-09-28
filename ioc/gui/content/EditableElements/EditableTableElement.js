@@ -49,6 +49,8 @@ define([
         "remove_rows": "Eliminar fila"
     };
 
+    var nullActions = {};
+
 
     function clickElem(elem) {
         // Thx user1601638 on Stack Overflow (6/6/2018 - https://stackoverflow.com/questions/13405129/javascript-create-and-save-file )
@@ -567,6 +569,8 @@ define([
 
                 if (args.defaultRow) {
                     this.defaultRow = args.defaultRow;
+                } else if (String(args.defaultRow) === args.defaultRow+"")  {
+                    this.defaultRow = args.defaultRow;
                 } else {
                     this.defaultRow = {};
                 }
@@ -756,8 +760,9 @@ define([
                 grid.on("ApplyCellEdit", function (e) {
                     this.updateField();
                 }.bind(this));
-
-                var actions = this.args.actions ? this.args.actions : defaultActions;
+                
+                var defAc = this.args.data.config.array_rows? nullActions: defaultActions;
+                var actions = this.args.actions ? this.args.actions : defAc;
 
                 this.initializeButtons(actions, $toolbar[0]);
 
@@ -799,7 +804,66 @@ define([
                 this.actionData[actionId] = action.data;
 
             },
+            
+            _parseValue: function (value, lastRow){
+                // Extraïem la funció
+                var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
+                var functionTokens = functionRegex.exec(value);
 
+                // El primer token és el nom de la funció
+                var func = functionTokens[1].toLowerCase();
+
+                // El segón token conté els paràmetres
+                var params = JSON.parse("[" + functionTokens[2] + "]");
+
+                var parsedValue;
+
+
+                switch (func) {
+                    case 'copy':
+                    case 'inc':
+
+                        // Si hi ha una fila anterior cerquem el valor anterior
+                        if (lastRow) {
+                            parsedValue = wiocclFunctions[func](params[0], lastRow);
+                        } else {
+                            // El paràmetre és el valor per defecte per la primera fila
+                            parsedValue = params[0];
+                        }
+
+                        break;
+
+                    default:
+                        if (wiocclFunctions[func]) {
+                            parsedValue = wiocclFunctions[func](params);
+                        } else {
+                            console.error("Function: unknown", params);
+                        }
+                }
+
+               return parsedValue;
+            },
+            
+            parseSingleRow: function (row){
+                var newRow = row + "";
+
+                var lastRow;
+
+                if (this.dataStore.objectStore.data.length > 0) {
+                    lastRow = this.dataStore.objectStore.data[this.dataStore.objectStore.data.length - 1];
+                }
+
+                var fieldRegex = /{#(.*?)#}/g;
+                var tokens = newRow.match(fieldRegex);
+                
+                if (tokens !== null) {                
+                    for (var iToken = 0; iToken < tokens.length; iToken++) {
+                        var value = this._parseValue(tokens[iToken], lastRow);
+                        newRow = newRow.replace(tokens[iToken], value);
+                    }
+                }
+                return newRow;
+            },
 
             parseRow: function (row) {
                 console.log(row);
@@ -820,85 +884,10 @@ define([
 
                     if (tokens === null) {
                         continue;
-                    } else if (tokens.length > 1) {
-                        console.warn("Alerta, només es processarà un token:", tokens[0]);
-                    }
+                    } 
 
-//CODI ORIGINAL
-//                    // Extraïem la funció
-//                    var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
-//                    var functionTokens = functionRegex.exec(tokens[0]);
-//
-//                    // El primer token és el nom de la funció
-//                    var func = functionTokens[1].toLowerCase();
-//
-//                    // El segón token conté els paràmetres
-//                    var params = JSON.parse("["+functionTokens[2]+"]");
-//
-//                    var value;
-//
-//
-//                    switch (func) {
-//                        case 'copy':
-//                        case 'inc':
-//
-//                            // Si hi ha una fila anterior cerquem el valor anterior
-//                            if (lastRow) {
-//                                value = wiocclFunctions[func](params[0], lastRow[this.fieldToCol[name]]);
-//                            } else {
-//                                // El paràmetre és el valor per defecte per la primera fila
-//                                value = params[0];
-//                            }
-//
-//                            break;
-//
-//                        default:
-//                            if (wiocclFunctions[func]) {
-//                                value = wiocclFunctions[func](params);
-//                            } else {
-//                                console.error("Function: unknown", params);
-//                            }
-//                    }
-//
-//                    newRow[name] = newRow[name].replace(fieldRegex, value);
-
-//CODI MILLORAT PER TAL QUE TRACTI MÚLTIPLES TOKENS EN EL MATEIX DEFAULT
                     for (var iToken = 0; iToken < tokens.length; iToken++) {
-                        // Extraïem la funció
-                        var functionRegex = /{#_(.*?)\((.*?)\)_#}/g;
-                        var functionTokens = functionRegex.exec(tokens[iToken]);
-
-                        // El primer token és el nom de la funció
-                        var func = functionTokens[1].toLowerCase();
-
-                        // El segón token conté els paràmetres
-                        var params = JSON.parse("[" + functionTokens[2] + "]");
-
-                        var value;
-
-
-                        switch (func) {
-                            case 'copy':
-                            case 'inc':
-
-                                // Si hi ha una fila anterior cerquem el valor anterior
-                                if (lastRow) {
-                                    value = wiocclFunctions[func](params[0], lastRow[this.fieldToCol[name]]);
-                                } else {
-                                    // El paràmetre és el valor per defecte per la primera fila
-                                    value = params[0];
-                                }
-
-                                break;
-
-                            default:
-                                if (wiocclFunctions[func]) {
-                                    value = wiocclFunctions[func](params);
-                                } else {
-                                    console.error("Function: unknown", params);
-                                }
-                        }
-
+                        var value = this._parseValue(tokens[iToken], lastRow[this.fieldToCol[name]]);
                         newRow[name] = newRow[name].replace(tokens[iToken], value);
                     }
 
@@ -918,12 +907,8 @@ define([
              *
              * @private
              */
-            addRow: function (keyPairs, options) {
-
-                this.grid.addingRow = true;
-
-                this.dataStore.save(); // Desem els canvis actuals al grid (cel·les editades)
-
+            _addObjectRow: function (keyPairs, options) {
+                
                 var data = {
                     id: this.objectStore.getUniqueId(),
                 };
@@ -933,22 +918,77 @@ define([
                 var parsedRow = this.parseRow(this.defaultRow);
 
                 for (var name in parsedRow) {
+                    var row;
                     var field = this.args.fields?this.args.fields[name]:{};
 
                     if (keyPairs && keyPairs[name]) {
-                        data[this.fieldToCol[name]] = keyPairs[name];
+                        row = data[this.fieldToCol[name]] = keyPairs[name];
 
                     } else if (field.type && field.type === "date" && !parsedRow[name]) {
-                        data[this.fieldToCol[name]] = dojo.date.locale.format(new Date(), {
+                        row = data[this.fieldToCol[name]] = dojo.date.locale.format(new Date(), {
                             selector: 'date',
                             datePattern: DATA_STORE_PATTERN
                         });
 
                         // dojo.date.locale.format(new Date(), {selector:'date', datePattern:DATA_DISPLAY_PATTERN})
                     } else {
-                        data[this.fieldToCol[name]] = parsedRow[name];
+                        row = data[this.fieldToCol[name]] = parsedRow[name];
                     }
                 }
+
+                // Afegim la fila als valors originals
+                var originalValue;
+                if (typeof  this.args.data.value == "string") {
+                    if (0 == this.args.data.value.length) {
+                        originalValue = [];
+                    } else {
+                        originalValue = JSON.parse(this.args.data.value);
+                    }
+                } else {
+                    originalValue = this.args.data.value;
+                }
+                originalValue.push(row);
+                this.args.data.value = originalValue;
+
+                this.dataStore.newItem(data);
+
+                if (options) {
+                    this.dataStore.save({options: options});
+                } else {
+                    this.dataStore.save();
+                }
+
+                this.grid._refresh();
+
+                this.updateField();
+
+                if (!options || (!options.after && !options.before)) {
+                    this.grid.scrollToRow(this.grid.rowCount);
+                }
+
+                this.grid.addingRow = false;
+            },
+            
+            _addSingleRow: function (value, options) {
+                var parsedRow;
+                var data = {
+                    id: this.objectStore.getUniqueId(),
+                };
+
+                if (value){
+                    parsedRow = value;
+                }else{
+                    parsedRow = this.parseSingleRow(this.defaultRow);
+                }
+                
+                if (this.args.data.config.typeDef && this.args.data.config.typeDef === "date" && !parsedRow) {
+                    parsedRow = dojo.date.locale.format(new Date(), {
+                        selector: 'date',
+                        datePattern: DATA_STORE_PATTERN
+                    });
+                }
+                
+                data["col0"] = parsedRow;
 
                 // Afegim la fila als valors originals
                 var originalValue;
@@ -981,6 +1021,80 @@ define([
                 }
 
                 this.grid.addingRow = false;
+            },
+            
+            _addArrayRow: function (array, options) {
+                var data = {
+                    id: this.objectStore.getUniqueId(),
+                };
+
+                var parsedRow = this.parseRow(this.defaultRow);
+                var row = new Array(parsedRow.lenght);
+                
+                for (var i = 0; i < parsedRow.length; i++) {
+                    var item;
+
+                    if (array && i<array.length) {
+                        row[i] = data[this.fieldToCol["col"+i]] = array[i];
+                    } else if (this.args.data.config.typeDef && this.args.data.config.typeDef === "date" && !parsedRow[i]) {
+                        row[i] = data[this.fieldToCol["col"+i]] = dojo.date.locale.format(new Date(), {
+                            selector: 'date',
+                            datePattern: DATA_STORE_PATTERN
+                        });
+
+                        // dojo.date.locale.format(new Date(), {selector:'date', datePattern:DATA_DISPLAY_PATTERN})
+                    } else {
+                        row[i] = data[this.fieldToCol["col"+i]] = parsedRow[i];
+                    }
+                }
+
+                // Afegim la fila als valors originals
+                var originalValue;
+                if (typeof  this.args.data.value == "string") {
+                    if (0 == this.args.data.value.length) {
+                        originalValue = [];
+                    } else {
+                        originalValue = JSON.parse(this.args.data.value);
+                    }
+                } else {
+                    originalValue = this.args.data.value;
+                }
+                originalValue.push(row);
+                this.args.data.value = originalValue;
+
+                this.dataStore.newItem(data);
+
+                if (options) {
+                    this.dataStore.save({options: options});
+                } else {
+                    this.dataStore.save();
+                }
+
+                this.grid._refresh();
+
+                this.updateField();
+
+                if (!options || (!options.after && !options.before)) {
+                    this.grid.scrollToRow(this.grid.rowCount);
+                }
+
+                this.grid.addingRow = false;
+            },
+            
+            addRow: function (keyPairs, options) {
+
+                this.grid.addingRow = true;
+
+                this.dataStore.save(); // Desem els canvis actuals al grid (cel·les editades)
+
+                if(this.args.data.type==="array" || this.args.data.type==="editableArray"){
+                    this._addSingleRow(keyPairs, options);
+                }else if(this.args.data.type==="table" || this.args.data.type==="editableTable"){
+                    this._addArrayRow(keyPairs, options);
+                }else{
+                    this._addObjectRow(keyPairs, options);
+                }
+
             },
 
             addRowAfter: function (data) {
@@ -1161,9 +1275,111 @@ define([
                 this.updateField();
 
             },
+            
+            _configCell: function(type, layout, i){
+                var constraints;
+                var cell = layout.cells[i];
+                
+                // Els cellType estan definits com propietats a dojox/grid/cells/_Base.js
+                switch (type) {
+                    case 'date':
+
+                        cell.type = dojox.grid.cells.DateTextBox;
+                        cell.getValue = function () {
+                            // Override the default getValue function for dojox.grid.cells.DateTextBox
+                            return dojo.date.locale.format(this.widget.get('value'), {
+                                selector: 'date',
+                                datePattern: DATA_STORE_PATTERN
+                            });
+                        };
+                        cell.formatter = function (datum) {
+                            // Format the value in store, so as to be displayed.
+                            var d = !datum ? (new Date()) : dojo.date.locale.parse(datum, {
+                                selector: 'date',
+                                datePattern: DATA_STORE_PATTERN
+                            });
+                            return dojo.date.locale.format(d, {
+                                selector: 'date',
+                                datePattern: DATA_DISPLAY_PATTERN
+                            });
+                        };
+                        break;
+
+                    case 'decimal':
+                        cell.type = cells._Widget;
+                        cell.widgetClass = NumberTextBox;
+                        cell.formatter = function (value, row, attr) {
+                            if (attr.constraints === undefined || attr.constraints === null) 
+                                constraints = {places: 2};
+                            else
+                                constraints = JSON.parse(attr.constraints);
+    //                                    console.log ("decimal.formatter", value, dojo.number.format(value, constraints));
+                            return dojo.number.format(value, constraints);
+                        };
+                        break;
+
+                    case 'number':
+                        cell.type = cells._Widget;
+                        cell.widgetClass = NumberSpinner;
+                        break;
+
+                    case 'select':
+                        cell.type = dojox.grid.cells.Select;
+                        cell.options = field['options'] || ['Error. No options added to default view'];
+                        break;
+
+                    case 'textarea':
+                        cell.type = cells._Widget;
+                        cell.widgetClass = ZoomableCell;
+                        cell.getValue = function () {
+                            // Override the default getValue function for dojox.grid.cells.DateTextBox
+                            var ret = this.widget.get("value");
+                            return  ret.split("<br>").join("\n");
+                        };
+                        cell.formatter = function (datum) {
+                            // Format the value in store, so as to be displayed.
+                            var ret = !datum ? "" : datum.split("\n").join("<br>");
+                            return ret;
+                        };
+                        break;                                
+                        break;
+
+                    case 'conditionalselect':
+                        cell.type = cells._Widget;
+                        cell.widgetClass = ConditionalSelectCell;
+                        break;
+
+                    case 'boolean':
+                    case 'bool':
+                        cell.type = dojox.grid.cells.Bool;
+                        break;
+
+                    default:
+                        cell.type = cells._Widget;
+                }
+                
+            },
 
             // Copia els paràmetres de configuració a la cel·la
             setupCells: function (layout) {
+                if(this.args.data.type==="array" || this.args.data.type==="editableArray"){
+                    this._setupCellsFomArray(layout);
+                }else if(this.args.data.type==="table" || this.args.data.type==="editableTable"){
+                    this._setupCellsFomArray(layout);
+                }else{
+                    this._setupCellsFomObjectArray(layout);
+                }                                
+            },
+            
+            _setupCellsFomArray: function (layout) {
+                for (var i in layout.cells) {
+                    if (this.args.data.config.typeDef){
+                        this._configCell(this.args.data.config.typeDef, layout, i);
+                    }
+                }                
+            },
+            
+            _setupCellsFomObjectArray: function (layout) {
 
                 this.inputOnNewRowFields = {};
 
@@ -1178,90 +1394,92 @@ define([
                     if (this.args.fields && this.args.fields[fieldName]) {
 
                         var field = this.args.fields[fieldName];
+                        
+                        this._configCell(field['type'], layout, i);
 
-                        // Els cellType estan definits com propietats a dojox/grid/cells/_Base.js
 
-                        switch (field['type']) {
-                            case 'date':
-
-                                cell.type = dojox.grid.cells.DateTextBox;
-                                cell.getValue = function () {
-                                    // Override the default getValue function for dojox.grid.cells.DateTextBox
-                                    return dojo.date.locale.format(this.widget.get('value'), {
-                                        selector: 'date',
-                                        datePattern: DATA_STORE_PATTERN
-                                    });
-                                };
-                                cell.formatter = function (datum) {
-                                    // Format the value in store, so as to be displayed.
-                                    var d = !datum ? (new Date()) : dojo.date.locale.parse(datum, {
-                                        selector: 'date',
-                                        datePattern: DATA_STORE_PATTERN
-                                    });
-                                    return dojo.date.locale.format(d, {
-                                        selector: 'date',
-                                        datePattern: DATA_DISPLAY_PATTERN
-                                    });
-                                };
-                                break;
-                                
-                            case 'decimal':
-                                cell.type = cells._Widget;
-                                cell.widgetClass = NumberTextBox;
-//                                cell.widgetProps = {constraints: {places: 2, locale:'es'}}
+//                        // Els cellType estan definits com propietats a dojox/grid/cells/_Base.js
+//                        switch (field['type']) {
+//                            case 'date':
+//
+//                                cell.type = dojox.grid.cells.DateTextBox;
 //                                cell.getValue = function () {
-//                                    var value = this.widget.get('value'); console.log ("decimal.getValue", dojo.number.parse(value.toString(), {places: 2}));
-//                                    return this.widget.get('value').toString();
-//                                }
-                                cell.formatter = function (value, row, attr) {
-                                    if (attr.constraints === undefined || attr.constraints === null) 
-                                        constraints = {places: 2};
-                                    else
-                                        constraints = JSON.parse(attr.constraints);
-//                                    console.log ("decimal.formatter", value, dojo.number.format(value, constraints));
-                                    return dojo.number.format(value, constraints);
-                                };
-                                break;
-                                
-                            case 'number':
-                                cell.type = cells._Widget;
-                                cell.widgetClass = NumberSpinner;
-                                break;
-                                
-                            case 'select':
-                                cell.type = dojox.grid.cells.Select;
-                                cell.options = field['options'] || ['Error. No options added to default view'];
-                                break;
-
-                            case 'textarea':
-                                cell.type = cells._Widget;
-                                cell.widgetClass = ZoomableCell;
-                                cell.getValue = function () {
-                                    // Override the default getValue function for dojox.grid.cells.DateTextBox
-                                    var ret = this.widget.get("value");
-                                    return  ret.split("<br>").join("\n");
-                                };
-                                cell.formatter = function (datum) {
-                                    // Format the value in store, so as to be displayed.
-                                    var ret = !datum ? "" : datum.split("\n").join("<br>");
-                                    return ret;
-                                };
-                                break;                                
-                                break;
-
-                            case 'conditionalselect':
-                                cell.type = cells._Widget;
-                                cell.widgetClass = ConditionalSelectCell;
-                                break;
-
-                            case 'boolean':
-                            case 'bool':
-                                cell.type = dojox.grid.cells.Bool;
-                                break;
-
-                            default:
-                                cell.type = cells._Widget;
-                        }
+//                                    // Override the default getValue function for dojox.grid.cells.DateTextBox
+//                                    return dojo.date.locale.format(this.widget.get('value'), {
+//                                        selector: 'date',
+//                                        datePattern: DATA_STORE_PATTERN
+//                                    });
+//                                };
+//                                cell.formatter = function (datum) {
+//                                    // Format the value in store, so as to be displayed.
+//                                    var d = !datum ? (new Date()) : dojo.date.locale.parse(datum, {
+//                                        selector: 'date',
+//                                        datePattern: DATA_STORE_PATTERN
+//                                    });
+//                                    return dojo.date.locale.format(d, {
+//                                        selector: 'date',
+//                                        datePattern: DATA_DISPLAY_PATTERN
+//                                    });
+//                                };
+//                                break;
+//                                
+//                            case 'decimal':
+//                                cell.type = cells._Widget;
+//                                cell.widgetClass = NumberTextBox;
+////                                cell.widgetProps = {constraints: {places: 2, locale:'es'}}
+////                                cell.getValue = function () {
+////                                    var value = this.widget.get('value'); console.log ("decimal.getValue", dojo.number.parse(value.toString(), {places: 2}));
+////                                    return this.widget.get('value').toString();
+////                                }
+//                                cell.formatter = function (value, row, attr) {
+//                                    if (attr.constraints === undefined || attr.constraints === null) 
+//                                        constraints = {places: 2};
+//                                    else
+//                                        constraints = JSON.parse(attr.constraints);
+////                                    console.log ("decimal.formatter", value, dojo.number.format(value, constraints));
+//                                    return dojo.number.format(value, constraints);
+//                                };
+//                                break;
+//                                
+//                            case 'number':
+//                                cell.type = cells._Widget;
+//                                cell.widgetClass = NumberSpinner;
+//                                break;
+//                                
+//                            case 'select':
+//                                cell.type = dojox.grid.cells.Select;
+//                                cell.options = field['options'] || ['Error. No options added to default view'];
+//                                break;
+//
+//                            case 'textarea':
+//                                cell.type = cells._Widget;
+//                                cell.widgetClass = ZoomableCell;
+//                                cell.getValue = function () {
+//                                    // Override the default getValue function for dojox.grid.cells.DateTextBox
+//                                    var ret = this.widget.get("value");
+//                                    return  ret.split("<br>").join("\n");
+//                                };
+//                                cell.formatter = function (datum) {
+//                                    // Format the value in store, so as to be displayed.
+//                                    var ret = !datum ? "" : datum.split("\n").join("<br>");
+//                                    return ret;
+//                                };
+//                                break;                                
+//                                break;
+//
+//                            case 'conditionalselect':
+//                                cell.type = cells._Widget;
+//                                cell.widgetClass = ConditionalSelectCell;
+//                                break;
+//
+//                            case 'boolean':
+//                            case 'bool':
+//                                cell.type = dojox.grid.cells.Bool;
+//                                break;
+//
+//                            default:
+//                                cell.type = cells._Widget;
+//                        }
 
                         if (field["input_on_new_row"] === true) {
                             this.inputOnNewRowFields[cell.name] = this.args.fields[cell.name];
@@ -1312,8 +1530,108 @@ define([
 
                 this.dataStore.save();
             },
-
+            
             htmlToJson: function ($table) {
+                var ret;
+                if(this.args.data.type=="array" || this.args.data.type=="aditableArray"){
+                    ret = this._htmlToJsonFromArray($table);
+                }else if(this.args.data.type=="table" || this.args.data.type=="aditableTable"){
+                    ret = this._htmlToJsonFromTable($table);
+                }else{
+                    ret = this._htmlToJsonFromObjectArray($table);
+                }
+                return ret;
+            },
+            
+            _htmlToJsonFromArray: function($table) {
+                var data = {
+                    columns: [],
+                    rows: []
+                };
+
+                var $rows = $table.find('tr');
+                var $col = jQuery($rows[0]).children()[0];
+                
+                var fieldData = {
+                    name: " ",
+                    field: 'col0',
+                    editable: true
+                };
+
+                data.columns.push(fieldData);
+
+                var field = jQuery($col).attr('data-field');
+                
+                this.fieldToCol[field] = fieldData.field;
+                this.colToField[fieldData.field] = field;
+                this.colToName[fieldData.field] = fieldData.name;
+
+                // Extraiem les dades de la resta de files
+                for (var i = 0; i < $rows.length; i++) {
+                    $col = jQuery($rows[i]).children()[0];
+                    var row = {id: i};
+                    var field = jQuery($col).attr('data-field');
+                    var colKey = this.fieldToCol[field];
+                    var key = this.colToField[colKey];
+
+                    var type = this.args.data.config.typeDef;
+                    row[colKey] = this.normalizeValue(jQuery($col).attr("data-originalvalue"), type) || '';
+
+
+                    data.rows.push(row);
+                }
+                return data;                
+            },
+
+            _htmlToJsonFromTable: function($table) {
+                var data = {
+                    columns: [],
+                    rows: []
+                };
+
+                var $rows = $table.find('tr');
+                var $columns = jQuery($rows[0]).children();
+                var type = this.args.data.config.typeDef;
+                
+                for (var i = 0; i < this.args.data.config.array_columns; i++) {
+
+                    var fieldData = {
+                        name: _.repeat(" ", i),
+                        field: 'col' + i,
+                        editable: true
+                    };
+
+                    data.columns.push(fieldData);
+
+                    var field = jQuery($columns[i]).attr('data-field');
+
+
+                    this.fieldToCol[field] = fieldData.field;
+                    this.colToField[fieldData.field] = field;
+                    this.colToName[fieldData.field] = fieldData.name;
+                }
+                
+                                // Extraiem les dades de la resta de files
+                for (i = 0; i < $rows.length; i++) {                    
+                    var row = {id: i};
+
+                    for (var j = 0; j < $columns.length; j++) {
+
+                        // Cerquem la columna corresponent al camp
+                        var field = jQuery($columns[j]).attr('data-field');
+                        var colKey = this.fieldToCol[field];
+                        var key = this.colToField[colKey];
+                        row[colKey] = this.normalizeValue(jQuery($columns[j]).attr("data-originalvalue"), type) || '';
+
+                    }
+
+                    data.rows.push(row);
+                }
+
+                return data;                
+            },
+
+            _htmlToJsonFromObjectArray: function ($table) {
 
                 var data = {
                     columns: [],
@@ -1322,7 +1640,7 @@ define([
 
                 var $rows = $table.find('tr');
                 var $columns = jQuery($rows[0]).children();
-
+                
                 // La primera columna són les capçáleres
                 for (var i = 0; i < $columns.length; i++) {
 
@@ -1339,12 +1657,6 @@ define([
 
                     this.fieldToCol[field] = fieldData.field;
                     this.colToField[fieldData.field] = field;
-
-
-                    // this.fieldToCol[fieldData.name] = fieldData.field;
-                    //this.colToField[fieldData.field] = fieldData.name;
-
-
                     this.colToName[fieldData.field] = jQuery($columns[i]).attr('data-field-name') || fieldData.name;
                 }
 
@@ -1378,10 +1690,8 @@ define([
                 return data;
             },
 
-            normalizeValueForKey: function (key, value) {
+            normalizeValue: function (value, type) {
                 var normalizedValue;
-                var type = this.args.fields[key] ? this.args.fields[key].type : '';
-
                 switch (type) {
                     case 'bool':
                     case 'boolean':
@@ -1394,6 +1704,11 @@ define([
                 }
 
                 return normalizedValue;
+            },
+
+            normalizeValueForKey: function (key, value) {
+                var type = this.args.fields[key] ? this.args.fields[key].type : '';
+                return this.normalizeValue(value, type);
             },
 
 
@@ -1446,6 +1761,72 @@ define([
 
 
             updateField: function () {
+                if(this.args.data.type=="array" || this.args.data.type=="aditableArray"){
+                    this._updateFieldArray();
+                }else if(this.args.data.type=="table" || this.args.data.type=="aditableTable"){
+                    this._updateFieldTable();
+                }else{
+                    this._updateFieldObjectArray();
+                }
+            },
+            
+            _updateFieldArray: function () {
+                var data = [];
+
+                var updatedData = this.dataStore.objectStore.data;
+
+
+                for (var i = 0; i < updatedData.length; i++) {
+                    var newItem;
+
+                    // console.log(this.columns[0],updatedData[i]);
+                    //var key = this.colToField[this.columns[0].field];
+                    newItem = updatedData[i][this.columns[0].field];
+
+                    data.push(newItem);
+                    this.addHiddenFieldValues(newItem, i);
+                }
+
+
+                data = this.normalizeData(data);
+
+                this.$field.val(JSON.stringify(data));
+
+                if (this.context.forceCheckChanges) {
+                    this.context.forceCheckChanges();
+                }
+            },
+
+            _updateFieldTable: function () {
+                var data = [];
+
+                var updatedData = this.dataStore.objectStore.data;
+
+
+                for (var i = 0; i < updatedData.length; i++) {
+                    var newItem = [];
+
+                    for (var j = 0; j < this.columns.length; j++) {
+                        // console.log(this.columns[j],updatedData[i]);
+                        //var key = this.colToField[this.columns[j].field];
+                        newItem.push(updatedData[i][this.columns[j].field]);
+                    }
+
+                    data.push(newItem);
+                    this.addHiddenFieldValues(newItem, i);
+                }
+
+
+                data = this.normalizeData(data);
+
+                this.$field.val(JSON.stringify(data));
+
+                if (this.context.forceCheckChanges) {
+                    this.context.forceCheckChanges();
+                }
+            },
+
+            _updateFieldObjectArray: function () {
                 var data = [];
 
                 var updatedData = this.dataStore.objectStore.data;
@@ -1592,6 +1973,7 @@ define([
             },
 
             addHiddenFieldValues: function (row, rowNumber) {
+                //[TODO] adaptar per array, table i objectArray
 
                 // var originalValues = JSON.parse(this.args.data.value);
                 var originalValues = this.args.data.value;
