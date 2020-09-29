@@ -886,7 +886,8 @@ define([
                     } 
 
                     for (var iToken = 0; iToken < tokens.length; iToken++) {
-                        var value = this._parseValue(tokens[iToken], lastRow[this.fieldToCol[name]]);
+                        var lr = lastRow?lastRow[this.fieldToCol[name]]:null;
+                        var value = this._parseValue(tokens[iToken], lr);
                         newRow[name] = newRow[name].replace(tokens[iToken], value);
                     }
 
