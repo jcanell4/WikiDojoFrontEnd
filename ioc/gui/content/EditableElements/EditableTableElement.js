@@ -1596,7 +1596,7 @@ define([
                 for (var i = 0; i < this.args.data.config.array_columns; i++) {
 
                     var fieldData = {
-                        name: _.repeat(" ", i),
+                        name: " ".repeat(i+1),
                         field: 'col' + i,
                         editable: true
                     };
@@ -1612,7 +1612,8 @@ define([
                 }
                 
                                 // Extraiem les dades de la resta de files
-                for (i = 0; i < $rows.length; i++) {                    
+                for (i = 0; i < $rows.length; i++) {    
+                    $columns = jQuery($rows[i]).children();
                     var row = {id: i};
 
                     for (var j = 0; j < $columns.length; j++) {

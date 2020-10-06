@@ -521,7 +521,7 @@ define([
                     dato =  data[i];
                 }
                 
-                $col.attr('data-field', "C0");
+                $col.attr('data-field', "col0");
                 $col.attr('data-originalValue', data[i]);
                 $col.html(dato);
                 $row.append($col);
@@ -563,14 +563,9 @@ define([
                     $cols.push($col);
                 }
 
-                for (var key in data[i]) {
+                for (var key=0; key<data[i].length; key++) {
 
                     var colNumber = key;
-
-                    if (!field.config.fields[key]) {
-                        console.error("Key " + key + " not found.", field.config.fields);
-                        continue;
-                    }
 
                     if(field.config.typeDef==="date"){
                         dato = this.convertToDateDMY(data[i][key]);
@@ -579,7 +574,7 @@ define([
                     }
                     //tratamiento especial para los campos de fecha de las tablas
 
-                    $cols[colNumber].attr('data-field', "C"+key);
+                    $cols[colNumber].attr('data-field', "col"+key);
                     $cols[colNumber].attr('data-originalValue', data[i][key]);
                     $cols[colNumber].html(dato);
 
