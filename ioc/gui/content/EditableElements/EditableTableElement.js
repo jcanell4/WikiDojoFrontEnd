@@ -1276,7 +1276,7 @@ define([
 
             },
             
-            _configCell: function(type, layout, i){
+            _configCell: function(type, layout, i, options){
                 var constraints;
                 var cell = layout.cells[i];
                 
@@ -1325,7 +1325,7 @@ define([
 
                     case 'select':
                         cell.type = dojox.grid.cells.Select;
-                        cell.options = field['options'] || ['Error. No options added to default view'];
+                        cell.options = options || ['Error. No options added to default view'];
                         break;
 
                     case 'textarea':
@@ -1395,7 +1395,7 @@ define([
 
                         var field = this.args.fields[fieldName];
                         
-                        this._configCell(field['type'], layout, i);
+                        this._configCell(field['type'], layout, i, field['options']);
 
 
 //                        // Els cellType estan definits com propietats a dojox/grid/cells/_Base.js
