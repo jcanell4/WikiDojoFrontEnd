@@ -815,3 +815,16 @@ td.center {
 .extra-solutions label {
     font-weight: bold;
 }
+
+
+.readonly {
+    background-color: #FF9999;
+}
+
+.readonly .readonly {
+    background-color: red;
+}
+
+.readonly .readonly .readonly {
+    background-color: #6c0000;
+}
