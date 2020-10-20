@@ -817,14 +817,16 @@ td.center {
 }
 
 
-.readonly {
-    background-color: #FF9999;
+span[data-wioccl-readonly] {
+    width: 15px;
+    height: 15px;
+    display:inline-block;
 }
 
-.readonly .readonly {
+span[data-wioccl-readonly="open"] {
     background-color: red;
 }
 
-.readonly .readonly .readonly {
+span[data-wioccl-readonly="close"] {
     background-color: #6c0000;
 }
