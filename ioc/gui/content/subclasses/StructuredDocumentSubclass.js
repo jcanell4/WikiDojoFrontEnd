@@ -234,8 +234,7 @@ define([
 
             var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
 
-
-            if (contentCache.projectOwner) {
+            if (contentCache.projectOwner && contentCache.projectOwner !== 'undefined') {
                 values.projectOwner = contentCache.projectOwner;
                 values.projectSourceType = contentCache.projectSourceType;
             }
@@ -336,7 +335,9 @@ define([
 
             var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
 
-            if (contentCache.projectOwner) {
+
+            if (contentCache.projectOwner && contentCache.projectOwner !== 'undefined') {
+
                 ret += "&projectOwner=" + contentCache.projectOwner;
                 ret += "&projectSourceType=" + contentCache.projectSourceType;
             }
@@ -1630,7 +1631,8 @@ define([
 
             var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
 
-            if (contentCache.projectOwner) {
+            if (contentCache.projectOwner && contentCache.projectOwner !== 'undefined') {
+
                 ret += "&projectOwner=" + contentCache.projectOwner;
                 ret += "&projectSourceType=" + contentCache.projectSourceType;
             }

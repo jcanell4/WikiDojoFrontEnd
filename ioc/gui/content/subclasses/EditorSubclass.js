@@ -191,7 +191,7 @@ define([
 
                 var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
 
-                if (contentCache.projectOwner) {
+                if (contentCache.projectOwner && contentCache.projectOwner !== 'undefined') {
                     query += "&projectOwner=" + contentCache.projectOwner;
                     query += "&projectSourceType=" + contentCache.projectSourceType;
                 }
