@@ -1626,7 +1626,16 @@ define([
 
         // TODO[Xavi] Copiat fil per randa de Editor Subclass
         getQueryForceCancel: function () {
-            return 'do=cancel&discard_changes=true&id=' + this.ns;
+            var ret = 'do=cancel&discard_changes=true&id=' + this.ns;
+
+            var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
+
+            if (contentCache.projectOwner) {
+                ret += "&projectOwner=" + contentCache.projectOwner;
+                ret += "&projectSourceType=" + contentCache.projectSourceType;
+            }
+
+            return ret;
         },
 
         setReadOnly: function (value) {
