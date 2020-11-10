@@ -42,6 +42,7 @@ define([
     // 'ioc/dokuwiki/editors/DojoManager/plugins/AceSwitchEditor',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoSwitchEditor',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoQuiz',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoWioccl',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableACE',
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableWrapper',
@@ -85,6 +86,7 @@ define([
              DojoFireEvent, AceDocumentPreview, DojoDocumentPreview,
              /*AceSwitchEditor,*/ DojoSwitchEditor,
              DojoQuiz,
+             DojoWioccl,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
              AceVideoPlugin,
@@ -195,6 +197,8 @@ define([
             'DojoQuizChoice': DojoQuiz,
             'DojoQuizRelations': DojoQuiz,
             'DojoQuizComplete': DojoQuiz,
+
+            'DojoWioccl': DojoWioccl,
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',
@@ -466,6 +470,12 @@ define([
             + "</tr>"
         },
 
+        'DojoWioccl': {
+            type: 'Wioccl',
+            title: localization["wioccl"],
+            icon: 'IocQuizVF',
+            tag: 'wioccl'
+        },
 
         'IocComment': {
             type: 'IocComment',

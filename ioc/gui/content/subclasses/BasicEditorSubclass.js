@@ -278,9 +278,9 @@ define([
             addEditors: function (editor) {
                 // this.editor = this.createEditor({id : this.id}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
 
-                this.editor = this.createEditor({id:this.id, content: this.content.content || this.originalContent, originalContent: this.originalContent}, this.editorType);
+                this.editor = this.createEditor({id:this.id, content: this.content.content || this.originalContent, originalContent: this.originalContent, extra: this.content.extra}, this.editorType);
 
-                //console.log("Content Format:", this.editor.getContentFormat());
+                console.log("Hi ha extra?", this.content.extra);
             },
 
             createEditor: function(config, type) {
@@ -309,6 +309,7 @@ define([
                         content: config.content,
                         originalContent: config.originalContent,
                         readOnly: this.getReadOnly(),
+                        extra: config.extra
                     }
                 );
             },
@@ -330,6 +331,7 @@ define([
                     dispatcher: this.dispatcher,
                     content: config.content,
                     originalContent: config.originalContent,
+                    extra: config.extra
                 });
             },
 

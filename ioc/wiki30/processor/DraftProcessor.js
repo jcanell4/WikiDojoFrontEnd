@@ -201,9 +201,6 @@ define([
 
                 var contentCache = this.dispatcher.getGlobalState().getContent(this.docId);
 
-                console.log("id?", this.docId)
-                console.log("hi ha contentCache?", this.dispatcher.getGlobalState());
-
                 if (contentCache.projectOwner) {
                     params += "&projectOwner=" + contentCache.projectOwner;
                     params += "&projectSourceType=" + contentCache.projectSourceType;

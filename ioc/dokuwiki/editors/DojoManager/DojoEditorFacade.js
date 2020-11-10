@@ -30,6 +30,8 @@ define([
         constructor: function (args) {
             // console.log("DojoEditorFacade#constructor", args);
 
+            console.log("DojoEditorFacade#constructor extra?", args.extra);
+
             this.id = args.id;
 
             this.viewId = args.viewId;
@@ -52,6 +54,7 @@ define([
                 components: [], // string[],
                 TOOLBAR_ID: this.TOOLBAR_ID,
                 readOnly: args.readOnly,
+                extra: args.extra,
                 extraPlugins: [
                     {name:"dijit._editor.plugins.CustomKeyHandling", blockNodeForEnter: 'P'},
                     {name:"dojox.editor.plugins.NormalizeIndentOutdent"}

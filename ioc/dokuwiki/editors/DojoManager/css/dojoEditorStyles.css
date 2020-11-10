@@ -817,16 +817,34 @@ td.center {
 }
 
 
-span[data-wioccl-readonly] {
+span[data-wioccl-state] {
     width: 15px;
     height: 15px;
     display:inline-block;
 }
 
-span[data-wioccl-readonly="open"] {
+[data-wioccl-state="open"] {
     background-color: red;
 }
 
-span[data-wioccl-readonly="close"] {
+[data-wioccl-state="close"] {
     background-color: #6c0000;
 }
+
+[data-wioccl-state="open"][data-wioccl-ref] {
+    background-color: #aaaaFF;
+}
+
+[data-wioccl-state="close"][data-wioccl-ref] {
+    background-color: blue;
+}
+
+
+[data-wioccl-ref] {
+    background-color: greenyellow;
+}
+
+tr[data-wioccl-ref] {
+    background-color: orange;
+}
+

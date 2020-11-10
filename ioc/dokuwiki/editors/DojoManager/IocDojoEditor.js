@@ -148,6 +148,8 @@ define([
                 this._pluginsToParse = [];
                 this.toolbars = {};
 
+                this.extra = args.extra;
+
                 this.disabled = args.readOnly === true;
 
                 // Basic plugins
@@ -253,7 +255,9 @@ define([
                     'DojoQuizVF',
                     'DojoQuizChoice',
                     'DojoQuizRelations',
-                    'DojoQuizComplete'
+                    'DojoQuizComplete',
+
+                    'DojoWioccl'
 
 
                 ]);
