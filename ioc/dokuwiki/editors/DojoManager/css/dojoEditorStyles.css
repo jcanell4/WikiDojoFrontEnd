@@ -848,3 +848,6 @@ tr[data-wioccl-ref] {
     background-color: orange;
 }
 
+[data-test="**"] {
+    background-color: purple;
+}

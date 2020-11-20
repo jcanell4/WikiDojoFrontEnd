@@ -63,7 +63,7 @@ define([
 
             $node.on('mouseover', function (e){
                 let id = $node.attr('data-wioccl-ref');
-                let ids;
+                let ids = [];
 
                 if (id.indexOf(',')!== -1){
                     ids = id.split(',');
@@ -84,6 +84,45 @@ define([
                 e.stopPropagation();
 
             });
+
+            // Cerca de parelles
+
+            let refId = $node.attr('data-wioccl-ref');
+
+            if ($node.attr('data-wioccl-state') === 'open') {
+                // cerquem el de tancament dintre del mateix pare
+
+
+                // el node de tancament contindrà 'data-wioccl-state' === 'close' i 'data-wioccl-ref' == al refId
+                let now = Date.now();
+                let $closingNode = $node.parent().find('[data-wioccl-state="close"][data-wioccl-ref="'+ refId+ '"]');
+
+                console.log("***Inici cerca node close")
+                if ($closingNode.length > 0) {
+                    console.log("Closing node trobat al mateix parent:", $closingNode);
+
+                    // TODO: moure tots els
+                } else {
+                    // No es troba al parent
+                }
+                console.log("***Fi cerca node close", Date.now()-now);
+
+
+
+
+
+
+            } else if ($node.attr('data-wioccl-state') === 'close') {
+                // no fem res
+            } else {
+                // TODO: per determinar, es tracta d'una fila, ja que aquestes no indique l'state
+            }
+
+
+
+
+
+
             //
             //
             // // console.log("Adding handlers", $node);
