@@ -122,17 +122,23 @@ define([
                 h = geometry.getContentBox(contentNode).h,
                 messageHeight = this._getImportantMessageHeight(contentNode);
 
+            console.log("Alçada calculada:", h);
 
             this.setHeight(h - messageHeight);
         },
 
         setHeight: function (height) {
-            // console.log("AceEditorFullFacade#setHeight", height);
+            console.log("AceEditorFullFacade#setHeight", height);
             var min = this.MIN_HEIGHT,
                 contentNode = dom.byId(this.id),
                 h = geometry.getContentBox(contentNode).h - this._getImportantMessageHeight(contentNode),
                 max = h - this.VERTICAL_MARGIN,
                 normalizedHeight = Math.max(min, Math.min(height, max));
+
+            console.log("Calculated height to set:", normalizedHeight);
+            console.log("h", h);
+            console.log("max", max);
+            console.log("ContentNode", contentNode);
 
 
             var node = this.editor.$textarea.get(0);
@@ -149,6 +155,28 @@ define([
             this.editor.resize();
 
         },
+
+        // Això és utilitzat quan l'editor es troba en un altre entorn que no és la edició completa
+        // ALERTA! aquesta funciò no forma part de la interface compartida amb altres editors
+        setHeightForced: function (height) {
+            // console.log("AceEditorFullFacade#setHeightForced", height);
+
+            var node = this.editor.$textarea.get(0);
+
+            if (node) {
+                style.set(node, "height", "" + height+ "px");
+            }
+
+            node = dom.byId(this.editor.containerId);
+            if (node) {
+                style.set(node, "height", "" + height+ "px");
+            }
+
+            this.editor.resize();
+
+        },
+
+
 
 
         addToolbars: function () {

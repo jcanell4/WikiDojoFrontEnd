@@ -279,8 +279,6 @@ define([
                 // this.editor = this.createEditor({id : this.id}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
 
                 this.editor = this.createEditor({id:this.id, content: this.content.content || this.originalContent, originalContent: this.originalContent, extra: this.content.extra}, this.editorType);
-
-                console.log("Hi ha extra?", this.content.extra);
             },
 
             createEditor: function(config, type) {

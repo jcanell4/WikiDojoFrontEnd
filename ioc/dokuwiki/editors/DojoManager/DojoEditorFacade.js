@@ -30,8 +30,6 @@ define([
         constructor: function (args) {
             // console.log("DojoEditorFacade#constructor", args);
 
-            console.log("DojoEditorFacade#constructor extra?", args.extra);
-
             this.id = args.id;
 
             this.viewId = args.viewId;

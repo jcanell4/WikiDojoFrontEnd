@@ -4,24 +4,31 @@ define([
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
     "dojo/string",
-    "dijit/form/ToggleButton"
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button) {
+    "dijit/form/ToggleButton",
+    "dojo/dom-construct",
+    'dijit/Dialog',
+    // "dojo/parser",
+    "dojo/store/Memory",
+    "dijit/tree/ObjectStoreModel",
+    "dijit/Tree",
+    "dijit/registry",
+    "dojo/dom",
+    // 'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
+    'ioc/dokuwiki/editors/AceManager/toolbarManager',
 
-    var FormatButton = declare(AbstractParseableDojoPlugin, {
+], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager) {
+
+    // No funciona si es carrega directament, hem de fer la inicialització quan cal utilitzar-lo
+    let AceFacade = null;
+
+    let FormatButton = declare(AbstractParseableDojoPlugin, {
 
         init: function (args) {
             this.inherited(arguments);
 
-            // this.htmlTemplate = args.open + "${content}" + args.close;
-
-            // this.content = args.sample;
             this.tag = 'wioccl';
-            // this.clearFormat = args.clearFormat;
-            // this.sample = args.sample;
 
-            // this.groupPattern = args.groupPattern ? new RegExp(args.groupPattern) : false;
-
-            var config = {
+            let config = {
                 label: args.title,
                 ownerDocument: this.editor.ownerDocument,
                 dir: this.editor.dir,
@@ -33,9 +40,6 @@ define([
             };
 
             this.addButton(config);
-
-            // this.empty = args.empty !== undefined ? args.empty : false;
-
 
             this.editor.on('changeCursor', this.updateCursorState.bind(this));
         },
@@ -61,180 +65,380 @@ define([
 
         _addHandlers: function ($node, context) {
 
-            $node.on('mouseover', function (e){
-                let id = $node.attr('data-wioccl-ref');
-                let ids = [];
 
-                if (id.indexOf(',')!== -1){
-                    ids = id.split(',');
+            $node.on('click', function (e) {
 
-                } else {
-                    ids.push(id);
-                }
-
-                for (let i=0; i<ids.length; i++) {
-                    console.log("mouseover: Element a la estructura:", ids[i], context.editor.extra.wioccl_structure.structure[ids[i]]);
-                }
-
-
-                // TODO: Determinar que fer en aquest cas, si no s'atura l'event es dispara per tots els nodes encapsulats
-                // però potser és això el que ens interessa, ja que en alguns casos pot ser que sigui la única manera
-                // de veure els nodes pare
                 e.preventDefault();
                 e.stopPropagation();
 
+                let refId = $node.attr('data-wioccl-ref');
+                let wioccl = context.editor.extra.wioccl_structure.structure[refId];
+                // console.log("wioccl:", refId, wioccl);
+
+                // TODO: extreure?
+                function getChildrenNodes(children, parent) {
+                    let nodes = [];
+                    for (let i = 0; i < children.length; i++) {
+
+
+                        let node = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure[children[i]]));
+
+                        if (!node) {
+                            console.error("Node not found:", children[i]);
+                        }
+                        node.name = node.type ? node.type : node.open;
+                        node.parent = parent;
+                        if (node.children.length > 0) {
+                            node.children = getChildrenNodes(node.children, node.id);
+                        }
+                        nodes.push(node);
+                    }
+
+                    return nodes;
+                }
+
+                let tree = [];
+                let node = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure[refId]));
+                node.name = node.type ? node.type : node.open;
+                tree.push(node);
+
+                tree[0].children = getChildrenNodes(tree[0].children, tree[0].id);
+
+                let oldDialog = registry.byId('wioccl-dialog');
+
+                if (oldDialog) {
+                    oldDialog.destroyRecursive();
+                }
+
+
+                let wiocclDialog = new Dialog({
+
+                    title: 'Edició wioccl',
+                    // style: 'width:auto',
+                    style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 100%; max-height: 100%;',
+                    // style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 100%; max-height: 100%;',
+                    onHide: function (e) { //Voliem detectar el event onClose i hem hagut de utilitzar onHide
+                        this.destroyRecursive();
+                    },
+                    id: 'wioccl-dialog',
+                    draggable: false,
+
+                    firstResize: true,
+
+                });
+
+
+                wiocclDialog.startup();
+
+
+                let dialogContainer = domConstruct.create("div", {
+                    id: "dialogContainer_wioccl"
+                });
+
+                let paneContainer = domConstruct.create("div", {
+                    "class": "dijitDialogPaneContentArea",
+                    "style": "max-width: 99%; max-height: 100%"
+                    // "style": "width:680px; height: 550px"
+                });
+
+                let detailContainer = domConstruct.create("div", {
+                    id: "detailContainer_" + "test",
+                    // "style": "width:400px",
+                    "class": "wioccl-detail",
+                    // "innerHTML": testContent
+                });
+
+                let contentContainer = domConstruct.create("div", {
+                    id: "contentContainer_" + "test",
+                    "style": "width:100%",
+                    "class": "wioccl-content",
+                    // "innerHTML": testContent
+                });
+
+                let attrContainer = domConstruct.create("div", {
+                    id: "attrContainer_" + "test",
+                    "style": "width:100%",
+                    "class": "wioccl-attr",
+                });
+
+                let treeContainer = domConstruct.create("div", {
+                    id: "treeContainer_" + "test",
+                    "style": "width:150px",
+                    "class": "wioccl-tree"
+                });
+                let actionBar = domConstruct.create("div", {
+                    "class": "dijitDialogPaneActionBar",
+                    "style": "height:35px"
+                });
+
+                let store = new Memory({
+                    data: tree,
+                    getChildren: function (object) {
+                        return object.children || [];
+                    }
+                });
+
+                let model = new ObjectStoreModel({
+                    store: store,
+                    query: {id: refId},
+                    mayHaveChildren: function (item) {
+                        // return "children" in item;
+                        return item.children.length > 0;
+                    }
+                });
+
+                let extractFields = function (attrs, type) {
+                    // console.log("Fields to extract:", attrs);
+
+                    let fields = {};
+
+                    switch (type) {
+
+                        case 'field':
+                            fields['field'] = attrs;
+                            break;
+
+                        case 'function':
+
+                            let paramsPattern = /(\[.*?\])|(".*?")|-?\d+/g;
+                            let tokens = attrs.match(paramsPattern);
+                            // console.log("Tokens:", tokens);
+                            for (let i = 0; i < tokens.length; i++) {
+                                fields['param' + i] = tokens[i].trim();
+                            }
+
+                            break;
+
+                        default:
+                            const pattern = / *((.*?)="(.*?)")/g;
+
+                            const array = [...attrs.matchAll(pattern)];
+
+                            for (let i = 0; i < array.length; i++) {
+                                fields[array[i][2].trim()] = array[i][3].trim();
+                            }
+                    }
+
+                    return fields;
+                };
+
+                let generateHtmlForFields = function (fields) {
+                    let html = '<fieldset class="wioccl-fields">';
+                    html += '<legend>Atributs, nom de la variable o paràmetres</legend>'
+
+                    for (let field in fields) {
+
+                        // Es necessari eliminar el escape de les dobles cometes
+                        // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
+                        let valor = fields[field].replaceAll('\"', '&quot;');
+
+                        html += '<div class="wioccl-field">';
+                        html += '<label>' + field + ':</label>';
+                        html += '<input type="text" name="' + field + '" value="' + valor + '"/>';
+                        html += '</div>';
+                    }
+
+                    html += "</fieldset>";
+                    return html;
+
+                };
+
+                let rebuildWioccl = function (data) {
+                    let wioccl = "";
+
+                    wioccl += data.open.replace('%s', data.attrs);
+                    for (let i = 0; i < data.children.length; i++) {
+                        wioccl += rebuildWioccl(data.children[i]);
+                    }
+
+                    wioccl += data.close;
+
+                    return wioccl;
+                };
+
+
+                let widgetTree = new Tree({
+                    model: model,
+                    onOpenClick: true,
+                    onLoad: function () {
+                        // dom.byId('image').src = '../resources/images/root.jpg';
+                    },
+                    onClick: function (item) {
+                        // TODO: reconstruir el codi wioccl, no mostrar el json del item
+                        jQuery(attrContainer).empty();
+                        jQuery(attrContainer).append(generateHtmlForFields(extractFields(item.attrs, item.type)));
+                        let auxItem = rebuildWioccl(item);
+                        editor.setValue(auxItem);
+                    }
+                });
+
+
+                let createEditor = function ($textarea, $node, args, context) {
+
+                    args.id = (args.id + Date.now() + Math.random()).replace('.', '-'); // id única
+
+
+                    // ALERTA! per alguna raó si s'afegeix el contentToolFactory com a dependència no funciona (exactament el mateix codi al DataContentProcessor sí que ho fa), la alternativa és utilitzar la factoria del content tool actual:
+                    let id = context.editor.dispatcher.getGlobalState().getCurrentId();
+                    let contentToolFactory = context.editor.dispatcher.getContentCache(id).getMainContentTool().contentToolFactory;
+
+                    let editorWidget = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
+                    let toolbarId = 'FormToolbar_' + (args.id);
+
+                    let $container = jQuery('<div id="container_' + args.id + '">');
+                    // this.$node.before($container);
+
+
+                    let $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
+
+                    $textarea.css('height', '200px');
+
+                    $textarea.attr('id', 'textarea_' + args.id);
+
+                    $container.append($toolbar);
+                    $container.append($textarea);
+                    $container.append(editorWidget);
+
+                    $node.append($container);
+
+
+                    toolbarManager.createToolbar(toolbarId, 'simple');
+
+
+                    if (AceFacade === null) {
+                        // ALERTA[Xavi] Ho carregam de manera sincrona perquè no carrega si es posa a la capçalera
+                        // cal investigar-ho
+                        require(["ioc/dokuwiki/editors/AceManager/AceEditorFullFacade"], function (AuxClass) {
+                            AceFacade = AuxClass;
+                        });
+
+                    }
+
+
+                    let editor = new AceFacade({
+                        id: args.id,
+                        auxId: args.id,
+                        containerId: editorWidget.id,
+                        textareaId: 'textarea_' + args.id,
+                        theme: JSINFO.plugin_aceeditor.colortheme,
+                        wraplimit: JSINFO.plugin_aceeditor.wraplimit, // TODO: determinar el lmit correcte
+                        wrapMode: true,
+                        dispatcher: context.editor.dispatcher,
+                        content: args.value,
+                        originalContent: args.value,
+                        // TOOLBAR_ID: toolbarId,
+                        TOOLBAR_ID: 'full-editor',
+                        ignorePatching: true,
+                        plugins: [],
+                    });
+
+
+                    this.widgetInitialized = true;
+
+                    return editor;
+
+                };
+
+
+                let valor = rebuildWioccl(tree[0]);
+
+                //col·locar en el lloc adequat
+                domConstruct.place(paneContainer, dialogContainer, "last");
+                domConstruct.place(actionBar, dialogContainer, "last");
+                domConstruct.place(treeContainer, paneContainer, "last");
+                domConstruct.place(detailContainer, paneContainer, "last");
+                domConstruct.place(contentContainer, detailContainer, "last");
+                domConstruct.place(attrContainer, detailContainer, "first");
+
+                //assignar i mostrar
+                wiocclDialog.set("content", dialogContainer);
+                wiocclDialog.show();
+
+                widgetTree.placeAt(treeContainer);
+                widgetTree.startup();
+
+
+                // L'editor no es pot afegir fins que el dialog no és creat:
+                let $contentContainer = jQuery(contentContainer);
+                let $textarea = jQuery('<textarea>' + valor + '</textarea>');
+                $contentContainer.append($textarea);
+
+                let args = {
+                    id: 'wioccl-dialog',
+                    value: valor
+                };
+
+                let editor = createEditor($textarea, $contentContainer, args, context);
+                editor.setValue(valor);
+
+
+                // editor.fillEditorContainer();
+
+
+                // Resize:
+                let fullSize = function () {
+                    let $paneContainer = jQuery(paneContainer);
+                    let $treeContainer = jQuery(treeContainer);
+                    let $detailContainer = jQuery(detailContainer);
+
+                    // jQuery(wiocclDialog.domNode).toggleClass('full-screen'); // això amplia la mida de la finestra al 90% del viewport
+
+                    $paneContainer.css('position', 'absolute');
+                    $paneContainer.css('top', 0);
+                    $paneContainer.css('bottom', '45px');
+                    $paneContainer.css('left', 0);
+                    $paneContainer.css('right', 0);
+
+                    let $updateButton = jQuery("<button>Actualitzar</button>");
+                    $updateButton.css('margin', '5px');
+                    $updateButton.css('margin-right', '15px');
+                    $updateButton.css('padding', '5px');
+                    let $actionBar = jQuery(actionBar);
+                    $actionBar.append($updateButton);
+                    $actionBar.css('margin', 0);
+                    $actionBar.css('padding', 0);
+
+                    $updateButton.on('click', function() {
+                        alert("TODO");
+                    });
+
+                    // pas 1: ajustar l'alçada del contingut
+                    let height = $paneContainer.height() -30;
+
+                    $treeContainer.css('height', height);
+                    let treeWidth = $treeContainer.width();
+                    let paneWidth = $paneContainer.width();
+
+                    $detailContainer.css('height', height);
+                    $detailContainer.css('width', paneWidth - treeWidth - 90);
+
+                    let $attrContainer = jQuery(attrContainer);
+
+                    $attrContainer.empty();
+                    $attrContainer.append(generateHtmlForFields(extractFields(tree[0].attrs, tree[0].type)));
+
+
+                    let offset = 20;
+                    editor.setHeightForced($detailContainer.height() - $attrContainer.height() - offset);
+                };
+
+                fullSize();
+
+
+                // ALERTA! aquesta funció es crida automáticament quan canvia la mida de la finestra del navegador o es fa scroll
+                // Com que hem fet que els elements del dialog s'ajustin via jQuery quan es crida al resize es
+                // fa malbé la composició.
+
+                // Per alguna raó desconeguda si es sobreescriu aquesta funció i s'intenta cridar al this.inherited()
+                // no funciona, i si es sobreescriu a la inicialització no es crida la primera vegada i no es
+                // genera correctament, per aquest motiu es fa la reescriptura en aquest punt, on ja tenim la mida final
+                wiocclDialog.resize = function(args) {};
+
+
+
             });
 
-            // Cerca de parelles
 
-            let refId = $node.attr('data-wioccl-ref');
-
-            if ($node.attr('data-wioccl-state') === 'open') {
-                // cerquem el de tancament dintre del mateix pare
-
-
-                // el node de tancament contindrà 'data-wioccl-state' === 'close' i 'data-wioccl-ref' == al refId
-                let now = Date.now();
-                let $closingNode = $node.parent().find('[data-wioccl-state="close"][data-wioccl-ref="'+ refId+ '"]');
-
-                console.log("***Inici cerca node close")
-                if ($closingNode.length > 0) {
-                    console.log("Closing node trobat al mateix parent:", $closingNode);
-
-                    // TODO: moure tots els
-                } else {
-                    // No es troba al parent
-                }
-                console.log("***Fi cerca node close", Date.now()-now);
-
-
-
-
-
-
-            } else if ($node.attr('data-wioccl-state') === 'close') {
-                // no fem res
-            } else {
-                // TODO: per determinar, es tracta d'una fila, ja que aquestes no indique l'state
-            }
-
-
-
-
-
-
-            //
-            //
-            // // console.log("Adding handlers", $node);
-            //
-            // // Si el node no te ID s'ha de genera una Id i una referència
-            // if (!$node.attr('id')) {
-            //     // console.log("No s'ha trobat id");
-            //
-            //     var time = Date.now();
-            //     $node.attr('id', 'ioc-comment-' + time);
-            //
-            //     var ref = this._referenceFromDate(time);
-            //     var reference = "*";
-            //     reference += " (" + ref + ")";
-            //
-            //     var $reference = $node.find('[data-reference]');
-            //     $reference.html(reference);
-            //
-            //     // var counter = $node.attr('data-note-counter');
-            //
-            //     // var $body = jQuery(this.editor.iframe).contents().find('div[data-note-counter="' + counter + '"]');
-            //
-            //     // Ens asegurem que es troba dins del note, com que 'ioc-note' és un element propi quan es troba dins d'un element de block (com <p> per exemple) es separen els elements incorrectament
-            //     // $node.append($body);
-            //
-            //     $node.find('.ioc-comment-main b').html('Ref. ' + ref);
-            // }
-            //
-            // var $replyNode = $node.find('textarea.reply');
-            // var $buttons = $node.find('button[data-action]');
-            // // var $removeButtons = $node.find('[data-button="remove"]');
-            // // var $editButtons = $node.find('[data-button="edit"]');
-            // var context = this;
-            //
-            // // Mostrem els botons ocultats pel mode readonly
-            // $replyNode.css('display', 'inherit');
-            //
-            // $node.find('button[data-action="reply"]').css('display', 'inherit');
-            //
-            // $node.find('button[data-action="resolve"]').css('display', 'inherit');
-            //
-            // $buttons.on('click', function (e) {
-            //     var $button = jQuery(this);
-            //     var func = $button.attr('data-action');
-            //     context[func].bind(context);
-            //     context[func]($node);
-            //     e.preventDefault();
-            // });
-            //
-            // $replyNode.on('keypress keydown keyup', function (e) {
-            //     $replyNode.focus();
-            //
-            //     if (e.keyCode === 13 || e.charCode === 13) {
-            //         e.stopPropagation();
-            //     }
-            //
-            // });
-            //
-            // // TODO: només s'ha d'afegir les toolbars de l'últim element
-            //
-            //
-            // var $toolbars = $node.find('.ioc-comment-toolbar');
-            // $toolbars.css('display', 'none');
-            //
-            // var $lastToolbar = $node.find('.ioc-comment-toolbar').last();
-            //
-            //
-            // if ($lastToolbar.length > 0) {
-            //     $lastToolbar.css('display', 'inherit');
-            //
-            //     var $removeButton = $lastToolbar.find('[data-button="remove"]');
-            //     var $editButton = $lastToolbar.find('[data-button="edit"]');
-            //
-            //     var $commentNode = $removeButton.closest('.ioc-comment-reply');
-            //
-            //     $removeButton.on('click', context.addRemoveCommentHandler($commentNode).bind(context));
-            //     $editButton.on('click', context.addEditCommentHandler($commentNode).bind(context));
-            //
-            // }
-            //
-            // var $commentBody = $node.find('.ioc-comment-body');
-            //
-            //
-            // $commentBody.on('click', function (e) {
-            //
-            //     if (!jQuery(e.srcElement).attr(data-button)) {
-            //         $node.find('textarea.reply').focus();
-            //     }
-            //
-            //     e.preventDefault();
-            // });
-            //
-            // // ALERTA! això ERA necessari per reenganxar el contingut del paràgraf quan hi ha una nota enmig
-            // // var auxNode = $node.parent().get(0).nextSibling;
-            //
-            // // console.log("Quin és el node següent?", auxNode);
-            // // console.log("Quin és el contingut del node següent?", auxNode.textContent);
-            //
-            // // if (auxNode && auxNode.nodeType === 3 /*&& auxNode.textContent.trim() !== ''*/) {
-            // //     // console.log("Contingut detectat, corregim el text");
-            // //     $node.after(auxNode);
-            // // } else {
-            // //     // console.log("No s'ha trobat node següent, afegim un espai");
-            // //     $node.after("&nbsp;");
-            // // }
-            //
-            // // var $commentBody = $node.find('ioc-coment-body');
-            //
-            // var $actions = jQuery('<span class="no-render action" contenteditable="false">');
-            //
-            // $commentBody.append($actions);
-            //
             // dojoActions.addParagraphAfterAction($actions, this.editor);
             // dojoActions.addParagraphBeforeAction($actions, this.editor);
             // dojoActions.setupContainer($node, $actions);
@@ -243,14 +447,12 @@ define([
 
         parse: function () {
 
-            var $nodes = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]');
-            var context = this;
+            let $nodes = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]');
+            let context = this;
 
             $nodes.each(function () {
                 let $node = jQuery(this);
-                let id = $node.attr('data-wioccl-ref');
-                console.log("context?", context.editor.extra);
-                console.log("Detectat element a la estructura:", id, context.editor.extra.wioccl_structure.structure[id]);
+                // let id = $node.attr('data-wioccl-ref');
 
                 context._addHandlers($node, context);
             });
