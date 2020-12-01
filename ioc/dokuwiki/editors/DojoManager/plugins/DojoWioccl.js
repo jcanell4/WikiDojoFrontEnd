@@ -63,6 +63,40 @@ define([
 
         },
 
+        _getWiocclChildrenNodes(children, parent, context) {
+            let nodes = [];
+            for (let i = 0; i < children.length; i++) {
+
+
+                let node = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure[children[i]]));
+
+                if (!node) {
+                    console.error("Node not found:", children[i]);
+                }
+                node.name = node.type ? node.type : node.open;
+                node.parent = parent;
+                if (node.children.length > 0) {
+                    node.children = this._getWiocclChildrenNodes(node.children, node.id, context);
+                }
+                nodes.push(node);
+            }
+
+            return nodes;
+        },
+
+        rebuildWioccl: function (data) {
+            let wioccl = "";
+
+            wioccl += data.open.replace('%s', data.attrs);
+            for (let i = 0; i < data.children.length; i++) {
+                wioccl += this.rebuildWioccl(data.children[i]);
+            }
+
+            wioccl += data.close;
+
+            return wioccl;
+        },
+
         _addHandlers: function ($node, context) {
 
 
@@ -73,36 +107,14 @@ define([
 
                 let refId = $node.attr('data-wioccl-ref');
                 let wioccl = context.editor.extra.wioccl_structure.structure[refId];
-                // console.log("wioccl:", refId, wioccl);
 
-                // TODO: extreure?
-                function getChildrenNodes(children, parent) {
-                    let nodes = [];
-                    for (let i = 0; i < children.length; i++) {
-
-
-                        let node = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure[children[i]]));
-
-                        if (!node) {
-                            console.error("Node not found:", children[i]);
-                        }
-                        node.name = node.type ? node.type : node.open;
-                        node.parent = parent;
-                        if (node.children.length > 0) {
-                            node.children = getChildrenNodes(node.children, node.id);
-                        }
-                        nodes.push(node);
-                    }
-
-                    return nodes;
-                }
 
                 let tree = [];
                 let node = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure[refId]));
                 node.name = node.type ? node.type : node.open;
                 tree.push(node);
 
-                tree[0].children = getChildrenNodes(tree[0].children, tree[0].id);
+                tree[0].children = context._getWiocclChildrenNodes(tree[0].children, tree[0].id, context);
 
                 let oldDialog = registry.byId('wioccl-dialog');
 
@@ -243,19 +255,6 @@ define([
 
                 };
 
-                let rebuildWioccl = function (data) {
-                    let wioccl = "";
-
-                    wioccl += data.open.replace('%s', data.attrs);
-                    for (let i = 0; i < data.children.length; i++) {
-                        wioccl += rebuildWioccl(data.children[i]);
-                    }
-
-                    wioccl += data.close;
-
-                    return wioccl;
-                };
-
 
                 let widgetTree = new Tree({
                     model: model,
@@ -267,8 +266,10 @@ define([
                         // TODO: reconstruir el codi wioccl, no mostrar el json del item
                         jQuery(attrContainer).empty();
                         jQuery(attrContainer).append(generateHtmlForFields(extractFields(item.attrs, item.type)));
-                        let auxItem = rebuildWioccl(item);
+                        let auxItem = this.rebuildWioccl(item);
                         editor.setValue(auxItem);
+                        editor.wioccl = item;
+                        console.log("Editor:", editor);
                     }
                 });
 
@@ -335,12 +336,15 @@ define([
 
                     this.widgetInitialized = true;
 
+                    // Per defecte s'assigna el primer node
+                    editor.wioccl = wioccl;
+
                     return editor;
 
                 };
 
 
-                let valor = rebuildWioccl(tree[0]);
+                let valor = context.rebuildWioccl(tree[0]);
 
                 //col·locar en el lloc adequat
                 domConstruct.place(paneContainer, dialogContainer, "last");
@@ -372,57 +376,41 @@ define([
                 editor.setValue(valor);
 
 
-                // editor.fillEditorContainer();
+                let $paneContainer = jQuery(paneContainer);
+                let $treeContainer = jQuery(treeContainer);
+                let $detailContainer = jQuery(detailContainer);
+
+                $paneContainer.css('position', 'absolute');
+                $paneContainer.css('top', 0);
+                $paneContainer.css('bottom', '45px');
+                $paneContainer.css('left', 0);
+                $paneContainer.css('right', 0);
+
+                let $updateButton = jQuery("<button>Actualitzar</button>");
+                $updateButton.css('margin', '5px');
+                $updateButton.css('margin-right', '15px');
+                $updateButton.css('padding', '5px');
+                let $actionBar = jQuery(actionBar);
+                $actionBar.append($updateButton);
+                $actionBar.css('margin', 0);
+                $actionBar.css('padding', 0);
+
+                let height = $paneContainer.height() - 30;
+
+                $treeContainer.css('height', height);
+                let treeWidth = $treeContainer.width();
+                let paneWidth = $paneContainer.width();
+
+                $detailContainer.css('height', height);
+                $detailContainer.css('width', paneWidth - treeWidth - 90);
+
+                let $attrContainer = jQuery(attrContainer);
+
+                $attrContainer.empty();
+                $attrContainer.append(generateHtmlForFields(extractFields(tree[0].attrs, tree[0].type)));
 
 
-                // Resize:
-                let fullSize = function () {
-                    let $paneContainer = jQuery(paneContainer);
-                    let $treeContainer = jQuery(treeContainer);
-                    let $detailContainer = jQuery(detailContainer);
-
-                    // jQuery(wiocclDialog.domNode).toggleClass('full-screen'); // això amplia la mida de la finestra al 90% del viewport
-
-                    $paneContainer.css('position', 'absolute');
-                    $paneContainer.css('top', 0);
-                    $paneContainer.css('bottom', '45px');
-                    $paneContainer.css('left', 0);
-                    $paneContainer.css('right', 0);
-
-                    let $updateButton = jQuery("<button>Actualitzar</button>");
-                    $updateButton.css('margin', '5px');
-                    $updateButton.css('margin-right', '15px');
-                    $updateButton.css('padding', '5px');
-                    let $actionBar = jQuery(actionBar);
-                    $actionBar.append($updateButton);
-                    $actionBar.css('margin', 0);
-                    $actionBar.css('padding', 0);
-
-                    $updateButton.on('click', function() {
-                        alert("TODO");
-                    });
-
-                    // pas 1: ajustar l'alçada del contingut
-                    let height = $paneContainer.height() -30;
-
-                    $treeContainer.css('height', height);
-                    let treeWidth = $treeContainer.width();
-                    let paneWidth = $paneContainer.width();
-
-                    $detailContainer.css('height', height);
-                    $detailContainer.css('width', paneWidth - treeWidth - 90);
-
-                    let $attrContainer = jQuery(attrContainer);
-
-                    $attrContainer.empty();
-                    $attrContainer.append(generateHtmlForFields(extractFields(tree[0].attrs, tree[0].type)));
-
-
-                    let offset = 20;
-                    editor.setHeightForced($detailContainer.height() - $attrContainer.height() - offset);
-                };
-
-                fullSize();
+                editor.setHeightForced($detailContainer.height() - $attrContainer.height() - 20);
 
 
                 // ALERTA! aquesta funció es crida automáticament quan canvia la mida de la finestra del navegador o es fa scroll
@@ -432,16 +420,109 @@ define([
                 // Per alguna raó desconeguda si es sobreescriu aquesta funció i s'intenta cridar al this.inherited()
                 // no funciona, i si es sobreescriu a la inicialització no es crida la primera vegada i no es
                 // genera correctament, per aquest motiu es fa la reescriptura en aquest punt, on ja tenim la mida final
-                wiocclDialog.resize = function(args) {};
+                wiocclDialog.resize = function (args) {
+                };
 
 
+                $updateButton.on('click', function () {
+                    context.parseWioccl(editor.getValue(), editor.wioccl, context.editor.extra.wioccl_structure.structure);
+
+                    // TODO: cal regenerar l'arbre treeWidget o cal aplicar els canvis de la structura al model?
+                    alert("TODO: Refrescar l'arbre");
+
+                });
 
             });
+        },
+
+        parseWioccl: function (text, wioccl, structure) {
+            console.log("Valor de l'editor:", text);
+            console.log("Wioccl corresponent:", wioccl);
+            console.log("Structure", structure);
+
+            // text és el text a parsejar
+
+            // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
+
+            // si hi han nous node s'han d'afegir a partir d'aquest index
+            let lastIndex = structure.length;
+
+            console.log("Last index:", lastIndex);
+
+            // Reordenació dels nodes:
+            //      - eliminem tots els nodes fills actuals
+            //      - afegim tots els nodes generats pel parse a partir del last index i els afegim com a children com
+            //        correspongui
 
 
-            // dojoActions.addParagraphAfterAction($actions, this.editor);
-            // dojoActions.addParagraphBeforeAction($actions, this.editor);
-            // dojoActions.setupContainer($node, $actions);
+            // Parse
+            // Pas 1: tokenize, dividir en els 4 tipus:
+            //      Open wioccl
+            //      Close wioccl
+            //      Function <-- cal fer parse dels atributs?
+            //      Field
+            //      Contingut <-- tot el que hi hagi entre el final d'un token i el principi del següent és contingut
+            let pattern = /<WIOCCL:.*?>|<\/WIOCCL:.*?>|{##.*?##}|{#_.*?_#}/gsm;
+
+
+            let tokens = [];
+            let xArray;
+            while (xArray = pattern.exec(text)) {
+
+                let token = {};
+                token.startIndex = xArray.index;
+                token.lastIndex = pattern.lastIndex;
+                token.value = xArray[0]
+                tokens.push(token);
+
+            }
+            console.log("tokens (tentative)", tokens);
+
+            // Si aquesta llista es vàlida cal extreure d'aquí el content (diferencia de lastindex i index del següent token
+
+            // Cal recorrer l'array des del final, ja que cal afegir (si escau) el token de content a la posició de l'index
+
+            let currentPos = text.length - 1;
+            for (let i = tokens.length - 1; i >= 0; --i) {
+
+                if (tokens[i].lastIndex === currentPos) {
+                    // és consecutiu, no hi ha content entre aquest element i el següent
+                } else {
+                    let token = {};
+                    token.type = 'content';
+                    token.value = text.substring(tokens[i].lastIndex, currentPos);
+
+
+                    // Això no és realment necessari
+                    token.startIndex = tokens[i].lastIndex;
+                    token.lastIndex = currentPos;
+
+                    tokens.splice(i, 0, token);
+                }
+
+                currentPos = tokens[i].startIndex-1;
+
+
+            }
+
+
+            // ALERTA! crec que aquest cas no és possible, però ho controlem per si de cas: no hi ha cap token al principi, s'ha de capturar com a content fins el primer token
+            if (currentPos >0 ){
+                let token = {};
+                token.type = 'content';
+                token.value = text.substring(0, currentPos);
+
+
+                // Això no és realment necessari
+                token.startIndex = 0;
+                token.lastIndex = currentPos;
+                tokens.unshift(token);
+            }
+
+            console.log("tokens amb content", tokens);
+
+
+            alert("ALERTA! el parse es incorrecte, els tokens sembla separar-se correctament però la inserció del content falla (el primer token vàlid es troba a la posició 1+ perquè es fiquen 2 tokens de contingut al principi)");
 
         },
 
