@@ -465,61 +465,135 @@ define([
             let pattern = /<WIOCCL:.*?>|<\/WIOCCL:.*?>|{##.*?##}|{#_.*?_#}/gsm;
 
 
+            // PROBLEMA: no podem capturar > sense capturar \>, fem una conversió de \> abans de fer el parse i ho restaurem després
+
+            // Hi han dos casos, amb salt de línia i sense, per poder restaurar-los fem servir dues marques diferents: &markn; i &mark;
+            let originalText = text;
+            text = text.replaceAll(/\\[\n]>/gsm, '&markn;');
+            text = text.replaceAll(/\\>/gsm, '&mark;');
+
+            // PROBLEMA: això suposa un problema en el recompte de caràcteres, perquè les posicions no corresponen
+
+
             let tokens = [];
             let xArray;
             while (xArray = pattern.exec(text)) {
 
+                let value = xArray[0];
+
+                // Actualitzem el valor del token
+
+
                 let token = {};
                 token.startIndex = xArray.index;
-                token.lastIndex = pattern.lastIndex;
-                token.value = xArray[0]
+                token.lastIndex = pattern.lastIndex - 1; // El lastIndex sembla correspondre a la posició on comença el token següent
+                token.value = value;
                 tokens.push(token);
 
             }
-            console.log("tokens (tentative)", tokens);
+            // console.log("tokens (tentative)", tokens);
+
+
 
             // Si aquesta llista es vàlida cal extreure d'aquí el content (diferencia de lastindex i index del següent token
 
             // Cal recorrer l'array des del final, ja que cal afegir (si escau) el token de content a la posició de l'index
 
             let currentPos = text.length - 1;
+
+
             for (let i = tokens.length - 1; i >= 0; --i) {
 
-                if (tokens[i].lastIndex === currentPos) {
+
+
+
+                console.log("** lastintindex, currentpos: ", tokens[i].lastIndex, currentPos);
+
+
+
+                if (tokens[i].lastIndex === currentPos + 1 || i === tokens.length - 1) {
+                    // console.log("** consecutiu: ");
                     // és consecutiu, no hi ha content entre aquest element i el següent
                 } else {
                     let token = {};
                     token.type = 'content';
-                    token.value = text.substring(tokens[i].lastIndex, currentPos);
+                    token.value = text.substring(tokens[i].lastIndex + 1, currentPos + 1);
 
 
                     // Això no és realment necessari
-                    token.startIndex = tokens[i].lastIndex;
+                    token.startIndex = tokens[i].lastIndex + 1;
                     token.lastIndex = currentPos;
 
-                    tokens.splice(i, 0, token);
+                    // Afegit entre el token actual i el següent
+                    tokens.splice(i + 1, 0, token);
+
+                    // console.log("** afegint token amb contingut a l'index:", i, token);
                 }
 
-                currentPos = tokens[i].startIndex-1;
+                currentPos = tokens[i].startIndex - 1;
+                // console.log("** actualizada currentpos: ", currentPos);
 
 
             }
 
 
-            // ALERTA! crec que aquest cas no és possible, però ho controlem per si de cas: no hi ha cap token al principi, s'ha de capturar com a content fins el primer token
-            if (currentPos >0 ){
+            // Si hi ha contingut entre el final de lúltim token i el final del text, s'ha d'afegir com a node de
+            // content (per exemple, pot haver un salt de línia)
+            let index = tokens.length-1;
+
+            if (tokens[index].lastIndex < text.length) {
                 let token = {};
                 token.type = 'content';
-                token.value = text.substring(0, currentPos);
+                token.value = text.substring(tokens[index].lastIndex+1, text.length);
 
 
                 // Això no és realment necessari
-                token.startIndex = 0;
-                token.lastIndex = currentPos;
-                tokens.unshift(token);
+                token.startIndex = tokens[index].lastIndex + 1;
+                token.lastIndex = text.length;
+                tokens.push(token);
             }
 
+
             console.log("tokens amb content", tokens);
+
+            // Comprovació de les posicions de les cadenes
+            // ALERTA! subsgring 0,3 mostra els 3 primers caràcters
+            for (let i = 0; i < tokens.length; i++) {
+                let equal = text.substring(tokens[i].startIndex, tokens[i].lastIndex + 1) === tokens[i].value;
+                // console.log ("length:", text.substring(tokens[i].startIndex, tokens[i].lastIndex+1), tokens[i].value);
+
+
+                if (!equal) {
+                    console.error("i:", 1);
+                    console.error("start char:", text.charAt(tokens[i].startIndex), "end char:", text.charAt(tokens[i].lastIndex));
+                    console.error("substring:", text.substring(tokens[i].startIndex, tokens[i].lastIndex + 1).length, "*" + text.substring(tokens[i].startIndex, tokens[i].lastIndex + 1) + "*");
+                    console.error("value    :", tokens[i].value.length, "*" + tokens[i].value + "*");
+
+                }
+
+            }
+
+            // Reemplacem les markes pels valors correctes, ho fem després de la validació perquè un
+            // un cop es fa un reemplaçament els valors dels startIndex i lastIndex ja no coincideixen amb
+            // el text original. Com aquests valors només són necessaris per fer la divisio i extreure
+            // els continguts, no cal corregir aquestes posicions
+
+            // Validem que el contingut concatnat de tots els tokens correspon al valor original_
+            let validationText = "";
+            for (let i = 0; i < tokens.length; i++) {
+
+                tokens[i].value= tokens[i].value.replaceAll(/&markn;/gsm, "\\\n>");
+                tokens[i].value= tokens[i].value.replaceAll(/&mark;/gsm, '\>');
+
+                validationText += tokens[i].value;
+            }
+
+            console.log("Original text:", "*"+ originalText+"*");
+            console.log("Validate text:", "*"+validationText+"*");
+            if (originalText !== validationText) {
+                console.error("ERROR: son diferents", originalText.length,validationText.length);
+            }
+
 
 
             alert("ALERTA! el parse es incorrecte, els tokens sembla separar-se correctament però la inserció del content falla (el primer token vàlid es troba a la posició 1+ perquè es fiquen 2 tokens de contingut al principi)");
