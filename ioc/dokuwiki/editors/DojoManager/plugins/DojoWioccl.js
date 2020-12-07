@@ -92,7 +92,9 @@ define([
                 wioccl += this.rebuildWioccl(data.children[i]);
             }
 
-            wioccl += data.close;
+            if (data.close !== null) {
+                wioccl += data.close;
+            }
 
             return wioccl;
         },
@@ -107,6 +109,9 @@ define([
 
                 let refId = $node.attr('data-wioccl-ref');
                 let wioccl = context.editor.extra.wioccl_structure.structure[refId];
+
+                console.log("refId:", refId);
+                console.log(wioccl);
 
 
                 let tree = [];
