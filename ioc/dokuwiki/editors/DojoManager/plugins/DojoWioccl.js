@@ -73,15 +73,7 @@ define([
 
             // console.log("hi ha estructura?", this.editor.extra.wioccl_structure.structure)
             if (!this.backupStructure) {
-                alert("copiada estructura");
                 this.backupStructure = JSON.parse(JSON.stringify(this.editor.extra.wioccl_structure.structure));
-
-                // TEST! per que funcionin els set('path') els ids han de ser cadenes de text
-                // for (let node of this.backupStructure ) {
-                //     node.id = node.id+"";
-                // }
-                console.log(this.backupStructure);
-                alert("check structure");
             }
 
             return this.backupStructure;
@@ -92,24 +84,10 @@ define([
             let nodes = [];
             for (let i = 0; i < children.length; i++) {
 
-                if (children[i] === 'object') {
-                    console.log("* node");
-                } else {
-                    console.log("* id");
-                }
-
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
-
-                console.log("Trying to copy (child):", id);
-                console.log("Trying to copy:", context._getStructure()[id]);
-                console.log("Stringify:", JSON.parse(JSON.stringify(context._getStructure()[id])));
-
 
 
                 let node = JSON.parse(JSON.stringify(context._getStructure()[id]));
-
-                // console.log("Trying to copy:", context.editor.extra.wioccl_structure.structure[children[i]]);
-                // let node = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure[children[i]]));
 
                 if (!node) {
                     console.error("Node not found:", id);
@@ -123,7 +101,6 @@ define([
                 }
 
 
-
                 nodes.push(node);
             }
 
@@ -133,7 +110,7 @@ define([
 
         rebuildWioccl: function (data) {
 
-            console.log("Rebuilding wioccl:", data);
+            // console.log("Rebuilding wioccl:", data);
             let wioccl = "";
 
             wioccl += data.open.replace('%s', data.attrs);
@@ -144,7 +121,6 @@ define([
             if (data.close !== null) {
                 wioccl += data.close;
             }
-
 
 
             return wioccl;
@@ -158,21 +134,12 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-
                 let refId = $node.attr('data-wioccl-ref');
-                // let wioccl = context.editor.extra.wioccl_structure.structure[refId];
                 let wioccl = context._getStructure()[refId];
 
                 context.root = refId;
 
-                console.log("Setting root:", context.root, refId);
-
-                console.log("refId:", refId);
-                console.log(wioccl);
-
-
                 let tree = [];
-                // let node = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure[refId]));
                 let node = JSON.parse(JSON.stringify(context._getStructure()[refId]));
                 node.name = node.type ? node.type : node.open;
                 tree.push(node);
@@ -200,7 +167,6 @@ define([
                     draggable: false,
 
                     firstResize: true,
-
 
 
                 });
@@ -252,8 +218,6 @@ define([
                     "style": "height:35px"
                 });
 
-                console.log("### Que pasem com a data al New Memory:", tree);
-
                 let store = new Memory({
                     data: tree,
                     getChildren: function (object) {
@@ -275,7 +239,6 @@ define([
                 context.model = model;
 
 
-
                 let widgetTree = new Tree({
                     id: Date.now(),
                     model: model,
@@ -284,14 +247,7 @@ define([
                         // dom.byId('image').src = '../resources/images/root.jpg';
                     },
                     onClick: function (item) {
-                        console.log(item);
-                        // TODO: reconstruir el codi wioccl, no mostrar el json del item
-                        jQuery(attrContainer).empty();
-                        jQuery(attrContainer).append(context._generateHtmlForFields(context._extractFields(item.attrs, item.type)));
-                        let auxItem = context.rebuildWioccl(item);
-                        context.dialogEditor.setValue(auxItem);
-                        context.dialogEditor.wioccl = item;
-                        console.log("Editor:", context.dialogEditor);
+                        context._updateDetail(item);
                     }
                 });
 
@@ -386,8 +342,6 @@ define([
                 widgetTree.placeAt(treeContainer);
                 widgetTree.startup();
 
-                console.log("desat container?", context.treeContainer);
-
                 // L'editor no es pot afegir fins que el dialog no és creat:
                 let $contentContainer = jQuery(contentContainer);
                 let $textarea = jQuery('<textarea>' + valor + '</textarea>');
@@ -451,13 +405,7 @@ define([
 
 
                 $updateButton.on('click', function () {
-
-                    // context.backupStructure = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure));
-
                     context.parseWioccl(editor.getValue(), editor.wioccl, context._getStructure());
-
-                    // TODO: cal regenerar l'arbre treeWidget o cal aplicar els canvis de la structura al model?
-                    console.log("Structura modificada?", context._getStructure());
 
                 });
 
@@ -485,8 +433,8 @@ define([
 
         },
 
-        _extractFields : function (attrs, type) {
-            console.log("Fields to extract:", attrs, type);
+        _extractFields: function (attrs, type) {
+            // console.log("Fields to extract:", attrs, type);
 
             let fields = {};
 
@@ -521,16 +469,10 @@ define([
         },
 
         parseWioccl: function (text, wioccl, structure) {
-
-
             let tokens = this._tokenize(text);
-
-            console.log(tokens);
-
-
+            // console.log(tokens);
 
             // text és el text a parsejar
-
             // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
 
             // si hi han nous node s'han d'afegir a partir d'aquest index
@@ -541,7 +483,6 @@ define([
             //      - posem com false tots els nodes fills actuals ALERTA no els eliminem perquè canviaria l'ordre de tots
             //      - els elements de la estructura i les referencies del document ja no serien correctes.
             let removeChildren = function (id, inStructure) {
-                console.log("Cercant childrens pel node:", id, inStructure[id]);
                 let node = inStructure[id];
                 for (let i = node.children.length - 1; i >= 0; --i) {
                     removeChildren(node.children[i], inStructure);
@@ -555,14 +496,11 @@ define([
 
             // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
             let found = false;
-            console.log("Parent comprovat:", structure[wioccl.parent]);
-            for (let i=0; i<structure[wioccl.parent].children.length; i++) {
-                console.log("Comprovant child (contra id):", structure[wioccl.parent].children[i], wioccl.id)
+            for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
+
                 if (structure[wioccl.parent].children[i] === wioccl.id) {
                     structure[wioccl.parent].children.splice(i, 1);
                     wioccl.index = i;
-                    console.log("*** afegit index al wioccl ***", wioccl.index);
-                    alert("eliminat aquest node del parent");
                     found = true;
                     break;
                 }
@@ -576,29 +514,9 @@ define([
 
             structure[wioccl.id] = false;
 
-
-            // console.log("Last index:", lastIndex);
-            //      - afegim tots els nodes generats pel parse a partir del last index i els afegim com a children com
-            //        correspongui
-            //      !!ALERTA!! cal crear un stack amb els open-close del wioccl per reassignar els fills
-            //      Només els desdendents directes del primer node s'assignen com a children del wioccl original
-
-
-            // TEST: Duplicació de la estructura
-
-            // let newStructure = JSON.parse(JSON.stringify(structure));
-
-            // this._createTree(wioccl, tokens, newStructure);
             this._createTree(wioccl, tokens, structure);
 
-
-
-
-            console.log("Id:", this.root);
-            console.log("Node root?",structure[this.root]);
-
             this._setData(structure[this.root], wioccl);
-            // this._setData(structure[wioccl.id]);
 
         },
 
@@ -608,13 +526,10 @@ define([
             //      CLOSE: comencen per "</WIOCCL:"
 
 
-
-
             let stack = [];
 
             // ALERTA! TODO: Cal gestionar el token inicial, aquest no s'ha d'afegira l'arbre
             // i el seu tancament tampoc
-
 
 
             let nextIndex = structure.length;
@@ -633,7 +548,6 @@ define([
                 }
 
 
-
                 tokens[i].children = [];
 
                 if (tokens[i].value.startsWith('</WIOCCL:')) {
@@ -642,7 +556,6 @@ define([
                     top.close = tokens[i].value;
                     continue;
                 }
-
 
 
                 if (stack.length > 0) {
@@ -658,15 +571,13 @@ define([
                 // structure[root.parent].children.push(tokens[i].id);
 
 
-
                 if (tokens[i].parent === root.parent) {
                     if (root.index === undefined) {
                         console.log("Root?", root);
                         alert("El root no té index!");
                     }
-                    structure[root.parent].children.splice(root.index+i, 0, tokens[i].id);
+                    structure[root.parent].children.splice(root.index + i, 0, tokens[i].id);
                 }
-
 
 
                 // No cal gestionar el type content perquè s'assigna al tokenizer
@@ -696,7 +607,6 @@ define([
                 }
 
 
-
                 if (tokens[i].value.startsWith('{##')) {
                     tokens[i].type = "field";
                     tokens[i].open = "{##%s";
@@ -708,7 +618,6 @@ define([
                     let matches = pattern.exec(tokens[i].value);
                     tokens[i].attrs = matches[1];
                 }
-
 
 
                 if (tokens[i].value.startsWith('{#_')) {
@@ -731,22 +640,15 @@ define([
                 }
 
 
-
-
-
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 if (i === 0) {
-                    console.log("Token establert al root.id:", root.id, tokens[i]);
                     structure[root.id] = tokens[i];
                 } else {
                     structure.push(tokens[i]);
                     nextIndex++;
                 }
 
-
             }
-
-            console.log('end Create Tree');
 
         },
 
@@ -786,50 +688,27 @@ define([
                 tokens.push(token);
 
             }
-            // console.log("tokens (tentative)", tokens);
-
 
             // Si aquesta llista es vàlida cal extreure d'aquí el content (diferencia de lastindex i index del següent token
-
             // Cal recorrer l'array des del final, ja que cal afegir (si escau) el token de content a la posició de l'index
-
             let currentPos = text.length - 1;
 
-
-
-            console.log("### Tokens:", tokens);
-
-            if (tokens.length>0) {
-                console.log("### final: currentPost/lastTokenlast", currentPos, tokens[tokens.length-1].lastIndex);
-
-                // TODO: si el lastIndex no es == currentPos, cal crear un token de currentPos+1 fins a text.length
-
-                if (tokens[tokens.length-1].lastIndex<currentPos) {
-                    alert("Detectat contingut al final, s'ha d'extreure el token");
-
+            if (tokens.length > 0) {
+                if (tokens[tokens.length - 1].lastIndex < currentPos) {
                     let token = {};
                     token.type = 'content';
-                    token.value = text.substring(tokens[tokens.length-1].lastIndex+1, text.length);
-                    token.attrs= '';
+                    token.value = text.substring(tokens[tokens.length - 1].lastIndex + 1, text.length);
+                    token.attrs = '';
                     token.open = token.value;
                     token.close = '';
 
                     // Això no és realment necessari
-                    token.startIndex = tokens[tokens.length-1].lastIndex+1;
+                    token.startIndex = tokens[tokens.length - 1].lastIndex + 1;
                     token.lastIndex = currentPos;
                     tokens.push(token);
-
-                    console.log('### final: afegit token amb content desde 0 fins a la posició de l\'últim node', token);
-
                 }
 
-            } else {
-                console.log("### final: currentPost (no hi ha cap token, tot és content)", currentPos);
             }
-
-
-
-
 
             for (let i = tokens.length - 1; i >= 0; --i) {
 
@@ -841,7 +720,7 @@ define([
                     let token = {};
                     token.type = 'content';
                     token.value = text.substring(tokens[i].lastIndex + 1, currentPos + 1);
-                    token.attrs= '';
+                    token.attrs = '';
                     token.open = token.value;
                     token.close = '';
 
@@ -852,20 +731,18 @@ define([
                     // Afegit entre el token actual i el següent
                     tokens.splice(i + 1, 0, token);
 
-                    // console.log("** afegint token amb contingut a l'index:", i, token);
                 }
 
                 currentPos = tokens[i].startIndex - 1;
 
             }
 
-            if (tokens.length===0) {
+            if (tokens.length === 0) {
                 // CAS: tot el text es content
-                // TODO: s'ha d'afegir un token de content amb el text complet
                 let token = {};
                 token.type = 'content';
                 token.value = text;
-                token.attrs= '';
+                token.attrs = '';
                 token.open = text;
                 token.close = '';
 
@@ -873,18 +750,14 @@ define([
                 token.startIndex = 0;
                 token.lastIndex = currentPos;
                 tokens.push(token);
-                console.log('### principi: no hi ha tokens s\'afegeix el content com a nou token');
-                console.log("### principi: currentPost (no hi ha tokens, tot es content", currentPos);
             } else {
 
-                console.log("### principi: currentPost/firstTokenStart", currentPos, tokens[0].startIndex);
-
-                if (tokens[0].startIndex>0) {
+                if (tokens[0].startIndex > 0) {
 
                     let token = {};
                     token.type = 'content';
                     token.value = text.substring(0, tokens[0].startIndex);
-                    token.attrs= '';
+                    token.attrs = '';
                     token.open = token.value;
                     token.close = '';
 
@@ -892,87 +765,33 @@ define([
                     token.startIndex = 0;
                     token.lastIndex = currentPos;
                     tokens.unshift(token);
-                    console.log('### final: afegit token amb content desde 0 fins a la posició de l\'últim node');
-
                 }
 
-            }
-
-
-
-            // ALERTA! no pot haver res abans del primer token ni res després de l'últim. Quan s'obre l'editor s'afegeix
-            // un salt de línia adicional que s'ha de descartar, no cal fer res per gestionar-lo, però s'ha de tenir
-            // en compte per la validació
-
-
-            console.log("### tokens amb content", tokens);
-
-            // Comprovació de les posicions de les cadenes
-            // ALERTA! subsgring 0,3 mostra els 3 primers caràcters
-            for (let i = 0; i < tokens.length; i++) {
-
-
-                let equal = text.substring(tokens[i].startIndex, tokens[i].lastIndex + 1) === tokens[i].value
-                    || text.substring(tokens[i].startIndex, tokens[i].lastIndex + 1) === tokens[i].value + "\n";
-                // console.log ("length:", text.substring(tokens[i].startIndex, tokens[i].lastIndex+1), tokens[i].value);
-
-
-                if (!equal) {
-                    console.error("i:", 1);
-                    console.error("start char:", text.charAt(tokens[i].startIndex), "end char:", text.charAt(tokens[i].lastIndex));
-                    console.error("substring:", text.substring(tokens[i].startIndex, tokens[i].lastIndex + 1).length, "*" + text.substring(tokens[i].startIndex, tokens[i].lastIndex + 1) + "*");
-                    console.error("value    :", tokens[i].value.length, "*" + tokens[i].value + "*");
-
-                }
-
-            }
-
-            // Reemplacem les markes pels valors correctes, ho fem després de la validació perquè un
-            // un cop es fa un reemplaçament els valors dels startIndex i lastIndex ja no coincideixen amb
-            // el text original. Com aquests valors només són necessaris per fer la divisio i extreure
-            // els continguts, no cal corregir aquestes posicions
-
-            // Validem que el contingut concatnat de tots els tokens correspon al valor original_
-            let validationText = "";
-            for (let i = 0; i < tokens.length; i++) {
-
-                tokens[i].value = tokens[i].value.replaceAll(/&markn;/gsm, "\\\n>");
-                tokens[i].value = tokens[i].value.replaceAll(/&mark;/gsm, '\>');
-
-                validationText += tokens[i].value;
-            }
-
-            // console.log("Original text:", "*"+ originalText+"*");
-            // console.log("Validate text:", "*"+validationText+"*");
-            if (originalText !== validationText && originalText !== validationText + "\n") {
-                console.error("ERROR: son diferents", originalText.length, validationText.length);
             }
 
             return tokens;
         },
 
-        _setData: function (root, selected) {
-            console.log("Root", root, "Selected", selected);
+        _updateDetail: function (item) {
+            console.log("Updating:", item);
 
+            jQuery(this.attrContainer).empty();
+            jQuery(this.attrContainer).append(this._generateHtmlForFields(this._extractFields(item.attrs, item.type)));
+            let auxItem = this.rebuildWioccl(item);
+
+            this.dialogEditor.setValue(auxItem);
+            this.dialogEditor.wioccl = item;
+        },
+
+        _setData: function (root, selected) {
             let tree = [];
-            // let node = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure[refId]));
             root.name = root.type ? root.type : root.open;
 
             tree.push(root);
 
-            console.log("SetData:", root);
-
             root.children = this._getWiocclChildrenNodes(root.children, root.id, this);
 
-            console.log("new tree:", tree);
-
-
             this.treeWidget.destroyRecursive();
-
-            // console.log("s'ha destruit el vell?");
-            // return;
-
-
 
             let store = new Memory({
                 data: tree,
@@ -992,23 +811,6 @@ define([
             });
 
 
-            // console.log("data al store: (abans)", this.store.data);
-
-            // for (let i = this.store.data.length-1; i>=0; --i) {
-            //     this.store.remove(this.store.data[i].id);
-            // }
-
-            // this.store.put(root, {parent: root.id});
-
-            // console.log("data al store (després):", this.store.data);
-
-            // no existeix query ni sembla que hi hagi manera de refrescar
-            // this.model.query({id: root.id});
-
-            // En aquest punt el store es buit, però no s'ha actualitzat l'arbre
-
-// alert("stop");
-
             let context = this;
 
             let newTree = new Tree({
@@ -1019,32 +821,19 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    // PROBLEMA s'ha de resoldre en el click
-                    console.log(item);
-                    // alert("TODO: extreure la funció de la implementacio original (o tota la generació del tree")
-                    // TODO: reconstruir el codi wioccl, no mostrar el json del item
-                    jQuery(context.attrContainer).empty();
-                    console.log("click al item:", item);
-                    jQuery(context.attrContainer).append(context._generateHtmlForFields(context._extractFields(item.attrs, item.type)));
-                    let auxItem = context.rebuildWioccl(item);
-
-                    console.log("aux item?", auxItem);
-                    context.dialogEditor.setValue(auxItem);
-                    context.dialogEditor.wioccl = item;
-                    // console.log("Editor:", context.editor);
-
-                    console.warn("Structura actual:", context._getStructure());
+                    context._updateDetail(item);
                 },
 
             });
+
+
 
 
             newTree.startup();
             newTree.placeAt(this.treeContainer);
 
 
-
-
+            // actualitzem el contingut del dialog
 
             // Seleccionem el node en el nou arbre:
             // Cas 1: no s'ha creat cap node nou (s'ha canviat l'existent), seleccionem el mateix
@@ -1055,22 +844,23 @@ define([
             let structure = this._getStructure();
 
 
-            while (node.parent!==null && node.id !== root.id) {
-                path.unshift(node.id+"");
+            while (node.parent !== null && node.id !== root.id) {
+                path.unshift(node.id + "");
                 node = structure[node.parent];
             }
 
             // Finalment s'afegeix el node root
-            path.unshift(root.id+"");
+            path.unshift(root.id + "");
 
-            console.log("Intentant establir path:", path);
+            console.log("Selected?", selected);
+            console.log("Path:", path);
             newTree.set('path', path);
-            // newTree.set('path', ['parent', 'child', 'grandchild'])
 
-
+            // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
+            // pot trobar-se dividit en múltiples tokens
+            this._updateDetail(structure[selected.id]);
 
             this.treeWidget = newTree;
-
         },
 
         parse: function () {
