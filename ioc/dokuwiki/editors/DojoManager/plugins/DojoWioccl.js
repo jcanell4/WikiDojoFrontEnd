@@ -529,6 +529,20 @@ define([
                 alert("node no trobat al pare");
             }
 
+            if (text.length===0) {
+
+                if (Number(wioccl.id) === Number(this.root)) {
+                    alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
+                    // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
+                    this.root = wioccl.parent;
+                } else {
+                    alert("La branca s'ha eliminat.");
+                }
+
+                wioccl = structure[wioccl.parent];
+                tokens = [];
+            }
+
 
             this._createTree(wioccl, tokens, structure);
 
@@ -556,7 +570,7 @@ define([
 
             for (let i = 0; i < tokens.length; i++) {
 
-                tokens[i].rebuild = true;
+                // tokens[i].rebuild = true;
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 if (i === 0) {
@@ -565,6 +579,7 @@ define([
                     // this.root = tokens[i].id;
 
                 } else {
+
                     tokens[i].id = nextIndex;
                 }
 
@@ -667,7 +682,8 @@ define([
 
             }
 
-            if (sibblings > 0) {
+
+            if (sibblings > 0 && root.id === this.root) {
                 root.addedSibblings = true;
             }
 
