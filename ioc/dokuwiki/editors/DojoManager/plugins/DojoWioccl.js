@@ -75,6 +75,13 @@ define([
             if (!this.backupStructure) {
                 alert("copiada estructura");
                 this.backupStructure = JSON.parse(JSON.stringify(this.editor.extra.wioccl_structure.structure));
+
+                // TEST! per que funcionin els set('path') els ids han de ser cadenes de text
+                // for (let node of this.backupStructure ) {
+                //     node.id = node.id+"";
+                // }
+                console.log(this.backupStructure);
+                alert("check structure");
             }
 
             return this.backupStructure;
@@ -590,7 +597,7 @@ define([
             console.log("Id:", this.root);
             console.log("Node root?",structure[this.root]);
 
-            this._setData(structure[this.root]);
+            this._setData(structure[this.root], wioccl);
             // this._setData(structure[wioccl.id]);
 
         },
@@ -944,8 +951,8 @@ define([
             return tokens;
         },
 
-        _setData: function (root) {
-
+        _setData: function (root, selected) {
+            console.log("Root", root, "Selected", selected);
 
             let tree = [];
             // let node = JSON.parse(JSON.stringify(context.editor.extra.wioccl_structure.structure[refId]));
@@ -966,7 +973,6 @@ define([
             // return;
 
 
-            console.log("### Que pasem com a data al New Memory:", tree);
 
             let store = new Memory({
                 data: tree,
@@ -1036,6 +1042,30 @@ define([
             newTree.startup();
             newTree.placeAt(this.treeContainer);
 
+
+
+
+
+            // Seleccionem el node en el nou arbre:
+            // Cas 1: no s'ha creat cap node nou (s'ha canviat l'existent), seleccionem el mateix
+
+            let node = selected;
+            /// corresponent al cas1, es seleccionarà el node original
+            let path = [];
+            let structure = this._getStructure();
+
+
+            while (node.parent!==null && node.id !== root.id) {
+                path.unshift(node.id+"");
+                node = structure[node.parent];
+            }
+
+            // Finalment s'afegeix el node root
+            path.unshift(root.id+"");
+
+            console.log("Intentant establir path:", path);
+            newTree.set('path', path);
+            // newTree.set('path', ['parent', 'child', 'grandchild'])
 
 
 
