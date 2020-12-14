@@ -74,6 +74,12 @@ define([
             // console.log("hi ha estructura?", this.editor.extra.wioccl_structure.structure)
             if (!this.backupStructure) {
                 this.backupStructure = JSON.parse(JSON.stringify(this.editor.extra.wioccl_structure.structure));
+
+                // Ajustem l'arrel
+                this.backupStructure[0].open = '';
+                this.backupStructure[0].name = 'root';
+                this.backupStructure[0].close = '';
+
             }
 
             return this.backupStructure;
@@ -110,12 +116,13 @@ define([
 
         rebuildWioccl: function (data) {
 
-            // console.log("Rebuilding wioccl:", data);
+            // console.error("Rebuilding wioccl:", data);
             let wioccl = "";
 
             wioccl += data.open.replace('%s', data.attrs);
             for (let i = 0; i < data.children.length; i++) {
-                wioccl += this.rebuildWioccl(data.children[i]);
+                let node = typeof data.children[i] === 'object' ? data.children[i] : this._getStructure()[data.children[i]];
+                wioccl += this.rebuildWioccl(node);
             }
 
             if (data.close !== null) {
@@ -191,6 +198,7 @@ define([
                     "class": "wioccl-detail",
                     // "innerHTML": testContent
                 });
+                context.detailContainer = detailContainer;
 
                 let contentContainer = domConstruct.create("div", {
                     id: "contentContainer_" + "test",
@@ -205,6 +213,7 @@ define([
                     "class": "wioccl-attr",
                 });
                 context.attrContainer = attrContainer;
+
 
                 let treeContainer = domConstruct.create("div", {
                     id: "treeContainer_" + "test",
@@ -344,7 +353,8 @@ define([
 
                 // L'editor no es pot afegir fins que el dialog no és creat:
                 let $contentContainer = jQuery(contentContainer);
-                let $textarea = jQuery('<textarea>' + valor + '</textarea>');
+                let $textarea = jQuery('<textarea></textarea>');
+                // let $textarea = jQuery('<textarea>' + valor + '</textarea>');
                 $contentContainer.append($textarea);
 
                 let args = {
@@ -353,7 +363,7 @@ define([
                 };
 
                 let editor = createEditor($textarea, $contentContainer, args, context);
-                editor.setValue(valor);
+                // editor.setValue(valor);
 
 
                 let $paneContainer = jQuery(paneContainer);
@@ -408,6 +418,8 @@ define([
                     context.parseWioccl(editor.getValue(), editor.wioccl, context._getStructure());
 
                 });
+
+                context._updateDetail(tree[0]);
 
             });
         },
@@ -484,6 +496,9 @@ define([
             //      - els elements de la estructura i les referencies del document ja no serien correctes.
             let removeChildren = function (id, inStructure) {
                 let node = inStructure[id];
+                if (!node.children) {
+                    console.error("no hi ha children?", node.children);
+                }
                 for (let i = node.children.length - 1; i >= 0; --i) {
                     removeChildren(node.children[i], inStructure);
                     inStructure[node.children[i]] = false;
@@ -498,7 +513,9 @@ define([
             let found = false;
             for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
 
-                if (structure[wioccl.parent].children[i] === wioccl.id) {
+                // Cal tenir en compte els dos casos ja que un cop es fa un update tots els childrens hauran
+                // canviat a nodes
+                if (structure[wioccl.parent].children[i] === wioccl.id || structure[wioccl.parent].children[i].id === wioccl.id) {
                     structure[wioccl.parent].children.splice(i, 1);
                     wioccl.index = i;
                     found = true;
@@ -507,19 +524,20 @@ define([
             }
 
             if (!found) {
-                console.error("no s'ha trobat aquest node al propi pare");
+                    console.error("no s'ha trobat aquest node al propi pare");
                 console.log(structure, wioccl);
                 alert("node no trobat al pare");
             }
 
-            structure[wioccl.id] = false;
 
             this._createTree(wioccl, tokens, structure);
 
+            // en el cas de siblings cal determinar també en quina posició es troba de l'arbre
             this._setData(structure[this.root], wioccl);
 
         },
 
+        // La structura es modifica i es retorna per referència
         _createTree(root, tokens, structure) {
             // Només hi ha un tipus open/close, que son els que poden tenir fills:
             //      OPEN: comencen per "<WIOCCL:"
@@ -533,6 +551,9 @@ define([
 
 
             let nextIndex = structure.length;
+
+            let sibblings = 0;
+
             for (let i = 0; i < tokens.length; i++) {
 
                 tokens[i].rebuild = true;
@@ -559,7 +580,6 @@ define([
 
 
                 if (stack.length > 0) {
-                    console.log("Afegint a: ", stack[stack.length - 1], "el child:", nextIndex);
                     stack[stack.length - 1].children.push(nextIndex);
                     tokens[i].parent = stack[stack.length - 1].id
                 } else {
@@ -572,11 +592,8 @@ define([
 
 
                 if (tokens[i].parent === root.parent) {
-                    if (root.index === undefined) {
-                        console.log("Root?", root);
-                        alert("El root no té index!");
-                    }
-                    structure[root.parent].children.splice(root.index + i, 0, tokens[i].id);
+                    structure[root.parent].children.splice(root.index + sibblings, 0, tokens[i].id);
+                    ++sibblings;
                 }
 
 
@@ -649,6 +666,11 @@ define([
                 }
 
             }
+
+            if (sibblings > 0) {
+                root.addedSibblings = true;
+            }
+
 
         },
 
@@ -773,19 +795,37 @@ define([
         },
 
         _updateDetail: function (item) {
-            console.log("Updating:", item);
+            // console.log("Updating:", item);
+
 
             jQuery(this.attrContainer).empty();
             jQuery(this.attrContainer).append(this._generateHtmlForFields(this._extractFields(item.attrs, item.type)));
+
             let auxItem = this.rebuildWioccl(item);
 
             this.dialogEditor.setValue(auxItem);
             this.dialogEditor.wioccl = item;
+
+
+            if (item.id === 0) {
+                this.dialogEditor.lockEditor();
+                jQuery(this.detailContainer).css('opacity', '0.5');
+            } else {
+                this.dialogEditor.unlockEditor();
+                jQuery(this.detailContainer).css('opacity', '1');
+            }
+
         },
 
         _setData: function (root, selected) {
             let tree = [];
             root.name = root.type ? root.type : root.open;
+
+            let structure = this._getStructure();
+
+            if (selected.addedSibblings) {
+                root = structure[root.parent];
+            }
 
             tree.push(root);
 
@@ -827,8 +867,6 @@ define([
             });
 
 
-
-
             newTree.startup();
             newTree.placeAt(this.treeContainer);
 
@@ -841,7 +879,6 @@ define([
             let node = selected;
             /// corresponent al cas1, es seleccionarà el node original
             let path = [];
-            let structure = this._getStructure();
 
 
             while (node.parent !== null && node.id !== root.id) {
@@ -852,8 +889,8 @@ define([
             // Finalment s'afegeix el node root
             path.unshift(root.id + "");
 
-            console.log("Selected?", selected);
-            console.log("Path:", path);
+            // console.log("Selected?", selected);
+            // console.log("Path:", path);
             newTree.set('path', path);
 
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
