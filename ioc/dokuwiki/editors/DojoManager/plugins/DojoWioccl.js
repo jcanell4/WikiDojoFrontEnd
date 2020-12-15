@@ -77,7 +77,7 @@ define([
 
                 // Ajustem l'arrel
                 this.backupStructure[0].open = '';
-                this.backupStructure[0].name = 'root';
+                this.backupStructure[0].type = 'root';
                 this.backupStructure[0].close = '';
 
             }
@@ -376,14 +376,16 @@ define([
                 $paneContainer.css('left', 0);
                 $paneContainer.css('right', 0);
 
-                let $updateButton = jQuery("<button>Actualitzar</button>");
-                $updateButton.css('margin', '5px');
-                $updateButton.css('margin-right', '15px');
-                $updateButton.css('padding', '5px');
                 let $actionBar = jQuery(actionBar);
-                $actionBar.append($updateButton);
                 $actionBar.css('margin', 0);
                 $actionBar.css('padding', 0);
+
+                let $updateButton = jQuery("<button class='wioccl-btn'>Actualitzar</button>");
+                $actionBar.append($updateButton);
+
+                let $saveButton = jQuery("<button class='wioccl-btn'>Save</button>");
+                $actionBar.append($saveButton);
+
 
                 let height = $paneContainer.height() - 30;
 
@@ -416,12 +418,114 @@ define([
 
                 $updateButton.on('click', function () {
                     context.parseWioccl(editor.getValue(), editor.wioccl, context._getStructure());
+                });
 
+                $saveButton.on('click', function() {
+                    context._save(editor);
                 });
 
                 context._updateDetail(tree[0]);
 
             });
+        },
+
+
+        // IDEA2: enviar el text
+        // en aquest cas s'envia el text reconstruit a partir dels nodes i el rootRef, només cal fer la traducció
+        // i reemplaçar les nodes
+
+        // Si aquest no és el root, cal cercar el parent que té com a parent el node 0
+
+        _save(editor) {
+            // TODO passos a executar
+            // 0 actualitzar el contingut actual
+            this.parseWioccl(editor.getValue(), editor.wioccl, this._getStructure());
+
+            // 1 reconstruir el wioccl del node pare (this._getStructure()[this.root], això és el que s'ha d'enviar al servidor
+            // ALERTA! no cal enviar el text, cal enviar la estructura i el node a partir del qual s'ha de regenerar el codi wioccl
+            let structure = this._getStructure();
+            // let text = this.rebuildWioccl(structure[this.root]);
+            let rootRef = this.root;
+
+            // Cal tenir en compte que el rootRef podria ser el node arrel i en aquest cas no cal cerca més
+            while (structure[rootRef].id > 0 && structure[rootRef].parent > 0) {
+                rootRef = structure[rootRef].parent;
+            }
+
+            let text = this.rebuildWioccl(structure[rootRef]);
+
+            console.log("Dades a enviar", text, rootRef);
+
+
+            // 2 enviar al servidor juntament amb el id del projecte per poder carregar el datasource, cal enviar també
+            //      la propera referència, que serà la posició per inserir els nodes nous
+
+
+
+
+            // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo al document editat (cal indicar el punt d'inserció)
+            // 4 eliminar tots els nodes que penjaven originalment de  this.root
+            // 5 inserir el html que ha arribat del servidor
+            // 6 afegir els handlers
+
+
+
+
+        },
+
+
+
+
+        // IDEA1: enviar la estructura
+        _save1(editor) {
+            // TODO passos a executar
+            // 0 actualitzar el contingut actual
+            this.parseWioccl(editor.getValue(), editor.wioccl, this._getStructure());
+
+            // 1 reconstruir el wioccl del node pare (this._getStructure()[this.root], això és el que s'ha d'enviar al servidor
+            // ALERTA! no cal enviar el text, cal enviar la estructura i el node a partir del qual s'ha de regenerar el codi wioccl
+            let structure = {};
+            // let text = this.rebuildWioccl(structure[this.root]);
+            let rootRef = this.root;
+
+
+            // No te sentit enviar tota la estructura porque inclou nodes de contingut extern que no s'han de processar
+            // (aquests nodes poden haver canviat a l'editor normal i no es troban actualitzants)
+            let addChildrenIdToStructure= function (nodeId, context, structure) {
+                let node = context._getStructure()[nodeId];
+
+                node.children = context._getWiocclChildrenNodes(node.children, node.id, context);
+
+                for (let i=0; i<node.children.length; i++) {
+                    if (node.children[i]) {
+                        addChildrenIdToStructure(node.children[i].id, context, structure);
+                    }
+                }
+                structure[node.id+""] =  node;
+            };
+
+            addChildrenIdToStructure(rootRef, this, structure);
+
+
+
+
+            console.log("Dades a enviar", structure, rootRef);
+
+
+            // 2 enviar al servidor juntament amb el id del projecte per poder carregar el datasource, cal enviar també
+            //      la propera referència, que serà la posició per inserir els nodes nous
+
+
+
+
+            // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo al document editat (cal indicar el punt d'inserció)
+            // 4 eliminar tots els nodes que penjaven originalment de  this.root
+            // 5 inserir el html que ha arribat del servidor
+            // 6 afegir els handlers
+
+
+
+
         },
 
         _generateHtmlForFields: function (fields) {
@@ -496,12 +600,16 @@ define([
             //      - els elements de la estructura i les referencies del document ja no serien correctes.
             let removeChildren = function (id, inStructure) {
                 let node = inStructure[id];
+
+                // console.log("Hi ha node?", node, id, structure);
                 if (!node.children) {
                     console.error("no hi ha children?", node.children);
                 }
+                
                 for (let i = node.children.length - 1; i >= 0; --i) {
-                    removeChildren(node.children[i], inStructure);
-                    inStructure[node.children[i]] = false;
+                    let childId = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
+                    removeChildren(childId, inStructure);
+                    inStructure[childId] = false;
                 }
             };
 
@@ -566,7 +674,7 @@ define([
 
             let nextIndex = structure.length;
 
-            let sibblings = 0;
+            let siblings = 0;
 
             for (let i = 0; i < tokens.length; i++) {
 
@@ -607,8 +715,8 @@ define([
 
 
                 if (tokens[i].parent === root.parent) {
-                    structure[root.parent].children.splice(root.index + sibblings, 0, tokens[i].id);
-                    ++sibblings;
+                    structure[root.parent].children.splice(root.index + siblings, 0, tokens[i].id);
+                    ++siblings;
                 }
 
 
@@ -682,9 +790,8 @@ define([
 
             }
 
-
-            if (sibblings > 0 && root.id === this.root) {
-                root.addedSibblings = true;
+            if (siblings > 1 && Number(root.id) === Number(this.root)) {
+                root.addedsiblings = true;
             }
 
 
@@ -701,13 +808,12 @@ define([
 
 
             // PROBLEMA: no podem capturar > sense capturar \>, fem una conversió de \> abans de fer el parse i ho restaurem després
-
             // Hi han dos casos, amb salt de línia i sense, per poder restaurar-los fem servir dues marques diferents: &markn; i &mark;
-            let originalText = text;
+            // let originalText = text;
             text = text.replaceAll(/\\[\n]>/gsm, '&markn;');
             text = text.replaceAll(/\\>/gsm, '&mark;');
 
-            // PROBLEMA: això suposa un problema en el recompte de caràcteres, perquè les posicions no corresponen
+            // ALERTA: això suposa un canvi en el recompte de caràcteres, perquè les posicions no corresponen
 
 
             let tokens = [];
@@ -722,6 +828,7 @@ define([
                 let token = {};
                 token.startIndex = xArray.index;
                 token.lastIndex = pattern.lastIndex - 1; // El lastIndex sembla correspondre a la posició on comença el token següent
+
                 token.value = value;
                 tokens.push(token);
 
@@ -819,7 +926,13 @@ define([
 
             let auxItem = this.rebuildWioccl(item);
 
+            // Eliminem el salt de línia final, no forma part del valor del token (per determinar perquè s'afegeix)
+            if (auxItem.substr(-1) === "\n") {
+                auxItem = auxItem.substring(0, auxItem.length-1);
+            }
+
             this.dialogEditor.setValue(auxItem);
+
             this.dialogEditor.wioccl = item;
 
 
@@ -835,13 +948,15 @@ define([
 
         _setData: function (root, selected) {
             let tree = [];
-            root.name = root.type ? root.type : root.open;
 
             let structure = this._getStructure();
 
-            if (selected.addedSibblings) {
+            if (selected.addedsiblings) {
                 root = structure[root.parent];
+                this.root = root.id;
             }
+
+            root.name = root.type ? root.type : root.open;
 
             tree.push(root);
 
