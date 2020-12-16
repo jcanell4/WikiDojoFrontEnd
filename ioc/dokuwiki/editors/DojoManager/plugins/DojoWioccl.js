@@ -15,11 +15,30 @@ define([
     "dojo/dom",
     // 'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/dokuwiki/editors/AceManager/toolbarManager',
+    'ioc/dokuwiki/editors/Components/RequestComponent',
 
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager) {
+
+
+], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager, RequestComponent) {
+
+
+    let AceFacade = null;
+
+    // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
+    require(["ioc/dokuwiki/editors/AceManager/AceEditorFullFacade"], function (AuxClass) {
+        AceFacade = AuxClass;
+    });
+
+    let ajax = null;
+    require(["ioc/dokuwiki/editors/Components/AjaxComponent"], function (AjaxComponent) {
+        ajax = new AjaxComponent(); //ajax.send(urlBase, dataToSend, type)
+        ajax.urlBase = '/dokuwiki_30/lib/exe/ioc_ajax.php?call=wioccl&format=html';
+        ajax.method = 'post';
+    });
+
 
     // No funciona si es carrega directament, hem de fer la inicialització quan cal utilitzar-lo
-    let AceFacade = null;
+
 
     let FormatButton = declare(AbstractParseableDojoPlugin, {
 
@@ -43,6 +62,9 @@ define([
                 tabIndex: "-1",
                 onClick: lang.hitch(this, "process")
             };
+
+            // this.requestComponent = new RequestComponent(this.editor.dispatcher);
+
 
             this.addButton(config);
 
@@ -294,16 +316,6 @@ define([
                     toolbarManager.createToolbar(toolbarId, 'simple');
 
 
-                    if (AceFacade === null) {
-                        // ALERTA[Xavi] Ho carregam de manera sincrona perquè no carrega si es posa a la capçalera
-                        // cal investigar-ho
-                        require(["ioc/dokuwiki/editors/AceManager/AceEditorFullFacade"], function (AuxClass) {
-                            AceFacade = AuxClass;
-                        });
-
-                    }
-
-
                     let editor = new AceFacade({
                         id: args.id,
                         auxId: args.id,
@@ -420,7 +432,7 @@ define([
                     context.parseWioccl(editor.getValue(), editor.wioccl, context._getStructure());
                 });
 
-                $saveButton.on('click', function() {
+                $saveButton.on('click', function () {
                     context._save(editor);
                 });
 
@@ -430,7 +442,7 @@ define([
         },
 
 
-        // IDEA2: enviar el text
+        // IDEA1: enviar el text
         // en aquest cas s'envia el text reconstruit a partir dels nodes i el rootRef, només cal fer la traducció
         // i reemplaçar les nodes
 
@@ -460,13 +472,64 @@ define([
             // 2 enviar al servidor juntament amb el id del projecte per poder carregar el datasource, cal enviar també
             //      la propera referència, que serà la posició per inserir els nodes nous
 
+            console.log("hi ha dispatcher a l'editor?", this.editor.dispatcher);
+            let globalState = this.editor.dispatcher.getGlobalState();
+
+            // ALERTA! aquesta informació és necessaria perquè s'han d'afegir els spans amb la referència
+            let dataToSend = {
+                content: text,
+                rootRef: rootRef,
+                nextRef: Number(structure[structure.length-1].id)+1,
+                projectOwner: globalState.getContent(globalState.currentTabId).projectOwner,
+                projectSourceType: globalState.getContent(globalState.currentTabId).projectSourceType,
+                sectok: this.editor.dispatcher.getSectok()
+            };
+
+            console.log("Data to send:", dataToSend);
 
 
+            // TODO: fer alguna cosa amb la resposta, es pot lligar amb .then perque retorna una promesa
 
             // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo al document editat (cal indicar el punt d'inserció)
-            // 4 eliminar tots els nodes que penjaven originalment de  this.root
-            // 5 inserir el html que ha arribat del servidor
-            // 6 afegir els handlers
+
+            // Fem servir ajax perquè això no ha de passar pel processor
+
+            ajax.send(dataToSend).then(function(data) {
+                    console.log("data:", data);
+
+                    // retorn:
+                    // [0] objecte amb el resultat del command <-- diria que aquest és l'únic necessari
+                    //      value.content <-- contingut
+                    //      value.extra.wioccl_structure <-- estructura
+                    // [1] jsinfo
+                    // [n...] extraContentState
+
+
+                console.log(data[0].value.content);
+                console.log(data[0].value.extra.wioccl_structure);
+
+
+                    console.log("TODO: gestionar aquí el retorn")
+
+                    // 4 eliminar tots els nodes que penjaven originalment de  this.root
+                    // 5 inserir el html que ha arribat del servidor
+                    // 6 afegir els handlers
+            });
+
+            //
+            // this.requestComponent.on('completed', function(data) {
+            //     console.log("data:", data);
+            //
+            //     console.log("TODO: gestionar aquí el retorn")
+            //
+            //     // 4 eliminar tots els nodes que penjaven originalment de  this.root
+            //     // 5 inserir el html que ha arribat del servidor
+            //     // 6 afegir els handlers
+            // });
+            //
+            // this.requestComponent.send(urlBase, dataToSend);
+
+            console.log("ajax request enviada");
 
 
 
@@ -474,10 +537,8 @@ define([
         },
 
 
-
-
         // IDEA1: enviar la estructura
-        _save1(editor) {
+        _save2(editor) {
             // TODO passos a executar
             // 0 actualitzar el contingut actual
             this.parseWioccl(editor.getValue(), editor.wioccl, this._getStructure());
@@ -491,22 +552,20 @@ define([
 
             // No te sentit enviar tota la estructura porque inclou nodes de contingut extern que no s'han de processar
             // (aquests nodes poden haver canviat a l'editor normal i no es troban actualitzants)
-            let addChildrenIdToStructure= function (nodeId, context, structure) {
+            let addChildrenIdToStructure = function (nodeId, context, structure) {
                 let node = context._getStructure()[nodeId];
 
                 node.children = context._getWiocclChildrenNodes(node.children, node.id, context);
 
-                for (let i=0; i<node.children.length; i++) {
+                for (let i = 0; i < node.children.length; i++) {
                     if (node.children[i]) {
                         addChildrenIdToStructure(node.children[i].id, context, structure);
                     }
                 }
-                structure[node.id+""] =  node;
+                structure[node.id + ""] = node;
             };
 
             addChildrenIdToStructure(rootRef, this, structure);
-
-
 
 
             console.log("Dades a enviar", structure, rootRef);
@@ -516,14 +575,10 @@ define([
             //      la propera referència, que serà la posició per inserir els nodes nous
 
 
-
-
             // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo al document editat (cal indicar el punt d'inserció)
             // 4 eliminar tots els nodes que penjaven originalment de  this.root
             // 5 inserir el html que ha arribat del servidor
             // 6 afegir els handlers
-
-
 
 
         },
@@ -605,7 +660,7 @@ define([
                 if (!node.children) {
                     console.error("no hi ha children?", node.children);
                 }
-                
+
                 for (let i = node.children.length - 1; i >= 0; --i) {
                     let childId = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
                     removeChildren(childId, inStructure);
@@ -618,6 +673,9 @@ define([
 
 
             // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
+
+            console.log("structure:", structure, wioccl);
+
             let found = false;
             for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
 
@@ -632,12 +690,12 @@ define([
             }
 
             if (!found) {
-                    console.error("no s'ha trobat aquest node al propi pare");
+                console.error("no s'ha trobat aquest node al propi pare");
                 console.log(structure, wioccl);
                 alert("node no trobat al pare");
             }
 
-            if (text.length===0) {
+            if (text.length === 0) {
 
                 if (Number(wioccl.id) === Number(this.root)) {
                     alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
@@ -728,12 +786,15 @@ define([
                     let matches;
 
                     if (matches = pattern.exec(tokens[i].value)) {
+                        console.log()
                         tokens[i].attrs = matches[1];
                     } else {
                         tokens[i].attrs = "";
                     }
 
+                    console.log("ALERTA! sembla que és aquí on està l'error, la expressió és tanca quan troba un espai que separa els atributs")
                     pattern = /(<WIOCCL:.*?)[ >]/gsm;
+                    alert("stop, mira la consola");
 
                     matches = pattern.exec(tokens[i].value);
                     tokens[i].open = matches[1] + ' %s>';
@@ -928,7 +989,7 @@ define([
 
             // Eliminem el salt de línia final, no forma part del valor del token (per determinar perquè s'afegeix)
             if (auxItem.substr(-1) === "\n") {
-                auxItem = auxItem.substring(0, auxItem.length-1);
+                auxItem = auxItem.substring(0, auxItem.length - 1);
             }
 
             this.dialogEditor.setValue(auxItem);
