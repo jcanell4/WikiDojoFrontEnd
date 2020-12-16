@@ -121,7 +121,7 @@ define([
                     .append($label);
 
                 $data.addClass('view-check');
-                if(fvalues[field.name]==="true" || fvalues[field.name]===true){
+                if(fvalues[field.name]==="true" || fvalues[field.name]==="on" || fvalues[field.name]===true){
                     $data.addClass('view-checked');
                 }
 //                    .html(fvalues[field.name]);
