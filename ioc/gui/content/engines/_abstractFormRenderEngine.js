@@ -433,7 +433,7 @@ define([
 
             $input.attr('type', field.type)
                 .attr('name', field.name)
-                //.val(field.value);
+                .val("true")
                 .prop("checked", fvalues[field.name]==="true" || fvalues[field.name]==="on" || fvalues[field.name]===true);
 
             if (field.id) {
