@@ -781,7 +781,8 @@ define([
                 // No cal gestionar el type content perquè s'assigna al tokenizer
 
                 if (tokens[i].value.startsWith('<WIOCCL:')) {
-                    let pattern = /<WIOCCL:.* (.*)>/gsm;
+                    console.log("Value:", tokens[i].value);
+                    let pattern = /<WIOCCL:.*? (.*?)>/gsm;
 
                     let matches;
 
@@ -792,9 +793,9 @@ define([
                         tokens[i].attrs = "";
                     }
 
-                    console.log("ALERTA! sembla que és aquí on està l'error, la expressió és tanca quan troba un espai que separa els atributs")
+                    console.log("Attrs:", tokens[i].attrs);
+
                     pattern = /(<WIOCCL:.*?)[ >]/gsm;
-                    alert("stop, mira la consola");
 
                     matches = pattern.exec(tokens[i].value);
                     tokens[i].open = matches[1] + ' %s>';
