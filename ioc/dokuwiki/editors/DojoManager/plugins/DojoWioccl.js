@@ -18,7 +18,6 @@ define([
     'ioc/dokuwiki/editors/Components/RequestComponent',
 
 
-
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager, RequestComponent) {
 
 
@@ -46,6 +45,8 @@ define([
         treeWidget: null,
 
         dialogEditor: null,
+
+        wiocclDialog: null,
 
         init: function (args) {
             this.inherited(arguments);
@@ -92,9 +93,11 @@ define([
 
         _getStructure() {
 
+            // console.log("estructura:", this.editor.extra.wioccl_structure.structure);
 
             // console.log("hi ha estructura?", this.editor.extra.wioccl_structure.structure)
             if (!this.backupStructure) {
+
                 this.backupStructure = JSON.parse(JSON.stringify(this.editor.extra.wioccl_structure.structure));
 
                 // Ajustem l'arrel
@@ -110,10 +113,11 @@ define([
 
         _getWiocclChildrenNodes(children, parent, context) {
             let nodes = [];
+
+
             for (let i = 0; i < children.length; i++) {
 
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
-
 
                 let node = JSON.parse(JSON.stringify(context._getStructure()[id]));
 
@@ -138,13 +142,30 @@ define([
 
         rebuildWioccl: function (data) {
 
-            // console.error("Rebuilding wioccl:", data);
+            // console.log("Rebuilding wioccl:", data);
             let wioccl = "";
 
+            // Cal fer la conversió de &gt; per \>
+            data.attrs = data.attrs.replace('&gt;','\\>');
+
             wioccl += data.open.replace('%s', data.attrs);
+
+
+
             for (let i = 0; i < data.children.length; i++) {
+
                 let node = typeof data.children[i] === 'object' ? data.children[i] : this._getStructure()[data.children[i]];
+
+                // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
+                // per exemple perquè és genera amb un for o foreach
+                if (node.isClone) {
+                    continue;
+                }
+
+
                 wioccl += this.rebuildWioccl(node);
+
+
             }
 
             if (data.close !== null) {
@@ -200,6 +221,8 @@ define([
 
                 });
 
+
+                context.wiocclDialog = wiocclDialog;
 
                 wiocclDialog.startup();
 
@@ -360,6 +383,9 @@ define([
                 wiocclDialog.set("content", dialogContainer);
                 wiocclDialog.show();
 
+
+
+
                 widgetTree.placeAt(treeContainer);
                 widgetTree.startup();
 
@@ -438,6 +464,8 @@ define([
 
                 context._updateDetail(tree[0]);
 
+
+
             });
         },
 
@@ -449,6 +477,10 @@ define([
         // Si aquest no és el root, cal cercar el parent que té com a parent el node 0
 
         _save(editor) {
+
+            console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
+
+            let context = this;
             // TODO passos a executar
             // 0 actualitzar el contingut actual
             this.parseWioccl(editor.getValue(), editor.wioccl, this._getStructure());
@@ -466,20 +498,16 @@ define([
 
             let text = this.rebuildWioccl(structure[rootRef]);
 
-            console.log("Dades a enviar", text, rootRef);
-
-
             // 2 enviar al servidor juntament amb el id del projecte per poder carregar el datasource, cal enviar també
             //      la propera referència, que serà la posició per inserir els nodes nous
 
-            console.log("hi ha dispatcher a l'editor?", this.editor.dispatcher);
             let globalState = this.editor.dispatcher.getGlobalState();
 
             // ALERTA! aquesta informació és necessaria perquè s'han d'afegir els spans amb la referència
             let dataToSend = {
                 content: text,
                 rootRef: rootRef,
-                nextRef: Number(structure[structure.length-1].id)+1,
+                nextRef: structure['next'],
                 projectOwner: globalState.getContent(globalState.currentTabId).projectOwner,
                 projectSourceType: globalState.getContent(globalState.currentTabId).projectSourceType,
                 sectok: this.editor.dispatcher.getSectok()
@@ -494,91 +522,64 @@ define([
 
             // Fem servir ajax perquè això no ha de passar pel processor
 
-            ajax.send(dataToSend).then(function(data) {
-                    console.log("data:", data);
+            ajax.send(dataToSend).then(function (data) {
+                console.log("data:", data);
 
-                    // retorn:
-                    // [0] objecte amb el resultat del command <-- diria que aquest és l'únic necessari
-                    //      value.content <-- contingut
-                    //      value.extra.wioccl_structure <-- estructura
-                    // [1] jsinfo
-                    // [n...] extraContentState
+                // retorn:
+                // [0] objecte amb el resultat del command <-- diria que aquest és l'únic necessari
+                //      value.content <-- contingut
+                //      value.extra.wioccl_structure <-- estructura
+                // [1] jsinfo
+                // [n...] extraContentState
 
 
                 console.log(data[0].value.content);
-                console.log(data[0].value.extra.wioccl_structure);
+                console.log(data[0].value.extra.wioccl_structure.structure);
+
+                context.wiocclDialog.hide();
+
+                // 4 eliminar tots els nodes que penjaven originalment de  this.root
+                //      alerta! no es guarantit que els nodes del backupstructure siguin els mateixos
+                //      que retorna el servidor, així que fem servir els valors retornats.
+
+                // aquesta es la estructura original.
+                let target = context.editor.extra.wioccl_structure.structure;
+
+                console.log("El rot és correcte? (ha de ser el parent de la branca)", rootRef)
+                context._removeChildren(rootRef, target, true);
 
 
-                    console.log("TODO: gestionar aquí el retorn")
+                // Cal eliminar també les referències al node arrel (poden ser múltiple en el cas del foreach)
 
-                    // 4 eliminar tots els nodes que penjaven originalment de  this.root
-                    // 5 inserir el html que ha arribat del servidor
-                    // 6 afegir els handlers
+                // Cal inserir una marca pel node root
+                let $rootNodes = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + rootRef +'"]');
+
+
+                console.log("$rootNodes", $rootNodes);
+
+                // 5 inserir el html que ha arribat del servidor
+                // Afegim les noves i eliminem el cursor
+                let $nouRoot = jQuery(data[0].value.content);
+                console.log("$nouRoot", $nouRoot);
+                console.log("$nouRoot html", $nouRoot.html());
+
+
+                jQuery($rootNodes.get(0)).before($nouRoot);
+
+                // Elimem les referencies
+                $rootNodes.remove();
+
+
+                // Actualitzem la estructura
+
+                let source = data[0].value.extra.wioccl_structure.structure;
+
+                Object.assign(target, source);
+
+
+
+                // TODO: 6 afegir els handlers
             });
-
-            //
-            // this.requestComponent.on('completed', function(data) {
-            //     console.log("data:", data);
-            //
-            //     console.log("TODO: gestionar aquí el retorn")
-            //
-            //     // 4 eliminar tots els nodes que penjaven originalment de  this.root
-            //     // 5 inserir el html que ha arribat del servidor
-            //     // 6 afegir els handlers
-            // });
-            //
-            // this.requestComponent.send(urlBase, dataToSend);
-
-            console.log("ajax request enviada");
-
-
-
-
-        },
-
-
-        // IDEA1: enviar la estructura
-        _save2(editor) {
-            // TODO passos a executar
-            // 0 actualitzar el contingut actual
-            this.parseWioccl(editor.getValue(), editor.wioccl, this._getStructure());
-
-            // 1 reconstruir el wioccl del node pare (this._getStructure()[this.root], això és el que s'ha d'enviar al servidor
-            // ALERTA! no cal enviar el text, cal enviar la estructura i el node a partir del qual s'ha de regenerar el codi wioccl
-            let structure = {};
-            // let text = this.rebuildWioccl(structure[this.root]);
-            let rootRef = this.root;
-
-
-            // No te sentit enviar tota la estructura porque inclou nodes de contingut extern que no s'han de processar
-            // (aquests nodes poden haver canviat a l'editor normal i no es troban actualitzants)
-            let addChildrenIdToStructure = function (nodeId, context, structure) {
-                let node = context._getStructure()[nodeId];
-
-                node.children = context._getWiocclChildrenNodes(node.children, node.id, context);
-
-                for (let i = 0; i < node.children.length; i++) {
-                    if (node.children[i]) {
-                        addChildrenIdToStructure(node.children[i].id, context, structure);
-                    }
-                }
-                structure[node.id + ""] = node;
-            };
-
-            addChildrenIdToStructure(rootRef, this, structure);
-
-
-            console.log("Dades a enviar", structure, rootRef);
-
-
-            // 2 enviar al servidor juntament amb el id del projecte per poder carregar el datasource, cal enviar també
-            //      la propera referència, que serà la posició per inserir els nodes nous
-
-
-            // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo al document editat (cal indicar el punt d'inserció)
-            // 4 eliminar tots els nodes que penjaven originalment de  this.root
-            // 5 inserir el html que ha arribat del servidor
-            // 6 afegir els handlers
 
 
         },
@@ -606,6 +607,9 @@ define([
 
         _extractFields: function (attrs, type) {
             // console.log("Fields to extract:", attrs, type);
+
+            // Cal fer la conversió de &gt; per \>
+            attrs = attrs.replace('&gt;','\\>');
 
             let fields = {};
 
@@ -653,28 +657,11 @@ define([
             // Reordenació dels nodes:
             //      - posem com false tots els nodes fills actuals ALERTA no els eliminem perquè canviaria l'ordre de tots
             //      - els elements de la estructura i les referencies del document ja no serien correctes.
-            let removeChildren = function (id, inStructure) {
-                let node = inStructure[id];
 
-                // console.log("Hi ha node?", node, id, structure);
-                if (!node.children) {
-                    console.error("no hi ha children?", node.children);
-                }
-
-                for (let i = node.children.length - 1; i >= 0; --i) {
-                    let childId = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
-                    removeChildren(childId, inStructure);
-                    inStructure[childId] = false;
-                }
-            };
-
-
-            removeChildren(wioccl.id, structure);
-
+            this._removeChildren(wioccl.id, structure);
 
             // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
 
-            console.log("structure:", structure, wioccl);
 
             let found = false;
             for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
@@ -709,11 +696,36 @@ define([
                 tokens = [];
             }
 
-
             this._createTree(wioccl, tokens, structure);
 
             // en el cas de siblings cal determinar també en quina posició es troba de l'arbre
             this._setData(structure[this.root], wioccl);
+
+        },
+
+        _removeChildren: function (id, inStructure, removeNode) {
+            let node = inStructure[id];
+
+            // console.log("Hi ha node?", node, id, structure);
+            if (!node.children) {
+                console.error("no hi ha children?", node.children);
+            }
+
+            for (let i = node.children.length - 1; i >= 0; --i) {
+                let childId = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
+                this._removeChildren(childId, inStructure, removeNode);
+                // inStructure[childId] = false;
+
+                if (removeNode) {
+                    let $node = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref="' +childId +'"]');
+                    $node.remove();
+                }
+
+                delete (inStructure[childId]);
+            }
+
+            node.children = [];
+
 
         },
 
@@ -730,23 +742,30 @@ define([
             // i el seu tancament tampoc
 
 
-            let nextIndex = structure.length;
+            // let nextIndex = structure.length;
+            let nextKey = structure.next;
+
+            console.log("Next", nextKey);
 
             let siblings = 0;
 
-            for (let i = 0; i < tokens.length; i++) {
+            // for (let i = 0; i < tokens.length; i++) {
+
+
+            let first = true;
+            for (let i in tokens) {
 
                 // tokens[i].rebuild = true;
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
-                if (i === 0) {
+                if (i === '0') {
                     tokens[i].id = root.id;
                     tokens[i].parent = root.parent;
                     // this.root = tokens[i].id;
 
                 } else {
 
-                    tokens[i].id = nextIndex;
+                    tokens[i].id = nextKey;
                 }
 
 
@@ -761,7 +780,7 @@ define([
 
 
                 if (stack.length > 0) {
-                    stack[stack.length - 1].children.push(nextIndex);
+                    stack[stack.length - 1].children.push(nextKey);
                     tokens[i].parent = stack[stack.length - 1].id
                 } else {
                     // Si no hi ha cap element a l'estack es que es troba al mateix nivell que l'element root
@@ -781,19 +800,16 @@ define([
                 // No cal gestionar el type content perquè s'assigna al tokenizer
 
                 if (tokens[i].value.startsWith('<WIOCCL:')) {
-                    console.log("Value:", tokens[i].value);
+                    // console.log("Value:", tokens[i].value);
                     let pattern = /<WIOCCL:.*? (.*?)>/gsm;
 
                     let matches;
 
                     if (matches = pattern.exec(tokens[i].value)) {
-                        console.log()
                         tokens[i].attrs = matches[1];
                     } else {
                         tokens[i].attrs = "";
                     }
-
-                    console.log("Attrs:", tokens[i].attrs);
 
                     pattern = /(<WIOCCL:.*?)[ >]/gsm;
 
@@ -804,7 +820,6 @@ define([
                     matches = pattern.exec(tokens[i].value);
                     tokens[i].type = matches[1].toLowerCase();
 
-                    // tokens[i].type = "wioccl";
                     stack.push(tokens[i]);
                 }
 
@@ -843,11 +858,12 @@ define([
 
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
-                if (i === 0) {
+                if (first) {
                     structure[root.id] = tokens[i];
+                    first = false;
                 } else {
-                    structure.push(tokens[i]);
-                    nextIndex++;
+                    structure[nextKey] = tokens[i];
+                    nextKey = (Number(nextKey) + 1) + "";
                 }
 
             }
@@ -855,7 +871,6 @@ define([
             if (siblings > 1 && Number(root.id) === Number(this.root)) {
                 root.addedsiblings = true;
             }
-
 
         },
 
@@ -1075,12 +1090,12 @@ define([
 
 
             while (node.parent !== null && node.id !== root.id) {
-                path.unshift(node.id + "");
+                path.unshift(node.id);
                 node = structure[node.parent];
             }
 
             // Finalment s'afegeix el node root
-            path.unshift(root.id + "");
+            path.unshift(root.id);
 
             // console.log("Selected?", selected);
             // console.log("Path:", path);
