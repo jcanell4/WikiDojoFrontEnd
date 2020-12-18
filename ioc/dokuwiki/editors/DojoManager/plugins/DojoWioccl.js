@@ -93,9 +93,6 @@ define([
 
         _getStructure() {
 
-            // console.log("estructura:", this.editor.extra.wioccl_structure.structure);
-
-            // console.log("hi ha estructura?", this.editor.extra.wioccl_structure.structure)
             if (!this.backupStructure) {
 
                 this.backupStructure = JSON.parse(JSON.stringify(this.editor.extra.wioccl_structure.structure));
@@ -147,7 +144,6 @@ define([
         },
 
         rebuildWioccl: function (data) {
-
             // console.log("Rebuilding wioccl:", data);
             let wioccl = "";
 
@@ -195,10 +191,6 @@ define([
                 let refId = $item.attr('data-wioccl-ref');
                 let wioccl = context._getStructure()[refId];
 
-                console.log("structure:", context._getStructure());
-
-                console.log("refId, wioccl:", refId, wioccl);
-
                 if (wioccl.isClone) {
                     alert("Aquest element es una copia, es mostrarà l'element pare");
 
@@ -206,9 +198,7 @@ define([
                         wioccl = context._getStructure()[wioccl.parent];
                         refId = wioccl.id;
                     }
-
                 }
-
 
                 context.root = refId;
 
@@ -492,36 +482,28 @@ define([
             });
         },
 
-
-        // IDEA1: enviar el text
+        // Enviar el text
         // en aquest cas s'envia el text reconstruit a partir dels nodes i el rootRef, només cal fer la traducció
         // i reemplaçar les nodes
 
         // Si aquest no és el root, cal cercar el parent que té com a parent el node 0
 
         _save(editor) {
-
-            console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
+            // console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
 
             let context = this;
-            // TODO passos a executar
             // 0 actualitzar el contingut actual
             this.parseWioccl(editor.getValue(), editor.wioccl, this._getStructure());
 
             // 1 reconstruir el wioccl del node pare (this._getStructure()[this.root], això és el que s'ha d'enviar al servidor
             // ALERTA! no cal enviar el text, cal enviar la estructura i el node a partir del qual s'ha de regenerar el codi wioccl
             let structure = this._getStructure();
-            // let text = this.rebuildWioccl(structure[this.root]);
             let rootRef = this.root;
 
-            console.log("quin era el this.root?", this.root);
             // Cal tenir en compte que el rootRef podria ser el node arrel i en aquest cas no cal cerca més
             while (structure[rootRef].id > 0 && structure[rootRef].parent > 0) {
                 rootRef = structure[rootRef].parent;
             }
-
-            console.log("rootRef determinat per enviar:", rootRef);
-
 
             // cal desar el parent per restaurar-lo, el que retorna del servidor no te cap parent assignat
             let originalParent = structure[rootRef].parent;
@@ -544,7 +526,7 @@ define([
                 sectok: this.editor.dispatcher.getSectok()
             };
 
-            console.log("Data to send:", dataToSend);
+            // console.log("Data to send:", dataToSend);
 
 
             // TODO: fer alguna cosa amb la resposta, es pot lligar amb .then perque retorna una promesa
@@ -559,7 +541,7 @@ define([
             context.wiocclDialog.hide();
 
             ajax.send(dataToSend).then(function (data) {
-                console.log("data:", data);
+                // console.log("data:", data);
 
                 // retorn:
                 // [0] objecte amb el resultat del command <-- diria que aquest és l'únic necessari
@@ -568,11 +550,8 @@ define([
                 // [1] jsinfo
                 // [n...] extraContentState
 
-
-                console.log(data[0].value.content);
-                console.log(data[0].value.extra.wioccl_structure.structure);
-
-
+                // console.log(data[0].value.content);
+                // console.log(data[0].value.extra.wioccl_structure.structure);
 
                 // 4 eliminar tots els nodes que penjaven originalment de  this.root
                 //      alerta! no es guarantit que els nodes del backupstructure siguin els mateixos
@@ -580,55 +559,34 @@ define([
 
                 // aquesta es la estructura original.
                 let target = context.editor.extra.wioccl_structure.structure;
-
-                console.log("El rot és correcte? (ha de ser el parent de la branca)", rootRef)
                 context._removeChildren(rootRef, target, true);
 
-
                 // Cal eliminar també les referències al node arrel (poden ser múltiple en el cas del foreach)
-
                 // Cal inserir una marca pel node root
                 let $rootNodes = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + rootRef +'"]');
-
-
-                console.log("$rootNodes", $rootNodes);
 
                 // 5 inserir el html que ha arribat del servidor
                 // Afegim les noves i eliminem el cursor
                 let $nouRoot = jQuery(data[0].value.content);
-                console.log("$nouRoot", $nouRoot);
-                // console.log("$nouRoot html", $nouRoot.html());
-
 
                 jQuery($rootNodes.get(0)).before($nouRoot);
 
                 // Elimem les referencies
                 $rootNodes.remove();
 
-
                 // Actualitzem la estructura
-
                 let source = data[0].value.extra.wioccl_structure.structure;
-
-
-
 
                 // fusió del original i l'anterior
                 Object.assign(target, source);
 
-
                 // Restaurem el parent
                 target[originalRef].parent = originalParent;
 
-
                 // Afegim els handlers
-
-                console.log("Afegits handlers a:", $nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'));
                 context._addHandlers($nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'), context);
 
             });
-
-
         },
 
         _generateHtmlForFields: function (fields) {
@@ -711,8 +669,7 @@ define([
 
 
             let found = false;
-            console.log("wioccl?", wioccl);
-            console.log("node del parent?", structure[wioccl.parent]);
+
             for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
 
                 // Cal tenir en compte els dos casos ja que un cop es fa un update tots els childrens hauran
@@ -727,7 +684,7 @@ define([
 
             if (!found) {
                 console.error("no s'ha trobat aquest node al propi pare");
-                console.log(structure, wioccl);
+                // console.log(structure, wioccl);
                 alert("node no trobat al pare");
             }
 
@@ -790,21 +747,12 @@ define([
             // ALERTA! TODO: Cal gestionar el token inicial, aquest no s'ha d'afegira l'arbre
             // i el seu tancament tampoc
 
-
-            // let nextIndex = structure.length;
             let nextKey = structure.next;
-
-            console.log("Next", nextKey);
 
             let siblings = 0;
 
-            // for (let i = 0; i < tokens.length; i++) {
-
-
             let first = true;
             for (let i in tokens) {
-
-                // tokens[i].rebuild = true;
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 if (i === '0') {
@@ -815,7 +763,6 @@ define([
                 } else {
                     tokens[i].id = nextKey;
                 }
-
 
                 tokens[i].children = [];
 
@@ -836,14 +783,11 @@ define([
                 }
 
                 // Si fem servir push s'afegeixen al final, això no serveix perquè cal inserir els nous nodes a la posició original (emmagatzemada a root.index)
-                // structure[root.parent].children.push(tokens[i].id);
-
 
                 if (tokens[i].parent === root.parent) {
                     structure[root.parent].children.splice(root.index + siblings, 0, tokens[i].id);
                     ++siblings;
                 }
-
 
                 // No cal gestionar el type content perquè s'assigna al tokenizer
 
@@ -1077,8 +1021,6 @@ define([
             let structure = this._getStructure();
 
             if (selected.addedsiblings) {
-                console.log("root?", root);
-                console.log("root.parent?", root.parent);
                 root = structure[root.parent];
                 this.root = root.id;
             }
@@ -1147,8 +1089,6 @@ define([
             // Finalment s'afegeix el node root
             path.unshift(root.id);
 
-            // console.log("Selected?", selected);
-            // console.log("Path:", path);
             newTree.set('path', path);
 
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
