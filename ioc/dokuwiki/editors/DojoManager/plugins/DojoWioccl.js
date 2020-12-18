@@ -15,10 +15,10 @@ define([
     "dojo/dom",
     // 'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/dokuwiki/editors/AceManager/toolbarManager',
-    'ioc/dokuwiki/editors/Components/RequestComponent',
+    // 'ioc/dokuwiki/editors/Components/RequestComponent',
 
 
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager, RequestComponent) {
+], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager/*, RequestComponent*/) {
 
 
     let AceFacade = null;
@@ -117,7 +117,13 @@ define([
 
             for (let i = 0; i < children.length; i++) {
 
+
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
+
+                if (context._getStructure()[id].isClone) {
+                    continue;
+                }
+
 
                 let node = JSON.parse(JSON.stringify(context._getStructure()[id]));
 
@@ -181,11 +187,28 @@ define([
 
             $node.on('click', function (e) {
 
+                let $item = jQuery(this);
+
                 e.preventDefault();
                 e.stopPropagation();
 
-                let refId = $node.attr('data-wioccl-ref');
+                let refId = $item.attr('data-wioccl-ref');
                 let wioccl = context._getStructure()[refId];
+
+                console.log("structure:", context._getStructure());
+
+                console.log("refId, wioccl:", refId, wioccl);
+
+                if (wioccl.isClone) {
+                    alert("Aquest element es una copia, es mostrarà l'element pare");
+
+                    while (wioccl.isClone) {
+                        wioccl = context._getStructure()[wioccl.parent];
+                        refId = wioccl.id;
+                    }
+
+                }
+
 
                 context.root = refId;
 
@@ -491,10 +514,18 @@ define([
             // let text = this.rebuildWioccl(structure[this.root]);
             let rootRef = this.root;
 
+            console.log("quin era el this.root?", this.root);
             // Cal tenir en compte que el rootRef podria ser el node arrel i en aquest cas no cal cerca més
             while (structure[rootRef].id > 0 && structure[rootRef].parent > 0) {
                 rootRef = structure[rootRef].parent;
             }
+
+            console.log("rootRef determinat per enviar:", rootRef);
+
+
+            // cal desar el parent per restaurar-lo, el que retorna del servidor no te cap parent assignat
+            let originalParent = structure[rootRef].parent;
+            let originalRef = rootRef;
 
             let text = this.rebuildWioccl(structure[rootRef]);
 
@@ -522,6 +553,11 @@ define([
 
             // Fem servir ajax perquè això no ha de passar pel processor
 
+            ajax.setStandbyId(jQuery('body').get(0));
+
+
+            context.wiocclDialog.hide();
+
             ajax.send(dataToSend).then(function (data) {
                 console.log("data:", data);
 
@@ -536,7 +572,7 @@ define([
                 console.log(data[0].value.content);
                 console.log(data[0].value.extra.wioccl_structure.structure);
 
-                context.wiocclDialog.hide();
+
 
                 // 4 eliminar tots els nodes que penjaven originalment de  this.root
                 //      alerta! no es guarantit que els nodes del backupstructure siguin els mateixos
@@ -561,7 +597,7 @@ define([
                 // Afegim les noves i eliminem el cursor
                 let $nouRoot = jQuery(data[0].value.content);
                 console.log("$nouRoot", $nouRoot);
-                console.log("$nouRoot html", $nouRoot.html());
+                // console.log("$nouRoot html", $nouRoot.html());
 
 
                 jQuery($rootNodes.get(0)).before($nouRoot);
@@ -574,11 +610,22 @@ define([
 
                 let source = data[0].value.extra.wioccl_structure.structure;
 
+
+
+
+                // fusió del original i l'anterior
                 Object.assign(target, source);
 
 
+                // Restaurem el parent
+                target[originalRef].parent = originalParent;
 
-                // TODO: 6 afegir els handlers
+
+                // Afegim els handlers
+
+                console.log("Afegits handlers a:", $nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'));
+                context._addHandlers($nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'), context);
+
             });
 
 
@@ -596,7 +643,7 @@ define([
 
                 html += '<div class="wioccl-field">';
                 html += '<label>' + field + ':</label>';
-                html += '<input type="text" name="' + field + '" value="' + valor + '"/>';
+                html += '<input type="text" name="' + field + '" value="' + valor + '" disabled="true"/>';
                 html += '</div>';
             }
 
@@ -664,6 +711,8 @@ define([
 
 
             let found = false;
+            console.log("wioccl?", wioccl);
+            console.log("node del parent?", structure[wioccl.parent]);
             for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
 
                 // Cal tenir en compte els dos casos ja que un cop es fa un update tots els childrens hauran
@@ -764,7 +813,6 @@ define([
                     // this.root = tokens[i].id;
 
                 } else {
-
                     tokens[i].id = nextKey;
                 }
 
@@ -1029,6 +1077,8 @@ define([
             let structure = this._getStructure();
 
             if (selected.addedsiblings) {
+                console.log("root?", root);
+                console.log("root.parent?", root.parent);
                 root = structure[root.parent];
                 this.root = root.id;
             }

@@ -842,6 +842,7 @@ span[data-wioccl-state] {
 
 [data-wioccl-ref] {
     background-color: greenyellow;
+    cursor: pointer;
 }
 
 tr[data-wioccl-ref] {
