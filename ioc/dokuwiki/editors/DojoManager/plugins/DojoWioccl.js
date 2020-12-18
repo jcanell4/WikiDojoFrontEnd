@@ -633,7 +633,7 @@ define([
 
         _generateHtmlForFields: function (fields) {
             let html = '<fieldset class="wioccl-fields">';
-            html += '<legend>Atributs, nom de la variable o paràmetres</legend>';
+            html += '<legend>Atributs, nom de la variable o paràmetres (no es poden modificar, cal modificar el codi a l\'editor)</legend>';
 
             for (let field in fields) {
 
