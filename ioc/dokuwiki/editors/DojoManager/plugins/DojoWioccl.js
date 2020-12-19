@@ -147,8 +147,8 @@ define([
             // console.log("Rebuilding wioccl:", data);
             let wioccl = "";
 
-            // Cal fer la conversió de &gt; per \>
-            data.attrs = data.attrs.replace('&gt;','\\>');
+            // Cal fer la conversió de &escapedgt; per \>
+            data.attrs = data.attrs.replace('&escapedgt;','\\>');
 
             wioccl += data.open.replace('%s', data.attrs);
 
@@ -613,8 +613,8 @@ define([
         _extractFields: function (attrs, type) {
             // console.log("Fields to extract:", attrs, type);
 
-            // Cal fer la conversió de &gt; per \>
-            attrs = attrs.replace('&gt;','\\>');
+            // Cal fer la conversió de &escapedgt; per \>
+            attrs = attrs.replace('&escapedgt;','\\>');
 
             let fields = {};
 
