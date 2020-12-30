@@ -26,6 +26,11 @@ define([
 
         var domNode = dom.byId(id);
         requestUpdate.urlBase=params.urlBase;
+        if(params.standbyId){
+            requestUpdate.setStandbyId(params.standbyId);
+        }else{
+            requestUpdate.setStandbyId(id);
+        }
 
         // capturar el clic sobre el botó Baixa i instal·la un nou connector
         var form = query(params.commonSelector);

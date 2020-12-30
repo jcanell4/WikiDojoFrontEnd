@@ -30,6 +30,9 @@ define([
             //enviar
             var queryString = domform.toQuery(objThis.form);
             queryString += "&" + objThis.name + "=" + domform.fieldToObject(objThis);
+            if(params.standbyId){
+                requestUpdateAcl.setStandbyId(params.standbyId);
+            }
             requestUpdateAcl.sendRequest(queryString);
             event.stop(e);
         };
@@ -47,6 +50,9 @@ define([
         var fACtualitzar = function(objThis, e){
             //enviar
             var data = objThis.name + "=" + domform.fieldToObject(objThis);
+            if(params.standbyId){
+                requestUpdateAcl.setStandbyId(params.standbyId);
+            }
             requestUpdateAcl.sendForm(objThis.form, data);
             event.stop(e);
         };

@@ -26,6 +26,11 @@ define([
 
         var domNode = dom.byId(id);
         requestUpdate.urlBase=params.urlBase;
+        if(params.standbyId){
+            requestUpdate.setStandbyId(params.standbyId);
+        }else{
+            requestUpdate.setStandbyId(id);
+        }
 
         // capturar el clic sobre el botó Desa
         var form = query(params.latexSelector);

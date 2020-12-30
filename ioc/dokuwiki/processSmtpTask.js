@@ -33,10 +33,10 @@ define([
         }
 
         // capturar el clic sobre el botó Cerca
-        var form = query(params.revertSelector);
-        var handle1 = on(form, "input[type=submit]:click", function(e){
+        var form = query(params.smtpSelector);
+        var handle = on(form, "button[type=submit]:click", function(e){
             //enviar
-            var queryString = "call=admin_task&do=admin&page=revert"; 
+            var queryString = "call=admin_task&do=admin&page=smtp"; 
             
             var data = domform.toObject(this.form);
             requestUpdate.getPostData = function () {
@@ -44,21 +44,8 @@ define([
             };
             requestUpdate.sendRequest(queryString);
             event.stop(e);
-            handle1.remove();
+            handle.remove();
         });
-
-        // capturar el clic sobre els enllaços <a>
-        var handle2 = on(form, "a:click", function(e){
-            //enviar
-            var uri = this.href;
-            var queryString = uri.substring(uri.indexOf("?") + 1, uri.length);
-            queryString = "call=page&" + queryString /*+ "&sectok=" + requestUpdate.getSectok()*/;
-            
-            requestUpdate.sendRequest(queryString);
-            event.stop(e);
-        });
-
-
     };
     return res;
 });
