@@ -96,6 +96,17 @@ define([], function () {
                 jQuery(this).parent().remove();
             });
         });
+        
+	jQuery(document).ready(function(){	
+            jQuery("#"+idBodyContent).find("span.note_reference").hover(function(){
+                var ref = "#"+jQuery(this).data("ref");
+                jQuery(ref).addClass("highlight");
+            }, function(){
+                var ref = "#"+jQuery(this).data("ref");
+                jQuery(ref).removeClass("highlight");
+
+            });
+        });
     };
     return res;
 });

@@ -447,9 +447,9 @@ define([
                 patcher.patch('setWrap', _patchSetWrap, id);
                 patcher.patch('sizeCtl', _patchSizeCtl, id);
 
-                this.doku_get_selection = patcher.patch('getSelection', _patchGetSelection, id);
+                this.doku_get_selection = patcher.patch('DWgetSelection', _patchGetSelection, id);     //[wiki2015->  this.doku_get_selection = patcher.patch('getSelection', _patchGetSelection, id);]
                 this.doku_selection_class = patcher.patch('selection_class', _patchSelectionClass, id);
-                this.doku_setEditorSelection = patcher.patch('setSelection', _patchSetSelection, id);
+                this.doku_setEditorSelection = patcher.patch('DWsetSelection', _patchSetSelection, id);  //[wiki2015->  this.doku_setEditorSelection = patcher.patch('DWsetSelection', _patchSetSelection, id);]
             },
 
             // Funcions originalment al Container
@@ -604,7 +604,7 @@ define([
                     }
                     this.setTextareaValue(this.get_value());
 
-                    summaryCheck(); // ALERTA! Funció propia de la Dokuwiki
+                    doku_summaryCheck(); // ALERTA! Funció propia de la Dokuwiki      [wiki2015->  summaryCheck();]
 
                     commands.hide_menu(); // ALERTA! es pot moure la subscripcció al propi commands
 
@@ -688,7 +688,7 @@ define([
                 // in Firefox, keypress doesn't send the correct keycodes,
                 // in Opera, the default of keydown can't be prevented
                 //[Josep] Alerta jQuery.browser està deprecated!
-                if (jQuery.browser.opera) {
+                 if (navigator.userAgent.search("Opera") >= 0) {    //[WIKI2015 -> if (jQuery.browser.opera) { ]
                     $editor.keypress(window.dw_editor.keyHandler);
                 } else {
                     $editor.keydown(window.dw_editor.keyHandler);

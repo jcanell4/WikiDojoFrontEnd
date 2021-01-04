@@ -162,7 +162,7 @@ define([
         regexImportLegend: "Importació via RegEx",
         importTableTitle: "Importar dades",
         buttonCancel: "Cancel·lar",
-        buttonImport: "Importar",
+        buttonImport: "Afegir",
         buttonReplace: "Reemplaçar",
         buttonLoad: "Carregar fitxer",
         rowSeparatorLabel: "Separador files",
@@ -426,11 +426,12 @@ define([
 
                         break;
 
+                    case "boolean":
                     case "bool":
 
-                        if (value === "true" || value === "1") {
+                        if (value === "true" || value === "vertader" || value === "cert" || value === "t" || value === "v" || value === "c" || value === "1") {
                             value = true;
-                        } else if (value === "false" || value === "0") {
+                        } else if (value === "false" || value === "f" || value === "0" || value.trim()==="") {
                             value = false;
                         } else {
                             console.error("Import error: " + value + " is not boolean option:", this.table.args.fields[key].options);
