@@ -1,0 +1,817 @@
+/* Estils pel DOJO-Editor */
+
+/* Plugin comentaris */
+
+.ioc-comment-block {
+    display: inline;
+    opacity: 0.999999; /* Sense això no es dibuixa correctament el triangle en el mode de lectura, meravelles de CSS i el z-index: https://philipwalton.com/articles/what-no-one-told-you-about-z-index/ */
+}
+
+.ioc-comment-reference {
+    font-style: italic;
+}
+
+.ioc-comment {
+    cursor: default;
+    color: black;
+    background-color: #FEEFB3;
+    border: 1px solid #9F6000;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.ioc-comment-body {
+    position: relative;
+    /*max-width: 350px;*/
+    max-width: 27%;
+}
+
+.ioc-comment textarea {
+    width: 96.5%;
+    margin: 10px 5px 5px;
+    resize: none;
+}
+
+.ioc-comment-reply {
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+span.replyContent {
+    display: inline-block;
+}
+
+.ioc-comment-reply:nth-child(even) {
+    background-color: #CBBF8F;
+}
+
+.ioc-signature span {
+    color: red;
+    font-weight: normal;
+    font-style: italic;
+}
+
+div.editComment {
+    display: none;
+}
+
+/*.ioc-reply-list div:first-child {*/
+/*background-color:#FEE067;*/
+/*}*/
+
+/*.ioc-comment-reply:nth-child(odd) {*/
+/*background-color:#FEE067;*/
+/*}*/
+
+.ioc-comment-reply .editComment {
+    overflow: auto;
+}
+
+.ioc-comment-reply textarea {
+    width: 96%;
+}
+
+.ioc-comment-body, .ioc-comment button {
+    float: right;
+}
+
+span.ioc-comment-toolbar {
+    float: right;
+    color: #9F6000;
+    display: none;
+}
+
+.editComment {
+    display: none;
+}
+
+textarea.reply {
+    display: none;
+}
+
+button[data-action="reply"] {
+    display: none;
+}
+
+button[data-action="resolve"] {
+    display: none;
+}
+
+span.ioc-comment-toolbar-button {
+    cursor: pointer;
+    font-weight: 100;
+    font-size: smaller;
+}
+
+div.ioc-comment [data-type="ioc-comment"] {
+    float: right;
+    display: block;
+    max-width: 350px;
+    position: relative;
+    box-shadow: 0.2em 0.3em 1.5em #eee;
+}
+
+.ioc-signature {
+    display: block;
+    width: 100%;
+    border-top: 1px dotted #9F6000;
+    padding-top: 5px;
+    font-weight: bold;
+    font-size: smaller;
+}
+
+.triangle-inner {
+    position: absolute;
+    border-top: none;
+    border-bottom: 24px solid transparent;
+    border-left: none;
+    border-right: 24px solid #9F6000;
+    left: -15px;
+    top: -1px;
+    z-index: -1;
+}
+
+.triangle-outer {
+    position: absolute;
+    border-top: none;
+    border-bottom: 18px solid transparent;
+    border-left: none;
+    border-right: 18px solid #FEEFB3;
+    left: -13px;
+    top: 0;
+}
+
+.editable-text {
+    border: 1px dotted dodgerblue;
+    border-bottom: none;
+    border-top: none;
+    padding: 0 5px;
+    margin: 0;
+
+}
+
+p.editable-text:first-child, .iocinfo + p.editable-text, .ioctitle+ p.editable-text, p.editable-text + .no-render.action{
+    border-top: 1px dotted dodgerblue;
+}
+
+p.editable-text:last-child {
+    border-bottom: 1px dotted dodgerblue;
+}
+
+
+div.action {
+    clear: both;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+
+.action a, .action span {
+    font-style: italic;
+    float: right;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 9px;
+    border-bottom: 1px dotted dodgerblue;
+    color: dodgerblue;
+    display: inline;
+    cursor: pointer;
+}
+
+a[data-ioc-link] .action a {
+    float: none;
+}
+
+a[data-ioc-link] div.action {
+    display: inline;
+}
+
+/* extrets del plugin en lloc del template */
+/* html styles
+-------------------------------------------------------------------------------*/
+
+.dokuwiki h1, .dokuwiki h2, .dokuwiki h3, .dokuwiki h4, .dokuwiki h5 {
+    clear: left;
+    width: 73%;
+}
+
+.ioctextl, .iocexample, .iocimportant, .iocquote, .iocfigure, .ioctable, .iocaccounting {
+    width: 73% !important;
+    position: relative;
+}
+
+.ioctable, .iocaccounting {
+    position: relative;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.ioctable table, .iocaccounting table {
+    border-collapse: collapse;
+    width:100%;
+}
+
+
+.ioctable th, .iocaccounting th {
+    background-color: #AAA;
+    text-align: left;
+}
+
+.ioctable table .centeralign {
+    text-align: center !important;
+}
+
+.ioctable table .leftalign {
+    text-align: left !important;
+}
+
+.ioctable table .rightalign {
+    text-align: right !important;
+}
+
+
+.ioctable th, .iocaccounting th, .ioctable td, .iocaccounting td {
+    border: 1px solid black;
+}
+
+
+div.level1, div.level2, div.level3, div.level4 {
+    float: none !important;
+}
+
+.level1 p, .level2 p, .level3 p, .level4 p, .level5 p, .level1 ol, .level2 ol, .level3 ol, .level4 ol, .level5 ol, .level1 ul, .level2 ul, .level3 ul, .level4 ul, .level5 ul {
+    width: 73% !important;
+}
+
+.dokuwiki #toc__inside .toc {
+    width: auto !important;
+}
+
+div.dokuwiki #toc__inside {
+    float: right;
+    min-width: 99%;
+}
+
+div.dokuwiki #toc__inside ul {
+    float: none;
+}
+
+.dokuwiki .secedit {
+    float: none !important;
+    padding-left: 93%;
+}
+
+.ioccontent ul, .ioccontent ol {
+    float: none;
+}
+
+
+
+.dokuwiki pre {
+    width: 73%;
+}
+
+.dokuwiki .ioccontent pre {
+    width: 98%;
+}
+
+.iocfigure, .iocfigure .iocinfo {
+    margin: 0 auto;
+}
+
+.iocfigure .iocinfo img {
+    margin-bottom: 0 !important;
+}
+
+.iocfigure p {
+    width: 100% !important;
+}
+
+.iocfigure img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+
+}
+
+.solution p {
+    width: 100% !important;
+}
+
+.solution img {
+    max-width: 100%;
+}
+
+.imgb {
+    position: relative;
+    /*clear: right;*/
+    float: right;
+    margin-bottom: 1em;
+    width: 200px !important;
+}
+
+.imgb img {
+    max-width: 195px;
+    float: left !important;
+}
+
+.imgb a {
+    float: left !important;
+
+}
+
+.imgb .title {
+    /*clear: right;*/
+    float: left !important;
+    font-size: 0.85em;
+    line-height: 1.2em;
+    padding: 0.3em 0 1em;
+    text-align: left;
+    width: 145px;
+}
+
+.newcontent {
+    display: block;
+    margin-left: -9px;
+    padding-left: 6px;
+    border-left: 3px solid #66CD00;
+}
+
+/* TABLE */
+.ioctable, .iocaccounting {
+    /*  width:100%;*/
+}
+
+.iocaccounting table {
+    border: 1px solid !important;
+}
+
+.iocaccounting table td, .iocaccounting table th {
+    border: 1px solid !important;
+}
+
+.iocaccounting table th {
+    background-color: #ccc !important;
+}
+
+.iocaccounting table td[colspan="3"] {
+    background-color: #ccc !important;
+}
+
+.ioctable .iocinfo, .iocaccounting .iocinfo {
+    /*margin: 2em auto 0 auto;*/
+    margin: 0 auto;
+}
+
+
+
+/* COLUMN B */
+
+.ioctext {
+    position: relative;
+    /*clear: right;*/
+    float: right;
+    width: 200px !important;
+    margin-bottom: 1em;
+    padding: 0;
+    font-size: 0.85em;
+    z-index: 1000;
+}
+
+.ioctext .ioccontent {
+    width: 148px;
+    float: left;
+}
+
+.iocreference {
+    position: relative;
+    /*clear: right;*/
+    float: right;
+    width: 145px !important;
+    margin-bottom: 1em;
+    background: url("./images/iocexportl/iocreference.png") no-repeat scroll left 0.2em #efefef;
+    padding: 1em 0.5em 1em 5em;
+    font-size: 0.85em;
+}
+
+.iocnote {
+    position: relative;
+    /*clear: right;*/
+    float: right;
+    width: 145px !important;
+    margin-bottom: 1em;
+    background: url("./images/iocexportl/iocnote.png") no-repeat scroll left 0.2em #efefef;
+    padding: 1em 0.5em 1em 5em;
+    font-size: 0.85em;
+}
+
+/* COLUMN A */
+
+.ioctextl, .iocexample, .iocimportant, .iocquote {
+    /*overflow: hidden;*/
+}
+
+.ioctextl .ioccontent {
+    /*clear: both !important;*/
+    width: 80%;
+    background-color: #efefef;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 1.5em 1.5em 2.5em;
+    margin: 1em auto;
+}
+
+
+
+
+.ioctextl .ioccontent p.ioctitle {
+    margin-bottom: 2em !important;
+}
+
+.iocexample .ioccontent {
+    /*clear: both !important;*/
+    width: 80%;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 1.5em 1.5em 2.5em;
+    margin: 1em auto;
+    font-size: 85%;
+}
+
+.iocexample .ioccontent p.ioctitle {
+    margin-bottom: 2em !important;
+    font-size: 120%;
+}
+
+.iocquote .ioccontent {
+    /*clear: both !important;*/
+    font-size: 85%;
+    width: 80%;
+    color: #2c2c2c;
+    background: url("./images/iocexportl/iocquote.png") no-repeat scroll 98% 1em #efefef;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    /*padding: 1.5em 4.5em 2.5em 1.5em;*/
+    padding: 1.5em 1.5em 2.5em;
+    margin: 1em auto;
+}
+
+.iocimportant .ioccontent {
+    /*clear: both !important;*/
+    width: 80%;
+    background-color: #ccc;
+    padding: 1.5em;
+    margin: 1em auto;
+}
+
+.iocexample .iocaccounting, .iocexample .ioctable, .ioctextl .iocaccounting, .ioctextl .ioctable {
+    width: 100% !important;
+}
+
+.iocexample .iocfigure, .ioctextl .iocfigure {
+    margin: 0 auto;
+}
+
+.ioctext p, .ioctextl p, .iocquote p, .iocexample p, .iocimportant p, .iocreference p, .iocnote p {
+    margin-bottom: 0px !important;
+    width: auto !important;
+    float: none;
+}
+
+.ioctextl img, .iocexample img {
+    max-width: 100%;
+}
+
+.ioctext pre, .ioctextl pre, .iocquote pre, .iocexemple pre {
+    margin-bottom: 0px !important;
+}
+
+.ioctitle {
+    font-weight: bold;
+}
+
+img.latex_displayed {
+    margin: 1em auto !important;
+    display: block;
+}
+
+.iocExportPdfIcon {
+    background-image: url("./images/iocexportl/iocPdf.png");
+    width: 32px;
+    height: 32px;
+}
+
+.iocExportPdfsIcon {
+    background-image: url("./images/iocexportl/iocPdfs.png");
+    width: 32px;
+    height: 32px;
+}
+
+.iocExportHtmlIcon {
+    background-image: url("./images/iocexportl/iocHtml.png");
+    width: 32px;
+    height: 32px;
+}
+
+div.iocContainer {
+    background-color: #FEEFB3;
+    color: #444444
+}
+
+pre {
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;
+}
+
+/*ol {*/
+    /*font-weight: bold;*/
+/*}*/
+
+/*ol ol li {*/
+    /*list-style-type: upper-roman;*/
+/*}*/
+
+/*ol ol ol li {*/
+    /*list-style-type: lower-alpha;*/
+/*}*/
+
+/*ol ol ol ol li {*/
+    /*list-style-type: lower-greek;*/
+/*}*/
+
+/*ol li, ol ol li, ol ol ol li, ol ol ol li {*/
+    /*font-weight: normal;*/
+/*}*/
+
+/*!* això posa el nombre de la llista en negreta *!*/
+/*ol {*/
+    /*margin:0 0 1.5em;*/
+    /*padding:0;*/
+    /*counter-reset:item;*/
+/*}*/
+
+/*ol>li {*/
+    /*margin:0;*/
+    /*padding:0 0 0 2em;*/
+    /*text-indent:-2em;*/
+    /*list-style-type:none;*/
+    /*counter-increment:item;*/
+/*}*/
+
+/*ol>li:before {*/
+    /*display:inline-block;*/
+    /*width:1.5em;*/
+    /*padding-right:0.5em;*/
+    /*font-weight:bold;*/
+    /*text-align:right;*/
+    /*content:counter(item) ".";*/
+/*}*/
+
+p {
+    min-height: 1px;
+}
+
+#dijitEditorBody {
+    word-wrap: break-word;
+}
+
+/*.iocaccounting {*/
+    /*!*background-color: rgba(46, 131, 255, 0.3);*!*/
+    /*background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='50px' width='110px'><text x='0' y='10' fill='lightsteelblue' font-size='14'>COMBTABILITAT</text></svg>") no-repeat;*/
+    /*background-position-x: right;*/
+
+/*}*/
+
+/* ICONS */
+.action span.actionIcon {
+    float: none;
+    display: inline-block;
+    position: relative;
+    bottom: -3px;
+    width: 16px;
+    height: 16px;
+    border: 0 !important;
+    background-size: cover;
+}
+
+.actionIcon.iocDeleteIcon {
+    background-image: url("./images/trash.png");
+}
+
+.actionIcon.iocAddEditIcon {
+    background-image: url("./images/edit.png");
+}
+
+.actionIcon.iocAddParagraphIcon {
+    background-image: url("./images/addParagraph2.png");
+}
+
+
+.actionIcon.iocAddParagraphBeforeIcon {
+    background-image: url("./images/addParagraphBefore2.png");
+}
+
+pre {
+    width: 73%;
+    background-color: #f9f9f9;
+    padding: 0.5em;
+    border: 1px dashed #8cacbb;
+    display: block;
+
+    position: relative;
+}
+
+/*pre code {*/
+    /*background-color: #f9f9f9;*/
+    /*padding: 0.5em;*/
+    /*border: 1px dashed #8cacbb;*/
+    /*display: block;*/
+
+    /*position: relative;*/
+/*}*/
+
+pre code div.no-render.action {
+    /*border-bottom: 1px dashed #8cacbb;*/
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+.iocfigure .no-render.action, .iocgif .no-render.action{
+    top: 0;
+}
+
+.iocgif .no-render.action {
+    transform: translateY(-100%);
+}
+
+
+[data-dw-block], [data-dw-box-text] {
+    position: relative
+}
+
+[data-dw-block] .no-render.action, [data-dw-box-text] .no-render.action,
+.imgb .no-render.action {
+    /*border-bottom: 1px dashed #8cacbb;*/
+    top: -15px;
+}
+
+/* Floating, requereix que el contenidor pare tingui position: relative */
+.no-render.action {
+    position: absolute;
+    float: right;
+    right: 0;
+    top: -100%;
+    padding: 2px;
+    margin: 0;
+    border: none;
+    border-radius:5px;
+
+    background-color: #FEEFB3;
+}
+
+
+pre code label {
+    font-weight: bold;
+    padding-left:15px;
+}
+
+
+
+.ioctable .no-render.action, .iocaccounting .no-render.action, .iocgif .no-render.action {
+    /*border-top: 1px dashed #8cacbb;*/
+    margin-top: 5px;
+    padding-top: 5px;
+
+    top: -5px;
+    transform: translateY(-100%);
+}
+
+.ioctable .no-render.action label, .iocaccounting .no-render.action label{
+    padding: 5px;
+}
+
+.ioctable .no-render.action label, .iocaccounting .no-render.action label{
+   font-weight: bold;
+}
+
+
+.ioctable .no-render.action select, .iocaccounting .no-render.action select,
+.ioctable .no-render.action input, .iocaccounting .no-render.action input
+{
+    margin-left: 5px;
+    margin-right:10px;
+}
+
+/*[data-dw-box]:hover,*/
+/*[data-dw-box-text]:hover,*/
+/*[data-ioc-link]:hover {*/
+.box-highlight, .box-highlight .ioctextl, .box-highlight .iocexample, .box-highlight .iocimportant, .box-highlight .iocquote,
+.box-highlight .iocnote, .box-highlight .iocreference, .box-highlight .ioccontent {
+    background-color: #FEEFB3;
+    border-radius: 5px;
+}
+
+.iocgif img {
+    max-width: 100%
+}
+
+.video, [data-dw-block="video"], .iocgif {
+    position: relative;
+    width: 73%;
+    text-align: center;
+}
+
+newcontent {
+    display: block;
+}
+
+newcontent, newcontent .iocnote, newcontent .iocreference, newcontent .ioctext {
+    border-left: 3px solid #66CD00;
+}
+
+.ioc-quiz {
+    border-radius: 5px;
+    padding: 15px;
+    margin: 15px;
+
+    border: 1px solid #8cacbb;
+}
+
+.ioc-quiz table {
+    border-collapse: collapse;
+    margin: 0 auto;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    width: 100%;
+}
+
+.ioc-quiz table td:last-child {
+    text-align: right;
+    padding-right: 15px;
+}
+
+.ioc-quiz tr:first-child {
+    width: 100%;
+    background-color: #f9f9f9;
+}
+
+
+td.center {
+    text-align: center;
+    vertical-align:middle;
+}
+
+.ioc-quiz .no-render.action {
+    position: relative;
+}
+
+.ioc-quiz .actionIcon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    background-size: cover;
+}
+
+.ioc-quiz .editable {
+    background-color: #FEEFB3;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.ioc-quiz .editable-text {
+    border: none;
+    font-style: italic;
+}
+
+.extra-solutions {
+    padding-top: 15px;
+}
+
+.extra-solutions textarea {
+    width: 100%;
+    padding: 5px;
+}
+
+.extra-solutions [data-ioc-extra-solutions]{
+    display:none;
+}
+
+.hidden-field {
+    display:none
+}
+
+.extra-solutions label {
+    font-weight: bold;
+}
