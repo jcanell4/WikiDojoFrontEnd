@@ -176,6 +176,10 @@ define([
                             + '&editing_chunks=' + value.params.editing_chunks;
                 }
 
+                query += this._getProjectParams();
+
+                query += '&editorType=' + this.dispatcher.getGlobalState().userState['editor'];
+
                 // console.log("Query built: ", query);
                 return query;
             },
@@ -191,8 +195,25 @@ define([
                 return query + '&recover_draft=true';
             },
 
+            _getProjectParams: function() {
+
+                var params = '';
+
+                var contentCache = this.dispatcher.getGlobalState().getContent(this.docId);
+
+                if (contentCache.projectOwner) {
+                    params += "&projectOwner=" + contentCache.projectOwner;
+                    params += "&projectSourceType=" + contentCache.projectSourceType;
+                }
+
+                return params;
+            },
+
             _getDocumentQuery: function () {
-                return this.query + '&recover_draft=false&editorType=' + this.dispatcher.getGlobalState().userState['editor'];
+
+                // return this.query + '&recover_draft=false&editorType=' + this.dispatcher.getGlobalState().userState['editor'];
+                return this.query + '&recover_draft=false';
+
             },
 
             _setActionType: function (value) {

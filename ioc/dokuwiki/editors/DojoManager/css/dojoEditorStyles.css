@@ -815,3 +815,40 @@ td.center {
 .extra-solutions label {
     font-weight: bold;
 }
+
+
+span[data-wioccl-state] {
+    width: 15px;
+    height: 15px;
+    display:inline-block;
+}
+
+[data-wioccl-state="open"] {
+    background-color: red;
+}
+
+[data-wioccl-state="close"] {
+    background-color: #6c0000;
+}
+
+[data-wioccl-state="open"][data-wioccl-ref] {
+    background-color: #aaaaFF;
+}
+
+[data-wioccl-state="close"][data-wioccl-ref] {
+    background-color: blue;
+}
+
+
+[data-wioccl-ref] {
+    background-color: greenyellow;
+    cursor: pointer;
+}
+
+tr[data-wioccl-ref] {
+    background-color: orange;
+}
+
+[data-test="**"] {
+    background-color: purple;
+}

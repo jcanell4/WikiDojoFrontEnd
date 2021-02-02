@@ -32,14 +32,14 @@ define([
             // TOOLBAR_ID: 'full_editor',
             // VERTICAL_MARGIN: 25,
             // MIN_HEIGHT: 200, // TODO [Xavi]: Penden de decidir on ha d'anar això definitivament. si aquí o al AceFacade
-            
-            editorCreated:false,
+
+            editorCreated: false,
 
             constructor: function () {
                 this.forceClose = false;
 
             },
-            
+
             setReadOnly: function (value) {
                 this.set("readonly", value);
             },
@@ -74,49 +74,45 @@ define([
             _doSave: function (event) {
                 // console.log("BasicEditorSubclass#_doSave", this.id, event);
 
-
-
                 var dataToSend = this.getQuerySave(this.id),
                     containerId = this.id;
 
-                // ALERTA[Xavi] No es pot fer servir el this.mixData perquè pertany al ChangesManagerCentralSubclass
-                // if (event.dataToSend) {
-                //     dataToSend = this.mixData(dataToSend, event.dataToSend, 'object');
-                // }
-                //
-                // if (event.extraDataToSend) {
-                //     // dataToSend = lang.mixin(dataToSend, event.extraDataToSend);
-                //     dataToSend = this.mixData(dataToSend, event.extraDataToSend, 'object');
-                // }
+                if (this.editor.editor.extra.wioccl_structure) {
+                    dataToSend.wioccl_structure = JSON.stringify(this.editor.editor.extra.wioccl_structure);
 
+                    let value = dataToSend.wikitext;
 
-                if(event.extraDataToSend){
-                    if(typeof event.extraDataToSend==="string"){
+                    // Cal eliminar les referencies wioccl, excepte els marcadors d'apertura,
+                    // ja que en aquest s'incrustarà el codi wioccl de la estructura
+                    // let $value = jQuery(value).contents();
+
+                    // Cal embolcallar tot dintre d'un sol node per obtenir després el html
+                    let $root = jQuery('<div>');
+                    let $value = $root.html(value);
+
+                    $value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').remove();
+
+                    dataToSend.wikitext = $value.html();
+
+                }
+
+                if (event.extraDataToSend) {
+                    if (typeof event.extraDataToSend === "string") {
                         lang.mixin(dataToSend, ioQuery.queryToObject(event.extraDataToSend));
-                    }else{
+                    } else {
                         lang.mixin(dataToSend, event.extraDataToSend);
                     }
 
                 }
 
-
-                if(event.dataToSend){
-                    if(typeof event.dataToSend==="string"){
+                if (event.dataToSend) {
+                    if (typeof event.dataToSend === "string") {
                         lang.mixin(dataToSend, ioQuery.queryToObject(event.dataToSend));
-                    }else{
+                    } else {
                         lang.mixin(dataToSend, event.dataToSend);
                     }
 
                 }
-
-
-
-//                this.eventManager.dispatchEvent(this.eventName.SAVE, {
-//                    id: this.id,
-//                    dataToSend: dataToSend,
-//                    standbyId: containerId
-//                })
-
 
                 return {
                     id: this.id,
@@ -132,18 +128,17 @@ define([
                     dataToSend = this.getQueryCancel(this.id); // el paràmetre no es fa servir
 
 
-
-                if(event.extraDataToSend){
-                    if(typeof event.extraDataToSend==="string"){
+                if (event.extraDataToSend) {
+                    if (typeof event.extraDataToSend === "string") {
                         dataToSend += "&" + event.extraDataToSend;
-                    }else{
+                    } else {
                         dataToSend += "&" + ioQuery.objectToQuery(event.extraDataToSend);
                     }
                 }
 
 //                console.log("DATA Enviada amb l'event: ", event);
 //                console.log("DATA Enviada al servidor: ", dataToSend);
-                
+
                 return {
                     id: this.id,
                     dataToSend: dataToSend,
@@ -164,7 +159,6 @@ define([
 
                 text = this.getCurrentContent();
 
-//                values.wikitext = jQuery.trim(text);
                 values.wikitext = text;
 
                 values.editorType = this.getEditor().getContentFormat();
@@ -190,8 +184,8 @@ define([
                 var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
 
                 if (contentCache.projectOwner) {
-                    query +="&projectOwner=" + contentCache.projectOwner;
-                    query +="&projectSourceType=" + contentCache.projectSourceType;
+                    query += "&projectOwner=" + contentCache.projectOwner;
+                    query += "&projectSourceType=" + contentCache.projectSourceType;
                 }
 
                 return query;
@@ -256,8 +250,8 @@ define([
             postRender: function () {
 
                 this.inherited(arguments);
-                
-                if(!this.editorCreated){
+
+                if (!this.editorCreated) {
                     if (!this.getReadOnly()) {
                         this.requirePage();
                     }
@@ -270,7 +264,7 @@ define([
                     }.bind(this));
 
                     this.fillEditorContainer();
-                    this.editorCreated=true;
+                    this.editorCreated = true;
                 }
             },
 
@@ -278,12 +272,15 @@ define([
             addEditors: function (editor) {
                 // this.editor = this.createEditor({id : this.id}, this.editorType); // ALERTA[Xavi] Establert el tipus d'editor via codi per fer proves (DOJO)
 
-                this.editor = this.createEditor({id:this.id, content: this.content.content || this.originalContent, originalContent: this.originalContent}, this.editorType);
-
-                //console.log("Content Format:", this.editor.getContentFormat());
+                this.editor = this.createEditor({
+                    id: this.id,
+                    content: this.content.content || this.originalContent,
+                    originalContent: this.originalContent,
+                    extra: this.content.extra
+                }, this.editorType);
             },
 
-            createEditor: function(config, type) {
+            createEditor: function (config, type) {
 
                 // console.log("BasicSubclass#createEditor type", type);
 
@@ -298,17 +295,18 @@ define([
                 }
             },
 
-            createDojoEditor: function(config) {
+            createDojoEditor: function (config) {
 
                 return new DojoEditorFacade(
                     {
                         id: config.id,
-                        containerId:'editor_' + config.id,
-                        textareaId:'textarea_' + config.id,
+                        containerId: 'editor_' + config.id,
+                        textareaId: 'textarea_' + config.id,
                         dispatcher: this.dispatcher,
                         content: config.content,
                         originalContent: config.originalContent,
                         readOnly: this.getReadOnly(),
+                        extra: config.extra
                     }
                 );
             },
@@ -330,10 +328,11 @@ define([
                     dispatcher: this.dispatcher,
                     content: config.content,
                     originalContent: config.originalContent,
+                    extra: config.extra
                 });
             },
 
-            requirePage: function() {
+            requirePage: function () {
                 this.required = this.dispatcher.getGlobalState().requirePage(this);
                 var readOnly = !this.required;
                 this.setReadOnly(readOnly);
@@ -351,12 +350,11 @@ define([
 
             },
 
-            freePage: function() {
+            freePage: function () {
                 this.required = false;
                 this.dispatcher.getGlobalState().freePage(this.id, this.ns);
-                this.fireEvent(this.eventName.FREE_DOCUMENT, {id:this.id})
+                this.fireEvent(this.eventName.FREE_DOCUMENT, {id: this.id})
             },
-
 
 
             getEditor: function () {
@@ -376,19 +374,18 @@ define([
              */
             onResize: function (args) {
                 var $form = jQuery('#form_' + this.id);
-                if($form.length>0 && args.changeSize){
+                if ($form.length > 0 && args.changeSize) {
                     $form.height(args.changeSize.h);
                 }
             },
 
-            onClose: function() {
+            onClose: function () {
                 // console.log("BasicEditorSubclass#onclose");
                 var ret = this.inherited(arguments);
 
-                if(ret===undefined){
+                if (ret === undefined) {
                     ret = true;
                 }
-
 
 
                 if (ret && !this.forceClose) {
@@ -410,7 +407,7 @@ define([
                 return ret;
             },
 
-            getCurrentEditor: function() {
+            getCurrentEditor: function () {
 
                 return this.editor;
             },

@@ -188,6 +188,14 @@ define([
                 if (this.rev) {
                     query += '&rev=' + this.rev;
                 }
+
+                var contentCache = this.dispatcher.getGlobalState().getContent(this.id);
+
+                if (contentCache.projectOwner && contentCache.projectOwner !== 'undefined') {
+                    query += "&projectOwner=" + contentCache.projectOwner;
+                    query += "&projectSourceType=" + contentCache.projectSourceType;
+                }
+
                 return query;
             },
 

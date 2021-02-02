@@ -867,6 +867,7 @@ define([
             },
 
             parseRow: function (row) {
+                console.log(row);
                 var newRow = {};
 
                 var lastRow;

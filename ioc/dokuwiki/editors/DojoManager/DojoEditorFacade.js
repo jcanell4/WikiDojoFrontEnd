@@ -52,6 +52,7 @@ define([
                 components: [], // string[],
                 TOOLBAR_ID: this.TOOLBAR_ID,
                 readOnly: args.readOnly,
+                extra: args.extra,
                 extraPlugins: [
                     {name:"dijit._editor.plugins.CustomKeyHandling", blockNodeForEnter: 'P'},
                     {name:"dojox.editor.plugins.NormalizeIndentOutdent"}
