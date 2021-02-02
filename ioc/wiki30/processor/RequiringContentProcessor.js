@@ -134,7 +134,7 @@ define([
             },
 
             _createStructuredContentTool: function (data, dispatcher) {
-                console.log("RequiringContentProcesor#createStructuredContentTool");
+                // console.log("RequiringContentProcesor#createStructuredContentTool");
 
                 var args = {
                     ns: data.ns,

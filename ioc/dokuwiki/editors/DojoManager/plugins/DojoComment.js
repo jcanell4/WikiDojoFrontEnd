@@ -395,7 +395,6 @@ define([
                 $textarea.val($content.html().replace(new RegExp('<br>', 'g'), '\n'));
                 $textarea.focus();
 
-                console.log("Textarea?", $textarea);
             };
         },
 

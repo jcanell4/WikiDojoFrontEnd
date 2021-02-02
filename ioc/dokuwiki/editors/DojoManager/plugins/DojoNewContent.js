@@ -68,7 +68,6 @@ define([
 
         addBlock: function () {
             var selection = this.editor.getSelection();
-            console.log("Selection nodes?", selection.nodes);
 
             for (var i = 0; i < selection.nodes.length; i++) {
 
@@ -96,7 +95,6 @@ define([
 
 
                 $node.wrap("<newcontent></newcontent>")
-                console.log("Node wrapped:", $node);
             }
 
             this.editor.forceChange();
@@ -105,13 +103,10 @@ define([
 
         removeBlock: function () {
             var selection = this.editor.getSelection();
-            console.log("Selection nodes?", selection.nodes);
 
             for (var i = 0; i < selection.nodes.length; i++) {
-                console.log("i:", i);
                 var $node = jQuery(selection.nodes[i]).closest(this.tag).children();
                 $node.unwrap();
-                console.log("Node unwrapped:", $node);
             }
 
             this.editor.forceChange();

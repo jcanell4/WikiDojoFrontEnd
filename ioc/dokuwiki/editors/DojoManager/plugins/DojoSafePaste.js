@@ -19,8 +19,8 @@ define([
                 var pastedDataTxt = e.originalEvent.clipboardData.getData('text');
                 var pastedDataHtml = e.originalEvent.clipboardData.getData('text/html');
 
-                console.log("TXT:", pastedDataTxt);
-                console.log("HTML:", pastedDataHtml);
+                // console.log("TXT:", pastedDataTxt);
+                // console.log("HTML:", pastedDataHtml);
 
                 // ALERTA! Això no funciona i provoca diversos errors com per exemple:
                 //      afegeix paràgrafs dintre d'una cel·la en copiar i enganxar cel·les

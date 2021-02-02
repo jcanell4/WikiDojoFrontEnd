@@ -489,6 +489,29 @@ define([
                 this.containerId = id;
 
                 this.editor = ace.edit(id);
+
+                // això elimina tots els keybinds
+                // this.editor.keyBinding.$defaultHandler.commandKeyBinding = {}
+
+                // console.log(this.editor.keyBinding.$defaultHandler.commandKeyBinding);
+
+                let keepKeys = ['left', 'right', 'up', 'down', 'tab', 'z'];
+
+                for (const index in this.editor.keyBinding.$defaultHandler.commandKeyBinding) {
+                    for (const key in this.editor.keyBinding.$defaultHandler.commandKeyBinding[index]) {
+                        // console.log("key", key);
+                        if (keepKeys.indexOf(key)===-1) {
+                            delete this.editor.keyBinding.$defaultHandler.commandKeyBinding[index][key]
+                        }
+                    }
+                    if ( this.editor.keyBinding.$defaultHandler.commandKeyBinding[index].length) {
+                        delete(this.editor.keyBinding.$defaultHandler.commandKeyBinding[index]);
+                    }
+
+
+                }
+
+
                 this.session = this.editor.getSession();
 
 

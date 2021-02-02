@@ -46,8 +46,8 @@ define([
         process: function () {
             var o = this.getTableInfo();
 
-            console.log("taula:", jQuery(o.tbl));
-            console.log("box?:", jQuery(o.tbl).parent());
+            // console.log("taula:", jQuery(o.tbl));
+            // console.log("box?:", jQuery(o.tbl).parent());
 
             // jQuery(o.tbl).remove();
             jQuery(o.tbl).parent().remove();

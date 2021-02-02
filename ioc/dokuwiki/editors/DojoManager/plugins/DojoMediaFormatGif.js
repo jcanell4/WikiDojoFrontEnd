@@ -84,7 +84,8 @@ define([
                 {
                     name: 'mediaselect', // name per la segona opció de window.open()
                     options: 'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes', // options pel tercer paràmetre de la funció window.open()
-                    url: 'lib/exe/mediamanager.php?ns='
+                    // url: 'lib/exe/mediamanager.php?ns='
+                    url: 'lib/exe/mediamanager.php?filler=true&onselect=dw_mediamanager_item_select_without_align&ns='
                 },
                 edid
             );
@@ -185,8 +186,6 @@ define([
         },
 
         _addHandlers: function ($node) {
-
-            console.log("Afegint handlers a media format gif. node:", $node);
 
             // ALERTA! No es pot controalr si es prem la tecla d'esborrar aquí perque el keypress es gestionat pel editor
 

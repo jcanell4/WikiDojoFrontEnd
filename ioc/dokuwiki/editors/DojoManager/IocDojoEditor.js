@@ -117,8 +117,6 @@ define([
             _fixListRootNode: function () {
                 var $node = this.getCurrentNode();
 
-                console.log("Node:", $node);
-
 
                 // Cerquem el node pare, no funciona el or al selector
                 // var $parent = $node.parent('div');
@@ -126,7 +124,7 @@ define([
                 var $closest = $node.closest('p');
 
                 // console.log("parent:", $parent);
-                console.log("closest:", $closest);
+                // console.log("closest:", $closest);
 
 
                 if ($closest.length > 0) {
@@ -514,12 +512,12 @@ define([
 
                     // Es bloqueja el parse, s'ha de fer servir plugins que interceptin aquest esdeveniment i el processin
                     $editorContainer.on('paste', function (e) {
-                        console.log(e);
+                        // console.log(e);
 
                         var pastedData = e.originalEvent.clipboardData.getData('text');
-                        console.log('Text: ', pastedData);
+                        // console.log('Text: ', pastedData);
 
-                        console.log('Html: ', e.originalEvent.clipboardData.getData('text/html'));
+                        // console.log('Html: ', e.originalEvent.clipboardData.getData('text/html'));
 
                         context.emit('safePaste', e);
 

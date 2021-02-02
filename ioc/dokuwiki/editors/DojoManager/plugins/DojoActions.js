@@ -135,9 +135,6 @@ define([
 
             $aux.on('click', function (e) {
                 e.preventDefault();
-                console.log("click");
-
-                // console.log(jQuery(getBoxNode($node)));
 
                 if (!confirm(localization["confirm-delete"] + " (" + elementType + ")?")) {
                     return;
@@ -219,7 +216,7 @@ define([
 
         addCustomAction = function ($root, $node, actionId) {
 
-            console.log($root, $node, actionId);
+            // console.log($root, $node, actionId);
 
 
             var $container = getAndAddActionContainer($root);

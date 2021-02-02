@@ -77,7 +77,7 @@ define([
                 var dataToSend = this.getQuerySave(this.id),
                     containerId = this.id;
 
-                if (this.editor.editor.extra.wioccl_structure) {
+                if (this.editor.editor.extra && this.editor.editor.extra.wioccl_structure) {
                     dataToSend.wioccl_structure = JSON.stringify(this.editor.editor.extra.wioccl_structure);
 
                     let value = dataToSend.wikitext;

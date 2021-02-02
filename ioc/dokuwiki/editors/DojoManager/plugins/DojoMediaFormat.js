@@ -77,7 +77,8 @@ define([
                 {
                     name: 'mediaselect', // name per la segona opció de window.open()
                     options: 'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes', // options pel tercer paràmetre de la funció window.open()
-                    url: 'lib/exe/mediamanager.php?ns='
+                    // url: 'lib/exe/mediamanager.php?ns='
+                    url: 'lib/exe/mediamanager.php?filler=true&onselect=dw_mediamanager_item_select_without_align&ns='
                 },
                 edid
             );
@@ -118,10 +119,6 @@ define([
 
             var width = value.match(/\?(.*?)\|/);
 
-
-            console.log("file:", file[1]);
-            console.log("width:", width[1]);
-
             var tok = '' // Es necessari el tok per canviar la mida, si no es pasa dona error 412 però aquesta
             // informació no es passa desde la finestra. De totes maneres no cal passar el paràmetre, la mida
             // la podem ajustar directament a la etiqueta
@@ -158,12 +155,11 @@ define([
             // ALERTA[Xavi] ens assegurem que s'esborre el node al premer les tecles delete o backspace
             $node.on('keyup', function (e) {
                 var $this = jQuery(this);
-                console.log("keyup!", e.keyCode);
 
                 switch (e.keyCode) {
                     case 8:  // Backspace
                     case 46:  // Delete
-                        console.log("Backspace/delete pressed");
+                        // console.log("Backspace/delete pressed");
                         $this.off();
                         $this.remove();
                         break;
@@ -171,10 +167,10 @@ define([
             });
 
             //Codi de prova, per ara no es necessari gestionar el click, però ens assegurem que funciona
-            $node.on('click', function (e) {
-
-                console.log('click',this);
-            });
+            // $node.on('click', function (e) {
+            //
+            //     console.log('click',this);
+            // });
         }
 
     });

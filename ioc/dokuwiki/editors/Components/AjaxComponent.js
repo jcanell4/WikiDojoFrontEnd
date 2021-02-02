@@ -5,6 +5,10 @@ define([
 
 ], function (declare, AbstractIocComponent, Standby) {
 
+    // ALERTA[Xavi] Només per utilitzar en casos molt molt concrets que no hagin de passar pels processors normals
+    // TODO valorar injectar-lo com a funció-processor quan s'envia i que la desvinculi quan retorna i eliminar
+    // aquesta classe (s'utilitzaria el request)
+
     return declare(AbstractIocComponent, {
         urlBase: "",
         method: "GET",
@@ -26,7 +30,7 @@ define([
              *The private attibute is used to control the construction of the object
              */
             if (this.standbyId !== null && !this._standby) {
-                console.log("Creat standby object");
+                // console.log("Creat standby object");
                 this._standby = new Standby({target: this.standbyId});
                 document.body.appendChild(this._standby.domNode);
                 this._standby.startup();
@@ -41,10 +45,7 @@ define([
             this._createStandbyObject();
 
             if (this._standby) {
-                console.log("mostrant show");
                 this._standby.show();
-            }else {
-                console.log("standby no mostrat");
             }
 
 
@@ -70,7 +71,6 @@ define([
                 },
 
                 complete: function() {
-                    console.log("hiding standby");
                     context._standby.hide();
                 }
             });

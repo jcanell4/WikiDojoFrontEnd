@@ -216,7 +216,7 @@ define([
         isReadonlySection: function (states, cursor) {
 
             if (!this.enabled) {
-                console.log("FALSE: no està activat");
+                // console.log("FALSE: no està activat");
                 return false;
             }
 
@@ -256,7 +256,7 @@ define([
                 for (var i = 0; i < lastLineStates.length; i++) {
                     // if (lastLineStates[i].name.startsWith(state)) {
                     if (lastLineStates[i].name.indexOf(state) !== -1) {
-                        console.log("FALSE: la última línia conté l'estat readonly:", state, lastLineStates[i].name);
+                        // console.log("FALSE: la última línia conté l'estat readonly:", state, lastLineStates[i].name);
                         return false;
                     }
                 }

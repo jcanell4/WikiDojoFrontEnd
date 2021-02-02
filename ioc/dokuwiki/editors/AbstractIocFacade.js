@@ -3,6 +3,20 @@ define([
     'dojo/_base/declare',
     'dojo/dom-geometry',
 ], function (Evented, declare, geometry) {
+
+    // Patch per ignorar l'alignment de tots els elements media
+    if (!window['dw_mediamanager_item_select_without_align']) {
+        window['dw_mediamanager_item_select_without_align'] = function(edid, mediaid, opts, align, keepopen) {
+            console.log('align:',align);
+
+            if (align===false) {
+                align = 1;
+            }
+
+            dw_mediamanager_item_select(edid, mediaid, opts, align, keepopen);
+        }
+    }
+
     return declare([Evented], {
 
         /**

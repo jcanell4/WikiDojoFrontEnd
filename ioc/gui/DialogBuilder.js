@@ -235,7 +235,7 @@ define([
                     {
                         name: 'mediaselect', // name per la segona opció de window.open()
                         options: 'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes', // options pel tercer paràmetre de la funció window.open()
-                        url: 'lib/exe/mediamanager.php?ns='
+                        url: 'lib/exe/mediamanager.php?filler=true&onselect=dw_mediamanager_item_select_without_align&ns='
                     },
                     edid
                 );

@@ -45,7 +45,6 @@ define([
             $node.removeClass(old);
 
             var value = $this.val();
-            console.log("input change detected: old/new", old);
             value.replace(/ /g, '-');
 
 
@@ -178,8 +177,6 @@ define([
                 $node.after(jQuery('<p>&nbsp;</p>'));
             }
 
-            console.log(this);
-            console.log(this.plugin);
 
             addActions($node, this.editor);
 

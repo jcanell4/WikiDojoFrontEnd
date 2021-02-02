@@ -25,7 +25,6 @@ define([
      d'editar i eliminar.
      */
 
-
     var WikiMediaFormatFigure = declare([AbstractParseableDojoPlugin, DojoMediaFormat], {
 
         init: function (args) {
@@ -82,6 +81,7 @@ define([
 
         _showDialog: function (data, previousId) {
 
+            console.log("Data del dialog?", data);
 
             var dialogManager = this.editor.dispatcher.getDialogManager();
 
@@ -267,12 +267,14 @@ define([
 
                 }, 0.1);
 
+                console.log("passat amb nova url");
                 tb_mediapopup(
                     null,
                     {
                         name: 'mediaselect', // name per la segona opció de window.open()
                         options: 'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes', // options pel tercer paràmetre de la funció window.open()
-                        url: 'lib/exe/mediamanager.php?ns='
+                        // url: 'lib/exe/mediamanager.php?ns='
+                        url: 'lib/exe/mediamanager.php?filler=true&onselect=dw_mediamanager_item_select_without_align&ns='
                     },
                     edid
                 );

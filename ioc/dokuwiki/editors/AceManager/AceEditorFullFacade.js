@@ -81,7 +81,7 @@ define([
         },
 
         select: function () {
-            console.log("AceEditorFullFacade#select", this.id);
+            // console.log("AceEditorFullFacade#select", this.id);
             // patcher.restoreCachedFunctions(this.id);
             this.editor.restoreCachedFunctions();
         },
@@ -122,23 +122,23 @@ define([
                 h = geometry.getContentBox(contentNode).h,
                 messageHeight = this._getImportantMessageHeight(contentNode);
 
-            console.log("Alçada calculada:", h);
+            // console.log("Alçada calculada:", h);
 
             this.setHeight(h - messageHeight);
         },
 
         setHeight: function (height) {
-            console.log("AceEditorFullFacade#setHeight", height);
+            // console.log("AceEditorFullFacade#setHeight", height);
             var min = this.MIN_HEIGHT,
                 contentNode = dom.byId(this.id),
                 h = geometry.getContentBox(contentNode).h - this._getImportantMessageHeight(contentNode),
                 max = h - this.VERTICAL_MARGIN,
                 normalizedHeight = Math.max(min, Math.min(height, max));
 
-            console.log("Calculated height to set:", normalizedHeight);
-            console.log("h", h);
-            console.log("max", max);
-            console.log("ContentNode", contentNode);
+            // console.log("Calculated height to set:", normalizedHeight);
+            // console.log("h", h);
+            // console.log("max", max);
+            // console.log("ContentNode", contentNode);
 
 
             var node = this.editor.$textarea.get(0);
