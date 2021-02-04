@@ -42,20 +42,21 @@ define([
                         for (var i=0; i<type.params.length; i++) {
                             nsTree.query += '&' + type.params[i] + '=' + item[type.params[i]];
                         }
-                    }
-                    else if (nsTree.urlBaseTyped[nsTree.item.type]) {
-                        nsTree.urlBase = nsTree.urlBaseTyped[nsTree.item.type];
-                    }
-                    else {
-                        nsTree.urlBase = nsTree.urlBaseTyped["*"];
-                    }
+                    }else{
+                        if (nsTree.urlBaseTyped[nsTree.item.type]) {
+                            nsTree.urlBase = nsTree.urlBaseTyped[nsTree.item.type];
+                        }
+                        else {
+                            nsTree.urlBase = nsTree.urlBaseTyped["*"];
+                        }
 
-                    if (item.nsproject) {
-                        nsTree.query += "&projectOwner="+item.nsproject;
-                    }
+                        if (item.nsproject) {
+                            nsTree.query += "&projectOwner="+item.nsproject;
+                        }
 
-                    if (item.projectType) {
-                        nsTree.query += "&projectSourceType="+item.projectType;
+                        if (item.projectType) {
+                            nsTree.query += "&projectSourceType="+item.projectType;
+                        }
                     }
 
 
