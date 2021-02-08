@@ -495,7 +495,7 @@ define([
 
                 // console.log(this.editor.keyBinding.$defaultHandler.commandKeyBinding);
 
-                let keepKeys = ['left', 'right', 'up', 'down', 'tab', 'z'];
+                let keepKeys = ['left', 'right', 'up', 'down', 'tab', 'z', 'f', 'h', 'c', 'v', 'x'];
 
                 for (const index in this.editor.keyBinding.$defaultHandler.commandKeyBinding) {
                     for (const key in this.editor.keyBinding.$defaultHandler.commandKeyBinding[index]) {
