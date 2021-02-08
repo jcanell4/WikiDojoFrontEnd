@@ -67,10 +67,11 @@ define([
                     },
 
                     mayHaveChildren: function (object) {
-                        return object.type === "d" ||
-                               (object.type === "p" && self.expandProject) ||
-                               object.type === "pd" ||
-                               (object.type === "po" && self.expandProject);
+                        var type = object.type.split("#");
+                        return type[0] === "d" ||
+                               (type[0] === "p" && self.expandProject) ||
+                               type[0] === "pd" ||
+                               (type[0] === "po" && self.expandProject);
                     },
 
                     getLabel: function (object) {
@@ -98,11 +99,12 @@ define([
 
             this.tree.getIconClass = function(item, opened) {
                 var ret = this.getIconClassOrig(item, opened);
-                if (item.type === "p") {
+                var type = item.type.split("#");
+                if (type[0] === "p") {
                     ret = (opened && self.expandProject) ? "iocIconProjectOpened" : "iocIconProjectClosed";
-                }else if (item.type === "po") {
+                }else if (type[0] === "po") {
                     ret = (opened && self.expandProject) ? "dijitIconBookmark" : "dijitIconChart";
-                }else if (item.type === "s") {
+                }else if (type[0] === "s") {
                     ret = (opened && self.expandProject) ? "dijitIconKey" : "dijitIconConfigure";
                 }
                 return ret;
