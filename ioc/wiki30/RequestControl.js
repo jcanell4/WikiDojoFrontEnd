@@ -3,7 +3,8 @@ define([
     "ioc/wiki30/Request",
     "ioc/wiki30/manager/EventObserver",
     "ioc/wiki30/dispatcherSingleton",
-], function (declare, Request, EventObserver, getDispatcher) {
+    "dijit/registry",
+], function (declare, Request, EventObserver, getDispatcher, registry) {
 
     var dispatcher = getDispatcher();
 
@@ -12,12 +13,19 @@ define([
          * @class RequestControl
          */
         {
-            constructor: function (/*String*/ eventToControl,
+            constructor: function (/*Object or String*/ eventToControl,
                                    /*String*/ urlBase,
                                    /*boolean*/ post,
                                    /*boolean*/ disableOnSend,
-                                   /*Object o Array*/ validatorData) {
-                this.request = new Request();
+                                   /*Object o Array*/ validatorData,
+                                   /*Object o String o FALSE*/ request) {
+                if(request && typeof request === 'string'){
+                    this.request = registry.byId(request);
+                }else if(request){
+                   this.request = request;
+                }else{
+                    this.request = new Request();
+                }
                 this.request.set("urlBase", urlBase);
                 if (disableOnSend) {
                     this.request.set("disableOnSend", disableOnSend);
