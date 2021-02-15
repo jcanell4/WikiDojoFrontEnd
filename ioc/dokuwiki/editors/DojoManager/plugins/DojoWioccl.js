@@ -31,7 +31,7 @@ define([
     let ajax = null;
     require(["ioc/dokuwiki/editors/Components/AjaxComponent"], function (AjaxComponent) {
         ajax = new AjaxComponent(); //ajax.send(urlBase, dataToSend, type)
-        ajax.urlBase = '/dokuwiki_30/lib/exe/ioc_ajax.php?call=wioccl&format=html';
+        ajax.urlBase = '/lib/exe/ioc_ajax.php?call=wioccl&format=html';
         ajax.method = 'post';
     });
 
@@ -144,7 +144,7 @@ define([
         },
 
         rebuildWioccl: function (data) {
-            // console.log("Rebuilding wioccl:", data);
+            console.log("Rebuilding wioccl:", data);
             let wioccl = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -489,7 +489,7 @@ define([
         // Si aquest no és el root, cal cercar el parent que té com a parent el node 0
 
         _save(editor) {
-            // console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
+            console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
 
             let context = this;
             // 0 actualitzar el contingut actual
@@ -541,7 +541,7 @@ define([
             context.wiocclDialog.hide();
 
             ajax.send(dataToSend).then(function (data) {
-                // console.log("data:", data);
+                console.log("data:", data);
 
                 // retorn:
                 // [0] objecte amb el resultat del command <-- diria que aquest és l'únic necessari
