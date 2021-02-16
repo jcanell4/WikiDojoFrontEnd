@@ -208,7 +208,6 @@ define([
                 let node = JSON.parse(JSON.stringify(context._getStructure()[refId]));
                 node.name = node.type ? node.type : node.open;
                 tree.push(node);
-                console.log("Tree després d'afegir el node amb ref", node.id, tree);
 
                 tree[0].children = context._getWiocclChildrenNodes(tree[0].children, tree[0].id, context);
 
@@ -488,7 +487,7 @@ define([
         // Si aquest no és el root, cal cercar el parent que té com a parent el node 0
 
         _save(editor) {
-            console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
+            // console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
 
             let context = this;
             // 0 actualitzar el contingut actual
@@ -585,6 +584,7 @@ define([
                 // Afegim els handlers
                 context._addHandlers($nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'), context);
 
+                context.editor.forceChange();
             });
         },
 
@@ -649,7 +649,7 @@ define([
 
         parseWioccl: function (text, wioccl, structure) {
             let tokens = this._tokenize(text);
-            console.log("ParseWioccl:", tokens);
+            // console.log("ParseWioccl:", tokens);
 
             // text és el text a parsejar
             // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
@@ -986,7 +986,7 @@ define([
         },
 
         _updateDetail: function (item) {
-            console.log("Updating:", item);
+            // console.log("Updating:", item);
 
 
             jQuery(this.attrContainer).empty();
