@@ -77,6 +77,8 @@ define([
                 var dataToSend = this.getQuerySave(this.id),
                     containerId = this.id;
 
+                console.log("Estructura:", dataToSend.wioccl_structure);
+
                 if (this.editor.editor.extra && this.editor.editor.extra.wioccl_structure) {
                     dataToSend.wioccl_structure = JSON.stringify(this.editor.editor.extra.wioccl_structure);
 
@@ -90,7 +92,41 @@ define([
                     let $root = jQuery('<div>');
                     let $value = $root.html(value);
 
-                    $value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').remove();
+                    //$value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').remove();
+                    $value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').each(function() {
+                        let $node = jQuery(this);
+
+                        // Si el parent és un paràgraf i ha quedat buit l'eliminem
+                        let $parent = $node.parent();
+                        $node.remove();
+
+                        console.log("Parent tag & length:", $parent.prop("tagName").toLowerCase(), $parent.text().length, $parent);
+
+                        // Això no sembla ocorrer mai
+                        if ($parent.prop("tagName").toLowerCase() === 'p' && $parent.text().length === 0) {
+                            console.log("Eliminat paràgraf buit");
+                            $parent.remove();
+                        }
+                    });
+
+                    // Correcció de paràgrafs que només contenenr un \n:
+                    //  Si el node que hi ha a continuació NO és un node de text amb '\n' cal afegir un node de text amb '\n'
+                    //  En qualsevol cas cal eliminar el paràgraf
+                    $value.find('p').each(function() {
+                        var $node = jQuery(this);
+
+                        // Si el node que hi ha acontinuació és \n no fem el canvi perquè es duplicaria
+                        if ($node.text()==="\n") {
+                            console.log("nextSibling?", $node[0].nextSibling, $node[0].nextSibling.textContent === "\n");
+
+                            if ($node[0].nextSibling && $node[0].nextSibling.textContent !== "\n") {
+                                let textNode = document.createTextNode("\n");
+                                $node.parent()[0].insertBefore(textNode, this);
+                            }
+                            $node.remove();
+
+                        }
+                    });
 
                     $value.find(':not(table br) br').remove();
                     // console.log("Només resten els brs que son dins de taules:", $value.find('br'));
