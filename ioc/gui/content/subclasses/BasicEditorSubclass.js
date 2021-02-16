@@ -93,10 +93,10 @@ define([
                     $value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').remove();
 
                     $value.find(':not(table br) br').remove();
-                    console.log("Només resten els brs que son dins de taules:", $value.find('br'));
+                    // console.log("Només resten els brs que son dins de taules:", $value.find('br'));
                     dataToSend.wikitext = $value.html();
 
-                    console.log("Data to send:", dataToSend);
+                    // console.log("Data to send:", dataToSend);
                 }
 
                 if (event.extraDataToSend) {

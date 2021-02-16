@@ -121,8 +121,9 @@ define([
                     continue;
                 }
 
-
+                // console.log("Original:", id, context._getStructure()[id]);
                 let node = JSON.parse(JSON.stringify(context._getStructure()[id]));
+                // console.log("Clon:", id,node);
 
                 if (!node) {
                     console.error("Node not found:", id);
@@ -144,7 +145,7 @@ define([
         },
 
         rebuildWioccl: function (data) {
-            console.log("Rebuilding wioccl:", data);
+            // console.log("Rebuilding wioccl:", data);
             let wioccl = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -174,6 +175,7 @@ define([
                 wioccl += data.close;
             }
 
+            // console.log("node rebuild wioccl:", wioccl);
 
             return wioccl;
         },
@@ -206,6 +208,7 @@ define([
                 let node = JSON.parse(JSON.stringify(context._getStructure()[refId]));
                 node.name = node.type ? node.type : node.open;
                 tree.push(node);
+                console.log("Tree després d'afegir el node amb ref", node.id, tree);
 
                 tree[0].children = context._getWiocclChildrenNodes(tree[0].children, tree[0].id, context);
 
@@ -381,7 +384,6 @@ define([
 
                 };
 
-
                 let valor = context.rebuildWioccl(tree[0]);
 
                 //col·locar en el lloc adequat
@@ -395,9 +397,6 @@ define([
                 //assignar i mostrar
                 wiocclDialog.set("content", dialogContainer);
                 wiocclDialog.show();
-
-
-
 
                 widgetTree.placeAt(treeContainer);
                 widgetTree.startup();
@@ -526,7 +525,7 @@ define([
                 sectok: this.editor.dispatcher.getSectok()
             };
 
-            // console.log("Data to send:", dataToSend);
+            console.log("Data to send:", dataToSend);
 
 
             // TODO: fer alguna cosa amb la resposta, es pot lligar amb .then perque retorna una promesa
@@ -541,7 +540,7 @@ define([
             context.wiocclDialog.hide();
 
             ajax.send(dataToSend).then(function (data) {
-                console.log("data:", data);
+                // console.log("data:", data);
 
                 // retorn:
                 // [0] objecte amb el resultat del command <-- diria que aquest és l'únic necessari
@@ -650,7 +649,7 @@ define([
 
         parseWioccl: function (text, wioccl, structure) {
             let tokens = this._tokenize(text);
-            // console.log(tokens);
+            console.log("ParseWioccl:", tokens);
 
             // text és el text a parsejar
             // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
@@ -987,18 +986,13 @@ define([
         },
 
         _updateDetail: function (item) {
-            // console.log("Updating:", item);
+            console.log("Updating:", item);
 
 
             jQuery(this.attrContainer).empty();
             jQuery(this.attrContainer).append(this._generateHtmlForFields(this._extractFields(item.attrs, item.type)));
 
             let auxItem = this.rebuildWioccl(item);
-
-            // Eliminem el salt de línia final, no forma part del valor del token (per determinar perquè s'afegeix)
-            if (auxItem.substr(-1) === "\n") {
-                auxItem = auxItem.substring(0, auxItem.length - 1);
-            }
 
             this.dialogEditor.setValue(auxItem);
 
