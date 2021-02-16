@@ -363,6 +363,15 @@ define([
             },
 
             /**
+             * Retorna el valor d'una propietat
+             * @returns property
+             */
+            getWidgetProperty: function(id, property) {
+                var widget = registry.byId(id);
+                return widget.get(property);
+            },
+            
+            /**
              * Retorna el GlobalState emmagatzemat al dispatcher.
              *
              * @returns {?GlobalState} el GlobalState emmagatzemat al dispatcher.
