@@ -70,6 +70,8 @@ define([
             this.addButton(config);
 
             this.editor.on('changeCursor', this.updateCursorState.bind(this));
+
+            console.log("wioccl structure:", this.editor.extra.wioccl_structure.structure);
         },
 
         addButton: function (config) {

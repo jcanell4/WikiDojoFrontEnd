@@ -100,11 +100,11 @@ define([
                         let $parent = $node.parent();
                         $node.remove();
 
-                        console.log("Parent tag & length:", $parent.prop("tagName").toLowerCase(), $parent.text().length, $parent);
+                        // console.log("Parent tag & length:", $parent.prop("tagName").toLowerCase(), $parent.text().length, $parent);
 
                         // Això no sembla ocorrer mai
                         if ($parent.prop("tagName").toLowerCase() === 'p' && $parent.text().length === 0) {
-                            console.log("Eliminat paràgraf buit");
+                            // console.log("Eliminat paràgraf buit");
                             $parent.remove();
                         }
                     });
