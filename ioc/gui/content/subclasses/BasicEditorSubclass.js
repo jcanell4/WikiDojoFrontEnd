@@ -98,13 +98,16 @@ define([
 
                         // Si el parent és un paràgraf i ha quedat buit l'eliminem
                         let $parent = $node.parent();
+                        console.log("Eliminant node amb ref:", $node.attr('data-wioccl-ref'));
                         $node.remove();
 
                         // console.log("Parent tag & length:", $parent.prop("tagName").toLowerCase(), $parent.text().length, $parent);
 
                         // Això no sembla ocorrer mai
-                        if ($parent.prop("tagName").toLowerCase() === 'p' && $parent.text().length === 0) {
-                            // console.log("Eliminat paràgraf buit");
+                        if ($parent.prop("tagName").toLowerCase() === 'p'
+                            && $parent.children().length === 0
+                            && $parent.text().length === 0) {
+                            // console.log("Eliminat paràgraf buit?");
                             $parent.remove();
                         }
                     });
