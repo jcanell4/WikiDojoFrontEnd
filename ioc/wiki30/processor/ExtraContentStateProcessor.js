@@ -14,7 +14,11 @@ define([
          * @param {*} value
          */
         updateState: function(dispatcher, value){
-            dispatcher.getGlobalState().getContent(value.id)[value.type]=value.value;
+            if (value.value) {
+                dispatcher.getGlobalState().getContent(value.id)[value.type]=value.value;
+            }else {
+                delete dispatcher.getGlobalState().getContent(value.id)[value.type];
+            }
         }
     });
     return ret;
