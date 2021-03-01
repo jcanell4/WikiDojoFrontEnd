@@ -79,6 +79,8 @@ define([
 
                 console.log("Estructura:", dataToSend.wioccl_structure);
 
+                let removedRefs = new Set();
+
                 if (this.editor.editor.extra && this.editor.editor.extra.wioccl_structure) {
                     dataToSend.wioccl_structure = JSON.stringify(this.editor.editor.extra.wioccl_structure);
 
@@ -92,14 +94,28 @@ define([
                     let $root = jQuery('<div>');
                     let $value = $root.html(value);
 
+                    $value.find('.no-render').remove();
+
                     //$value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').remove();
                     $value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').each(function() {
                         let $node = jQuery(this);
 
                         // Si el parent és un paràgraf i ha quedat buit l'eliminem
                         let $parent = $node.parent();
-                        console.log("Eliminant node amb ref:", $node.attr('data-wioccl-ref'));
+
+                        let refId = $node.attr('data-wioccl-ref');
+                        console.log("Eliminant node amb ref:", refId);
+
+                        // els tr amb refId de manera diferent perquè cal ficar el span amb el ref al foreach que el genera
+                        if ($node.prop('tagName').toLowerCase() === 'tr' && !removedRefs.has(refId)) {
+                            console.log("inserint un span amb el refid", refId);
+                            let html = `<span data-wioccl-ref="${refId}" data-wioccl-state="open"></span>`;
+                            jQuery(html).insertBefore($node);
+                        }
+
                         $node.remove();
+
+                        removedRefs.add(refId);
 
                         // console.log("Parent tag & length:", $parent.prop("tagName").toLowerCase(), $parent.text().length, $parent);
 
