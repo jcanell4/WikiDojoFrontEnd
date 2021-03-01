@@ -104,11 +104,11 @@ define([
                         let $parent = $node.parent();
 
                         let refId = $node.attr('data-wioccl-ref');
-                        console.log("Eliminant node amb ref:", refId);
+                        // console.log("Eliminant node amb ref:", refId);
 
                         // els tr amb refId de manera diferent perquè cal ficar el span amb el ref al foreach que el genera
                         if ($node.prop('tagName').toLowerCase() === 'tr' && !removedRefs.has(refId)) {
-                            console.log("inserint un span amb el refid", refId);
+                            // console.log("inserint un span amb el refid", refId);
                             let html = `<span data-wioccl-ref="${refId}" data-wioccl-state="open"></span>`;
                             jQuery(html).insertBefore($node);
                         }
