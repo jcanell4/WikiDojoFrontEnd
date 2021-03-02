@@ -125,7 +125,9 @@ define([
                     position = 0,
                     refreshContent;
 
-                var sameFormat = oldContentTool && content.editorType && oldContentTool.editorType.toLowerCase() === content.editorType.toLowerCase();
+                var sameFormat = oldContentTool &&
+                                 ((content.editorType && oldContentTool.editorType.toLowerCase() === content.editorType.toLowerCase())
+                                 || (oldContentTool.type && oldContentTool.type === this.type));
 
                 // console.log("oldContentTool", oldContentTool ? oldContentTool.editorType : '-');
                 // console.log("content.editorType", content ? content.editorType : '-');
