@@ -31,7 +31,7 @@ define([
     let ajax = null;
     require(["ioc/dokuwiki/editors/Components/AjaxComponent"], function (AjaxComponent) {
         ajax = new AjaxComponent(); //ajax.send(urlBase, dataToSend, type)
-        ajax.urlBase = '/dokuwiki_30/lib/exe/ioc_ajax.php?call=wioccl&format=html';
+        ajax.urlBase = '/lib/exe/ioc_ajax.php?call=wioccl&format=html';
         ajax.method = 'post';
     });
 
@@ -121,8 +121,9 @@ define([
                     continue;
                 }
 
-
+                // console.log("Original:", id, context._getStructure()[id]);
                 let node = JSON.parse(JSON.stringify(context._getStructure()[id]));
+                // console.log("Clon:", id,node);
 
                 if (!node) {
                     console.error("Node not found:", id);
@@ -174,6 +175,7 @@ define([
                 wioccl += data.close;
             }
 
+            // console.log("node rebuild wioccl:", wioccl);
 
             return wioccl;
         },
@@ -381,7 +383,6 @@ define([
 
                 };
 
-
                 let valor = context.rebuildWioccl(tree[0]);
 
                 //col·locar en el lloc adequat
@@ -395,9 +396,6 @@ define([
                 //assignar i mostrar
                 wiocclDialog.set("content", dialogContainer);
                 wiocclDialog.show();
-
-
-
 
                 widgetTree.placeAt(treeContainer);
                 widgetTree.startup();
@@ -526,7 +524,7 @@ define([
                 sectok: this.editor.dispatcher.getSectok()
             };
 
-            // console.log("Data to send:", dataToSend);
+            console.log("Data to send:", dataToSend);
 
 
             // TODO: fer alguna cosa amb la resposta, es pot lligar amb .then perque retorna una promesa
@@ -586,6 +584,7 @@ define([
                 // Afegim els handlers
                 context._addHandlers($nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'), context);
 
+                context.editor.forceChange();
             });
         },
 
@@ -650,7 +649,7 @@ define([
 
         parseWioccl: function (text, wioccl, structure) {
             let tokens = this._tokenize(text);
-            // console.log(tokens);
+            // console.log("ParseWioccl:", tokens);
 
             // text és el text a parsejar
             // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
@@ -994,11 +993,6 @@ define([
             jQuery(this.attrContainer).append(this._generateHtmlForFields(this._extractFields(item.attrs, item.type)));
 
             let auxItem = this.rebuildWioccl(item);
-
-            // Eliminem el salt de línia final, no forma part del valor del token (per determinar perquè s'afegeix)
-            if (auxItem.substr(-1) === "\n") {
-                auxItem = auxItem.substring(0, auxItem.length - 1);
-            }
 
             this.dialogEditor.setValue(auxItem);
 
