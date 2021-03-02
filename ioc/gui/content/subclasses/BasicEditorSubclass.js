@@ -70,6 +70,89 @@ define([
                 this.fillEditorContainer();
             },
 
+            // TODO[Xavi] refactoritzar, aquesta és una funció utilitzada només pel editor HTML
+            // per reconstruir el html adaptat, caldria afegir un _PreSave i algun sistema per
+            // lligar plugins dels editors amb aquest _PreSave del ContentEditor
+            _FixHtmlDocumentToSend: function (dataToSend) {
+                let removedRefs = new Set();
+                console.log("Estructura:", dataToSend.wioccl_structure);
+                dataToSend.wioccl_structure = JSON.stringify(this.editor.editor.extra.wioccl_structure);
+
+                let value = dataToSend.wikitext;
+
+                // Cal eliminar les referencies wioccl, excepte els marcadors d'apertura,
+                // ja que en aquest s'incrustarà el codi wioccl de la estructura
+                // let $value = jQuery(value).contents();
+
+                // Cal embolcallar tot dintre d'un sol node per obtenir després el html
+                let $root = jQuery('<div>');
+                let $value = $root.html(value);
+
+                $value.find('.no-render').remove();
+
+                //$value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').remove();
+                $value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').each(function() {
+                    let $node = jQuery(this);
+
+                    // Si el parent és un paràgraf i ha quedat buit l'eliminem
+                    let $parent = $node.parent();
+
+                    let refId = $node.attr('data-wioccl-ref');
+                    // console.log("Eliminant node amb ref:", refId);
+
+                    // els tr amb refId de manera diferent perquè cal ficar el span amb el ref al foreach que el genera
+                    if ($node.prop('tagName').toLowerCase() === 'tr' && !removedRefs.has(refId)) {
+                        // console.log("inserint un span amb el refid", refId);
+                        let html = `<span data-wioccl-ref="${refId}" data-wioccl-state="open"></span>`;
+                        jQuery(html).insertBefore($node);
+                    }
+
+                    $node.remove();
+
+                    removedRefs.add(refId);
+
+                    // console.log("Parent tag & length:", $parent.prop("tagName").toLowerCase(), $parent.text().length, $parent);
+
+                    let parentTag = $parent.length === 1 ? $parent.prop("tagName").toLowerCase() : '';
+
+
+                    // Paràgrafs: en el document de prova crec que no passa, però podria passar.
+                    // Cel·les: Aquest cas es dona quan una columna és opcional i es mostra només si s'acompleix
+                    // un IF no cal comprovar l'alineació perquè això ho assignarà el
+                    if ((parentTag === 'p' || parentTag === 'th' || parentTag === 'td')
+                        && $parent.children().length === 0
+                        && $parent.text().length === 0) {
+                        console.log(`Eliminat ${parentTag} buit`);
+                        $parent.remove();
+                    }
+
+                });
+
+                // Correcció de paràgrafs que només contenen un \n:
+                //  Si el node que hi ha a continuació NO és un node de text amb '\n' cal afegir un node de text amb '\n'
+                //  En qualsevol cas cal eliminar el paràgraf
+                $value.find('p').each(function() {
+                    var $node = jQuery(this);
+
+                    // Si el node que hi ha acontinuació és \n no fem el canvi perquè es duplicaria
+                    if ($node.text()==="\n") {
+                        console.log("nextSibling?", $node[0].nextSibling, $node[0].nextSibling.textContent === "\n");
+
+                        if ($node[0].nextSibling && $node[0].nextSibling.textContent !== "\n") {
+                            let textNode = document.createTextNode("\n");
+                            $node.parent()[0].insertBefore(textNode, this);
+                        }
+                        $node.remove();
+
+                    }
+                });
+
+                $value.find(':not(table br) br').remove();
+                // console.log("Només resten els brs que son dins de taules:", $value.find('br'));
+                dataToSend.wikitext = $value.html();
+
+                // console.log("Data to send:", dataToSend);
+            },
 
             _doSave: function (event) {
                 // console.log("BasicEditorSubclass#_doSave", this.id, event);
@@ -77,81 +160,9 @@ define([
                 var dataToSend = this.getQuerySave(this.id),
                     containerId = this.id;
 
-                console.log("Estructura:", dataToSend.wioccl_structure);
-
-                let removedRefs = new Set();
 
                 if (this.editor.editor.extra && this.editor.editor.extra.wioccl_structure) {
-                    dataToSend.wioccl_structure = JSON.stringify(this.editor.editor.extra.wioccl_structure);
-
-                    let value = dataToSend.wikitext;
-
-                    // Cal eliminar les referencies wioccl, excepte els marcadors d'apertura,
-                    // ja que en aquest s'incrustarà el codi wioccl de la estructura
-                    // let $value = jQuery(value).contents();
-
-                    // Cal embolcallar tot dintre d'un sol node per obtenir després el html
-                    let $root = jQuery('<div>');
-                    let $value = $root.html(value);
-
-                    $value.find('.no-render').remove();
-
-                    //$value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').remove();
-                    $value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').each(function() {
-                        let $node = jQuery(this);
-
-                        // Si el parent és un paràgraf i ha quedat buit l'eliminem
-                        let $parent = $node.parent();
-
-                        let refId = $node.attr('data-wioccl-ref');
-                        // console.log("Eliminant node amb ref:", refId);
-
-                        // els tr amb refId de manera diferent perquè cal ficar el span amb el ref al foreach que el genera
-                        if ($node.prop('tagName').toLowerCase() === 'tr' && !removedRefs.has(refId)) {
-                            // console.log("inserint un span amb el refid", refId);
-                            let html = `<span data-wioccl-ref="${refId}" data-wioccl-state="open"></span>`;
-                            jQuery(html).insertBefore($node);
-                        }
-
-                        $node.remove();
-
-                        removedRefs.add(refId);
-
-                        // console.log("Parent tag & length:", $parent.prop("tagName").toLowerCase(), $parent.text().length, $parent);
-
-                        // Això no sembla ocorrer mai
-                        if ($parent.prop("tagName").toLowerCase() === 'p'
-                            && $parent.children().length === 0
-                            && $parent.text().length === 0) {
-                            // console.log("Eliminat paràgraf buit?");
-                            $parent.remove();
-                        }
-                    });
-
-                    // Correcció de paràgrafs que només contenenr un \n:
-                    //  Si el node que hi ha a continuació NO és un node de text amb '\n' cal afegir un node de text amb '\n'
-                    //  En qualsevol cas cal eliminar el paràgraf
-                    $value.find('p').each(function() {
-                        var $node = jQuery(this);
-
-                        // Si el node que hi ha acontinuació és \n no fem el canvi perquè es duplicaria
-                        if ($node.text()==="\n") {
-                            console.log("nextSibling?", $node[0].nextSibling, $node[0].nextSibling.textContent === "\n");
-
-                            if ($node[0].nextSibling && $node[0].nextSibling.textContent !== "\n") {
-                                let textNode = document.createTextNode("\n");
-                                $node.parent()[0].insertBefore(textNode, this);
-                            }
-                            $node.remove();
-
-                        }
-                    });
-
-                    $value.find(':not(table br) br').remove();
-                    // console.log("Només resten els brs que son dins de taules:", $value.find('br'));
-                    dataToSend.wikitext = $value.html();
-
-                    // console.log("Data to send:", dataToSend);
+                    this._FixHtmlDocumentToSend(dataToSend);
                 }
 
                 if (event.extraDataToSend) {
