@@ -17,9 +17,8 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "dojo/on",
-    "dojo/dom-attr",
     "dojo/dom"
-], function (declare, lang, on, domAttr,dom) {
+], function (declare, lang, on, dom) {
 
     return declare(null,
 
@@ -57,12 +56,9 @@ define([
                 result = false;
                 /*var content = this._getCurrentContent(),
                     result = !(this._getOriginalContent() == content);
-
                 if (result) {
                     this.onDocumentChanged();
-
                 }*/
-
                 return result;
             },
 
@@ -78,12 +74,9 @@ define([
             /**
              * Es registra als esdeveniments i activa la detecció de canvis, copiar, enganxar i pijar tecles dins
              * del node on es troba quest ContentTool.
-             *
              * Realitza l'enregistrament al ChangesManager.
-             *
              * @override
              */
-            //postLoad: function () {
             postAttach: function () {
                 //TODO[Xavi] Aquesta crida s'ha de fer aquí perque si no el ContentTool que es registra es l'abstracta
                 //this.registerToChangesManager();
@@ -107,15 +100,10 @@ define([
             
             _doCheckCount: function (evt) {
                 if (evt.target.checked && this.controlsChecked < 2) {
-
                     this.controlsChecked++;
-
                 } else if (!evt.target.checked) {
-
                     this.controlsChecked--;
-
                 } else {
-
                     evt.target.checked = false;
                     alert("Només es poden comparar les diferencies entre 2 versions alhora");
                 }
@@ -153,11 +141,7 @@ define([
                 }
 
             },
-            /*
-             * 
-             * @param {type} evt
-             * @returns {undefined}
-             */
+            
             _doForm: function (evt) {
                 evt.preventDefault();
                 var source = evt.target || evt.srcElement;
@@ -168,13 +152,32 @@ define([
             },
             
             /**
-             * Prova de clic a contingut
-             *
+             * Segresta el clic i modifica el seu contingut i, per tant, la seva funció
              * @private
              */
             _doClickLink: function (evt) {
                 evt.preventDefault();
-                alert("Es pot seleccionar una versió a comparar amb el check o les ulleres.");
+                //alert("Es pot seleccionar una versió a comparar amb el check o les ulleres.");
+                var source = evt.target || evt.srcElement;
+                var query = source.href.slice(source.href.lastIndexOf("?")+1);
+                this._hideButtons(query);
+                this._createRequest();
+                this.requester.urlBase = "lib/exe/ioc_ajax.php?call=mediadetails";
+                this.requester.sendForm(source.id, query);
+            },
+
+            _hideButtons: function(query) {
+                var i, rev=false;
+                var q = query.split("&");
+                for (i=0; i<q.length; i++) {
+                    if (q[i].search(/rev=\d+/) !== -1) {
+                        rev = (q[i].substring(4) > 0);
+                    }
+                }
+                if (rev) {
+                    this.dispatcher.changeWidgetProperty('detailSupressioButton', "visible", false);
+                    this.dispatcher.changeWidgetProperty('mediaUpdateImageButton', "visible", false);
+                }
             },
             
             _doClickUll: function (evt) {
@@ -184,7 +187,6 @@ define([
                     source = source.parentNode;
                 }
                 var arr = source.href.split("&");
-                //var arr = domAttr.get(this, "href").split("?");
                 var arr2 = arr[2].split("=");
                 var rev = arr2[1];
                 this._createRequest();

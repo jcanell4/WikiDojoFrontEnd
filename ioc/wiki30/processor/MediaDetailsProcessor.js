@@ -73,7 +73,9 @@ define([
                 dispatcher.getGlobalState().getContent(value.id)["action"] = "mediadetails";
                 dispatcher.getGlobalState().getContent(value.id)["ns"] = value.ns;
                 dispatcher.getGlobalState().getContent(value.id)["myid"] = value.id;
+                dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
             },
+
             createContentTool: function (content, dispatcher) {
                 var urlBase = "lib/exe/ioc_ajax.php?call=mediadetails";
                 var urlBase1 = urlBase+"&img="+content.id+"&mediado=save&do=media&tab_details=view&tab_files=files&image="+content.id+"&ns="+content.ns;
