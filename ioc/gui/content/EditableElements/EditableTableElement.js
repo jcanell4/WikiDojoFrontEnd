@@ -28,8 +28,10 @@ define([
     "dijit/form/Textarea",
     "dijit/Fieldset"
 
-], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, ObjectStore, Button, GridEvents, NumberTextBox, NumberSpinner, ZoomableCell, ConditionalSelectCell, Dialog, _TemplatedMixin, _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings*/
-             on
+], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, 
+                    ObjectStore, Button, GridEvents, NumberTextBox, NumberSpinner, 
+                    ZoomableCell, ConditionalSelectCell, Dialog, _TemplatedMixin, 
+                    _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings,*/ on
 ) {
 
     var ADD_IMPORT = "add_import",
@@ -39,7 +41,8 @@ define([
         ADD_DEFAULT_ROW_AFTER = "add_default_row_after",
         ADD_MULTIPLE_DEFAULT_ROWS = "add_multiple_default_rows",
         SET_MULTIPLE_DEFAULT_ROWS = "set_multiple_default_rows",
-        REMOVE_ROWS = "remove_rows";
+        REMOVE_ROWS = "remove_rows",
+        CREATE_TABLE_FROM_URL = "create_table_from_url";
 
     var DATA_STORE_PATTERN = 'yyyy/MM/dd';
     var DATA_DISPLAY_PATTERN = 'dd/MM/yyyy';
@@ -552,6 +555,7 @@ define([
                 this.actionCallbacks[ADD_MULTIPLE_DEFAULT_ROWS] = this._addMultipleDefaultRowsCallback.bind(this);
                 this.actionCallbacks[SET_MULTIPLE_DEFAULT_ROWS] = this._setMultipleDefaultRowsCallback.bind(this);
                 this.actionCallbacks[REMOVE_ROWS] = this._removeRowCallback.bind(this);
+                this.actionCallbacks[CREATE_TABLE_FROM_URL] = this._createTableFromUrlCallback.bind(this);
             },
 
             _showDialog: function () {
@@ -1114,13 +1118,43 @@ define([
                     }
                 });
             },
+                        
+            _createTableFromUrlCallback: function(){
+                var self = this;
+                var confirmation = confirm("Aquesta opció eliminarà totes les files de la taula i la crearà de nou amb les dades per defecte.\n\
+Segur que voleu crear de nou la taula?");
+
+                if (!confirmation) {
+                    return;
+                }
+                
+                var processor = {
+                    process:function(response){
+                        self.clear();
+                        for(var item of response){
+                           self.addRow(item);
+                        }
+                    }
+                };                
+                require(["ioc/wiki30/Request"], function(Request) {
+                    var url = self.actionData[CREATE_TABLE_FROM_URL].url;
+                    var formValues = self.context.getCurrentContent();
+                    var request = new Request({urlBase: url});
+                    request.addProcessor("array", processor);
+                    request.dataToSend = {
+                        id:self.context.ns,
+                        parameters: JSON.stringify(formValues)
+                    };
+                    request.sendRequest();
+                });
+                return;
+            },
 
             _addImportCallback: function () {
 
                 this._showDialog();
 
             },
-
 
             _addRowCallback: function () {
 
@@ -1225,7 +1259,7 @@ define([
                 this.removeRows(selected);
 
             },
-
+            
             removeRows: function (indexes) {
                 indexes.sort(function (a, b) { // això no se si cal
                     return b.id - a.id;
