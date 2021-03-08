@@ -15,7 +15,6 @@ define([
 ], function (declare, Standby, request, iframe, getDispatcher, Stateful,
                 timing, domConstruct, domGeom, style, dom, Evented, ioQuery) {
 
-
     /**
      * @class Request
      */
@@ -94,7 +93,7 @@ define([
             getSectok: function () {
                 return this.dispatcher.getSectok(this.sectokId);
             },
-            
+
             getDataToSend: function(){
                 return this.dataToSend;
             },
@@ -132,12 +131,12 @@ define([
             },
 
             /**
-             * Realitzar una petició ajax de tipus post, passant com a dades 
-             * el contingut  d'un formulari (fromObject). A més se li pot 
-             * afegir a la petició un string en forma d query de la petició 
+             * Realitzar una petició ajax de tipus post, passant com a dades
+             * el contingut  d'un formulari (fromObject). A més se li pot
+             * afegir a la petició un string en forma d query de la petició
              * (buttonQuery): "id=valor&do=valorDo&..."
              *
-             * @param {string} formObject objecte de tipus formulari que es vol 
+             * @param {string} formObject objecte de tipus formulari que es vol
              * enviar a la comanda.
              * @param {string} buttonQuery petició que fem a la dokuwiki
              *
@@ -214,13 +213,13 @@ define([
                 this._startStandby();
 
                 //Set the query value and set the linkChar value to build a good query.
-                //if query param is null, query takes the value returned by getQuery function. 
+                //if query param is null, query takes the value returned by getQuery function.
                 var linkChar = (this.urlBase[this.urlBase.length - 1] === "=") ? "" : (this.urlBase.indexOf("?") !== -1) ? "&" : "?";
                 var vUrl = this.urlBase;
                 if (!query) {
                     query = this.getQuery();
                 }
-                
+
                 //Setting the linkChar value.
                 var dataToSend;
                 if (this.method!=="post" && query && typeof query === "string" && query.length > 0) {
@@ -232,16 +231,16 @@ define([
                     }else{
                         dataToSend={};
                         for (var attrname in this.dataToSend) {
-                            dataToSend[attrname] = this.dataToSend[attrname]; 
+                            dataToSend[attrname] = this.dataToSend[attrname];
                         }
                         for (var attrname in query) {
-                            dataToSend[attrname] = query[attrname]; 
+                            dataToSend[attrname] = query[attrname];
                         }
                     }
                 }else if(query){
                     dataToSend = query;
                 }
-                
+
                 //Setting the sectok value to a correct checking in the server side.
                 var gSect = this.getSectok();
                 if (gSect) {
@@ -284,7 +283,7 @@ define([
                             }
                         }else{
                             for (var attrname in dataToSend) {
-                                configPost.data[attrname] = dataToSend[attrname]; 
+                                configPost.data[attrname] = dataToSend[attrname];
                             }
                         }
                     }else if (dataToSend) {
@@ -325,6 +324,7 @@ define([
              * @param {string|bool} id del contenidor o false si no es vol mostrar
              */
             setStandbyId:     function (id) {
+
                 if (!id===false) {
                 // if (!id===false && this.get("standbyId") !== id) {
                     if (this.get("standbyId") !== id) {
@@ -343,6 +343,7 @@ define([
                 /*It sets the Standby object in a variable to be accessible from any site.
                  *The private attibute is used to control the construction of the object
                  */
+
                 if (this.standbyId !== null && !this._standby) {
                     this._standby = new Standby({target: this.standbyId});
                     document.body.appendChild(this._standby.domNode);
@@ -376,7 +377,12 @@ define([
 
             _stopStandby: function () {
                 if (this._standby) {
-                    this._standby.hide();
+                    // this._standby.hide();
+                    // ALERTA[Xavi] la reutilització no funciona, si es tanca un document
+                    // i es torna a obrir els standby no es mostren, així que els destruim
+                    // i els refem quan sigui necessari
+                    this._standby.destroy();
+                    this._standby=null;
                 }
                 if (this.hasTimer && this._timer.isRunning) {
                     this._timer.stop();
@@ -401,6 +407,7 @@ define([
                 this._timer.onStart = function () {
                     this.counter = 0;
                     if (self._standby) {
+
                         var output = domGeom.getContentBox(self.standbyId, style.getComputedStyle(self.standbyId));
                         textSize = output.w < (output.h / 2) ? output.w : output.h / 2;
                         counterDiv = domConstruct.toDom(
