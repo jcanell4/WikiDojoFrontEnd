@@ -14,6 +14,8 @@ define([
     "dojo/io-query"
 ], function (declare, Standby, request, iframe, getDispatcher, Stateful,
                 timing, domConstruct, domGeom, style, dom, Evented, ioQuery) {
+
+
     /**
      * @class Request
      */
@@ -324,8 +326,11 @@ define([
              */
             setStandbyId:     function (id) {
                 if (!id===false) {
-                    this.set("standbyId", id);
-                    this._standby = null;
+                // if (!id===false && this.get("standbyId") !== id) {
+                    if (this.get("standbyId") !== id) {
+                        this.set("standbyId", id);
+                        this._standby = null;
+                    }
                     this._standbyDisabled = false;
 
                 } else {
@@ -333,7 +338,7 @@ define([
                 }
 
             },
-            
+
             _createStandbyObject:function () {
                 /*It sets the Standby object in a variable to be accessible from any site.
                  *The private attibute is used to control the construction of the object
@@ -344,10 +349,13 @@ define([
                     this._standby.startup();
                 }
             },
-            
+
             _standbyIdSetter: function (id) {
-                this.standbyId = id;
-                this._standby = null;
+                if (this.standbyId !== id) {
+                    console.warn("S'estableix id i s'elimina el _standby", id);
+                    this.standbyId = id;
+                    this._standby = null;
+                }
             },
 
             _startStandby: function () {
