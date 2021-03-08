@@ -31,7 +31,9 @@ define([
     // ALERTA[Xavi] Substituim la funció global corresponent al picker
     window['addBtnActionPicker'] = function ($btn, props, edid) {
         var pickerid = 'picker' + (pickercounter++);
-        createPicker(pickerid, props, edid);
+
+        let node = createPicker(pickerid, props, edid);
+        jQuery(node).attr('data-toolbar-edid', edid);
 
         $btn.click(
             function () {
@@ -286,7 +288,7 @@ define([
          * @param {string} type - tipus de barra d'eines
          */
         initToolbar: function (toolbarId, wikiTextId, type) {
-            // console.log('toolbarManager#initToolbar', type);
+            // console.log('toolbarManager#initToolbar', toolbarId, type);
             this._initToolbar(toolbarId, wikiTextId, this.getToolbar(type));
 
             var $toolbar = jQuery('#' + toolbarId);
@@ -296,6 +298,8 @@ define([
 
             // Recorrem tots els botons
             var _buttons = this.getToolbar(type);
+
+            // console.log("Buttons?", _buttons);
 
             for (var i = 0; i < _buttons.length; i++) {
                 var key = _buttons[i].type;
@@ -320,8 +324,7 @@ define([
          * @param  bool   allowblock Allow buttons creating multiline content
          * @author Andreas Gohr <andi@splitbrain.org>
          */
-        _initToolbar:
-        function initToolbar(tbid,edid,tb, allowblock){
+        _initToolbar: function initToolbar(tbid,edid,tb, allowblock){
             var $toolbar, $edit;
             if (typeof tbid == 'string') {
                 $toolbar = jQuery('#' + tbid);
@@ -341,6 +344,9 @@ define([
 
             //empty the toolbar area:
             $toolbar.html('');
+
+            // Eliminem tots els pickers que estaban referenciats per aquesta toolbar si existien previament
+            jQuery(`.picker[data-toolbar-edid="${edid}"]`).remove();
 
             jQuery.each(tb, function (k, val) {
                 if (!tb.hasOwnProperty(k) || (!allowblock && val.block === true)) {
@@ -376,6 +382,7 @@ define([
                         $btn.attr('aria-controls', pickerid);
                         if (actionFunc === 'addBtnActionPicker') {
                             $btn.attr('aria-haspopup', 'true');
+                            $btn.attr('data-toolbar-edid', edid);
                         }
                     }
                     return;
