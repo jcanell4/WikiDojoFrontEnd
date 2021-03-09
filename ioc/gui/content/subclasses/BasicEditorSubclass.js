@@ -98,37 +98,6 @@ define([
 
                 $value.find('.no-render').remove();
 
-                // Cal fer una neteja dels paràgrafs que contenen només un wioccl i son fills d'altres.
-                // ho apliquem també a les capçaleres per si de cas
-
-                console.error("Això no funciona, per això està comentat");
-                // $value.find('p>[data-wioccl-ref], h1>[data-wioccl-ref], h2>[data-wioccl-ref], h3>[data-wioccl-ref], h4>[data-wioccl-ref], h5>[data-wioccl-ref], h6>[data-wioccl-ref]').each(function() {
-                //
-                //     let $node = jQuery(this);
-                //     let refId = $node.attr('data-wioccl-ref');
-                //
-                //     console.log("Comprovant node per ref:", refId);
-                //
-                //     // Cas 1, el parent es diferent de 0, aquest wioccl es troba dintre d'un altre wioccl, això
-                //     // no és suficient per determinar res.
-                //     // No modifiquem el open, aquest es processa després
-                //     if ($node.attr('data-wioccl-state') !== 'open') {
-                //
-                //         // cal eliminar-lo, no penja de l'arrel
-                //         let $parent = $node.parent();
-                //         $node.remove();
-                //
-                //         if ($parent.text().length ===0 && $parent.children() === 0) {
-                //             console.log("Eliminant al pare del wioccl amb refId", refId);
-                //             $parent.remove();
-                //         }
-                //     }
-                // });
-
-
-
-                //$value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').remove();
-                // $value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').each(function() {
                 $value.find('[data-wioccl-ref]').each(function() {
                     let $node = jQuery(this);
                     let refId = $node.attr('data-wioccl-ref');
@@ -221,6 +190,7 @@ define([
                 // console.log("Només resten els brs que son dins de taules:", $value.find('br'));
                 console.log($value.html());
                 dataToSend.wikitext = $value.html();
+
 
                 // console.log("Data to send:", dataToSend);
             },
