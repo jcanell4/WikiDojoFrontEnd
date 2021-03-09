@@ -93,10 +93,26 @@ define([
                 // let $value = jQuery(value).contents();
 
                 // Cal embolcallar tot dintre d'un sol node per obtenir després el html
+
+
+
+
+                // ALERTA! si hi ha un <div> dintre d'un element inline, com per exemple un <a> o <span>
+                // es tanca el paràgraf, la etiqueta i s'obre el <div>
+                // aquest cas es dona amb els no-render, que cal eliminar-los perquè contenen els botons
+                // no contingut per parsejar.
+
+                value = value.replace(/<div class="no-render.*?<\/div>/mg, '');
+
                 let $root = jQuery('<div>');
                 let $value = $root.html(value);
 
+
+                console.error("reconversió: ", $value.html());
+
+                console.log("Queda algún no-render?", $value.find('.no-render').length)
                 $value.find('.no-render').remove();
+
 
                 $value.find('[data-wioccl-ref]').each(function() {
                     let $node = jQuery(this);
@@ -170,6 +186,8 @@ define([
                 // Correcció de paràgrafs que només contenen un \n:
                 //  Si el node que hi ha a continuació NO és un node de text amb '\n' cal afegir un node de text amb '\n'
                 //  En qualsevol cas cal eliminar el paràgraf
+
+
                 $value.find('p').each(function() {
                     var $node = jQuery(this);
 
