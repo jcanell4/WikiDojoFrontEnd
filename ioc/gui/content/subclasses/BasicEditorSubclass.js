@@ -86,16 +86,10 @@ define([
 
                 let value = dataToSend.wikitext;
 
-                console.warn("Html abans d'eliminar els nodes:", dataToSend.wikitext);
 
                 // Cal eliminar les referencies wioccl, excepte els marcadors d'apertura,
                 // ja que en aquest s'incrustarà el codi wioccl de la estructura
                 // let $value = jQuery(value).contents();
-
-                // Cal embolcallar tot dintre d'un sol node per obtenir després el html
-
-
-
 
                 // ALERTA! si hi ha un <div> dintre d'un element inline, com per exemple un <a> o <span>
                 // es tanca el paràgraf, la etiqueta i s'obre el <div>
@@ -104,15 +98,12 @@ define([
 
                 value = value.replace(/<div class="no-render.*?<\/div>/mg, '');
 
+                // Cal embolcallar tot dintre d'un sol node per obtenir després el html
                 let $root = jQuery('<div>');
                 let $value = $root.html(value);
 
 
-                console.error("reconversió: ", $value.html());
-
-                console.log("Queda algún no-render?", $value.find('.no-render').length)
                 $value.find('.no-render').remove();
-
 
                 $value.find('[data-wioccl-ref]').each(function() {
                     let $node = jQuery(this);
@@ -131,8 +122,6 @@ define([
                             console.error(structure[Number(refId)].id, refId);
                             alert("Error amb la referència a dels identificadors, el index de l'array no es correspon amb el refId")
                         }
-
-                        console.log("**** RETURN ****");
                         return;
                     }
 
@@ -141,9 +130,6 @@ define([
                     // Si el parent és un paràgraf i ha quedat buit l'eliminem
                     let $parent = $node.parent();
 
-
-                    // console.log("Eliminant node amb ref:", refId);
-
                     // els tr amb refId de manera diferent perquè cal ficar el span amb el ref al foreach que el genera
                     if ($node.prop('tagName').toLowerCase() === 'tr' && !removedRefs.has(refId)) {
                         // console.log("inserint un span amb el refid", refId);
@@ -151,7 +137,6 @@ define([
                         jQuery(html).insertBefore($node);
                     }
 
-                    console.log("Eliminant node:", $node);
                     $node.remove();
 
                     let debugText = $node.text();
@@ -170,7 +155,6 @@ define([
                     // ALERTA! Si només contenia wioccl ignorem els salts de línia, aquest es tornaràn
                     // a afegir als seus wioccl respectius
 
-                    console.log("cal eliminar el parent?", parentTag, $parent.children().length, $parent.text().trim().length === 0)
                     if (tagList.includes(parentTag)
                         && $parent.children().length === 0
                         && $parent.text().trim().length === 0) {
@@ -193,7 +177,6 @@ define([
 
                     // Si el node que hi ha acontinuació és \n no fem el canvi perquè es duplicaria
                     if ($node.text()==="\n") {
-                        console.log("nextSibling?", $node[0].nextSibling, $node[0].nextSibling.textContent === "\n");
 
                         if ($node[0].nextSibling && $node[0].nextSibling.textContent !== "\n") {
                             let textNode = document.createTextNode("\n");
@@ -206,7 +189,7 @@ define([
 
                 $value.find(':not(table br) br').remove();
                 // console.log("Només resten els brs que son dins de taules:", $value.find('br'));
-                console.log($value.html());
+                // console.log($value.html());
                 dataToSend.wikitext = $value.html();
 
 
