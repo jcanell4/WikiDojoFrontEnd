@@ -449,7 +449,7 @@ define([
 
 
         renderFieldEditableObject: function (field, fvalues) {
-            // console.log("_abstractFormRenderEngine#renderFieldEditableObject:", field, field.props.editableClass);
+            console.log("_abstractFormRenderEngine#renderFieldEditableObject:", field, field.props);
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
                 $editableObject;
@@ -479,6 +479,11 @@ define([
             }
             $field.append($editableObject);
 
+            if (field.props.readonly) {
+                let $hidden =  jQuery('<input type="hidden" name="' + field.name + '" id="' + field.name + '"/>');
+                $hidden.val(JSON.stringify(fvalues[field.name]));
+                $field.append($hidden);
+            }
             return $field;
         },
 
