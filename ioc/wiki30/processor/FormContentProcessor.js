@@ -48,6 +48,8 @@ define([
                     dispatcher.getGlobalState().getContent(value.id).metaDataSubSet = value.extra.metaDataSubSet;
                 if (value.extra.rol)
                     dispatcher.getGlobalState().getContent(value.id).rol = value.extra.rol;
+                dispatcher.getGlobalState().getContent(value.id).rev = value.extra.rev;
+                dispatcher.getGlobalState().getContent(value.id).isRevision = (value.extra.rev) ? true : false;                                
             }
         },
 
