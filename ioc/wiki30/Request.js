@@ -353,7 +353,6 @@ define([
 
             _standbyIdSetter: function (id) {
                 if (this.standbyId !== id) {
-                    console.warn("S'estableix id i s'elimina el _standby", id);
                     this.standbyId = id;
                     this._standby = null;
                 }

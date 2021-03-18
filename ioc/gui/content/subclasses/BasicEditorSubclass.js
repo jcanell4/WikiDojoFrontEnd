@@ -10,6 +10,10 @@ define([
     'ioc/gui/content/subclasses/AbstractEditorSubclass',
 ], function (declare, on, AceFacade, DojoEditorFacade, geometry, dom, ioQuery, lang, AbstractEditorSubclass) {
 
+    // Aquest són els elements que es crean com a contenidors d'items wioccl i que s'han d'eliminar
+    // per poder reconstruir el document correctament al servidor
+    let tagList = ['p', 'th', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+
     return declare([AbstractEditorSubclass],
 
         /**
@@ -75,30 +79,56 @@ define([
             // lligar plugins dels editors amb aquest _PreSave del ContentEditor
             _FixHtmlDocumentToSend: function (dataToSend) {
                 let removedRefs = new Set();
-                console.log("Estructura:", dataToSend.wioccl_structure);
+                let structure = this.editor.editor.extra.wioccl_structure.structure;
                 dataToSend.wioccl_structure = JSON.stringify(this.editor.editor.extra.wioccl_structure);
+                // console.log("Estructura:", dataToSend.wioccl_structure);
+                // console.log("Estructura:", structure);
 
                 let value = dataToSend.wikitext;
+
 
                 // Cal eliminar les referencies wioccl, excepte els marcadors d'apertura,
                 // ja que en aquest s'incrustarà el codi wioccl de la estructura
                 // let $value = jQuery(value).contents();
 
+                // ALERTA! si hi ha un <div> dintre d'un element inline, com per exemple un <a> o <span>
+                // es tanca el paràgraf, la etiqueta i s'obre el <div>
+                // aquest cas es dona amb els no-render, que cal eliminar-los perquè contenen els botons
+                // no contingut per parsejar.
+
+                value = value.replace(/<div class="no-render.*?<\/div>/mg, '');
+
                 // Cal embolcallar tot dintre d'un sol node per obtenir després el html
                 let $root = jQuery('<div>');
                 let $value = $root.html(value);
 
+
                 $value.find('.no-render').remove();
 
-                //$value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').remove();
-                $value.find('[data-wioccl-ref]:not([data-wioccl-state="open"])').each(function() {
+                $value.find('[data-wioccl-ref]').each(function() {
                     let $node = jQuery(this);
+                    let refId = $node.attr('data-wioccl-ref');
+
+                    // console.log("comprovant node:", $node);
+
+                    // Cal eliminar només els nodes open que tinguinun parentId > 0, perquè aquests node s'afegiran
+                    // automàticament amb la reconstrucció del wioccl
+                    // console.log(refId, structure[Number(refId)]);
+                    if ($node.attr('data-wioccl-state') === 'open' && structure[Number(refId)].parent === '0') {
+
+                        // console.log("Comprovant node d'apertura per saltar:", refId, structure[Number(refId)]);
+                        // comprovació!
+                        if (structure[Number(refId)].id !== refId) {
+                            console.error(structure[Number(refId)].id, refId);
+                            alert("Error amb la referència a dels identificadors, el index de l'array no es correspon amb el refId")
+                        }
+                        return;
+                    }
+
+
 
                     // Si el parent és un paràgraf i ha quedat buit l'eliminem
                     let $parent = $node.parent();
-
-                    let refId = $node.attr('data-wioccl-ref');
-                    // console.log("Eliminant node amb ref:", refId);
 
                     // els tr amb refId de manera diferent perquè cal ficar el span amb el ref al foreach que el genera
                     if ($node.prop('tagName').toLowerCase() === 'tr' && !removedRefs.has(refId)) {
@@ -108,6 +138,8 @@ define([
                     }
 
                     $node.remove();
+
+                    let debugText = $node.text();
 
                     removedRefs.add(refId);
 
@@ -119,24 +151,32 @@ define([
                     // Paràgrafs: en el document de prova crec que no passa, però podria passar.
                     // Cel·les: Aquest cas es dona quan una columna és opcional i es mostra només si s'acompleix
                     // un IF no cal comprovar l'alineació perquè això ho assignarà el
-                    if ((parentTag === 'p' || parentTag === 'th' || parentTag === 'td')
+
+                    // ALERTA! Si només contenia wioccl ignorem els salts de línia, aquest es tornaràn
+                    // a afegir als seus wioccl respectius
+
+                    if (tagList.includes(parentTag)
                         && $parent.children().length === 0
-                        && $parent.text().length === 0) {
-                        console.log(`Eliminat ${parentTag} buit`);
+                        && $parent.text().trim().length === 0) {
+                        console.warn(`Eliminat ${parentTag} buit, child text:${debugText}`);
                         $parent.remove();
                     }
 
                 });
 
+
+
+
                 // Correcció de paràgrafs que només contenen un \n:
                 //  Si el node que hi ha a continuació NO és un node de text amb '\n' cal afegir un node de text amb '\n'
                 //  En qualsevol cas cal eliminar el paràgraf
+
+
                 $value.find('p').each(function() {
                     var $node = jQuery(this);
 
                     // Si el node que hi ha acontinuació és \n no fem el canvi perquè es duplicaria
                     if ($node.text()==="\n") {
-                        console.log("nextSibling?", $node[0].nextSibling, $node[0].nextSibling.textContent === "\n");
 
                         if ($node[0].nextSibling && $node[0].nextSibling.textContent !== "\n") {
                             let textNode = document.createTextNode("\n");
@@ -149,7 +189,9 @@ define([
 
                 $value.find(':not(table br) br').remove();
                 // console.log("Només resten els brs que son dins de taules:", $value.find('br'));
+                // console.log($value.html());
                 dataToSend.wikitext = $value.html();
+
 
                 // console.log("Data to send:", dataToSend);
             },

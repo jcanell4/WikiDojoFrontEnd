@@ -489,6 +489,11 @@ define([
                 $field.append($hidden);
             }
 
+            if (field.props.readonly) {
+                let $hidden =  jQuery('<input type="hidden" name="' + field.name + '" id="' + field.name + '"/>');
+                $hidden.val(JSON.stringify(fvalues[field.name]));
+                $field.append($hidden);
+            }
             return $field;
         },
 
