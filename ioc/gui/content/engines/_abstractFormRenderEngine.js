@@ -449,7 +449,7 @@ define([
 
 
         renderFieldEditableObject: function (field, fvalues) {
-            console.log("_abstractFormRenderEngine#renderFieldEditableObject:", field, field.props);
+            // console.log("_abstractFormRenderEngine#renderFieldEditableObject:", field, field.props.editableClass);
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
                 $editableObject;
