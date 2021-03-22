@@ -80,6 +80,9 @@ define([
             _FixHtmlDocumentToSend: function (dataToSend) {
                 let removedRefs = new Set();
                 let structure = this.editor.editor.extra.wioccl_structure.structure;
+
+                console.log("Structure to save:", this.editor.editor.extra.wioccl_structure);
+
                 dataToSend.wioccl_structure = JSON.stringify(this.editor.editor.extra.wioccl_structure);
                 // console.log("Estructura:", dataToSend.wioccl_structure);
                 // console.log("Estructura:", structure);
