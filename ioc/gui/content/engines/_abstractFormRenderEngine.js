@@ -68,6 +68,8 @@ define([
                     $header.append($collapseIcon);
 
                     $collapseIcon.on('click', this._collapseToggle);
+
+                    $group.addClass('collapsable-frame');
                 }
 
             }
@@ -193,6 +195,8 @@ define([
             }
 
             // Padding 6px, border 1px, line height 20px
+
+            $field.find('label').attr('data-error-id', field.id);
 
             return $field;
         },

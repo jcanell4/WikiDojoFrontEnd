@@ -61,6 +61,7 @@ define([
     "ioc/wiki30/processor/ProjectDiffContentProcessor",
     "ioc/wiki30/processor/ProjectRequireContentProcessor",
     "ioc/wiki30/processor/ProjectPartialContentProcessor",
+    "ioc/wiki30/processor/MetaErrorProcessor",
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, MediaProcessor, MetaInfoProcessor, MetaMediaInfoProcessor,
              MediaDetailsProcessor, MetaMediaDetailsInfoProcessor, DataContentProcessor,
@@ -76,7 +77,7 @@ define([
              PrintProcessor, ContentToolTimerProcessor, UserStateProcessor,
              UpdateLocalDraftsProcessor, UserProfileProcessor, ProjectEditContentProcessor,
              ProjectViewContentProcessor, ProjectDiffContentProcessor, ProjectRequireContentProcessor,
-             ProjectPartialContentProcessor) {
+             ProjectPartialContentProcessor, MetaErrorProcessor) {
 
     /** @typedef {object} DijitWidget widget */
     /** @typedef {object} DijitContainer contenidor */
@@ -217,6 +218,8 @@ define([
                 this.processors["project_partial"] = new ProjectPartialContentProcessor();
                 this.processors["project_diff"] = new ProjectDiffContentProcessor();
                 this.processors["project_require"] = new ProjectRequireContentProcessor();
+
+                this.processors["meta_error_type"] = new MetaErrorProcessor();
             },
 
             /**

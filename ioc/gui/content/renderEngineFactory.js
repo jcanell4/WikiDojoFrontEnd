@@ -41,6 +41,7 @@ define([
          * @private
          */
         _getRenderEngine = function (type) {
+            // console.log("RenderEngine Type:", type)
             // TODO[Xavi] afegir el canvi a les funcions:
             // after.content;
             // before.content;
