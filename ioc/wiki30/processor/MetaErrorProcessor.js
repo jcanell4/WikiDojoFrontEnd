@@ -5,18 +5,21 @@ define([
     "ioc/wiki30/processor/AbstractResponseProcessor",
     "ioc/wiki30/processor/ExtraMetaInfoProcessor"
 ], function (declare, registry, contentToolFactory, AbstractResponseProcessor, ExtraMetaInfoProcessor) {
-    /**
-     * Aquesta classe s'encarrega de processar la informació de tipus metadada, generar el ContentTool del tipus
-     * adequat i afegirlo al ContainerContentTool que li pertoca.
-     *
-     * @class MetaInfoProcessor
-     * @extends AbstractResponseProcessor
-     * @author Josep Cañellas <jcanell4@ioc.cat>, Xavier García <xaviergaro.dev@gmail.com>
-     */
+
+
+
+
     return declare([AbstractResponseProcessor, ExtraMetaInfoProcessor], {
 
-        // type: "meta_error_processor",
+        // aquest és el tipus que es fa servir pel renderengine
         type: "metainfo",
+
+        docId: null,
+
+        process: function (value, dispatcher) {
+            this.docId = value.id;
+            this.inherited(arguments);
+        },
 
         _addMetainfo: function (id, meta, dispatcher, nodeMetaInfo, ret, standalone) {
 
@@ -41,19 +44,26 @@ define([
                     nodeMetaInfo.addChild(cp);
                     nodeMetaInfo.resize();
 
+                    let $doc = jQuery('#' + this.docId);
 
                     jQuery(cp.domNode).find('[data-error-target]').on('click', function (e) {
                         e.preventDefault();
+                        // console.log("Doc:", $doc);
+
+                        jQuery('.meta-error-highlight').removeClass('meta-error-highlight');
 
                         let $this = jQuery(this);
                         let fieldId = $this.attr('data-error-target');
 
-                        let node = document.querySelector('[data-error-id="' + fieldId + '"]');
+                        let node = $doc[0].querySelector('[data-error-id="' + fieldId + '"]');
+                        // let node = document.querySelector('[data-error-id="' + fieldId + '"]');
                         jQuery(node).attr('data-collapse-target', true);
 
                         // Travesem el dom fins l'arrel del document cercant tots els icons collapse en cascada inversa
                         // per obrir-los
-                        let $parent = jQuery('[data-error-id="' + fieldId + '"]').parent();
+                        let $parent = $doc.find('[data-error-id="' + fieldId + '"]').parent();
+
+                        $parent.closest('.pair-label-field').addClass('meta-error-highlight');
 
                         // Fem servir un set (podria ser un map) perque distingueix entre nodes quan es fan servir entre claus, això
                         // permet ignorar els duplicats
@@ -104,7 +114,7 @@ define([
 
                         // intentem fer focus
                         setTimeout(function() {
-                            jQuery('#' + fieldId).focus();
+                            $doc.find('#' + fieldId).focus();
                         }, timeBeforeFocusing);
 
 
