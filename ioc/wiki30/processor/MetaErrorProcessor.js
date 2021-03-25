@@ -103,11 +103,11 @@ define([
                             if (collapsing) {
                                 // Hem d'esperar a que acavi
                                 setTimeout(function() {
-                                    node.scrollIntoView({behavior: 'smooth', block: 'start'});
+                                    node.scrollIntoView({behavior: 'smooth', block: 'center'});
                                 }, 600);
                                 timeBeforeFocusing = 1000;
                             } else {
-                                node.scrollIntoView({behavior: 'smooth', block: 'start'});
+                                node.scrollIntoView({behavior: 'smooth', block: 'center'});
                                 timeBeforeFocusing = 500;
                             }
                         }
