@@ -529,6 +529,11 @@ define([
             console.log("Data to send:", dataToSend);
 
 
+            // ALERTA! si el rootRef és 0 cal eliminar tot el document perquè es reemplaçarà
+            if (dataToSend.rootRef === "0") {
+                context.editor.setValue('');
+            }
+
             // TODO: fer alguna cosa amb la resposta, es pot lligar amb .then perque retorna una promesa
 
             // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo al document editat (cal indicar el punt d'inserció)
@@ -569,7 +574,13 @@ define([
                 // Afegim les noves i eliminem el cursor
                 let $nouRoot = jQuery(data[0].value.content);
 
-                jQuery($rootNodes.get(0)).before($nouRoot);
+                if (dataToSend.rootRef === "0") {
+                    // s'ha reemplaçat tot el document
+                    context.editor.setValue(data[0].value.content);
+                } else {
+                    jQuery($rootNodes.get(0)).before($nouRoot);
+                }
+
 
                 // Elimem les referencies
                 $rootNodes.remove();

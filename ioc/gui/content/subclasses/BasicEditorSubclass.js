@@ -89,6 +89,9 @@ define([
 
                 let value = dataToSend.wikitext;
 
+                console.log("Data to send? hi ha el rootRef?", dataToSend);
+
+
 
                 // Cal eliminar les referencies wioccl, excepte els marcadors d'apertura,
                 // ja que en aquest s'incrustarà el codi wioccl de la estructura
@@ -104,7 +107,6 @@ define([
                 // Cal embolcallar tot dintre d'un sol node per obtenir després el html
                 let $root = jQuery('<div>');
                 let $value = $root.html(value);
-
 
                 $value.find('.no-render').remove();
 
