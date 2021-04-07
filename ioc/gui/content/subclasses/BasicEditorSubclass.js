@@ -163,7 +163,7 @@ define([
                     if (tagList.includes(parentTag)
                         && $parent.children().length === 0
                         && $parent.text().trim().length === 0) {
-                        console.warn(`Eliminat ${parentTag} buit, child text:${debugText}`);
+                        // console.warn(`Eliminat ${parentTag} buit, child text:${debugText}`);
                         $parent.remove();
                     }
 
