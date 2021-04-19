@@ -71,7 +71,7 @@ define([
 
             this.editor.on('changeCursor', this.updateCursorState.bind(this));
 
-            console.log("wioccl structure:", this.editor.extra.wioccl_structure.structure);
+            // console.log("wioccl structure:", this.editor.extra.wioccl_structure.structure);
         },
 
         addButton: function (config) {
@@ -151,7 +151,13 @@ define([
             let wioccl = "";
 
             // Cal fer la conversió de &escapedgt; per \>
-            data.attrs = data.attrs.replace('&escapedgt;','\\>');
+            data.attrs = data.attrs.replaceAll('&escapedgt;','\\>');
+
+            data.attrs = data.attrs.replaceAll('&mark;','\\>');
+            data.attrs = data.attrs.replaceAll('&markn;',"\n>");
+            // value = value.replaceAll(/&markn;/gsm, '\n>');
+            // value = value.replaceAll(/&mark;/gsm, '>');
+
 
             wioccl += data.open.replace('%s', data.attrs);
 
@@ -526,7 +532,7 @@ define([
                 sectok: this.editor.dispatcher.getSectok()
             };
 
-            console.log("Data to send:", dataToSend);
+            // console.log("Data to send:", dataToSend);
 
 
             // ALERTA! si el rootRef és 0 cal eliminar tot el document perquè es reemplaçarà
@@ -903,6 +909,8 @@ define([
 
                 let value = xArray[0];
 
+
+
                 // Actualitzem el valor del token
 
 
@@ -912,6 +920,8 @@ define([
 
                 token.value = value;
                 tokens.push(token);
+
+                console.log(token);
 
             }
 
@@ -958,6 +968,8 @@ define([
                     tokens.splice(i + 1, 0, token);
 
                 }
+
+
 
                 currentPos = tokens[i].startIndex - 1;
 

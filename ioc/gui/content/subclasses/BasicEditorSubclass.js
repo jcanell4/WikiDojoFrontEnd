@@ -81,7 +81,7 @@ define([
                 let removedRefs = new Set();
                 let structure = this.editor.editor.extra.wioccl_structure.structure;
 
-                console.log("Structure to save:", this.editor.editor.extra.wioccl_structure);
+                // console.log("Structure to save:", this.editor.editor.extra.wioccl_structure);
 
                 dataToSend.wioccl_structure = JSON.stringify(this.editor.editor.extra.wioccl_structure);
                 // console.log("Estructura:", dataToSend.wioccl_structure);
@@ -89,7 +89,7 @@ define([
 
                 let value = dataToSend.wikitext;
 
-                console.log("Data to send? hi ha el rootRef?", dataToSend);
+                // console.log("Data to send? hi ha el rootRef?", dataToSend);
 
 
 
@@ -118,7 +118,7 @@ define([
 
                     // Cal eliminar només els nodes open que tinguinun parentId > 0, perquè aquests node s'afegiran
                     // automàticament amb la reconstrucció del wioccl
-                    console.log(refId, structure[Number(refId)]);
+                    // console.log(refId, structure[Number(refId)]);
                     if ($node.attr('data-wioccl-state') === 'open' && structure[Number(refId)].parent === '0') {
 
                         // console.log("Comprovant node d'apertura per saltar:", refId, structure[Number(refId)]);
