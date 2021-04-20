@@ -823,13 +823,6 @@ span[data-wioccl-state] {
     display:inline-block;
 }
 
-[data-wioccl-xtype="readonly"][data-wioccl-state="open"] {
-    background-color: red;
-}
-
-[data-wioccl-xtype="readonly"][data-wioccl-state="close"] {
-    background-color: #6c0000;
-}
 
 [data-wioccl-state="open"][data-wioccl-ref] {
     background-color: #aaaaFF;
@@ -837,6 +830,15 @@ span[data-wioccl-state] {
 
 [data-wioccl-state="close"][data-wioccl-ref] {
     background-color: blue;
+}
+
+
+[data-wioccl-xtype="readonly"][data-wioccl-state="open"] {
+    background-color: red;
+}
+
+[data-wioccl-xtype="readonly"][data-wioccl-state="close"] {
+    background-color: #6c0000;
 }
 
 

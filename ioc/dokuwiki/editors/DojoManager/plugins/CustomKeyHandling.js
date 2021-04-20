@@ -62,8 +62,11 @@ define([
             // Problema: quan es troba l'últim ol o ul es posa com a <div></p>, ho hem de gestionar
             // ALERTA! Només cal gestionar-lo quan el ol/ul es troba al principi i no hi ha cap més
 
-            if (isIocInfo || state.endsWith('block-enter')) {
-                console.log("és ioc info o block-enter");
+            let $node = this.editor.getCurrentNode();
+
+
+            if (isIocInfo || state.endsWith('block-enter') || $node.attr('contenteditable') === 'false') {
+                console.log("és ioc info, block-enter o readonly");
                 return false
 
             } else if ((state.indexOf('ol') === 0 || state.indexOf('ul') === 0) && state.substr(3).indexOf('ol') === -1 && state.substr(3).indexOf('ul') === -1) {
@@ -71,7 +74,7 @@ define([
                 console.log("és una llista");
 
                 //var ret = this.inherited(arguments);
-                var $node = this.editor.getCurrentNode();
+
 
                 if ($node.prop('tagName').toLowerCase() === 'span') {
                     $node = $node.parent();
