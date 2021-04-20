@@ -136,6 +136,15 @@ define([
 
         },
 
+        // Aquesta funció gestiona la tecla enter per solucionar el bug que fa
+        // que es canvii el focus a un editor ACE i s'activi el primer botó de la toolbar
+        manageEnter: function(e) {
+            if(e.which === 13) {
+                e.preventDefault();
+                jQuery(this).blur()
+            }
+        },
+
         renderField: function (field, fvalues) {
             // console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
             var $field,
@@ -159,6 +168,7 @@ define([
 
                 case 'textarea':
                     $field = this.renderFieldTextarea(field, fvalues);
+                    $field.find('textarea').keypress(this.manageEnter)
                     break;
 
                 case 'select':
@@ -184,6 +194,7 @@ define([
 
                 default:
                     $field = this.renderFieldDefault(field, fvalues);
+                    $field.find('input').keypress(this.manageEnter)
             }
 
             if (field.type !== 'hidden') {
