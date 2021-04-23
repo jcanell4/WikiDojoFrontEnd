@@ -27,8 +27,8 @@ define([
             if (args.content) {
                 throw new DialogBuilderException("No es pot afegir una propietat 'content' a aquests dialegs");
             }
-            this.params.width = args.width || 400;
-            // this.params.height = args.height || 400;
+            this.params.width = args.width || 'auto';
+            this.params.height = args.height || 'auto';
 
             if (!this.params.sections) {
                 this.params.sections = [];
