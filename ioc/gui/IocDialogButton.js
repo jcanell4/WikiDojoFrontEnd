@@ -40,7 +40,8 @@ define([
                 urlBase: params.urlBase,
                 title: "Creació d'un nou element de projecte",
                 message: "Selecciona l'element a crear i omple les dades corresponents.",
-                width: "410px",
+                //width: "460",
+                height: "320",
                 closable: true,
                 sections: [
                     {'widget': this._getDialogTree(params.treeDataSource, params.fromRoot, reactClick)},
