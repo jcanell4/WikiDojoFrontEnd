@@ -220,6 +220,7 @@ define([
                 this.processors["project_require"] = new ProjectRequireContentProcessor();
 
                 this.processors["meta_error_type"] = new MetaErrorProcessor();
+                this.originalButtonAttributes = {};
             },
 
             /**
@@ -259,11 +260,32 @@ define([
             updateFromState: function () {
                 this._updatePropertyControl = new Array();
                 if (this.updateViewHandlers) {
+                    this.__resetButtons();
                     for(var i=this.updateViewHandlers.length-1; i>=0; i--){
                         this.updateViewHandlers[i].update();
                     }
                 }
             },
+            
+            __resetButtons: function(){
+                for (const [buttonId, actions] of Object.entries(this.originalButtonAttributes)) {
+//                     for (const [buttonId, actions] of Object.entries(oldValues['%_projectType_%%_workflowState_%'])) {
+                    var button = registry.byId(buttonId);
+                    if(actions["toDelete"]){
+                        actions["toDelete"].forEach(function(element){
+                            delete button[element];
+                        });      
+                    }
+                    if(actions["toSet"]){
+                        for (const [key, value] of Object.entries(actions['toSet'])) {
+                            button.set(key, value);
+                        }
+                    }
+//                    }
+                }
+                this.originalButtonAttributes = {};
+            },
+
 
             /**
              * Recorre el array de ReloadStateHandlers i recarrega el estat passat com argument.
