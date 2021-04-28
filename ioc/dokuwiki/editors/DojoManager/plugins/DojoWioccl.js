@@ -221,7 +221,7 @@ define([
                     }
                 }
 
-                console.log("Establint root:", refId);
+                // console.log("Establint root:", refId);
                 context.root = refId;
 
                 let tree = [];
@@ -567,7 +567,7 @@ define([
             context.wiocclDialog.hide();
 
             ajax.send(dataToSend).then(function (data) {
-                console.log("data:", data);
+                // console.log("data:", data);
 
                 // fem que l'editor dispari un event, això ho fa servir el DojoReadonlyToggle
 
@@ -603,8 +603,8 @@ define([
                     // s'ha reemplaçat tot el document
                     context.editor.setValue(data[0].value.content);
                 } else {
-                    console.log("S'inserta el nou contingut abans de:", $rootNodes.get(0))
-                    console.log("quin és el $nouroot??", $nouRoot);
+                    // console.log("S'inserta el nou contingut abans de:", $rootNodes.get(0))
+                    // console.log("quin és el $nouroot??", $nouRoot);
                     jQuery($rootNodes.get(0)).before($nouRoot);
                 }
 
@@ -782,7 +782,7 @@ define([
 
         // La structura es modifica i es retorna per referència
         _createTree(root, tokens, structure) {
-            console.log("Root del create?", root);
+            // console.log("Root del create?", root);
             // Només hi ha un tipus open/close, que son els que poden tenir fills:
             //      OPEN: comencen per "<WIOCCL:"
             //      CLOSE: comencen per "</WIOCCL:"
@@ -920,8 +920,8 @@ define([
                 root.addedsibblings = true;
             }
 
-            console.log("Root?", root);
-            console.log("tokens?", tokens);
+            // console.log("Root?", root);
+            // console.log("tokens?", tokens);
 
 
             //root.addNewline = tokens[tokens.length-1].value === "\n";
@@ -1080,7 +1080,7 @@ define([
         },
 
         _setData: function (root, selected) {
-            console.log("root:", root);
+            // console.log("root:", root);
 
             let tree = [];
 
