@@ -205,6 +205,7 @@ define([
                 context.useRegex = true;
             }
 
+            //per canvis al camp regexColSeparator del template (interfie d'usuari)
             on(this.regexColSeparator, "input,change", function (evt) {
 
                 if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
@@ -219,8 +220,8 @@ define([
 
             });
 
+            //per canvis al camp regexRowSeparator del template (interfie d'usuari) 
             on(this.regexRowSeparator, "input,change", function (evt) {
-
                 if (context.regexRowSeparator.get('value').length === 0 && context.regexColSeparator.get('value').length === 0) {
                     context.csvColSeparator.set('disabled', false);
                     context.csvRowSeparator.set('disabled', false);
@@ -403,13 +404,13 @@ define([
                     break;
                 }
 
-                var value = cols[j].trim();
+                var value = cols[j]===undefined?"":cols[j].trim();
 
                 switch (this.table.args.fields[key].type) {
 
                     case "number":
 
-                        if (isNaN(cols[j])) {
+                        if (isNaN(value)) {
                             console.error("Import error: " + value + " is not a number");
                             this.validated = false;
                             return {};
@@ -422,7 +423,7 @@ define([
                     case "select":
 
                         if (this.table.args.fields[key].options.indexOf(value) === -1) {
-                            console.error("Import error: " + cols[j] + " is not a valid option:", this.table.args.fields[key].options);
+                            console.error("Import error: " + value + " is not a valid option:", this.table.args.fields[key].options);
                             this.validated = false;
                             return {};
                         }
@@ -478,7 +479,8 @@ define([
             var rows = content.split(rowSeparator);
 
             for (var i = 0; i < rows.length; i++) {
-                var regex = new RegExp(colSeparator, 'gm');
+                //var regex = new RegExp(colSeparator, 'gm');
+                var regex = new RegExp(colSeparator, 's');
 
                 if (rows[i].length === 0) {
                     continue;
