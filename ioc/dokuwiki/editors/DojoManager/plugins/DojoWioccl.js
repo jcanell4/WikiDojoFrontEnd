@@ -39,7 +39,7 @@ define([
     // No funciona si es carrega directament, hem de fer la inicialització quan cal utilitzar-lo
 
 
-    let FormatButton = declare(AbstractParseableDojoPlugin, {
+    let WiocclButton = declare(AbstractParseableDojoPlugin, {
 
         // S'assigna quan es crea el diàleg
         treeWidget: null,
@@ -70,6 +70,7 @@ define([
             this.addButton(config);
 
             this.editor.on('changeCursor', this.updateCursorState.bind(this));
+            this.editor.on('import', this.updateHandlers.bind(this));
 
             // console.log("wioccl structure:", this.editor.extra.wioccl_structure.structure);
         },
@@ -77,6 +78,11 @@ define([
         addButton: function (config) {
             this.button = new Button(config);
         },
+
+        updateHandlers: function() {
+            // console.log("updating handlers", jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'));
+            this._addHandlers(jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'), this);
+            },
 
         updateCursorState: function (e) {
 
@@ -190,6 +196,10 @@ define([
 
         _addHandlers: function ($node, context) {
 
+            // console.log("$node", $node);
+
+            $node.off('click');
+
 
             $node.on('click', function (e) {
 
@@ -199,6 +209,7 @@ define([
                 e.stopPropagation();
 
                 let refId = $item.attr('data-wioccl-ref');
+
                 let wioccl = context._getStructure()[refId];
 
                 if (wioccl.isClone) {
@@ -506,6 +517,8 @@ define([
             let structure = this._getStructure();
             let rootRef = this.root;
 
+            console.log("rootref??", rootRef);
+
             // Cal tenir en compte que el rootRef podria ser el node arrel i en aquest cas no cal cerca més
             while (structure[rootRef].id > 0 && structure[rootRef].parent > 0) {
                 rootRef = structure[rootRef].parent;
@@ -523,6 +536,8 @@ define([
             let globalState = this.editor.dispatcher.getGlobalState();
 
             // ALERTA! aquesta informació és necessaria perquè s'han d'afegir els spans amb la referència
+            let next = structure['next'];
+
             let dataToSend = {
                 content: text,
                 rootRef: rootRef,
@@ -553,6 +568,9 @@ define([
 
             ajax.send(dataToSend).then(function (data) {
                 // console.log("data:", data);
+
+                // fem que l'editor dispari un event, això ho fa servir el DojoReadonlyToggle
+
 
                 // retorn:
                 // [0] objecte amb el resultat del command <-- diria que aquest és l'únic necessari
@@ -600,8 +618,9 @@ define([
                 // Restaurem el parent
                 target[originalRef].parent = originalParent;
 
-                // Afegim els handlers
-                context._addHandlers($nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'), context);
+                // Afegim els handlers (ara s'afegeixen com a resposta al emit)
+                // context._addHandlers($nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'), context);
+                context.editor.emit('import');
 
                 context.editor.forceChange();
             });
@@ -667,8 +686,9 @@ define([
         },
 
         parseWioccl: function (text, wioccl, structure) {
+
             let tokens = this._tokenize(text);
-            // console.log("ParseWioccl:", tokens);
+
 
             // text és el text a parsejar
             // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
@@ -755,6 +775,7 @@ define([
 
         // La structura es modifica i es retorna per referència
         _createTree(root, tokens, structure) {
+            console.log("Root del create?", root);
             // Només hi ha un tipus open/close, que son els que poden tenir fills:
             //      OPEN: comencen per "<WIOCCL:"
             //      CLOSE: comencen per "</WIOCCL:"
@@ -921,7 +942,7 @@ define([
                 token.value = value;
                 tokens.push(token);
 
-                console.log(token);
+                // console.log(token);
 
             }
 
@@ -1122,12 +1143,15 @@ define([
             let $nodes = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]');
             let context = this;
 
-            $nodes.each(function () {
-                let $node = jQuery(this);
-                // let id = $node.attr('data-wioccl-ref');
+            // $nodes.each(function () {
+            //     let $node = jQuery(this);
+            //
+            //     context._addHandlers($node, context);
+            // });
 
-                context._addHandlers($node, context);
-            });
+            // perquè no ho fem en general? si aquí no funciona, es válid pel import'
+            context._addHandlers($nodes, context)
+
 
         },
     });
@@ -1135,8 +1159,8 @@ define([
 
     // Register this plugin.
     _Plugin.registry["insert_wioccl"] = function () {
-        return new FormatButton({command: "insert_wioccl"});
+        return new WiocclButton({command: "insert_wioccl"});
     };
 
-    return FormatButton;
+    return WiocclButton;
 });

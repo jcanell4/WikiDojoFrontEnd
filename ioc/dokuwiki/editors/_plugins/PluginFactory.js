@@ -43,6 +43,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoSwitchEditor',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoQuiz',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWioccl',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoReadonlyToggle',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableACE',
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableWrapper',
@@ -87,6 +88,7 @@ define([
              /*AceSwitchEditor,*/ DojoSwitchEditor,
              DojoQuiz,
              DojoWioccl,
+             DojoReadonlyToggle,
              AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
              AceVideoPlugin,
@@ -199,6 +201,7 @@ define([
             'DojoQuizComplete': DojoQuiz,
 
             'DojoWioccl': DojoWioccl,
+            'ReadonlyBlocksToggle': DojoReadonlyToggle,
 
             // Aquests depenen del pluign 'LinkDialog', només cal que estigui carregat per habilitar-los
             // 'CreateLink' : 'createLink',

@@ -190,13 +190,13 @@ define([
         handleDeleteKey: function (e) {
 
             var selection = this.editor.getSelection();
-            console.log(selection);
+            // console.log(selection);
 
             // ALERTA! només es compten com a nodes els blocks, no els inline
 
             var $previousNode = this.editor.getPreviousNode();
             var $currentNode = this.editor.getCurrentNode();
-            console.log($previousNode, $currentNode);
+            // console.log($previousNode, $currentNode);
 
             // Codi per controlar la eliminació dels continguts de les caixes: ioccontent i data-dw-field
 
@@ -234,7 +234,7 @@ define([
                     return false;
                 }
 
-                console.log("tagname:", node, node.tagName);
+                // console.log("tagname:", node, node.tagName);
 
                 // console.log("Comprovant si hi ha més d'un node", selection.nodes.length > 1 && jQuery(node).attr('data-dw-field'));
                 if (selection.nodes.length > 1 && jQuery(node).attr('data-dw-field')) {

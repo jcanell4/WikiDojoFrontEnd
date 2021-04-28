@@ -255,7 +255,8 @@ define([
                     'DojoQuizRelations',
                     'DojoQuizComplete',
 
-                    'DojoWioccl'
+                    'DojoWioccl',
+                    'ReadonlyBlocksToggle'
 
 
                 ]);
