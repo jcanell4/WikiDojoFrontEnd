@@ -109,16 +109,33 @@ define([
                 let $value = $root.html(value);
 
                 $value.find('.no-render').remove();
+                // Cal eliminar
+                $value.find('[data-wioccl-xtype="readonly"]').remove();
 
                 $value.find('[data-wioccl-ref]').each(function() {
                     let $node = jQuery(this);
                     let refId = $node.attr('data-wioccl-ref');
 
+                    // eliminen el content editable i el readonly, no són necessaries
+                    // pel parse i trencan el regex
+
+                    $node.removeAttr('contenteditable');
+                    $node.removeAttr('data-readonly');
+
                     // console.log("comprovant node:", $node);
 
                     // Cal eliminar només els nodes open que tinguinun parentId > 0, perquè aquests node s'afegiran
                     // automàticament amb la reconstrucció del wioccl
-                    // console.log(refId, structure[Number(refId)]);
+
+                    // console.log($node);
+                    if (Number(refId) === NaN) {
+                        console.log($node);
+                        return true;
+
+                    }
+
+                    // console.log(refId, Number(refId), structure);
+                    // console.log(structure[Number(refId)]);
                     if ($node.attr('data-wioccl-state') === 'open' && structure[Number(refId)].parent === '0') {
 
                         // console.log("Comprovant node d'apertura per saltar:", refId, structure[Number(refId)]);

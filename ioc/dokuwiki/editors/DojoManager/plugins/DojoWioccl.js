@@ -221,6 +221,7 @@ define([
                     }
                 }
 
+                console.log("Establint root:", refId);
                 context.root = refId;
 
                 let tree = [];
@@ -517,11 +518,10 @@ define([
             let structure = this._getStructure();
             let rootRef = this.root;
 
-            console.log("rootref??", rootRef);
-
             // Cal tenir en compte que el rootRef podria ser el node arrel i en aquest cas no cal cerca més
             while (structure[rootRef].id > 0 && structure[rootRef].parent > 0) {
                 rootRef = structure[rootRef].parent;
+                console.log("RootRef al while:", rootRef);
             }
 
             // cal desar el parent per restaurar-lo, el que retorna del servidor no te cap parent assignat
@@ -536,7 +536,7 @@ define([
             let globalState = this.editor.dispatcher.getGlobalState();
 
             // ALERTA! aquesta informació és necessaria perquè s'han d'afegir els spans amb la referència
-            let next = structure['next'];
+            // let next = structure['next'];
 
             let dataToSend = {
                 content: text,
@@ -567,7 +567,7 @@ define([
             context.wiocclDialog.hide();
 
             ajax.send(dataToSend).then(function (data) {
-                // console.log("data:", data);
+                console.log("data:", data);
 
                 // fem que l'editor dispari un event, això ho fa servir el DojoReadonlyToggle
 
@@ -599,9 +599,12 @@ define([
                 let $nouRoot = jQuery(data[0].value.content);
 
                 if (dataToSend.rootRef === "0") {
+                    alert("Alerta! es reemplaça tot el document").
                     // s'ha reemplaçat tot el document
                     context.editor.setValue(data[0].value.content);
                 } else {
+                    console.log("S'inserta el nou contingut abans de:", $rootNodes.get(0))
+                    console.log("quin és el $nouroot??", $nouRoot);
                     jQuery($rootNodes.get(0)).before($nouRoot);
                 }
 
@@ -623,6 +626,10 @@ define([
                 context.editor.emit('import');
 
                 context.editor.forceChange();
+
+
+                jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + originalRef +'"]')[0].scrollIntoView();
+
             });
         },
 
@@ -742,7 +749,7 @@ define([
 
             this._createTree(wioccl, tokens, structure);
 
-            // en el cas de siblings cal determinar també en quina posició es troba de l'arbre
+            // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
             this._setData(structure[this.root], wioccl);
 
         },
@@ -788,9 +795,16 @@ define([
 
             let nextKey = structure.next;
 
-            let siblings = 0;
+            let sibblings = 0;
 
             let first = true;
+
+            // Si l'últim token és un salt de linia ho afegim al token anterior
+            if (tokens.length>1 && tokens[tokens.length-1].value === "\n") {
+                tokens[tokens.length-2].value += "\n";
+                tokens.pop();
+            }
+
             for (let i in tokens) {
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
@@ -823,9 +837,10 @@ define([
 
                 // Si fem servir push s'afegeixen al final, això no serveix perquè cal inserir els nous nodes a la posició original (emmagatzemada a root.index)
 
-                if (tokens[i].parent === root.parent) {
-                    structure[root.parent].children.splice(root.index + siblings, 0, tokens[i].id);
-                    ++siblings;
+                if (tokens[i].parent === root.parent && tokens[i].id !== root.id
+                    && (Number(i) < tokens.length-1 || tokens[i].value !== "\n" )) {
+                    structure[root.parent].children.splice(root.index + sibblings, 0, tokens[i].id);
+                    ++sibblings;
                 }
 
                 // No cal gestionar el type content perquè s'assigna al tokenizer
@@ -899,9 +914,18 @@ define([
 
             }
 
-            if (siblings > 1 && Number(root.id) === Number(this.root)) {
-                root.addedsiblings = true;
+
+            // ALERTA[Xavi] Si s'afegeixen sibblings a un element que penji directament del root aquest es descartaran
+            if (sibblings > 1 && Number(root.id) === Number(this.root) && Number(structure[root.id]['parent']) !== 0) {
+                root.addedsibblings = true;
             }
+
+            console.log("Root?", root);
+            console.log("tokens?", tokens);
+
+
+            //root.addNewline = tokens[tokens.length-1].value === "\n";
+
 
         },
 
@@ -1056,12 +1080,15 @@ define([
         },
 
         _setData: function (root, selected) {
+            console.log("root:", root);
+
             let tree = [];
 
             let structure = this._getStructure();
 
-            if (selected.addedsiblings) {
+            if (selected.addedsibblings) {
                 root = structure[root.parent];
+                console.error("Modificant el root, canviat ", this.root,"per:", root.id);
                 this.root = root.id;
             }
 
