@@ -115,6 +115,7 @@ define([
         },
 
         _getStructure() {
+            // console.log(this.editor.extra.wioccl_structure.structure);
 
             if (!this.backupStructure) {
 
@@ -182,7 +183,7 @@ define([
 
             wioccl += data.open.replace('%s', data.attrs);
 
-
+            // console.log(data.id, data.children);
 
             for (let i = 0; i < data.children.length; i++) {
 
@@ -556,12 +557,12 @@ define([
             // 1 reconstruir el wioccl del node pare (this._getStructure()[this.root], això és el que s'ha d'enviar al servidor
             // ALERTA! no cal enviar el text, cal enviar la estructura i el node a partir del qual s'ha de regenerar el codi wioccl
             let structure = this._getStructure();
+
             let rootRef = this.root;
 
             // Cal tenir en compte que el rootRef podria ser el node arrel i en aquest cas no cal cerca més
             while (structure[rootRef].id > 0 && structure[rootRef].parent > 0) {
                 rootRef = structure[rootRef].parent;
-                console.log("RootRef al while:", rootRef);
             }
 
             // cal desar el parent per restaurar-lo, el que retorna del servidor no te cap parent assignat
@@ -591,9 +592,10 @@ define([
 
 
             // ALERTA! si el rootRef és 0 cal eliminar tot el document perquè es reemplaçarà
-            if (dataToSend.rootRef === "0") {
-                context.editor.setValue('');
-            }
+            // ALERTA[Xavi] no es permet això perquè fallava.
+            // if (dataToSend.rootRef === "0") {
+            //     context.editor.setValue('');
+            // }
 
             // TODO: fer alguna cosa amb la resposta, es pot lligar amb .then perque retorna una promesa
 
@@ -748,12 +750,15 @@ define([
             //      - posem com false tots els nodes fills actuals ALERTA no els eliminem perquè canviaria l'ordre de tots
             //      - els elements de la estructura i les referencies del document ja no serien correctes.
 
+
+
             this._removeChildren(wioccl.id, structure);
 
             // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
 
 
             let found = false;
+
 
             for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
 
@@ -797,7 +802,8 @@ define([
         _removeChildren: function (id, inStructure, removeNode) {
             let node = inStructure[id];
 
-            // console.log("Hi ha node?", node, id, structure);
+            // console.log("_removeChildren?", node, id, inStructure);
+
             if (!node.children) {
                 console.error("no hi ha children?", node.children);
             }
@@ -822,7 +828,6 @@ define([
 
         // La structura es modifica i es retorna per referència
         _createTree(root, tokens, structure) {
-            // console.log("Root del create?", root);
             // Només hi ha un tipus open/close, que son els que poden tenir fills:
             //      OPEN: comencen per "<WIOCCL:"
             //      CLOSE: comencen per "</WIOCCL:"
@@ -877,7 +882,8 @@ define([
 
                 // Si fem servir push s'afegeixen al final, això no serveix perquè cal inserir els nous nodes a la posició original (emmagatzemada a root.index)
 
-                if (tokens[i].parent === root.parent && tokens[i].id !== root.id
+                // if (tokens[i].parent === root.parent && tokens[i].id !== root.id
+                if (tokens[i].parent === root.parent
                     && (Number(i) < tokens.length-1 || tokens[i].value !== "\n" )) {
                     structure[root.parent].children.splice(root.index + sibblings, 0, tokens[i].id);
                     ++sibblings;
