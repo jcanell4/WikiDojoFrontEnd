@@ -24,18 +24,6 @@ define([
 
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager/*, RequestComponent*/, Tooltip, on, place, mouse) {
 
-    let cursor = {x: -1, y: -1};
-
-    document.onmousemove = function(event)
-    {
-        cursor.x = event.pageX;
-        cursor.y = event.pageY;
-    }
-
-    function htmlEntities(str) {
-        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
     let AceFacade = null;
 
     // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
@@ -94,10 +82,10 @@ define([
             this.button = new Button(config);
         },
 
-        updateHandlers: function() {
+        updateHandlers: function () {
             // console.log("updating handlers", jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'));
-                this._addHandlers(jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'), this);
-            },
+            this._addHandlers(jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'), this);
+        },
 
         updateCursorState: function (e) {
 
@@ -173,10 +161,10 @@ define([
             let wioccl = "";
 
             // Cal fer la conversió de &escapedgt; per \>
-            data.attrs = data.attrs.replaceAll('&escapedgt;','\\>');
+            data.attrs = data.attrs.replaceAll('&escapedgt;', '\\>');
 
-            data.attrs = data.attrs.replaceAll('&mark;','\\>');
-            data.attrs = data.attrs.replaceAll('&markn;',"\n>");
+            data.attrs = data.attrs.replaceAll('&mark;', '\\>');
+            data.attrs = data.attrs.replaceAll('&markn;', "\n>");
             // value = value.replaceAll(/&markn;/gsm, '\n>');
             // value = value.replaceAll(/&mark;/gsm, '>');
 
@@ -211,36 +199,86 @@ define([
         },
 
 
-
-
         _addHandlers: function ($node, context) {
 
             // console.log("$node", $node);
 
             $node.off('click');
-            $node.off('mouseenter', context._showTooltip);
 
-            $node.on('mouseenter', function() {
+            // ALERTA[Xavi] ho posem com una variable i no com una propietat perquè necessitem
+            // accés al context (aquesta classe) i al this (el node on es dispara l'event) i
+            // una referència per poder fer un off per no reafegir-lo
+
+            let _enableHighlight = function (refId, isParent) {
+                let $relatedNodes = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + refId + '"]');
+                $relatedNodes.addClass('ref-highlight');
+
+                if (!isParent) {
+                    $relatedNodes.addClass('child');
+                }
+
+
+                let wioccl = context._getStructure()[refId];
+
+                for (let child of wioccl.children) {
+                    _enableHighlight(child, false);
+                }
+            }
+
+            let _disableHighlight = function (refId) {
+                let $relatedNodes = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + refId + '"]');
+                $relatedNodes.removeClass('ref-highlight');
+                $relatedNodes.removeClass('child');
+
+                let wioccl = context._getStructure()[refId];
+
+                for (let child of wioccl.children) {
+                    _disableHighlight(child);
+                }
+            }
+
+
+            let _showTooltip = function (e) {
+
+                e.stopPropagation();
+
                 let node = this;
                 let $this = jQuery(node);
                 let refId = $this.attr('data-wioccl-ref');
+                // console.log("show", refId);
 
                 let wioccl = context._getStructure()[refId];
 
                 let str = wioccl.open + wioccl.close;
                 str = str.replace('%s', wioccl.attrs);
 
-                $this.attr('title', '['+refId+'] ' + str);
+                $this.attr('title', '[' + refId + '] ' + str);
                 $this.attr('data-tooltip', 'displaying');
-            });
 
-            $node.on('mouseout', function (e) {
+                _enableHighlight(refId, true);
+            };
+
+            $node.off('mouseover', _showTooltip);
+
+            $node.on('mouseover', _showTooltip);
+
+            let _hideTooltip = function (e) {
                 let $this = jQuery(this);
+                let refId = $this.attr('data-wioccl-ref');
+                // console.log("hide", refId);
+
                 if ($this.attr('data-tooltip')) {
                     $this.removeAttr('title');
                     $this.removeAttr('data-tooltip');
                 }
-            });
+
+                _disableHighlight(refId);
+
+            };
+
+            $node.on('mouseout', _hideTooltip);
+
+            $node.on('mouseout', _hideTooltip);
 
             $node.on('click', function (e) {
 
@@ -537,7 +575,6 @@ define([
                 context._updateDetail(tree[0]);
 
 
-
             });
         },
 
@@ -634,7 +671,7 @@ define([
 
                 // Cal eliminar també les referències al node arrel (poden ser múltiple en el cas del foreach)
                 // Cal inserir una marca pel node root
-                let $rootNodes = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + rootRef +'"]');
+                let $rootNodes = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + rootRef + '"]');
 
                 // 5 inserir el html que ha arribat del servidor
                 // Afegim les noves i eliminem el cursor
@@ -642,8 +679,8 @@ define([
 
                 if (dataToSend.rootRef === "0") {
                     alert("Alerta! es reemplaça tot el document").
-                    // s'ha reemplaçat tot el document
-                    context.editor.setValue(data[0].value.content);
+                        // s'ha reemplaçat tot el document
+                        context.editor.setValue(data[0].value.content);
                 } else {
                     // console.log("S'inserta el nou contingut abans de:", $rootNodes.get(0))
                     // console.log("quin és el $nouroot??", $nouRoot);
@@ -670,7 +707,7 @@ define([
                 context.editor.forceChange();
 
 
-                jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + originalRef +'"]')[0].scrollIntoView();
+                jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + originalRef + '"]')[0].scrollIntoView();
 
             });
         },
@@ -700,7 +737,7 @@ define([
             // console.log("Fields to extract:", attrs, type);
 
             // Cal fer la conversió de &escapedgt; per \>
-            attrs = attrs.replace('&escapedgt;','\\>');
+            attrs = attrs.replace('&escapedgt;', '\\>');
 
             let fields = {};
 
@@ -749,7 +786,6 @@ define([
             // Reordenació dels nodes:
             //      - posem com false tots els nodes fills actuals ALERTA no els eliminem perquè canviaria l'ordre de tots
             //      - els elements de la estructura i les referencies del document ja no serien correctes.
-
 
 
             this._removeChildren(wioccl.id, structure);
@@ -814,7 +850,7 @@ define([
                 // inStructure[childId] = false;
 
                 if (removeNode) {
-                    let $node = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref="' +childId +'"]');
+                    let $node = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref="' + childId + '"]');
                     $node.remove();
                 }
 
@@ -845,8 +881,8 @@ define([
             let first = true;
 
             // Si l'últim token és un salt de linia ho afegim al token anterior
-            if (tokens.length>1 && tokens[tokens.length-1].value === "\n") {
-                tokens[tokens.length-2].value += "\n";
+            if (tokens.length > 1 && tokens[tokens.length - 1].value === "\n") {
+                tokens[tokens.length - 2].value += "\n";
                 tokens.pop();
             }
 
@@ -884,7 +920,7 @@ define([
 
                 // if (tokens[i].parent === root.parent && tokens[i].id !== root.id
                 if (tokens[i].parent === root.parent
-                    && (Number(i) < tokens.length-1 || tokens[i].value !== "\n" )) {
+                    && (Number(i) < tokens.length - 1 || tokens[i].value !== "\n")) {
                     structure[root.parent].children.splice(root.index + sibblings, 0, tokens[i].id);
                     ++sibblings;
                 }
@@ -1001,7 +1037,6 @@ define([
                 let value = xArray[0];
 
 
-
                 // Actualitzem el valor del token
 
 
@@ -1059,7 +1094,6 @@ define([
                     tokens.splice(i + 1, 0, token);
 
                 }
-
 
 
                 currentPos = tokens[i].startIndex - 1;
@@ -1134,7 +1168,7 @@ define([
 
             if (selected.addedsibblings) {
                 root = structure[root.parent];
-                console.error("Modificant el root, canviat ", this.root,"per:", root.id);
+                console.error("Modificant el root, canviat ", this.root, "per:", root.id);
                 this.root = root.id;
             }
 

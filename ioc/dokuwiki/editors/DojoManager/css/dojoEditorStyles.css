@@ -723,6 +723,19 @@ pre code label {
     border-radius: 5px;
 }
 
+.ref-highlight {
+    /*background-color: #feefb3 !important;*/
+    background-color: #feefb3 !important;
+    /*border-radius: 5px !important;*/
+}
+
+.ref-highlight.child {
+    /*background-color: #feefb3 !important;*/
+    background-color: #ead2a5 !important;
+    /*border-radius: 5px !important;*/
+}
+
+
 .iocgif img {
     max-width: 100%
 }
