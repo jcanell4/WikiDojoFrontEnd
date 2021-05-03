@@ -16,10 +16,25 @@ define([
     // 'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/dokuwiki/editors/AceManager/toolbarManager',
     // 'ioc/dokuwiki/editors/Components/RequestComponent',
+    'dijit/Tooltip',
+    'dojo/on',
+    'dijit/place',
+    'dojo/mouse'
 
 
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager/*, RequestComponent*/) {
+], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager/*, RequestComponent*/, Tooltip, on, place, mouse) {
 
+    let cursor = {x: -1, y: -1};
+
+    document.onmousemove = function(event)
+    {
+        cursor.x = event.pageX;
+        cursor.y = event.pageY;
+    }
+
+    function htmlEntities(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 
     let AceFacade = null;
 
@@ -81,7 +96,7 @@ define([
 
         updateHandlers: function() {
             // console.log("updating handlers", jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'));
-            this._addHandlers(jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'), this);
+                this._addHandlers(jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'), this);
             },
 
         updateCursorState: function (e) {
@@ -194,12 +209,37 @@ define([
             return wioccl;
         },
 
+
+
+
         _addHandlers: function ($node, context) {
 
             // console.log("$node", $node);
 
             $node.off('click');
+            $node.off('mouseenter', context._showTooltip);
 
+            $node.on('mouseenter', function() {
+                let node = this;
+                let $this = jQuery(node);
+                let refId = $this.attr('data-wioccl-ref');
+
+                let wioccl = context._getStructure()[refId];
+
+                let str = wioccl.open + wioccl.close;
+                str = str.replace('%s', wioccl.attrs);
+
+                $this.attr('title', '['+refId+'] ' + str);
+                $this.attr('data-tooltip', 'displaying');
+            });
+
+            $node.on('mouseout', function (e) {
+                let $this = jQuery(this);
+                if ($this.attr('data-tooltip')) {
+                    $this.removeAttr('title');
+                    $this.removeAttr('data-tooltip');
+                }
+            });
 
             $node.on('click', function (e) {
 
