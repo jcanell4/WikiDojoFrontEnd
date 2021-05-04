@@ -125,13 +125,13 @@ define([
                     position = 0,
                     refreshContent;
 
-                var sameFormat = oldContentTool &&
-                                 ((content.editorType && oldContentTool.editorType.toLowerCase() === content.editorType.toLowerCase())
-                                 || (oldContentTool.type && oldContentTool.type === this.type));
+                let sameFormat = false;
 
-                // console.log("oldContentTool", oldContentTool ? oldContentTool.editorType : '-');
-                // console.log("content.editorType", content ? content.editorType : '-');
-                // console.log("És el mateix format?", sameFormat);
+                if (oldContentTool && content.editorType) {
+                    sameFormat = oldContentTool.editorType.toLowerCase() === content.editorType.toLowerCase();
+                } else if (oldContentTool && oldContentTool.type) {
+                    sameFormat =  oldContentTool.type === this.type;
+                }
 
                 if (sameFormat) {
                     refreshContent = this.isRefreshableContent(oldContentTool.type);
