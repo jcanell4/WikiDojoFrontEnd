@@ -1,0 +1,26 @@
+<div class="dijitDialog background-white" role="dialog" aria-labelledby="diff-dialog_title">
+    <div data-dojo-attach-point="titleBar" class="dijitDialogTitleBar">
+		<span data-dojo-attach-point="titleNode" class="dijitDialogTitle" id="diff-dialog_title"
+              role="header" level="1"></span>
+        <span data-dojo-attach-point="closeButtonNode" class="dijitDialogCloseIcon"
+              data-dojo-attach-event="ondijitclick: onCancel" title="" role="button" tabIndex="-1">
+			<span data-dojo-attach-point="closeText" class="closeText" title="">x</span>
+		</span>
+    </div>
+
+    <div class="dijitDialogPaneContentArea" style="max-width: 99%; max-height: 100%" data-dojo-attach-point="paneContainerNode">
+<!--    <div data-dojo-attach-point="containerNode" class="dijitDialogPaneContent custom-ioc-dialog">-->
+
+<!--        <p data-dojo-attach-point="containerNode"></p>-->
+
+        <div id="treeContainer_test" style="width:150px" class="wioccl-tree" data-dojo-attach-point="treeContainerNode"></div>
+        <div id="detailContainer_test" class="wioccl-detail" data-dojo-attach-point="detailContainerNode">
+            <div id="attrContainer_test" style="width:100%" class="wioccl-attr" data-dojo-attach-point="attrContainerNode"></div>
+            <div id="contentContainer_test" style="width:100%" class="wioccl-content" data-dojo-attach-point="contentContainerNode"></div>
+        </div>
+
+    </div>
+    <div class="dijitDialogPaneActionBar" data-dojo-attach-point="buttonsNode">
+    </div>
+
+</div>

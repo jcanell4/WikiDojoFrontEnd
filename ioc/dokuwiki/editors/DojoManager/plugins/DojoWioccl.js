@@ -6,7 +6,8 @@ define([
     "dojo/string",
     "dijit/form/ToggleButton",
     "dojo/dom-construct",
-    'dijit/Dialog',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoWiocclDialog',
+    // 'dijit/Dialog',
     // "dojo/parser",
     "dojo/store/Memory",
     "dijit/tree/ObjectStoreModel",
@@ -25,6 +26,8 @@ define([
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager/*, RequestComponent*/, Tooltip, on, place, mouse) {
 
     let AceFacade = null;
+
+    let counter = 0;
 
     // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
     require(["ioc/dokuwiki/editors/AceManager/AceEditorFullFacade"], function (AuxClass) {
@@ -310,10 +313,11 @@ define([
 
                 tree[0].children = context._getWiocclChildrenNodes(tree[0].children, tree[0].id, context);
 
-                let oldDialog = registry.byId('wioccl-dialog');
+                let oldDialog = registry.byId('wioccl-dialog' + counter);
 
                 if (oldDialog) {
                     oldDialog.destroyRecursive();
+                    counter++;
                 }
 
 
@@ -327,7 +331,7 @@ define([
                         this.destroyRecursive();
                         context.backupStructure = null;
                     },
-                    id: 'wioccl-dialog',
+                    id: 'wioccl-dialog' + counter,
                     draggable: false,
 
                     firstResize: true,
@@ -341,50 +345,50 @@ define([
                 wiocclDialog.startup();
 
 
-                let dialogContainer = domConstruct.create("div", {
-                    id: "dialogContainer_wioccl"
-                });
+                // let dialogContainer = domConstruct.create("div", {
+                //     id: "dialogContainer_wioccl"
+                // });
 
-                let paneContainer = domConstruct.create("div", {
-                    "class": "dijitDialogPaneContentArea",
-                    "style": "max-width: 99%; max-height: 100%"
-                    // "style": "width:680px; height: 550px"
-                });
+                // let paneContainer = domConstruct.create("div", {
+                //     "class": "dijitDialogPaneContentArea",
+                //     "style": "max-width: 99%; max-height: 100%"
+                //     // "style": "width:680px; height: 550px"
+                // });
 
-                let detailContainer = domConstruct.create("div", {
-                    id: "detailContainer_" + "test",
-                    // "style": "width:400px",
-                    "class": "wioccl-detail",
-                    // "innerHTML": testContent
-                });
-                context.detailContainer = detailContainer;
+                // let detailContainer = domConstruct.create("div", {
+                //     id: "detailContainer_" + "test",
+                //     "class": "wioccl-detail",
+                // });
+                context.detailContainer = wiocclDialog.detailContainerNode;
 
-                let contentContainer = domConstruct.create("div", {
-                    id: "contentContainer_" + "test",
-                    "style": "width:100%",
-                    "class": "wioccl-content",
-                    // "innerHTML": testContent
-                });
+                // let contentContainer = domConstruct.create("div", {
+                //     id: "contentContainer_" + "test",
+                //     "style": "width:100%",
+                //     "class": "wioccl-content",
+                //     // "innerHTML": testContent
+                // });
 
-                let attrContainer = domConstruct.create("div", {
-                    id: "attrContainer_" + "test",
-                    "style": "width:100%",
-                    "class": "wioccl-attr",
-                });
-                context.attrContainer = attrContainer;
+                // let attrContainer = domConstruct.create("div", {
+                //     id: "attrContainer_" + "test",
+                //     "style": "width:100%",
+                //     "class": "wioccl-attr",
+                // });
+                context.attrContainer = wiocclDialog.attrContainerNode;
 
 
-                let treeContainer = domConstruct.create("div", {
-                    id: "treeContainer_" + "test",
-                    "style": "width:150px",
-                    "class": "wioccl-tree"
-                });
-                context.treeContainer = treeContainer;
+                // let treeContainer = domConstruct.create("div", {
+                //     id: "treeContainer_" + "test",
+                //     "style": "width:150px",
+                //     "class": "wioccl-tree"
+                // });
 
-                let actionBar = domConstruct.create("div", {
-                    "class": "dijitDialogPaneActionBar",
-                    "style": "height:35px"
-                });
+
+                context.treeContainer = wiocclDialog.treeContainerNode;
+
+                // let actionBar = domConstruct.create("div", {
+                //     "class": "dijitDialogPaneActionBar",
+                //     "style": "height:35px"
+                // });
 
                 let store = new Memory({
                     data: tree,
@@ -485,28 +489,29 @@ define([
                 let valor = context.rebuildWioccl(tree[0]);
 
                 //col·locar en el lloc adequat
-                domConstruct.place(paneContainer, dialogContainer, "last");
-                domConstruct.place(actionBar, dialogContainer, "last");
-                domConstruct.place(treeContainer, paneContainer, "last");
-                domConstruct.place(detailContainer, paneContainer, "last");
-                domConstruct.place(contentContainer, detailContainer, "last");
-                domConstruct.place(attrContainer, detailContainer, "first");
+                // domConstruct.place(paneContainer, wiocclDialog.containerNode, "last");
+                // domConstruct.place(wiocclDialog.buttonsNode, wiocclDialog.containerNode, "last");
+                // domConstruct.place(treeContainer, paneContainer, "last");
+                // domConstruct.place(detailContainer, paneContainer, "last");
+                // domConstruct.place(contentContainer, wiocclDialog.detailContainerNode, "last");
+                // domConstruct.place(attrContainer, wiocclDialog.detailContainerNode, "first");
 
                 //assignar i mostrar
-                wiocclDialog.set("content", dialogContainer);
+                // dialogContainer.placeAt(wiocclDialog.containerNode)
+                // wiocclDialog.set("containerNode", dialogContainer);
                 wiocclDialog.show();
 
-                widgetTree.placeAt(treeContainer);
+                widgetTree.placeAt(wiocclDialog.treeContainerNode);
                 widgetTree.startup();
 
                 // L'editor no es pot afegir fins que el dialog no és creat:
-                let $contentContainer = jQuery(contentContainer);
+                let $contentContainer = jQuery(wiocclDialog.contentContainerNode);
                 let $textarea = jQuery('<textarea></textarea>');
                 // let $textarea = jQuery('<textarea>' + valor + '</textarea>');
                 $contentContainer.append($textarea);
 
                 let args = {
-                    id: 'wioccl-dialog',
+                    id: 'wioccl-dialog' + counter,
                     value: valor
                 };
 
@@ -514,17 +519,17 @@ define([
                 // editor.setValue(valor);
 
 
-                let $paneContainer = jQuery(paneContainer);
-                let $treeContainer = jQuery(treeContainer);
-                let $detailContainer = jQuery(detailContainer);
+                let $paneContainer = jQuery(wiocclDialog.paneContainerNode);
+                let $treeContainer = jQuery(wiocclDialog.treeContainerNode);
+                let $detailContainer = jQuery(wiocclDialog.detailContainerNode);
 
                 $paneContainer.css('position', 'absolute');
-                $paneContainer.css('top', 0);
+                $paneContainer.css('top', '30px');
                 $paneContainer.css('bottom', '45px');
                 $paneContainer.css('left', 0);
                 $paneContainer.css('right', 0);
 
-                let $actionBar = jQuery(actionBar);
+                let $actionBar = jQuery(wiocclDialog.buttonsNode);
                 $actionBar.css('margin', 0);
                 $actionBar.css('padding', 0);
 
@@ -544,7 +549,7 @@ define([
                 $detailContainer.css('height', height);
                 $detailContainer.css('width', paneWidth - treeWidth - 90);
 
-                let $attrContainer = jQuery(attrContainer);
+                let $attrContainer = jQuery(wiocclDialog.attrContainerNode);
 
                 $attrContainer.empty();
                 $attrContainer.append(context._generateHtmlForFields(context._extractFields(tree[0].attrs, tree[0].type)));
