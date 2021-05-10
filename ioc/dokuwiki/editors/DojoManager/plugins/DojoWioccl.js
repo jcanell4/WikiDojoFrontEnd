@@ -336,200 +336,31 @@ define([
                     },
                     wioccl: wioccl,
                     tree: tree,
-                    refId: refId
+                    refId: refId,
+                    saveCallback : context._save.bind(context),
+                    updateCallback: context._update.bind(context)
                 });
+
+
                 context.wiocclDialog = wiocclDialog;
                 wiocclDialog.startup();
-
 
                 context.detailContainer = wiocclDialog.detailContainerNode;
                 context.attrContainer = wiocclDialog.attrContainerNode;
                 context.treeContainer = wiocclDialog.treeContainerNode;
 
-                // let store = new Memory({
-                //     data: tree,
-                //     getChildren: function (object) {
-                //         return object.children || [];
-                //     }
-                // });
-                //
-                // context.store = store;
-                //
-                // let model = new ObjectStoreModel({
-                //     store: store,
-                //     query: {id: refId},
-                //     mayHaveChildren: function (item) {
-                //         // return "children" in item;
-                //         return item.children.length > 0;
-                //     }
-                // });
-                //
-                // context.model = model;
-                //
-                //
-                // let widgetTree = new Tree({
-                //     id: Date.now(),
-                //     model: model,
-                //     onOpenClick: true,
-                //     onLoad: function () {
-                //         // dom.byId('image').src = '../resources/images/root.jpg';
-                //     },
-                //     onClick: function (item) {
-                //         context._updateDetail(item);
-                //     }
-                // });
-                //
                 context.treeWidget = wiocclDialog.widgetTree;
 
-                // let createEditor = function ($textarea, $node, args, context) {
-                //
-                //     args.id = (args.id + Date.now() + Math.random()).replace('.', '-'); // id única
-                //
-                //
-                //     // ALERTA! per alguna raó si s'afegeix el contentToolFactory com a dependència no funciona (exactament el mateix codi al DataContentProcessor sí que ho fa), la alternativa és utilitzar la factoria del content tool actual:
-                //     let id = context.editor.dispatcher.getGlobalState().getCurrentId();
-                //     let contentToolFactory = context.editor.dispatcher.getContentCache(id).getMainContentTool().contentToolFactory;
-                //
-                //     let editorWidget = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
-                //     let toolbarId = 'FormToolbar_' + (args.id);
-                //
-                //     let $container = jQuery('<div id="container_' + args.id + '">');
-                //     // this.$node.before($container);
-                //
-                //
-                //     let $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
-                //
-                //     $textarea.css('height', '200px');
-                //
-                //     $textarea.attr('id', 'textarea_' + args.id);
-                //
-                //     $container.append($toolbar);
-                //     $container.append($textarea);
-                //     $container.append(editorWidget);
-                //
-                //     $node.append($container);
-                //
-                //
-                //     toolbarManager.createToolbar(toolbarId, 'simple');
-                //
-                //
-                //     let editor = new AceFacade({
-                //         id: args.id,
-                //         auxId: args.id,
-                //         containerId: editorWidget.id,
-                //         textareaId: 'textarea_' + args.id,
-                //         theme: JSINFO.plugin_aceeditor.colortheme,
-                //         wraplimit: JSINFO.plugin_aceeditor.wraplimit, // TODO: determinar el lmit correcte
-                //         wrapMode: true,
-                //         dispatcher: context.editor.dispatcher,
-                //         content: args.value,
-                //         originalContent: args.value,
-                //         // TOOLBAR_ID: toolbarId,
-                //         TOOLBAR_ID: 'full-editor',
-                //         ignorePatching: true,
-                //         plugins: [],
-                //     });
-                //
-                //     context.dialogEditor = editor;
-                //
-                //
-                //     this.widgetInitialized = true;
-                //
-                //     // Per defecte s'assigna el primer node
-                //     editor.wioccl = wioccl;
-                //
-                //     return editor;
-                //
-                // };
-
-                // let valor = context.rebuildWioccl(tree[0]);
-
-                //col·locar en el lloc adequat
-                // domConstruct.place(paneContainer, wiocclDialog.containerNode, "last");
-                // domConstruct.place(wiocclDialog.buttonsNode, wiocclDialog.containerNode, "last");
-                // domConstruct.place(treeContainer, paneContainer, "last");
-                // domConstruct.place(detailContainer, paneContainer, "last");
-                // domConstruct.place(contentContainer, wiocclDialog.detailContainerNode, "last");
-                // domConstruct.place(attrContainer, wiocclDialog.detailContainerNode, "first");
-
-                //assignar i mostrar
-                // dialogContainer.placeAt(wiocclDialog.containerNode)
-                // wiocclDialog.set("containerNode", dialogContainer);
                 wiocclDialog.show();
-
-                // widgetTree.placeAt(wiocclDialog.treeContainerNode);
-                // widgetTree.startup();
-
-                // L'editor no es pot afegir fins que el dialog no és creat:
-                // let $contentContainer = jQuery(wiocclDialog.contentContainerNode);
-                // let $textarea = jQuery('<textarea></textarea>');
-                // let $textarea = jQuery('<textarea>' + valor + '</textarea>');
-                // $contentContainer.append($textarea);
-
-                // let args = {
-                //     id: 'wioccl-dialog' + counter,
-                //     value: valor
-                // };
-
-                // TODO: afegir el args i context->source al constructor del dialog
-
-                // let editor = wiocclDialog.createEditor(args, context);
-                // editor.setValue(valor);
-
-
-                // let $paneContainer = jQuery(wiocclDialog.paneContainerNode);
-                // let $treeContainer = jQuery(wiocclDialog.treeContainerNode);
-                // let $detailContainer = jQuery(wiocclDialog.detailContainerNode);
-
-                // $paneContainer.css('position', 'absolute');
-                // $paneContainer.css('top', '30px');
-                // $paneContainer.css('bottom', '45px');
-                // $paneContainer.css('left', 0);
-                // $paneContainer.css('right', 0);
-
-                let $actionBar = jQuery(wiocclDialog.buttonsNode);
-                // $actionBar.css('margin', 0);
-                // $actionBar.css('padding', 0);
-
-                let $updateButton = jQuery("<button class='wioccl-btn'>Actualitzar</button>");
-                $actionBar.append($updateButton);
-
-                let $saveButton = jQuery("<button class='wioccl-btn'>Save</button>");
-                $actionBar.append($saveButton);
-
-                $updateButton.on('click', function () {
-                    context.parseWioccl(editor.getValue(), editor.wioccl, context._getStructure());
-                });
-
-                $saveButton.on('click', function () {
-                    context._save(editor);
-                });
-
-                // wiocclDialog._updateHeight();
-                // let height = $paneContainer.height() - 30;
-                //
-                // console.log("Pane?", $paneContainer);
-                // console.log("alçada??", height);
-                // $treeContainer.css('height', height);
-                // let treeWidth = $treeContainer.width();
-                // let paneWidth = $paneContainer.width();
-                //
-                // $detailContainer.css('height', height);
-                // $detailContainer.css('width', paneWidth - treeWidth - 90);
-
-                // let $attrContainer = jQuery(wiocclDialog.attrContainerNode);
-                //
-                // $attrContainer.empty();
-                // $attrContainer.append(context._generateHtmlForFields(context._extractFields(tree[0].attrs, tree[0].type)));
 
                 wiocclDialog.setFields(context._extractFields(tree[0].attrs, tree[0].type));
 
-
-
                 context._updateDetail(tree[0]);
-
-
             });
+        },
+
+        _update(editor) {
+            this.parseWioccl(editor.getValue(), editor.wioccl, this._getStructure());
         },
 
         // Enviar el text
@@ -540,6 +371,8 @@ define([
 
         _save(editor) {
             // console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
+
+            // console.log("this?", this);
 
             let context = this;
             // 0 actualitzar el contingut actual
@@ -665,29 +498,6 @@ define([
 
             });
         },
-
-        // _generateHtmlForFields: function (fields) {
-        //     // let html = '<fieldset class="wioccl-fields">';
-        //     // html += '<legend>Atributs, nom de la variable o paràmetres (no es poden modificar, cal modificar el codi a l\'editor)</legend>';
-        //
-        //     let html = '';
-        //
-        //     for (let field in fields) {
-        //
-        //         // Es necessari eliminar el escape de les dobles cometes
-        //         // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
-        //         let valor = fields[field].replaceAll('\"', '&quot;');
-        //
-        //         html += '<div class="wioccl-field">';
-        //         html += '<label>' + field + ':</label>';
-        //         html += '<input type="text" name="' + field + '" value="' + valor + '" disabled="true"/>';
-        //         html += '</div>';
-        //     }
-        //
-        //     // html += "</fieldset>";
-        //     return html;
-        //
-        // },
 
         _extractFields: function (attrs, type) {
             // console.log("Fields to extract:", attrs, type);
@@ -1092,13 +902,8 @@ define([
         },
 
         _updateDetail: function (item) {
-            // console.log("Updating:", item);
-
-
-            // jQuery(this.attrContainer).empty();
 
             this.wiocclDialog.setFields(this._extractFields(item.attrs, item.type));
-            // jQuery(this.attrContainer).append(this._generateHtmlForFields(this._extractFields(item.attrs, item.type)));
 
             let auxItem = this.rebuildWioccl(item);
 
@@ -1136,71 +941,13 @@ define([
 
             root.children = this._getWiocclChildrenNodes(root.children, root.id, this);
 
-            this.treeWidget.destroyRecursive();
-
-            let store = new Memory({
-                data: tree,
-                // data: {name: 'test'},
-                getChildren: function (object) {
-                    return object.children || [];
-                }
-            });
-
-            let model = new ObjectStoreModel({
-                store: store,
-                query: {id: root.id},
-                mayHaveChildren: function (item) {
-                    // return "children" in item;
-                    return item.children.length > 0;
-                }
-            });
-
-
-            let context = this;
-
-            let newTree = new Tree({
-                id: Date.now(),
-                model: model,
-                onOpenClick: true,
-                onLoad: function () {
-                    // dom.byId('image').src = '../resources/images/root.jpg';
-                },
-                onClick: function (item) {
-                    context._updateDetail(item);
-                },
-
-            });
-
-
-            newTree.startup();
-            newTree.placeAt(this.treeContainer);
-
-
-            // actualitzem el contingut del dialog
-
-            // Seleccionem el node en el nou arbre:
-            // Cas 1: no s'ha creat cap node nou (s'ha canviat l'existent), seleccionem el mateix
-
-            let node = selected;
-            /// corresponent al cas1, es seleccionarà el node original
-            let path = [];
-
-
-            while (node.parent !== null && node.id !== root.id) {
-                path.unshift(node.id);
-                node = structure[node.parent];
-            }
-
-            // Finalment s'afegeix el node root
-            path.unshift(root.id);
-
-            newTree.set('path', path);
+            this.wiocclDialog.updateTree(tree, root, selected, structure);
 
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
             // pot trobar-se dividit en múltiples tokens
             this._updateDetail(structure[selected.id]);
 
-            this.treeWidget = newTree;
+            this.treeWidget = this.wiocclDialog.treeWidget;
         },
 
         parse: function () {
@@ -1208,15 +955,8 @@ define([
             let $nodes = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]');
             let context = this;
 
-            // $nodes.each(function () {
-            //     let $node = jQuery(this);
-            //
-            //     context._addHandlers($node, context);
-            // });
-
             // perquè no ho fem en general? si aquí no funciona, es válid pel import'
             context._addHandlers($nodes, context)
-
 
         },
     });

@@ -32,6 +32,28 @@ define([
             this.createEditor();
             this.createTree();
 
+            // let $updateButton = jQuery("<button class='wioccl-btn'>Actualitzar</button>");
+            let $updateButton = jQuery(this.updateButtonNode);
+            // $actionBar.append($updateButton);
+
+            // let $saveButton = jQuery("<button class='wioccl-btn'>Save</button>");
+            let $saveButton = jQuery(this.saveButtonNode);;
+            // $actionBar.append($saveButton);
+
+            let context = this;
+
+            $updateButton.on('click', function () {
+                // Alerta, el context d'execució en afegir el callback al objecte de configuració
+                context.updateCallback(context.editor);
+            });
+
+            $saveButton.on('click', function () {
+                // Alerta, el context d'execució en afegir el callback al objecte de configuració
+                context.saveCallback(context.editor);
+            });
+
+
+
             // this._updateHeight();
         },
 
@@ -82,7 +104,7 @@ define([
             let source = this.source;
 
 
-            let widgetTree = new Tree({
+            this.treeWidget = new Tree({
                 id: Date.now(),
                 model: model,
                 onOpenClick: true,
@@ -96,10 +118,8 @@ define([
                 }
             });
 
-            this.treeWidget = widgetTree;
-
-            widgetTree.placeAt(this.treeContainerNode);
-            widgetTree.startup();
+            this.treeWidget.placeAt(this.treeContainerNode);
+            this.treeWidget.startup();
         },
 
         // ALERTA! aquesta funció es crida automáticament quan canvia la mida de la finestra del navegador o es fa scroll
@@ -226,6 +246,71 @@ define([
 
         },
 
+        updateTree: function(tree, root, selected, structure) {
+            this.treeWidget.destroyRecursive();
+
+            let store = new Memory({
+                data: tree,
+                // data: {name: 'test'},
+                getChildren: function (object) {
+                    return object.children || [];
+                }
+            });
+
+            let model = new ObjectStoreModel({
+                store: store,
+                query: {id: root.id},
+                mayHaveChildren: function (item) {
+                    // return "children" in item;
+                    return item.children.length > 0;
+                }
+            });
+
+
+            let source = this.source;
+
+            let newTree = new Tree({
+                id: Date.now(),
+                model: model,
+                onOpenClick: true,
+                onLoad: function () {
+                    // dom.byId('image').src = '../resources/images/root.jpg';
+                },
+                onClick: function (item) {
+                    source._updateDetail(item);
+                },
+
+            });
+
+
+            newTree.startup();
+            newTree.placeAt(this.treeContainerNode);
+
+
+            // actualitzem el contingut del dialog
+
+            // Seleccionem el node en el nou arbre:
+            // Cas 1: no s'ha creat cap node nou (s'ha canviat l'existent), seleccionem el mateix
+
+            let node = selected;
+            /// corresponent al cas1, es seleccionarà el node original
+            let path = [];
+
+
+            while (node.parent !== null && node.id !== root.id) {
+                path.unshift(node.id);
+                node = structure[node.parent];
+            }
+
+            // Finalment s'afegeix el node root
+            path.unshift(root.id);
+
+            newTree.set('path', path);
+
+            this.store = store;
+            this.model = model;
+            this.treeWidget = newTree;
+        }
         // constructor: function () {
         //     this.initFunctions = [];
         //     this.sections = [];
