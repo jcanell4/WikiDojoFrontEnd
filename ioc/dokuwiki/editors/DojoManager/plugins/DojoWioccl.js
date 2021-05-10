@@ -7,32 +7,29 @@ define([
     "dijit/form/ToggleButton",
     "dojo/dom-construct",
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWiocclDialog',
-    // 'dijit/Dialog',
-    // "dojo/parser",
-    "dojo/store/Memory",
-    "dijit/tree/ObjectStoreModel",
-    "dijit/Tree",
+    // "dojo/store/Memory",
+    // "dijit/tree/ObjectStoreModel",
+    // "dijit/Tree",
     "dijit/registry",
     "dojo/dom",
-    // 'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
-    'ioc/dokuwiki/editors/AceManager/toolbarManager',
-    // 'ioc/dokuwiki/editors/Components/RequestComponent',
+    // 'ioc/dokuwiki/editors/AceManager/toolbarManager',
     'dijit/Tooltip',
     'dojo/on',
     'dijit/place',
     'dojo/mouse'
 
 
-], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct, Dialog, Memory, ObjectStoreModel, Tree, registry, dom, /*AceFacade, */toolbarManager/*, RequestComponent*/, Tooltip, on, place, mouse) {
+], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct,
+             Dialog, /*Memory, ObjectStoreModel, Tree,*/ registry, dom, Tooltip, on, place, mouse) {
 
     let AceFacade = null;
 
     let counter = 0;
 
-    // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
-    require(["ioc/dokuwiki/editors/AceManager/AceEditorFullFacade"], function (AuxClass) {
-        AceFacade = AuxClass;
-    });
+    // // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
+    // require(["ioc/dokuwiki/editors/AceManager/AceEditorFullFacade"], function (AuxClass) {
+    //     AceFacade = AuxClass;
+    // });
 
     let ajax = null;
     require(["ioc/dokuwiki/editors/Components/AjaxComponent"], function (AjaxComponent) {
@@ -320,12 +317,10 @@ define([
                     counter++;
                 }
 
-
                 let wiocclDialog = new Dialog({
-
                     title: 'Edició wioccl',
                     // style: 'width:auto',
-                    style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 100%; max-height: 100%;',
+                    style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
                     // style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 100%; max-height: 100%;',
                     onHide: function (e) { //Voliem detectar el event onClose i hem hagut de utilitzar onHide
                         this.destroyRecursive();
@@ -333,160 +328,121 @@ define([
                     },
                     id: 'wioccl-dialog' + counter,
                     draggable: false,
-
                     firstResize: true,
-
-
+                    source: context,
+                    args: {
+                        id: 'wioccl-dialog' + counter,
+                        value: context.rebuildWioccl(tree[0])
+                    },
+                    wioccl: wioccl,
+                    tree: tree,
+                    refId: refId
                 });
-
-
                 context.wiocclDialog = wiocclDialog;
-
                 wiocclDialog.startup();
 
 
-                // let dialogContainer = domConstruct.create("div", {
-                //     id: "dialogContainer_wioccl"
-                // });
-
-                // let paneContainer = domConstruct.create("div", {
-                //     "class": "dijitDialogPaneContentArea",
-                //     "style": "max-width: 99%; max-height: 100%"
-                //     // "style": "width:680px; height: 550px"
-                // });
-
-                // let detailContainer = domConstruct.create("div", {
-                //     id: "detailContainer_" + "test",
-                //     "class": "wioccl-detail",
-                // });
                 context.detailContainer = wiocclDialog.detailContainerNode;
-
-                // let contentContainer = domConstruct.create("div", {
-                //     id: "contentContainer_" + "test",
-                //     "style": "width:100%",
-                //     "class": "wioccl-content",
-                //     // "innerHTML": testContent
-                // });
-
-                // let attrContainer = domConstruct.create("div", {
-                //     id: "attrContainer_" + "test",
-                //     "style": "width:100%",
-                //     "class": "wioccl-attr",
-                // });
                 context.attrContainer = wiocclDialog.attrContainerNode;
-
-
-                // let treeContainer = domConstruct.create("div", {
-                //     id: "treeContainer_" + "test",
-                //     "style": "width:150px",
-                //     "class": "wioccl-tree"
-                // });
-
-
                 context.treeContainer = wiocclDialog.treeContainerNode;
 
-                // let actionBar = domConstruct.create("div", {
-                //     "class": "dijitDialogPaneActionBar",
-                //     "style": "height:35px"
+                // let store = new Memory({
+                //     data: tree,
+                //     getChildren: function (object) {
+                //         return object.children || [];
+                //     }
                 // });
+                //
+                // context.store = store;
+                //
+                // let model = new ObjectStoreModel({
+                //     store: store,
+                //     query: {id: refId},
+                //     mayHaveChildren: function (item) {
+                //         // return "children" in item;
+                //         return item.children.length > 0;
+                //     }
+                // });
+                //
+                // context.model = model;
+                //
+                //
+                // let widgetTree = new Tree({
+                //     id: Date.now(),
+                //     model: model,
+                //     onOpenClick: true,
+                //     onLoad: function () {
+                //         // dom.byId('image').src = '../resources/images/root.jpg';
+                //     },
+                //     onClick: function (item) {
+                //         context._updateDetail(item);
+                //     }
+                // });
+                //
+                context.treeWidget = wiocclDialog.widgetTree;
 
-                let store = new Memory({
-                    data: tree,
-                    getChildren: function (object) {
-                        return object.children || [];
-                    }
-                });
+                // let createEditor = function ($textarea, $node, args, context) {
+                //
+                //     args.id = (args.id + Date.now() + Math.random()).replace('.', '-'); // id única
+                //
+                //
+                //     // ALERTA! per alguna raó si s'afegeix el contentToolFactory com a dependència no funciona (exactament el mateix codi al DataContentProcessor sí que ho fa), la alternativa és utilitzar la factoria del content tool actual:
+                //     let id = context.editor.dispatcher.getGlobalState().getCurrentId();
+                //     let contentToolFactory = context.editor.dispatcher.getContentCache(id).getMainContentTool().contentToolFactory;
+                //
+                //     let editorWidget = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
+                //     let toolbarId = 'FormToolbar_' + (args.id);
+                //
+                //     let $container = jQuery('<div id="container_' + args.id + '">');
+                //     // this.$node.before($container);
+                //
+                //
+                //     let $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
+                //
+                //     $textarea.css('height', '200px');
+                //
+                //     $textarea.attr('id', 'textarea_' + args.id);
+                //
+                //     $container.append($toolbar);
+                //     $container.append($textarea);
+                //     $container.append(editorWidget);
+                //
+                //     $node.append($container);
+                //
+                //
+                //     toolbarManager.createToolbar(toolbarId, 'simple');
+                //
+                //
+                //     let editor = new AceFacade({
+                //         id: args.id,
+                //         auxId: args.id,
+                //         containerId: editorWidget.id,
+                //         textareaId: 'textarea_' + args.id,
+                //         theme: JSINFO.plugin_aceeditor.colortheme,
+                //         wraplimit: JSINFO.plugin_aceeditor.wraplimit, // TODO: determinar el lmit correcte
+                //         wrapMode: true,
+                //         dispatcher: context.editor.dispatcher,
+                //         content: args.value,
+                //         originalContent: args.value,
+                //         // TOOLBAR_ID: toolbarId,
+                //         TOOLBAR_ID: 'full-editor',
+                //         ignorePatching: true,
+                //         plugins: [],
+                //     });
+                //
+                //     context.dialogEditor = editor;
+                //
+                //
+                //     this.widgetInitialized = true;
+                //
+                //     // Per defecte s'assigna el primer node
+                //     editor.wioccl = wioccl;
+                //
+                //     return editor;
+                //
+                // };
 
-                context.store = store;
-
-                let model = new ObjectStoreModel({
-                    store: store,
-                    query: {id: refId},
-                    mayHaveChildren: function (item) {
-                        // return "children" in item;
-                        return item.children.length > 0;
-                    }
-                });
-
-                context.model = model;
-
-
-                let widgetTree = new Tree({
-                    id: Date.now(),
-                    model: model,
-                    onOpenClick: true,
-                    onLoad: function () {
-                        // dom.byId('image').src = '../resources/images/root.jpg';
-                    },
-                    onClick: function (item) {
-                        context._updateDetail(item);
-                    }
-                });
-
-                context.treeWidget = widgetTree;
-
-                let createEditor = function ($textarea, $node, args, context) {
-
-                    args.id = (args.id + Date.now() + Math.random()).replace('.', '-'); // id única
-
-
-                    // ALERTA! per alguna raó si s'afegeix el contentToolFactory com a dependència no funciona (exactament el mateix codi al DataContentProcessor sí que ho fa), la alternativa és utilitzar la factoria del content tool actual:
-                    let id = context.editor.dispatcher.getGlobalState().getCurrentId();
-                    let contentToolFactory = context.editor.dispatcher.getContentCache(id).getMainContentTool().contentToolFactory;
-
-                    let editorWidget = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
-                    let toolbarId = 'FormToolbar_' + (args.id);
-
-                    let $container = jQuery('<div id="container_' + args.id + '">');
-                    // this.$node.before($container);
-
-
-                    let $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
-
-                    $textarea.css('height', '200px');
-
-                    $textarea.attr('id', 'textarea_' + args.id);
-
-                    $container.append($toolbar);
-                    $container.append($textarea);
-                    $container.append(editorWidget);
-
-                    $node.append($container);
-
-
-                    toolbarManager.createToolbar(toolbarId, 'simple');
-
-
-                    let editor = new AceFacade({
-                        id: args.id,
-                        auxId: args.id,
-                        containerId: editorWidget.id,
-                        textareaId: 'textarea_' + args.id,
-                        theme: JSINFO.plugin_aceeditor.colortheme,
-                        wraplimit: JSINFO.plugin_aceeditor.wraplimit, // TODO: determinar el lmit correcte
-                        wrapMode: true,
-                        dispatcher: context.editor.dispatcher,
-                        content: args.value,
-                        originalContent: args.value,
-                        // TOOLBAR_ID: toolbarId,
-                        TOOLBAR_ID: 'full-editor',
-                        ignorePatching: true,
-                        plugins: [],
-                    });
-
-                    context.dialogEditor = editor;
-
-
-                    this.widgetInitialized = true;
-
-                    // Per defecte s'assigna el primer node
-                    editor.wioccl = wioccl;
-
-                    return editor;
-
-                };
-
-                let valor = context.rebuildWioccl(tree[0]);
+                // let valor = context.rebuildWioccl(tree[0]);
 
                 //col·locar en el lloc adequat
                 // domConstruct.place(paneContainer, wiocclDialog.containerNode, "last");
@@ -501,73 +457,45 @@ define([
                 // wiocclDialog.set("containerNode", dialogContainer);
                 wiocclDialog.show();
 
-                widgetTree.placeAt(wiocclDialog.treeContainerNode);
-                widgetTree.startup();
+                // widgetTree.placeAt(wiocclDialog.treeContainerNode);
+                // widgetTree.startup();
 
                 // L'editor no es pot afegir fins que el dialog no és creat:
-                let $contentContainer = jQuery(wiocclDialog.contentContainerNode);
-                let $textarea = jQuery('<textarea></textarea>');
+                // let $contentContainer = jQuery(wiocclDialog.contentContainerNode);
+                // let $textarea = jQuery('<textarea></textarea>');
                 // let $textarea = jQuery('<textarea>' + valor + '</textarea>');
-                $contentContainer.append($textarea);
+                // $contentContainer.append($textarea);
 
-                let args = {
-                    id: 'wioccl-dialog' + counter,
-                    value: valor
-                };
+                // let args = {
+                //     id: 'wioccl-dialog' + counter,
+                //     value: valor
+                // };
 
-                let editor = createEditor($textarea, $contentContainer, args, context);
+                // TODO: afegir el args i context->source al constructor del dialog
+
+                // let editor = wiocclDialog.createEditor(args, context);
                 // editor.setValue(valor);
 
 
-                let $paneContainer = jQuery(wiocclDialog.paneContainerNode);
-                let $treeContainer = jQuery(wiocclDialog.treeContainerNode);
-                let $detailContainer = jQuery(wiocclDialog.detailContainerNode);
+                // let $paneContainer = jQuery(wiocclDialog.paneContainerNode);
+                // let $treeContainer = jQuery(wiocclDialog.treeContainerNode);
+                // let $detailContainer = jQuery(wiocclDialog.detailContainerNode);
 
-                $paneContainer.css('position', 'absolute');
-                $paneContainer.css('top', '30px');
-                $paneContainer.css('bottom', '45px');
-                $paneContainer.css('left', 0);
-                $paneContainer.css('right', 0);
+                // $paneContainer.css('position', 'absolute');
+                // $paneContainer.css('top', '30px');
+                // $paneContainer.css('bottom', '45px');
+                // $paneContainer.css('left', 0);
+                // $paneContainer.css('right', 0);
 
                 let $actionBar = jQuery(wiocclDialog.buttonsNode);
-                $actionBar.css('margin', 0);
-                $actionBar.css('padding', 0);
+                // $actionBar.css('margin', 0);
+                // $actionBar.css('padding', 0);
 
                 let $updateButton = jQuery("<button class='wioccl-btn'>Actualitzar</button>");
                 $actionBar.append($updateButton);
 
                 let $saveButton = jQuery("<button class='wioccl-btn'>Save</button>");
                 $actionBar.append($saveButton);
-
-
-                let height = $paneContainer.height() - 30;
-
-                $treeContainer.css('height', height);
-                let treeWidth = $treeContainer.width();
-                let paneWidth = $paneContainer.width();
-
-                $detailContainer.css('height', height);
-                $detailContainer.css('width', paneWidth - treeWidth - 90);
-
-                let $attrContainer = jQuery(wiocclDialog.attrContainerNode);
-
-                $attrContainer.empty();
-                $attrContainer.append(context._generateHtmlForFields(context._extractFields(tree[0].attrs, tree[0].type)));
-
-
-                editor.setHeightForced($detailContainer.height() - $attrContainer.height() - 20);
-
-
-                // ALERTA! aquesta funció es crida automáticament quan canvia la mida de la finestra del navegador o es fa scroll
-                // Com que hem fet que els elements del dialog s'ajustin via jQuery quan es crida al resize es
-                // fa malbé la composició.
-
-                // Per alguna raó desconeguda si es sobreescriu aquesta funció i s'intenta cridar al this.inherited()
-                // no funciona, i si es sobreescriu a la inicialització no es crida la primera vegada i no es
-                // genera correctament, per aquest motiu es fa la reescriptura en aquest punt, on ja tenim la mida final
-                wiocclDialog.resize = function (args) {
-                };
-
 
                 $updateButton.on('click', function () {
                     context.parseWioccl(editor.getValue(), editor.wioccl, context._getStructure());
@@ -576,6 +504,27 @@ define([
                 $saveButton.on('click', function () {
                     context._save(editor);
                 });
+
+                // wiocclDialog._updateHeight();
+                // let height = $paneContainer.height() - 30;
+                //
+                // console.log("Pane?", $paneContainer);
+                // console.log("alçada??", height);
+                // $treeContainer.css('height', height);
+                // let treeWidth = $treeContainer.width();
+                // let paneWidth = $paneContainer.width();
+                //
+                // $detailContainer.css('height', height);
+                // $detailContainer.css('width', paneWidth - treeWidth - 90);
+
+                // let $attrContainer = jQuery(wiocclDialog.attrContainerNode);
+                //
+                // $attrContainer.empty();
+                // $attrContainer.append(context._generateHtmlForFields(context._extractFields(tree[0].attrs, tree[0].type)));
+
+                wiocclDialog.setFields(context._extractFields(tree[0].attrs, tree[0].type));
+
+
 
                 context._updateDetail(tree[0]);
 
@@ -717,26 +666,28 @@ define([
             });
         },
 
-        _generateHtmlForFields: function (fields) {
-            let html = '<fieldset class="wioccl-fields">';
-            html += '<legend>Atributs, nom de la variable o paràmetres (no es poden modificar, cal modificar el codi a l\'editor)</legend>';
-
-            for (let field in fields) {
-
-                // Es necessari eliminar el escape de les dobles cometes
-                // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
-                let valor = fields[field].replaceAll('\"', '&quot;');
-
-                html += '<div class="wioccl-field">';
-                html += '<label>' + field + ':</label>';
-                html += '<input type="text" name="' + field + '" value="' + valor + '" disabled="true"/>';
-                html += '</div>';
-            }
-
-            html += "</fieldset>";
-            return html;
-
-        },
+        // _generateHtmlForFields: function (fields) {
+        //     // let html = '<fieldset class="wioccl-fields">';
+        //     // html += '<legend>Atributs, nom de la variable o paràmetres (no es poden modificar, cal modificar el codi a l\'editor)</legend>';
+        //
+        //     let html = '';
+        //
+        //     for (let field in fields) {
+        //
+        //         // Es necessari eliminar el escape de les dobles cometes
+        //         // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
+        //         let valor = fields[field].replaceAll('\"', '&quot;');
+        //
+        //         html += '<div class="wioccl-field">';
+        //         html += '<label>' + field + ':</label>';
+        //         html += '<input type="text" name="' + field + '" value="' + valor + '" disabled="true"/>';
+        //         html += '</div>';
+        //     }
+        //
+        //     // html += "</fieldset>";
+        //     return html;
+        //
+        // },
 
         _extractFields: function (attrs, type) {
             // console.log("Fields to extract:", attrs, type);
@@ -1144,8 +1095,10 @@ define([
             // console.log("Updating:", item);
 
 
-            jQuery(this.attrContainer).empty();
-            jQuery(this.attrContainer).append(this._generateHtmlForFields(this._extractFields(item.attrs, item.type)));
+            // jQuery(this.attrContainer).empty();
+
+            this.wiocclDialog.setFields(this._extractFields(item.attrs, item.type));
+            // jQuery(this.attrContainer).append(this._generateHtmlForFields(this._extractFields(item.attrs, item.type)));
 
             let auxItem = this.rebuildWioccl(item);
 
