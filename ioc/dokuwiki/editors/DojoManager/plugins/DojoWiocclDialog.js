@@ -113,6 +113,15 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
+                    console.log(context.editor.isChanged());
+
+                    if (context.editor.isChanged()) {
+                        let descartar = confirm("S'han detectat canvis, vols descartar-los?");
+                        if (!descartar) {
+                            return false;
+                        }
+                    }
+
                     context._updateDetail(item);
                     // TODO: el update s'ha de portar a aquesta classe
                     // source._updateDetail(item);
@@ -168,6 +177,7 @@ define([
             let auxItem = this.source.rebuildWioccl(item);
 
             this.editor.setValue(auxItem);
+            this.editor.resetOriginalContentState();
 
             this.editor.wioccl = item;
 
@@ -338,6 +348,16 @@ define([
                 },
                 onClick: function (item) {
                     // source._updateDetail(item);
+
+                    if (context.editor.isChanged()) {
+                        let descartar = confirm("S'han detectat canvis, vols descartar-los?");
+                        if (!descartar) {
+                            return false;
+                        }
+                    }
+
+
+                    console.log(context.editor.isChanged());
                     context._updateDetail(item);
                 },
 
