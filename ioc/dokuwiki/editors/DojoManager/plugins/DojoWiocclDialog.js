@@ -30,7 +30,7 @@ define([
         startup: function () {
             this.inherited(arguments);
             this.createEditor();
-            this.createTree();
+            this.createTree(this.tree, this.refId);
 
             // let $updateButton = jQuery("<button class='wioccl-btn'>Actualitzar</button>");
             let $updateButton = jQuery(this.updateButtonNode);
@@ -80,19 +80,21 @@ define([
             // alert('stop');
         },
 
-        createTree: function () {
+        createTree: function (tree, refId) {
             let store = new Memory({
-                data: this.tree,
+                // data: this.tree,
+                data: tree,
                 getChildren: function (object) {
                     return object.children || [];
                 }
             });
 
-            this.store = store;
+            // this.store = store;
 
             let model = new ObjectStoreModel({
                 store: store,
-                query: {id: this.refId},
+                query: {id: refId},
+                // query: {id: this.refId},
                 mayHaveChildren: function (item) {
                     // return "children" in item;
                     return item.children.length > 0;
@@ -113,7 +115,7 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    console.log(context.editor.isChanged());
+                    // console.log(context.editor.isChanged());
 
                     if (context.editor.isChanged()) {
                         let descartar = confirm("S'han detectat canvis, vols descartar-los?");
@@ -319,53 +321,55 @@ define([
         updateTree: function(tree, root, selected, structure) {
             this.treeWidget.destroyRecursive();
 
-            let store = new Memory({
-                data: tree,
-                // data: {name: 'test'},
-                getChildren: function (object) {
-                    return object.children || [];
-                }
-            });
+            this.createTree(tree, root.id);
 
-            let model = new ObjectStoreModel({
-                store: store,
-                query: {id: root.id},
-                mayHaveChildren: function (item) {
-                    // return "children" in item;
-                    return item.children.length > 0;
-                }
-            });
-
-
-            // let source = this.source;
-            let context = this;
-            let newTree = new Tree({
-                id: Date.now(),
-                model: model,
-                onOpenClick: true,
-                onLoad: function () {
-                    // dom.byId('image').src = '../resources/images/root.jpg';
-                },
-                onClick: function (item) {
-                    // source._updateDetail(item);
-
-                    if (context.editor.isChanged()) {
-                        let descartar = confirm("S'han detectat canvis, vols descartar-los?");
-                        if (!descartar) {
-                            return false;
-                        }
-                    }
-
-
-                    console.log(context.editor.isChanged());
-                    context._updateDetail(item);
-                },
-
-            });
-
-
-            newTree.startup();
-            newTree.placeAt(this.treeContainerNode);
+            // let store = new Memory({
+            //     data: tree,
+            //     // data: {name: 'test'},
+            //     getChildren: function (object) {
+            //         return object.children || [];
+            //     }
+            // });
+            //
+            // let model = new ObjectStoreModel({
+            //     store: store,
+            //     query: {id: root.id},
+            //     mayHaveChildren: function (item) {
+            //         // return "children" in item;
+            //         return item.children.length > 0;
+            //     }
+            // });
+            //
+            //
+            // // let source = this.source;
+            // let context = this;
+            // let newTree = new Tree({
+            //     id: Date.now(),
+            //     model: model,
+            //     onOpenClick: true,
+            //     onLoad: function () {
+            //         // dom.byId('image').src = '../resources/images/root.jpg';
+            //     },
+            //     onClick: function (item) {
+            //         // source._updateDetail(item);
+            //
+            //         if (context.editor.isChanged()) {
+            //             let descartar = confirm("S'han detectat canvis, vols descartar-los?");
+            //             if (!descartar) {
+            //                 return false;
+            //             }
+            //         }
+            //
+            //
+            //         console.log(context.editor.isChanged());
+            //         context._updateDetail(item);
+            //     },
+            //
+            // });
+            //
+            //
+            // newTree.startup();
+            // newTree.placeAt(this.treeContainerNode);
 
 
             // actualitzem el contingut del dialog
@@ -386,11 +390,11 @@ define([
             // Finalment s'afegeix el node root
             path.unshift(root.id);
 
-            newTree.set('path', path);
+            this.treeWidget.set('path', path);
 
-            this.store = store;
-            this.model = model;
-            this.treeWidget = newTree;
+            // this.store = store;
+            // this.model = model;
+            // this.treeWidget = newTree;
         }
         // constructor: function () {
         //     this.initFunctions = [];

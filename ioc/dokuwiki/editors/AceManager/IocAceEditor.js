@@ -1625,8 +1625,8 @@ define([
             isChanged: function () {
                 //console.log("IocAceEditor#isChanged", this.getValue().length, this.originalContent.length);
 
-                console.log("|" + this.getValue() + "|");
-                console.log("|" + this.originalContent + "|");
+                // console.log("|" + this.getValue() + "|");
+                // console.log("|" + this.originalContent + "|");
 
                 return this.originalContent !== this.getValue();
             },
