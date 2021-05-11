@@ -101,7 +101,8 @@ define([
 
             this.model = model;
 
-            let source = this.source;
+            // let source = this.source;
+            let context = this;
 
 
             this.treeWidget = new Tree({
@@ -112,14 +113,73 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    // context._updateDetail(item);
+                    context._updateDetail(item);
                     // TODO: el update s'ha de portar a aquesta classe
-                    source._updateDetail(item);
+                    // source._updateDetail(item);
                 }
             });
 
             this.treeWidget.placeAt(this.treeContainerNode);
             this.treeWidget.startup();
+        },
+
+        _extractFields: function (attrs, type) {
+            // console.log("Fields to extract:", attrs, type);
+
+            // Cal fer la conversió de &escapedgt; per \>
+            attrs = attrs.replace('&escapedgt;', '\\>');
+
+            let fields = {};
+
+            switch (type) {
+
+                case 'field':
+                    fields['field'] = attrs;
+                    break;
+
+                case 'function':
+
+                    let paramsPattern = /(\[.*?\])|(".*?")|-?\d+/g;
+                    let tokens = attrs.match(paramsPattern);
+                    // console.log("Tokens:", tokens);
+                    for (let i = 0; i < tokens.length; i++) {
+                        fields['param' + i] = tokens[i].trim();
+                    }
+
+                    break;
+
+                default:
+                    const pattern = / *((.*?)="(.*?)")/g;
+
+                    const array = [...attrs.matchAll(pattern)];
+
+                    for (let i = 0; i < array.length; i++) {
+                        fields[array[i][2].trim()] = array[i][3].trim();
+                    }
+            }
+
+            return fields;
+        },
+
+        _updateDetail: function (item) {
+
+            this.setFields(this._extractFields(item.attrs, item.type));
+
+            let auxItem = this.source.rebuildWioccl(item);
+
+            this.editor.setValue(auxItem);
+
+            this.editor.wioccl = item;
+
+
+            if (item.id === 0) {
+                this.editor.lockEditor();
+                jQuery(this.detailContainerNode).css('opacity', '0.5');
+            } else {
+                this.editor.unlockEditor();
+                jQuery(this.detailContainerNode).css('opacity', '1');
+            }
+
         },
 
         // ALERTA! aquesta funció es crida automáticament quan canvia la mida de la finestra del navegador o es fa scroll
@@ -267,8 +327,8 @@ define([
             });
 
 
-            let source = this.source;
-
+            // let source = this.source;
+            let context = this;
             let newTree = new Tree({
                 id: Date.now(),
                 model: model,
@@ -277,7 +337,8 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    source._updateDetail(item);
+                    // source._updateDetail(item);
+                    context._updateDetail(item);
                 },
 
             });

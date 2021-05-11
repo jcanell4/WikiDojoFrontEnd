@@ -353,9 +353,10 @@ define([
 
                 wiocclDialog.show();
 
-                wiocclDialog.setFields(context._extractFields(tree[0].attrs, tree[0].type));
+                wiocclDialog.setFields(wiocclDialog._extractFields(tree[0].attrs, tree[0].type));
 
-                context._updateDetail(tree[0]);
+                // context._updateDetail(tree[0]);
+                wiocclDialog._updateDetail(tree[0]);
             });
         },
 
@@ -499,43 +500,43 @@ define([
             });
         },
 
-        _extractFields: function (attrs, type) {
-            // console.log("Fields to extract:", attrs, type);
-
-            // Cal fer la conversió de &escapedgt; per \>
-            attrs = attrs.replace('&escapedgt;', '\\>');
-
-            let fields = {};
-
-            switch (type) {
-
-                case 'field':
-                    fields['field'] = attrs;
-                    break;
-
-                case 'function':
-
-                    let paramsPattern = /(\[.*?\])|(".*?")|-?\d+/g;
-                    let tokens = attrs.match(paramsPattern);
-                    // console.log("Tokens:", tokens);
-                    for (let i = 0; i < tokens.length; i++) {
-                        fields['param' + i] = tokens[i].trim();
-                    }
-
-                    break;
-
-                default:
-                    const pattern = / *((.*?)="(.*?)")/g;
-
-                    const array = [...attrs.matchAll(pattern)];
-
-                    for (let i = 0; i < array.length; i++) {
-                        fields[array[i][2].trim()] = array[i][3].trim();
-                    }
-            }
-
-            return fields;
-        },
+        // _extractFields: function (attrs, type) {
+        //     // console.log("Fields to extract:", attrs, type);
+        //
+        //     // Cal fer la conversió de &escapedgt; per \>
+        //     attrs = attrs.replace('&escapedgt;', '\\>');
+        //
+        //     let fields = {};
+        //
+        //     switch (type) {
+        //
+        //         case 'field':
+        //             fields['field'] = attrs;
+        //             break;
+        //
+        //         case 'function':
+        //
+        //             let paramsPattern = /(\[.*?\])|(".*?")|-?\d+/g;
+        //             let tokens = attrs.match(paramsPattern);
+        //             // console.log("Tokens:", tokens);
+        //             for (let i = 0; i < tokens.length; i++) {
+        //                 fields['param' + i] = tokens[i].trim();
+        //             }
+        //
+        //             break;
+        //
+        //         default:
+        //             const pattern = / *((.*?)="(.*?)")/g;
+        //
+        //             const array = [...attrs.matchAll(pattern)];
+        //
+        //             for (let i = 0; i < array.length; i++) {
+        //                 fields[array[i][2].trim()] = array[i][3].trim();
+        //             }
+        //     }
+        //
+        //     return fields;
+        // },
 
         parseWioccl: function (text, wioccl, structure) {
 
@@ -901,26 +902,26 @@ define([
             return tokens;
         },
 
-        _updateDetail: function (item) {
-
-            this.wiocclDialog.setFields(this._extractFields(item.attrs, item.type));
-
-            let auxItem = this.rebuildWioccl(item);
-
-            this.dialogEditor.setValue(auxItem);
-
-            this.dialogEditor.wioccl = item;
-
-
-            if (item.id === 0) {
-                this.dialogEditor.lockEditor();
-                jQuery(this.detailContainer).css('opacity', '0.5');
-            } else {
-                this.dialogEditor.unlockEditor();
-                jQuery(this.detailContainer).css('opacity', '1');
-            }
-
-        },
+        // _updateDetail: function (item) {
+        //
+        //     this.wiocclDialog.setFields(this._extractFields(item.attrs, item.type));
+        //
+        //     let auxItem = this.rebuildWioccl(item);
+        //
+        //     this.dialogEditor.setValue(auxItem);
+        //
+        //     this.dialogEditor.wioccl = item;
+        //
+        //
+        //     if (item.id === 0) {
+        //         this.dialogEditor.lockEditor();
+        //         jQuery(this.detailContainer).css('opacity', '0.5');
+        //     } else {
+        //         this.dialogEditor.unlockEditor();
+        //         jQuery(this.detailContainer).css('opacity', '1');
+        //     }
+        //
+        // },
 
         _setData: function (root, selected) {
             // console.log("root:", root);
@@ -941,11 +942,14 @@ define([
 
             root.children = this._getWiocclChildrenNodes(root.children, root.id, this);
 
+
             this.wiocclDialog.updateTree(tree, root, selected, structure);
 
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
             // pot trobar-se dividit en múltiples tokens
-            this._updateDetail(structure[selected.id]);
+            this.wiocclDialog._updateDetail(structure[selected.id]);
+
+            // this._updateDetail(structure[selected.id]);
 
             this.treeWidget = this.wiocclDialog.treeWidget;
         },
