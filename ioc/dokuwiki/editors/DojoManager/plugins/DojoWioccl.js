@@ -7,12 +7,8 @@ define([
     "dijit/form/ToggleButton",
     "dojo/dom-construct",
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWiocclDialog',
-    // "dojo/store/Memory",
-    // "dijit/tree/ObjectStoreModel",
-    // "dijit/Tree",
     "dijit/registry",
     "dojo/dom",
-    // 'ioc/dokuwiki/editors/AceManager/toolbarManager',
     'dijit/Tooltip',
     'dojo/on',
     'dijit/place',
@@ -20,17 +16,11 @@ define([
 
 
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct,
-             Dialog, /*Memory, ObjectStoreModel, Tree,*/ registry, dom, Tooltip, on, place, mouse) {
-
-    let AceFacade = null;
+             Dialog, registry, dom, Tooltip, on, place, mouse) {
 
     let counter = 0;
 
     // // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
-    // require(["ioc/dokuwiki/editors/AceManager/AceEditorFullFacade"], function (AuxClass) {
-    //     AceFacade = AuxClass;
-    // });
-
     let ajax = null;
     require(["ioc/dokuwiki/editors/Components/AjaxComponent"], function (AjaxComponent) {
         ajax = new AjaxComponent(); //ajax.send(urlBase, dataToSend, type)
@@ -38,16 +28,12 @@ define([
         ajax.method = 'post';
     });
 
-
     // No funciona si es carrega directament, hem de fer la inicialització quan cal utilitzar-lo
 
 
     let WiocclButton = declare(AbstractParseableDojoPlugin, {
 
         // S'assigna quan es crea el diàleg
-        treeWidget: null,
-
-        dialogEditor: null,
 
         wiocclDialog: null,
 
@@ -66,9 +52,6 @@ define([
                 tabIndex: "-1",
                 onClick: lang.hitch(this, "process")
             };
-
-            // this.requestComponent = new RequestComponent(this.editor.dispatcher);
-
 
             this.addButton(config);
 
@@ -97,9 +80,7 @@ define([
         },
 
         process: function () {
-
             alert("TODO");
-
         },
 
         _getStructure() {
@@ -117,12 +98,10 @@ define([
             }
 
             return this.backupStructure;
-
         },
 
         _getWiocclChildrenNodes(children, parent, context) {
             let nodes = [];
-
 
             for (let i = 0; i < children.length; i++) {
 
@@ -142,16 +121,13 @@ define([
                 }
                 node.name = node.type ? node.type : node.open;
 
-
                 node.parent = parent;
                 if (node.children.length > 0) {
                     node.children = this._getWiocclChildrenNodes(node.children, node.id, context);
                 }
 
-
                 nodes.push(node);
             }
-
 
             return nodes;
         },
@@ -162,16 +138,10 @@ define([
 
             // Cal fer la conversió de &escapedgt; per \>
             data.attrs = data.attrs.replaceAll('&escapedgt;', '\\>');
-
             data.attrs = data.attrs.replaceAll('&mark;', '\\>');
             data.attrs = data.attrs.replaceAll('&markn;', "\n>");
-            // value = value.replaceAll(/&markn;/gsm, '\n>');
-            // value = value.replaceAll(/&mark;/gsm, '>');
-
 
             wioccl += data.open.replace('%s', data.attrs);
-
-            // console.log(data.id, data.children);
 
             for (let i = 0; i < data.children.length; i++) {
 
@@ -183,24 +153,18 @@ define([
                     continue;
                 }
 
-
                 wioccl += this.rebuildWioccl(node);
-
-
             }
 
             if (data.close !== null) {
                 wioccl += data.close;
             }
 
-            // console.log("node rebuild wioccl:", wioccl);
-
             return wioccl;
         },
 
 
         _addHandlers: function ($node, context) {
-
             // console.log("$node", $node);
 
             $node.off('click');
@@ -237,7 +201,6 @@ define([
                 }
             }
 
-
             let _showTooltip = function (e) {
 
                 e.stopPropagation();
@@ -245,7 +208,6 @@ define([
                 let node = this;
                 let $this = jQuery(node);
                 let refId = $this.attr('data-wioccl-ref');
-                // console.log("show", refId);
 
                 let wioccl = context._getStructure()[refId];
 
@@ -341,21 +303,12 @@ define([
                     updateCallback: context._update.bind(context)
                 });
 
-
                 context.wiocclDialog = wiocclDialog;
                 wiocclDialog.startup();
-
-                context.detailContainer = wiocclDialog.detailContainerNode;
-                context.attrContainer = wiocclDialog.attrContainerNode;
-                context.treeContainer = wiocclDialog.treeContainerNode;
-
-                context.treeWidget = wiocclDialog.widgetTree;
 
                 wiocclDialog.show();
 
                 wiocclDialog.setFields(wiocclDialog._extractFields(tree[0].attrs, tree[0].type));
-
-                // context._updateDetail(tree[0]);
                 wiocclDialog._updateDetail(tree[0]);
             });
         },
@@ -369,11 +322,8 @@ define([
         // i reemplaçar les nodes
 
         // Si aquest no és el root, cal cercar el parent que té com a parent el node 0
-
         _save(editor) {
             // console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
-
-            // console.log("this?", this);
 
             let context = this;
             // 0 actualitzar el contingut actual
@@ -430,7 +380,6 @@ define([
 
             ajax.setStandbyId(jQuery('body').get(0));
 
-
             context.wiocclDialog.hide();
 
             ajax.send(dataToSend).then(function (data) {
@@ -475,7 +424,6 @@ define([
                     jQuery($rootNodes.get(0)).before($nouRoot);
                 }
 
-
                 // Elimem les referencies
                 $rootNodes.remove();
 
@@ -499,44 +447,6 @@ define([
 
             });
         },
-
-        // _extractFields: function (attrs, type) {
-        //     // console.log("Fields to extract:", attrs, type);
-        //
-        //     // Cal fer la conversió de &escapedgt; per \>
-        //     attrs = attrs.replace('&escapedgt;', '\\>');
-        //
-        //     let fields = {};
-        //
-        //     switch (type) {
-        //
-        //         case 'field':
-        //             fields['field'] = attrs;
-        //             break;
-        //
-        //         case 'function':
-        //
-        //             let paramsPattern = /(\[.*?\])|(".*?")|-?\d+/g;
-        //             let tokens = attrs.match(paramsPattern);
-        //             // console.log("Tokens:", tokens);
-        //             for (let i = 0; i < tokens.length; i++) {
-        //                 fields['param' + i] = tokens[i].trim();
-        //             }
-        //
-        //             break;
-        //
-        //         default:
-        //             const pattern = / *((.*?)="(.*?)")/g;
-        //
-        //             const array = [...attrs.matchAll(pattern)];
-        //
-        //             for (let i = 0; i < array.length; i++) {
-        //                 fields[array[i][2].trim()] = array[i][3].trim();
-        //             }
-        //     }
-        //
-        //     return fields;
-        // },
 
         parseWioccl: function (text, wioccl, structure) {
 
@@ -604,8 +514,6 @@ define([
 
         _removeChildren: function (id, inStructure, removeNode) {
             let node = inStructure[id];
-
-            // console.log("_removeChildren?", node, id, inStructure);
 
             if (!node.children) {
                 console.error("no hi ha children?", node.children);
@@ -718,7 +626,6 @@ define([
                     stack.push(tokens[i]);
                 }
 
-
                 if (tokens[i].value.startsWith('{##')) {
                     tokens[i].type = "field";
                     tokens[i].open = "{##%s";
@@ -726,11 +633,9 @@ define([
 
                     let pattern = /{##(.*)##}/gsm;
 
-
                     let matches = pattern.exec(tokens[i].value);
                     tokens[i].attrs = matches[1];
                 }
-
 
                 if (tokens[i].value.startsWith('{#_')) {
                     tokens[i].type = "function";
@@ -748,9 +653,7 @@ define([
                     tokens[i].open = tokens[i].value.replace(pattern, "$1%s$3");
 
                     tokens[i].close = "";
-
                 }
-
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 if (first) {
@@ -763,18 +666,10 @@ define([
 
             }
 
-
             // ALERTA[Xavi] Si s'afegeixen sibblings a un element que penji directament del root aquest es descartaran
             if (sibblings > 1 && Number(root.id) === Number(this.root) && Number(structure[root.id]['parent']) !== 0) {
                 root.addedsibblings = true;
             }
-
-            // console.log("Root?", root);
-            // console.log("tokens?", tokens);
-
-
-            //root.addNewline = tokens[tokens.length-1].value === "\n";
-
 
         },
 
@@ -796,17 +691,13 @@ define([
 
             // ALERTA: això suposa un canvi en el recompte de caràcteres, perquè les posicions no corresponen
 
-
             let tokens = [];
             let xArray;
             while (xArray = pattern.exec(text)) {
 
                 let value = xArray[0];
 
-
                 // Actualitzem el valor del token
-
-
                 let token = {};
                 token.startIndex = xArray.index;
                 token.lastIndex = pattern.lastIndex - 1; // El lastIndex sembla correspondre a la posició on comença el token següent
@@ -862,9 +753,7 @@ define([
 
                 }
 
-
                 currentPos = tokens[i].startIndex - 1;
-
             }
 
             if (tokens.length === 0) {
@@ -902,27 +791,6 @@ define([
             return tokens;
         },
 
-        // _updateDetail: function (item) {
-        //
-        //     this.wiocclDialog.setFields(this._extractFields(item.attrs, item.type));
-        //
-        //     let auxItem = this.rebuildWioccl(item);
-        //
-        //     this.dialogEditor.setValue(auxItem);
-        //
-        //     this.dialogEditor.wioccl = item;
-        //
-        //
-        //     if (item.id === 0) {
-        //         this.dialogEditor.lockEditor();
-        //         jQuery(this.detailContainer).css('opacity', '0.5');
-        //     } else {
-        //         this.dialogEditor.unlockEditor();
-        //         jQuery(this.detailContainer).css('opacity', '1');
-        //     }
-        //
-        // },
-
         _setData: function (root, selected) {
             // console.log("root:", root);
 
@@ -942,16 +810,11 @@ define([
 
             root.children = this._getWiocclChildrenNodes(root.children, root.id, this);
 
-
             this.wiocclDialog.updateTree(tree, root, selected, structure);
 
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
             // pot trobar-se dividit en múltiples tokens
             this.wiocclDialog._updateDetail(structure[selected.id]);
-
-            // this._updateDetail(structure[selected.id]);
-
-            this.treeWidget = this.wiocclDialog.treeWidget;
         },
 
         parse: function () {
@@ -964,7 +827,6 @@ define([
 
         },
     });
-
 
     // Register this plugin.
     _Plugin.registry["insert_wioccl"] = function () {
