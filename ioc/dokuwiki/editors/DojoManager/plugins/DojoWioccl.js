@@ -83,7 +83,7 @@ define([
             alert("TODO");
         },
 
-        _getStructure() {
+        getStructure() {
             // console.log(this.editor.extra.wioccl_structure.structure);
 
             if (!this.backupStructure) {
@@ -108,12 +108,12 @@ define([
 
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
 
-                if (context._getStructure()[id].isClone) {
+                if (context.getStructure()[id].isClone) {
                     continue;
                 }
 
-                // console.log("Original:", id, context._getStructure()[id]);
-                let node = JSON.parse(JSON.stringify(context._getStructure()[id]));
+                // console.log("Original:", id, context.getStructure()[id]);
+                let node = JSON.parse(JSON.stringify(context.getStructure()[id]));
                 // console.log("Clon:", id,node);
 
                 if (!node) {
@@ -145,7 +145,7 @@ define([
 
             for (let i = 0; i < data.children.length; i++) {
 
-                let node = typeof data.children[i] === 'object' ? data.children[i] : this._getStructure()[data.children[i]];
+                let node = typeof data.children[i] === 'object' ? data.children[i] : this.getStructure()[data.children[i]];
 
                 // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
                 // per exemple perquè és genera amb un for o foreach
@@ -182,7 +182,7 @@ define([
                 }
 
 
-                let wioccl = context._getStructure()[refId];
+                let wioccl = context.getStructure()[refId];
 
                 for (let child of wioccl.children) {
                     _enableHighlight(child, false);
@@ -194,7 +194,7 @@ define([
                 $relatedNodes.removeClass('ref-highlight');
                 $relatedNodes.removeClass('child');
 
-                let wioccl = context._getStructure()[refId];
+                let wioccl = context.getStructure()[refId];
 
                 for (let child of wioccl.children) {
                     _disableHighlight(child);
@@ -209,7 +209,7 @@ define([
                 let $this = jQuery(node);
                 let refId = $this.attr('data-wioccl-ref');
 
-                let wioccl = context._getStructure()[refId];
+                let wioccl = context.getStructure()[refId];
 
                 let str = wioccl.open + wioccl.close;
                 str = str.replace('%s', wioccl.attrs);
@@ -251,13 +251,13 @@ define([
 
                 let refId = $item.attr('data-wioccl-ref');
 
-                let wioccl = context._getStructure()[refId];
+                let wioccl = context.getStructure()[refId];
 
                 if (wioccl.isClone) {
                     alert("Aquest element es una copia, es mostrarà l'element pare");
 
                     while (wioccl.isClone) {
-                        wioccl = context._getStructure()[wioccl.parent];
+                        wioccl = context.getStructure()[wioccl.parent];
                         refId = wioccl.id;
                     }
                 }
@@ -266,7 +266,7 @@ define([
                 context.root = refId;
 
                 let tree = [];
-                let node = JSON.parse(JSON.stringify(context._getStructure()[refId]));
+                let node = JSON.parse(JSON.stringify(context.getStructure()[refId]));
                 node.name = node.type ? node.type : node.open;
                 tree.push(node);
 
@@ -314,7 +314,7 @@ define([
         },
 
         _update(editor) {
-            this.parseWioccl(editor.getValue(), editor.wioccl, this._getStructure());
+            this.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
         },
 
         // Enviar el text
@@ -327,11 +327,11 @@ define([
 
             let context = this;
             // 0 actualitzar el contingut actual
-            this.parseWioccl(editor.getValue(), editor.wioccl, this._getStructure());
+            this.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
 
             // 1 reconstruir el wioccl del node pare (this._getStructure()[this.root], això és el que s'ha d'enviar al servidor
             // ALERTA! no cal enviar el text, cal enviar la estructura i el node a partir del qual s'ha de regenerar el codi wioccl
-            let structure = this._getStructure();
+            let structure = this.getStructure();
 
             let rootRef = this.root;
 
@@ -796,7 +796,7 @@ define([
 
             let tree = [];
 
-            let structure = this._getStructure();
+            let structure = this.getStructure();
 
             if (selected.addedsibblings) {
                 root = structure[root.parent];

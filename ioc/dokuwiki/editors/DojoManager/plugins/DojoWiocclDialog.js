@@ -31,7 +31,7 @@ define([
             this.inherited(arguments);
             this.createEditor();
             this.createTree(this.tree, this.refId);
-
+            this._rebuildChunkMap(this.source.getStructure()[this.refId]);
             let $updateButton = jQuery(this.updateButtonNode);
             let $saveButton = jQuery(this.saveButtonNode);;
 
@@ -108,12 +108,83 @@ define([
                         }
                     }
 
+                    context._rebuildChunkMap(item).bind(context);
+
+                    // console.log(item);
+                    // console.log(context.source.getStructure());
+                    //
+                    // let outChunkMap = new Map();
+                    // let rebuild = context._createChunkMap(item, context.source.getStructure(),0, outChunkMap);
+                    // console.log(rebuild, outChunkMap);
+                    //
+                    // console.log("Chunk Map Set");
+                    // context.chunkMap = outChunkMap;
+
                     context._updateDetail(item);
                 }
             });
 
             this.treeWidget.placeAt(this.treeContainerNode);
             this.treeWidget.startup();
+        },
+
+        _rebuildChunkMap: function (item){
+            // console.log(item);
+            // console.log(this.source.getStructure());
+
+            let outChunkMap = new Map();
+            let rebuild = this._createChunkMap(item, this.source.getStructure(),0, outChunkMap);
+            // console.log(rebuild, outChunkMap);
+
+            // console.log("Chunk Map Set");
+            this.chunkMap = outChunkMap;
+        },
+
+        // el chunk map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
+        _createChunkMap: function(item, structure, pos, outChunkMap) {
+
+            // console.log("Creant chunkmap per item:", item);
+
+            // Cal fer la conversió de &escapedgt; per \>
+            let attrs = item.attrs;
+            attrs = attrs.replaceAll('&escapedgt;', '\\>');
+            attrs = attrs.replaceAll('&mark;', '\\>');
+            attrs = attrs.replaceAll('&markn;', "\n>");
+            // data.attrs = data.attrs.replaceAll('&escapedgt;', '\\>');
+            // data.attrs = data.attrs.replaceAll('&mark;', '\\>');
+            // data.attrs = data.attrs.replaceAll('&markn;', "\n>");
+
+            let wioccl = item.open.replace('%s', attrs);
+
+            outChunkMap.set(pos, item);
+
+            let cursorPos = pos+wioccl.length;
+
+            for (let i = 0; i < item.children.length; i++) {
+
+                // let node = typeof item.children[i] === 'object' ? item.children[i] : this.getStructure()[item.children[i]];
+                let node = typeof item.children[i] === 'object' ? item.children[i] : structure[item.children[i]];
+
+                // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
+                // per exemple perquè és genera amb un for o foreach
+                if (node.isClone) {
+                    continue;
+                }
+
+                let childWioccl = this._createChunkMap(node, structure, cursorPos, outChunkMap);
+                wioccl += childWioccl;
+                cursorPos += childWioccl.length;
+            }
+
+            if (item.close !== null && item.close.length>0) {
+                // si hi ha un close en clicar a sobre d'aquest també es seleccionarà l'item
+                // console.log("Afegint posició al close per:", item.close, cursorPos);
+                outChunkMap.set(cursorPos, item);
+                wioccl += item.close;
+            }
+
+            return wioccl;
+
         },
 
         _extractFields: function (attrs, type) {
@@ -272,6 +343,74 @@ define([
             editor.wioccl = this.wioccl;
 
             this.editor = editor;
+
+            // editor.on('change', function(e) {
+            //    console.log("change", e);
+            // });
+
+            let context = this;
+
+            editor.on('changeCursor', function(e) {
+
+
+                // console.log(e);
+
+
+                // Alerta! això pot ralentitzar amb documents molt llargs perquè itera sobre tot el document
+                // console.log(editor.editor.session.doc.positionToIndex(editor.editor.getEditor().getSelection().getCursor()));
+
+                // Només actualitzarem si no hi ha selecció
+                let pos = editor.getPositionAsIndex(true);
+
+
+
+                if (pos === -1) {
+                    return;
+                }
+
+                // console.log(editor.getPositionAsIndex());
+                // console.log(context.chunkMap);
+
+                // Cerquem el node corresponent
+                let candidate;
+                let found;
+                let first;
+
+                // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
+                // S'agafarà l'anterior
+                for (let [start, wioccl] of context.chunkMap) {
+                    if (!first) {
+                        first = wioccl;
+                    }
+
+                    // console.log("Comprovant pos > start: candidate", pos, start);
+                    if (start>pos && candidate) {
+                        console.log("Click al node:", candidate.id, candidate);
+                        found = true;
+
+                        // context.setFields(context._extractFields(candidate.attrs, candidate.type));
+
+                        // context._updateDetail(wioccl)
+                        break;
+                    }
+
+                    // s'estableix a la següent iteració
+                    candidate = wioccl;
+                }
+
+                if (!found) {
+                    candidate = first;
+                }
+
+                let auxFields = context._extractFields(candidate.attrs, candidate.type);
+
+                // console.log(auxFields);
+                // return;
+                context.setFields(auxFields);
+
+
+
+            });
 
             this._updateEditorHeight();
         },

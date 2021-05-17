@@ -58,6 +58,14 @@ define([
             this.editor.on('change', function () {
                 this.emit('change', {newContent: this.getValue()});
             }.bind(this));
+
+            this.editor.on('changeCursor', function (e) {
+                this.emit('changeCursor', e);
+            }.bind(this));
+        },
+
+        getPositionAsIndex: function (ignoreIfSelecting) {
+            return this.editor.getPositionAsIndex(ignoreIfSelecting);
         },
 
         getValue: function () {
@@ -210,9 +218,12 @@ define([
 
         getCurrentRow: function() {
             return this.editor.getCurrentRow();
-        }
+        },
 
-
+        // No està provat, ho desactivem
+        // clearSelection: function() {
+        //     this.editor.clearSelection();
+        // }
 
     });
 

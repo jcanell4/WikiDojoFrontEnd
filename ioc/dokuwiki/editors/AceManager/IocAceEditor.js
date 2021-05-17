@@ -1645,6 +1645,28 @@ define([
                 return this.readOnlyBlocksManager.isReadonlySection();
             },
 
+
+            getPositionAsIndex: function (ignoreIfSelecting) {
+
+                let editor = this.getEditor();
+
+                if (ignoreIfSelecting) {
+                    let selectedText = editor.getSelectedText();
+                    if (selectedText.length > 0) {
+                        return -1;
+                    }
+                }
+
+                // console.log("Cursor:", editor.getSelection().getCursor());
+                return editor.session.doc.positionToIndex(editor.getSelection().getCursor());
+            },
+
+            // No està provat, ho desactivem
+            // clearSelection: function () {
+            //     this.getEditor().getSelection().clearSelection();
+            // }
+
+
         });
 
 
