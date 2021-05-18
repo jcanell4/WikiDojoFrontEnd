@@ -65,10 +65,10 @@ define([
                         this._processRemoveAllChildrenWidgets(command, dispatcher);
 
                     } else if (command.type === "process_dom_from_function") {
-                        this._processDomFromFuntcion(command, dispatcher);
+                        this._processDomFromFunction(command, dispatcher);
 
                     } else if (command.type === "process_function") {
-                        this._processFuntcion(command, dispatcher);
+                        this._processFunction(command, dispatcher);
 
                     } else if (command.type === "jsinfo") {
                         this._processJsInfo(command, dispatcher);
@@ -145,7 +145,7 @@ define([
              * @param {Command} command
              * @private
              */
-            _processDomFromFuntcion: function (command) {
+            _processDomFromFunction: function (command) {
                 if (command.amd) {
                     require(new Array(command.processName), function (process) {
                         process(command.id, command.params);
@@ -168,7 +168,7 @@ define([
              * @param {Command} command
              * @private
              */
-            _processFuntcion: function (command) {
+            _processFunction: function (command) {
                 if (command.amd) {
                     require(new Array(command.processName), function (process) {
                         process(command.params);
