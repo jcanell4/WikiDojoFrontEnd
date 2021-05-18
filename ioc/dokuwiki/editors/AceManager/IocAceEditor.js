@@ -666,6 +666,10 @@ define([
                     this.emit('changeCursor', e)
                 }.bind(this));
 
+                this.editor.on('focus', function () {
+                    this.emit('focus');
+                }.bind(this));
+
             },
 
             //ALERTA[Xav] Aquest mètode lliga el textarea als events originals de la wiki
@@ -1665,8 +1669,8 @@ define([
                 let editor = this.getEditor();
 
                 // Ens seveixen tots dos mètodes
+                // console.log('activeElement:', document.activeElement);
                 // console.log('ace: is focused?', editor.isFocused());
-
                 // console.log('textinput: ', editor.textInput.getElement() == document.activeElement);
 
                 return editor.textInput.getElement() === document.activeElement;

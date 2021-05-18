@@ -62,6 +62,10 @@ define([
             this.editor.on('changeCursor', function (e) {
                 this.emit('changeCursor', e);
             }.bind(this));
+
+            this.editor.on('focus', function (e) {
+                this.emit('focus', e);
+            }.bind(this));
         },
 
         getPositionAsIndex: function (ignoreIfSelecting) {

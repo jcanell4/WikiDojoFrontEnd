@@ -15,7 +15,7 @@ define([
 ], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable,
              EventObserver, Button, toolbarManager, Memory, ObjectStoreModel, Tree) {
 
-    const UPDATE_TIME = 500;
+    const UPDATE_TIME = 300; // temps en millisegons
 
     let AceFacade = null;
 
@@ -108,19 +108,20 @@ define([
                 onClick: function (item) {
 
                     // actualitzem qualsevol canvi pendent abans
-                    context._updatePendingChanges()
 
 
-                    if (context.editor.isChanged()) {
+
+                    if (context.editor.isChanged() || context._pendingChanges) {
                         let descartar = confirm("S'han detectat canvis, vols descartar-los?");
                         if (!descartar) {
                             return false;
                         }
                     }
 
+                    context._updatePendingChanges()
 
-
-                    context._rebuildChunkMap(item).bind(context);
+                    // context._rebuildChunkMap(item).bind(context);
+                    context._rebuildChunkMap(item);
 
                     // console.log(item);
                     // console.log(context.source.getStructure());
@@ -133,6 +134,10 @@ define([
                     // context.chunkMap = outChunkMap;
 
                     context._updateDetail(item);
+
+                    let wioccl = context.source.getStructure()[item.id];
+                    context.selectedWioccl = wioccl;
+                    // console.log("Set selected:", context.selectedWioccl)
                 }
             });
 
@@ -244,6 +249,9 @@ define([
             }
 
             let auxItem = this.source.rebuildWioccl(item);
+
+            // console.log(item);
+            // console.log('auxItem?', auxItem);
 
             this.editor.setValue(auxItem);
             this.editor.resetOriginalContentState();
@@ -369,11 +377,15 @@ define([
             // TODO: optimització, ficar en un timer amb un buffer, disparar els updates periodicament,
             //  cada mig segon per exemple
 
+            // console.log("establint input change");
+
             // *********************
             // TEST: fer el mateix (similar! $this és el input per treure el val, es pot canviar)
             // que el botó però amb el input/change
             $fields.find('input').on('input change', function () {
-                // console.log('context', context.selectedWioccl)
+                // console.log("input change");
+
+                // console.log('selecteed Wioccl', context.selectedWioccl)
                 // let $fieldContainer = jQuery(this).closest('[data-attr-field]');
                 // let attrField = $fieldContainer.attr('data-attr-field');
                 // // console.log('attr', attrField)
@@ -417,6 +429,8 @@ define([
                 } else if (!context._pendingChanges) {
                     context.timerId = setTimeout(context._updatePendingChanges.bind(context), UPDATE_TIME);
                     context._pendingChanges = true;
+                } else {
+                    console.log('pending changes?', context._pendingChanges);
                 }
             });
 
@@ -437,11 +451,15 @@ define([
         },
 
         _updatePendingChanges: function() {
+
+            // console.log("Updating");
             let $attrContainer = jQuery(this.attrContainerNode);
 
             let context = this;
 
             $attrContainer.find('input').each(function() {
+                // console.log("updating", this);
+
                 let $fieldContainer = jQuery(this).closest('[data-attr-field]');
                 let attrField = $fieldContainer.attr('data-attr-field');
                 // console.log('attr', attrField)
@@ -458,6 +476,9 @@ define([
                 // reconstruim els atributs com a string
                 let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
 
+
+                // console.log(rebuildAttrs);
+
                 // Re assignem els nous atributs
                 context.selectedWioccl.attrs = rebuildAttrs;
 
@@ -472,10 +493,38 @@ define([
             // console.log("structure:", structure);
             // console.log("this?", this);
 
+            //
+            // PROBLEMA: El candidate (que funciona en fer click a un) és el corresponent al chunkmap
+            // així que cal actualitzar el chunk map amb el selected
+            // però el chunkmap és <pos, wioccl>, així que cal recorre tots!
+            //     console.log("És igual que el chunkmap??", this.chunkMap);
+
+
+
+
+            for (let [start, wioccl] of this.chunkMap) {
+                if (wioccl.id === this.selectedWioccl.id) {
+                    // console.log("updated chunkMap!", start, wioccl);
+                    this.chunkMap.set(start, this.selectedWioccl);
+                    // ALERTA! no fem el break perquè cal actualitzar el wioccl al principi i al final!
+                    //break;
+                }
+            }
+
+            // console.log(this.chunkMap);
+            //
+            // alert('stop');
+
+
+
             this._updateStructure();
             // structure[Number(context.selectedWioccl.id)] = context.selectedWioccl;
 
-            // console.log("Update del detall per:", context.editor.wioccl);
+
+            // console.log("Update del detall per:", this.editor.wioccl);
+            // console.log("És igual que el selected??", this.selectedWioccl);
+
+
 
             this._updateDetail(this.editor.wioccl, true);
 
@@ -492,6 +541,7 @@ define([
         _updateStructure: function () {
             let structure = this.source.getStructure();
             for (let [start, wioccl] of this.chunkMap) {
+                // console.log("updating structure", start, wioccl);
                 structure[Number(wioccl.id)] = wioccl;
             }
 
@@ -602,9 +652,10 @@ define([
 
             let context = this;
 
-            editor.on('changeCursor', function (e) {
+            editor.on('changeCursor, focus', function (e) {
 
                 if (!editor.isFocused()) {
+                    // console.log("no te focus", e);
                     return;
                 }
 
@@ -639,7 +690,7 @@ define([
 
                     // console.log("Comprovant pos > start: candidate", pos, start);
                     if (start > pos && candidate) {
-                        console.log("Click al node:", candidate.id, candidate);
+                        // console.log("Click al node:", candidate.id, candidate);
                         found = true;
 
                         // context.setFields(context._extractFields(candidate.attrs, candidate.type));
