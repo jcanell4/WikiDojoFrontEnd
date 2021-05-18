@@ -15,6 +15,8 @@ define([
 ], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable,
              EventObserver, Button, toolbarManager, Memory, ObjectStoreModel, Tree) {
 
+    const UPDATE_TIME = 500;
+
     let AceFacade = null;
 
     // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
@@ -31,9 +33,13 @@ define([
             this.inherited(arguments);
             this.createEditor();
             this.createTree(this.tree, this.refId);
+
+            let wioccl = this.source.getStructure()[this.refId];
+            this.selectedWioccl = wioccl;
+
             this._rebuildChunkMap(this.source.getStructure()[this.refId]);
             let $updateButton = jQuery(this.updateButtonNode);
-            let $saveButton = jQuery(this.saveButtonNode);;
+            let $saveButton = jQuery(this.saveButtonNode);
 
             let context = this;
 
@@ -101,12 +107,18 @@ define([
                 },
                 onClick: function (item) {
 
+                    // actualitzem qualsevol canvi pendent abans
+                    context._updatePendingChanges()
+
+
                     if (context.editor.isChanged()) {
                         let descartar = confirm("S'han detectat canvis, vols descartar-los?");
                         if (!descartar) {
                             return false;
                         }
                     }
+
+
 
                     context._rebuildChunkMap(item).bind(context);
 
@@ -128,12 +140,12 @@ define([
             this.treeWidget.startup();
         },
 
-        _rebuildChunkMap: function (item){
+        _rebuildChunkMap: function (item) {
             // console.log(item);
             // console.log(this.source.getStructure());
 
             let outChunkMap = new Map();
-            let rebuild = this._createChunkMap(item, this.source.getStructure(),0, outChunkMap);
+            let rebuild = this._createChunkMap(item, this.source.getStructure(), 0, outChunkMap);
             // console.log(rebuild, outChunkMap);
 
             // console.log("Chunk Map Set");
@@ -141,7 +153,7 @@ define([
         },
 
         // el chunk map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
-        _createChunkMap: function(item, structure, pos, outChunkMap) {
+        _createChunkMap: function (item, structure, pos, outChunkMap) {
 
             // console.log("Creant chunkmap per item:", item);
 
@@ -158,7 +170,7 @@ define([
 
             outChunkMap.set(pos, item);
 
-            let cursorPos = pos+wioccl.length;
+            let cursorPos = pos + wioccl.length;
 
             for (let i = 0; i < item.children.length; i++) {
 
@@ -176,7 +188,7 @@ define([
                 cursorPos += childWioccl.length;
             }
 
-            if (item.close !== null && item.close.length>0) {
+            if (item.close !== null && item.close.length > 0) {
                 // si hi ha un close en clicar a sobre d'aquest també es seleccionarà l'item
                 // console.log("Afegint posició al close per:", item.close, cursorPos);
                 outChunkMap.set(cursorPos, item);
@@ -225,9 +237,11 @@ define([
             return fields;
         },
 
-        _updateDetail: function (item) {
+        _updateDetail: function (item, ignoreFields) {
 
-            this.setFields(this._extractFields(item.attrs, item.type));
+            if (!ignoreFields) {
+                this.setFields(this._extractFields(item.attrs, item.type));
+            }
 
             let auxItem = this.source.rebuildWioccl(item);
 
@@ -276,20 +290,258 @@ define([
                 // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
                 let valor = fields[field].replaceAll('\"', '&quot;');
 
-                html += '<div class="wioccl-field">';
+                html += '<div class="wioccl-field" data-attr-field="' + field + '">';
                 html += '<label>' + field + ':</label>';
-                html += '<input type="text" name="' + field + '" value="' + valor + '" disabled="true"/>';
+                html += '<input type="text" name="' + field + '" value="' + valor + '"/>';
+                // html += '<button data-button-update>Actualitzar</button>';
+                // html += '<input type="text" name="' + field + '" value="' + valor + '" disabled="true"/>';
                 html += '</div>';
             }
 
             return html;
         },
 
+        _pendingChanges: null,
+
         setFields: function (fields, type) {
+            // console.error("Setting fields");
             let $attrContainer = jQuery(this.attrContainerNode);
+
+            // TODO: en lloc de reconstruir tots els camps s'hauria de fer camp per camp: si ja hi es actualitzar, si no hi es eliminar.
+            //
+            //  no buidem els attrs! s'ha de fer un recompte de quins ja existeixen i actualitzar-los
+            // i els que no hi siguin esborrar-los
             $attrContainer.empty();
-            $attrContainer.append(this._generateHtmlForFields(fields, type));
+
+            let $fields = jQuery(this._generateHtmlForFields(fields, type))
+
+            // TODO:
+
+
+            let context = this;
+
+            // ALERTA: Problema amb aquesta implementació: s'actualitza el camp clicat i es
+            // descarta qualsevol altre camp. S'hauria de substituir per un únic botó per actualitzar i
+            // fer el update de tots els camps i no només el clicat
+            // $fields.find('[data-button-update]').on('click', function () {
+            //     console.log('context', context.selectedWioccl)
+            //     let $fieldContainer = jQuery(this).closest('[data-attr-field]');
+            //     let attrField = $fieldContainer.attr('data-attr-field');
+            //     console.log('attr', attrField)
+            //     let attrValue = $fieldContainer.find('input').val();
+            //     console.log('value', attrValue);
+            //
+            //     let extractedFields = context._extractFields(context.selectedWioccl.attrs,
+            //         context.selectedWioccl.type);
+            //     console.log("Extracted fields:", extractedFields);
+            //     // Reemplacem l'atribut
+            //     extractedFields[attrField] = attrValue;
+            //
+            //
+            //     // reconstruim els atributs com a string
+            //     let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
+            //
+            //     // Re assignem els nous atributs
+            //     context.selectedWioccl.attrs = rebuildAttrs;
+            //
+            //     // TODO: cal actualitzar l'editor fent una reconstrucció del wioccl i establint-lo
+            //     //      TODO: Cal tornar a colocar el cursor a la mateixa posició!
+            //
+            //
+            //     // Cal actualitzar-lo al backup map, que és el que s'utilitza per fer el rebuild
+            //     // el editor.wioccl només s'utilitza per recuperar les referències de la estructura
+            //     // i el selectedWioccl no és una referència a la estructura
+            //
+            //     // let structure = context.source.getStructure();
+            //     // console.log("structure:", structure);
+            //
+            //     context._updateStructure();
+            //     // structure[Number(context.selectedWioccl.id)] = context.selectedWioccl;
+            //
+            //     console.log("Update del detall per:", context.editor.wioccl);
+            //
+            //     context._updateDetail(context.editor.wioccl);
+            //
+            // });
+
+
+
+            // TODO: optimització, ficar en un timer amb un buffer, disparar els updates periodicament,
+            //  cada mig segon per exemple
+
+            // *********************
+            // TEST: fer el mateix (similar! $this és el input per treure el val, es pot canviar)
+            // que el botó però amb el input/change
+            $fields.find('input').on('input change', function () {
+                // console.log('context', context.selectedWioccl)
+                // let $fieldContainer = jQuery(this).closest('[data-attr-field]');
+                // let attrField = $fieldContainer.attr('data-attr-field');
+                // // console.log('attr', attrField)
+                // let attrValue = $fieldContainer.find('input').val();
+                // // console.log('value', attrValue);
+                //
+                // let extractedFields = context._extractFields(context.selectedWioccl.attrs,
+                //     context.selectedWioccl.type);
+                // // console.log("Extracted fields:", extractedFields);
+                // // Reemplacem l'atribut
+                // extractedFields[attrField] = attrValue;
+                //
+                //
+                // // reconstruim els atributs com a string
+                // let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
+                //
+                // // Re assignem els nous atributs
+                // context.selectedWioccl.attrs = rebuildAttrs;
+                //
+                // // TODO: cal actualitzar l'editor fent una reconstrucció del wioccl i establint-lo
+                // //      TODO: Cal tornar a colocar el cursor a la mateixa posició!
+                //
+                //
+                // // Cal actualitzar-lo al backup map, que és el que s'utilitza per fer el rebuild
+                // // el editor.wioccl només s'utilitza per recuperar les referències de la estructura
+                // // i el selectedWioccl no és una referència a la estructura
+                //
+                // // let structure = context.source.getStructure();
+                // // console.log("structure:", structure);
+                //
+                // context._updateStructure();
+                // // structure[Number(context.selectedWioccl.id)] = context.selectedWioccl;
+                //
+                // console.log("Update del detall per:", context.editor.wioccl);
+                //
+                // context._updateDetail(context.editor.wioccl, true);
+
+                if (UPDATE_TIME === 0) {
+                    context._updatePendingChanges();
+
+                } else if (!context._pendingChanges) {
+                    context.timerId = setTimeout(context._updatePendingChanges.bind(context), UPDATE_TIME);
+                    context._pendingChanges = true;
+                }
+            });
+
+            // *********************
+
+
+            $attrContainer.append($fields);
             this._updateEditorHeight();
+        },
+
+        destroy: function() {
+            this.inherited(arguments);
+
+            if (this.timerId) {
+                clearTimeout(this.timerId);
+            }
+
+        },
+
+        _updatePendingChanges: function() {
+            let $attrContainer = jQuery(this.attrContainerNode);
+
+            let context = this;
+
+            $attrContainer.find('input').each(function() {
+                let $fieldContainer = jQuery(this).closest('[data-attr-field]');
+                let attrField = $fieldContainer.attr('data-attr-field');
+                // console.log('attr', attrField)
+                let attrValue = $fieldContainer.find('input').val();
+                // console.log('value', attrValue);
+
+                let extractedFields = context._extractFields(context.selectedWioccl.attrs,
+                    context.selectedWioccl.type);
+                // console.log("Extracted fields:", extractedFields);
+                // Reemplacem l'atribut
+                extractedFields[attrField] = attrValue;
+
+
+                // reconstruim els atributs com a string
+                let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
+
+                // Re assignem els nous atributs
+                context.selectedWioccl.attrs = rebuildAttrs;
+
+
+            });
+
+            // Cal actualitzar-lo al backup map, que és el que s'utilitza per fer el rebuild
+            // el editor.wioccl només s'utilitza per recuperar les referències de la estructura
+            // i el selectedWioccl no és una referència a la estructura
+
+            // let structure = context.source.getStructure();
+            // console.log("structure:", structure);
+            // console.log("this?", this);
+
+            this._updateStructure();
+            // structure[Number(context.selectedWioccl.id)] = context.selectedWioccl;
+
+            // console.log("Update del detall per:", context.editor.wioccl);
+
+            this._updateDetail(this.editor.wioccl, true);
+
+
+            // console.log('update');
+            context._pendingChanges = false;
+
+            // ens assegurem d'eliminar el timer
+            clearInterval(this.timerId);
+        },
+
+
+        // Actualitza la estructura a partir dels valors del chunkmap
+        _updateStructure: function () {
+            let structure = this.source.getStructure();
+            for (let [start, wioccl] of this.chunkMap) {
+                structure[Number(wioccl.id)] = wioccl;
+            }
+
+            if (this.editor.wioccl !== undefined) {
+                this.editor.wioccl = structure[Number(this.editor.wioccl.id)];
+            }
+        },
+
+        _rebuildAttrs: function (fields, type) {
+            // console.log("fields:", fields);
+            // console.log("type:", type);
+
+            let rebuild = '';
+            let first = true;
+
+            switch (type) {
+
+                case 'field':
+                    rebuild = fields['field'];
+                    break;
+
+                case 'function':
+
+
+                    for (let name in fields) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            rebuild += ',';
+                        }
+
+                        rebuild += fields[name];
+                    }
+
+                    break;
+
+                default:
+
+                    for (let name in fields) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            rebuild += " ";
+                        }
+                        rebuild += name + '=\"' + fields[name] + '\"';
+                    }
+            }
+
+            // console.log("fields rebuild:", rebuild);
+            return rebuild;
         },
 
         createEditor: function () {
@@ -350,8 +602,11 @@ define([
 
             let context = this;
 
-            editor.on('changeCursor', function(e) {
+            editor.on('changeCursor', function (e) {
 
+                if (!editor.isFocused()) {
+                    return;
+                }
 
                 // console.log(e);
 
@@ -361,7 +616,6 @@ define([
 
                 // Només actualitzarem si no hi ha selecció
                 let pos = editor.getPositionAsIndex(true);
-
 
 
                 if (pos === -1) {
@@ -384,7 +638,7 @@ define([
                     }
 
                     // console.log("Comprovant pos > start: candidate", pos, start);
-                    if (start>pos && candidate) {
+                    if (start > pos && candidate) {
                         console.log("Click al node:", candidate.id, candidate);
                         found = true;
 
@@ -402,12 +656,21 @@ define([
                     candidate = first;
                 }
 
+
+                if (context.selectedWioccl === candidate) {
+                    return;
+                }
+
                 let auxFields = context._extractFields(candidate.attrs, candidate.type);
 
                 // console.log(auxFields);
                 // return;
-                context.setFields(auxFields);
 
+
+
+
+                context.selectedWioccl = candidate;
+                context.setFields(auxFields);
 
 
             });
@@ -415,7 +678,8 @@ define([
             this._updateEditorHeight();
         },
 
-        updateTree: function(tree, root, selected, structure) {
+        // es crida desde DojoWioccl
+        updateTree: function (tree, root, selected, structure) {
             this.treeWidget.destroyRecursive();
 
             this.createTree(tree, root.id);

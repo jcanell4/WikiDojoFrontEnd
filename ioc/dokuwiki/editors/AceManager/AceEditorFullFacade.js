@@ -225,6 +225,10 @@ define([
         //     this.editor.clearSelection();
         // }
 
+        isFocused: function() {
+            return this.editor.isFocused();
+        }
+
     });
 
 

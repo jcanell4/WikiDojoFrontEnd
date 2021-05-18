@@ -1661,6 +1661,17 @@ define([
                 return editor.session.doc.positionToIndex(editor.getSelection().getCursor());
             },
 
+            isFocused: function() {
+                let editor = this.getEditor();
+
+                // Ens seveixen tots dos mètodes
+                // console.log('ace: is focused?', editor.isFocused());
+
+                // console.log('textinput: ', editor.textInput.getElement() == document.activeElement);
+
+                return editor.textInput.getElement() === document.activeElement;
+            }
+
             // No està provat, ho desactivem
             // clearSelection: function () {
             //     this.getEditor().getSelection().clearSelection();
