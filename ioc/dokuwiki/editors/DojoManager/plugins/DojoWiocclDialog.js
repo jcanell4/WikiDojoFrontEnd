@@ -109,8 +109,6 @@ define([
 
                     // actualitzem qualsevol canvi pendent abans
 
-
-
                     if (context.editor.isChanged() || context._pendingChanges) {
                         let descartar = confirm("S'han detectat canvis, vols descartar-los?");
                         if (!descartar) {
@@ -119,20 +117,7 @@ define([
                     }
 
                     context._updatePendingChanges()
-
-                    // context._rebuildChunkMap(item).bind(context);
                     context._rebuildChunkMap(item);
-
-                    // console.log(item);
-                    // console.log(context.source.getStructure());
-                    //
-                    // let outChunkMap = new Map();
-                    // let rebuild = context._createChunkMap(item, context.source.getStructure(),0, outChunkMap);
-                    // console.log(rebuild, outChunkMap);
-                    //
-                    // console.log("Chunk Map Set");
-                    // context.chunkMap = outChunkMap;
-
                     context._updateDetail(item);
 
                     let wioccl = context.source.getStructure()[item.id];
@@ -146,30 +131,21 @@ define([
         },
 
         _rebuildChunkMap: function (item) {
-            // console.log(item);
-            // console.log(this.source.getStructure());
 
             let outChunkMap = new Map();
             let rebuild = this._createChunkMap(item, this.source.getStructure(), 0, outChunkMap);
             // console.log(rebuild, outChunkMap);
-
-            // console.log("Chunk Map Set");
             this.chunkMap = outChunkMap;
         },
 
         // el chunk map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
         _createChunkMap: function (item, structure, pos, outChunkMap) {
 
-            // console.log("Creant chunkmap per item:", item);
-
             // Cal fer la conversió de &escapedgt; per \>
             let attrs = item.attrs;
             attrs = attrs.replaceAll('&escapedgt;', '\\>');
             attrs = attrs.replaceAll('&mark;', '\\>');
             attrs = attrs.replaceAll('&markn;', "\n>");
-            // data.attrs = data.attrs.replaceAll('&escapedgt;', '\\>');
-            // data.attrs = data.attrs.replaceAll('&mark;', '\\>');
-            // data.attrs = data.attrs.replaceAll('&markn;', "\n>");
 
             let wioccl = item.open.replace('%s', attrs);
 
@@ -179,7 +155,6 @@ define([
 
             for (let i = 0; i < item.children.length; i++) {
 
-                // let node = typeof item.children[i] === 'object' ? item.children[i] : this.getStructure()[item.children[i]];
                 let node = typeof item.children[i] === 'object' ? item.children[i] : structure[item.children[i]];
 
                 // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
@@ -205,7 +180,6 @@ define([
         },
 
         _extractFields: function (attrs, type) {
-            // console.log("Fields to extract:", attrs, type);
 
             // Cal fer la conversió de &escapedgt; per \>
             attrs = attrs.replace('&escapedgt;', '\\>');
@@ -250,14 +224,10 @@ define([
 
             let auxItem = this.source.rebuildWioccl(item);
 
-            // console.log(item);
-            // console.log('auxItem?', auxItem);
-
             this.editor.setValue(auxItem);
             this.editor.resetOriginalContentState();
 
             this.editor.wioccl = item;
-
 
             if (item.id === 0) {
                 this.editor.lockEditor();
@@ -315,10 +285,6 @@ define([
             // console.error("Setting fields");
             let $attrContainer = jQuery(this.attrContainerNode);
 
-            // TODO: en lloc de reconstruir tots els camps s'hauria de fer camp per camp: si ja hi es actualitzar, si no hi es eliminar.
-            //
-            //  no buidem els attrs! s'ha de fer un recompte de quins ja existeixen i actualitzar-los
-            // i els que no hi siguin esborrar-los
             $attrContainer.empty();
 
             let $fields = jQuery(this._generateHtmlForFields(fields, type))
@@ -328,100 +294,9 @@ define([
 
             let context = this;
 
-            // ALERTA: Problema amb aquesta implementació: s'actualitza el camp clicat i es
-            // descarta qualsevol altre camp. S'hauria de substituir per un únic botó per actualitzar i
-            // fer el update de tots els camps i no només el clicat
-            // $fields.find('[data-button-update]').on('click', function () {
-            //     console.log('context', context.selectedWioccl)
-            //     let $fieldContainer = jQuery(this).closest('[data-attr-field]');
-            //     let attrField = $fieldContainer.attr('data-attr-field');
-            //     console.log('attr', attrField)
-            //     let attrValue = $fieldContainer.find('input').val();
-            //     console.log('value', attrValue);
-            //
-            //     let extractedFields = context._extractFields(context.selectedWioccl.attrs,
-            //         context.selectedWioccl.type);
-            //     console.log("Extracted fields:", extractedFields);
-            //     // Reemplacem l'atribut
-            //     extractedFields[attrField] = attrValue;
-            //
-            //
-            //     // reconstruim els atributs com a string
-            //     let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
-            //
-            //     // Re assignem els nous atributs
-            //     context.selectedWioccl.attrs = rebuildAttrs;
-            //
-            //     // TODO: cal actualitzar l'editor fent una reconstrucció del wioccl i establint-lo
-            //     //      TODO: Cal tornar a colocar el cursor a la mateixa posició!
-            //
-            //
-            //     // Cal actualitzar-lo al backup map, que és el que s'utilitza per fer el rebuild
-            //     // el editor.wioccl només s'utilitza per recuperar les referències de la estructura
-            //     // i el selectedWioccl no és una referència a la estructura
-            //
-            //     // let structure = context.source.getStructure();
-            //     // console.log("structure:", structure);
-            //
-            //     context._updateStructure();
-            //     // structure[Number(context.selectedWioccl.id)] = context.selectedWioccl;
-            //
-            //     console.log("Update del detall per:", context.editor.wioccl);
-            //
-            //     context._updateDetail(context.editor.wioccl);
-            //
-            // });
-
-
-
-            // TODO: optimització, ficar en un timer amb un buffer, disparar els updates periodicament,
-            //  cada mig segon per exemple
-
             // console.log("establint input change");
 
-            // *********************
-            // TEST: fer el mateix (similar! $this és el input per treure el val, es pot canviar)
-            // que el botó però amb el input/change
             $fields.find('input').on('input change', function () {
-                // console.log("input change");
-
-                // console.log('selecteed Wioccl', context.selectedWioccl)
-                // let $fieldContainer = jQuery(this).closest('[data-attr-field]');
-                // let attrField = $fieldContainer.attr('data-attr-field');
-                // // console.log('attr', attrField)
-                // let attrValue = $fieldContainer.find('input').val();
-                // // console.log('value', attrValue);
-                //
-                // let extractedFields = context._extractFields(context.selectedWioccl.attrs,
-                //     context.selectedWioccl.type);
-                // // console.log("Extracted fields:", extractedFields);
-                // // Reemplacem l'atribut
-                // extractedFields[attrField] = attrValue;
-                //
-                //
-                // // reconstruim els atributs com a string
-                // let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
-                //
-                // // Re assignem els nous atributs
-                // context.selectedWioccl.attrs = rebuildAttrs;
-                //
-                // // TODO: cal actualitzar l'editor fent una reconstrucció del wioccl i establint-lo
-                // //      TODO: Cal tornar a colocar el cursor a la mateixa posició!
-                //
-                //
-                // // Cal actualitzar-lo al backup map, que és el que s'utilitza per fer el rebuild
-                // // el editor.wioccl només s'utilitza per recuperar les referències de la estructura
-                // // i el selectedWioccl no és una referència a la estructura
-                //
-                // // let structure = context.source.getStructure();
-                // // console.log("structure:", structure);
-                //
-                // context._updateStructure();
-                // // structure[Number(context.selectedWioccl.id)] = context.selectedWioccl;
-                //
-                // console.log("Update del detall per:", context.editor.wioccl);
-                //
-                // context._updateDetail(context.editor.wioccl, true);
 
                 if (UPDATE_TIME === 0) {
                     context._updatePendingChanges();
@@ -430,12 +305,9 @@ define([
                     context.timerId = setTimeout(context._updatePendingChanges.bind(context), UPDATE_TIME);
                     context._pendingChanges = true;
                 } else {
-                    console.log('pending changes?', context._pendingChanges);
+                    // console.log('pending changes?', context._pendingChanges);
                 }
             });
-
-            // *********************
-
 
             $attrContainer.append($fields);
             this._updateEditorHeight();
@@ -452,23 +324,19 @@ define([
 
         _updatePendingChanges: function() {
 
-            // console.log("Updating");
             let $attrContainer = jQuery(this.attrContainerNode);
 
             let context = this;
 
             $attrContainer.find('input').each(function() {
-                // console.log("updating", this);
 
                 let $fieldContainer = jQuery(this).closest('[data-attr-field]');
                 let attrField = $fieldContainer.attr('data-attr-field');
-                // console.log('attr', attrField)
                 let attrValue = $fieldContainer.find('input').val();
-                // console.log('value', attrValue);
 
                 let extractedFields = context._extractFields(context.selectedWioccl.attrs,
                     context.selectedWioccl.type);
-                // console.log("Extracted fields:", extractedFields);
+
                 // Reemplacem l'atribut
                 extractedFields[attrField] = attrValue;
 
@@ -476,66 +344,29 @@ define([
                 // reconstruim els atributs com a string
                 let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
 
-
-                // console.log(rebuildAttrs);
-
                 // Re assignem els nous atributs
                 context.selectedWioccl.attrs = rebuildAttrs;
-
-
             });
 
             // Cal actualitzar-lo al backup map, que és el que s'utilitza per fer el rebuild
             // el editor.wioccl només s'utilitza per recuperar les referències de la estructura
             // i el selectedWioccl no és una referència a la estructura
 
-            // let structure = context.source.getStructure();
-            // console.log("structure:", structure);
-            // console.log("this?", this);
-
-            //
-            // PROBLEMA: El candidate (que funciona en fer click a un) és el corresponent al chunkmap
-            // així que cal actualitzar el chunk map amb el selected
-            // però el chunkmap és <pos, wioccl>, així que cal recorre tots!
-            //     console.log("És igual que el chunkmap??", this.chunkMap);
-
-
-
-
             for (let [start, wioccl] of this.chunkMap) {
                 if (wioccl.id === this.selectedWioccl.id) {
-                    // console.log("updated chunkMap!", start, wioccl);
                     this.chunkMap.set(start, this.selectedWioccl);
                     // ALERTA! no fem el break perquè cal actualitzar el wioccl al principi i al final!
                     //break;
                 }
             }
 
-            // console.log(this.chunkMap);
-            //
-            // alert('stop');
-
-
-
             this._updateStructure();
-            // structure[Number(context.selectedWioccl.id)] = context.selectedWioccl;
-
-
-            // console.log("Update del detall per:", this.editor.wioccl);
-            // console.log("És igual que el selected??", this.selectedWioccl);
-
-
-
             this._updateDetail(this.editor.wioccl, true);
 
-
-            // console.log('update');
             context._pendingChanges = false;
 
-            // ens assegurem d'eliminar el timer
             clearInterval(this.timerId);
         },
-
 
         // Actualitza la estructura a partir dels valors del chunkmap
         _updateStructure: function () {
@@ -551,8 +382,6 @@ define([
         },
 
         _rebuildAttrs: function (fields, type) {
-            // console.log("fields:", fields);
-            // console.log("type:", type);
 
             let rebuild = '';
             let first = true;
@@ -646,10 +475,6 @@ define([
 
             this.editor = editor;
 
-            // editor.on('change', function(e) {
-            //    console.log("change", e);
-            // });
-
             let context = this;
 
             editor.on('changeCursor, focus', function (e) {
@@ -658,9 +483,6 @@ define([
                     // console.log("no te focus", e);
                     return;
                 }
-
-                // console.log(e);
-
 
                 // Alerta! això pot ralentitzar amb documents molt llargs perquè itera sobre tot el document
                 // console.log(editor.editor.session.doc.positionToIndex(editor.editor.getEditor().getSelection().getCursor()));
@@ -672,9 +494,6 @@ define([
                 if (pos === -1) {
                     return;
                 }
-
-                // console.log(editor.getPositionAsIndex());
-                // console.log(context.chunkMap);
 
                 // Cerquem el node corresponent
                 let candidate;
@@ -688,14 +507,8 @@ define([
                         first = wioccl;
                     }
 
-                    // console.log("Comprovant pos > start: candidate", pos, start);
                     if (start > pos && candidate) {
-                        // console.log("Click al node:", candidate.id, candidate);
                         found = true;
-
-                        // context.setFields(context._extractFields(candidate.attrs, candidate.type));
-
-                        // context._updateDetail(wioccl)
                         break;
                     }
 
@@ -714,16 +527,8 @@ define([
 
                 let auxFields = context._extractFields(candidate.attrs, candidate.type);
 
-                // console.log(auxFields);
-                // return;
-
-
-
-
                 context.selectedWioccl = candidate;
                 context.setFields(auxFields);
-
-
             });
 
             this._updateEditorHeight();
