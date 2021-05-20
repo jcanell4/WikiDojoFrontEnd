@@ -55,9 +55,17 @@ define([
                 var rowOwn = fieldOwn[this.src.gridData.rowIndex];
 
                 for (var i = 0; i < fieldSource.length; i++) {
+                    var compliant = true;
+                    if(Array.isArray(config.filterByKeySource)){
+                        for(var j=0; j<config.filterByKeySource.length; j++){
+                            compliant = compliant && fieldSource[i][config.filterByKeySource[j]] == rowOwn[config.filterByKeyOwn[j]];
+                        }
+                    }else{
+                        compliant = fieldSource[i][config.filterByKeySource] == rowOwn[config.filterByKeyOwn];
+                    }
 
                     // ALERTA! == intencionat perquè un valor pot ser enter i l'altre string
-                    if (fieldSource[i][config.filterByKeySource] == rowOwn[config.filterByKeyOwn]) {
+                    if (compliant) {
                         var labelItems = [];
                         var outputItems = [];
 
@@ -102,6 +110,9 @@ define([
 
                 // Seleccionem les opcions anteriors
                 var auxOptions = checkMultiSelectWidget.getOptions();
+                for (var i = 0; i < auxOptions.length; i++) {
+                    auxOptions[i].selected = false;
+                }
                 var selectedOptions = this.$field.val().split(config.outputSeparator);
                 var optionsToUpdate = [];
 
@@ -110,8 +121,8 @@ define([
                         // == intencionat, per si es dona el cas de que un sigui nombre i l'altre string
                         if (auxOptions[i].value == selectedOptions[j]) {
                             auxOptions[i].selected = true;
-                            optionsToUpdate.push(auxOptions);
                         }
+                        optionsToUpdate.push(auxOptions);
                     }
                 }
 
@@ -214,7 +225,9 @@ define([
                 var cancelCallback = function () {
                     this.src.gridData.grid.ignoreApply = false;
                     this.setEditionState(false);
-                    this.src.gridData.grid.edit.apply();
+                    if(this.src.gridData.grid.edit){
+                        this.src.gridData.grid.edit.apply();
+                    }
 
                     dialog.onHide();
                 }.bind(this);
