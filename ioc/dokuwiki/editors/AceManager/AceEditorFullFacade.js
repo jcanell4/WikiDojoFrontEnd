@@ -53,7 +53,14 @@ define([
         },
 
         initEventHandlers: function() {
+
+            let context = this;
+
             this.editor.on('focus', this.select.bind(this));
+
+            this.editor.on('focus', function (e) {
+                this.emit('focus', e);
+            }.bind(this));
 
             this.editor.on('change', function () {
                 this.emit('change', {newContent: this.getValue()});
@@ -63,13 +70,17 @@ define([
                 this.emit('changeCursor', e);
             }.bind(this));
 
-            this.editor.on('focus', function (e) {
-                this.emit('focus', e);
-            }.bind(this));
         },
 
         getPositionAsIndex: function (ignoreIfSelecting) {
             return this.editor.getPositionAsIndex(ignoreIfSelecting);
+        },
+
+        getPosition: function() {
+            return this.editor.cursor_position();
+        },
+        setPosition: function(cursor) {
+            return this.editor.setPosition(cursor);
         },
 
         getValue: function () {
@@ -224,13 +235,13 @@ define([
             return this.editor.getCurrentRow();
         },
 
-        // No està provat, ho desactivem
-        // clearSelection: function() {
-        //     this.editor.clearSelection();
-        // }
 
-        isFocused: function() {
-            return this.editor.isFocused();
+        clearSelection: function() {
+            this.editor.clearSelection();
+        },
+
+        hasFocus: function() {
+            return this.editor.hasFocus();
         }
 
     });

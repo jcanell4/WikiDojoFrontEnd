@@ -15,7 +15,8 @@ define([
 ], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable,
              EventObserver, Button, toolbarManager, Memory, ObjectStoreModel, Tree) {
 
-    const UPDATE_TIME = 300; // temps en millisegons
+    // const UPDATE_TIME = 300; // temps en millisegons
+    const UPDATE_TIME = 0; // temps en millisegons
 
     let AceFacade = null;
 
@@ -28,6 +29,9 @@ define([
 
         templateString: template,
 
+        lastPos : null,
+        lastCursor : null,
+        wasFocused: null,
 
         startup: function () {
             this.inherited(arguments);
@@ -35,7 +39,9 @@ define([
             this.createTree(this.tree, this.refId);
 
             let wioccl = this.source.getStructure()[this.refId];
-            this.selectedWioccl = wioccl;
+
+            this._selectWioccl(wioccl)
+            // this.selectedWioccl = wioccl;
 
             this._rebuildChunkMap(this.source.getStructure()[this.refId]);
             let $updateButton = jQuery(this.updateButtonNode);
@@ -52,6 +58,10 @@ define([
                 // Alerta, el context d'execució en afegir el callback al objecte de configuració
                 context.saveCallback(context.editor);
             });
+
+            // ens assegurem que es false al començar, pot ser que hagi canviat
+            // durant la inicialització
+            this.dirty = false;
         },
 
         show: function () {
@@ -121,7 +131,8 @@ define([
                     context._updateDetail(item);
 
                     let wioccl = context.source.getStructure()[item.id];
-                    context.selectedWioccl = wioccl;
+                    context._selectWioccl(wioccl);
+                    // context.selectedWioccl = wioccl;
                     // console.log("Set selected:", context.selectedWioccl)
                 }
             });
@@ -131,7 +142,7 @@ define([
         },
 
         _rebuildChunkMap: function (item) {
-
+            console.log("Rebuilding chunkmap for", item);
             let outChunkMap = new Map();
             let rebuild = this._createChunkMap(item, this.source.getStructure(), 0, outChunkMap);
             // console.log(rebuild, outChunkMap);
@@ -225,6 +236,14 @@ define([
             let auxItem = this.source.rebuildWioccl(item);
 
             this.editor.setValue(auxItem);
+            this.dirty = true;
+
+
+            // if (this.lastCursor) {
+            //     this.editor.setPosition(this.lastCursor);
+            // }
+            // this.editor.clearSelection();
+
             this.editor.resetOriginalContentState();
 
             this.editor.wioccl = item;
@@ -296,9 +315,11 @@ define([
 
             // console.log("establint input change");
 
-            $fields.find('input').on('input change', function () {
+            $fields.find('input').on('input change', function (e) {
 
-                if (UPDATE_TIME === 0) {
+                console.log("es input o es change?",e.type );
+
+                if (UPDATE_TIME === 0 || e.type === 'change') {
                     context._updatePendingChanges();
 
                 } else if (!context._pendingChanges) {
@@ -323,6 +344,7 @@ define([
         },
 
         _updatePendingChanges: function() {
+            console.log("updatePendingChanges ##?");
 
             let $attrContainer = jQuery(this.attrContainerNode);
 
@@ -348,24 +370,60 @@ define([
                 context.selectedWioccl.attrs = rebuildAttrs;
             });
 
+            console.log('## 0');
+
             // Cal actualitzar-lo al backup map, que és el que s'utilitza per fer el rebuild
             // el editor.wioccl només s'utilitza per recuperar les referències de la estructura
             // i el selectedWioccl no és una referència a la estructura
 
-            for (let [start, wioccl] of this.chunkMap) {
-                if (wioccl.id === this.selectedWioccl.id) {
-                    this.chunkMap.set(start, this.selectedWioccl);
-                    // ALERTA! no fem el break perquè cal actualitzar el wioccl al principi i al final!
-                    //break;
-                }
-            }
+            // ALERTA! Cal reconstruir el chunk!
+            // 1- desem la posició del cursor
+            // 2- reconstruim el chunkMap
+            this._rebuildChunkMap(this.source.getStructure()[this.editor.wioccl.id]);
+            // 3?- disparem el trigger per la posició del cursor,
+            // de manera que s'actualitzi el field? <-- diria que no
+            // 3?- com que les referències hauran canviat, establir com a selected el chunkmap
+            // corresponent a la posició del cursor però sense actualitzar el field!!
+            console.log('## 1');
+
+            // if (!this.wasFocused) {
+                this.editor.clearSelection();
+            // }
+
+            console.log('## 2');
+
+            // this.selectedWioccl = this._getWiocclForCurrentPos();
+            console.log("last pos?", this.lastPos);
+            let wioccl = this._getWiocclForPos(this.lastPos);
+            this._selectWioccl(wioccl);
+            // this.selectedWioccl = this._getWiocclForPos(this.lastPos);
+
+            console.log('## 3');
+
+
+
+            // for (let [start, wioccl] of this.chunkMap) {
+            //
+            //     if (wioccl.id === this.selectedWioccl.id) {
+            //         this.chunkMap.set(start, this.selectedWioccl);
+            //         // ALERTA! no fem el break perquè cal actualitzar el wioccl al principi i al final!
+            //         //break;
+            //     }
+            // }
 
             this._updateStructure();
             this._updateDetail(this.editor.wioccl, true);
 
             context._pendingChanges = false;
 
+            console.log('## 4');
             clearInterval(this.timerId);
+            console.log('## 5 - OK');
+        },
+
+        _selectWioccl(wioccl) {
+            console.error('select wioccl:', wioccl);
+            this.selectedWioccl = wioccl;
         },
 
         // Actualitza la estructura a partir dels valors del chunkmap
@@ -477,61 +535,149 @@ define([
 
             let context = this;
 
-            editor.on('changeCursor, focus', function (e) {
+            // editor.on('changeCursor,focus', function (e) {
 
-                if (!editor.isFocused()) {
-                    // console.log("no te focus", e);
+            // Cal fer un tractament diferent pel focus, aquest només es dispara quan
+            // efectivament s'ha fet click, però es dispara abans de que s'estableixi
+            // la posició??
+            editor.on('focus', function(e) {
+
+                // if (context.dirty) {
+                //     console.log("selected [focus] dirty, no fem res");
+                //     // es processará al changeCursor
+                //     return;
+                // }
+
+                console.log("Focus!");
+
+                // ALERTA! si es dispara quan no te focus llavors això PETARÁ!
+                context.lastPos = context.editor.getPositionAsIndex(false);
+
+                let candidate = context._getWiocclForPos(context.lastPos);
+                console.log ('[focus] selected candidate', context.lastPos, candidate)
+
+                console.log("Quina es la lastpos??", context.lastPos);
+                console.log("Quina es la posició actual??", context.lastPos);
+
+                // if (context.selectedWioccl === candidate) {
+                //     console.log("El seleccionat és el mateix que el actual? (no fem el extract)", context.selectedWioccl, candidate)
+                //     return;
+                // }
+
+                let auxFields = context._extractFields(candidate.attrs, candidate.type);
+
+                context._selectWioccl(candidate);
+                // context.selectedWioccl = candidate;
+                context.setFields(auxFields);
+                context.editor.clearSelection();
+
+            });
+
+            editor.on('changeCursor', function (e) {
+                console.log("Change cursor!", editor.getPositionAsIndex(false));
+
+                // Problema, això fa que s'ignori la carrega i quan es fa a clic
+                // però si no es fica es dispara quan es modifica el valor directament amb set value
+                if (!editor.hasFocus()) {
+                    console.log("no te focus", e);
                     return;
                 }
 
-                // Alerta! això pot ralentitzar amb documents molt llargs perquè itera sobre tot el document
-                // console.log(editor.editor.session.doc.positionToIndex(editor.editor.getEditor().getSelection().getCursor()));
+                console.log("selectedWioccl?", context.selectedWioccl);
 
-                // Només actualitzarem si no hi ha selecció
-                let pos = editor.getPositionAsIndex(true);
+                // Cal discriminar quan es dirty (s'acaba de fer un set value) i quan l'editor
+                // pot contenir una selecció vàlida
+                let pos = editor.getPositionAsIndex(!context.dirty);
+                context.dirty = false;
+                let candidate = context._getWiocclForPos(pos);
 
+                // let candidate = context._getWiocclForCurrentPos(); // aquí el current pos pot ser -1 sí es considera que hi ha selecció, i això passa desprès de fer un setValue
 
-                if (pos === -1) {
-                    return;
-                }
-
-                // Cerquem el node corresponent
-                let candidate;
-                let found;
-                let first;
-
-                // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
-                // S'agafarà l'anterior
-                for (let [start, wioccl] of context.chunkMap) {
-                    if (!first) {
-                        first = wioccl;
-                    }
-
-                    if (start > pos && candidate) {
-                        found = true;
-                        break;
-                    }
-
-                    // s'estableix a la següent iteració
-                    candidate = wioccl;
-                }
-
-                if (!found) {
-                    candidate = first;
-                }
-
+                console.log("selectedWioccl? [candidate]", context.selectedWioccl);
+                // console.log("Quina es la lastpos??", context.lastPos);
 
                 if (context.selectedWioccl === candidate) {
+                    // console.log("El seleccionat és el mateix que el actual? (no fem el extract)", context.selectedWioccl, candidate)
                     return;
                 }
 
                 let auxFields = context._extractFields(candidate.attrs, candidate.type);
 
-                context.selectedWioccl = candidate;
+                context._selectWioccl(candidate);
+                // context.selectedWioccl = candidate;
                 context.setFields(auxFields);
+
+
+                // context.editor.clearSelection();
             });
 
             this._updateEditorHeight();
+        },
+
+        _getWiocclForCurrentPos: function() {
+            let pos;
+            let cursor = {row: 0, column: 0}
+
+
+            if (this.editor.hasFocus()) {
+                pos = this.editor.getPositionAsIndex(true);
+                // pos = this.editor.getPositionAsIndex(true);
+                cursor = this.editor.getPosition();
+
+                this.lastPos = pos;
+                this.lastCursor = cursor;
+
+            } else {
+                console.warn("no te focus");
+                pos = this.lastPos;
+                cursor = this.lastCursor;
+                // this.editor.clearSelection();
+            }
+
+
+            // console.log("Pos:", pos);
+            // console.log("Cursor:", cursor);
+
+            // if (pos ===-1) {
+            //     console.log("Reemplaçat, netejant selecció");
+            //     this.editor.clearSelection();
+            // }
+
+            this.wasFocused = this.editor.hasFocus();
+
+
+
+            console.log("has focus?", this.editor.hasFocus());
+            return this._getWiocclForPos(pos);
+        },
+
+        _getWiocclForPos: function(pos) {
+            // Cerquem el node corresponent
+            let candidate;
+            let found;
+            let first;
+
+            // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
+            // S'agafarà l'anterior
+            for (let [start, wioccl] of this.chunkMap) {
+                if (!first) {
+                    first = wioccl;
+                }
+
+                if (start > pos && candidate) {
+                    found = true;
+                    break;
+                }
+
+                // s'estableix a la següent iteració
+                candidate = wioccl;
+            }
+
+            if (!found) {
+                candidate = first;
+            }
+
+            return candidate;
         },
 
         // es crida desde DojoWioccl

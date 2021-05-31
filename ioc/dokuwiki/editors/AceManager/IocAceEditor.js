@@ -914,10 +914,13 @@ define([
 
             setValue: function (value) {
                 if (this.currentEditor === this.EDITOR.ACE) {
+                    console.log("Setting editor value");
                     this.setEditorValue(value);
                 } else {
                     this.setTextareaValue(value);
                 }
+
+                this.clearSelection();
             },
 
             /**
@@ -1665,7 +1668,7 @@ define([
                 return editor.session.doc.positionToIndex(editor.getSelection().getCursor());
             },
 
-            isFocused: function() {
+            hasFocus: function() {
                 let editor = this.getEditor();
 
                 // Ens seveixen tots dos mètodes
@@ -1674,12 +1677,18 @@ define([
                 // console.log('textinput: ', editor.textInput.getElement() == document.activeElement);
 
                 return editor.textInput.getElement() === document.activeElement;
-            }
+            },
 
-            // No està provat, ho desactivem
-            // clearSelection: function () {
-            //     this.getEditor().getSelection().clearSelection();
-            // }
+            setPosition: function(cursor) {
+                // console.log("setting cursor position to", cursor);
+                this.getEditor().moveCursorToPosition(cursor);
+            },
+
+            clearSelection: function () {
+                this.getEditor().clearSelection();
+                // this.getEditor().getSelection().clearSelection();
+                console.log("clearing selection");
+            }
 
 
         });

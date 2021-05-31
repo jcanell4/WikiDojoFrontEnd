@@ -196,6 +196,10 @@ define([
 
                 let wioccl = context.getStructure()[refId];
 
+                if (!wioccl) {
+                    return;
+                }
+
                 for (let child of wioccl.children) {
                     _disableHighlight(child);
                 }
@@ -448,9 +452,9 @@ define([
             });
         },
 
-        parseWioccl: function (text, wioccl, structure) {
+        parseWioccl: function (text, wioccl, structure, ignoreRebranch) {
 
-            let tokens = this._tokenize(text);
+            let outTokens = this._tokenize(text);
 
 
             // text és el text a parsejar
@@ -502,13 +506,17 @@ define([
                 }
 
                 wioccl = structure[wioccl.parent];
-                tokens = [];
+                outTokens = [];
             }
 
-            this._createTree(wioccl, tokens, structure);
+            // TODO: considerar extreure això, el parser només hauria de parsejar els resultats
+            // i no refer l'arbre. En el cas de la edició normal (sense fer update) no s'ha
+            // de refer
+            this._createTree(wioccl, outTokens, structure);
 
             // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
-            this._setData(structure[this.root], wioccl);
+            this._setData(structure[this.root], wioccl, ignoreRebranch);
+
 
         },
 
@@ -538,7 +546,7 @@ define([
         },
 
         // La structura es modifica i es retorna per referència
-        _createTree(root, tokens, structure) {
+        _createTree(root, outTokens, structure) {
             // Només hi ha un tipus open/close, que son els que poden tenir fills:
             //      OPEN: comencen per "<WIOCCL:"
             //      CLOSE: comencen per "</WIOCCL:"
@@ -549,6 +557,7 @@ define([
             // ALERTA! TODO: Cal gestionar el token inicial, aquest no s'ha d'afegira l'arbre
             // i el seu tancament tampoc
 
+            console.log("Next key:", structure.next);
             let nextKey = structure.next;
 
             let sibblings = 0;
@@ -556,111 +565,111 @@ define([
             let first = true;
 
             // Si l'últim token és un salt de linia ho afegim al token anterior
-            if (tokens.length > 1 && tokens[tokens.length - 1].value === "\n") {
-                tokens[tokens.length - 2].value += "\n";
-                tokens.pop();
+            if (outTokens.length > 1 && outTokens[outTokens.length - 1].value === "\n") {
+                outTokens[outTokens.length - 2].value += "\n";
+                outTokens.pop();
             }
 
-            for (let i in tokens) {
+            for (let i in outTokens) {
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 if (i === '0') {
-                    tokens[i].id = root.id;
-                    tokens[i].parent = root.parent;
+                    outTokens[i].id = root.id;
+                    outTokens[i].parent = root.parent;
                     // this.root = tokens[i].id;
 
                 } else {
-                    tokens[i].id = nextKey;
+                    outTokens[i].id = nextKey;
                 }
 
-                tokens[i].children = [];
+                outTokens[i].children = [];
 
-                if (tokens[i].value.startsWith('</WIOCCL:')) {
-                    tokens[i].type = "wioccl";
+                if (outTokens[i].value.startsWith('</WIOCCL:')) {
+                    outTokens[i].type = "wioccl";
                     let top = stack.pop();
-                    top.close = tokens[i].value;
+                    top.close = outTokens[i].value;
                     continue;
                 }
 
 
                 if (stack.length > 0) {
                     stack[stack.length - 1].children.push(nextKey);
-                    tokens[i].parent = stack[stack.length - 1].id
+                    outTokens[i].parent = stack[stack.length - 1].id
                 } else {
                     // Si no hi ha cap element a l'estack es que es troba al mateix nivell que l'element root
-                    tokens[i].parent = root.parent
+                    outTokens[i].parent = root.parent
                 }
 
                 // Si fem servir push s'afegeixen al final, això no serveix perquè cal inserir els nous nodes a la posició original (emmagatzemada a root.index)
 
                 // if (tokens[i].parent === root.parent && tokens[i].id !== root.id
-                if (tokens[i].parent === root.parent
-                    && (Number(i) < tokens.length - 1 || tokens[i].value !== "\n")) {
-                    structure[root.parent].children.splice(root.index + sibblings, 0, tokens[i].id);
+                if (outTokens[i].parent === root.parent
+                    && (Number(i) < outTokens.length - 1 || outTokens[i].value !== "\n")) {
+                    structure[root.parent].children.splice(root.index + sibblings, 0, outTokens[i].id);
                     ++sibblings;
                 }
 
                 // No cal gestionar el type content perquè s'assigna al tokenizer
 
-                if (tokens[i].value.startsWith('<WIOCCL:')) {
+                if (outTokens[i].value.startsWith('<WIOCCL:')) {
                     // console.log("Value:", tokens[i].value);
                     let pattern = /<WIOCCL:.*? (.*?)>/gsm;
 
                     let matches;
 
-                    if (matches = pattern.exec(tokens[i].value)) {
-                        tokens[i].attrs = matches[1];
+                    if (matches = pattern.exec(outTokens[i].value)) {
+                        outTokens[i].attrs = matches[1];
                     } else {
-                        tokens[i].attrs = "";
+                        outTokens[i].attrs = "";
                     }
 
                     pattern = /(<WIOCCL:.*?)[ >]/gsm;
 
-                    matches = pattern.exec(tokens[i].value);
-                    tokens[i].open = matches[1] + ' %s>';
+                    matches = pattern.exec(outTokens[i].value);
+                    outTokens[i].open = matches[1] + ' %s>';
 
                     pattern = /<WIOCCL:(.*?)[ >]/gsm;
-                    matches = pattern.exec(tokens[i].value);
-                    tokens[i].type = matches[1].toLowerCase();
+                    matches = pattern.exec(outTokens[i].value);
+                    outTokens[i].type = matches[1].toLowerCase();
 
-                    stack.push(tokens[i]);
+                    stack.push(outTokens[i]);
                 }
 
-                if (tokens[i].value.startsWith('{##')) {
-                    tokens[i].type = "field";
-                    tokens[i].open = "{##%s";
-                    tokens[i].close = "##}";
+                if (outTokens[i].value.startsWith('{##')) {
+                    outTokens[i].type = "field";
+                    outTokens[i].open = "{##%s";
+                    outTokens[i].close = "##}";
 
                     let pattern = /{##(.*)##}/gsm;
 
-                    let matches = pattern.exec(tokens[i].value);
-                    tokens[i].attrs = matches[1];
+                    let matches = pattern.exec(outTokens[i].value);
+                    outTokens[i].attrs = matches[1];
                 }
 
-                if (tokens[i].value.startsWith('{#_')) {
-                    tokens[i].type = "function";
+                if (outTokens[i].value.startsWith('{#_')) {
+                    outTokens[i].type = "function";
 
                     let pattern = /{#_.*?\((.*)\)_#}/gsm;
                     let matches;
 
-                    if (matches = pattern.exec(tokens[i].value)) {
-                        tokens[i].attrs = matches[1];
+                    if (matches = pattern.exec(outTokens[i].value)) {
+                        outTokens[i].attrs = matches[1];
                     } else {
-                        tokens[i].attrs = "";
+                        outTokens[i].attrs = "";
                     }
 
                     pattern = /({#_.*?\()(.*)(\)_#})/gsm;
-                    tokens[i].open = tokens[i].value.replace(pattern, "$1%s$3");
+                    outTokens[i].open = outTokens[i].value.replace(pattern, "$1%s$3");
 
-                    tokens[i].close = "";
+                    outTokens[i].close = "";
                 }
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 if (first) {
-                    structure[root.id] = tokens[i];
+                    structure[root.id] = outTokens[i];
                     first = false;
                 } else {
-                    structure[nextKey] = tokens[i];
+                    structure[nextKey] = outTokens[i];
                     nextKey = (Number(nextKey) + 1) + "";
                 }
 
@@ -671,6 +680,7 @@ define([
                 root.addedsibblings = true;
             }
 
+            structure.next = Number(nextKey);
         },
 
         _tokenize(text) {
@@ -791,7 +801,7 @@ define([
             return tokens;
         },
 
-        _setData: function (root, selected) {
+        _setData: function (root, selected, ignoreRebranch) {
             // console.log("root:", root);
 
             let tree = [];
@@ -810,7 +820,10 @@ define([
 
             root.children = this._getWiocclChildrenNodes(root.children, root.id, this);
 
-            this.wiocclDialog.updateTree(tree, root, selected, structure);
+            if (!ignoreRebranch) {
+                this.wiocclDialog.updateTree(tree, root, selected, structure);
+            }
+
 
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
             // pot trobar-se dividit en múltiples tokens
