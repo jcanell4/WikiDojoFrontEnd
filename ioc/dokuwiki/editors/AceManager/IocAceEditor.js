@@ -914,7 +914,6 @@ define([
 
             setValue: function (value) {
                 if (this.currentEditor === this.EDITOR.ACE) {
-                    console.log("Setting editor value");
                     this.setEditorValue(value);
                 } else {
                     this.setTextareaValue(value);
@@ -1685,13 +1684,10 @@ define([
             },
 
             clearSelection: function () {
+                // console.log("clearing selection");
                 this.getEditor().clearSelection();
-                // this.getEditor().getSelection().clearSelection();
-                console.log("clearing selection");
             }
 
-
         });
-
 
 });
