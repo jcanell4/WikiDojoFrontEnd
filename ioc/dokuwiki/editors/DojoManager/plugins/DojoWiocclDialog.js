@@ -317,7 +317,7 @@ define([
 
             $fields.find('input').on('input change', function (e) {
 
-                console.log("es input o es change?",e.type );
+                // console.log("es input o es change?",e.type );
 
                 if (UPDATE_TIME === 0 || e.type === 'change') {
                     context._updatePendingChanges();
@@ -367,6 +367,8 @@ define([
                 let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
 
                 // Re assignem els nous atributs
+                console.log("** wioccl", context.selectedWioccl);
+                console.log("** rebuildattrs", rebuildAttrs)
                 context.selectedWioccl.attrs = rebuildAttrs;
             });
 
@@ -376,29 +378,28 @@ define([
             // el editor.wioccl només s'utilitza per recuperar les referències de la estructura
             // i el selectedWioccl no és una referència a la estructura
 
-            // ALERTA! Cal reconstruir el chunk!
-            // 1- desem la posició del cursor
-            // 2- reconstruim el chunkMap
-            this._rebuildChunkMap(this.source.getStructure()[this.editor.wioccl.id]);
-            // 3?- disparem el trigger per la posició del cursor,
-            // de manera que s'actualitzi el field? <-- diria que no
-            // 3?- com que les referències hauran canviat, establir com a selected el chunkmap
-            // corresponent a la posició del cursor però sense actualitzar el field!!
-            console.log('## 1');
 
-            // if (!this.wasFocused) {
-                this.editor.clearSelection();
-            // }
+            // ALERTA! Això només s'ha de fer al focus, no quan s'edita
 
-            console.log('## 2');
-
-            // this.selectedWioccl = this._getWiocclForCurrentPos();
-            console.log("last pos?", this.lastPos);
-            let wioccl = this._getWiocclForPos(this.lastPos);
-            this._selectWioccl(wioccl);
-            // this.selectedWioccl = this._getWiocclForPos(this.lastPos);
-
-            console.log('## 3');
+            // // ALERTA! Cal reconstruir el chunk!
+            // // 1- desem la posició del cursor
+            // // 2- reconstruim el chunkMap
+            //
+            // this._rebuildChunkMap(this.source.getStructure()[this.editor.wioccl.id]);
+            //
+            //
+            // // 3?- disparem el trigger per la posició del cursor,
+            // // de manera que s'actualitzi el field? <-- diria que no
+            // // 3?- com que les referències hauran canviat, establir com a selected el chunkmap
+            // // corresponent a la posició del cursor però sense actualitzar el field!!
+            //
+            // // this.selectedWioccl = this._getWiocclForCurrentPos();
+            // console.log("last pos?", this.lastPos);
+            // let wioccl = this._getWiocclForPos(this.lastPos);
+            // this._selectWioccl(wioccl);
+            // // this.selectedWioccl = this._getWiocclForPos(this.lastPos);
+            //
+            // console.log('## 3');
 
 
 
@@ -416,9 +417,9 @@ define([
 
             context._pendingChanges = false;
 
-            console.log('## 4');
+            // console.log('## 4');
             clearInterval(this.timerId);
-            console.log('## 5 - OK');
+            // console.log('## 5 - OK');
         },
 
         _selectWioccl(wioccl) {
@@ -569,7 +570,28 @@ define([
                 context._selectWioccl(candidate);
                 // context.selectedWioccl = candidate;
                 context.setFields(auxFields);
-                context.editor.clearSelection();
+
+
+                // *********************** //
+
+                // ALERTA! Cal reconstruir el chunk!
+                // 1- desem la posició del cursor
+                // 2- reconstruim el chunkMap
+
+                context._rebuildChunkMap(context.source.getStructure()[editor.wioccl.id]);
+
+
+                // 3?- disparem el trigger per la posició del cursor,
+                // de manera que s'actualitzi el field? <-- diria que no
+                // 3?- com que les referències hauran canviat, establir com a selected el chunkmap
+                // corresponent a la posició del cursor però sense actualitzar el field!!
+
+                // this.selectedWioccl = this._getWiocclForCurrentPos();
+                console.log("last pos?", context.lastPos);
+                let wioccl = context._getWiocclForPos(context.lastPos);
+                context._selectWioccl(wioccl);
+                // this.selectedWioccl = this._getWiocclForPos(this.lastPos);
+
 
             });
 
@@ -588,13 +610,19 @@ define([
                 // Cal discriminar quan es dirty (s'acaba de fer un set value) i quan l'editor
                 // pot contenir una selecció vàlida
                 let pos = editor.getPositionAsIndex(!context.dirty);
-                context.dirty = false;
+                // context.dirty = false;
                 let candidate = context._getWiocclForPos(pos);
 
                 // let candidate = context._getWiocclForCurrentPos(); // aquí el current pos pot ser -1 sí es considera que hi ha selecció, i això passa desprès de fer un setValue
 
-                console.log("selectedWioccl? [candidate]", context.selectedWioccl);
+                // console.log("selectedWioccl? [candidate]", context.selectedWioccl);
                 // console.log("Quina es la lastpos??", context.lastPos);
+
+                if (context.dirty) {
+                    console.log("dirty!");
+                    context.editor.clearSelection();
+                    context.dirty = false;
+                }
 
                 if (context.selectedWioccl === candidate) {
                     // console.log("El seleccionat és el mateix que el actual? (no fem el extract)", context.selectedWioccl, candidate)
@@ -606,6 +634,7 @@ define([
                 context._selectWioccl(candidate);
                 // context.selectedWioccl = candidate;
                 context.setFields(auxFields);
+
 
 
                 // context.editor.clearSelection();
