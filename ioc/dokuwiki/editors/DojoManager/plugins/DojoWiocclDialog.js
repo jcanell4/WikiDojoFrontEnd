@@ -495,7 +495,7 @@ define([
 
 
         _selectWioccl(wioccl) {
-            console.log('selecting wioccl:', wioccl);
+            // console.log('selecting wioccl:', wioccl);
             this.selectedWioccl = wioccl;
         },
 
@@ -638,8 +638,16 @@ define([
                 context.lastPos = context.editor.getPositionAsIndex(false);
 
                 let candidate = context._getWiocclForPos(context.lastPos);
-                let auxFields = context._extractFields(candidate.attrs, candidate.type);
 
+
+                if (candidate.attrs.length === 0) {
+                    console.log("és el content [focus]?", candidate);
+                    candidate.type = "content";
+                    candidate.attrs = candidate.open;
+                    console.log("Attrs establerts:", candidate.open);
+                }
+
+                let auxFields = context._extractFields(candidate.attrs, candidate.type);
                 context._selectWioccl(candidate);
                 context.setFields(auxFields);
 
