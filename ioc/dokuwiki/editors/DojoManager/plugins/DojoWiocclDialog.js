@@ -189,7 +189,18 @@ define([
 
         },
 
+        _extractFieldsFromCandidate: function (candidate) {
+            // console.log('_extractFieldsFromCandidate', candidate);
+            if (candidate.attrs.length === 0) {
+                candidate.type = "content";
+                candidate.attrs = candidate.open;
+            }
+
+            return this._extractFields(candidate.attrs, candidate.type);
+        },
+
         _extractFields: function (attrs, type) {
+            // console.log('_extractFields', type, attrs);
 
             // Cal fer la conversió de &escapedgt; per \>
             attrs = attrs.replace('&escapedgt;', '\\>');
@@ -398,8 +409,9 @@ define([
                 let attrField = $fieldContainer.attr('data-attr-field');
                 let attrValue = $fieldContainer.find('input').val();
 
-                let extractedFields = context._extractFields(context.selectedWioccl.attrs,
-                    context.selectedWioccl.type);
+                let extractedFields = context._extractFieldsFromCandidate(context.selectedWioccl);
+                // let extractedFields = context._extractFields(context.selectedWioccl.attrs,
+                //     context.selectedWioccl.type);
 
                 // Reemplacem l'atribut
                 extractedFields[attrField] = attrValue;
@@ -470,13 +482,16 @@ define([
             // console.log(updatedWioccl.id, structure);
 
             // ALERTA! Per tercera vegada s'ha d'afegir el open com attr pel content
-            if (updatedWioccl.attrs.length === 0) {
-                updatedWioccl.type = "content";
-                updatedWioccl.attrs =  updatedWioccl.open;
-            }
+            // if (updatedWioccl.attrs.length === 0) {
+            //     updatedWioccl.type = "content";
+            //     updatedWioccl.attrs =  updatedWioccl.open;
+            // }
+            //
+            // // console.log("Update a partir de:", item, auxItem);
+            // let extractedFields = this._extractFields(updatedWioccl.attrs, updatedWioccl.type);
+            //
+            let extractedFields = this._extractFieldsFromCandidate(updatedWioccl);
 
-            // console.log("Update a partir de:", item, auxItem);
-            let extractedFields = this._extractFields(updatedWioccl.attrs, updatedWioccl.type);
             this.setFields(extractedFields);
 
             // -------
@@ -503,6 +518,8 @@ define([
                 this.editor.wioccl = structure[Number(this.editor.wioccl.id)];
             }
         },
+
+
 
         _rebuildAttrs: function (fields, type) {
 
@@ -631,13 +648,16 @@ define([
 
                 let candidate = context._getWiocclForPos(context.lastPos);
 
-                // TODO: refactoritzar, es troba per  triplicat
-                if (candidate.attrs.length === 0) {
-                    candidate.type = "content";
-                    candidate.attrs = candidate.open;
-                }
+                // // TODO: refactoritzar, es troba per  triplicat
+                // if (candidate.attrs.length === 0) {
+                //     candidate.type = "content";
+                //     candidate.attrs = candidate.open;
+                // }
+                //
+                // let auxFields = context._extractFields(candidate.attrs, candidate.type);
 
-                let auxFields = context._extractFields(candidate.attrs, candidate.type);
+                let auxFields = context._extractFieldsFromCandidate(candidate);
+
                 context._selectWioccl(candidate);
                 context.setFields(auxFields);
 
@@ -675,12 +695,14 @@ define([
                 }
 
                 // TODO: refactoritzar, es troba per  triplicat
-                if (candidate.attrs.length === 0) {
-                    candidate.type = "content";
-                    candidate.attrs = candidate.open;
-                }
+                // if (candidate.attrs.length === 0) {
+                //     candidate.type = "content";
+                //     candidate.attrs = candidate.open;
+                // }
+                //
+                // let auxFields = context._extractFields(candidate.attrs, candidate.type);
 
-                let auxFields = context._extractFields(candidate.attrs, candidate.type);
+                let auxFields = context._extractFieldsFromCandidate(candidate);
 
                 context._selectWioccl(candidate);
                 // context.selectedWioccl = candidate;
