@@ -456,40 +456,23 @@ define([
 
             let structure = this.source.getStructure();
 
-            // console.log("abans", structure[item.id]);
-
 
             this.source.parseWioccl(value, this.editor.wioccl, structure, true);
 
-
-            // console.log("després", structure[item.id]);
-
-            //let auxItem = this.source.rebuildWioccl(item);
-            // let auxItem = structure[item.id];
-
-
             this._rebuildChunkMap(this.source.getStructure()[this.refId])
 
-            console.log("chunkmap?", this.chunkMap);
+            // console.log("chunkmap?", this.chunkMap);
             let updatedWioccl = this._getWiocclForCurrentPos();
-            console.log("updated wioccl a la posició:", updatedWioccl);
+            // console.log("updated wioccl a la posició:", updatedWioccl);
             this._selectWioccl(updatedWioccl);
 
 
-
-            // PROBLEMA: el item.id no es troba a la estructura
-            // el id no és correcte, marca 1888 però es troba al 1896
-            //      - el parent és correcte
-
-
-            console.log(updatedWioccl.id, structure);
+            // console.log(updatedWioccl.id, structure);
 
             // ALERTA! Per tercera vegada s'ha d'afegir el open com attr pel content
             if (updatedWioccl.attrs.length === 0) {
-                console.log("és el content [change]?", updatedWioccl);
                 updatedWioccl.type = "content";
                 updatedWioccl.attrs =  updatedWioccl.open;
-                console.log("Attrs establerts:", updatedWioccl.open);
             }
 
             // console.log("Update a partir de:", item, auxItem);
@@ -648,12 +631,10 @@ define([
 
                 let candidate = context._getWiocclForPos(context.lastPos);
 
-
+                // TODO: refactoritzar, es troba per  triplicat
                 if (candidate.attrs.length === 0) {
-                    console.log("és el content [focus]?", candidate);
                     candidate.type = "content";
                     candidate.attrs = candidate.open;
-                    console.log("Attrs establerts:", candidate.open);
                 }
 
                 let auxFields = context._extractFields(candidate.attrs, candidate.type);
@@ -693,12 +674,10 @@ define([
                     return;
                 }
 
-
+                // TODO: refactoritzar, es troba per  triplicat
                 if (candidate.attrs.length === 0) {
-                    console.log("és el content?", candidate);
                     candidate.type = "content";
                     candidate.attrs = candidate.open;
-                    console.log("Attrs establerts:", candidate.open);
                 }
 
                 let auxFields = context._extractFields(candidate.attrs, candidate.type);
@@ -721,22 +700,16 @@ define([
 
 
             if (this.editor.hasFocus()) {
-                console.log("te focus");
                 pos = this.editor.getPositionAsIndex(true);
-                // pos = this.editor.getPositionAsIndex(true);
                 cursor = this.editor.getPosition();
 
                 this.lastPos = pos;
                 this.lastCursor = cursor;
 
             } else {
-                console.warn("no te focus");
                 pos = this.lastPos;
                 cursor = this.lastCursor;
-                // this.editor.clearSelection();
             }
-
-            console.log("pos i cursor", pos, cursor);
 
             this.wasFocused = this.editor.hasFocus();
 

@@ -557,7 +557,7 @@ define([
             // ALERTA! TODO: Cal gestionar el token inicial, aquest no s'ha d'afegira l'arbre
             // i el seu tancament tampoc
 
-            console.log("Next key:", structure.next);
+            // console.log("Next key:", structure.next);
             let nextKey = structure.next;
 
             let sibblings = 0;
