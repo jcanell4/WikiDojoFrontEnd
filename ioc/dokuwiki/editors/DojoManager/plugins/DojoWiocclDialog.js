@@ -458,6 +458,7 @@ define([
 
             // console.log("abans", structure[item.id]);
 
+
             this.source.parseWioccl(value, this.editor.wioccl, structure, true);
 
 
@@ -482,6 +483,14 @@ define([
 
 
             console.log(updatedWioccl.id, structure);
+
+            // ALERTA! Per tercera vegada s'ha d'afegir el open com attr pel content
+            if (updatedWioccl.attrs.length === 0) {
+                console.log("és el content [change]?", updatedWioccl);
+                updatedWioccl.type = "content";
+                updatedWioccl.attrs =  updatedWioccl.open;
+                console.log("Attrs establerts:", updatedWioccl.open);
+            }
 
             // console.log("Update a partir de:", item, auxItem);
             let extractedFields = this._extractFields(updatedWioccl.attrs, updatedWioccl.type);
