@@ -248,10 +248,19 @@ define([
 
             this.source.parseWioccl(value, this.editor.wioccl, structure, true);
 
+
             // console.log("després", structure[item.id]);
 
             //let auxItem = this.source.rebuildWioccl(item);
             let auxItem = structure[item.id];
+
+            // PROBLEMA: el item.id no es troba a la estructura
+            // el id no és correcte, marca 1888 però es troba al 1896
+            //      - el parent és correcte
+
+
+            console.log(item.id, structure);
+
             // console.log("Update a partir de:", item, auxItem);
             let extractedFields = this._extractFields(auxItem.attrs, auxItem.type);
             this.setFields(extractedFields);
@@ -417,20 +426,76 @@ define([
 
             // Ens assegurem que no estem actualitzant
             this.updating = true;
-            this._updateField(this.selectedWioccl);
+
 
             // Cal actualitzar el mapeig de posició-elements
             // PROBLEMA! quan es fa el rebuild canvien els refid i llavors
             // en modificar el field, ja no és correcte
+            // this._rebuildChunkMap(this.source.getStructure()[this.refId])
+            //
+            // console.log("chunkmap?", this.chunkMap);
+            // let updatedWioccl = this._getWiocclForCurrentPos();
+            // console.log("updated wioccl a la posició:", updatedWioccl);
+            // this._selectWioccl(updatedWioccl);
+
+            // això no pot funcionar perquè es fa el parse després del rebuild, copiem
+            // el contingut del updateField aquí i ho modifiquem
+            //this._updateField(updatedWioccl);
+
+            // -------
+
+            // console.log(item, this.editor.wioccl);
+
+            let value = this.editor.getValue();
+
+            if (value.length === 0) {
+                // TODO: buidar els atributs
+                console.warn('TODO: eliminar atributs, el valor és buit');
+                return;
+            }
+
+            let structure = this.source.getStructure();
+
+            // console.log("abans", structure[item.id]);
+
+            this.source.parseWioccl(value, this.editor.wioccl, structure, true);
+
+
+            // console.log("després", structure[item.id]);
+
+            //let auxItem = this.source.rebuildWioccl(item);
+            // let auxItem = structure[item.id];
+
+
             this._rebuildChunkMap(this.source.getStructure()[this.refId])
+
+            console.log("chunkmap?", this.chunkMap);
+            let updatedWioccl = this._getWiocclForCurrentPos();
+            console.log("updated wioccl a la posició:", updatedWioccl);
+            this._selectWioccl(updatedWioccl);
+
+
+
+            // PROBLEMA: el item.id no es troba a la estructura
+            // el id no és correcte, marca 1888 però es troba al 1896
+            //      - el parent és correcte
+
+
+            console.log(updatedWioccl.id, structure);
+
+            // console.log("Update a partir de:", item, auxItem);
+            let extractedFields = this._extractFields(updatedWioccl.attrs, updatedWioccl.type);
+            this.setFields(extractedFields);
+
+            // -------
+
 
             this.updating = false;
         },
 
-        
 
         _selectWioccl(wioccl) {
-            // console.log('selecting wioccl:', wioccl);
+            console.log('selecting wioccl:', wioccl);
             this.selectedWioccl = wioccl;
         },
 
@@ -547,7 +612,7 @@ define([
             editor.on('change', function (e) {
                 // console.log("Changes detected", e, context.updating);
 
-                if (context.updating) {
+                if (context.updating || !context.editor.hasFocus()) {
                     return;
                 }
 
@@ -633,30 +698,33 @@ define([
             this._updateEditorHeight();
         },
 
-        // _getWiocclForCurrentPos: function() {
-        //     let pos;
-        //     let cursor = {row: 0, column: 0}
-        //
-        //
-        //     if (this.editor.hasFocus()) {
-        //         pos = this.editor.getPositionAsIndex(true);
-        //         // pos = this.editor.getPositionAsIndex(true);
-        //         cursor = this.editor.getPosition();
-        //
-        //         this.lastPos = pos;
-        //         this.lastCursor = cursor;
-        //
-        //     } else {
-        //         console.warn("no te focus");
-        //         pos = this.lastPos;
-        //         cursor = this.lastCursor;
-        //         // this.editor.clearSelection();
-        //     }
-        //
-        //     this.wasFocused = this.editor.hasFocus();
-        //
-        //     return this._getWiocclForPos(pos);
-        // },
+        _getWiocclForCurrentPos: function() {
+            let pos;
+            let cursor = {row: 0, column: 0}
+
+
+            if (this.editor.hasFocus()) {
+                console.log("te focus");
+                pos = this.editor.getPositionAsIndex(true);
+                // pos = this.editor.getPositionAsIndex(true);
+                cursor = this.editor.getPosition();
+
+                this.lastPos = pos;
+                this.lastCursor = cursor;
+
+            } else {
+                console.warn("no te focus");
+                pos = this.lastPos;
+                cursor = this.lastCursor;
+                // this.editor.clearSelection();
+            }
+
+            console.log("pos i cursor", pos, cursor);
+
+            this.wasFocused = this.editor.hasFocus();
+
+            return this._getWiocclForPos(pos);
+        },
 
         _getWiocclForPos: function(pos) {
             // Cerquem el node corresponent
