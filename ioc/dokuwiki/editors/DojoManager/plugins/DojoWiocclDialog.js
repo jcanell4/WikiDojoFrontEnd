@@ -15,8 +15,7 @@ define([
 ], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable,
              EventObserver, Button, toolbarManager, Memory, ObjectStoreModel, Tree) {
 
-    // const UPDATE_TIME = 300; // temps en millisegons
-    const UPDATE_TIME = 0; // temps en millisegons
+    const UPDATE_TIME = 300; // temps en millisegons
 
     let AceFacade = null;
 
@@ -119,14 +118,14 @@ define([
 
                     // actualitzem qualsevol canvi pendent abans
 
-                    if (context.editor.isChanged() || context._pendingChanges) {
+                    if (context.editor.isChanged() || context._pendingChanges_Field2Detail) {
                         let descartar = confirm("S'han detectat canvis, vols descartar-los?");
                         if (!descartar) {
                             return false;
                         }
                     }
 
-                    context._updatePendingChanges()
+                    context._updatePendingChanges_Field2Detail()
                     context._rebuildChunkMap(item);
                     context._updateDetail(item);
 
@@ -199,6 +198,10 @@ define([
 
             switch (type) {
 
+                case 'content':
+                    fields['content'] = attrs;
+                    break;
+
                 case 'field':
                     fields['field'] = attrs;
                     break;
@@ -227,7 +230,39 @@ define([
             return fields;
         },
 
+        _updateField: function (item) {
+
+            // console.log(item, this.editor.wioccl);
+
+            let value = this.editor.getValue();
+
+            if (value.length === 0) {
+                // TODO: buidar els atributs
+                console.warn('TODO: eliminar atributs, el valor és buit');
+                return;
+            }
+
+            let structure = this.source.getStructure();
+
+            // console.log("abans", structure[item.id]);
+
+            this.source.parseWioccl(value, this.editor.wioccl, structure, true);
+
+            // console.log("després", structure[item.id]);
+
+            //let auxItem = this.source.rebuildWioccl(item);
+            let auxItem = structure[item.id];
+            // console.log("Update a partir de:", item, auxItem);
+            let extractedFields = this._extractFields(auxItem.attrs, auxItem.type);
+            this.setFields(extractedFields);
+
+        },
+
         _updateDetail: function (item, ignoreFields) {
+
+            if (this.updating) {
+                return;
+            }
 
             if (!ignoreFields) {
                 this.setFields(this._extractFields(item.attrs, item.type));
@@ -308,25 +343,19 @@ define([
 
             let $fields = jQuery(this._generateHtmlForFields(fields, type))
 
-            // TODO:
-
-
             let context = this;
-
-            // console.log("establint input change");
 
             $fields.find('input').on('input change', function (e) {
 
                 // console.log("es input o es change?",e.type );
-
                 if (UPDATE_TIME === 0 || e.type === 'change') {
-                    context._updatePendingChanges();
+                    context._updatePendingChanges_Field2Detail();
 
-                } else if (!context._pendingChanges) {
-                    context.timerId = setTimeout(context._updatePendingChanges.bind(context), UPDATE_TIME);
-                    context._pendingChanges = true;
+                } else if (!context._pendingChanges_Field2Detail) {
+                    context.timerId_Field2Detail = setTimeout(context._updatePendingChanges_Field2Detail.bind(context), UPDATE_TIME);
+                    context._pendingChanges_Field2Detail = true;
                 } else {
-                    // console.log('pending changes?', context._pendingChanges);
+                    // console.log('pending changes?', context._pendingChanges_Field2Detail);
                 }
             });
 
@@ -337,14 +366,18 @@ define([
         destroy: function() {
             this.inherited(arguments);
 
-            if (this.timerId) {
-                clearTimeout(this.timerId);
+            if (this.timerId_Field2Detail) {
+                clearTimeout(this.timerId_Field2Detail);
+            }
+
+            if (this.timerId_Detail2Field) {
+                clearTimeout(this.timerId_Detail2Field);
             }
 
         },
 
-        _updatePendingChanges: function() {
-            // console.log("updatePendingChanges ##?");
+        _updatePendingChanges_Field2Detail: function() {
+            // console.log("updatePendingChanges_Field2Detail");
 
             let $attrContainer = jQuery(this.attrContainerNode);
 
@@ -373,12 +406,28 @@ define([
             this._updateStructure();
             this._updateDetail(this.editor.wioccl, true);
 
-            context._pendingChanges = false;
+            context._pendingChanges_Field2Detail = false;
 
-            // console.log('## 4');
-            clearInterval(this.timerId);
-            // console.log('## 5 - OK');
+            clearInterval(this.timerId_Field2Detail);
         },
+
+        _updatePendingChanges_Detail2Field: function () {
+            this.timerId_Detail2Field = false;
+            this._pendingChanges_Detail2Field = false;
+
+            // Ens assegurem que no estem actualitzant
+            this.updating = true;
+            this._updateField(this.selectedWioccl);
+
+            // Cal actualitzar el mapeig de posició-elements
+            // PROBLEMA! quan es fa el rebuild canvien els refid i llavors
+            // en modificar el field, ja no és correcte
+            this._rebuildChunkMap(this.source.getStructure()[this.refId])
+
+            this.updating = false;
+        },
+
+        
 
         _selectWioccl(wioccl) {
             // console.log('selecting wioccl:', wioccl);
@@ -494,7 +543,27 @@ define([
 
             let context = this;
 
-            // editor.on('changeCursor,focus', function (e) {
+
+            editor.on('change', function (e) {
+                // console.log("Changes detected", e, context.updating);
+
+                if (context.updating) {
+                    return;
+                }
+
+                if (UPDATE_TIME === 0) {
+                    context._updatePendingChanges_Detail2Field();
+
+                } else if (!context._pendingChanges_Detail2Field) {
+                    context.timerId_Detail2Field = setTimeout(context._updatePendingChanges_Detail2Field.bind(context), UPDATE_TIME);
+                    context._pendingChanges_Detail2Field = true;
+                } else {
+                    // console.log('pending changes?', context._pendingChanges_Detail2Field);
+                }
+
+            });
+
+
 
             // Cal fer un tractament diferent pel focus, aquest només es dispara quan
             // efectivament s'ha fet click, però es dispara abans de que s'estableixi
@@ -542,6 +611,14 @@ define([
                     return;
                 }
 
+
+                if (candidate.attrs.length === 0) {
+                    console.log("és el content?", candidate);
+                    candidate.type = "content";
+                    candidate.attrs = candidate.open;
+                    console.log("Attrs establerts:", candidate.open);
+                }
+
                 let auxFields = context._extractFields(candidate.attrs, candidate.type);
 
                 context._selectWioccl(candidate);
@@ -556,42 +633,30 @@ define([
             this._updateEditorHeight();
         },
 
-        _getWiocclForCurrentPos: function() {
-            let pos;
-            let cursor = {row: 0, column: 0}
-
-
-            if (this.editor.hasFocus()) {
-                pos = this.editor.getPositionAsIndex(true);
-                // pos = this.editor.getPositionAsIndex(true);
-                cursor = this.editor.getPosition();
-
-                this.lastPos = pos;
-                this.lastCursor = cursor;
-
-            } else {
-                console.warn("no te focus");
-                pos = this.lastPos;
-                cursor = this.lastCursor;
-                // this.editor.clearSelection();
-            }
-
-
-            // console.log("Pos:", pos);
-            // console.log("Cursor:", cursor);
-
-            // if (pos ===-1) {
-            //     console.log("Reemplaçat, netejant selecció");
-            //     this.editor.clearSelection();
-            // }
-
-            this.wasFocused = this.editor.hasFocus();
-
-
-
-            console.log("has focus?", this.editor.hasFocus());
-            return this._getWiocclForPos(pos);
-        },
+        // _getWiocclForCurrentPos: function() {
+        //     let pos;
+        //     let cursor = {row: 0, column: 0}
+        //
+        //
+        //     if (this.editor.hasFocus()) {
+        //         pos = this.editor.getPositionAsIndex(true);
+        //         // pos = this.editor.getPositionAsIndex(true);
+        //         cursor = this.editor.getPosition();
+        //
+        //         this.lastPos = pos;
+        //         this.lastCursor = cursor;
+        //
+        //     } else {
+        //         console.warn("no te focus");
+        //         pos = this.lastPos;
+        //         cursor = this.lastCursor;
+        //         // this.editor.clearSelection();
+        //     }
+        //
+        //     this.wasFocused = this.editor.hasFocus();
+        //
+        //     return this._getWiocclForPos(pos);
+        // },
 
         _getWiocclForPos: function(pos) {
             // Cerquem el node corresponent
