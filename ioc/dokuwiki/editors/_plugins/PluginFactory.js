@@ -56,6 +56,8 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceTableEditorPlugin',
     'ioc/dokuwiki/editors/AceManager/plugins/AceVideoPlugin',
     'ioc/dokuwiki/editors/AceManager/plugins/AceGifPlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceIncludePagePlugin',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceIncludeSectionPlugin',
     'ioc/dokuwiki/editors/AceManager/plugins/AceSwitchEditorPlugin',
 
 
@@ -93,6 +95,8 @@ define([
              AceTableEditor,
              AceVideoPlugin,
              AceGifPlugin,
+             AceIncludePagePlugin,
+             AceIncludeSectionPlugin,
              AceSwitchEditor,
              ViewSource, LinkDialog,
              localization,
@@ -109,6 +113,8 @@ define([
             'IocSoundFormatButton': AceFormat,
             'IocVideoFormatButton': AceVideoPlugin,
             'IocGifFormatButton': AceGifPlugin,
+            'IocIncludePageButton': AceIncludePagePlugin,
+            'IocIncludeSectionButton': AceIncludeSectionPlugin,
             // 'TestFormatButton' : AceFormat,
             'CancelButton': AceFireEvent,
             'SaveButton': AceFireEvent,
@@ -891,6 +897,21 @@ define([
             category: localization["category-ioc"]
         },
 
+        'IocIncludePageButton': {
+            title: localization["ioc-include-page-button"],
+            type: 'IncludePagePlugin',
+            template: '{{page>${id}}}',
+            icon: 'includepage',
+            category:localization["category-include"]
+        },
+
+       'IocIncludeSectionButton': {
+            title: localization["ioc-include-section-button"],
+            type: 'IncludeSectionPlugin',
+            template: '{{section>${id}}}',
+            icon: 'includesection',
+            category:localization["category-include"]
+        },
 
         'InsertTableSyntax': {
             title: localization["ioc-insert-table-button"],

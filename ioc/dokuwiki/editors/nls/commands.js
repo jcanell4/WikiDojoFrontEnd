@@ -10,11 +10,13 @@ define({ root:
         'enable-ace': 'Activate/Deactivate ACE',
         'enable-wrapper': 'Activate/Deactivate wrap',
 
-
         // Categories
         'category-ioc': 'IOC',
+        'category-ioc-style': 'Styles',
         'category-header': 'Header',
         'category-WikiTable': 'Tables',
+        'category-include': 'include',
+
 
         // Comments Plugin
         'ioc-comment-button': 'Add comment',
@@ -32,7 +34,10 @@ define({ root:
         // IOC Sound Plugin
         'ioc-sound-button': 'Add sound',
         'ioc-sound-sample': 'sound identifier:key',
+        
+        // IOC Video Plugin
 
+        
         // Latex Preview Plugin
         'ioc-latex-preview': 'Latex preview',
 
@@ -42,6 +47,9 @@ define({ root:
 
         'ioc-insert-figure-button': 'Figure syntax',
         'ioc-insert-figure-sample': 'Figure syntax',
+
+        'ioc-include-page-button':'Include document',
+        'ioc-include-section-button':'Include section',
 
         'ioc-insert-figure-link-button': 'Link to figure syntax',
         'ioc-insert-figure-link-sample': 'Link to figure syntax',
@@ -73,8 +81,8 @@ define({ root:
         'ioc-insert-quote-button': 'Quote syntax',
         'ioc-insert-quote-sample': 'Quote syntax',
 
-        'ioc-insert-accounting-button': 'Accounting syntax',
-        'ioc-insert-accounting-sample': 'Accounting syntax',
+//        'ioc-insert-accounting-button': 'Accounting syntax',
+//        'ioc-insert-accounting-sample': 'Accounting syntax',
 
         // Basic toolbar butons
         'ioc-insert-bold-button' : 'Bold',
@@ -83,6 +91,8 @@ define({ root:
         'ioc-insert-italic-sample' : 'Italic',
         'ioc-insert-underline-button' : 'Underline',
         'ioc-insert-underline-sample' : 'Underline',
+        'ioc-insert-monospace-button' : 'Monospace',
+        'ioc-insert-monospace-sample' : 'Monospace',        
         'ioc-insert-code-button' : 'Code',
         'ioc-insert-code-sample' : 'Code',
         'ioc-insert-strikethrough-button' : 'Strikethrough',
@@ -99,6 +109,7 @@ define({ root:
 
 
         'ioc-insert-header-sample': 'Header',
+        'ioc-insert-header0-button': 'Remove header',
         'ioc-insert-header1-button': 'Header sintax level 1',
         'ioc-insert-header2-button': 'Header sintax level 2',
         'ioc-insert-header3-button': 'Header sintax level 3',
@@ -107,27 +118,28 @@ define({ root:
         'ioc-insert-header6-button': 'Header sintax level 6',
 
         'ioc-readonly-toggle': 'Toggle readonly blocks',
+        
         'ioc-table-editor':  'Table editor',
         'ioc-table-editor-multiline':  'Multiline table editor',
         'ioc-table-editor-accounting':  'Accounting table editor',
 
         'table-insert': 'Insert table',
         'table-toggle-header' : 'Toggle header',
+        'table-align-right' : 'Align right',
+        'table-align-left' : 'Alinign left',
+        'table-align-center' : 'Alinign center',
         'merge-cells': 'Merge cells',
         'table-delete': 'Delete table',
 
         'delete': 'Delete',
         'confirm-delete': 'Delete element',
 
-
-
         'ioc-insert-sound-button': 'Insert sound',
-        'ioc-insert-sound-sample': 'sound_id',
+//        'ioc-insert-sound-sample': 'sound_id',
         'ioc-insert-sound-prompt': 'Enter sound id:',
 
         'ioc-insert-video-button': 'Insert video',
         'ioc-insert-video-prompt': 'Enter video id:',
-
 
         'ioc-insert-figure-prompt': 'Enter id, title and foot for the figure:',
 
