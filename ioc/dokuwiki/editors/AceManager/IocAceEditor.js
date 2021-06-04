@@ -545,6 +545,8 @@ define([
                             'IocSoundFormatButton',
                             'IocVideoFormatButton',
                             'IocGifFormatButton',
+                            'IocIncludePageButton',
+                            'IocIncludeSectionButton',
                             'DocumentPreviewButton',
                             'LatexPreview',
                             'TestReadonlyPlugin',

@@ -99,6 +99,7 @@ define([
                 ['box', ["reference", ["id", "offset"]]],
                 ['box', ["quote"]],
                 ['box', ["important"]],
+                ['box', ["include"]],
                 ['box', ["example", ["title"]]],
                 ['base', ["^(::)(.+?)(:)", ["keyword.operator", "keyword.invalid", "keyword.operator"]]],
                 ['base', ["^:::s*$", "keyword.operator"]],

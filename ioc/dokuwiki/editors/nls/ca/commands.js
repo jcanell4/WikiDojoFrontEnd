@@ -6,7 +6,6 @@ define(
         'document-preview': 'Previsualitzar el document',
         'switch-editor-ace': 'Canviar a editor ACE',
         'switch-editor-dojo': 'Canviar a editor HTML',
-
         'enable-ace': 'Activar/Desactivar ACE',
         'enable-wrapper' : 'Activar/Desactivar embolcall',
 
@@ -15,6 +14,7 @@ define(
         'category-ioc-style': 'Estils',
         'category-header': 'Capçalera',
         'category-WikiTable': 'Taules',
+        'category-include': 'include',
 
         // Comments Plugin
         'ioc-comment-button': 'Afegir comentari',
@@ -44,6 +44,9 @@ define(
 
         'ioc-insert-figure-button': 'Afegir figura',
         'ioc-insert-figure-sample': 'Incloure la figura',
+        
+        'ioc-include-page-button':'Incloure document',
+        'ioc-include-section-button':'Incloure secció',
 
         'ioc-insert-figure-link-button': 'Enllaç a figura',
         'ioc-insert-figure-link-sample': 'Incloure enllaç a figura',
