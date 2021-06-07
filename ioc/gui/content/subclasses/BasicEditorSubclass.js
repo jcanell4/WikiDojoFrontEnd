@@ -89,10 +89,8 @@ define([
 
                 let value = dataToSend.wikitext;
 
-                console.log("structure", this.editor.editor.extra.wioccl_structure);
-                console.log("dataToSend", dataToSend);
-
-
+                // console.log("structure", this.editor.editor.extra.wioccl_structure);
+                // console.log("dataToSend", dataToSend);
 
                 // Cal eliminar les referencies wioccl, excepte els marcadors d'apertura,
                 // ja que en aquest s'incrustarà el codi wioccl de la estructura
