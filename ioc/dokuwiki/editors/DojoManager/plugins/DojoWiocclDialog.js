@@ -200,7 +200,7 @@ define([
         },
 
         _extractFields: function (attrs, type) {
-            // console.log('_extractFields', type, attrs);
+            console.log('_extractFields', type, attrs);
 
             // Cal fer la conversió de &escapedgt; per \>
             attrs = attrs.replace('&escapedgt;', '\\>');
@@ -241,56 +241,62 @@ define([
             return fields;
         },
 
-        _updateField: function (item) {
-
-            // console.log(item, this.editor.wioccl);
-
-            let value = this.editor.getValue();
-
-            if (value.length === 0) {
-                // TODO: buidar els atributs
-                console.warn('TODO: eliminar atributs, el valor és buit');
-                return;
-            }
-
-            let structure = this.source.getStructure();
-
-            // console.log("abans", structure[item.id]);
-
-            this.source.parseWioccl(value, this.editor.wioccl, structure, true);
-
-
-            // console.log("després", structure[item.id]);
-
-            //let auxItem = this.source.rebuildWioccl(item);
-            let auxItem = structure[item.id];
-
-            // PROBLEMA: el item.id no es troba a la estructura
-            // el id no és correcte, marca 1888 però es troba al 1896
-            //      - el parent és correcte
-
-
-            console.log(item.id, structure);
-
-            // console.log("Update a partir de:", item, auxItem);
-            let extractedFields = this._extractFields(auxItem.attrs, auxItem.type);
-            this.setFields(extractedFields);
-
-        },
+        // _updateField: function (item) {
+        //
+        //     // console.log(item, this.editor.wioccl);
+        //
+        //     let value = this.editor.getValue();
+        //
+        //     if (value.length === 0) {
+        //         // TODO: buidar els atributs
+        //         console.warn('TODO: eliminar atributs, el valor és buit');
+        //         return;
+        //     }
+        //
+        //     let structure = this.source.getStructure();
+        //
+        //     // console.log("abans", structure[item.id]);
+        //
+        //     this.source.parseWioccl(value, this.editor.wioccl, structure, true);
+        //
+        //
+        //     // console.log("després", structure[item.id]);
+        //
+        //     //let auxItem = this.source.rebuildWioccl(item);
+        //     let auxItem = structure[item.id];
+        //
+        //     // PROBLEMA: el item.id no es troba a la estructura
+        //     // el id no és correcte, marca 1888 però es troba al 1896
+        //     //      - el parent és correcte
+        //
+        //
+        //     console.log(item.id, structure);
+        //
+        //     // console.log("Update a partir de:", item, auxItem);
+        //     let extractedFields = this._extractFields(auxItem.attrs, auxItem.type);
+        //     this.setFields(extractedFields);
+        //
+        // },
 
         _updateDetail: function (item, ignoreFields) {
+
 
             if (this.updating) {
                 return;
             }
 
             if (!ignoreFields) {
-                this.setFields(this._extractFields(item.attrs, item.type));
+
+                // this.setFields(this._extractFields(item.attrs, item.type));
+                this.setFields(this._extractFieldsFromCandidate(item));
             }
 
-            let auxItem = this.source.rebuildWioccl(item);
 
-            this.editor.setValue(auxItem);
+            console.log("rebuild a partir del item:", item);
+            let auxContent = this.source.rebuildWioccl(item);
+
+            console.log("setting value:", auxContent);
+            this.editor.setValue(auxContent);
             this.dirty = true;
 
 
@@ -403,28 +409,54 @@ define([
 
             let context = this;
 
+            let extractedFields = context._extractFieldsFromCandidate(context.selectedWioccl);
+
             $attrContainer.find('input').each(function() {
 
                 let $fieldContainer = jQuery(this).closest('[data-attr-field]');
                 let attrField = $fieldContainer.attr('data-attr-field');
                 let attrValue = $fieldContainer.find('input').val();
 
-                let extractedFields = context._extractFieldsFromCandidate(context.selectedWioccl);
+
                 // let extractedFields = context._extractFields(context.selectedWioccl.attrs,
                 //     context.selectedWioccl.type);
 
                 // Reemplacem l'atribut
                 extractedFields[attrField] = attrValue;
-
-
-                // reconstruim els atributs com a string
-                let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
-
-                // Re assignem els nous atributs
-                context.selectedWioccl.attrs = rebuildAttrs;
             });
 
-            this._updateStructure();
+            // reconstruim els atributs com a string
+            let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWioccl.type);
+            // Re assignem els nous atributs
+            this.selectedWioccl.attrs = rebuildAttrs;
+
+            if (context.selectedWioccl.type === 'content') {
+                // Cal actualitzar la estructura directament, el selectedWioccl es una copia?
+                // console.log("Es content, hi ha attributs actualitzats?", extractedFields);
+                this.source.getStructure()[this.selectedWioccl.id].open = extractedFields['content'];
+
+                // ALERTA! cal actualitzar també el this.editor.wioccl.open si és l'element actiu perquè és una copia
+                // provant alternativa, agafar sempre de la estructura
+                // if (this.editor.wioccl.id === this.selectedWioccl.id) {
+                //     this.editor.wioccl.open = extractedFields['content'];
+                // }
+
+                // this.selectedWioccl.open = this.selectedWioccl.attrs.content;
+                // this.editor.setValue(context.selectedWioccl.attrs.content);
+            }
+
+            console.log('selected', this.selectedWioccl.attrs);
+            console.log("S'ha actualitzat?", this.source.getStructure()[this.selectedWioccl.id]);
+
+            // Refresquem el wioccl associat a l'editor amb el valor actual
+            // if (this.editor.wioccl.id === this.selectedWioccl.id) {
+                    this.editor.wioccl = this.source.getStructure()[this.editor.wioccl.id];
+                // }
+
+            // això no pot ser correcte, aquest cas es dispara quan es modifica el camp
+            // en tot cas caldrà fer un rebuild després
+
+            // this._updateStructure();
             this._updateDetail(this.editor.wioccl, true);
 
             context._pendingChanges_Field2Detail = false;
@@ -510,7 +542,7 @@ define([
         _updateStructure: function () {
             let structure = this.source.getStructure();
             for (let [start, wioccl] of this.chunkMap) {
-                // console.log("updating structure", start, wioccl);
+                console.log("updating structure", start, wioccl);
                 structure[Number(wioccl.id)] = wioccl;
             }
 
@@ -559,7 +591,7 @@ define([
                     }
             }
 
-            // console.log("fields rebuild:", rebuild);
+            console.log("fields rebuild:", rebuild);
             return rebuild;
         },
 
