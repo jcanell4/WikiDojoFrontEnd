@@ -19,11 +19,8 @@ define([
     return declare([AbstractAcePlugin], {
 
         init: function (args) {
-            //this.category = args.category;
-            //this.icon = args.icon;
             this.template = args.template;
             this.title = args.title;
-            //this.type = args.type;
 
             var config = JSON.parse(JSON.stringify(args));
             if (args.icon.indexOf(".png") === -1) {
@@ -41,17 +38,16 @@ define([
         },
 
         _showDialog: function () {
+            var context = this;
             var ed = this._getEditor();
-            var template = this.template;
             var selectedPage = {};
-            var path = [];
             var dialog = registry.byId("includePageSyntaxDocumentDlg");
 
             if (!dialog){
                 dialog = new Dialog({
                     id: "includePageSyntaxDocumentDlg",
                     title: "Cerca de la pàgina a incloure",
-                    style: "width: 590px; height: 350px;",
+                    style: "width: 510px; height: 350px;",
                     page: ed.id
                 });
 
@@ -61,35 +57,12 @@ define([
                 });
 
                 dialog.on('show', function () {
-                    dialog.dialogTree.tree.set('path',path).then(function(){
-                        dom.byId('textBoxPagesList').focus();
-                    });
-                    selectedPage.id = path[path.length-1] || "";
-                    dom.byId('textBoxPagesList').value = path[path.length-1] || "";
-                    dom.byId('textBoxPagesList').focus();
+                    dialog.dialogTree.tree.set('path', '');
                 });
 
-                dialog.nsActivePage = function (){
-                    var getGlobalState = ed.dispatcher.getGlobalState();
-                    path.length = 0;
-                    if (getGlobalState.currentTabId) {
-                        var stPath = "";
-                        var aPath = getGlobalState.getContent(getGlobalState.currentTabId).ns || '';
-                        aPath = aPath.split(':');
-                        aPath.pop();
-                        aPath.unshift("");
-                        for (var i=0; i<aPath.length; i++) {
-                            if (i > 1) {
-                                stPath = stPath + ":";
-                            }
-                            stPath = stPath + aPath[i];
-                            path[i] = stPath;
-                        }
-                    }
-                };
-
+                //Creació del marc contenidor del diàleg
                 var bc = new BorderContainer({
-                    style: "height: 300px; width: 570px;"
+                    style: "height: 300px; width: 490px;"
                 });
 
                 // create a ContentPane as the left pane in the BorderContainer
@@ -102,7 +75,7 @@ define([
                 // create a ContentPane as the right pane in the BorderContainer
                 var cpDreta = new ContentPane({
                     region: "right",
-                    style: "width: 250px"
+                    style: "width: 210px"
                 });
                 bc.addChild(cpDreta);
 
@@ -127,8 +100,8 @@ define([
                     if (item.type === "f") {
                         selectedPage.id = item.id;
                         selectedPage.name = item.name;
+                        dom.byId('textBoxPagesList').value = item.id;
                     }
-                    dom.byId('textBoxPagesList').value = item.id;
                 };
 
                 // Un formulari a la banda dreta contenint:
@@ -169,10 +142,8 @@ define([
                 new Button({
                     label: 'Acceptar',
                     onClick: function(){
-                        PagesList.value = template.replace('id', selectedPage.id);
-                        var query = '&id=' + PagesList.value;
-                        ed.sendRequest(query);
                         dialog.hide();
+                        context.insert(selectedPage.id);
                     }
                 }).placeAt(botons);
 
@@ -183,9 +154,8 @@ define([
 
                 form.startup();
             }
-            dialog.nsActivePage();
             dialog.show();
-            return PagesList.value;
+            return false;
         },
 
         _processFull: function () {
@@ -193,16 +163,7 @@ define([
         },
 
         insert: function (value) {
-            var reg = new RegExp('{{:(.*)\\?');
-            var file = value.match(reg);
-            var chunks = file[1].split('|');
-            var ns = chunks[0];
-            // Si es troba a l'arrel cal incloure els :
-            if (ns.indexOf(':') === -1) {
-                ns = ':' + ns;
-            }
-
-            var data = {id: ns};
+            var data = {id: value};
             this.editor.session.insert(this.editor.editor.getCursorPosition(), string.substitute(this.template, data));
         }
 
