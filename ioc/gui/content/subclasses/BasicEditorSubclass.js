@@ -89,7 +89,8 @@ define([
 
                 let value = dataToSend.wikitext;
 
-                // console.log("Data to send? hi ha el rootRef?", dataToSend);
+                console.log("structure", this.editor.editor.extra.wioccl_structure);
+                console.log("dataToSend", dataToSend);
 
 
 

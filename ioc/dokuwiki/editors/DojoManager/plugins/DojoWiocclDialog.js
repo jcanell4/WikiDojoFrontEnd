@@ -118,11 +118,12 @@ define([
 
                     // actualitzem qualsevol canvi pendent abans
 
-                    if (context.editor.isChanged() || context._pendingChanges_Field2Detail) {
+                    if (context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges) {
                         let descartar = confirm("S'han detectat canvis, vols descartar-los?");
                         if (!descartar) {
                             return false;
                         }
+                        context._fieldChanges = false;
                     }
 
                     context._updatePendingChanges_Field2Detail()
@@ -150,6 +151,8 @@ define([
 
         // el chunk map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
         _createChunkMap: function (item, structure, pos, outChunkMap) {
+
+
 
             // Cal fer la conversió de &escapedgt; per \>
             let attrs = item.attrs;
@@ -200,7 +203,7 @@ define([
         },
 
         _extractFields: function (attrs, type) {
-            console.log('_extractFields', type, attrs);
+            // console.log('_extractFields', type, attrs);
 
             // Cal fer la conversió de &escapedgt; per \>
             attrs = attrs.replace('&escapedgt;', '\\>');
@@ -292,10 +295,7 @@ define([
             }
 
 
-            console.log("rebuild a partir del item:", item);
             let auxContent = this.source.rebuildWioccl(item);
-
-            console.log("setting value:", auxContent);
             this.editor.setValue(auxContent);
             this.dirty = true;
 
@@ -372,6 +372,7 @@ define([
             let context = this;
 
             $fields.find('input').on('input change', function (e) {
+                context._fieldChanges = true;
 
                 // console.log("es input o es change?",e.type );
                 if (UPDATE_TIME === 0 || e.type === 'change') {
@@ -445,18 +446,11 @@ define([
                 // this.editor.setValue(context.selectedWioccl.attrs.content);
             }
 
-            console.log('selected', this.selectedWioccl.attrs);
-            console.log("S'ha actualitzat?", this.source.getStructure()[this.selectedWioccl.id]);
-
             // Refresquem el wioccl associat a l'editor amb el valor actual
-            // if (this.editor.wioccl.id === this.selectedWioccl.id) {
-                    this.editor.wioccl = this.source.getStructure()[this.editor.wioccl.id];
-                // }
+            this.editor.wioccl = this.source.getStructure()[this.editor.wioccl.id];
 
-            // això no pot ser correcte, aquest cas es dispara quan es modifica el camp
-            // en tot cas caldrà fer un rebuild després
 
-            // this._updateStructure();
+            // this._updateDetail(this.editor.wioccl, true);
             this._updateDetail(this.editor.wioccl, true);
 
             context._pendingChanges_Field2Detail = false;
@@ -503,11 +497,22 @@ define([
 
             this.source.parseWioccl(value, this.editor.wioccl, structure, true);
 
-            this._rebuildChunkMap(this.source.getStructure()[this.refId])
+            // this._rebuildChunkMap(this.source.getStructure()[this.refId])
 
-            // console.log("chunkmap?", this.chunkMap);
+            // PROBLEMA: el id de this.selectedWioccl.id no està actualitzat, això es fa desprès!
+            // posar abans del rebuildChunkMap? PRBOLEMA, no es pot canviar el select...
+
+            // ALERTA! No és el item selected, s'ha de reconstruir pel wioccl de l'editor!
+            // ALERTA! No és el item selected, s'ha de reconstruir pel wioccl de l'editor!
+            // ALERTA! No és el item selected, s'ha de reconstruir pel wioccl de l'editor!
+
+
+
+            let candidate = this.source.getStructure()[this.editor.wioccl.id];
+            // this._rebuildChunkMap(this.source.getStructure()[this.selectedWioccl.id]);
+            this._rebuildChunkMap(candidate);
+
             let updatedWioccl = this._getWiocclForCurrentPos();
-            // console.log("updated wioccl a la posició:", updatedWioccl);
             this._selectWioccl(updatedWioccl);
 
 
@@ -591,7 +596,7 @@ define([
                     }
             }
 
-            console.log("fields rebuild:", rebuild);
+            // console.log("fields rebuild:", rebuild);
             return rebuild;
         },
 
@@ -714,6 +719,7 @@ define([
                 let pos = editor.getPositionAsIndex(!context.dirty);
                 let candidate = context._getWiocclForPos(pos);
 
+                // console.log("Candidate:", candidate);
 
                 // Si es dirty es que s'acava de canviar el valor, cal eliminar la selecció
                 if (context.dirty) {
@@ -767,6 +773,7 @@ define([
 
             this.wasFocused = this.editor.hasFocus();
 
+            // console.log("pos:", pos);
             return this._getWiocclForPos(pos);
         },
 
