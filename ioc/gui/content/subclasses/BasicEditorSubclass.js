@@ -122,6 +122,7 @@ define([
 
                     $node.removeAttr('contenteditable');
                     $node.removeAttr('data-readonly');
+                    $node.removeAttr('class');
 
                     // console.log("comprovant node:", $node);
 
