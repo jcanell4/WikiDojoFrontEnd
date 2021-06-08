@@ -3,18 +3,17 @@ define([
     'dijit/registry',
     'dojo/dom',
     'dojo/dom-construct',
+    'dojo/string',
     'dijit/Dialog',
     'dijit/layout/BorderContainer',
     'dijit/layout/ContentPane',
     'dijit/form/Form',
     'dijit/form/TextBox',
     'dijit/form/Button',
-    "ioc/gui/NsTreeContainer",
-    'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin',
-    "dojo/string"
-], function (declare,registry,dom,domConstruct,Dialog,
-             BorderContainer,ContentPane,Form,TextBox,Button,
-             NsTreeContainer,AbstractAcePlugin,string) {
+    'ioc/gui/NsTreeContainer',
+    'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin'
+], function (declare,registry,dom,domConstruct,string,
+             Dialog,BorderContainer,ContentPane,Form,TextBox,Button,NsTreeContainer,AbstractAcePlugin) {
 
     return declare([AbstractAcePlugin], {
 
@@ -90,7 +89,7 @@ define([
                 var dialogTree = new NsTreeContainer({
                     treeDataSource: 'lib/exe/ioc_ajaxrest.php/ns_tree_rest/',
                     onlyDirs: false,
-                    hiddenProjects: false
+                    hiddenProjects: true
                 }).placeAt(divizquierda);
                 dialogTree.startup();
 
@@ -100,7 +99,7 @@ define([
                     if (item.type === "f") {
                         selectedPage.id = item.id;
                         selectedPage.name = item.name;
-                        dom.byId('textBoxPagesList').value = item.id;
+                        dom.byId('textBoxPageName').value = item.id;
                     }
                 };
 
@@ -112,21 +111,21 @@ define([
                 var form = new Form({id:"formIncludeSyntaxDialog"}).placeAt(divdreta);
 
                 //Un camp de text per inclore la ruta de la pàgina
-                var divPagesList = domConstruct.create('div', {
-                    className: 'divPagesList'
+                var divPageName = domConstruct.create('div', {
+                    className: 'divPageName'
                 },form.containerNode);
 
                 domConstruct.create('label', {
                     innerHTML: 'Pàgina seleccionada<br>'
-                },divPagesList);
+                },divPageName);
 
-                var PagesList = new TextBox({
-                    id: 'textBoxPagesList',
-                    name: 'PagesList',
+                var PageName = new TextBox({
+                    id: 'textBoxPageName',
+                    name: 'PageName',
                     readOnly: true,
                     style: 'width: 100%;'
-                }).placeAt(divPagesList);
-                dialog.textBoxPagesList = PagesList;
+                }).placeAt(divPageName);
+                dialog.textBoxPageName = PageName;
 
 
                 // ----- Botons generals del formulari ------

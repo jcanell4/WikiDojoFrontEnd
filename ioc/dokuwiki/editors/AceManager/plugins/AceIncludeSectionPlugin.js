@@ -1,124 +1,199 @@
 define([
     'dojo/_base/declare',
-    'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin',
-    "dojo/string",
-], function (declare, AbstractAcePlugin, string) {
-
-    var TIMER_INTERVAL = 0.1;
+    'dijit/registry',
+    'dojo/dom',
+    'dojo/dom-construct',
+    'dojo/string',
+    'dijit/Dialog',
+    'dijit/layout/BorderContainer',
+    'dijit/layout/ContentPane',
+    'dijit/form/Form',
+    'dijit/form/TextBox',
+    'dijit/form/Button',
+    'ioc/gui/NsTreeContainer',
+    'ioc/wiki30/Request',
+    'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin'
+], function (declare,registry,dom,domConstruct,string,Dialog,BorderContainer,ContentPane,Form,TextBox,Button,
+             NsTreeContainer,myRequest,AbstractAcePlugin) {
 
     return declare([AbstractAcePlugin], {
 
-
         init: function (args) {
-
-            this.title = args.title;
-            this.prompt = args.prompt;
-            this.data = args.data;
             this.template = args.template;
-            this.origins = args.origins;
-
+            this.title = args.title;
 
             var config = JSON.parse(JSON.stringify(args));
             if (args.icon.indexOf(".png") === -1) {
                 config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
             }
-
             this.addButton(config, this.process);
-
             this.enabled = true;
-
         },
 
         _getEditor: function () {
             var dispatcher = this.editor.dispatcher;
-            var id = dispatcher.getGlobalState().getCurrentId(),
-                contentTool = dispatcher.getContentCache(id).getMainContentTool();
-
+            var id = dispatcher.getGlobalState().getCurrentId();
+            var contentTool = dispatcher.getContentCache(id).getMainContentTool();
             return contentTool.getCurrentEditor();
-
         },
 
         _showDialog: function () {
-            //this.documentPreviewComponent.send();
-            // Opció 1: cridar directament a tb_mediapopup(btn, props, edid)
-
-            // obtenir el id del document
-
-            var edid = 'textarea_' + this._getEditor().id + '_media';
-
-
-            // eliminem qualsevol textarea anterior. Alternativa: si existeix deixar aquest i no crear cap de nou
-            jQuery('textarea#' + edid).remove();
-            clearInterval(timer);
-
-            // Afegim un de nou
-            var $textarea = jQuery('<textarea>').attr('id', edid);
-            $textarea.css('display', 'none');
-
-            jQuery('body').append($textarea);
-
-            // Canvia al textarea es fa mitjançant expresions regulars directament sobre el text,
-            // no es dispara cap event
-
             var context = this;
+            var ed = this._getEditor();
+            var selectedPage = {};
+            var dialog = registry.byId("includePageSyntaxDocumentDlg");
 
-            timer = setInterval(function () {
-                var value = $textarea.val();
-                if (value.length > 0) {
-                    clearInterval(timer);
-                    // this.editor.execCommand('inserthtml', string.substitute(this.htmlTemplate, args));
+            if (!dialog){
+                dialog = new Dialog({
+                    id: "includePageSyntaxDocumentDlg",
+                    title: "Cerca de la secció d'una pàgina a incloure",
+                    style: "width: 540px; height: 350px;",
+                    page: ed.id
+                });
 
-                    context.insert(value);
+                dialog.on('hide', function () {
+                    dialog.destroyRecursive(false);
+                    domConstruct.destroy("includePageSyntaxDocumentDlg");
+                });
+
+                dialog.on('show', function () {
+                    dialog.dialogTree.tree.set('path', '');
+                });
+
+                //Creació del marc contenidor del diàleg
+                var bc = new BorderContainer({
+                    style: "height: 300px; width: 520px;"
+                });
+
+                // create a ContentPane as the left pane in the BorderContainer
+                var cpEsquerra = new ContentPane({
+                    region: "left",
+                    style: "width: 220px"
+                });
+                bc.addChild(cpEsquerra);
+
+                //Creació del marc de la dreta
+                var bcDreta = new BorderContainer({
+                    region: "right",
+                    style: "height: 300px; width: 260px;"
+                });
+                bc.addChild(bcDreta);
+
+                // ContentPane a la part superior del BorderContainer
+                var cpTop = new ContentPane({
+                    region: "top",
+                    style: "height:180px; width:245px"
+                });
+                bcDreta.addChild(cpTop);
+
+                // ContentPane a la part inferior del BorderContainer
+                var cpBottom = new ContentPane({
+                    region: "bottom",
+                    style: "height:70px; width:245px"
+                });
+                bcDreta.addChild(cpBottom);
+
+                // put the top level widget into the document, and then call startup()
+                bc.placeAt(dialog.containerNode);
+
+                //L'arbre de navegació a la banda esquerra del quadre.
+                var divizquierda = domConstruct.create('div', {
+                    className: 'izquierda'
+                },cpEsquerra.containerNode);
+
+                // Un espai a la banda dreta alta per contenir el resultat de la petició de TOC:
+                var divdretaalta = domConstruct.create('div', {
+                    className: 'dretaalta'
+                },cpTop.containerNode);
+
+                var request = new myRequest({
+                    urlBase: 'lib/exe/ioc_ajaxrest.php/get_toc_rest/'
+                }).placeAt(divdretaalta);;
+
+                var dialogTree = new NsTreeContainer({
+                    treeDataSource: 'lib/exe/ioc_ajaxrest.php/ns_tree_rest/',
+                    onlyDirs: false,
+                    hiddenProjects: true
+                }).placeAt(divizquierda);
+                dialogTree.startup();
+
+                dialog.dialogTree = dialogTree;
+
+                dialogTree.tree.onClick = function(item) {
+                    if (item.type === "f") {
+                        selectedPage.id = item.id;
+                        selectedPage.name = item.name;
+                        request.set('urlBase', 'lib/exe/ioc_ajaxrest.php/get_toc_rest/');
+                        request.sendRequest(item.id);
+                    }
+                };
 
 
-                    // context.editor.execCommand('inserthtml', value);
+                // Un formulari a la banda dreta baixa contenint:
+                var divdretabaixa = domConstruct.create('div', {
+                    className: 'dretabaixa'
+                },cpBottom.containerNode);
 
-                    timer = null;
-                    $textarea.remove();
-                }
+                var form = new Form({id:"formIncludeSyntaxDialog"}).placeAt(divdretabaixa);
 
-            }, TIMER_INTERVAL);
+                //Un camp de text per inclore la ruta de la pàgina
+                var divPageSectionName = domConstruct.create('div', {
+                    className: 'divPageSectionName'
+                },form.containerNode);
 
-            tb_mediapopup(
-                null,
-                {
-                    name: 'mediaselect', // name per la segona opció de window.open()
-                    options: 'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes', // options pel tercer paràmetre de la funció window.open()
-                    // url: 'lib/exe/mediamanager.php?ns='
-                    url: 'lib/exe/mediamanager.php?filler=true&onselect=dw_mediamanager_item_select_without_align&ns='
-                },
-                edid
-            );
+                domConstruct.create('label', {
+                    innerHTML: 'Pàgina i secció seleccionada'
+                },divPageSectionName);
 
+                var PageSectionName = new TextBox({
+                    id: 'textBoxPageSectionName',
+                    name: 'PageSectionName',
+                    readOnly: true,
+                    style: 'width: 100%;'
+                }).placeAt(divPageSectionName);
+                dialog.textBoxPageSectionName = PageSectionName;
+
+
+                // ----- Botons generals del formulari ------
+                var botons = domConstruct.create('div', {
+                    className: 'botons',
+                    style: "text-align:center;margin-top:10px;margin-bottom:0;"
+                },form.containerNode);
+
+                new Button({
+                    label: 'Acceptar',
+                    onClick: function(){
+                        dialog.hide();
+                        context.insert(selectedPage.id);
+                    }
+                }).placeAt(botons);
+
+                new Button({
+                    label: 'Cancel·lar',
+                    onClick: function(){dialog.hide();}
+                }).placeAt(botons);
+
+                form.startup();
+            }
+            dialog.show();
+            return false;
         },
 
         _processFull: function () {
             this._showDialog();
-
         },
 
         insert: function (value) {
-
-            var reg = new RegExp('{{:(.*)\\?');
-            var file = value.match(reg);
-
-
-            var chunks = file[1].split('|');
-            var ns = chunks[0];
-
-            // Si es troba a l'arrel cal incloure els :
-            if (ns.indexOf(':') === -1) {
-                ns = ':' + ns;
-            }
-
-            var data = {
-                id : ns
-            };
-
+            var data = {id: value};
             this.editor.session.insert(this.editor.editor.getCursorPosition(), string.substitute(this.template, data));
-
         },
 
+        responseHandler: function (data) {
+            this.inherited(arguments);
+            this._stopStandby();
+            dom.byId('textBoxPageSectionName').value = data;
+        }
+        
     });
 
 });
