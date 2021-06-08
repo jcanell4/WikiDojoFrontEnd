@@ -19,17 +19,19 @@ define([
 
     let AceFacade = null;
 
+    let counter = 0;
+
     // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
     require(["ioc/dokuwiki/editors/AceManager/AceEditorFullFacade"], function (AuxClass) {
         AceFacade = AuxClass;
     });
 
-    return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin, EventObservable, EventObserver], {
+    var DojoWioccDialog = declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin, EventObservable, EventObserver], {
 
         templateString: template,
 
-        lastPos : null,
-        lastCursor : null,
+        lastPos: null,
+        lastCursor: null,
         wasFocused: null,
 
         startup: function () {
@@ -151,7 +153,6 @@ define([
 
         // el chunk map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
         _createChunkMap: function (item, structure, pos, outChunkMap) {
-
 
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -351,8 +352,7 @@ define([
                 html += '<div class="wioccl-field" data-attr-field="' + field + '">';
                 html += '<label>' + field + ':</label>';
                 html += '<input type="text" name="' + field + '" value="' + valor + '"/>';
-                // html += '<button data-button-update>Actualitzar</button>';
-                // html += '<input type="text" name="' + field + '" value="' + valor + '" disabled="true"/>';
+                html += '<button data-button-edit>wioccl</button>';
                 html += '</div>';
             }
 
@@ -370,6 +370,81 @@ define([
             let $fields = jQuery(this._generateHtmlForFields(fields, type))
 
             let context = this;
+
+            $fields.find('[data-button-edit]').on('click', function (e) {
+                console.log("TODO: obrir nou dialeg");
+
+                let value = jQuery(this).siblings('input').val();
+
+                console.log("value", value);
+                let outStructure = {next: "0"};
+
+                let outRoot = {isNull:true};
+                context.source.parseWiocclNew(value, outStructure, outRoot);
+
+                console.log("Root:", outRoot);
+                console.log("Estructura generada:", outStructure);
+
+                alert("No funciona, compte! el node no existeix a la estructura perquè és un atribut!! s'ha de generar una estructura a partir d'aquest node")
+
+
+                let refId = outRoot.id;
+                let tree = [];
+                // let node = JSON.parse(JSON.stringify(outStructure[refId]));
+                let node = outRoot;
+                node.name = node.type ? node.type : node.open;
+                tree.push(node);
+
+                // perquè necessitem treure el context source
+                // tree[0].children = context.source._getWiocclChildrenNodes(tree[0].children, tree[0].id, context.source);
+                tree[0].children = context.source._getWiocclChildrenNodes(tree[0].children, tree[0].id, outStructure);
+
+                // ALERTA! Aquest dialog no és
+                let wiocclDialog = new DojoWioccDialog({
+                    title: 'Edició wioccl',
+                    // style: 'width:auto',
+                    style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
+                    // style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 100%; max-height: 100%;',
+                    onHide: function (e) { //Voliem detectar el event onClose i hem hagut de utilitzar onHide
+                        this.destroyRecursive();
+                        context.backupStructure = null;
+                    },
+                    id: 'wioccl-dialog_inner' + counter,
+                    draggable: false,
+                    firstResize: true,
+                    source: context.source,
+                    args: {
+                        id: 'wioccl-dialog_inner' + counter,
+                        value: context.source.rebuildWioccl(tree[0])
+                    },
+                    wioccl: outRoot,
+                    tree: tree,
+                    refId: refId,
+                    saveCallback: function () {
+                        alert('TODO: destruir el dialog i posar el parseWioccl de la branca com a contingut d\'aquest camp');
+                    }
+                    ,
+                    // saveCallback : context._save.bind(context),
+                    updateCallback: function (editor) {
+                        this.source.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
+                    }.bind(context)
+                    // updateCallback: context._update.bind(context)
+
+
+                });
+
+                counter++;
+
+                wiocclDialog.startup();
+
+                wiocclDialog.show();
+
+                console.log("el dialog existeix?", wiocclDialog);
+
+                wiocclDialog.setFields(wiocclDialog._extractFields(tree[0].attrs, tree[0].type));
+                wiocclDialog._updateDetail(tree[0]);
+            });
+
 
             $fields.find('input').on('input change', function (e) {
                 context._fieldChanges = true;
@@ -390,7 +465,7 @@ define([
             this._updateEditorHeight();
         },
 
-        destroy: function() {
+        destroy: function () {
             this.inherited(arguments);
 
             if (this.timerId_Field2Detail) {
@@ -403,7 +478,7 @@ define([
 
         },
 
-        _updatePendingChanges_Field2Detail: function() {
+        _updatePendingChanges_Field2Detail: function () {
             // console.log("updatePendingChanges_Field2Detail");
 
             let $attrContainer = jQuery(this.attrContainerNode);
@@ -412,7 +487,7 @@ define([
 
             let extractedFields = context._extractFieldsFromCandidate(context.selectedWioccl);
 
-            $attrContainer.find('input').each(function() {
+            $attrContainer.find('input').each(function () {
 
                 let $fieldContainer = jQuery(this).closest('[data-attr-field]');
                 let attrField = $fieldContainer.attr('data-attr-field');
@@ -507,7 +582,6 @@ define([
             // ALERTA! No és el item selected, s'ha de reconstruir pel wioccl de l'editor!
 
 
-
             let candidate = this.source.getStructure()[this.editor.wioccl.id];
             // this._rebuildChunkMap(this.source.getStructure()[this.selectedWioccl.id]);
             this._rebuildChunkMap(candidate);
@@ -555,7 +629,6 @@ define([
                 this.editor.wioccl = structure[Number(this.editor.wioccl.id)];
             }
         },
-
 
 
         _rebuildAttrs: function (fields, type) {
@@ -675,11 +748,10 @@ define([
             });
 
 
-
             // Cal fer un tractament diferent pel focus, aquest només es dispara quan
             // efectivament s'ha fet click, però es dispara abans de que s'estableixi
             // la posició??
-            editor.on('focus', function(e) {
+            editor.on('focus', function (e) {
 
                 context.lastPos = context.editor.getPositionAsIndex(false);
 
@@ -747,14 +819,13 @@ define([
                 context.setFields(auxFields);
 
 
-
                 // context.editor.clearSelection();
             });
 
             this._updateEditorHeight();
         },
 
-        _getWiocclForCurrentPos: function() {
+        _getWiocclForCurrentPos: function () {
             let pos;
             let cursor = {row: 0, column: 0}
 
@@ -777,7 +848,7 @@ define([
             return this._getWiocclForPos(pos);
         },
 
-        _getWiocclForPos: function(pos) {
+        _getWiocclForPos: function (pos) {
             // Cerquem el node corresponent
             let candidate;
             let found;
@@ -829,4 +900,6 @@ define([
 
         }
     });
+
+    return DojoWioccDialog;
 });

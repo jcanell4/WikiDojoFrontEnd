@@ -100,7 +100,9 @@ define([
             return this.backupStructure;
         },
 
-        _getWiocclChildrenNodes(children, parent, context) {
+
+        // _getWiocclChildrenNodes(children, parent, context) {
+        _getWiocclChildrenNodes(children, parent, structure) {
             let nodes = [];
 
             for (let i = 0; i < children.length; i++) {
@@ -108,12 +110,14 @@ define([
 
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
 
-                if (context.getStructure()[id].isClone) {
+                if (structure[id].isClone) {
+                // if (context.getStructure()[id].isClone) {
                     continue;
                 }
 
                 // console.log("Original:", id, context.getStructure()[id]);
-                let node = JSON.parse(JSON.stringify(context.getStructure()[id]));
+                let node = JSON.parse(JSON.stringify(structure[id]));
+                // let node = JSON.parse(JSON.stringify(context.getStructure()[id]));
                 // console.log("Clon:", id,node);
 
                 if (!node) {
@@ -123,7 +127,7 @@ define([
 
                 node.parent = parent;
                 if (node.children.length > 0) {
-                    node.children = this._getWiocclChildrenNodes(node.children, node.id, context);
+                    node.children = this._getWiocclChildrenNodes(node.children, node.id, structure);
                 }
 
                 nodes.push(node);
@@ -274,7 +278,7 @@ define([
                 node.name = node.type ? node.type : node.open;
                 tree.push(node);
 
-                tree[0].children = context._getWiocclChildrenNodes(tree[0].children, tree[0].id, context);
+                tree[0].children = context._getWiocclChildrenNodes(tree[0].children, tree[0].id, context.getStructure());
 
                 let oldDialog = registry.byId('wioccl-dialog' + counter);
 
@@ -303,7 +307,7 @@ define([
                     wioccl: wioccl,
                     tree: tree,
                     refId: refId,
-                    saveCallback : context._save.bind(context),
+                    saveCallback: context._save.bind(context),
                     updateCallback: context._update.bind(context)
                 });
 
@@ -520,6 +524,23 @@ define([
 
         },
 
+        parseWiocclNew: function (text, outStructure, outRoot) {
+
+            let outTokens = this._tokenize(text);
+
+            console.log("out tokens?", outTokens);
+
+
+            this._createTree(outRoot, outTokens, outStructure);
+
+
+
+            // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
+            // this._setData(structure[this.root], wioccl);
+            console.warn("cal fer alguna cosa amb el _setData?");
+
+        },
+
         _removeChildren: function (id, inStructure, removeNode) {
             let node = inStructure[id];
 
@@ -564,6 +585,9 @@ define([
 
             let first = true;
 
+            /// Aquest serà el valor a retornar si el root es null inicialment
+            let outRoot = null;
+
             // Si l'últim token és un salt de linia ho afegim al token anterior
             if (outTokens.length > 1 && outTokens[outTokens.length - 1].value === "\n") {
                 outTokens[outTokens.length - 2].value += "\n";
@@ -573,7 +597,8 @@ define([
             for (let i in outTokens) {
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
-                if (i === '0') {
+                // quan es fa un parserNew el root és null
+                if (i === '0' && !root.isNull) {
                     outTokens[i].id = root.id;
                     outTokens[i].parent = root.parent;
                     // this.root = tokens[i].id;
@@ -595,15 +620,19 @@ define([
                 if (stack.length > 0) {
                     stack[stack.length - 1].children.push(nextKey);
                     outTokens[i].parent = stack[stack.length - 1].id
-                } else {
+                } else if (root != null) {
                     // Si no hi ha cap element a l'estack es que es troba al mateix nivell que l'element root
-                    outTokens[i].parent = root.parent
+                    outTokens[i].parent = root.parent;
+                } else {
+                    outTokens[i].parent = -1;
                 }
 
                 // Si fem servir push s'afegeixen al final, això no serveix perquè cal inserir els nous nodes a la posició original (emmagatzemada a root.index)
 
                 // if (tokens[i].parent === root.parent && tokens[i].id !== root.id
-                if (outTokens[i].parent === root.parent
+
+                // Si el root és null es un parserNew, els canviem de lloc
+                if (!root.isNull && outTokens[i].parent === root.parent
                     && (Number(i) < outTokens.length - 1 || outTokens[i].value !== "\n")) {
                     structure[root.parent].children.splice(root.index + sibblings, 0, outTokens[i].id);
                     ++sibblings;
@@ -665,21 +694,36 @@ define([
                 }
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
+
                 if (first) {
-                    structure[root.id] = outTokens[i];
+                    if (root.isNull) {
+                        outRoot = outTokens[i];
+                    } else {
+                        structure[root.id] = outTokens[i];
+                    }
                     first = false;
+
                 } else {
                     structure[nextKey] = outTokens[i];
                     nextKey = (Number(nextKey) + 1) + "";
                 }
 
+
+                // ALERTA[Xavi] Si s'afegeixen sibblings a un element que penji directament del root aquest es descartaran
+                if (sibblings > 1 && Number(root.id) === Number(this.root) && Number(structure[root.id]['parent']) !== 0) {
+                    root.addedsibblings = true;
+                }
+
+
             }
 
-            // ALERTA[Xavi] Si s'afegeixen sibblings a un element que penji directament del root aquest es descartaran
-            if (sibblings > 1 && Number(root.id) === Number(this.root) && Number(structure[root.id]['parent']) !== 0) {
-                root.addedsibblings = true;
+            console.log ("hi ha outRoot?", outRoot);
+            if (outRoot !== null) {
+                Object.assign(root, outRoot);
+                delete root.isNull;
             }
 
+            console.log("Nou root:", outRoot);
             structure.next = Number(nextKey);
         },
 
@@ -799,7 +843,8 @@ define([
             }
 
             return tokens;
-        },
+        }
+        ,
 
         _setData: function (root, selected, ignoreRebranch) {
             // console.log("root:", root);
@@ -818,7 +863,8 @@ define([
 
             tree.push(root);
 
-            root.children = this._getWiocclChildrenNodes(root.children, root.id, this);
+
+            root.children = this._getWiocclChildrenNodes(root.children, root.id, this.getStructure());
 
             if (!ignoreRebranch) {
                 this.wiocclDialog.updateTree(tree, root, selected, structure);
@@ -828,7 +874,8 @@ define([
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
             // pot trobar-se dividit en múltiples tokens
             this.wiocclDialog._updateDetail(structure[selected.id]);
-        },
+        }
+        ,
 
         parse: function () {
 
@@ -838,7 +885,8 @@ define([
             // perquè no ho fem en general? si aquí no funciona, es válid pel import'
             context._addHandlers($nodes, context)
 
-        },
+        }
+        ,
     });
 
     // Register this plugin.
