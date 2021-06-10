@@ -1,22 +1,32 @@
 define([
-    'dojo/_base/declare',
-    'dijit/registry',
-    'dojo/dom',
-    'dojo/dom-construct',
-    'dojo/string',
-    'dijit/Dialog',
-    'dijit/layout/BorderContainer',
-    'dijit/layout/ContentPane',
-    'dijit/form/Form',
-    'dijit/form/TextBox',
-    'dijit/form/Button',
-    'ioc/gui/NsTreeContainer',
-    'ioc/wiki30/Request',
-    'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin'
-], function (declare,registry,dom,domConstruct,string,Dialog,BorderContainer,ContentPane,Form,TextBox,Button,
-             NsTreeContainer,myRequest,AbstractAcePlugin) {
+    "dojo/_base/declare",
+    "dijit/registry",
+    "dojo/on",
+    "dojo/dom",
+    "dojo/dom-construct",
+    "dojo/string",
+    "dijit/Dialog",
+    "dijit/layout/BorderContainer",
+    "dijit/layout/ContentPane",
+    "dijit/form/Form",
+    "dijit/form/TextBox",
+    "dijit/form/Button",
+    "ioc/gui/NsTreeContainer",
+    "ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin"
+], function (declare,registry,on,dom,domConstruct,string,Dialog,BorderContainer,ContentPane,Form,TextBox,Button,
+             NsTreeContainer,AbstractAcePlugin) {
 
-    return declare([AbstractAcePlugin], {
+    var request;
+
+    require(["ioc/wiki30/Request"], function(Request) {
+        request = new Request({
+            urlBase: "lib/exe/ioc_ajaxrest.php/get_toc_rest/",
+            method: "get"
+        });
+        request.urlBase = request.urlBase + request.getSectok() + "/=";
+    });
+
+    var ret = declare([AbstractAcePlugin], {
 
         init: function (args) {
             this.template = args.template;
@@ -38,7 +48,7 @@ define([
         },
 
         _showDialog: function () {
-            var context = this;
+            var self = this;
             var ed = this._getEditor();
             var selectedPage = {};
             var dialog = registry.byId("includePageSyntaxDocumentDlg");
@@ -101,15 +111,6 @@ define([
                     className: 'izquierda'
                 },cpEsquerra.containerNode);
 
-                // Un espai a la banda dreta alta per contenir el resultat de la petició de TOC:
-                var divdretaalta = domConstruct.create('div', {
-                    className: 'dretaalta'
-                },cpTop.containerNode);
-
-                var request = new myRequest({
-                    urlBase: 'lib/exe/ioc_ajaxrest.php/get_toc_rest/'
-                }).placeAt(divdretaalta);;
-
                 var dialogTree = new NsTreeContainer({
                     treeDataSource: 'lib/exe/ioc_ajaxrest.php/ns_tree_rest/',
                     onlyDirs: false,
@@ -122,21 +123,36 @@ define([
                 dialogTree.tree.onClick = function(item) {
                     if (item.type === "f") {
                         selectedPage.id = item.id;
-                        selectedPage.name = item.name;
-                        request.set('urlBase', 'lib/exe/ioc_ajaxrest.php/get_toc_rest/');
-                        request.sendRequest(item.id);
+                        request.dataToSend = {id: item.id};
+                        request.sendRequest();
                     }
                 };
 
+                // Un espai a la banda dreta alta per contenir el resultat de la petició de TOC:
+                domConstruct.create('div', {
+                    id: 'idTocArea',
+                    className: 'divTocArea'
+                },cpTop.containerNode);
 
-                // Un formulari a la banda dreta baixa contenint:
+                request.responseHandler = function (data) {
+                    this._stopStandby();
+                    dom.byId('idTocArea').innerHTML = data.html;
+                };
+                
+                var getTocAreaHandler = on(document, "#idTocArea a:click", function(evt){
+                    selectedPage.section = selectedPage.id + "#" + evt.target.innerText;
+                    dom.byId('textBoxPageSectionName').value = selectedPage.section;
+                    getTocAreaHandler.remove();
+                });
+
+                // Creació del formulari
                 var divdretabaixa = domConstruct.create('div', {
                     className: 'dretabaixa'
                 },cpBottom.containerNode);
 
                 var form = new Form({id:"formIncludeSyntaxDialog"}).placeAt(divdretabaixa);
 
-                //Un camp de text per inclore la ruta de la pàgina
+                //Un camp de text per inclore la ruta de la pàgina#secció
                 var divPageSectionName = domConstruct.create('div', {
                     className: 'divPageSectionName'
                 },form.containerNode);
@@ -164,7 +180,7 @@ define([
                     label: 'Acceptar',
                     onClick: function(){
                         dialog.hide();
-                        context.insert(selectedPage.id);
+                        self.insert(selectedPage.section);
                     }
                 }).placeAt(botons);
 
@@ -186,14 +202,9 @@ define([
         insert: function (value) {
             var data = {id: value};
             this.editor.session.insert(this.editor.editor.getCursorPosition(), string.substitute(this.template, data));
-        },
-
-        responseHandler: function (data) {
-            this.inherited(arguments);
-            this._stopStandby();
-            dom.byId('textBoxPageSectionName').value = data;
         }
-        
+
     });
+    return ret;
 
 });
