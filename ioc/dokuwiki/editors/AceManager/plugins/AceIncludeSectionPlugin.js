@@ -19,11 +19,7 @@ define([
     var request;
 
     require(["ioc/wiki30/Request"], function(Request) {
-        request = new Request({
-            urlBase: "lib/exe/ioc_ajaxrest.php/get_toc_rest/",
-            method: "get"
-        });
-        request.urlBase = request.urlBase + request.getSectok() + "/=";
+        request = new Request({urlBase: "lib/exe/ioc_ajax.php?call=get_toc_page"});
     });
 
     var ret = declare([AbstractAcePlugin], {
