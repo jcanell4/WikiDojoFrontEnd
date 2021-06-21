@@ -80,7 +80,7 @@ define([
         },
 
         process: function () {
-            alert("TODO");
+            alert("TODO: s'ha d'insertar un codi wioccl que permeti obrir l'editor");
         },
 
         getStructure() {
@@ -111,7 +111,7 @@ define([
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
 
                 if (structure[id].isClone) {
-                // if (context.getStructure()[id].isClone) {
+                    // if (context.getStructure()[id].isClone) {
                     continue;
                 }
 
@@ -136,7 +136,7 @@ define([
             return nodes;
         },
 
-        rebuildWioccl: function (data) {
+        rebuildWioccl: function (data, structure) {
             // console.log("Rebuilding wioccl:", data);
             let wioccl = "";
 
@@ -149,7 +149,8 @@ define([
 
             for (let i = 0; i < data.children.length; i++) {
 
-                let node = typeof data.children[i] === 'object' ? data.children[i] : this.getStructure()[data.children[i]];
+                // let node = typeof data.children[i] === 'object' ? data.children[i] : this.getStructure()[data.children[i]];
+                let node = typeof data.children[i] === 'object' ? data.children[i] : structure[data.children[i]];
 
                 // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
                 // per exemple perquè és genera amb un for o foreach
@@ -157,7 +158,7 @@ define([
                     continue;
                 }
 
-                wioccl += this.rebuildWioccl(node);
+                wioccl += this.rebuildWioccl(node, structure);
             }
 
             if (data.close !== null) {
@@ -287,6 +288,8 @@ define([
                     counter++;
                 }
 
+                let structure = context.getStructure();
+
                 let wiocclDialog = new Dialog({
                     title: 'Edició wioccl',
                     // style: 'width:auto',
@@ -302,9 +305,10 @@ define([
                     source: context,
                     args: {
                         id: 'wioccl-dialog' + counter,
-                        value: context.rebuildWioccl(tree[0])
+                        value: context.rebuildWioccl(tree[0], structure)
                     },
                     wioccl: wioccl,
+                    structure: structure,
                     tree: tree,
                     refId: refId,
                     saveCallback: context._save.bind(context),
@@ -352,7 +356,7 @@ define([
             let originalParent = structure[rootRef].parent;
             let originalRef = rootRef;
 
-            let text = this.rebuildWioccl(structure[rootRef]);
+            let text = this.rebuildWioccl(structure[rootRef], structure);
 
             // 2 enviar al servidor juntament amb el id del projecte per poder carregar el datasource, cal enviar també
             //      la propera referència, que serà la posició per inserir els nodes nous
@@ -473,45 +477,49 @@ define([
             //      - els elements de la estructura i les referencies del document ja no serien correctes.
 
 
-            this._removeChildren(wioccl.id, structure);
+            // En el cas de l'arrel d'un subdialeg no existeix el parent
 
-            // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
+            if (wioccl.parent) {
+                this._removeChildren(wioccl.id, structure);
 
+                // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
+                let found = false;
 
-            let found = false;
+                for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
 
+                    // Cal tenir en compte els dos casos (chidlren com id o com nodes) ja que un cop es fa
+                    // un update tots els childrens hauran canviat a nodes
+                    if (structure[wioccl.parent].children[i] === wioccl.id || structure[wioccl.parent].children[i].id === wioccl.id) {
+                        // console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
+                        structure[wioccl.parent].children.splice(i, 1);
+                        wioccl.index = i;
+                        found = true;
+                        break;
+                    }
+                }
 
-            for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
+                // perquè passa això de vegades?
+                if (!found) {
+                    console.error("no s'ha trobat aquest node al propi pare");
+                    console.log(structure, wioccl);
+                    alert("node no trobat al pare");
+                }
 
-                // Cal tenir en compte els dos casos ja que un cop es fa un update tots els childrens hauran
-                // canviat a nodes
-                if (structure[wioccl.parent].children[i] === wioccl.id || structure[wioccl.parent].children[i].id === wioccl.id) {
-                    structure[wioccl.parent].children.splice(i, 1);
-                    wioccl.index = i;
-                    found = true;
-                    break;
+                if (text.length === 0) {
+
+                    if (Number(wioccl.id) === Number(this.root)) {
+                        alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
+                        // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
+                        this.root = wioccl.parent;
+                    } else {
+                        alert("La branca s'ha eliminat.");
+                    }
+
+                    wioccl = structure[wioccl.parent];
+                    outTokens = [];
                 }
             }
 
-            if (!found) {
-                console.error("no s'ha trobat aquest node al propi pare");
-                // console.log(structure, wioccl);
-                alert("node no trobat al pare");
-            }
-
-            if (text.length === 0) {
-
-                if (Number(wioccl.id) === Number(this.root)) {
-                    alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
-                    // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
-                    this.root = wioccl.parent;
-                } else {
-                    alert("La branca s'ha eliminat.");
-                }
-
-                wioccl = structure[wioccl.parent];
-                outTokens = [];
-            }
 
             // TODO: considerar extreure això, el parser només hauria de parsejar els resultats
             // i no refer l'arbre. En el cas de la edició normal (sense fer update) no s'ha
@@ -524,15 +532,13 @@ define([
 
         },
 
-        parseWiocclNew: function (text, outStructure, outRoot) {
-
+        parseWiocclNew: function (text, outRoot, outStructure) {
+            // console.log(text, outRoot, outStructure);
             let outTokens = this._tokenize(text);
 
-            console.log("out tokens?", outTokens);
-
+            // console.log("out tokens?", outTokens);
 
             this._createTree(outRoot, outTokens, outStructure);
-
 
 
             // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
@@ -579,7 +585,7 @@ define([
             // i el seu tancament tampoc
 
             // console.log("Next key:", structure.next);
-            let nextKey = structure.next;
+            let nextKey = structure.next + "";
 
             let sibblings = 0;
 
@@ -594,14 +600,28 @@ define([
                 outTokens.pop();
             }
 
+
+            if (root.type === 'temp') {
+                // cal eliminar els childs perquè es tornaran a afegir
+                root.children = [];
+            }
+
+
             for (let i in outTokens) {
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
-                // quan es fa un parserNew el root és null
-                if (i === '0' && !root.isNull) {
+                // Si l'arrel és temporal el primer token és fill de l'arrel
+
+                if (root.type === 'temp' && stack.length === 0) {
+                    outTokens[i].id = nextKey;
+                    root.children.push(outTokens[i].id);
+                    outTokens[i].parent = root.id;
+
+                } else if (i === '0') {
                     outTokens[i].id = root.id;
                     outTokens[i].parent = root.parent;
                     // this.root = tokens[i].id;
+
 
                 } else {
                     outTokens[i].id = nextKey;
@@ -632,10 +652,21 @@ define([
                 // if (tokens[i].parent === root.parent && tokens[i].id !== root.id
 
                 // Si el root és null es un parserNew, els canviem de lloc
-                if (!root.isNull && outTokens[i].parent === root.parent
+
+                // if (root.index) {
+                //     console.log("aquí s'hauria de reinserir l'element amb index", root.index, root !== null.outTokens[i].parent === root.parent);
+                // } else {
+                //     console.log('no hi ha root amb index', structure);
+                //
+                // }
+
+                // si no hi ha root.index no cal reordenar, això passa amb un parse de múltiples tokens temporals
+
+                if (root !== null && root.index && outTokens[i].parent === root.parent
                     && (Number(i) < outTokens.length - 1 || outTokens[i].value !== "\n")) {
                     structure[root.parent].children.splice(root.index + sibblings, 0, outTokens[i].id);
                     ++sibblings;
+                    console.log("*** eliminant childrent ***");
                 }
 
                 // No cal gestionar el type content perquè s'assigna al tokenizer
@@ -671,8 +702,13 @@ define([
 
                     let pattern = /{##(.*)##}/gsm;
 
-                    let matches = pattern.exec(outTokens[i].value);
-                    outTokens[i].attrs = matches[1];
+                    let matches;
+                    if (matches = pattern.exec(outTokens[i].value)) {
+                        outTokens[i].attrs = matches[1];
+                    } else {
+                        console.error("S'ha trobat un camp però no el seu nom", outTokens[i].value);
+                    }
+
                 }
 
                 if (outTokens[i].value.startsWith('{#_')) {
@@ -695,9 +731,12 @@ define([
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
 
-                if (first) {
+                // TODO[Xavi] eliminar el root.isNull i el outRoot, no s'ha de fer servir, tots els nodes han de penjar d'un pare
+                if (first && root.type !== 'temp') {
                     if (root.isNull) {
                         outRoot = outTokens[i];
+                        structure[nextKey] = outTokens[i];
+                        nextKey = (Number(nextKey) + 1) + "";
                     } else {
                         structure[root.id] = outTokens[i];
                     }
@@ -714,17 +753,18 @@ define([
                     root.addedsibblings = true;
                 }
 
-
             }
 
-            console.log ("hi ha outRoot?", outRoot);
+            // console.log("hi ha outRoot?", outRoot);
             if (outRoot !== null) {
                 Object.assign(root, outRoot);
                 delete root.isNull;
             }
 
-            console.log("Nou root:", outRoot);
+            // console.log("Nou root:", outRoot);
             structure.next = Number(nextKey);
+
+
         },
 
         _tokenize(text) {
