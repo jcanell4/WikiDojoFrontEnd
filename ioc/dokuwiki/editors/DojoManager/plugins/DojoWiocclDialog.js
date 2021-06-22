@@ -452,8 +452,9 @@ define([
                     // saveCallback : context._save.bind(context),
                     updateCallback: function (editor) {
                         // this.source.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
-                        this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure);
-                        alert("Updated?");
+                        this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure, wiocclDialog);
+                        console.log(refId, outStructure, outRoot);
+                        // this.source._setData(outStructure[refId], outRoot, outStructure, wiocclDialog);
                     }.bind(context)
                     // updateCallback: context._update.bind(context)
 
@@ -647,6 +648,8 @@ define([
 
 
             this.updating = false;
+
+            console.log(structure);
         },
 
 
@@ -923,8 +926,11 @@ define([
 
         // es crida desde DojoWioccl
         updateTree: function (tree, root, selected, structure) {
+            console.log("Fent updateTree", tree, root, selected, structure);
             this.treeWidget.destroyRecursive();
 
+            console.log("Hi ha tree widget?", this.treeWidget);
+            alert("Stop! s'ha destruit?");
             this.createTree(tree, root.id);
 
             let node = selected;

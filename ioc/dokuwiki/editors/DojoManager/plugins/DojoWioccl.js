@@ -527,12 +527,12 @@ define([
             this._createTree(wioccl, outTokens, structure);
 
             // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
-            this._setData(structure[this.root], wioccl, ignoreRebranch);
+            this._setData(structure[this.root], wioccl, structure, ignoreRebranch);
 
 
         },
 
-        parseWiocclNew: function (text, outRoot, outStructure) {
+        parseWiocclNew: function (text, outRoot, outStructure, ignoreRebranch) {
             // console.log(text, outRoot, outStructure);
             let outTokens = this._tokenize(text);
 
@@ -542,8 +542,12 @@ define([
 
 
             // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
-            // this._setData(structure[this.root], wioccl);
-            console.warn("cal fer alguna cosa amb el _setData?");
+            // this._setData(outStructure[this.root], wioccl);
+
+            // Alerta[Xavi] el _setData es crida manualment quan calgui (al update)
+            // console.log(this.root, outStructure, outRoot);
+            // this._setData(outStructure[this.root], outRoot, ignoreRebranch);
+            // console.warn("cal fer alguna cosa amb el _setData?"); // es necessari pel update?
 
         },
 
@@ -603,7 +607,8 @@ define([
 
             if (root.type === 'temp') {
                 // cal eliminar els childs perquè es tornaran a afegir
-                root.children = [];
+                this._removeChildren(root.id, structure, true);
+                // root.children = [];
             }
 
 
@@ -876,12 +881,13 @@ define([
         }
         ,
 
-        _setData: function (root, selected, ignoreRebranch) {
+        // _setData: function (root, selected, ignoreRebranch) {
+        _setData: function (root, selected, structure, ignoreRebranch) {
             // console.log("root:", root);
 
             let tree = [];
 
-            let structure = this.getStructure();
+            // let structure = this.getStructure();
 
             if (selected.addedsibblings) {
                 root = structure[root.parent];
@@ -894,7 +900,8 @@ define([
             tree.push(root);
 
 
-            root.children = this._getWiocclChildrenNodes(root.children, root.id, this.getStructure());
+            // root.children = this._getWiocclChildrenNodes(root.children, root.id, this.getStructure());
+            root.children = this._getWiocclChildrenNodes(root.children, root.id, structure);
 
             if (!ignoreRebranch) {
                 this.wiocclDialog.updateTree(tree, root, selected, structure);
@@ -904,8 +911,7 @@ define([
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
             // pot trobar-se dividit en múltiples tokens
             this.wiocclDialog._updateDetail(structure[selected.id]);
-        }
-        ,
+        },
 
         parse: function () {
 
