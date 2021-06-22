@@ -488,9 +488,9 @@ define([
                 for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
 
                     // Cal tenir en compte els dos casos (chidlren com id o com nodes) ja que un cop es fa
-                    // un update tots els childrens hauran canviat a nodes
+                    // a un update tots els childrens hauran canviat a nodes
                     if (structure[wioccl.parent].children[i] === wioccl.id || structure[wioccl.parent].children[i].id === wioccl.id) {
-                        // console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
+                        console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
                         structure[wioccl.parent].children.splice(i, 1);
                         wioccl.index = i;
                         found = true;
@@ -648,25 +648,15 @@ define([
                 }
 
                 // Si fem servir push s'afegeixen al final, això no serveix perquè cal inserir els nous nodes a la posició original (emmagatzemada a root.index)
-
-                // if (tokens[i].parent === root.parent && tokens[i].id !== root.id
-
-                // Si el root és null es un parserNew, els canviem de lloc
-
-                // if (root.index) {
-                //     console.log("aquí s'hauria de reinserir l'element amb index", root.index, root !== null.outTokens[i].parent === root.parent);
-                // } else {
-                //     console.log('no hi ha root amb index', structure);
-                //
-                // }
-
                 // si no hi ha root.index no cal reordenar, això passa amb un parse de múltiples tokens temporals
 
-                if (root !== null && root.index && outTokens[i].parent === root.parent
+                // console.log(root !== null,  root.index,  outTokens[i].parent, root.parent);
+
+                if (root !== null && root.index !== undefined && outTokens[i].parent === root.parent
                     && (Number(i) < outTokens.length - 1 || outTokens[i].value !== "\n")) {
                     structure[root.parent].children.splice(root.index + sibblings, 0, outTokens[i].id);
+                    console.log("Reafegit a la posició:", root.index + sibblings, " amb id:", outTokens[i].id);
                     ++sibblings;
-                    console.log("*** eliminant childrent ***");
                 }
 
                 // No cal gestionar el type content perquè s'assigna al tokenizer
