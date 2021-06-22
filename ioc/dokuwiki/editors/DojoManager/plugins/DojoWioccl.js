@@ -327,7 +327,21 @@ define([
 
         _update(editor) {
             console.log("update", this.wiocclDialog);
-            this.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure(), this.wiocclDialog);
+            let structure = this.getStructure();
+            structure.updating = true;
+            if (structure.siblings && structure.siblings.length>0) {
+                console.warn("alerta, és d'esperar que això no funcioni perquè s'elimina també l'element original?");
+                console.log("siblings:", structure.siblings);
+                for (let i=structure.siblings.length-1; i>=0; i--) {
+                    console.log("existeix l'element a la estructura?", structure.siblings[i], structure[structure.siblings[i]], structure);
+                    let siblingId = structure[structure.siblings[i]].id;
+                    console.log("Eliminant sibling:", siblingId);
+                    this._removeNode(siblingId, structure);
+                }
+            }
+            this.parseWioccl(editor.getValue(), editor.wioccl, structure, this.wiocclDialog);
+            structure.siblings = [];
+            structure.updating = false;
         },
 
         // Enviar el text
@@ -384,8 +398,6 @@ define([
             // if (dataToSend.rootRef === "0") {
             //     context.editor.setValue('');
             // }
-
-            // TODO: fer alguna cosa amb la resposta, es pot lligar amb .then perque retorna una promesa
 
             // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo al document editat (cal indicar el punt d'inserció)
 
@@ -463,6 +475,9 @@ define([
 
         parseWioccl: function (text, wioccl, structure, dialog, ignoreRebranch) {
 
+            // console.log(structure);
+            console.log("abans:", structure.next);
+
             let outTokens = this._tokenize(text);
 
 
@@ -527,10 +542,12 @@ define([
             // de refer
             this._createTree(wioccl, outTokens, structure);
 
-            // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
+            // en el cas de siblings cal determinar també en quina posició es troba de l'arbre
             this._setData(structure[this.root], wioccl, structure, this.wiocclDialog, ignoreRebranch);
             // this._setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
 
+
+            console.log("després:", structure.next);
 
         },
 
@@ -543,7 +560,7 @@ define([
             this._createTree(outRoot, outTokens, outStructure);
 
 
-            // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
+            // en el cas de siblings cal determinar també en quina posició es troba de l'arbre
             // this._setData(outStructure[this.root], wioccl);
 
             // Alerta[Xavi] el _setData es crida manualment quan calgui (al update), no es fa servir el this.root
@@ -557,6 +574,12 @@ define([
 
         _removeChildren: function (id, inStructure, removeNode) {
             let node = inStructure[id];
+
+            if (!node) {
+                console.error("Node no trobat", id, node, inStructure);
+            }
+
+            console.log("Fent remove children de id", node.id, node.parent);
 
             if (!node.children) {
                 console.error("no hi ha children?", node.children);
@@ -580,6 +603,28 @@ define([
 
         },
 
+        _removeNode: function (id, inStructure) {
+            let node = inStructure[id];
+            console.log("Fent remove node de id", node.id, node.parent);
+
+            if (!node.parent) {
+                console.error("no hi ha parent?", node.children);
+            }
+
+            let parent = inStructure[node.parent];
+
+            for (let i = parent.children.length - 1; i >= 0; --i) {
+
+                let childId = typeof parent.children[i] === 'object' ? parent.children[i].id : parent.children[i];
+                if (childId === id) {
+                    parent.children.splice(i, 1);
+                    break;
+                }
+                delete (inStructure[id]);
+            }
+
+        },
+
         // La structura es modifica i es retorna per referència
         _createTree(root, outTokens, structure) {
             // Només hi ha un tipus open/close, que son els que poden tenir fills:
@@ -595,7 +640,7 @@ define([
             // console.log("Next key:", structure.next);
             let nextKey = structure.next + "";
 
-            let sibblings = 0;
+            let siblings = 0;
 
             let first = true;
 
@@ -663,9 +708,20 @@ define([
 
                 if (root !== null && root.index !== undefined && outTokens[i].parent === root.parent
                     && (Number(i) < outTokens.length - 1 || outTokens[i].value !== "\n")) {
-                    structure[root.parent].children.splice(root.index + sibblings, 0, outTokens[i].id);
-                    console.log("Reafegit a la posició:", root.index + sibblings, " amb id:", outTokens[i].id);
-                    ++sibblings;
+                    let id =  outTokens[i].id;
+                    structure[root.parent].children.splice(root.index + siblings, 0,id);
+                    console.log("Reafegit a la posició:", root.index + siblings, " amb id:", id);
+                    ++siblings;
+
+                    // el root.id és l'element seleccionat, aquest no cal marcar-lo com a sibling perquè
+                    // existeix a l'estructura
+                    if (!structure.updating && id !== root.id) {
+                        if (structure.siblings === undefined) {
+                            structure.siblings = [];
+                        }
+                        structure.siblings.push(id);
+                    }
+
                 }
 
                 // No cal gestionar el type content perquè s'assigna al tokenizer
@@ -747,9 +803,9 @@ define([
                 }
 
 
-                // ALERTA[Xavi] Si s'afegeixen sibblings a un element que penji directament del root aquest es descartaran
-                if (sibblings > 1 && Number(root.id) === Number(this.root) && Number(structure[root.id]['parent']) !== 0) {
-                    root.addedsibblings = true;
+                // ALERTA[Xavi] Si s'afegeixen siblings a un element que penji directament del root aquest es descartaran
+                if (siblings > 1 && Number(root.id) === Number(this.root) && Number(structure[root.id]['parent']) !== 0) {
+                    root.addedsiblings = true;
                 }
 
             }
@@ -881,9 +937,9 @@ define([
 
             }
 
+
             return tokens;
-        }
-        ,
+        },
 
         // _setData: function (root, selected, ignoreRebranch) {
         _setData: function (root, selected, structure, dialog, ignoreRebranch) {
@@ -893,7 +949,7 @@ define([
 
             // let structure = this.getStructure();
 
-            if (selected.addedsibblings) {
+            if (selected.addedsiblings) {
                 root = structure[root.parent];
                 console.error("Modificant el root, canviat ", this.root, "per:", root.id);
                 this.root = root.id;
