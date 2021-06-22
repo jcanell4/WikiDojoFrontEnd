@@ -452,7 +452,7 @@ define([
                     // saveCallback : context._save.bind(context),
                     updateCallback: function (editor) {
                         // this.source.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
-                        this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure, wiocclDialog);
+                        this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure);
                         console.log(refId, outStructure, outRoot);
                         // this.source._setData(outStructure[refId], outRoot, outStructure, wiocclDialog);
                     }.bind(context)
