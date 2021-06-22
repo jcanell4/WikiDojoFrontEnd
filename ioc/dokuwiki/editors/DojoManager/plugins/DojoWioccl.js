@@ -326,7 +326,8 @@ define([
         },
 
         _update(editor) {
-            this.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
+            console.log("update", this.wiocclDialog);
+            this.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure(), this.wiocclDialog);
         },
 
         // Enviar el text
@@ -339,7 +340,7 @@ define([
 
             let context = this;
             // 0 actualitzar el contingut actual
-            this.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
+            this.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure(), this.wiocclDialog);
 
             // 1 reconstruir el wioccl del node pare (this._getStructure()[this.root], això és el que s'ha d'enviar al servidor
             // ALERTA! no cal enviar el text, cal enviar la estructura i el node a partir del qual s'ha de regenerar el codi wioccl
@@ -460,7 +461,7 @@ define([
             });
         },
 
-        parseWioccl: function (text, wioccl, structure, ignoreRebranch) {
+        parseWioccl: function (text, wioccl, structure, dialog, ignoreRebranch) {
 
             let outTokens = this._tokenize(text);
 
@@ -527,12 +528,13 @@ define([
             this._createTree(wioccl, outTokens, structure);
 
             // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
-            this._setData(structure[this.root], wioccl, structure, ignoreRebranch);
+            this._setData(structure[this.root], wioccl, structure, this.wiocclDialog, ignoreRebranch);
+            // this._setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
 
 
         },
 
-        parseWiocclNew: function (text, outRoot, outStructure, ignoreRebranch) {
+        parseWiocclNew: function (text, outRoot, outStructure, dialog, ignoreRebranch) {
             // console.log(text, outRoot, outStructure);
             let outTokens = this._tokenize(text);
 
@@ -544,9 +546,11 @@ define([
             // en el cas de sibblings cal determinar també en quina posició es troba de l'arbre
             // this._setData(outStructure[this.root], wioccl);
 
-            // Alerta[Xavi] el _setData es crida manualment quan calgui (al update)
+            // Alerta[Xavi] el _setData es crida manualment quan calgui (al update), no es fa servir el this.root
+            // si no el refId que només és disponible quan es crea el subdialeg.
+
             // console.log(this.root, outStructure, outRoot);
-            // this._setData(outStructure[this.root], outRoot, ignoreRebranch);
+            // this._setData(outStructure[this.root], outRoot, ignoreRebranch, dialog, ignoreRebranch);
             // console.warn("cal fer alguna cosa amb el _setData?"); // es necessari pel update?
 
         },
@@ -882,7 +886,7 @@ define([
         ,
 
         // _setData: function (root, selected, ignoreRebranch) {
-        _setData: function (root, selected, structure, ignoreRebranch) {
+        _setData: function (root, selected, structure, dialog, ignoreRebranch) {
             // console.log("root:", root);
 
             let tree = [];
@@ -904,13 +908,15 @@ define([
             root.children = this._getWiocclChildrenNodes(root.children, root.id, structure);
 
             if (!ignoreRebranch) {
-                this.wiocclDialog.updateTree(tree, root, selected, structure);
+                dialog.updateTree(tree, root, selected, structure);
+                // this.wiocclDialog.updateTree(tree, root, selected, structure);
             }
 
 
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
             // pot trobar-se dividit en múltiples tokens
-            this.wiocclDialog._updateDetail(structure[selected.id]);
+            dialog._updateDetail(structure[selected.id]);
+            // this.wiocclDialog._updateDetail(structure[selected.id]);
         },
 
         parse: function () {

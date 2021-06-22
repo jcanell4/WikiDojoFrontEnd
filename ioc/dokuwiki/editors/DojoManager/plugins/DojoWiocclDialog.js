@@ -405,7 +405,7 @@ define([
                     next: "1",
                     temp: true};
 
-                context.source.parseWiocclNew(value, outRoot, outStructure);
+                context.source.parseWiocclNew(value, outRoot, outStructure, context);
 
                 // console.log("Root:", outRoot);
                 // console.log("Estructura generada:", outStructure);
@@ -445,16 +445,17 @@ define([
                     tree: tree,
                     refId: refId,
                     saveCallback: function () {
-                        console.warn("ALERTA! Eliminar el node root, només serveix per agrupar els continguts")
+                        // no cal eliminar el node root perquè l'open i el close són buits, així que el parse del contingut
+                        // retorna només els fills
                         alert('TODO: destruir el dialog i posar el parseWioccl de la branca com a contingut d\'aquest camp');
-                    }
-                    ,
+                    },
                     // saveCallback : context._save.bind(context),
                     updateCallback: function (editor) {
                         // this.source.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
-                        this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure);
+                        this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure, wiocclDialog);
                         console.log(refId, outStructure, outRoot);
-                        // this.source._setData(outStructure[refId], outRoot, outStructure, wiocclDialog);
+                        // Ho cridem manualment amb el node corresponent al refId
+                        this.source._setData(outStructure[refId], outRoot, outStructure, wiocclDialog);
                     }.bind(context)
                     // updateCallback: context._update.bind(context)
 
@@ -607,9 +608,9 @@ define([
             // console.log(text, wioccl, structure);
 
             if (structure.temp) {
-                 this.source.parseWiocclNew(value, this.editor.wioccl, structure, true);
+                 this.source.parseWiocclNew(value, this.editor.wioccl, structure, this, true);
             } else {
-                this.source.parseWioccl(value, this.editor.wioccl, structure, true);
+                this.source.parseWioccl(value, this.editor.wioccl, structure, this,true);
             }
 
 
@@ -930,7 +931,7 @@ define([
             this.treeWidget.destroyRecursive();
 
             console.log("Hi ha tree widget?", this.treeWidget);
-            alert("Stop! s'ha destruit?");
+
             this.createTree(tree, root.id);
 
             let node = selected;
