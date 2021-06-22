@@ -22,7 +22,6 @@ define([
     "dojo/text!./templates/importTableDialog.html",
     // "dojo/i18n!./nls/TableDialog",
     "dojo/on",
-
     // Carregats pel template
     "dijit/form/TextBox",
     "dijit/form/Textarea",
@@ -135,7 +134,7 @@ define([
             return ret;
         },
 
-        nextrow: function(value) {
+        seq: function(value) {
             return value;
         },
 
@@ -841,8 +840,18 @@ define([
                         }
                         break;
 
-                    case 'nextrow':
-                        parsedValue = this.dataStore.objectStore.data.length;
+                    case 'seq':
+                        // Obtener el valor de la siguiente secuencia para la tabla
+                        // (el campo que obtiene la secuencia debe ser la primera columna)
+                        var max = false;
+                        parsedValue = (params[0] ? params[0] : 0); //valor inicial
+                        for (var i = 0; i < this.dataStore.objectStore.data.length; i++) {
+                            max = parseInt(this.dataStore.objectStore.data[i]['col0']);
+                            if (parsedValue < max) {
+                                parsedValue = max;
+                            }
+                        }
+                        if (max !== false) parsedValue++;
                         break;
 
                     default:
