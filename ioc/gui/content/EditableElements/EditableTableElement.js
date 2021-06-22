@@ -135,6 +135,10 @@ define([
             return ret;
         },
 
+        nextrow: function(value) {
+            return value;
+        },
+
         today: function () {
             return dojo.date.locale.format(new Date(), {
                 selector: 'date',
@@ -825,11 +829,9 @@ define([
 
                 var parsedValue;
 
-
                 switch (func) {
                     case 'copy':
                     case 'inc':
-
                         // Si hi ha una fila anterior cerquem el valor anterior
                         if (lastRow) {
                             parsedValue = wiocclFunctions[func](params[0], lastRow);
@@ -837,7 +839,10 @@ define([
                             // El paràmetre és el valor per defecte per la primera fila
                             parsedValue = params[0];
                         }
+                        break;
 
+                    case 'nextrow':
+                        parsedValue = this.dataStore.objectStore.data.length;
                         break;
 
                     default:
