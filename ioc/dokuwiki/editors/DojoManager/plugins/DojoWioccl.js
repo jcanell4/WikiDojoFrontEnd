@@ -543,8 +543,8 @@ define([
             this._createTree(wioccl, outTokens, structure);
 
             // en el cas de siblings cal determinar també en quina posició es troba de l'arbre
-            this._setData(structure[this.root], wioccl, structure, this.wiocclDialog, ignoreRebranch);
-            // this._setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
+            //this._setData(structure[this.root], wioccl, structure, this.wiocclDialog, ignoreRebranch);
+            this._setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
 
 
             console.log("després:", structure.next);
@@ -579,7 +579,7 @@ define([
                 console.error("Node no trobat", id, node, inStructure);
             }
 
-            console.log("Fent remove children de id", node.id, node.parent);
+            // console.log("Fent remove children de id", node.id, node.parent);
 
             if (!node.children) {
                 console.error("no hi ha children?", node.children);

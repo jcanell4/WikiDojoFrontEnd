@@ -509,6 +509,9 @@ define([
         },
 
         _updatePendingChanges_Field2Detail: function () {
+            if (!this._pendingChanges_Field2Detail) {
+                return;
+            }
             // console.log("updatePendingChanges_Field2Detail");
 
             let $attrContainer = jQuery(this.attrContainerNode);
@@ -536,7 +539,8 @@ define([
             // Re assignem els nous atributs
             this.selectedWioccl.attrs = rebuildAttrs;
 
-            if (context.selectedWioccl.type === 'content') {
+            console.log("selected:", this.selectedWioccl.id, this.selectedWioccl, this.structure);
+            if (this.selectedWioccl.type === 'content') {
                 // Cal actualitzar la estructura directament, el selectedWioccl es una copia?
                 // console.log("Es content, hi ha attributs actualitzats?", extractedFields);
 
@@ -567,6 +571,10 @@ define([
         },
 
         _updatePendingChanges_Detail2Field: function () {
+            if (!this._pendingChanges_Detail2Field) {
+                return;
+            }
+
             this.timerId_Detail2Field = false;
             this._pendingChanges_Detail2Field = false;
 
