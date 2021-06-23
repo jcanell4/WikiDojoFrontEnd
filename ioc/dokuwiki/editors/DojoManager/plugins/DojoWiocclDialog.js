@@ -453,7 +453,7 @@ define([
                     updateCallback: function (editor) {
                         // this.source.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
                         this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure, wiocclDialog);
-                        console.log(refId, outStructure, outRoot);
+                        // console.log(refId, outStructure, outRoot);
                         // Ho cridem manualment amb el node corresponent al refId
                         this.source._setData(outStructure[refId], outRoot, outStructure, wiocclDialog);
                     }.bind(context)
@@ -658,7 +658,7 @@ define([
 
             this.updating = false;
 
-            console.log(structure);
+            // console.log(structure);
         },
 
 
@@ -935,10 +935,8 @@ define([
 
         // es crida desde DojoWioccl
         updateTree: function (tree, root, selected, structure) {
-            console.log("Fent updateTree", tree, root, selected, structure);
+            // console.log("updateTree", tree, root, selected, structure);
             this.treeWidget.destroyRecursive();
-
-            console.log("Hi ha tree widget?", this.treeWidget);
 
             this.createTree(tree, root.id);
 

@@ -579,8 +579,6 @@ define([
                 console.error("Node no trobat", id, node, inStructure);
             }
 
-            // console.log("Fent remove children de id", node.id, node.parent);
-
             if (!node.children) {
                 console.error("no hi ha children?", node.children);
             }
