@@ -414,7 +414,7 @@ define([
             context.wiocclDialog.hide();
 
             ajax.send(dataToSend).then(function (data) {
-                console.log("data:", data);
+                // console.log("data:", data);
 
                 // fem que l'editor dispari un event, això ho fa servir el DojoReadonlyToggle
 
@@ -440,6 +440,8 @@ define([
                 // Cal eliminar també les referències al node arrel (poden ser múltiple en el cas del foreach)
                 // Cal inserir una marca pel node root
                 let $rootNodes = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + rootRef + '"]');
+
+                // console.log("Eliminant root nodes", rootRef, $rootNodes);
 
 
                 // 5 inserir el html que ha arribat del servidor
@@ -570,7 +572,7 @@ define([
                     // Cal tenir en compte els dos casos (chidlren com id o com nodes) ja que un cop es fa
                     // a un update tots els childrens hauran canviat a nodes
                     if (structure[wioccl.parent].children[i] === wioccl.id || structure[wioccl.parent].children[i].id === wioccl.id) {
-                        console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
+                        // console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
                         structure[wioccl.parent].children.splice(i, 1);
                         wioccl.index = i;
                         found = true;
@@ -607,6 +609,7 @@ define([
         },
 
         _removeChildren: function (id, inStructure, removeNode) {
+
             let node = inStructure[id];
 
             if (!node) {
@@ -708,7 +711,9 @@ define([
             // if (root.type === 'temp') {
             if (root.type === 'temp') {
                 // cal eliminar els childs perquè es tornaran a afegir
-                this._removeChildren(root.id, structure, true);
+                // ALERTA! no posar true el removeNode (3r param) perquè eliminarà els nodes
+                // del document!
+                this._removeChildren(root.id, structure);
                 // root.children = [];
             }
 
