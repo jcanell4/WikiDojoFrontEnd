@@ -37,7 +37,7 @@ define([
         startup: function () {
             this.inherited(arguments);
             this.createEditor();
-            this.createTree(this.tree, this.refId);
+            this.createTree(this.tree, this.refId, this.structure);
 
             let wioccl = this.structure[this.refId];
             // let wioccl = this.source.getStructure()[this.refId];
@@ -89,7 +89,7 @@ define([
             $detailContainer.css('width', paneWidth - treeWidth - 90);
         },
 
-        createTree: function (tree, refId) {
+        createTree: function (tree, refId, structure) {
             let store = new Memory({
                 // data: this.tree,
                 data: tree,
@@ -102,6 +102,7 @@ define([
                 store: store,
                 query: {id: refId},
                 mayHaveChildren: function (item) {
+                    // console.log("mayHaveChildren", item);
                     // return "children" in item;
                     return item.children.length > 0;
                 }
@@ -111,6 +112,8 @@ define([
 
             let context = this;
 
+            // console.log(tree, refId, structure, model);
+
             this.treeWidget = new Tree({
                 id: Date.now(),
                 model: model,
@@ -119,6 +122,8 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
+                    // console.log("item clicat:", item);
+
 
                     // actualitzem qualsevol canvi pendent abans
 
@@ -127,10 +132,78 @@ define([
                         if (!descartar) {
                             return false;
                         }
+                        console.warn("Descartar!", structure.backup);
+
+
+                        let purge = function (structure, node) {
+                            console.log("purging:", node);
+                            for (let i=0; i<node.children.length; i++) {
+                                let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
+                                console.log("child id:", id, structure);
+                                purge(structure, structure[id]);
+                            }
+                            delete(structure[node.id]);
+                        };
+
+                        // TODO: Extreure a una funció restore
+                        let restore = function (structure, node) {
+
+                            if (structure[node.id]) {
+                                // Si existeix, cal eliminar tots els seus fills recursivament
+                            }
+
+                            // console.log("Restaurant:", node.id, node);
+                            structure[node.id] = node;
+                            for (let i = 0; i < node.children.length; i++) {
+                                let child = node.children[i];
+                                restore(structure, child);
+                                // structure[child.id] = child;
+                                // structure.backup.children[i] = structure.backup.children[i].id;
+                                // console.log("Restaurant:", child.id, child);
+                            }
+                        }
+
+
+                        if (structure.backup) {
+                            // El purge s'ha de cridar només un cop perquè és recursiu sobre l'element que conté els childs actualment
+                            purge(structure, structure[structure.backup.id]);
+
+                            restore(structure, structure.backup);
+                            console.log("Restaurat:", structure.backup);
+                            console.log(structure);
+
+                            alert("check!");
+                        }
+
                         context._fieldChanges = false;
                     }
 
+
+                    // Fem un backup del item i els seus fills a la estructura (només després de confirmar!!
+                    // !! ALERTA !! S'ha de fer un backup manualment en obrir l'editor!!
+                    // TODO: Extreure a una funció backup
+                    let getBackup = function (structure, node) {
+                        // console.log(structure, node.id);
+                        let backup = JSON.parse(JSON.stringify(structure[node.id]));
+
+                        for (let i = 0; i < backup.children.length; i++) {
+                            // Canviem els ids per la copia de l'objecte
+                            let id = typeof backup.children[i] === 'object' ? backup.children[i].id : backup.children[i];
+                            backup.children[i] = getBackup(structure, structure[id]);
+                            //backup.children[i] = JSON.parse(JSON.stringify(structure[id]));
+                        }
+                        return backup;
+                    }
+
+                    structure.backup = getBackup(structure, item);
+                    // console.log(structure.backup);
+                    // alert("check backup");
+
+                    // console.log(item, structure[item.id]);
+
+
                     context._updatePendingChanges_Field2Detail()
+
                     context._rebuildChunkMap(item);
                     context._updateDetail(item);
 
@@ -149,16 +222,31 @@ define([
         _rebuildChunkMap: function (item) {
             // console.error("Rebuilding chunkmap for", item);
             let outChunkMap = new Map();
-            let rebuild = this._createChunkMap(item, this.structure, 0, outChunkMap);
+
+            // s'han de tenir en compte els siblings temporals
+            // creem un nou item que els contingui i aquest és el que reconstruim
+            let wrapper = {
+                open: '',
+                close: '',
+                attrs: '',
+                // ALERTA! Cal crear una copia perquè si no es modifiquen els siblings!!
+                children: this.structure.siblings ? JSON.parse(JSON.stringify(this.structure.siblings)) : []
+            }
+
+            wrapper.children.unshift(item);
+
+            let rebuild = this._createChunkMap(wrapper, this.structure, 0, outChunkMap);
+            // let rebuild = this._createChunkMap(item, this.structure, 0, outChunkMap);
             // let rebuild = this._createChunkMap(item, this.source.getStructure(), 0, outChunkMap);
             // console.log(rebuild, outChunkMap);
             this.chunkMap = outChunkMap;
+            // alert("Check rebuild");
         },
 
         // el chunk map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
         _createChunkMap: function (item, structure, pos, outChunkMap) {
 
-
+            // console.log("_createChunkmap", item, structure);
             // Cal fer la conversió de &escapedgt; per \>
             let attrs = item.attrs;
             attrs = attrs.replaceAll('&escapedgt;', '\\>');
@@ -381,7 +469,8 @@ define([
 
             $fields.find('[data-button-edit]').on('click', function (e) {
 
-                let value = jQuery(this).siblings('input').val();
+                let $input = jQuery(this).siblings('input');
+                let value = $input.val();
 
                 // console.log("value", value);
                 // let outStructure = {next: "0", temp: true};
@@ -401,9 +490,10 @@ define([
                 }
 
                 let outStructure = {
-                    "0" : outRoot,
+                    "0": outRoot,
                     next: "1",
-                    temp: true};
+                    temp: true
+                };
 
                 context.source.parseWiocclNew(value, outRoot, outStructure, context);
 
@@ -445,13 +535,45 @@ define([
                     tree: tree,
                     refId: refId,
                     saveCallback: function () {
-                        // no cal eliminar el node root perquè l'open i el close són buits, així que el parse del contingut
-                        // retorna només els fills
-                        alert('TODO: destruir el dialog i posar el parseWioccl de la branca com a contingut d\'aquest camp');
+
+                        this.source.parseWiocclNew(this.editor.getValue(), this.editor.wioccl, outStructure, this);
+                        let text = this.source.rebuildWioccl(outStructure[refId], outStructure);
+
+                        $input.val(text);
+                        $input.trigger('input');
+
+                        wiocclDialog.destroyRecursive();
                     },
                     // saveCallback : context._save.bind(context),
                     updateCallback: function (editor) {
                         // this.source.parseWioccl(editor.getValue(), editor.wioccl, this.getStructure());
+
+                        // copiat del dojowiccl#_update(editor)
+
+
+                        console.log("*****update subdialog inici");
+
+                        // ALERTA[Xavi]això és necessari? sembla que ara no s'utilitza
+                        outStructure.updating = true;
+
+                        // ALERTA! Duplicat al dojowioccl: TODO: extreure a una funció propia
+                        if (outStructure.siblings && outStructure.siblings.length > 0) {
+                            console.log("siblings:", outStructure.siblings);
+                            for (let i = outStructure.siblings.length - 1; i >= 0; i--) {
+                                console.log("existeix l'element a la estructura?", outStructure.siblings[i], outStructure[outStructure.siblings[i]], outStructure);
+                                let siblingId = outStructure[outStructure.siblings[i]].id;
+                                console.log("Eliminant sibling:", siblingId);
+                                this.source._removeNode(siblingId, outStructure);
+                            }
+                        }
+                        //this.parseWioccl(editor.getValue(), editor.wioccl, structure, this.wiocclDialog);
+                        outStructure.siblings = [];
+                        outStructure.updating = false;
+
+
+                        console.log("*****update subdialog fi");
+
+
                         this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure, wiocclDialog);
                         // console.log(refId, outStructure, outRoot);
                         // Ho cridem manualment amb el node corresponent al refId
@@ -539,7 +661,6 @@ define([
             // Re assignem els nous atributs
             this.selectedWioccl.attrs = rebuildAttrs;
 
-            console.log("selected:", this.selectedWioccl.id, this.selectedWioccl, this.structure);
             if (this.selectedWioccl.type === 'content') {
                 // Cal actualitzar la estructura directament, el selectedWioccl es una copia?
                 // console.log("Es content, hi ha attributs actualitzats?", extractedFields);
@@ -616,9 +737,9 @@ define([
             // console.log(text, wioccl, structure);
 
             if (structure.temp) {
-                 this.source.parseWiocclNew(value, this.editor.wioccl, structure, this, true);
+                this.source.parseWiocclNew(value, this.editor.wioccl, structure, this, true);
             } else {
-                this.source.parseWioccl(value, this.editor.wioccl, structure, this,true);
+                this.source.parseWioccl(value, this.editor.wioccl, structure, this, true);
             }
 
 
@@ -835,7 +956,11 @@ define([
                 }
 
                 let pos = editor.getPositionAsIndex(!context.dirty);
+
+
                 let candidate = context._getWiocclForPos(pos);
+
+                // console.log(pos, candidate);
 
                 // console.log("Candidate:", candidate);
 
@@ -938,7 +1063,7 @@ define([
             // console.log("updateTree", tree, root, selected, structure);
             this.treeWidget.destroyRecursive();
 
-            this.createTree(tree, root.id);
+            this.createTree(tree, root.id, structure);
 
             let node = selected;
             /// corresponent al cas1, es seleccionarà el node original
