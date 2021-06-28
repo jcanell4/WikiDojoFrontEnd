@@ -89,9 +89,8 @@ define([
 
                 let value = dataToSend.wikitext;
 
-                // console.log("Data to send? hi ha el rootRef?", dataToSend);
-
-
+                // console.log("structure", this.editor.editor.extra.wioccl_structure);
+                // console.log("dataToSend", dataToSend);
 
                 // Cal eliminar les referencies wioccl, excepte els marcadors d'apertura,
                 // ja que en aquest s'incrustarà el codi wioccl de la estructura
@@ -121,6 +120,7 @@ define([
 
                     $node.removeAttr('contenteditable');
                     $node.removeAttr('data-readonly');
+                    $node.removeAttr('class');
 
                     // console.log("comprovant node:", $node);
 

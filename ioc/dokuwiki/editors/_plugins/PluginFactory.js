@@ -271,6 +271,7 @@ define([
         },
         'IocSoundFormatButton': { // Pel AceEditor
             title: localization["ioc-sound-button"],
+            type: 'format',
             open: '{{soundcloud>',
             close: '}}',
             sample: localization["ioc-sound-sample"],

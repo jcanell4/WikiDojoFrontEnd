@@ -8,7 +8,7 @@ define([
         init: function (args) {
             // console.log("AceFormatButtonPlugin#init", args);
             var config = JSON.parse(JSON.stringify(args));
-            config.type = 'format';
+            // config.type = 'format';
             if (args.icon.indexOf(".png")===-1) {
                 config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
             }
