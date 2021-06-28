@@ -134,8 +134,17 @@ define([
             return ret;
         },
 
-        seq: function(value) {
-            return value;
+        seq: function(data, value) {
+            // Obtener el valor de la siguiente secuencia para la tabla
+            // (el campo que obtiene la secuencia debe ser la primera columna)
+            var max = false;
+            for (var i = 0; i < data.length; i++) {
+                max = parseInt(data[i]['col0']);
+                if (value < max) {
+                    value = max;
+                }
+            }
+            return (max===false) ? value : ++value;
         },
 
         today: function () {
@@ -161,7 +170,6 @@ define([
         inputFooter: '',
         inputTableId: '',
         boxType: '',
-
 
         // TODO: pasar a un fitxer nls
         csvImportLegend: "Importació via CSV",
@@ -843,15 +851,8 @@ define([
                     case 'seq':
                         // Obtener el valor de la siguiente secuencia para la tabla
                         // (el campo que obtiene la secuencia debe ser la primera columna)
-                        var max = false;
-                        parsedValue = (params[0] ? params[0] : 0); //valor inicial
-                        for (var i = 0; i < this.dataStore.objectStore.data.length; i++) {
-                            max = parseInt(this.dataStore.objectStore.data[i]['col0']);
-                            if (parsedValue < max) {
-                                parsedValue = max;
-                            }
-                        }
-                        if (max !== false) parsedValue++;
+                        var param = (params[0]) ? params[0] : 0; //valor inicial
+                        parsedValue = wiocclFunctions[func](this.dataStore.objectStore.data, param);
                         break;
 
                     default:
