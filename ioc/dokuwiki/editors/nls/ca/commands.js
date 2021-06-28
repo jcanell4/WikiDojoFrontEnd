@@ -1,5 +1,4 @@
 define(
-
     ({
         // Toolbar buttons
         'cancel-button': 'Tornar',
@@ -7,7 +6,6 @@ define(
         'document-preview': 'Previsualitzar el document',
         'switch-editor-ace': 'Canviar a editor ACE',
         'switch-editor-dojo': 'Canviar a editor HTML',
-
         'enable-ace': 'Activar/Desactivar ACE',
         'enable-wrapper' : 'Activar/Desactivar embolcall',
 
@@ -16,6 +14,7 @@ define(
         'category-ioc-style': 'Estils',
         'category-header': 'Capçalera',
         'category-WikiTable': 'Taules',
+        'category-include': 'include',
 
         // Comments Plugin
         'ioc-comment-button': 'Afegir comentari',
@@ -36,7 +35,6 @@ define(
 
         // IOC Video Plugin
 
-
         // Latex Preview Plugin
         'ioc-latex-preview': 'Previsualització Latex',
 
@@ -46,6 +44,9 @@ define(
 
         'ioc-insert-figure-button': 'Afegir figura',
         'ioc-insert-figure-sample': 'Incloure la figura',
+        
+        'ioc-include-page-button':'Incloure document',
+        'ioc-include-section-button':'Incloure secció',
 
         'ioc-insert-figure-link-button': 'Enllaç a figura',
         'ioc-insert-figure-link-sample': 'Incloure enllaç a figura',
@@ -77,13 +78,10 @@ define(
         'ioc-insert-quote-button': 'Citació',
         'ioc-insert-quote-sample': 'Incloure citació',
 
-
         // 'ioc-insert-accounting-button': 'Sintaxi d\'assentament contable',
         // 'ioc-insert-accounting-sample': 'Incloure la sintaxis d\'un assentament contable',
 
-
         // Basic toolbar butons
-
         'ioc-insert-bold-button' : 'Negreta',
         'ioc-insert-bold-sample' : 'Negreta',
         'ioc-insert-italic-button' : 'Cursiva',
@@ -100,12 +98,11 @@ define(
         'ioc-insert-link-sample' : 'Enllaç intern',
         'ioc-insert-link-external-button' : 'Enllaç extern',
         'ioc-insert-link-external-sample' : 'Enllaç extern',
+        'ioc-insert-include-button' : 'Inclou una pàgina',
 
         'ioc-insert-special-character-button': 'Caràcters especials',
         'ioc-insert-media-button': 'Afegeix imatges',
         'ioc-insert-hr-button': 'Ratlla horitzontal',
-
-
 
         'ioc-insert-header-sample': 'Encapçalament',
         'ioc-insert-header0-button': 'Elimina caçalera',
@@ -115,7 +112,6 @@ define(
         'ioc-insert-header4-button': 'Sintaxi d\'encapçalament nivell 4',
         'ioc-insert-header5-button': 'Sintaxi d\'encapçalament nivell 5',
         'ioc-insert-header6-button': 'Sintaxi d\'encapçalament nivell 6',
-
 
         'ioc-readonly-toggle': 'Activa/Desactiva blocs de només lectura',
 
@@ -176,7 +172,7 @@ define(
         'quiz-vf' : 'Exercici: vertader/fals',
         'quiz-choice' : "Exercici: tria l'opció correcta",
         'quiz-relations' : 'Exercici: relacionar',
-        'quiz-complete' : 'Exercici: autocompletar',
+        'quiz-complete' : 'Exercici: autocompletar'
     })
 );
 
