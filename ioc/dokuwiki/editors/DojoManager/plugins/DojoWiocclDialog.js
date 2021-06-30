@@ -12,8 +12,9 @@ define([
     "dojo/store/Memory",
     "dijit/tree/ObjectStoreModel",
     "dijit/Tree",
+    'ioc/dokuwiki/editors/DojoManager/plugins/WiocclStructureTemp',
 ], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable,
-             EventObserver, Button, toolbarManager, Memory, ObjectStoreModel, Tree) {
+             EventObserver, Button, toolbarManager, Memory, ObjectStoreModel, Tree, WiocclStructureTemp) {
 
     const UPDATE_TIME = 300; // temps en millisegons
 
@@ -496,24 +497,29 @@ define([
                 // ALERTA! aquest node s'ha d'eliminar quan es passi el contingut a un camp
                 // let outRoot = {isNull:true};
 
-                let outRoot = {
-                    "type": "temp",
-                    "value": "",
-                    "attrs": "",
-                    "open": "",
-                    "close": "",
-                    "id": "0",
-                    "children": [],
-                }
 
-                let outStructure = {
-                    "0": outRoot,
-                    next: "1",
-                    temp: true
-                };
+                let structure = new WiocclStructureTemp();
+                let root = structure.getRoot();
+
+                // let outRoot = {
+                //     "type": "temp",
+                //     "value": "",
+                //     "attrs": "",
+                //     "open": "",
+                //     "close": "",
+                //     "id": "0",
+                //     "children": [],
+                // }
+
+                // let outStructure = {
+                //     "0": outRoot,
+                //     next: "1",
+                //     temp: true
+                // };
 
                 // Això es pot posar al constructor del temp i passar el vlaue com a config
-                context.source.parseWiocclNew(value, outRoot, outStructure, context);
+                // context.source.parseWiocclNew(value, outRoot, outStructure, context);
+                structure.parseWioccl(value, root);
 
                 // console.log("Root:", outRoot);
                 // console.log("Estructura generada:", outStructure);
@@ -522,17 +528,20 @@ define([
                 /** IDÈNTiC AL DOJO WIOCCL, però allà es clona en lloc d'assignar-se**/
                     // ALERTA! Cal assecurar-se queel outRoot.id correspon al node amb el mateix id per poder fer la
                     // crida igual que al DojoWioccl: structure.getTreeFromNode(refId)
-                    console.warn("són el mateix?", outRoot.id, outStructure.getNodeById(outRoot).id);
-                let refId = outRoot.id;
-                let tree = [];
+                    // console.warn("són el mateix?", outRoot.id, outStructure.getNodeById(outRoot).id);
+                // let refId = outRoot.id;
+                let refId = root.id;
+
+                let tree = structure.getTreeFromNode(refId);
+                // let tree = [];
                 // let node = JSON.parse(JSON.stringify(outStructure[refId]));
-                let node = outRoot;
-                node.name = node.type ? node.type : node.open;
-                tree.push(node);
+                // let node = outRoot;
+                // node.name = node.type ? node.type : node.open;
+                // tree.push(node);
 
                 // perquè necessitem treure el context source
                 // tree[0].children = context.source._getChildrenNodes(tree[0].children, tree[0].id, context.source);
-                tree[0].children = context.source._getChildrenNodes(tree[0].children, tree[0].id, outStructure);
+                // tree[0].children = context.source._getChildrenNodes(tree[0].children, tree[0].id, outStructure);
 
                 /** FI DE IDÈNTiC AL DOJO WIOCCL, però allà es clona en lloc d'assignar-se**/
 
@@ -553,16 +562,22 @@ define([
                     source: context.source,
                     args: {
                         id: 'wioccl-dialog_inner' + counter,
-                        value: context.source.rebuildWioccl(tree[0], outStructure)
+                        // value: context.source.rebuildWioccl(tree[0], outStructure)
+                        value: structure.rebuildWioccl(tree[0])
                     },
-                    wioccl: outRoot,
-                    structure: outStructure,
+                    wioccl: root,
+                    // structure: outStructure,
+                    structure: structure,
                     tree: tree,
                     refId: refId,
                     saveCallback: function () {
 
-                        this.source.parseWiocclNew(this.editor.getValue(), this.editor.wioccl, outStructure, this);
-                        let text = this.source.rebuildWioccl(outStructure[refId], outStructure);
+                        // this és correcte, fa referència al nou dialog que s'instància
+                        this.structure.parseWioccl(this.editor.getValue(), this.editor.wioccl);
+                        // this.source.parseWiocclNew(this.editor.getValue(), this.editor.wioccl, outStructure, this);
+                        let text = this.structure.rebuildWioccl(this.structure.getNodeById(refId));
+
+
 
                         $input.val(text);
                         $input.trigger('input');
@@ -576,34 +591,44 @@ define([
                         // copiat del dojowiccl#_update(editor)
 
 
-                        console.log("*****update subdialog inici");
+                        // console.log("*****update subdialog inici");
 
-                        // ALERTA[Xavi]això és necessari? sembla que ara no s'utilitza
-                        outStructure.updating = true;
-
-                        // ALERTA! Duplicat al dojowioccl: TODO: extreure a una funció propia
-                        if (outStructure.siblings && outStructure.siblings.length > 0) {
-                            console.log("siblings:", outStructure.siblings);
-                            for (let i = outStructure.siblings.length - 1; i >= 0; i--) {
-                                console.log("existeix l'element a la estructura?", outStructure.siblings[i], outStructure[outStructure.siblings[i]], outStructure);
-                                let siblingId = outStructure[outStructure.siblings[i]].id;
-                                console.log("Eliminant sibling:", siblingId);
-                                this.source._removeNode(siblingId, outStructure);
-                            }
-                        }
-                        //this.parseWioccl(editor.getValue(), editor.wioccl, structure, this.wiocclDialog);
-                        outStructure.siblings = [];
-                        outStructure.updating = false;
+                        // this és correcte, fa referència al nou dialog que s'instància
+                        this.structure.updating = true;
 
 
-                        console.log("*****update subdialog fi");
+                        this.structure.discardSiblings();
 
 
-                        this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure, wiocclDialog);
+                        // if (outStructure.siblings && outStructure.siblings.length > 0) {
+                        //     console.log("siblings:", outStructure.siblings);
+                        //     for (let i = outStructure.siblings.length - 1; i >= 0; i--) {
+                        //         console.log("existeix l'element a la estructura?", outStructure.siblings[i], outStructure[outStructure.siblings[i]], outStructure);
+                        //         let siblingId = outStructure[outStructure.siblings[i]].id;
+                        //         console.log("Eliminant sibling:", siblingId);
+                        //         this.source._removeNode(siblingId, outStructure);
+                        //     }
+                        // }
+                        // //this.parseWioccl(editor.getValue(), editor.wioccl, structure, this.wiocclDialog);
+                        // outStructure.siblings = [];
+                        this.structure.updating = false;
+
+
+                        // console.log("*****update subdialog fi");
+
+
+                        this.structure.parseWioccl(editor.getValue(), editor.wioccl);
+                        // this.source.parseWiocclNew(editor.getValue(), editor.wioccl, outStructure, wiocclDialog);
+
                         // console.log(refId, outStructure, outRoot);
                         // Ho cridem manualment amb el node corresponent al refId
-                        this._setData(outStructure[refId], outRoot);
-                    }.bind(context)
+                        this._setData(this.structure.getNodeById(refId), root);
+
+
+                        console.log("estructura del update?", this.structure);
+
+                    // }.bind(context)
+                    }
                     // updateCallback: context._update.bind(context)
 
 
@@ -618,8 +643,8 @@ define([
 
                 // console.log(outRoot);
                 // wiocclDialog.setFields(wiocclDialog._extractFields(outRoot.attrs, outRoot.type));
-                wiocclDialog.setFields(wiocclDialog._extractFieldsFromCandidate(outRoot));
-                wiocclDialog._updateDetail(outRoot);
+                wiocclDialog.setFields(wiocclDialog._extractFieldsFromCandidate(root));
+                wiocclDialog._updateDetail(root);
             });
 
 
@@ -643,7 +668,7 @@ define([
         },
 
         _setData: function (root, selected, ignoreRebranch) {
-            // console.log("root:", root);
+            // console.log(root, selected);
 
             if (!ignoreRebranch) {
 
@@ -822,7 +847,7 @@ define([
 
             // ALERTA! No cal discriminar pel temp, perque el parseWioccl de la subclasse serà diferent
 
-            console.warn("ALERTA! hem d'implementar la sublcasse tem que cridi al parseWioccl modificat");
+            // console.warn("ALERTA! hem d'implementar la sublcasse tem que cridi al parseWioccl modificat");
             // if (structure.temp) {
             //     this.source.parseWiocclNew(value, this.editor.wioccl, structure, this, true);
             // } else {
@@ -833,6 +858,7 @@ define([
             // this.wiocclDialog._setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
 
             // PROBLEMA: el this.root es troba al dojoWioccl
+
             this._setData(this.structure.getNodeById(this.structure.root), wioccl, true);
 
 

@@ -13,7 +13,7 @@ define([
     'dojo/on',
     'dijit/place',
     'dojo/mouse',
-    'ioc/dokuwiki/editors/DojoManager/plugins/WiocclStructureclone',
+    'ioc/dokuwiki/editors/DojoManager/plugins/WiocclStructureClone',
 
 
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct,
@@ -293,7 +293,6 @@ define([
                     }
                 }
 
-                console.log("Establint root:", refId, context.getStructure());
                 context.getStructure().root = refId;
 
 
@@ -306,7 +305,7 @@ define([
                 //  * això es fa pràcticament igual al DojoWiocclDialog, però sense clonar
                 //      ALERTA: el node que es crea és una copia
 
-                let tree = context.getStructure().getTreeFromNode(refId, true, );
+                let tree = context.getStructure().getTreeFromNode(refId, true);
                 // let tree = [];
                 // let node = JSON.parse(JSON.stringify(context.getNodeById(refId)));
                 // node.name = node.type ? node.type : node.open;
@@ -411,11 +410,11 @@ define([
 
             let rootRef = structure.root;
 
-            console.log("Rootref:", rootRef, structure);
+            // console.log("Rootref:", rootRef, structure);
             // Cal tenir en compte que el rootRef podria ser el node arrel i en aquest cas no cal cerca més
             while (structure.getNodeById(rootRef).id > 0 && structure.getNodeById(rootRef).parent > 0) {
                 rootRef = structure.getNodeById(rootRef).parent;
-                console.log("Rootref (new):", rootRef);
+                // console.log("Rootref (new):", rootRef);
             }
 
             // cal desar el parent per restaurar-lo, el que retorna del servidor no te cap parent assignat
@@ -423,6 +422,7 @@ define([
             let originalRef = rootRef;
 
             let text = structure.rebuildWioccl(structure.getNodeById(rootRef));
+
 
             // 2 enviar al servidor juntament amb el id del projecte per poder carregar el datasource, cal enviar també
             //      la propera referència, que serà la posició per inserir els nodes nous
@@ -435,7 +435,8 @@ define([
             let dataToSend = {
                 content: text,
                 rootRef: rootRef,
-                nextRef: structure['next'],
+                // nextRef: structure['next'],
+                nextRef: structure.getNextKey(),
                 projectOwner: globalState.getContent(globalState.currentTabId).projectOwner,
                 projectSourceType: globalState.getContent(globalState.currentTabId).projectSourceType,
                 sectok: this.editor.dispatcher.getSectok()
@@ -482,12 +483,12 @@ define([
                 let target = context.editor.extra.wioccl_structure.structure;
                 // context._removeChildren(rootRef, target, true);
                 let ids = structure._removeChildren(rootRef);
-                console.log("ids de nodes per eliminar:", ids);
+                // console.log("ids de nodes per eliminar:", ids);
                 for (let id of ids) {
-                        console.log("Buscant node:", id)
+                        // console.log("Buscant node:", id)
                         let $node = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + id + '"]');
                         $node.remove();
-                        console.log("Eliminat:", $node);
+                        // console.log("Eliminat:", $node);
                 }
 
 
@@ -517,6 +518,7 @@ define([
 
                 // Actualitzem la estructura
                 let source = data[0].value.extra.wioccl_structure.structure;
+
 
                 // fusió del original i l'anterior
                 Object.assign(target, source);
@@ -612,59 +614,59 @@ define([
         //     this.wiocclDialog._setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
         // },
 
-        parseWiocclNew: function (text, wioccl, structure, dialog, ignoreRebranch) {
-            // console.log(text, outRoot, outStructure);
-            let outTokens = this._tokenize(text);
-
-
-
-            // Copiat del parse normal, es requereix afegir l'index i eliminar els nodes que toqui
-            if (wioccl.parent) {
-                structure._removeChildren(wioccl.id);
-
-                // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
-                let found = false;
-
-                for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
-
-                    // Cal tenir en compte els dos casos (chidlren com id o com nodes) ja que un cop es fa
-                    // a un update tots els childrens hauran canviat a nodes
-                    if (structure[wioccl.parent].children[i] === wioccl.id || structure[wioccl.parent].children[i].id === wioccl.id) {
-                        // console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
-                        structure[wioccl.parent].children.splice(i, 1);
-                        wioccl.index = i;
-                        found = true;
-                        break;
-                    }
-                }
-
-                // perquè passa això de vegades?
-                if (!found) {
-                    console.error("no s'ha trobat aquest node al propi pare");
-                    console.log(structure, wioccl);
-                    alert("node no trobat al pare");
-                }
-
-                if (text.length === 0) {
-
-                    if (Number(wioccl.id) === Number(this.root)) {
-                        alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
-                        // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
-                        this.root = wioccl.parent;
-                    } else {
-                        alert("La branca s'ha eliminat.");
-                    }
-
-                    wioccl = structure[wioccl.parent];
-                    outTokens = [];
-                }
-            }
-
-
-            this._createTree(wioccl, outTokens, structure);
-
-
-        },
+        // parseWiocclNew: function (text, wioccl, structure, dialog, ignoreRebranch) {
+        //     // console.log(text, outRoot, outStructure);
+        //     let outTokens = this._tokenize(text);
+        //
+        //
+        //
+        //     // Copiat del parse normal, es requereix afegir l'index i eliminar els nodes que toqui
+        //     if (wioccl.parent) {
+        //         structure._removeChildren(wioccl.id);
+        //
+        //         // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
+        //         let found = false;
+        //
+        //         for (let i = 0; i < structure[wioccl.parent].children.length; i++) {
+        //
+        //             // Cal tenir en compte els dos casos (chidlren com id o com nodes) ja que un cop es fa
+        //             // a un update tots els childrens hauran canviat a nodes
+        //             if (structure[wioccl.parent].children[i] === wioccl.id || structure[wioccl.parent].children[i].id === wioccl.id) {
+        //                 // console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
+        //                 structure[wioccl.parent].children.splice(i, 1);
+        //                 wioccl.index = i;
+        //                 found = true;
+        //                 break;
+        //             }
+        //         }
+        //
+        //         // perquè passa això de vegades?
+        //         if (!found) {
+        //             console.error("no s'ha trobat aquest node al propi pare");
+        //             console.log(structure, wioccl);
+        //             alert("node no trobat al pare");
+        //         }
+        //
+        //         if (text.length === 0) {
+        //
+        //             if (Number(wioccl.id) === Number(this.root)) {
+        //                 alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
+        //                 // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
+        //                 this.root = wioccl.parent;
+        //             } else {
+        //                 alert("La branca s'ha eliminat.");
+        //             }
+        //
+        //             wioccl = structure[wioccl.parent];
+        //             outTokens = [];
+        //         }
+        //     }
+        //
+        //
+        //     this._createTree(wioccl, outTokens, structure);
+        //
+        //
+        // },
 
         // _removeChildren: function (id, inStructure, removeNode) {
         //
