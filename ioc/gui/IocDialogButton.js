@@ -64,17 +64,20 @@ define([
             };
 
             var dialog = this.dialogManager.getDialog(this.dialogManager.type.PROJECT_NEW_ELEMENT, id, dialogParams);
-            var promesa = dialog.show();
-            promesa.then(function(){
-                //Si sólo hay un botón activo, simula un onClick para activarlo automáticamente
-                var id, activeButtons = 0;
-                if (params.call_project)  {++activeButtons; id = "ButtonProject";}
-                if (params.call_document) {++activeButtons; id = "ButtonDocument";}
-                if (params.call_folder)   {++activeButtons; id = "ButtonFolder";}
-                if (activeButtons===1) {
-                    registry.byId(id).onClick();
-                }                 
-             });
+            dialog.show();
+//            
+//            Aquest codi no té cap efecte, no funciona
+//            var promesa = dialog.show();
+//            promesa.then(function(){
+//                //Si sólo hay un botón activo, simula un onClick para activarlo automáticamente
+//                var id, activeButtons = 0;
+//                if (params.call_project)  {++activeButtons; id = "ButtonProject";}
+//                if (params.call_document) {++activeButtons; id = "ButtonDocument";}
+//                if (params.call_folder)   {++activeButtons; id = "ButtonFolder";}
+//                if (activeButtons===1) {
+//                    registry.byId(id).onClick();
+//                }
+//             });
             
         },
 
@@ -119,7 +122,7 @@ define([
                     }
                 },
 
-                show_documet: function () {
+                show_document: function () {
                     dialog.default();
                     //Muestra los DIV que se necesitan para la creación de un nuevo documento
                     dom.byId('id_divSelectTemplate').hidden = false;
@@ -213,7 +216,7 @@ define([
                 new Button({
                     id: "ButtonDocument",
                     label: "document",
-                    onClick: function(){dialog.show_documet();}
+                    onClick: function(){dialog.show_document();}
                 }).placeAt(form.containerNode);
             }
             

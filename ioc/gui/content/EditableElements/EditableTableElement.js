@@ -22,7 +22,6 @@ define([
     "dojo/text!./templates/importTableDialog.html",
     // "dojo/i18n!./nls/TableDialog",
     "dojo/on",
-
     // Carregats pel template
     "dijit/form/TextBox",
     "dijit/form/Textarea",
@@ -58,8 +57,8 @@ define([
     function clickElem(elem) {
         // Thx user1601638 on Stack Overflow (6/6/2018 - https://stackoverflow.com/questions/13405129/javascript-create-and-save-file )
         var eventMouse = document.createEvent("MouseEvents");
-        eventMouse.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-        elem.dispatchEvent(eventMouse)
+        eventMouse.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        elem.dispatchEvent(eventMouse);
     }
 
     function openFile(func) {
@@ -71,18 +70,18 @@ define([
             var reader = new FileReader();
             reader.onload = function (e) {
                 var contents = e.target.result;
-                fileInput.func(contents)
-                document.body.removeChild(fileInput)
+                fileInput.func(contents);
+                document.body.removeChild(fileInput);
             };
-            reader.readAsText(file)
+            reader.readAsText(file);
         };
         var fileInput = document.createElement("input");
         fileInput.type = 'file';
         fileInput.style.display = 'none';
         fileInput.onchange = readFile;
         fileInput.func = func;
-        document.body.appendChild(fileInput)
-        clickElem(fileInput)
+        document.body.appendChild(fileInput);
+        clickElem(fileInput);
     }
 
 
@@ -135,6 +134,19 @@ define([
             return ret;
         },
 
+        seq: function(data, value) {
+            // Obtener el valor de la siguiente secuencia para la tabla
+            // (el campo que obtiene la secuencia debe ser la primera columna)
+            var max = false;
+            for (var i = 0; i < data.length; i++) {
+                max = parseInt(data[i]['col0']);
+                if (value < max) {
+                    value = max;
+                }
+            }
+            return (max===false) ? value : ++value;
+        },
+
         today: function () {
             return dojo.date.locale.format(new Date(), {
                 selector: 'date',
@@ -158,7 +170,6 @@ define([
         inputFooter: '',
         inputTableId: '',
         boxType: '',
-
 
         // TODO: pasar a un fitxer nls
         csvImportLegend: "Importació via CSV",
@@ -825,11 +836,9 @@ define([
 
                 var parsedValue;
 
-
                 switch (func) {
                     case 'copy':
                     case 'inc':
-
                         // Si hi ha una fila anterior cerquem el valor anterior
                         if (lastRow) {
                             parsedValue = wiocclFunctions[func](params[0], lastRow);
@@ -837,7 +846,13 @@ define([
                             // El paràmetre és el valor per defecte per la primera fila
                             parsedValue = params[0];
                         }
+                        break;
 
+                    case 'seq':
+                        // Obtener el valor de la siguiente secuencia para la tabla
+                        // (el campo que obtiene la secuencia debe ser la primera columna)
+                        var param = (params[0]) ? params[0] : 0; //valor inicial
+                        parsedValue = wiocclFunctions[func](this.dataStore.objectStore.data, param);
                         break;
 
                     default:
@@ -918,7 +933,7 @@ define([
             _addObjectRow: function (keyPairs, options) {
                 
                 var data = {
-                    id: this.objectStore.getUniqueId(),
+                    id: this.objectStore.getUniqueId()
                 };
 
                 // console.log("Valor de la taula", this.args.data.value);
@@ -927,7 +942,7 @@ define([
 
                 for (var name in parsedRow) {
                     var row;
-                    var field = this.args.fields?this.args.fields[name]:{};
+                    var field = this.args.fields ? this.args.fields[name] : {};
 
                     if (keyPairs && keyPairs[name]) {
                         row = data[this.fieldToCol[name]] = keyPairs[name];
@@ -955,7 +970,8 @@ define([
                 } else {
                     originalValue = this.args.data.value;
                 }
-                originalValue.push(row);
+                //originalValue.push(row); //WARNING: esto no tiene sentido!!! row no es una fila, solo es un string = el valor del último campo procesado
+                originalValue.push(parsedRow);
                 this.args.data.value = originalValue;
 
                 this.dataStore.newItem(data);
@@ -980,7 +996,7 @@ define([
             _addSingleRow: function (value, options) {
                 var parsedRow;
                 var data = {
-                    id: this.objectStore.getUniqueId(),
+                    id: this.objectStore.getUniqueId()
                 };
 
                 if (value){
@@ -1033,7 +1049,7 @@ define([
             
             _addArrayRow: function (array, options) {
                 var data = {
-                    id: this.objectStore.getUniqueId(),
+                    id: this.objectStore.getUniqueId()
                 };
 
                 var parsedRow = this.parseRow(this.defaultRow);
@@ -1232,7 +1248,7 @@ Segur que voleu crear de nou la taula?");
                         this.addRow();
                     }
                 } else if (this.objectStore.data.length > quantity) {
-                    alert("Aquesta acció només permet incrementar el nombre de files. No pas reduir-lo.")
+                    alert("Aquesta acció només permet incrementar el nombre de files. No pas reduir-lo.");
                 }
             },
             addRows: function (quantity) {
@@ -1524,7 +1540,7 @@ Segur que voleu crear de nou la taula?");
                         }
 
                     } else {
-                        console.error("Can't find data for the column", cell.name, this.args.fields[cell.name])
+                        console.error("Can't find data for the column", cell.name, this.args.fields[cell.name]);
                     }
                 }
 
@@ -1541,9 +1557,7 @@ Segur que voleu crear de nou la taula?");
                     query: {id: "*"}, onComplete: function (results) {
                         results.forEach(function (i) {
                             store.deleteItem(i);
-
-                        })
-
+                        });
                     }
                 });
 
@@ -1908,27 +1922,18 @@ Segur que voleu crear de nou la taula?");
                 // Recorrem totes les files
                 for (var i = 0; i < data.length; i++) {
 
-
                     for (var key in data[i]) {
                         var type = (this.args.fields && this.args.fields[key]) ? this.args.fields[key].type : '';
-
-
                         switch (type) {
                             case 'bool':
                             case 'boolean':
                                 data[i][key] = data[i][key] === true || data[i][key] === "true";
                                 break;
-
                             default:
                             // No fer cap canvi
-
                         }
-
                     }
-
                 }
-
-
                 return data;
             },
 
