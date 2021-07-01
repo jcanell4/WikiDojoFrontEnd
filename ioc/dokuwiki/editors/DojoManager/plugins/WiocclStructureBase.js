@@ -65,17 +65,18 @@ define([
             return this.structure[id];
         },
 
-        getTreeFromNode: function (refId, asClone) {
+        // l'arbre sempre es construeix a partir de nodes clonats
+        getTreeFromNode: function (refId) {
             let tree = [];
 
             let node;
-            if (asClone) {
+            // if (asClone) {
                 // així es crida en iniciar el diàleg principal
                 node = JSON.parse(JSON.stringify(this.getNodeById(refId)));
-            } else {
-                // així es crida en iniciar un subdiàleg
-                node = this.structure[refId];
-            }
+            // } else {
+            //     // així es crida en iniciar un subdiàleg
+            //     node = this.structure[refId];
+            // }
 
             node.name = node.type ? node.type : node.open;
             tree.push(node);
@@ -193,7 +194,7 @@ define([
         // el chunk map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
         _createChunkMap: function (item, pos, outChunkMap) {
 
-            // console.log("_createChunkmap", item, pos);
+            // console.error("_createChunkmap", item, pos);
             // Cal fer la conversió de &escapedgt; per \>
             let attrs = item.attrs;
             attrs = attrs.replaceAll('&escapedgt;', '\\>');
@@ -205,16 +206,9 @@ define([
 
             let cursorPos = pos + wioccl.length;
 
-            // if (structure.temp) {
-            //     console.log("Quina és la estructura?", structure);
-            //     // alert("Stop!");
-            // }
-
             for (let i = 0; i < item.children.length; i++) {
 
                 let node = typeof item.children[i] === 'object' ? item.children[i] : this.structure[item.children[i]];
-
-                // console.log("Checking children:", item.children[i]);
 
                 // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
                 // per exemple perquè és genera amb un for o foreach
@@ -227,7 +221,8 @@ define([
                 cursorPos += childWioccl.length;
             }
 
-            if (item.close !== null && item.close.length > 0) {
+            // console.log("item", item);
+            if (item.close !== undefined && item.close.length > 0) {
                 // si hi ha un close en clicar a sobre d'aquest també es seleccionarà l'item
                 // console.log("Afegint posició al close per:", item.close, cursorPos);
                 outChunkMap.set(cursorPos, item);
@@ -278,7 +273,7 @@ define([
         },
 
         _purge: function (node) {
-            console.log("purging:", node);
+            // console.log("purging:", node);
             for (let i = 0; i < node.children.length; i++) {
                 let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
                 // console.log("child id:", id, structure);
@@ -289,10 +284,7 @@ define([
 
 
         _restore: function (node) {
-
-            if (this.structure[node.id]) {
-                // Si existeix, cal eliminar tots els seus fills recursivament
-            }
+            // console.log("Restoring node id", node.id);
 
             // console.log("Restaurant:", node.id, node);
             this.structure[node.id] = node;
@@ -303,17 +295,26 @@ define([
         },
 
         restore: function () {
-            if (this.backupNode) {
+
+            if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop perquè és recursiu sobre l'element que conté els childs actualment
-                this._purge(this.structure[this.backupNode.id]);
                 this.discardSiblings();
-                this._restore(this.backupNode);
+                this._purge(this.structure[this.structure.backupNode.id]);
+
+                this._restore(this.structure.backupNode);
+                // console.log("Restaurat:", this.structure.backupNode.id, this.structure);
+                delete(this.structure.backupNode);
+                //
+
+                // alert("stop!");
             }
         },
 
         _backup: function (node) {
-            // console.log(structure, node.id);
-            let backup = JSON.parse(JSON.stringify(this.structure[node.id]));
+            // console.error("_backup", node);
+            let id = typeof node === 'object' ? node.id : node;
+            // let backup = JSON.parse(JSON.stringify(this.structure[node.id]));
+            let backup = JSON.parse(JSON.stringify(this.structure[id]));
 
             for (let i = 0; i < backup.children.length; i++) {
                 // Canviem els ids per la copia de l'objecte
@@ -328,7 +329,6 @@ define([
         },
 
         parseWioccl: function (text, wioccl) {
-            // console.log(structure);
 
             let outTokens = this._tokenize(text);
 
@@ -375,7 +375,6 @@ define([
 
                 if (text.length === 0) {
 
-
                     if (Number(wioccl.id) === Number(this.root)) {
                         alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
                         // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
@@ -391,17 +390,8 @@ define([
             }
 
 
-            // TODO: considerar extreure això, el parser només hauria de parsejar els resultats
-            // i no refer l'arbre. En el cas de la edició normal (sense fer update) no s'ha
-            // de refer
             this._createTree(wioccl, outTokens, this.structure);
 
-            // en el cas de siblings cal determinar també en quina posició es troba de l'arbre
-            //this._setData(structure[this.root], wioccl, structure, this.wiocclDialog, ignoreRebranch);
-
-            // això ara s'està fent (o s'ha de fer) desprès de cridar al parseWiocc on correspongui
-            // this.wiocclDialog._setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
-            // retornem el node per assegurar-nos que està actualitzat
             return wioccl;
 
         },

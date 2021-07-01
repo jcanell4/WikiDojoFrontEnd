@@ -23,10 +23,9 @@ define([
             this.structure['0'].type = 'root';
             this.structure['0'].close = '';
 
-            // siblings és un array d'ids de nodes que
+            // siblings és un array d'ids de nodes temporals afegits
             this.structure.siblings = [];
 
-            // console.log("this.structure:", this.structure);
         }
 
     });

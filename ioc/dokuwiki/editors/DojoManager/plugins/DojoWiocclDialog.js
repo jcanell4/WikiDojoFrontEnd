@@ -136,6 +136,7 @@ define([
                     // console.log("item clicat:", item);
 
                     // actualitzem qualsevol canvi pendent abans
+                    context._updatePendingChanges_Field2Detail()
 
                     if (context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges) {
                         let descartar = confirm("S'han detectat canvis, vols descartar-los?");
@@ -144,165 +145,27 @@ define([
                         }
 
                         structure.restore();
-                        // console.warn("Descartar!", structure.backup);
-                        //
-                        //
-                        // let purge = function (structure, node) {
-                        //     console.log("purging:", node);
-                        //     for (let i=0; i<node.children.length; i++) {
-                        //         let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
-                        //         console.log("child id:", id, structure);
-                        //         purge(structure, structure[id]);
-                        //     }
-                        //     delete(structure[node.id]);
-                        // };
-                        //
-                        // // TODO: Extreure a una funció restore
-                        // let restore = function (structure, node) {
-                        //
-                        //     if (structure[node.id]) {
-                        //         // Si existeix, cal eliminar tots els seus fills recursivament
-                        //     }
-                        //
-                        //     // console.log("Restaurant:", node.id, node);
-                        //     structure[node.id] = node;
-                        //     for (let i = 0; i < node.children.length; i++) {
-                        //         let child = node.children[i];
-                        //         restore(structure, child);
-                        //         // structure[child.id] = child;
-                        //         // structure.backup.children[i] = structure.backup.children[i].id;
-                        //         // console.log("Restaurant:", child.id, child);
-                        //     }
-                        // }
-
-
-                        // if (structure.backup) {
-                        //     // El purge s'ha de cridar només un cop perquè és recursiu sobre l'element que conté els childs actualment
-                        //     purge(structure, structure[structure.backup.id]);
-                        //
-                        //     restore(structure, structure.backup);
-                        //     console.log("Restaurat:", structure.backup);
-                        //     console.log(structure);
-                        //
-                        //     alert("check!");
-                        // }
 
                         context._fieldChanges = false;
+
                     }
 
+                    // Alerta! aquest és l'item seleccionat, no correspón amb el restaurat i sobreescriu el backup
+                    // ALERTA[Xavi] no es pot fer servir el item directament, tot i que el backup crea una copia,
+                    // cal recuperar l'element de la estructura.
 
-                    // Fem un backup del item i els seus fills a la estructura (només després de confirmar!!
-                    // !! ALERTA !! S'ha de fer un backup manualment en obrir l'editor!!
-                    // TODO: Extreure a una funció backup
-                    // let getBackup = function (structure, node) {
-                    //     // console.log(structure, node.id);
-                    //     let backup = JSON.parse(JSON.stringify(structure[node.id]));
-                    //
-                    //     for (let i = 0; i < backup.children.length; i++) {
-                    //         // Canviem els ids per la copia de l'objecte
-                    //         let id = typeof backup.children[i] === 'object' ? backup.children[i].id : backup.children[i];
-                    //         backup.children[i] = getBackup(structure, structure[id]);
-                    //         //backup.children[i] = JSON.parse(JSON.stringify(structure[id]));
-                    //     }
-                    //     return backup;
-                    // }
-                    //
-                    // structure.backup = getBackup(structure, item);
-
-                    structure.backup(item);
-
-                    // console.log(structure.backup);
-                    // alert("check backup");
-
-                    // console.log(item, structure[item.id]);
-
-
-                    context._updatePendingChanges_Field2Detail()
-
-                    structure._rebuildChunkMap(item);
-                    context._updateDetail(item);
-
-                    // let wioccl = context.source.getStructure()[item.id];
                     let wioccl = structure.getNodeById(item.id);
+                    structure.backup(wioccl);
+
+                    structure._rebuildChunkMap(wioccl);
+                    context._updateDetail(wioccl);
                     context._selectWioccl(wioccl);
-                    // context.selectedWioccl = wioccl;
-                    // console.log("Set selected:", context.selectedWioccl)
                 }
             });
 
             this.treeWidget.placeAt(this.treeContainerNode);
             this.treeWidget.startup();
         },
-
-        // _rebuildChunkMap: function (item) {
-        //     // console.error("Rebuilding chunkmap for", item);
-        //     let outChunkMap = new Map();
-        //
-        //     // s'han de tenir en compte els siblings temporals
-        //     // creem un nou item que els contingui i aquest és el que reconstruim
-        //     let wrapper = {
-        //         open: '',
-        //         close: '',
-        //         attrs: '',
-        //         // ALERTA! Cal crear una copia perquè si no es modifiquen els siblings!!
-        //         children: this.structure.siblings ? JSON.parse(JSON.stringify(this.structure.siblings)) : []
-        //     }
-        //
-        //     wrapper.children.unshift(item);
-        //
-        //     let rebuild = this._createChunkMap(wrapper, this.structure, 0, outChunkMap);
-        //     // let rebuild = this._createChunkMap(item, this.structure, 0, outChunkMap);
-        //     // let rebuild = this._createChunkMap(item, this.source.getStructure(), 0, outChunkMap);
-        //     // console.log(rebuild, outChunkMap);
-        //     this.chunkMap = outChunkMap;
-        //     // alert("Check rebuild");
-        // },
-        //
-        // // el chunk map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
-        // _createChunkMap: function (item, structure, pos, outChunkMap) {
-        //
-        //     console.error("_createChunkmap", item, structure);
-        //     // Cal fer la conversió de &escapedgt; per \>
-        //     let attrs = item.attrs;
-        //     attrs = attrs.replaceAll('&escapedgt;', '\\>');
-        //     attrs = attrs.replaceAll('&mark;', '\\>');
-        //     attrs = attrs.replaceAll('&markn;', "\n>");
-        //
-        //     let wioccl = item.open.replace('%s', attrs);
-        //     outChunkMap.set(pos, item);
-        //
-        //     let cursorPos = pos + wioccl.length;
-        //
-        //     // if (structure.temp) {
-        //     //     console.log("Quina és la estructura?", structure);
-        //     //     // alert("Stop!");
-        //     // }
-        //
-        //     for (let i = 0; i < item.children.length; i++) {
-        //
-        //         let node = typeof item.children[i] === 'object' ? item.children[i] : structure[item.children[i]];
-        //
-        //         // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
-        //         // per exemple perquè és genera amb un for o foreach
-        //         if (node.isClone) {
-        //             continue;
-        //         }
-        //
-        //         let childWioccl = this._createChunkMap(node, structure, cursorPos, outChunkMap);
-        //         wioccl += childWioccl;
-        //         cursorPos += childWioccl.length;
-        //     }
-        //
-        //     if (item.close !== null && item.close.length > 0) {
-        //         // si hi ha un close en clicar a sobre d'aquest també es seleccionarà l'item
-        //         // console.log("Afegint posició al close per:", item.close, cursorPos);
-        //         outChunkMap.set(cursorPos, item);
-        //         wioccl += item.close;
-        //     }
-        //
-        //     return wioccl;
-        //
-        // },
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
         _extractFieldsFromCandidate: function (candidate) {
@@ -358,42 +221,6 @@ define([
             return fields;
         },
 
-        // _updateField: function (item) {
-        //
-        //     // console.log(item, this.editor.wioccl);
-        //
-        //     let value = this.editor.getValue();
-        //
-        //     if (value.length === 0) {
-        //         // TODO: buidar els atributs
-        //         console.warn('TODO: eliminar atributs, el valor és buit');
-        //         return;
-        //     }
-        //
-        //     let structure = this.source.getStructure();
-        //
-        //     // console.log("abans", structure[item.id]);
-        //
-        //     this.source.parseWioccl(value, this.editor.wioccl, structure, true);
-        //
-        //
-        //     // console.log("després", structure[item.id]);
-        //
-        //     //let auxItem = this.source.rebuildWioccl(item);
-        //     let auxItem = structure[item.id];
-        //
-        //     // PROBLEMA: el item.id no es troba a la estructura
-        //     // el id no és correcte, marca 1888 però es troba al 1896
-        //     //      - el parent és correcte
-        //
-        //
-        //     console.log(item.id, structure);
-        //
-        //     // console.log("Update a partir de:", item, auxItem);
-        //     let extractedFields = this._extractFields(auxItem.attrs, auxItem.type);
-        //     this.setFields(extractedFields);
-        //
-        // },
 
         _updateDetail: function (item, ignoreFields) {
 
@@ -413,12 +240,6 @@ define([
             // let auxContent = this.source.rebuildWioccl(item, this.structure);
             this.editor.setValue(auxContent);
             this.dirty = true;
-
-
-            // if (this.lastCursor) {
-            //     this.editor.setPosition(this.lastCursor);
-            // }
-            // this.editor.clearSelection();
 
             this.editor.resetOriginalContentState();
 
@@ -490,62 +311,14 @@ define([
                 let $input = jQuery(this).siblings('input');
                 let value = $input.val();
 
-                // console.log("value", value);
-                // let outStructure = {next: "0", temp: true};
-
-                // TODO: canviar per un node on s'afegirà tot!
-                // ALERTA! aquest node s'ha d'eliminar quan es passi el contingut a un camp
-                // let outRoot = {isNull:true};
-
-
                 let structure = new WiocclStructureTemp();
                 let root = structure.getRoot();
 
-                // let outRoot = {
-                //     "type": "temp",
-                //     "value": "",
-                //     "attrs": "",
-                //     "open": "",
-                //     "close": "",
-                //     "id": "0",
-                //     "children": [],
-                // }
-
-                // let outStructure = {
-                //     "0": outRoot,
-                //     next: "1",
-                //     temp: true
-                // };
-
-                // Això es pot posar al constructor del temp i passar el vlaue com a config
-                // context.source.parseWiocclNew(value, outRoot, outStructure, context);
                 structure.parseWioccl(value, root);
 
-                // console.log("Root:", outRoot);
-                // console.log("Estructura generada:", outStructure);
-
-
-                /** IDÈNTiC AL DOJO WIOCCL, però allà es clona en lloc d'assignar-se**/
-                    // ALERTA! Cal assecurar-se queel outRoot.id correspon al node amb el mateix id per poder fer la
-                    // crida igual que al DojoWioccl: structure.getTreeFromNode(refId)
-                    // console.warn("són el mateix?", outRoot.id, outStructure.getNodeById(outRoot).id);
-                // let refId = outRoot.id;
                 let refId = root.id;
 
-                let tree = structure.getTreeFromNode(refId);
-                // let tree = [];
-                // let node = JSON.parse(JSON.stringify(outStructure[refId]));
-                // let node = outRoot;
-                // node.name = node.type ? node.type : node.open;
-                // tree.push(node);
-
-                // perquè necessitem treure el context source
-                // tree[0].children = context.source._getChildrenNodes(tree[0].children, tree[0].id, context.source);
-                // tree[0].children = context.source._getChildrenNodes(tree[0].children, tree[0].id, outStructure);
-
-                /** FI DE IDÈNTiC AL DOJO WIOCCL, però allà es clona en lloc d'assignar-se**/
-
-
+                let tree = structure.getTreeFromNode(refId, true);
 
                 let wiocclDialog = new DojoWioccDialog({
                     title: 'Edició wioccl',
@@ -559,7 +332,7 @@ define([
                     id: 'wioccl-dialog_inner' + counter,
                     draggable: false,
                     firstResize: true,
-                    source: context.source,
+                    dispatcher: context.dispatcher,
                     args: {
                         id: 'wioccl-dialog_inner' + counter,
                         // value: context.source.rebuildWioccl(tree[0], outStructure)
@@ -625,7 +398,7 @@ define([
                         this._setData(this.structure.getNodeById(refId), root);
 
 
-                        console.log("estructura del update?", this.structure);
+                        // console.log("estructura del update?", this.structure);
 
                     // }.bind(context)
                     }
@@ -765,29 +538,10 @@ define([
 
 
             if (this.selectedWioccl.type === 'content') {
-                // Cal actualitzar la estructura directament, el selectedWioccl es una copia?
-                // console.log("Es content, hi ha attributs actualitzats?", extractedFields);
-
-                // this.structure[this.selectedWioccl.id].open = extractedFields['content'];
                 this.selectedWioccl.open = extractedFields['content'];
-
-                console.warn("Comprovant que el selected es passa per referència:", this.selectedWioccl.open = this.structure.getNodeById(this.selectedWioccl.id).open)
-
-                // this.structure[this.selectedWioccl.id].open = extractedFields['content'];
-                //this.source.getStructure()[this.selectedWioccl.id].open = extractedFields['content'];
-
-                // ALERTA! cal actualitzar també el this.editor.wioccl.open si és l'element actiu perquè és una copia
-                // provant alternativa, agafar sempre de la estructura
-                // if (this.editor.wioccl.id === this.selectedWioccl.id) {
-                //     this.editor.wioccl.open = extractedFields['content'];
-                // }
-
-                // this.selectedWioccl.open = this.selectedWioccl.attrs.content;
-                // this.editor.setValue(context.selectedWioccl.attrs.content);
             }
 
             // Refresquem el wioccl associat a l'editor amb el valor actual
-            // this.editor.wioccl = this.source.getStructure()[this.editor.wioccl.id];
             this.editor.wioccl = this.structure.getNodeById(this.editor.wioccl.id);
 
 
@@ -816,24 +570,6 @@ define([
             this.updating = true;
 
 
-            // Cal actualitzar el mapeig de posició-elements
-            // PROBLEMA! quan es fa el rebuild canvien els refid i llavors
-            // en modificar el field, ja no és correcte
-            // this._rebuildChunkMap(this.source.getStructure()[this.refId])
-            //
-            // console.log("chunkmap?", this.chunkMap);
-            // let updatedWioccl = this._getWiocclForCurrentPos();
-            // console.log("updated wioccl a la posició:", updatedWioccl);
-            // this._selectWioccl(updatedWioccl);
-
-            // això no pot funcionar perquè es fa el parse després del rebuild, copiem
-            // el contingut del updateField aquí i ho modifiquem
-            //this._updateField(updatedWioccl);
-
-            // -------
-
-            // console.log(item, this.editor.wioccl);
-
             let value = this.editor.getValue();
 
             if (value.length === 0) {
@@ -842,22 +578,7 @@ define([
                 return;
             }
 
-            // let structure = this.source.getStructure();
-            // let structure = this.structure;
-
-            // ALERTA! No cal discriminar pel temp, perque el parseWioccl de la subclasse serà diferent
-
-            // console.warn("ALERTA! hem d'implementar la sublcasse tem que cridi al parseWioccl modificat");
-            // if (structure.temp) {
-            //     this.source.parseWiocclNew(value, this.editor.wioccl, structure, this, true);
-            // } else {
-            //     this.source.parseWioccl(value, this.editor.wioccl, structure, this, true);
-            // }
-            // this.source.parseWioccl(value, this.editor.wioccl, structure, this, true);
             let wioccl = this.structure.parseWioccl(value, this.editor.wioccl);
-            // this.wiocclDialog._setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
-
-            // PROBLEMA: el this.root es troba al dojoWioccl
 
             this._setData(this.structure.getNodeById(this.structure.root), wioccl, true);
 
@@ -868,29 +589,12 @@ define([
 
             let updatedWioccl = this._getWiocclForCurrentPos();
             this._selectWioccl(updatedWioccl);
-
-
-            // console.log(updatedWioccl.id, structure);
-
-            // ALERTA! Per tercera vegada s'ha d'afegir el open com attr pel content
-            // if (updatedWioccl.attrs.length === 0) {
-            //     updatedWioccl.type = "content";
-            //     updatedWioccl.attrs =  updatedWioccl.open;
-            // }
-            //
-            // // console.log("Update a partir de:", item, auxItem);
-            // let extractedFields = this._extractFields(updatedWioccl.attrs, updatedWioccl.type);
-            //
             let extractedFields = this._extractFieldsFromCandidate(updatedWioccl);
-
             this.setFields(extractedFields);
-
-            // -------
 
 
             this.updating = false;
 
-            // console.log(structure);
         },
 
 
@@ -964,11 +668,8 @@ define([
             let args = this.args;
             args.id = suffixId;
 
-            // ALERTA! per alguna raó si s'afegeix el contentToolFactory com a dependència no funciona (exactament el
-            // mateix codi al DataContentProcessor sí que ho fa), la alternativa és utilitzar la factoria del content
-            // tool actual:
-            let id = this.source.editor.dispatcher.getGlobalState().getCurrentId();
-            let contentToolFactory = this.source.editor.dispatcher.getContentCache(id).getMainContentTool().contentToolFactory;
+            let id = this.dispatcher.getGlobalState().getCurrentId();
+            let contentToolFactory = this.dispatcher.getContentCache(id).getMainContentTool().contentToolFactory;
 
             let editorWidget = contentToolFactory.generate(contentToolFactory.generation.BASE, args);
 
@@ -994,7 +695,7 @@ define([
                 theme: JSINFO.plugin_aceeditor.colortheme,
                 wraplimit: JSINFO.plugin_aceeditor.wraplimit, // TODO: determinar el lmit correcte
                 wrapMode: true,
-                dispatcher: this.source.editor.dispatcher,
+                dispatcher: this.dispatcher,
                 content: args.value,
                 originalContent: args.value,
                 // TOOLBAR_ID: toolbarId,
@@ -1003,7 +704,8 @@ define([
                 plugins: [],
             });
 
-            this.source.dialogEditor = editor;
+            // ja no és necessari
+            // this.source.dialogEditor = editor;
 
             // Per defecte s'assigna el primer node
             editor.wioccl = this.wioccl;
@@ -1075,8 +777,6 @@ define([
 
                 // console.log(pos, candidate);
 
-                // console.log("Candidate:", candidate);
-
                 // Si es dirty es que s'acava de canviar el valor, cal eliminar la selecció
                 if (context.dirty) {
                     context.editor.clearSelection();
@@ -1087,14 +787,6 @@ define([
                     // console.log("El seleccionat és el mateix que el actual? (no fem el extract)", context.selectedWioccl, candidate)
                     return;
                 }
-
-                // TODO: refactoritzar, es troba per  triplicat
-                // if (candidate.attrs.length === 0) {
-                //     candidate.type = "content";
-                //     candidate.attrs = candidate.open;
-                // }
-                //
-                // let auxFields = context._extractFields(candidate.attrs, candidate.type);
 
                 let auxFields = context._extractFieldsFromCandidate(candidate);
 
@@ -1133,44 +825,7 @@ define([
             return this.structure._getWiocclForPos(pos);
         },
 
-        // _getWiocclForPos: function (pos) {
-        //     // console.log("pos, chunkmap?", pos, this.chunkMap);
-        //
-        //     // Cerquem el node corresponent
-        //     let candidate;
-        //     let found;
-        //     // let first;
-        //     let last;
-        //
-        //     // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
-        //     // S'agafarà l'anterior
-        //     for (let [start, wioccl] of this.chunkMap) {
-        //
-        //         // això no és correcte
-        //         // if (!first) {
-        //         //     first = wioccl;
-        //         // }
-        //
-        //         last = wioccl;
-        //
-        //         if (start > pos && candidate) {
-        //             found = true;
-        //             break;
-        //         }
-        //
-        //         // s'estableix a la següent iteració
-        //         candidate = wioccl;
-        //     }
-        //
-        //     // if (!found) {
-        //     //     candidate = first;
-        //     // }
-        //     if (!found) {
-        //         candidate = last;
-        //     }
-        //
-        //     return candidate;
-        // },
+
 
         // es crida desde DojoWioccl
         updateTree: function (tree, root, selected) {
