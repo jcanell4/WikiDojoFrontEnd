@@ -27,6 +27,9 @@ define([
         // TODO: Canviar el nom per selected root per no confondre amb l'arrel real ('0') de la estructura
         root: '',
 
+        /** @type {string[]} siblings creats temporalment **/
+        siblings: null,
+
         /**
          *
          * TODO: crear subclasses de manera que no calgui
@@ -42,6 +45,7 @@ define([
             // console.log(config);
             // Aquí no fem res perquè cada subclasse ha d'implementar la seva propia lògica
 
+            this.siblings = [];
         },
 
         setStructure: function (structure) {
@@ -177,7 +181,7 @@ define([
                 close: '',
                 attrs: '',
                 // ALERTA! Cal crear una copia perquè si no es modifiquen els siblings!!
-                children: this.structure.siblings ? JSON.parse(JSON.stringify(this.structure.siblings)) : []
+                children: this.siblings ? JSON.parse(JSON.stringify(this.siblings)) : []
             }
 
             wrapper.children.unshift(item);
@@ -495,13 +499,12 @@ define([
 
                     // el root.id és l'element seleccionat, aquest no cal marcar-lo com a sibling perquè
                     // existeix a l'estructura
-                    console.warn("TODO: considerar moure el structure.siblings a this.siblings")
                     if (!this.updating && id !== root.id) {
-                        if (this.structure.siblings === undefined) {
-                            this.structure.siblings = [];
+                        if (this.siblings === undefined) {
+                            this.siblings = [];
                         }
                         // console.log("Afegint sibling", id);
-                        this.structure.siblings.push(id);
+                        this.siblings.push(id);
                     }
 
                 }
@@ -590,8 +593,8 @@ define([
                 // Si es detecta cap error
                 if (siblings > 1 && Number(root.id) === Number(this.root)
                     && Number(this.structure[root.id]['parent']) !== 0 && stack.length>0) {
-                    // console.log("structure siblings (id i parent):", this.structure.siblings);
-                    // for (let childId of this.structure.siblings) {
+                    // console.log("structure siblings (id i parent):", this.siblings);
+                    // for (let childId of this.siblings) {
                     //     let child = this.structure[childId];
                     //     console.log(child.id, child.parent);
                     // }
@@ -797,10 +800,10 @@ define([
 
         discardSiblings: function () {
 
-            for (let i = this.structure.siblings.length - 1; i >= 0; i--) {
-                this._removeNode(this.structure.siblings[i]);
+            for (let i = this.siblings.length - 1; i >= 0; i--) {
+                this._removeNode(this.siblings[i]);
             }
-            this.structure.siblings = [];
+            this.siblings = [];
         },
 
         // les claus són a l'estructura i només es manipulan en aquesta classe

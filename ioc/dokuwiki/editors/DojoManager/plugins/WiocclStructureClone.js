@@ -24,7 +24,7 @@ define([
             this.structure['0'].close = '';
 
             // siblings és un array d'ids de nodes temporals afegits
-            this.structure.siblings = [];
+            this.siblings = [];
 
         }
 

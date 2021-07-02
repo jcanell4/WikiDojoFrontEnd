@@ -22,8 +22,7 @@ define([
                     "children": [],
                 },
                 next: "1",
-                temp: true,
-                siblings: []
+                temp: true
             };
 
             this.root = "0";
@@ -34,6 +33,7 @@ define([
         setStructure: function (structure) {
             alert("Check!, s'estableix en algún moment per les structures temporals?");
             this.structure = structure;
+            this.siblings = [];
         },
 
 
