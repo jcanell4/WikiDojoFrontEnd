@@ -18,7 +18,7 @@ define([
         updating: false,
 
         /** @type {Map<int, wioccl>} - relació de nodes per posició */
-        chunkMap: null,
+        posMap: null,
 
         /** @type {wioccl} - copia del node per poder restarurar-lo **/
         backupNode: null,
@@ -128,45 +128,45 @@ define([
             return nodes;
         },
 
-        rebuildWioccl: function (data) {
+        getCode: function (node) {
             // console.log("Rebuilding wioccl:", data, structure);
-            let wioccl = "";
+            let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
-            data.attrs = data.attrs.replaceAll('&escapedgt;', '\\>');
-            data.attrs = data.attrs.replaceAll('&mark;', '\\>');
-            data.attrs = data.attrs.replaceAll('&markn;', "\n>");
+            node.attrs = node.attrs.replaceAll('&escapedgt;', '\\>');
+            node.attrs = node.attrs.replaceAll('&mark;', '\\>');
+            node.attrs = node.attrs.replaceAll('&markn;', "\n>");
 
-            wioccl += data.open.replace('%s', data.attrs);
+            code += node.open.replace('%s', node.attrs);
 
             // console.log("Comprovant childrens:", data.children);
-            for (let i = 0; i < data.children.length; i++) {
+            for (let i = 0; i < node.children.length; i++) {
 
                 // let node = typeof data.children[i] === 'object' ? data.children[i] : this.getStructure()[data.children[i]];
                 // Si com a fill hi ha un node és una copia, cal recuperar-lo de la estructura sempre
-                let id = typeof data.children[i] === 'object' ? data.children[i].id : data.children[i];
+                let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
                 // console.log("Quin node s'intenta comprovar?", id);
-                let node = this.structure[id];
+                let child = this.structure[id];
 
                 // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
                 // per exemple perquè és genera amb un for o foreach
-                if (node.isClone) {
+                if (child.isClone) {
                     continue;
                 }
 
-                wioccl += this.rebuildWioccl(node, this.structure);
+                code += this.getCode(child, this.structure);
             }
 
-            if (data.close !== null) {
-                wioccl += data.close;
+            if (node.close !== null) {
+                code += node.close;
             }
 
 
             // console.log("Rebuild:", wioccl);
-            return wioccl;
+            return code;
         },
 
-        _rebuildChunkMap: function (item) {
+        rebuildPosMap: function (item) {
             // console.error("Rebuilding chunkmap for", item);
             let outChunkMap = new Map();
 
@@ -183,58 +183,58 @@ define([
             wrapper.children.unshift(item);
 
             // console.log("Wrapper", wrapper);
-            let rebuild = this._createChunkMap(wrapper, 0, outChunkMap);
-            // let rebuild = this._createChunkMap(item, this.structure, 0, outChunkMap);
-            // let rebuild = this._createChunkMap(item, this.source.getStructure(), 0, outChunkMap);
+            let rebuild = this._createPosMap(wrapper, 0, outChunkMap);
+            // let rebuild = this._createPosMap(item, this.structure, 0, outChunkMap);
+            // let rebuild = this._createPosMap(item, this.source.getStructure(), 0, outChunkMap);
             // console.log(rebuild, outChunkMap);
-            this.chunkMap = outChunkMap;
+            this.posMap = outChunkMap;
             // alert("Check rebuild");
         },
 
-        // el chunk map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
-        _createChunkMap: function (item, pos, outChunkMap) {
+        // el pos map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
+        _createPosMap: function (node, pos, outPosMap) {
 
-            // console.error("_createChunkmap", item, pos);
+            // console.error("_createPosMap", item, pos);
             // Cal fer la conversió de &escapedgt; per \>
-            let attrs = item.attrs;
+            let attrs = node.attrs;
             attrs = attrs.replaceAll('&escapedgt;', '\\>');
             attrs = attrs.replaceAll('&mark;', '\\>');
             attrs = attrs.replaceAll('&markn;', "\n>");
 
-            let wioccl = item.open.replace('%s', attrs);
-            outChunkMap.set(pos, item);
+            let code = node.open.replace('%s', attrs);
+            outPosMap.set(pos, node);
 
-            let cursorPos = pos + wioccl.length;
+            let cursorPos = pos + code.length;
 
-            for (let i = 0; i < item.children.length; i++) {
+            for (let i = 0; i < node.children.length; i++) {
 
-                let node = typeof item.children[i] === 'object' ? item.children[i] : this.structure[item.children[i]];
+                let child = typeof node.children[i] === 'object' ? node.children[i] : this.structure[node.children[i]];
 
                 // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
                 // per exemple perquè és genera amb un for o foreach
-                if (node.isClone) {
+                if (child.isClone) {
                     continue;
                 }
 
-                let childWioccl = this._createChunkMap(node, cursorPos, outChunkMap);
-                wioccl += childWioccl;
-                cursorPos += childWioccl.length;
+                let childCode = this._createPosMap(child, cursorPos, outPosMap);
+                code += childCode;
+                cursorPos += childCode.length;
             }
 
             // console.log("item", item);
-            if (item.close !== undefined && item.close.length > 0) {
+            if (node.close !== undefined && node.close.length > 0) {
                 // si hi ha un close en clicar a sobre d'aquest també es seleccionarà l'item
                 // console.log("Afegint posició al close per:", item.close, cursorPos);
-                outChunkMap.set(cursorPos, item);
-                wioccl += item.close;
+                outPosMap.set(cursorPos, node);
+                code += node.close;
             }
 
-            return wioccl;
+            return code;
 
         },
 
-        _getWiocclForPos: function (pos) {
-            // console.log("pos, chunkmap?", pos, this.chunkMap);
+        _getNodeForPos: function (pos) {
+            // console.log("pos, chunkmap?", pos, this.posMap);
 
             // Cerquem el node corresponent
             let candidate;
@@ -244,14 +244,9 @@ define([
 
             // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
             // S'agafarà l'anterior
-            for (let [start, wioccl] of this.chunkMap) {
+            for (let [start, node] of this.posMap) {
 
-                // això no és correcte
-                // if (!first) {
-                //     first = wioccl;
-                // }
-
-                last = wioccl;
+                last = node;
 
                 if (start > pos && candidate) {
                     found = true;
@@ -259,12 +254,9 @@ define([
                 }
 
                 // s'estableix a la següent iteració
-                candidate = wioccl;
+                candidate = node;
             }
 
-            // if (!found) {
-            //     candidate = first;
-            // }
             if (!found) {
                 candidate = last;
             }
@@ -328,7 +320,7 @@ define([
             this.structure.backupNode = this._backup(node);
         },
 
-        parseWioccl: function (text, wioccl) {
+        parse: function (text, node) {
 
             let outTokens = this._tokenize(text);
 
@@ -347,20 +339,20 @@ define([
 
             // En el cas de l'arrel d'un subdialeg no existeix el parent
 
-            if (wioccl.parent) {
-                this._removeChildren(wioccl.id);
+            if (node.parent) {
+                this._removeChildren(node.id);
 
                 // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
                 let found = false;
 
-                for (let i = 0; i < this.structure[wioccl.parent].children.length; i++) {
+                for (let i = 0; i < this.structure[node.parent].children.length; i++) {
 
                     // Cal tenir en compte els dos casos (chidlren com id o com nodes) ja que un cop es fa
                     // a un update tots els childrens hauran canviat a nodes
-                    if (this.structure[wioccl.parent].children[i] === wioccl.id || this.structure[wioccl.parent].children[i].id === wioccl.id) {
+                    if (this.structure[node.parent].children[i] === node.id || this.structure[node.parent].children[i].id === node.id) {
                         // console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
-                        this.structure[wioccl.parent].children.splice(i, 1);
-                        wioccl.index = i;
+                        this.structure[node.parent].children.splice(i, 1);
+                        node.index = i;
                         found = true;
                         break;
                     }
@@ -369,30 +361,30 @@ define([
                 // perquè passa això de vegades?
                 if (!found) {
                     console.error("no s'ha trobat aquest node al propi pare");
-                    console.log(this.structure, wioccl);
+                    console.log(this.structure, node);
                     alert("node no trobat al pare");
                 }
 
                 if (text.length === 0) {
 
-                    if (Number(wioccl.id) === Number(this.root)) {
+                    if (Number(node.id) === Number(this.root)) {
                         alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
                         // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
                         console.error("TODO: determinar que fer amb això, el this.root no és correcte, era el this.root del DojoWioccl")
-                        this.root = wioccl.parent;
+                        this.root = node.parent;
                     } else {
                         alert("La branca s'ha eliminat.");
                     }
 
-                    wioccl = this.structure[wioccl.parent];
+                    node = this.structure[node.parent];
                     outTokens = [];
                 }
             }
 
 
-            this._createTree(wioccl, outTokens, this.structure);
+            this._createTree(node, outTokens, this.structure);
 
-            return wioccl;
+            return node;
 
         },
 
@@ -430,7 +422,10 @@ define([
             }
 
 
+            let errorDetected = false ;
+
             for (let i in outTokens) {
+                // console.log(i, stack);
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 // Si l'arrel és temporal el primer token és fill de l'arrel
@@ -457,9 +452,20 @@ define([
                 outTokens[i].children = [];
 
                 if (outTokens[i].value.startsWith('</WIOCCL:')) {
+                    // console.log("Tancant", outTokens[i].value)
                     outTokens[i].type = "wioccl";
                     let top = stack.pop();
-                    top.close = outTokens[i].value;
+
+                    if (!top) {
+                        // Aquest error es produeix quan s'afegeix l'apertura d'una instrucció però encara no s'ha
+                        // afegit el tancament, per exemple amb {## es capturarà tot el text fins el primer ##} i aquest
+                        // pot correspondre a un attribut d'una altra instrucció, per exemple un if.
+                        console.error("S'ha produit un error en la detecció del tancament", outTokens[i].value);
+                        errorDetected = true;
+                    } else {
+                        top.close = outTokens[i].value;
+                    }
+
                     continue;
                 }
 
@@ -503,7 +509,7 @@ define([
                 // No cal gestionar el type content perquè s'assigna al tokenizer
 
                 if (outTokens[i].value.startsWith('<WIOCCL:')) {
-                    // console.log("Value:", tokens[i].value);
+                    // console.log("Obrint", outTokens[i].value)
                     let pattern = /<WIOCCL:.*? (.*?)>/gsm;
 
                     let matches;
@@ -538,6 +544,7 @@ define([
                         outTokens[i].attrs = matches[1];
                     } else {
                         console.error("S'ha trobat un camp però no el seu nom", outTokens[i].value);
+                        errorDetected = true;
                     }
 
                 }
@@ -580,14 +587,29 @@ define([
 
 
                 // ALERTA[Xavi] Si s'afegeixen siblings a un element que penji directament del root aquest es descartaran
-                if (siblings > 1 && Number(root.id) === Number(this.root) && Number(this.structure[root.id]['parent']) !== 0) {
+                // Si es detecta cap error
+                if (siblings > 1 && Number(root.id) === Number(this.root)
+                    && Number(this.structure[root.id]['parent']) !== 0 && stack.length>0) {
+                    // console.log("structure siblings (id i parent):", this.structure.siblings);
+                    // for (let childId of this.structure.siblings) {
+                    //     let child = this.structure[childId];
+                    //     console.log(child.id, child.parent);
+                    // }
+
                     root.addedsiblings = true;
                 }
 
             }
 
+            // Si es produeix cap error ho descartem
+            if (errorDetected) {
+                root.addedsiblings = false;
+            }
+
             // console.log("hi ha outRoot?", outRoot);
             if (outRoot !== null) {
+                console.error("esborrar això");
+                alert("ERROR, això s'executa??");
                 Object.assign(root, outRoot);
                 delete root.isNull;
             }
