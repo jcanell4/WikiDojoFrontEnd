@@ -233,7 +233,7 @@ define([
             if (!ignoreFields) {
 
                 // this.setFields(this._extractFields(item.attrs, item.type));
-                this.setFields(this._extractFieldsFromWiocclNode(wiocclNode));
+                this.setFields(this._extractFieldsFromWiocclNode(wiocclNode), "test");
             }
 
 
@@ -350,7 +350,6 @@ define([
                         this.structure.parse(this.editor.getValue(), this.editor.wioccl);
                         // this.source.parseWiocclNew(this.editor.getValue(), this.editor.wioccl, outStructure, this);
                         let text = this.structure.getCode(this.structure.getNodeById(refId));
-
 
 
                         $input.val(text);
@@ -556,7 +555,26 @@ define([
 
 
         _selectWiocclNode(wiocclNode) {
-            // console.error('selecting wioccl:', wioccl);
+            // console.error('selecting wioccl:', wiocclNode);
+
+            let text;
+
+            switch (wiocclNode.type) {
+                case "content":
+                    text = "content";
+                    break;
+                case "field":
+                    text = "field";
+                    break;
+                default:
+                    text = wiocclNode.open + wiocclNode.close;
+                    text = text.replace(/[\u00A0-\u9999<>\&]/g, function (i) {
+                        return '&#' + i.charCodeAt(0) + ';';
+                    });
+
+            }
+            jQuery(this.attrLegendNode).html(text);
+
             this.selectedWiocclNode = wiocclNode;
         },
 
@@ -776,7 +794,6 @@ define([
             // return this._getNodeForPos(pos);
             return this.structure._getNodeForPos(pos);
         },
-
 
 
         // es crida desde DojoWioccl
