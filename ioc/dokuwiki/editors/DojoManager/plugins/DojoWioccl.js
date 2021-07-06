@@ -248,7 +248,8 @@ define([
 
                 wiocclDialog.show();
 
-                wiocclDialog.setFields(wiocclDialog._extractFields(tree[0].attrs, tree[0].type));
+                wiocclDialog._updateFields(tree[0]);
+                // wiocclDialog._setFields(wiocclDialog._extractFields(tree[0].attrs, tree[0].type));
                 wiocclDialog._updateDetail(tree[0]);
             });
         },

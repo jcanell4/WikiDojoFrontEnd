@@ -5,6 +5,100 @@ define([
 ], function (declare) {
 
 
+    // TODO: Solució temporal, en lloc de rebre la definició de WIOCC des del servidor la establim aquí
+
+
+    // TODO: comprovar quines falten!
+
+    let wiocclDefinition = {
+        function: {
+            open: "{#_",
+            close: "(%s)_#}",
+            defs: {
+                STR_REPLACE: {
+                    params: [
+                        {name: "param A", type: ["TODO"]},
+                        {name: "param B", type: ["TODO"]},
+                        {name: "param C", type: ["TODO"]},
+                        {name: "param D", type: ["TODO"]}
+                    ]
+                },
+                GET_PERCENT: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                        {name: "param1", type: ["TODO"]},
+                    ]
+                },
+                IS_STR_EMPTY: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                    ]
+                },
+                STR_CONTAINS: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                        {name: "param1", type: ["TODO"]},
+                    ]
+                },
+                ARRAY_LENGTH: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                    ]
+                },
+                MAX: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                        {name: "param1", type: ["TODO"]},
+                        {name: "param2", type: ["TODO"]},
+                    ]
+                },
+                DATE: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                        {name: "param1", type: ["TODO"]},
+                    ]
+                },
+                FIRST: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                        {name: "param1", type: ["TODO"]},
+                    ]
+                },
+                LAST: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                        {name: "param1", type: ["TODO"]},
+                    ]
+                },
+                SUBS: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                        {name: "param1", type: ["TODO"]},
+                    ]
+                },
+                ARRAY_GET_SUM: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                        {name: "param1", type: ["TODO"]},
+                    ]
+                },
+                COUNTINARRAY: {
+                    params: [
+                        {name: "param0", type: ["TODO"]},
+                        {name: "param1", type: ["TODO"]},
+                        {name: "param2", type: ["TODO"]},
+                    ]
+                },
+                UCFIRST: {
+                    params: [
+                        {name: "param0", type: ["TODO"]}
+                    ]
+                }
+            }
+        }
+
+    };
+
     return declare([], {
 
         /**
@@ -62,6 +156,45 @@ define([
             return this.structure['0'];
         },
 
+        getFunctionDefinition: function (name) {
+            if (wiocclDefinition.function.defs[name]) {
+                return wiocclDefinition.function.defs[name]
+            } else {
+                console.error("Error: la funció " + name + " no es troba definida");
+            }
+        },
+        getFunctionNames: function () {
+            return Object.keys(wiocclDefinition.function.defs);
+        },
+
+        updateFunctionName(wiocclNode, value) {
+            // console.log(wiocclNode);
+            let open = wiocclDefinition.function.open + value + wiocclDefinition.function.close;
+            this.structure[wiocclNode.id].open = open;
+        },
+
+        getInstructionName: function (node) {
+            let instruction = '';
+
+            switch (node.type) {
+                case 'function':
+
+                    let pattern = new RegExp('{#_(.*?)\\(');
+                    let match = pattern.exec(node.open);
+
+                    if (match.length > 1) {
+                        instruction = match[1];
+                    } else {
+                        console.error("Error, no s'ha pogut extreure el nom de la funció:", wiocclNode.open);
+                    }
+                    break;
+
+            }
+
+            return instruction;
+
+        },
+
         getNodeById: function (id) {
             if (!this.structure[id]) {
                 console.error(`No existeix a la estructura cap element amb id ${id}`, this.structure);
@@ -75,8 +208,8 @@ define([
 
             let node;
             // if (asClone) {
-                // així es crida en iniciar el diàleg principal
-                node = JSON.parse(JSON.stringify(this.getNodeById(refId)));
+            // així es crida en iniciar el diàleg principal
+            node = JSON.parse(JSON.stringify(this.getNodeById(refId)));
             // } else {
             //     // així es crida en iniciar un subdiàleg
             //     node = this.structure[refId];
@@ -299,7 +432,7 @@ define([
 
                 this._restore(this.structure.backupNode);
                 // console.log("Restaurat:", this.structure.backupNode.id, this.structure);
-                delete(this.structure.backupNode);
+                delete (this.structure.backupNode);
                 //
 
                 // alert("stop!");
@@ -426,7 +559,7 @@ define([
             }
 
 
-            let errorDetected = false ;
+            let errorDetected = false;
 
             for (let i in outTokens) {
                 // console.log(i, stack);
@@ -592,7 +725,7 @@ define([
                 // ALERTA[Xavi] Si s'afegeixen siblings a un element que penji directament del root aquest es descartaran
                 // Si es detecta cap error
                 if (siblings > 1 && Number(root.id) === Number(this.root)
-                    && Number(this.structure[root.id]['parent']) !== 0 && stack.length>0) {
+                    && Number(this.structure[root.id]['parent']) !== 0 && stack.length > 0) {
                     // console.log("structure siblings (id i parent):", this.siblings);
                     // for (let childId of this.siblings) {
                     //     let child = this.structure[childId];
@@ -808,9 +941,8 @@ define([
 
         // les claus són a l'estructura i només es manipulan en aquesta classe
         getNextKey: function () {
-            return this.structure.next +'';
+            return this.structure.next + '';
         },
-
 
 
     });

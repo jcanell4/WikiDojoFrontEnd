@@ -170,21 +170,21 @@ define([
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
         _extractFieldsFromWiocclNode: function (wiocclNode) {
-            // console.error('_extractFieldsFromWiocclNode', candidate);
+            // console.log('_extractFieldsFromWiocclNode', wiocclNode);
             if (wiocclNode.attrs.length === 0) {
                 wiocclNode.type = wiocclNode.type ? wiocclNode.type : "content";
                 wiocclNode.attrs = wiocclNode.open;
             }
 
-            return this._extractFields(wiocclNode.attrs, wiocclNode.type);
+            return this._extractFields(wiocclNode, wiocclNode.type);
         },
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
-        _extractFields: function (attrs, type) {
+        _extractFields: function (wiocclNode, type) {
             // console.log('_extractFields', type, attrs);
 
             // Cal fer la conversió de &escapedgt; per \>
-            attrs = attrs.replace('&escapedgt;', '\\>');
+            let attrs = wiocclNode.attrs.replace('&escapedgt;', '\\>');
 
             let fields = {};
 
@@ -203,9 +203,28 @@ define([
                     let paramsPattern = /(\[.*?\])|(".*?")|-?\d+/g;
                     let tokens = attrs.match(paramsPattern);
                     // console.log("Tokens:", tokens);
-                    for (let i = 0; i < tokens.length; i++) {
-                        fields['param' + i] = tokens[i].trim();
+                    let instruction = this.structure.getInstructionName(wiocclNode);
+                    let functionDefinition = this.structure.getFunctionDefinition(instruction);
+
+                    if (functionDefinition) {
+
+                        // En aquest cas el for inclou tots els params, independentment del nombre de tokens
+
+                        // for (let i = 0; i < tokens.length; i++) {
+                        for (let i = 0; i < functionDefinition.params.length; i++) {
+
+                            if (i <= tokens.length - 1) {
+                                fields[functionDefinition.params[i].name] = tokens[i].trim();
+                            } else {
+                                fields[functionDefinition.params[i].name] = '';
+                            }
+
+                            // fields['param' + i] = tokens[i].trim();
+                        }
+
+                        // console.log(fields);
                     }
+
 
                     break;
 
@@ -223,6 +242,32 @@ define([
         },
 
 
+        // todo: determinar si es necessari el ignore detal
+        _updateFields: function (wiocclNode, ignoreDetail) {
+            //
+
+
+            // type: wioccl o content.
+            // todo: fer un tractament diferent per cada tipus, actualment es modifica el wiocclNode per tractar
+            // els params i el content com atributs
+
+            switch (wiocclNode.type) {
+
+                // case 'function':
+                //     let params = this._extractFieldsFromWiocclNode(wiocclNode);
+                //     this._setParams(params)
+                //
+                // case 'wioccl':
+                default:
+                    let fields = this._extractFieldsFromWiocclNode(wiocclNode);
+                    this._setAttrs(fields);
+                    break;
+
+
+            }
+
+        },
+
         _updateDetail: function (wiocclNode, ignoreFields) {
 
 
@@ -233,7 +278,8 @@ define([
             if (!ignoreFields) {
 
                 // this.setFields(this._extractFields(item.attrs, item.type));
-                this.setFields(this._extractFieldsFromWiocclNode(wiocclNode), "test");
+                // this.setFields(this._extractFieldsFromWiocclNode(wiocclNode));
+                this._updateFields(wiocclNode);
             }
 
 
@@ -279,6 +325,7 @@ define([
 
             let html = '';
 
+
             for (let field in fields) {
 
                 // Es necessari eliminar el escape de les dobles cometes
@@ -297,13 +344,14 @@ define([
 
         _pendingChanges: null,
 
-        setFields: function (fields, type) {
-            // console.error("Setting fields", fields, type);
+
+        _setParams: function (fields) {
+            alert("Stop, reimplementar, això tracta amb camps!")
             let $attrContainer = jQuery(this.attrContainerNode);
 
             $attrContainer.empty();
 
-            let $fields = jQuery(this._generateHtmlForFields(fields, type))
+            let $fields = jQuery(this._generateHtmlForFields(fields))
 
             let context = this;
 
@@ -384,7 +432,119 @@ define([
 
 
                 // console.log(outRoot);
-                wiocclDialog.setFields(wiocclDialog._extractFieldsFromWiocclNode(rootWiocclNode));
+                // wiocclDialog._setFields(wiocclDialog._extractFieldsFromWiocclNode(rootWiocclNode));
+                wiocclDialog._updateFields(rootWiocclNode);
+                wiocclDialog._updateDetail(rootWiocclNode);
+            });
+
+
+            $fields.find('input').on('input change', function (e) {
+                context._fieldChanges = true;
+
+                // console.log("es input o es change?",e.type );
+                if (UPDATE_TIME === 0 || e.type === 'change') {
+                    context._updatePendingChanges_Field2Detail();
+
+                } else if (!context._pendingChanges_Field2Detail) {
+                    context.timerId_Field2Detail = setTimeout(context._updatePendingChanges_Field2Detail.bind(context), UPDATE_TIME);
+                    context._pendingChanges_Field2Detail = true;
+                } else {
+                    // console.log('pending changes?', context._pendingChanges_Field2Detail);
+                }
+            });
+
+            $attrContainer.append($fields);
+            this._updateEditorHeight();
+        },
+
+        _setAttrs: function (fields) {
+            let $attrContainer = jQuery(this.attrContainerNode);
+
+            $attrContainer.empty();
+
+            let $fields = jQuery(this._generateHtmlForFields(fields))
+
+            let context = this;
+
+            $fields.find('[data-button-edit]').on('click', function (e) {
+
+                let $input = jQuery(this).siblings('input');
+                let value = $input.val();
+
+                let structure = new WiocclStructureTemp();
+                let rootWiocclNode = structure.getRoot();
+
+                structure.parse(value, rootWiocclNode);
+
+                let refId = rootWiocclNode.id;
+
+                let tree = structure.getTreeFromNode(refId, true);
+
+                let wiocclDialog = new DojoWioccDialog({
+                    title: 'Edició wioccl',
+                    // style: 'width:auto',
+                    style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
+                    // style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 100%; max-height: 100%;',
+                    onHide: function (e) { //Voliem detectar el event onClose i hem hagut de utilitzar onHide
+                        this.destroyRecursive();
+                        context.backup = null;
+                    },
+                    id: 'wioccl-dialog_inner' + counter,
+                    draggable: false,
+                    firstResize: true,
+                    dispatcher: context.dispatcher,
+                    args: {
+                        id: 'wioccl-dialog_inner' + counter,
+                        // value: context.source.getCode(tree[0], outStructure)
+                        value: structure.getCode(tree[0])
+                    },
+                    wioccl: rootWiocclNode,
+                    // structure: outStructure,
+                    structure: structure,
+                    tree: tree,
+                    refId: refId,
+                    saveCallback: function () {
+
+                        // this és correcte, fa referència al nou dialog que s'instància
+                        this.structure.parse(this.editor.getValue(), this.editor.wioccl);
+                        // this.source.parseWiocclNew(this.editor.getValue(), this.editor.wioccl, outStructure, this);
+                        let text = this.structure.getCode(this.structure.getNodeById(refId));
+
+
+                        $input.val(text);
+                        $input.trigger('input');
+
+                        wiocclDialog.destroyRecursive();
+                    },
+                    // saveCallback : context._save.bind(context),
+                    updateCallback: function (editor) {
+                        // this.source.parse(editor.getValue(), editor.wioccl, this.getStructure());
+                        // this és correcte, fa referència al nou dialog que s'instància
+                        this.structure.updating = true;
+
+
+                        this.structure.discardSiblings();
+
+                        this.structure.updating = false;
+
+
+                        this.structure.parse(editor.getValue(), editor.wioccl);
+
+                        this.setData(this.structure.getNodeById(refId), rootWiocclNode);
+                    }
+
+                });
+
+                counter++;
+
+                wiocclDialog.startup();
+
+                wiocclDialog.show();
+
+
+                // console.log(outRoot);
+                // wiocclDialog._setFields(wiocclDialog._extractFieldsFromWiocclNode(rootWiocclNode));
+                wiocclDialog._updateFields(rootWiocclNode);
                 wiocclDialog._updateDetail(rootWiocclNode);
             });
 
@@ -545,8 +705,7 @@ define([
 
             let updatedWioccl = this._getWiocclForCurrentPos();
             this._selectWiocclNode(updatedWioccl);
-            let extractedFields = this._extractFieldsFromWiocclNode(updatedWioccl);
-            this.setFields(extractedFields);
+            this._updateFields(updatedWioccl);
 
 
             this.updating = false;
@@ -557,6 +716,12 @@ define([
         _selectWiocclNode(wiocclNode) {
             // console.error('selecting wioccl:', wiocclNode);
 
+            this._updateLegend(wiocclNode);
+            this._updateInstructionHtml(wiocclNode);
+            this.selectedWiocclNode = wiocclNode;
+        },
+
+        _updateLegend: function(wiocclNode) {
             let text;
 
             switch (wiocclNode.type) {
@@ -574,25 +739,82 @@ define([
 
             }
             jQuery(this.attrLegendNode).html(text);
-
-            this.selectedWiocclNode = wiocclNode;
         },
 
-        // // Actualitza la estructura a partir dels valors del chunkmap
-        // _updateStructure: function () {
-        //     // let structure = this.source.getStructure();
-        //     let structure = this.structure;
-        //     for (let [startPos, wiocclNode] of this.chunkMap) {
-        //         // console.log("updating structure", start, wioccl);
-        //         structure.setNode(wiocclNode);
-        //         // structure[Number(wioccl.id)] = wioccl;
-        //     }
-        //
-        //     if (this.editor.wioccl !== undefined) {
-        //         // this.editor.wioccl = structure[Number(this.editor.wioccl.id)];
-        //         this.editor.wioccl = structure.getById(this.editor.wioccl.id);
-        //     }
-        // },
+        _updateInstructionHtml: function (wiocclNode) {
+            // console.log("_updateInstructionHtml", wiocclNode);
+            // TODO: Afegir al template una secció nova dojo- per afegir el selector:
+            //      - funció
+            //      - instrucció wioccl
+
+
+            let instruction = '';
+            if (wiocclNode.type === 'function') {
+                instruction = this.structure.getInstructionName(wiocclNode);
+
+                // let pattern = new RegExp('{#_(.*?)\\(');
+                // let match = pattern.exec(wiocclNode.open);
+                //
+                //
+                //
+                // if (match.length > 1) {
+                //     instruction = match[1];
+                // } else {
+                //     console.error("Error, no s'ha pogut extreure el nom de la funció:", wiocclNode.open);
+                // }
+
+                let html = '';
+
+                html += '<div class="wioccl-field">';
+                html += '<label>' + wiocclNode.type + ':</label>';
+                // html += '<input type="text" name="' + instruction + '" value="' + instruction + '"/>';
+                html += '<select name="' + instruction + '">';
+
+                let functionNames = this.structure.getFunctionNames();
+                // console.log("Function names:", functionNames);
+                for (let name of functionNames) {
+                    let selected = name === instruction ? 'selected' : '';
+                    html += `<option value="${name}" ${selected}>${name}</option>`;
+                }
+
+
+                html += '</select>';
+                // html += '<button data-button-edit>change</button>';
+                html += '</div>';
+
+                let $instruction = jQuery(this.wiocclInstruction);
+                $instruction.html(html);
+
+                let context = this;
+
+                $instruction.find('select').on('change input', function () {
+                    let value = jQuery(this).val();
+                    // console.log("seleccionat:", value);
+                    context.structure.updateFunctionName(wiocclNode, value);
+                    context._updateLegend(wiocclNode)
+                    context._updateFields(wiocclNode);
+                    context._updateDetail(wiocclNode, true)
+                    // fer this.structure.updateFunction(wioccl, instruction);
+                });
+            }
+
+
+            // TODO: El nom de la funció ha de ser un select i es tracta de forma diferent
+            // if (type === 'function') {
+            //     html += '<div class="wioccl-field" data-attr-field="' + field + '">';
+            //     html += '<label>Funció:</label>';
+            //     // afegim data-function per poder distingir aquest tipus quan es detecti un canvi
+            //     html += '<input type="text" name="function" value="' + fields.function + '" data-function/>';
+            //     // html += '<button data-button-edit>wioccl</button>';
+            //     html += '</div>';
+            //     delete(fields.function)
+            // }
+
+            // TODO: gestionar els noms de variables (type field) amb opció per afegir literals. Això és més complicat
+            //  perquè és necessari un camp que admeti literals i desplegable amb els camps actius en aquest punt de
+            //  la estructura
+
+        },
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
         _rebuildAttrs: function (fields, type) {
@@ -721,10 +943,11 @@ define([
 
                 // console.error("Focus! canviant el selected per", candidate);
 
-                let auxFields = context._extractFieldsFromWiocclNode(candidateWiocclNode);
+                // let auxFields = context._extractFieldsFromWiocclNode(candidateWiocclNode);
 
                 context._selectWiocclNode(candidateWiocclNode);
-                context.setFields(auxFields);
+                // context._setFields(auxFields);
+                context._updateFields(candidateWiocclNode);
 
 
                 // *********************** //
@@ -762,10 +985,12 @@ define([
                     return;
                 }
 
-                let auxFields = context._extractFieldsFromWiocclNode(candidateWiocclNode);
+                // let auxFields = context._extractFieldsFromWiocclNode(candidateWiocclNode);
 
                 context._selectWiocclNode(candidateWiocclNode);
-                context.setFields(auxFields);
+                // context._setFields(auxFields);
+                context._updateFields(candidateWiocclNode);
+
             });
 
             this._updateEditorHeight();
