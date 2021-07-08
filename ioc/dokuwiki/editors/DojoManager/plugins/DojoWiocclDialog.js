@@ -36,7 +36,6 @@ define([
         wasFocused: null,
 
         startup: function () {
-            // console.log("Quina es la estructura que s'ha assignat al diàleg?", this.structure);
             this.inherited(arguments);
             this.createEditor();
             this.createTree(this.tree, this.refId, this.structure);
@@ -122,9 +121,6 @@ define([
             // Fem un backup inicial quan es crea l'arbre
             structure.backup(structure.getRoot());
 
-
-            // console.log(tree, refId, structure, model);
-
             this.treeWidget = new Tree({
                 id: Date.now(),
                 model: model,
@@ -170,12 +166,14 @@ define([
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
         _extractFieldsFromWiocclNode: function (wiocclNode) {
-            // console.log('_extractFieldsFromWiocclNode', wiocclNode);
+            console.log('_extractFieldsFromWiocclNode type', wiocclNode.type);
             if (wiocclNode.attrs.length === 0) {
                 wiocclNode.type = wiocclNode.type ? wiocclNode.type : "content";
             }
 
             let fields;
+
+
 
             switch (wiocclNode.type) {
                 case 'function':
@@ -225,23 +223,14 @@ define([
             let paramsPattern = /(\[.*?\])|(".*?")|(''.*?'')|-?\d+|,(),/g;
             let tokens = attrs.match(paramsPattern);
 
-            // console.log(paramsPattern, attrs);
-
             if (tokens === null) {
                 // això és pot produir si s'esborren les dobles cometes d'un camp per exemple
                 console.error("S'ha produit un error, no és possible parsejar els camps actuals");
                 return {};
             }
 
-
-
-            // console.warn("Tokens:", tokens);
-
-
             let instruction = this.structure.getInstructionName(wiocclNode);
             let functionDefinition = this.structure.getFunctionDefinition(instruction);
-
-            // console.log(functionDefinition);
 
             // ALERTA! s'han de gestionar les ,, ja que són camps buits.
             for (let i = 0; i < tokens.length; i++) {
@@ -260,7 +249,6 @@ define([
                     // console.log("Default:", functionDefinition.params[i].default, functionDefinition.params[i])
 
                     let paramDef = functionDefinition.params[i];
-                    // console.log("paramDef", paramDef);
                     let value = '';
 
                     if (i <= tokens.length - 1 && tokens[i].length > 0) {
@@ -269,13 +257,11 @@ define([
                         value = paramDef.default !== undefined ? paramDef.default : '';
                     }
 
-
-                    // console.log("Valor:", value);
                     value += ''; // ens asegurem que es tracta d'un string
 
                     let isString = (value.startsWith("''") || value.startsWith('"'))
                         && (paramDef.type === 'string'
-                        || (Array.isArray(paramDef.type) && paramDef.type.includes('string')));
+                            || (Array.isArray(paramDef.type) && paramDef.type.includes('string')));
 
                     // TODO: eliminar les cometes i dobles cometes al principi i al final
                     value = value.replace(/^("|'')/gm, '')
@@ -402,15 +388,18 @@ define([
                 case 'function':
                     return this._generateHtmlForParams(fields, wiocclNode);
 
+                case 'field':
+                case 'content':
+                    return this._generateHtmlForGenerics(fields, wiocclNode);
+
                 default:
                     return this._generateHtmlForAttrs(fields, wiocclNode);
+
             }
         },
 
         _generateHtmlForParams: function (fields, wiocclNode) {
             let html = '';
-
-            // console.log(wiocclNode);
 
             let paramMap = new Map();
 
@@ -421,21 +410,15 @@ define([
             for (let i = 0; i < functionDefinition.params.length; i++) {
                 paramMap.set(functionDefinition.params[i].name, functionDefinition.params[i]);
             }
-            // console.log(instruction, functionDefinition, paramMap, fields);
-
-
-
 
             for (let field in fields) {
 
-                // console.log(field, paramMap);
                 let types = paramMap.get(field).type;
 
                 if (Array.isArray(types)) {
                     types = types.join('|');
                 }
 
-                // console.log("[test]", field);
                 // Es necessari eliminar el escape de les dobles cometes
                 // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
                 let value = fields[field].replaceAll('\"', '&quot;');
@@ -461,6 +444,48 @@ define([
         },
 
         _generateHtmlForAttrs: function (fields, wiocclNode) {
+
+            let html = '';
+
+            let attrsMap = new Map();
+
+            let instruction = this.structure.getInstructionName(wiocclNode);
+            let keywordDefinition = this.structure.getKeywordDefinition(instruction);
+
+
+            for (let i = 0; i < keywordDefinition.attrs.length; i++) {
+                attrsMap.set(keywordDefinition.attrs[i].name, keywordDefinition.attrs[i]);
+            }
+
+            for (let [name, attr] of attrsMap) {
+
+                let types = attr.type;
+
+                if (Array.isArray(types)) {
+                    types = types.join('|');
+                }
+
+                let value;
+
+                if (fields[name]) {
+                    value = fields[name].replaceAll('\"', '&quot;');
+                } else {
+                    // TODO: Gestionar si és opcional o no
+                    value = '';
+                }
+
+                html += '<div class="wioccl-field" data-attr-field="' + name + '">';
+                // html += `<label>${field} <span>(${types})</span></label>`;
+                html += `<label>${name} <span>(${types})</span></label>`;
+                html += '<input type="text" name="' + name + '" value="' + value + '"/>';
+                html += '<button data-button-edit>wioccl</button>';
+                html += '</div>';
+            }
+
+            return html;
+        },
+
+        _generateHtmlForGenerics: function (fields, wiocclNode) {
             let html = '';
             for (let field in fields) {
                 // console.log("[test]", field);
@@ -774,76 +799,119 @@ define([
 
 
             let instruction = '';
-            if (wiocclNode.type === 'function') {
-                instruction = this.structure.getInstructionName(wiocclNode);
 
-                // let pattern = new RegExp('{#_(.*?)\\(');
-                // let match = pattern.exec(wiocclNode.open);
-                //
-                //
-                //
-                // if (match.length > 1) {
-                //     instruction = match[1];
-                // } else {
-                //     console.error("Error, no s'ha pogut extreure el nom de la funció:", wiocclNode.open);
-                // }
+            switch (wiocclNode.type) {
+                case 'function':
+                    this._updateFunctionHtml(wiocclNode);
 
-                let html = '';
+                case 'field':
+                case 'content':
+                    // no fem res per ara
+                    break;
 
-                html += '<div class="wioccl-field">';
-                html += '<label>' + wiocclNode.type + ':</label>';
-                // html += '<input type="text" name="' + instruction + '" value="' + instruction + '"/>';
-                html += '<select name="' + instruction + '">';
+                default:
+                    // keyword
+                    this._updateKeywordHtml(wiocclNode);
+            }
 
-                let functionNames = this.structure.getFunctionNames();
-                // console.log("Function names:", functionNames);
-                for (let name of functionNames) {
-                    let selected = name === instruction ? 'selected' : '';
-                    html += `<option value="${name}" ${selected}>${name}</option>`;
-                }
+        },
 
+        _updateKeywordHtml: function (wiocclNode) {
+            let instruction = this.structure.getInstructionName(wiocclNode);
 
-                html += '</select>';
-                // html += '<button data-button-edit>change</button>';
-                html += '</div>';
+            let html = '';
 
-                let $instruction = jQuery(this.wiocclInstruction);
-                $instruction.html(html);
+            html += '<div class="wioccl-field">';
+            html += '<label>Type:</label>';
+            // html += '<input type="text" name="' + instruction + '" value="' + instruction + '"/>';
+            html += '<select name="' + instruction + '">';
 
-                let context = this;
-
-                $instruction.find('select').on('change input', function () {
-                    let value = jQuery(this).val();
-                    // console.log("seleccionat:", value);
-                    context.structure.updateFunctionName(wiocclNode, value);
-                    context._updateLegend(wiocclNode)
-                    context._updateFields(wiocclNode);
-
-                    let extractedFields = context._extractFieldsFromWiocclNode(context.selectedWiocclNode);
-                    let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWiocclNode);
-                    // Re assignem els nous atributs
-                    wiocclNode.attrs = rebuildAttrs;
-
-                    context._updateDetail(wiocclNode, true)
-                    // fer this.structure.updateFunction(wioccl, instruction);
-                });
+            let keywordNames = this.structure.getKeywordNames();
+            // console.log("Function names:", functionNames);
+            for (let name of keywordNames) {
+                let selected = name === instruction ? 'selected' : '';
+                html += `<option value="${name}" ${selected}>${name}</option>`;
             }
 
 
-            // TODO: El nom de la funció ha de ser un select i es tracta de forma diferent
-            // if (type === 'function') {
-            //     html += '<div class="wioccl-field" data-attr-field="' + field + '">';
-            //     html += '<label>Funció:</label>';
-            //     // afegim data-function per poder distingir aquest tipus quan es detecti un canvi
-            //     html += '<input type="text" name="function" value="' + fields.function + '" data-function/>';
-            //     // html += '<button data-button-edit>wioccl</button>';
-            //     html += '</div>';
-            //     delete(fields.function)
-            // }
+            html += '</select>';
+            // html += '<button data-button-edit>change</button>';
+            html += '</div>';
 
-            // TODO: gestionar els noms de variables (type field) amb opció per afegir literals. Això és més complicat
-            //  perquè és necessari un camp que admeti literals i desplegable amb els camps actius en aquest punt de
-            //  la estructura
+            let $instruction = jQuery(this.wiocclInstruction);
+            $instruction.html(html);
+
+            let context = this;
+
+            $instruction.find('select').on('change input', function () {
+                let value = jQuery(this).val();
+                // console.log("seleccionat:", value);
+
+                context.structure.updateKeywordName(wiocclNode, value);
+
+                // context.structure.updateFunctionName(wiocclNode, value);
+
+                context._updateLegend(wiocclNode)
+                context._updateFields(wiocclNode);
+
+                let extractedFields = context._extractFieldsFromWiocclNode(context.selectedWiocclNode);
+
+                let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWiocclNode);
+
+                // Re assignem els nous atributs
+                wiocclNode.attrs = rebuildAttrs;
+
+                context._updateDetail(wiocclNode, true)
+            });
+        },
+
+        _updateFunctionHtml: function (wiocclNode) {
+            // console.log("_updateInstructionHtml", wiocclNode);
+            // TODO: Afegir al template una secció nova dojo- per afegir el selector:
+            //      - funció
+            //      - instrucció wioccl
+
+
+            let instruction = this.structure.getInstructionName(wiocclNode);
+
+
+            let html = '';
+
+            html += '<div class="wioccl-field">';
+            html += '<label>' + wiocclNode.type + ':</label>';
+            // html += '<input type="text" name="' + instruction + '" value="' + instruction + '"/>';
+            html += '<select name="' + instruction + '">';
+
+            let functionNames = this.structure.getFunctionNames();
+            for (let name of functionNames) {
+                let selected = name === instruction ? 'selected' : '';
+                html += `<option value="${name}" ${selected}>${name}</option>`;
+            }
+
+            html += '</select>';
+            html += '</div>';
+
+            let $instruction = jQuery(this.wiocclInstruction);
+            $instruction.html(html);
+
+            let context = this;
+
+            $instruction.find('select').on('change input', function () {
+                let value = jQuery(this).val();
+                // console.log("seleccionat:", value);
+                context.structure.updateFunctionName(wiocclNode, value);
+                context._updateLegend(wiocclNode)
+                context._updateFields(wiocclNode);
+
+                let extractedFields = context._extractFieldsFromWiocclNode(context.selectedWiocclNode);
+                let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWiocclNode);
+                // Re assignem els nous atributs
+                wiocclNode.attrs = rebuildAttrs;
+
+                context._updateDetail(wiocclNode, true)
+                // fer this.structure.updateFunction(wioccl, instruction);
+            });
+
 
         },
 
@@ -853,8 +921,15 @@ define([
             let type = wiocclNode.type;
             let rebuild = '';
             let first = true;
+            let instruction;
+
+            console.log('type', wiocclNode.type);
 
             switch (type) {
+
+                case 'content':
+                    // és content, no cal fer res
+                    break;
 
                 case 'field':
                     rebuild = fields['field'];
@@ -862,7 +937,7 @@ define([
 
                 case 'function':
 
-                    let instruction = this.structure.getInstructionName(wiocclNode);
+                    instruction = this.structure.getInstructionName(wiocclNode);
                     let functionDefinition = this.structure.getFunctionDefinition(instruction);
 
                     let paramMap = new Map();
@@ -911,11 +986,9 @@ define([
                         } else {
                             // Comprovem els tipus de camp i si el valor és un string o date i afegim les dobles cometes
 
-
                             // Eliminem les "* i les ''* del principi i del final
                             value = value.replace(/^("+|'{2,})+/g, '');
                             value = value.replace(/("+|'{2,})+$/g, '');
-
 
                             // console.log("[**]:", name, types, value)
                             for (let i = 0; i < types.length; i++) {
@@ -936,18 +1009,58 @@ define([
                     break;
 
                 default:
+                    // Instrucció
 
-                    for (let name in fields) {
+                    instruction = this.structure.getInstructionName(wiocclNode);
+                    let keywordDefinition = this.structure.getKeywordDefinition(instruction);
+
+                    let attrsMap = new Map();
+                    for (let i = 0; i < keywordDefinition.attrs.length; i++) {
+                        attrsMap.set(keywordDefinition.attrs[i].name, keywordDefinition.attrs[i]);
+                    }
+
+                    // Differencia amb la gestió de funcions: no s'han de fer servir cometes i en lloc de separar per ,
+                    // es separa per espais
+
+
+                    // TODO: ALERTA! La reconstrucció s'ha de fer (a function també) a partir dels atributs definits
+                    // no dels camps!!
+
+                    for (let [name, attr] of attrsMap) {
                         if (first) {
                             first = false;
                         } else {
-                            rebuild += " ";
+                            rebuild += ' ';
                         }
-                        rebuild += name + '=\"' + fields[name] + '\"';
+
+                        let value;
+
+                        if (fields[name]) {
+                            value = fields[name];
+                        } else {
+                            value = '';
+                        }
+
+
+                        let types = Array.isArray(attr.type) ? attr.type : [attr.type];
+
+                        if (value.startsWith('[') && value.endsWith(']')) {
+                            // És un array, comprovem que sigui un tipus vàlid
+                            if (!types.includes("array")) {
+                                console.error("S'ha detectat un array però el camp no accepta aquest tipus. Tipus acceptats:", types);
+                                alert("S'ha detectat un array però el camp " + name + " no accepta aquest tipus. Tipus acceptats:" + types);
+                            }
+
+                        }
+
+                        // rebuild += value;
+
+                        rebuild += name + '=\"' + value + '\"';
                     }
+
             }
 
-            // console.log("fields rebuild:", rebuild);
+            // console.log("fields rebuilt:", rebuild);
             return rebuild;
         },
 

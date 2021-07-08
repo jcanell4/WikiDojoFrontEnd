@@ -238,6 +238,92 @@ define([
                     ]
                 },
             }
+        },
+        // template serà el template a inserir quan s'afegeixi aquesta instrucció
+        keyword: {
+            // %i es reemplaça pel nom de l'instrucció
+            open: "<WIOCCL:%i %s>",
+            close: "</WIOCCL:%i>",
+            defs: {
+                IF: {
+                    attrs: [
+                        {name: 'condition', type: '*'}
+                    ],
+                    template: ''
+                },
+                FOREACH: {
+                    attrs: [
+                        {name: 'TODO', type: '*'}
+                    ],
+                    template: ''
+                },
+                FOR: {
+                    attrs: [
+                        {name: 'TODO', type: '*'}
+                    ],
+                    template: ''
+                },
+                SUBSET: {
+                    attrs: [
+                        {name: 'TODO', type: '*'}
+                    ],
+                    template: ''
+                },
+                SET: {
+                    attrs: [
+                        {name: 'var', type: '*'},
+                        {name: 'type', type: '*'},
+                        {name: 'value', type: '*'},
+                    ],
+                    template: ''
+                },
+                CONDSET: {
+                    attrs: [
+                        {name: 'TODO', type: '*'}
+                    ],
+                    template: ''
+                },
+                RESET: {
+                    attrs: [
+                        {name: 'TODO', type: '*'}
+                    ],
+                    template: ''
+                },
+                CASE: {
+                    attrs: [
+                        {name: 'TODO', type: '*'}
+                    ],
+                    template: ''
+                },
+                DEFAULTCASE: {
+                    attrs: [
+                        {name: 'TODO', type: '*'}
+                    ],
+                    template: ''
+                },
+                REPARSE: {
+                    attrs: [
+                        {name: 'TODO', type: '*'}
+                    ],
+                    template: ''
+                },
+                REPARSESET: {
+                    attrs: [
+                        {name: 'TODO', type: '*'}
+                    ],
+                    template: ''
+                },
+                READONLY_OPEN: {
+                    open: ':###',
+                    close: '',
+                    attrs: []
+                },
+                READONLY_CLOSE: {
+                    open: '###:',
+                    close: '',
+                    attrs: []
+                }
+            }
         }
 
     };
@@ -289,7 +375,7 @@ define([
             throw error('This methos must be implemented by subclasses');
         },
 
-        getRaw: function() {
+        getRaw: function () {
             return this.structure;
         },
 
@@ -311,14 +397,66 @@ define([
                 console.error("Error: la funció " + name + " no es troba definida");
             }
         },
+
         getFunctionNames: function () {
             return Object.keys(wiocclDefinition.function.defs).sort();
         },
 
-        updateFunctionName(wiocclNode, value) {
+        updateFunctionName(node, value) {
             // console.log(wiocclNode);
             let open = wiocclDefinition.function.open + value + wiocclDefinition.function.close;
-            this.structure[wiocclNode.id].open = open;
+            this.structure[node.id].open = open;
+        },
+
+        updateKeywordName(node, value) {
+            // console.log(node, value);
+            let trailingOpenNewLine = node.open.endsWith("\n");
+            let trailingCloseNewLine = node.close.endsWith("\n");
+
+
+            let instruction = value;
+
+            let definition = this.getKeywordDefinition(instruction)
+            let opening = '';
+            let closing = '';
+
+            if (definition.open) {
+                opening = definition.open;
+            } else {
+                opening = wiocclDefinition.keyword.open.replace('%i', instruction);
+            }
+
+            if (definition.close) {
+                closing = definition.close;
+            } else {
+                closing = wiocclDefinition.keyword.close.replace('%i', instruction);
+            }
+
+            if (trailingOpenNewLine) {
+                opening += "\n";
+            }
+
+            if (trailingCloseNewLine) {
+                closing += "\n";
+            }
+
+            this.structure[node.id].open = opening;
+            this.structure[node.id].type = instruction.toLowerCase();
+            this.structure[node.id].close = closing;
+        },
+
+        getKeywordDefinition: function (name) {
+            // console.log(name, wiocclDefinition.keyword.defs);
+
+            if (wiocclDefinition.keyword.defs[name]) {
+                return wiocclDefinition.keyword.defs[name]
+            } else {
+                console.error("Error: la instrucció " + name + " no es troba definida");
+            }
+        },
+
+        getKeywordNames: function () {
+            return Object.keys(wiocclDefinition.keyword.defs).sort();
         },
 
         getInstructionName: function (node) {
@@ -337,6 +475,17 @@ define([
                     }
                     break;
 
+                case 'content':
+                    console.warn("TODO: content no definit");
+                    break;
+
+                case 'field':
+                    console.warn("TODO: field no definit");
+                    break;
+
+                default:
+                    // Instruccions
+                    instruction = node.type.toUpperCase();
             }
 
             return instruction;
