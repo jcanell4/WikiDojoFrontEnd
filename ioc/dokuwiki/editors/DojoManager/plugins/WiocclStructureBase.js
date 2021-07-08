@@ -7,93 +7,236 @@ define([
 
     // TODO: Solució temporal, en lloc de rebre la definició de WIOCC des del servidor la establim aquí
 
-
-    // TODO: comprovar quines falten!
-
     let wiocclDefinition = {
         function: {
             open: "{#_",
             close: "(%s)_#}",
             defs: {
-                STR_REPLACE: {
-                    params: [
-                        {name: "param A", type: ["TODO"]},
-                        {name: "param B", type: ["TODO"]},
-                        {name: "param C", type: ["TODO"]},
-                        {name: "param D", type: ["TODO"]}
-                    ]
-                },
-                GET_PERCENT: {
-                    params: [
-                        {name: "param0", type: ["TODO"]},
-                        {name: "param1", type: ["TODO"]},
-                    ]
-                },
                 IS_STR_EMPTY: {
                     params: [
-                        {name: "param0", type: ["TODO"]},
+                        {name: "text", type: "string", default: ""}
                     ]
                 },
-                STR_CONTAINS: {
+
+                YEAR: {
                     params: [
-                        {name: "param0", type: ["TODO"]},
-                        {name: "param1", type: ["TODO"]},
+                        {name: "date", type: "date"}
                     ]
                 },
-                ARRAY_LENGTH: {
-                    params: [
-                        {name: "param0", type: ["TODO"]},
-                    ]
-                },
-                MAX: {
-                    params: [
-                        {name: "param0", type: ["TODO"]},
-                        {name: "param1", type: ["TODO"]},
-                        {name: "param2", type: ["TODO"]},
-                    ]
-                },
+
                 DATE: {
                     params: [
-                        {name: "param0", type: ["TODO"]},
-                        {name: "param1", type: ["TODO"]},
+                        {name: "date", type: "date"},
+                        {name: "sep", type: "string", default: "-"}
                     ]
                 },
+
+                LONG_DATE: {
+                    params: [
+                        {name: "date", type: "date"},
+                        {name: "includeDay", type: "bool", default: false}
+                    ]
+                },
+
+                SUM_DATE: {
+                    params: [
+                        {name: "date", type: "date"},
+                        {name: "days", type: "int"},
+                        {name: "months", type: "int", default: 0},
+                        {name: "years", type: "int", default: 0},
+                        {name: "sep", type: "string", default: "-"}
+                    ]
+                },
+
+                IN_ARRAY: {
+                    params: [
+                        {name: "value", type: "string"},
+                        {name: "array", type: "array"}
+                    ]
+                },
+
+                SEARCH_ROW: {
+                    params: [
+                        {name: "toSearch", type: "string"},
+                        {name: "array", type: "array"},
+                        {name: "column", type: "string"},
+                        {name: "default", type: "bool", default: false}
+                    ]
+                },
+
+                SEARCH_VALUE: {
+                    params: [
+                        {name: "toSearch", type: "string"},
+                        {name: "array", type: "array"},
+                        {name: "column", type: "string"}
+                    ]
+                },
+
+                SEARCH_KEY: {
+                    params: [
+                        {name: "toSearch", type: ["string", "array"]},
+                        {name: "array", type: "array"},
+                        {name: "column", type: ["string", "array"]}
+                    ]
+                },
+
+                ARRAY_GET_VALUE: {
+                    params: [
+                        {name: "key", type: "string"},
+                        {name: "array", type: "array"},
+                        {name: "defaultValue", type: "bool", default: false}
+                    ]
+                },
+
+                ARRAY_LENGTH: {
+                    params: [
+                        {name: "array", type: "array"}
+                    ]
+                },
+
+                COUNTDISTINCT: {
+                    params: [
+                        {name: "array", type: "array"},
+                        {name: "fields", type: "array"}
+                    ]
+                },
+
                 FIRST: {
                     params: [
-                        {name: "param0", type: ["TODO"]},
-                        {name: "param1", type: ["TODO"]},
+                        {name: "array", type: "array"},
+                        {name: "template", type: "string"}
                     ]
                 },
+
                 LAST: {
                     params: [
-                        {name: "param0", type: ["TODO"]},
-                        {name: "param1", type: ["TODO"]},
+                        {name: "array", type: "array"},
+                        {name: "template", type: "string"}
                     ]
                 },
+
+                MIN: {
+                    params: [
+                        {name: "array", type: "array"},
+                        {name: "template", type: "string", default: "MIN"},
+                        {name: "fields", type: "array"}
+                    ]
+                },
+
+                MAX: {
+                    params: [
+                        {name: "array", type: "array"},
+                        {name: "template", type: "string", default: "MAX"},
+                        {name: "fields", type: "array"}
+                    ]
+                },
+
                 SUBS: {
                     params: [
-                        {name: "param0", type: ["TODO"]},
-                        {name: "param1", type: ["TODO"]},
+                        {name: "value1", type: "int"},
+                        {name: "value2", type: "int"}
                     ]
                 },
-                ARRAY_GET_SUM: {
+
+                SUMA: {
                     params: [
-                        {name: "param0", type: ["TODO"]},
-                        {name: "param1", type: ["TODO"]},
+                        {name: "value1", type: "int"},
+                        {name: "value2", type: "int"}
                     ]
                 },
-                COUNTINARRAY: {
+
+                UPPERCASE: {
                     params: [
-                        {name: "param0", type: ["TODO"]},
-                        {name: "param1", type: ["TODO"]},
-                        {name: "param2", type: ["TODO"]},
+                        {name: "value1", type: "string"},
+                        {name: "value2", type: "int"},
+                        {name: "value3", type: "int", default: 0}
                     ]
                 },
+
+                LOWERCASE: {
+                    params: [
+                        {name: "value1", type: "string"},
+                        {name: "value2", type: "int"},
+                        {name: "value3", type: "int", default: 0}
+                    ]
+                },
+
                 UCFIRST: {
                     params: [
-                        {name: "param0", type: ["TODO"]}
+                        {name: "value1", type: "string"}
                     ]
-                }
+                },
+
+                LCFIRST: {
+                    params: [
+                        {name: "value1", type: "string"}
+                    ]
+                },
+
+                STR_CONTAINS: {
+                    params: [
+                        {name: "subs", type: "string"},
+                        {name: "srtring", type: "string"}
+                    ]
+                },
+
+                EXPLODE: {
+                    params: [
+                        {name: "delimeter", type: "string"},
+                        {name: "srtring", type: "string"},
+                        {name: "limit", type: "bool", default: false},
+                        {name: "trim", type: "bool", default: false}
+                    ]
+                },
+
+                STR_TRIM: {
+                    params: [
+                        {name: "text", type: "string"},
+                        {name: "mask", type: "string"}
+                    ]
+                },
+
+                STR_SUBTR: {
+                    params: [
+                        {name: "text", type: "string"},
+                        {name: "start", type: "int", default: 0},
+                        {name: "len", type: "int", len: NaN}
+                    ]
+                },
+
+                STR_REPLACE: {
+                    params: [
+                        {name: "search", type: ["string", "array"]},
+                        {name: "replace", type: ["string", "array"]},
+                        {name: "subject", type: "string"},
+                        {name: "count", type: "int"},
+                    ]
+                },
+
+                ARRAY_GET_SUM: {
+                    params: [
+                        {name: "taula", type: "array"},
+                        {name: "camp", type: "string"},
+                        {name: "filter_field", type: "string"},
+                        {name: "filter_value", type: "string"} // alerta, a PHP és "type", per determinar
+                    ]
+                },
+
+                GET_PERCENT: {
+                    params: [
+                        {name: "suma", type: "int", default: 0},
+                        {name: "valor", type: "int", default: 0},
+                        {name: "redondeo", type: "int", default: 2}
+                    ]
+                },
+
+                COUNTINARRAY: {
+                    params: [
+                        {name: "array", type: "array"},
+                        {name: "fields", type: "array"},
+                        {name: "values", type: "array"}
+                    ]
+                },
             }
         }
 
@@ -164,7 +307,7 @@ define([
             }
         },
         getFunctionNames: function () {
-            return Object.keys(wiocclDefinition.function.defs);
+            return Object.keys(wiocclDefinition.function.defs).sort();
         },
 
         updateFunctionName(wiocclNode, value) {

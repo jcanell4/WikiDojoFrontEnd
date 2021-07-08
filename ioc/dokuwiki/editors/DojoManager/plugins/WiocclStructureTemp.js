@@ -27,6 +27,8 @@ define([
 
             this.root = "0";
 
+            console.log("estructura temporal");
+
             // console.log("this.structure:", this.structure);
         },
 

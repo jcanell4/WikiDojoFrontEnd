@@ -13,11 +13,13 @@ define([
 
             this.setStructure(config.structure);
 
+            console.log("Constructor del Clone, no s'ha fet copia??");
         },
 
         setStructure: function(structure) {
             this.structure = JSON.parse(JSON.stringify(structure));
 
+            console.log("Copia creada", this.structure);
             // Ajustem l'arrel
             this.structure['0'].open = '';
             this.structure['0'].type = 'root';

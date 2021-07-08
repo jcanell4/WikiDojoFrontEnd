@@ -173,74 +173,149 @@ define([
             // console.log('_extractFieldsFromWiocclNode', wiocclNode);
             if (wiocclNode.attrs.length === 0) {
                 wiocclNode.type = wiocclNode.type ? wiocclNode.type : "content";
-                wiocclNode.attrs = wiocclNode.open;
             }
 
-            return this._extractFields(wiocclNode, wiocclNode.type);
+            let fields;
+
+            switch (wiocclNode.type) {
+                case 'function':
+                    fields = this._extractParams(wiocclNode);
+                    break;
+
+                case 'content':
+                    fields = this._extractContent(wiocclNode);
+                    break;
+
+                case 'field':
+                    fields = this._extractField(wiocclNode);
+                    break;
+
+                default:
+                    fields = this._extractAttrs(wiocclNode);
+                    break;
+            }
+
+            return fields;
+
         },
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
-        _extractFields: function (wiocclNode, type) {
-            // console.log('_extractFields', type, attrs);
+        _extractContent: function (wiocclNode, type) {
+            return {
+                'content': wiocclNode.open
+            };
+        },
+
+        _extractField: function (wiocclNode) {
+            let attrs = wiocclNode.attrs.replace('&escapedgt;', '\\>');
+
+            return {
+                'field': attrs
+            };
+        },
+
+        _extractParams: function (wiocclNode) {
+            // console.log('_extractParams', wiocclNode);
 
             // Cal fer la conversió de &escapedgt; per \>
             let attrs = wiocclNode.attrs.replace('&escapedgt;', '\\>');
 
             let fields = {};
 
-            switch (type) {
+            let paramsPattern = /(\[.*?\])|(".*?")|(''.*?'')|-?\d+|,(),/g;
+            let tokens = attrs.match(paramsPattern);
 
-                case 'content':
-                    fields['content'] = attrs;
-                    break;
+            // console.log(paramsPattern, attrs);
 
-                case 'field':
-                    fields['field'] = attrs;
-                    break;
+            if (tokens === null) {
+                // això és pot produir si s'esborren les dobles cometes d'un camp per exemple
+                console.error("S'ha produit un error, no és possible parsejar els camps actuals");
+                return {};
+            }
 
-                case 'function':
 
-                    let paramsPattern = /(\[.*?\])|(".*?")|-?\d+/g;
-                    let tokens = attrs.match(paramsPattern);
-                    // console.log("Tokens:", tokens);
-                    let instruction = this.structure.getInstructionName(wiocclNode);
-                    let functionDefinition = this.structure.getFunctionDefinition(instruction);
 
-                    if (functionDefinition) {
+            // console.warn("Tokens:", tokens);
 
-                        // En aquest cas el for inclou tots els params, independentment del nombre de tokens
 
-                        // for (let i = 0; i < tokens.length; i++) {
-                        for (let i = 0; i < functionDefinition.params.length; i++) {
+            let instruction = this.structure.getInstructionName(wiocclNode);
+            let functionDefinition = this.structure.getFunctionDefinition(instruction);
 
-                            if (i <= tokens.length - 1) {
-                                fields[functionDefinition.params[i].name] = tokens[i].trim();
-                            } else {
-                                fields[functionDefinition.params[i].name] = '';
-                            }
+            // console.log(functionDefinition);
 
-                            // fields['param' + i] = tokens[i].trim();
-                        }
+            // ALERTA! s'han de gestionar les ,, ja que són camps buits.
+            for (let i = 0; i < tokens.length; i++) {
+                if (tokens[i] === ',,') {
+                    tokens[i] = '';
+                }
+            }
 
-                        // console.log(fields);
+            if (functionDefinition) {
+
+                // El for inclou tots els params, independentment del nombre de tokens, però el nombre de tokens
+                // afecta al paràmetre al que s'assigna cada valor
+
+                // for (let i = 0; i < tokens.length; i++) {
+                for (let i = 0; i < functionDefinition.params.length; i++) {
+                    // console.log("Default:", functionDefinition.params[i].default, functionDefinition.params[i])
+
+                    let paramDef = functionDefinition.params[i];
+                    // console.log("paramDef", paramDef);
+                    let value = '';
+
+                    if (i <= tokens.length - 1 && tokens[i].length > 0) {
+                        value = tokens[i].trim();
+                    } else {
+                        value = paramDef.default !== undefined ? paramDef.default : '';
                     }
 
 
-                    break;
+                    // console.log("Valor:", value);
+                    value += ''; // ens asegurem que es tracta d'un string
 
-                default:
-                    const pattern = / *((.*?)="(.*?)")/g;
+                    let isString = (value.startsWith("''") || value.startsWith('"'))
+                        && (paramDef.type === 'string'
+                        || (Array.isArray(paramDef.type) && paramDef.type.includes('string')));
 
-                    const array = [...attrs.matchAll(pattern)];
+                    // TODO: eliminar les cometes i dobles cometes al principi i al final
+                    value = value.replace(/^("|'')/gm, '')
+                    value = value.replace(/("|'')$/gm, '')
 
-                    for (let i = 0; i < array.length; i++) {
-                        fields[array[i][2].trim()] = array[i][3].trim();
+                    // let isField = value.startsWith("{##") || value.startsWith('##}');
+
+                    if (isString) {
+                        value = `''${value}''`;
                     }
+
+                    fields[paramDef.name] = value;
+
+                    // fields['param' + i] = tokens[i].trim();
+                }
+
+                // console.warn(fields);
             }
 
             return fields;
         },
 
+        _extractAttrs: function (wiocclNode, type) {
+            // console.log('_extractFields', type, wiocclNode.attrs);
+
+            // Cal fer la conversió de &escapedgt; per \>
+            let attrs = wiocclNode.attrs.replace('&escapedgt;', '\\>');
+
+            let fields = {};
+
+            const pattern = / *((.*?)="(.*?)")/g;
+
+            const array = [...attrs.matchAll(pattern)];
+
+            for (let i = 0; i < array.length; i++) {
+                fields[array[i][2].trim()] = array[i][3].trim();
+            }
+
+            return fields;
+        },
 
         // todo: determinar si es necessari el ignore detal
         _updateFields: function (wiocclNode, ignoreDetail) {
@@ -260,7 +335,8 @@ define([
                 // case 'wioccl':
                 default:
                     let fields = this._extractFieldsFromWiocclNode(wiocclNode);
-                    this._setAttrs(fields);
+                    // console.log("_updateFields", fields);
+                    this._setAttrs(fields, wiocclNode);
                     break;
 
 
@@ -321,19 +397,80 @@ define([
             this.editor.setHeightForced($detailContainer.height() - $attrContainer.height() - offset);
         },
 
-        _generateHtmlForFields: function (fields) {
+        _generateHtmlForFields: function (fields, wiocclNode) {
+            switch (wiocclNode.type) {
+                case 'function':
+                    return this._generateHtmlForParams(fields, wiocclNode);
 
+                default:
+                    return this._generateHtmlForAttrs(fields, wiocclNode);
+            }
+        },
+
+        _generateHtmlForParams: function (fields, wiocclNode) {
             let html = '';
+
+            // console.log(wiocclNode);
+
+            let paramMap = new Map();
+
+            let instruction = this.structure.getInstructionName(wiocclNode);
+            let functionDefinition = this.structure.getFunctionDefinition(instruction);
+
+
+            for (let i = 0; i < functionDefinition.params.length; i++) {
+                paramMap.set(functionDefinition.params[i].name, functionDefinition.params[i]);
+            }
+            // console.log(instruction, functionDefinition, paramMap, fields);
+
+
 
 
             for (let field in fields) {
+
+                // console.log(field, paramMap);
+                let types = paramMap.get(field).type;
+
+                if (Array.isArray(types)) {
+                    types = types.join('|');
+                }
+
+                // console.log("[test]", field);
+                // Es necessari eliminar el escape de les dobles cometes
+                // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
+                let value = fields[field].replaceAll('\"', '&quot;');
+
+                let isStringField = value.startsWith('"{##') || value.startsWith("''{##");
+
+                value = value.replace(/^("+|'{2,})+/g, '');
+                value = value.replace(/("+|'{2,})+$/g, '');
+
+                // reafegim normalitzat si escau
+                if (isStringField) {
+                    value = `''${value}''`;
+                }
+
+                html += '<div class="wioccl-field" data-attr-field="' + field + '">';
+                html += `<label>${field} <span>(${types})</span></label>`;
+                html += '<input type="text" name="' + field + '" value="' + value + '"/>';
+                html += '<button data-button-edit>wioccl</button>';
+                html += '</div>';
+            }
+
+            return html;
+        },
+
+        _generateHtmlForAttrs: function (fields, wiocclNode) {
+            let html = '';
+            for (let field in fields) {
+                // console.log("[test]", field);
 
                 // Es necessari eliminar el escape de les dobles cometes
                 // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
                 let valor = fields[field].replaceAll('\"', '&quot;');
 
                 html += '<div class="wioccl-field" data-attr-field="' + field + '">';
-                html += '<label>' + field + ':</label>';
+                html += `<label>${field}</label>`;
                 html += '<input type="text" name="' + field + '" value="' + valor + '"/>';
                 html += '<button data-button-edit>wioccl</button>';
                 html += '</div>';
@@ -345,124 +482,12 @@ define([
         _pendingChanges: null,
 
 
-        _setParams: function (fields) {
-            alert("Stop, reimplementar, això tracta amb camps!")
+        _setAttrs: function (fields, wiocclNode) {
             let $attrContainer = jQuery(this.attrContainerNode);
 
             $attrContainer.empty();
 
-            let $fields = jQuery(this._generateHtmlForFields(fields))
-
-            let context = this;
-
-            $fields.find('[data-button-edit]').on('click', function (e) {
-
-                let $input = jQuery(this).siblings('input');
-                let value = $input.val();
-
-                let structure = new WiocclStructureTemp();
-                let rootWiocclNode = structure.getRoot();
-
-                structure.parse(value, rootWiocclNode);
-
-                let refId = rootWiocclNode.id;
-
-                let tree = structure.getTreeFromNode(refId, true);
-
-                let wiocclDialog = new DojoWioccDialog({
-                    title: 'Edició wioccl',
-                    // style: 'width:auto',
-                    style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
-                    // style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 100%; max-height: 100%;',
-                    onHide: function (e) { //Voliem detectar el event onClose i hem hagut de utilitzar onHide
-                        this.destroyRecursive();
-                        context.backup = null;
-                    },
-                    id: 'wioccl-dialog_inner' + counter,
-                    draggable: false,
-                    firstResize: true,
-                    dispatcher: context.dispatcher,
-                    args: {
-                        id: 'wioccl-dialog_inner' + counter,
-                        // value: context.source.getCode(tree[0], outStructure)
-                        value: structure.getCode(tree[0])
-                    },
-                    wioccl: rootWiocclNode,
-                    // structure: outStructure,
-                    structure: structure,
-                    tree: tree,
-                    refId: refId,
-                    saveCallback: function () {
-
-                        // this és correcte, fa referència al nou dialog que s'instància
-                        this.structure.parse(this.editor.getValue(), this.editor.wioccl);
-                        // this.source.parseWiocclNew(this.editor.getValue(), this.editor.wioccl, outStructure, this);
-                        let text = this.structure.getCode(this.structure.getNodeById(refId));
-
-
-                        $input.val(text);
-                        $input.trigger('input');
-
-                        wiocclDialog.destroyRecursive();
-                    },
-                    // saveCallback : context._save.bind(context),
-                    updateCallback: function (editor) {
-                        // this.source.parse(editor.getValue(), editor.wioccl, this.getStructure());
-                        // this és correcte, fa referència al nou dialog que s'instància
-                        this.structure.updating = true;
-
-
-                        this.structure.discardSiblings();
-
-                        this.structure.updating = false;
-
-
-                        this.structure.parse(editor.getValue(), editor.wioccl);
-
-                        this.setData(this.structure.getNodeById(refId), rootWiocclNode);
-                    }
-
-                });
-
-                counter++;
-
-                wiocclDialog.startup();
-
-                wiocclDialog.show();
-
-
-                // console.log(outRoot);
-                // wiocclDialog._setFields(wiocclDialog._extractFieldsFromWiocclNode(rootWiocclNode));
-                wiocclDialog._updateFields(rootWiocclNode);
-                wiocclDialog._updateDetail(rootWiocclNode);
-            });
-
-
-            $fields.find('input').on('input change', function (e) {
-                context._fieldChanges = true;
-
-                // console.log("es input o es change?",e.type );
-                if (UPDATE_TIME === 0 || e.type === 'change') {
-                    context._updatePendingChanges_Field2Detail();
-
-                } else if (!context._pendingChanges_Field2Detail) {
-                    context.timerId_Field2Detail = setTimeout(context._updatePendingChanges_Field2Detail.bind(context), UPDATE_TIME);
-                    context._pendingChanges_Field2Detail = true;
-                } else {
-                    // console.log('pending changes?', context._pendingChanges_Field2Detail);
-                }
-            });
-
-            $attrContainer.append($fields);
-            this._updateEditorHeight();
-        },
-
-        _setAttrs: function (fields) {
-            let $attrContainer = jQuery(this.attrContainerNode);
-
-            $attrContainer.empty();
-
-            let $fields = jQuery(this._generateHtmlForFields(fields))
+            let $fields = jQuery(this._generateHtmlForFields(fields, wiocclNode))
 
             let context = this;
 
@@ -648,7 +673,7 @@ define([
             });
 
             // reconstruim els atributs com a string
-            let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWiocclNode.type);
+            let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWiocclNode);
             // Re assignem els nous atributs
             this.selectedWiocclNode.attrs = rebuildAttrs;
 
@@ -721,7 +746,7 @@ define([
             this.selectedWiocclNode = wiocclNode;
         },
 
-        _updateLegend: function(wiocclNode) {
+        _updateLegend: function (wiocclNode) {
             let text;
 
             switch (wiocclNode.type) {
@@ -793,6 +818,12 @@ define([
                     context.structure.updateFunctionName(wiocclNode, value);
                     context._updateLegend(wiocclNode)
                     context._updateFields(wiocclNode);
+
+                    let extractedFields = context._extractFieldsFromWiocclNode(context.selectedWiocclNode);
+                    let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWiocclNode);
+                    // Re assignem els nous atributs
+                    wiocclNode.attrs = rebuildAttrs;
+
                     context._updateDetail(wiocclNode, true)
                     // fer this.structure.updateFunction(wioccl, instruction);
                 });
@@ -817,8 +848,9 @@ define([
         },
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
-        _rebuildAttrs: function (fields, type) {
+        _rebuildAttrs: function (fields, wiocclNode) {
 
+            let type = wiocclNode.type;
             let rebuild = '';
             let first = true;
 
@@ -830,7 +862,17 @@ define([
 
                 case 'function':
 
+                    let instruction = this.structure.getInstructionName(wiocclNode);
+                    let functionDefinition = this.structure.getFunctionDefinition(instruction);
 
+                    let paramMap = new Map();
+                    for (let i = 0; i < functionDefinition.params.length; i++) {
+                        paramMap.set(functionDefinition.params[i].name, functionDefinition.params[i]);
+                    }
+
+                    // TODO: fer un rebuild dels paràmetres, afegint les '' segons el type i assignar el valor de fiels[name] si e stroba
+
+                    // console.log("Rebuilding", fields, type, paramMap);
                     for (let name in fields) {
                         if (first) {
                             first = false;
@@ -838,7 +880,57 @@ define([
                             rebuild += ',';
                         }
 
-                        rebuild += fields[name];
+                        let value = fields[name];
+
+                        let types = Array.isArray(paramMap.get(name).type) ? paramMap.get(name).type : [paramMap.get(name).type];
+
+                        if (value.startsWith('[') && value.endsWith(']')) {
+                            // És un array, comprovem que sigui un tipus vàlid
+                            if (!types.includes("array")) {
+                                console.error("S'ha detectat un array però el camp no accepta aquest tipus. Tipus acceptats:", types);
+                                alert("S'ha detectat un array però el camp " + name + " no accepta aquest tipus. Tipus acceptats:" + types);
+                            }
+
+                        } else if ((value.startsWith('{##') && value.endsWith('##}'))
+                            || (value.startsWith("''{##") && value.endsWith("##}'"))
+                            || (value.startsWith('"{##') && value.endsWith('##}"'))
+                        ) {
+                            // És un camp, no podem saber si és un array o un string, en cas de ser un string s'han
+                            // d'afegir manualment les dobles cometes
+
+                            // Normalitzem l'ús de les cometes dobles
+                            let isString = value.startsWith("''") || value.startsWith("");
+                            value = value.replace(/^("+|'{2,})+/g, '');
+                            value = value.replace(/("+|'{2,})+$/g, '');
+
+                            if (isString) {
+                                value = `''${value}''`;
+                            }
+
+
+                        } else {
+                            // Comprovem els tipus de camp i si el valor és un string o date i afegim les dobles cometes
+
+
+                            // Eliminem les "* i les ''* del principi i del final
+                            value = value.replace(/^("+|'{2,})+/g, '');
+                            value = value.replace(/("+|'{2,})+$/g, '');
+
+
+                            // console.log("[**]:", name, types, value)
+                            for (let i = 0; i < types.length; i++) {
+
+                                if (types[i] === 'string'
+                                    || types[i] === 'date') {
+                                    value = "''" + value + "''";
+                                    // console.log("[**]Afegides cometes:", value);
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        rebuild += value;
                     }
 
                     break;

@@ -61,6 +61,7 @@ define([
 
             // ALERTA! this.editor fa referència a l'editor dojo
 
+            // Aquesta és l'estructura que s'utilitza quan es fa mouseover un element
             this.structure = new WiocclStructureClone({structure: this.editor.extra.wioccl_structure.structure});
 
             // console.log("wioccl structure:", this.editor.extra.wioccl_structure.structure);
@@ -216,14 +217,28 @@ define([
                     counter++;
                 }
 
+                // Això utilitza la mateixa estructura que el document
                 let structure = context.structure;
 
+                // Es crearà una copia només per l'editor amb la estructura original
+                // let structure = new WiocclStructureClone(context.structure);
+
+                // console.log("Falla aqui si fem un clon de l'estructura, però si no ho fem es modifica la estructura i " +
+                //     "no es restaura quan es tanca el diàleg")
+                // Idea 1: fer una copia cada vegada (és el que falla)
+                // Idea 2: fer un restore de quan es descarta el diàleg (només el tancament, el save farà canvis) <-- això funciona, veure onHide()
+
+                // alert("Stop, arreglar això")
 
                 let wiocclDialog = new Dialog({
                     title: 'Edició wioccl',
                     // style: 'width:auto',
                     style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
-                    onHide: function (e) { //Voliem detectar el event onClose i hem hagut de utilitzar onHide
+                    onHide: function (e) { // Es dispara quan es tanca el diàleg
+
+                        // Si fem un restore funciona
+                        structure.restore();
+
                         this.destroyRecursive();
                         // context.backupStructure = null;
                     },
