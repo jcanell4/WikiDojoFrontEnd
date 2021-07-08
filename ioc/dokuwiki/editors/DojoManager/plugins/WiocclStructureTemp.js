@@ -27,14 +27,15 @@ define([
 
             this.root = "0";
 
-            console.log("estructura temporal");
+            // console.log("estructura temporal");
 
             // console.log("this.structure:", this.structure);
         },
 
-        setStructure: function (structure) {
+        setStructure: function (structure, root) {
             alert("Check!, s'estableix en algún moment per les structures temporals?");
             this.structure = structure;
+            this.root = root;
             this.siblings = [];
         },
 

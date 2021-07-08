@@ -11,15 +11,16 @@ define([
 
         constructor: function (config) {
 
-            this.setStructure(config.structure);
+            this.setStructure(config.structure, config.root);
 
-            console.log("Constructor del Clone, no s'ha fet copia??");
         },
 
-        setStructure: function(structure) {
+        setStructure: function(structure, root) {
+
+            // console.log("setStructure:", structure);
+
             this.structure = JSON.parse(JSON.stringify(structure));
 
-            console.log("Copia creada", this.structure);
             // Ajustem l'arrel
             this.structure['0'].open = '';
             this.structure['0'].type = 'root';
@@ -27,6 +28,7 @@ define([
 
             // siblings és un array d'ids de nodes temporals afegits
             this.siblings = [];
+            this.root =root;
 
         }
 

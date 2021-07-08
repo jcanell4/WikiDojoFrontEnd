@@ -285,16 +285,21 @@ define([
             this.siblings = [];
         },
 
-        setStructure: function (structure) {
+        setStructure: function (structure, root) {
             throw error('This methos must be implemented by subclasses');
         },
 
+        getRaw: function() {
+            return this.structure;
+        },
 
         setNode: function (node) {
             this.structure[node.id] = node;
         },
 
         // Actualment l'arrel sempre és el 0, fem servir el mètode per si cal canviar-lo en algun moment
+        // no confondre amb la propietat root, que indica l'element seleccionat a partir del qual s'ha
+        // generat un arbre
         getRoot: function () {
             return this.structure['0'];
         },
