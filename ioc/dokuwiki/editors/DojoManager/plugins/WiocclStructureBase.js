@@ -563,7 +563,7 @@ define([
         },
 
         getCode: function (node) {
-            // console.log("Rebuilding wioccl:", data, structure);
+            console.log("getCode:", node);
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -573,7 +573,7 @@ define([
 
             code += node.open.replace('%s', node.attrs);
 
-            // console.log("Comprovant childrens:", data.children);
+            console.log("Comprovant childrens:", node.children);
             for (let i = 0; i < node.children.length; i++) {
 
                 // let node = typeof data.children[i] === 'object' ? data.children[i] : this.getStructure()[data.children[i]];
@@ -596,9 +596,67 @@ define([
             }
 
 
+            console.log("Code rebuilt:", code);
+            return code;
+        },
+
+        // En lloc de generar el codi pels childs es reemplaça pel inner passat com argument
+        getCodeWithInner: function (node, inner) {
+            // console.log("Rebuilding wioccl:", data, structure);
+            let code = "";
+
+            // Cal fer la conversió de &escapedgt; per \>
+            node.attrs = node.attrs.replaceAll('&escapedgt;', '\\>');
+            node.attrs = node.attrs.replaceAll('&mark;', '\\>');
+            node.attrs = node.attrs.replaceAll('&markn;', "\n>");
+
+            code += node.open.replace('%s', node.attrs);
+
+
+            // invertim el canvi que es fa en obtenir l'inner
+
+            code += inner;
+
+            // // console.log("Comprovant childrens:", data.children);
+            // for (let i = 0; i < node.children.length; i++) {
+            //
+            //     // let node = typeof data.children[i] === 'object' ? data.children[i] : this.getStructure()[data.children[i]];
+            //     // Si com a fill hi ha un node és una copia, cal recuperar-lo de la estructura sempre
+            //     let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
+            //     // console.log("Quin node s'intenta comprovar?", id);
+            //     let child = this.structure[id];
+            //
+            //     // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
+            //     // per exemple perquè és genera amb un for o foreach
+            //     if (child.isClone) {
+            //         continue;
+            //     }
+            //
+            //     code += this.getCode(child, this.structure);
+            // }
+
+            if (node.close !== null) {
+                code += node.close;
+            }
+
+
             // console.log("Rebuild:", wioccl);
             return code;
         },
+
+        // retorna el contingut d'un node, és a dir, el codi corresponent als nodes fills
+        getInner: function(node) {
+            let code = '';
+
+            for (let i=0; i<node.children.length; i++) {
+                let child = typeof node.children[i] === 'object' ? node.children[i] : this.structure[node.children[i]];
+                code += this.getCode(child);
+            }
+
+            // console.log("Inner:", code);
+            return code;
+        },
+
 
         rebuildPosMap: function (item) {
             // console.error("Rebuilding chunkmap for", item);
@@ -756,7 +814,9 @@ define([
 
         parse: function (text, node) {
 
+            console.warn("Parsing:", text);
             let outTokens = this._tokenize(text);
+            console.warn("tokens:", outTokens);
 
 
             // text és el text a parsejar
@@ -822,6 +882,9 @@ define([
 
         },
 
+        // TODO: Refactoritzar i canviar el nom, això no crea un arbre, actualitza l'estructura a partir del node root
+        // i els tokens passats que són un vector d'elements que calr estructurar en forma d'arbre segons si es troben
+        // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
 
             // console.error("_createTree", outTokens);
@@ -859,7 +922,7 @@ define([
             let errorDetected = false;
 
             for (let i in outTokens) {
-                // console.log(i, stack);
+                console.log(i, stack);
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 // Si l'arrel és temporal el primer token és fill de l'arrel
@@ -878,12 +941,13 @@ define([
                     outTokens[i].parent = root.parent;
                     // this.root = tokens[i].id;
 
-
                 } else {
                     outTokens[i].id = nextKey;
                 }
 
                 outTokens[i].children = [];
+
+
 
                 if (outTokens[i].value.startsWith('</WIOCCL:')) {
                     // console.log("Tancant", outTokens[i].value)
@@ -904,6 +968,7 @@ define([
                 }
 
 
+                // Aqui es fa la gestió dels childrens, però sembla que no funciona
                 if (stack.length > 0) {
                     stack[stack.length - 1].children.push(nextKey);
                     outTokens[i].parent = stack[stack.length - 1].id
@@ -942,7 +1007,7 @@ define([
                 // No cal gestionar el type content perquè s'assigna al tokenizer
 
                 if (outTokens[i].value.startsWith('<WIOCCL:')) {
-                    // console.log("Obrint", outTokens[i].value)
+                    console.log("Obrint", outTokens[i].value)
                     let pattern = /<WIOCCL:.*? (.*?)>/gsm;
 
                     let matches;
@@ -963,6 +1028,7 @@ define([
                     outTokens[i].type = matches[1].toLowerCase();
 
                     stack.push(outTokens[i]);
+                    console.log("Afegit a l'stack", outTokens[i])
                 }
 
                 if (outTokens[i].value.startsWith('{##')) {
@@ -1032,7 +1098,9 @@ define([
                     root.addedsiblings = true;
                 }
 
+
             }
+
 
             // Si es produeix cap error ho descartem
             if (errorDetected) {
@@ -1047,14 +1115,28 @@ define([
                 delete root.isNull;
             }
 
+            console.warn("node modificat?", root);
+
             // console.log("Nou root:", outRoot);
             this.structure.next = Number(nextKey);
+
+            // actualitzem el root, es passa com a referència
+            root = this.structure[root.id];
+
+
+            console.log("S'han afegit els children?", root);
+            console.log("S'han afegit a l'structure?", this.structure); // si, es troban a la estructura, però el
+            // parent no està actualitzat? <-- sí està actualitzat
+            // root no és el mateix objecte que es troba a l'estructura amb aquest id
+            console.log("tokens finals, han de trobar-se els children, es troba també el root??", outTokens);
+            alert("check children");
 
 
             // console.warn("siblings afegits:", structure.siblings);
         },
 
         _tokenize(text) {
+            console.log("Text rebut:", text);
             //  Dividim en en els 4 tipus:
             //      Open wioccl
             //      Close wioccl

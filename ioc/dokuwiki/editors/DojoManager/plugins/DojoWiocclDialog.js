@@ -166,7 +166,7 @@ define([
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
         _extractFieldsFromWiocclNode: function (wiocclNode) {
-            console.log('_extractFieldsFromWiocclNode type', wiocclNode.type);
+            // console.log('_extractFieldsFromWiocclNode type', wiocclNode.type);
             if (wiocclNode.attrs.length === 0) {
                 wiocclNode.type = wiocclNode.type ? wiocclNode.type : "content";
             }
@@ -332,7 +332,6 @@ define([
 
         _updateDetail: function (wiocclNode, ignoreFields) {
 
-
             if (this.updating) {
                 return;
             }
@@ -482,6 +481,23 @@ define([
                 html += '</div>';
             }
 
+            // Afegim un botó adicional per editar el contingut
+            // TODO: això no és un field, és el valor rebuild dels children
+
+            let value = this.structure.getInner(wiocclNode);
+
+            // ALERTA! el codi intern contè < i >, s'han de reemplaçar
+            value = value.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+            // console.log("inner amb htmlentities:", value);
+
+            html += '<div class="wioccl-textarea" data-inner-field="inner">';
+            // html += `<label>${field} <span>(${types})</span></label>`;
+            html += `<label>Contingut intern</span></label>`;
+            html += '<textarea type="text" name="inner" >' + value +'</textarea>';
+            html += '<button data-button-edit>wioccl</button>';
+            html += '</div>';
+
             return html;
         },
 
@@ -518,7 +534,7 @@ define([
 
             $fields.find('[data-button-edit]').on('click', function (e) {
 
-                let $input = jQuery(this).siblings('input');
+                let $input = jQuery(this).siblings('input, textarea');
                 let value = $input.val();
 
                 let structure = new WiocclStructureTemp();
@@ -599,7 +615,7 @@ define([
             });
 
 
-            $fields.find('input').on('input change', function (e) {
+            $fields.find('input, textarea').on('input change', function (e) {
                 context._fieldChanges = true;
 
                 // console.log("es input o es change?",e.type );
@@ -683,7 +699,7 @@ define([
 
             let extractedFields = context._extractFieldsFromWiocclNode(this.selectedWiocclNode);
 
-            $attrContainer.find('input').each(function () {
+            $attrContainer.find('[data-attr-field] input').each(function () {
 
                 let $fieldContainer = jQuery(this).closest('[data-attr-field]');
                 let attrField = $fieldContainer.attr('data-attr-field');
@@ -695,6 +711,19 @@ define([
 
                 // Reemplacem l'atribut
                 extractedFields[attrField] = attrValue;
+            });
+
+            let innerValue;
+            $attrContainer.find('[data-inner-field] textarea').each(function () {
+
+                console.log("****");
+
+                let $innerContainer = jQuery(this).closest('[data-inner-field]');
+                // let attrField = $innerContainer.attr('data-attr-field');
+                innerValue = $innerContainer.find('textarea').val();
+                innerValue.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+
+                console.warn("TODO: reemplaçar l'interior de la instrucció per:", innerValue);
             });
 
             // reconstruim els atributs com a string
@@ -710,6 +739,23 @@ define([
             // Refresquem el wioccl associat a l'editor amb el valor actual
             this.editor.wioccl = this.structure.getNodeById(this.editor.wioccl.id);
 
+
+            if (innerValue) {
+                // TODO: com ho fem?
+                //  aquesta funció tracta amb la modificació dels nodes per passar a reconstruir el text de l'editor
+                //  a partir d'aquesta:
+                //      - Eliminem els fills del node
+                //      - els reconstruim a partir de ¿?¿
+
+                // reemplaçem les entitats html que puguin haver-se desat
+                console.log("childcontent amb htmlentities:", innerValue);
+                let code = this.structure.getCodeWithInner(this.selectedWiocclNode, innerValue);
+                this.structure.parse(code, this.selectedWiocclNode);
+
+                // restablim els nodes, perquè s'ha modificat a l'estructura
+                this.selectedWiocclNode = this.structure.getNodeById(this.selectedWiocclNode.id);
+                this.editor.wioccl = this.structure.getNodeById(this.editor.wioccl.id);
+            }
 
             // this._updateDetail(this.editor.wioccl, true);
             this._updateDetail(this.editor.wioccl, true);
