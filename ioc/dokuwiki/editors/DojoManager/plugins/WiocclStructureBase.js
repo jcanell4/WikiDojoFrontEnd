@@ -289,7 +289,7 @@ define([
                         {name: 'var', type: 'string'},
                         {name: 'type', type: 'string'},
                         {name: 'value', type: '*'},
-                        {name: 'map', type: 'array'},
+                        {name: 'map', type: 'array', optional: true},
                     ],
                 },
                 CONDSET: {

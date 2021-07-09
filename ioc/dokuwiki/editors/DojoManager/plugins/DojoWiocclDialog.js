@@ -375,11 +375,13 @@ define([
 
 
         _updateEditorHeight: function () {
-            let $attrContainer = jQuery(this.attrContainerNode);
+            let $headerContainer = jQuery(this.attrHeaderContainer);
             let $detailContainer = jQuery(this.detailContainerNode);
             let offset = 70;
 
-            this.editor.setHeightForced($detailContainer.height() - $attrContainer.height() - offset);
+
+            // console.log("Updating editor height", $detailContainer.height(), attrContainerHeight, offset);
+            this.editor.setHeightForced($detailContainer.height() - $headerContainer.height() - offset);
         },
 
         _generateHtmlForFields: function (fields, wiocclNode) {
@@ -473,9 +475,13 @@ define([
                     value = '';
                 }
 
+                let optional = '';
+                if (attr.optional) {
+                    optional = '[opcional]';
+                }
                 html += '<div class="wioccl-field" data-attr-field="' + name + '">';
                 // html += `<label>${field} <span>(${types})</span></label>`;
-                html += `<label>${name} <span>(${types})</span></label>`;
+                html += `<label>${name} <span>(${types})${optional}</span></label>`;
                 html += '<input type="text" name="' + name + '" value="' + value + '"/>';
                 html += '<button data-button-edit>wioccl</button>';
                 html += '</div>';
@@ -493,7 +499,7 @@ define([
 
             html += '<div class="wioccl-textarea" data-inner-field="inner">';
             // html += `<label>${field} <span>(${types})</span></label>`;
-            html += `<label>Contingut intern</span></label>`;
+            html += `<label>Contingut intern<span>(prem el botó per editar)</span></label>`;
             html += '<textarea type="text" name="inner" disabled title="Per editar el contingut prem el botó">' + value +'</textarea>';
             html += '<button data-button-edit>editar</button>';
             html += '</div>';
