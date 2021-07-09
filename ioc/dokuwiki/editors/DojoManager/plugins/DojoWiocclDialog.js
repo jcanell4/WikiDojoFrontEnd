@@ -593,7 +593,6 @@ define([
 
                         this.structure.updating = false;
 
-
                         this.structure.parse(editor.getValue(), editor.wioccl);
 
                         this.setData(this.structure.getNodeById(refId), rootWiocclNode);
@@ -715,15 +714,9 @@ define([
 
             let innerValue;
             $attrContainer.find('[data-inner-field] textarea').each(function () {
-
-                console.log("****");
-
                 let $innerContainer = jQuery(this).closest('[data-inner-field]');
-                // let attrField = $innerContainer.attr('data-attr-field');
                 innerValue = $innerContainer.find('textarea').val();
                 innerValue.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
-
-                console.warn("TODO: reemplaçar l'interior de la instrucció per:", innerValue);
             });
 
             // reconstruim els atributs com a string
@@ -748,7 +741,7 @@ define([
                 //      - els reconstruim a partir de ¿?¿
 
                 // reemplaçem les entitats html que puguin haver-se desat
-                console.log("childcontent amb htmlentities:", innerValue);
+                // console.log("childcontent amb htmlentities:", innerValue);
                 let code = this.structure.getCodeWithInner(this.selectedWiocclNode, innerValue);
                 this.structure.parse(code, this.selectedWiocclNode);
 
@@ -969,7 +962,7 @@ define([
             let first = true;
             let instruction;
 
-            console.log('type', wiocclNode.type);
+            // console.log('type', wiocclNode.type);
 
             switch (type) {
 
