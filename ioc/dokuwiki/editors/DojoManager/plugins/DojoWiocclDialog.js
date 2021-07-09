@@ -494,8 +494,8 @@ define([
             html += '<div class="wioccl-textarea" data-inner-field="inner">';
             // html += `<label>${field} <span>(${types})</span></label>`;
             html += `<label>Contingut intern</span></label>`;
-            html += '<textarea type="text" name="inner" >' + value +'</textarea>';
-            html += '<button data-button-edit>wioccl</button>';
+            html += '<textarea type="text" name="inner" disabled title="Per editar el contingut prem el botó">' + value +'</textarea>';
+            html += '<button data-button-edit>editar</button>';
             html += '</div>';
 
             return html;
@@ -845,7 +845,9 @@ define([
 
                 case 'field':
                 case 'content':
-                    // no fem res per ara
+                    // només amaguem el contenidor del selector d'sintruccions
+                    let $instruction = jQuery(this.wiocclInstruction);
+                    $instruction.html('');
                     break;
 
                 default:

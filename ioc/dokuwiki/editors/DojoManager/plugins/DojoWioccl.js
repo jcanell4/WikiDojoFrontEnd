@@ -250,7 +250,9 @@ define([
 
                     // ALERTA[Xavi], aquesta propietat no és utilitzada pel dialeg, la injectem per poder-la utilitzar
                     // al saveCallback
-                    originalStructure: context.structure
+                    originalStructure: context.structure,
+                    $document: jQuery(context.editor.iframe).contents(),
+                    pluginEditor: context.editor
                 });
 
                 context.wiocclDialog = wiocclDialog;
@@ -377,14 +379,14 @@ define([
 
                 for (let id of removedIds) {
                     // console.log("Buscant node:", id)
-                    let $node = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + id + '"]');
+                    let $node = context.$document.find('[data-wioccl-ref="' + id + '"]');
                     $node.remove();
                     // console.log("Eliminat:", $node);
                 }
 
                 // Cal eliminar també les referències al node arrel (poden ser múltiple en el cas del foreach)
                 // Cal inserir una marca pel node root
-                let $rootNodes = jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + rootRef + '"]');
+                let $rootNodes = context.$document.find('[data-wioccl-ref="' + rootRef + '"]');
 
                 // console.log("Eliminant root nodes", rootRef, $rootNodes);
 
@@ -418,13 +420,12 @@ define([
 
                 // ALERTA! aquesta es la estructura associada al plugin, no al diàleg
                 context.originalStructure.setStructure(target, context.originalStructure.root);
-
                 // Afegim els handlers (ara s'afegeixen com a resposta al emit)
                 // context._addHandlers($nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'), context);
-                context.editor.emit('import');
-                context.editor.forceChange();
+                context.pluginEditor.emit('import');
+                context.pluginEditor.forceChange();
 
-                jQuery(context.editor.iframe).contents().find('[data-wioccl-ref="' + originalRefId + '"]')[0].scrollIntoView();
+                context.$document.find('[data-wioccl-ref="' + originalRefId + '"]')[0].scrollIntoView();
 
             });
         },

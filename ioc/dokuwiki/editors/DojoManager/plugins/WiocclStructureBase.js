@@ -245,6 +245,13 @@ define([
             open: "<WIOCCL:%i %s>",
             close: "</WIOCCL:%i>",
             defs: {
+                // TEMP és un tipus especial utilitzat internament per les estructures temporals
+                TEMP: {
+                    attrs: [],
+                    open: '',
+                    close: '',
+                    hidden: true
+                },
                 IF: {
                     attrs: [
                         {name: 'condition', type: '*'}
@@ -399,7 +406,23 @@ define([
         },
 
         getFunctionNames: function () {
+            // actualment no ni ha cap funció oculta, així que no és necessari
+            // let names = [];
+
+            // for (let key in wiocclDefinition.function.defs) {
+            //     let def = wiocclDefinition.function.defs[key];
+            //
+            //     console.log(def);
+            //     if (def.hidden) {
+            //         continue;
+            //     }
+            //
+            //     names.push(key);
+            // }
+            // return names.sort();
+
             return Object.keys(wiocclDefinition.function.defs).sort();
+
         },
 
         updateFunctionName(node, value) {
@@ -456,7 +479,19 @@ define([
         },
 
         getKeywordNames: function () {
-            return Object.keys(wiocclDefinition.keyword.defs).sort();
+            let names = [];
+
+            for (let key in wiocclDefinition.keyword.defs) {
+                let def = wiocclDefinition.keyword.defs[key];
+
+                if (def.hidden) {
+                    continue;
+                }
+                names.push(key);
+            }
+
+            return names;
+            // return Object.keys(wiocclDefinition.keyword.defs).sort();
         },
 
         getInstructionName: function (node) {
