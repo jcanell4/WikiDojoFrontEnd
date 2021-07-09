@@ -53,7 +53,7 @@ define([
                 dialog = new Dialog({
                     id: "includePageSyntaxDocumentDlg",
                     title: "Cerca de la secció d'una pàgina a incloure",
-                    style: "width: 540px; height: 350px;",
+                    style: "width: 680px; height: 350px;",
                     page: ed.id
                 });
 
@@ -66,38 +66,49 @@ define([
                     dialog.dialogTree.tree.set('path', '');
                 });
 
+                //TREE
                 //Creació del marc contenidor del diàleg
                 var bc = new BorderContainer({
-                    style: "height: 300px; width: 520px;"
+                    style: "height: 300px; width: 660px;"
                 });
 
-                // create a ContentPane as the left pane in the BorderContainer
+                // crea ContentPane a l'esquerra dins del BorderContainer per a l'arbre de directoris
                 var cpEsquerra = new ContentPane({
                     region: "left",
                     style: "width: 220px"
                 });
                 bc.addChild(cpEsquerra);
 
-                //Creació del marc de la dreta
-                var bcDreta = new BorderContainer({
-                    region: "right",
-                    style: "height: 300px; width: 260px;"
+                //TOC
+                //Creació del marc del centre pe a la selecció de l'element de l'índex
+                var bcCentre = new BorderContainer({
+                    region: "center",
+                    style: "height: 300px; width: 200px;"
                 });
-                bc.addChild(bcDreta);
+                bc.addChild(bcCentre);
 
-                // ContentPane a la part superior del BorderContainer
+                // ContentPane a la part superior del BorderContainer: conté la TOC
                 var cpTop = new ContentPane({
                     region: "top",
-                    style: "height:180px; width:245px"
+                    style: "height:180px; width:145px"
                 });
-                bcDreta.addChild(cpTop);
+                bcCentre.addChild(cpTop);
 
                 // ContentPane a la part inferior del BorderContainer
                 var cpBottom = new ContentPane({
                     region: "bottom",
-                    style: "height:70px; width:245px"
+                    style: "height:70px; width:145px"
                 });
-                bcDreta.addChild(cpBottom);
+                bcCentre.addChild(cpBottom);
+
+                //CONTINGUT
+                // ContentPane a la part dreta del BorderContainer: conté el Contingut
+                var cpDreta = new ContentPane({
+                    region: "right",
+                    style: "width:190px"
+                });
+                bc.addChild(cpDreta);
+
 
                 // put the top level widget into the document, and then call startup()
                 bc.placeAt(dialog.containerNode);
@@ -119,34 +130,55 @@ define([
                 dialogTree.tree.onClick = function(item) {
                     if (item.type === "f") {
                         selectedPage.id = item.id;
-                        request.dataToSend = {id: item.id};
+                        request.dataToSend = {id: selectedPage.id};
+                        request.urlBase = "lib/exe/ioc_ajax.php?call=get_toc_page";
                         request.sendRequest();
                     }
                 };
 
-                // Un espai a la banda dreta alta per contenir el resultat de la petició de TOC:
+                // Un espai a la part alta del contenidor del centre per contenir el resultat de la petició de TOC:
                 domConstruct.create('div', {
                     id: 'idTocArea',
                     className: 'divTocArea'
                 },cpTop.containerNode);
 
+                // Un espai al contenidor de la dreta per contenir el Contingut de l'element TOC seleccionat:
+                domConstruct.create('div', {
+                    id: 'idContentArea',
+                    className: 'divContentArea'
+                },cpDreta.containerNode);
+
                 request.responseHandler = function (data) {
                     this._stopStandby();
-                    dom.byId('idTocArea').innerHTML = data.html;
+                    if (data.htmlTOC) {
+                        dom.byId('idTocArea').innerHTML = data.htmlTOC;
+                    }
+                    if (data.htmlContent) {
+                        dom.byId('idContentArea').innerHTML = data.htmlContent;
+                    }
                 };
                 
-                var getTocAreaHandler = on(document, "#idTocArea a:click", function(evt){
-                    selectedPage.section = selectedPage.id + "#" + evt.target.innerText;
+                //función que captura el click sobre el elemento del TOC
+                on(document, "#idTocArea a:click", function(evt){
+                    //escribe la ruta entera en el campo de input del formulario
+                    var section = evt.target.innerText;
+                    var idSection = evt.target.hash.substring(1);
+                    selectedPage.section = selectedPage.id + "#" + section;
                     dom.byId('textBoxPageSectionName').value = selectedPage.section;
-                    getTocAreaHandler.remove();
+                    //envía una patició ajax para recuperar el contenido de la sección solicitada
+                    request.dataToSend = {id: selectedPage.id,
+                                          selected: section,
+                                          idSection: idSection};
+                    request.urlBase = "lib/exe/ioc_ajax.php?call=get_content_page";
+                    request.sendRequest();
                 });
 
                 // Creació del formulari
-                var divdretabaixa = domConstruct.create('div', {
-                    className: 'dretabaixa'
+                var divcentrebaix = domConstruct.create('div', {
+                    className: 'centrebaix'
                 },cpBottom.containerNode);
 
-                var form = new Form({id:"formIncludeSyntaxDialog"}).placeAt(divdretabaixa);
+                var form = new Form({id:"formIncludeSyntaxDialog"}).placeAt(divcentrebaix);
 
                 //Un camp de text per inclore la ruta de la pàgina#secció
                 var divPageSectionName = domConstruct.create('div', {
