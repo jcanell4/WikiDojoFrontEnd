@@ -1440,8 +1440,13 @@ define([
              * Inserta el text passat com argument a la posició que es trobi el cursor del editor.
              * @param {index} text - Text a insertar
              */
-            insert: function (text) {
-                return this.getEditor().insert(text);
+            insert: function (text, force) {
+
+                // en alguns casos l'editor pot ser readonly però volem poder inserir externament
+                if (!this.readonly || force) {
+                    this.getEditor().insert(text);
+                    this.emit('change', {});
+                }
             },
 
             /**

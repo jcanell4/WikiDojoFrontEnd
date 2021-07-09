@@ -474,6 +474,64 @@ define([
             this.structure[node.id].close = closing;
         },
 
+        getKeywordTemplate: function(name) {
+
+            // TODO: cal implementar un dialeg per seleccionar-lo
+            let text = "Introdueix un nom d'instrucció vàlid: " + this.getKeywordNames().join(', ');
+            while (!name) {
+                name = prompt(text, 'IF').toUpperCase();
+
+                if (!wiocclDefinition.keyword.defs[name]) {
+                    name = false;
+                    console.warn("Keyword not found:", name);
+                }
+            }
+
+
+            let definition = this.getKeywordDefinition(name);
+            let opening = '';
+            let closing = '';
+
+            if (definition.open) {
+                opening = definition.open;
+            } else {
+                opening = wiocclDefinition.keyword.open.replace('%i', name).replace('%s', '');
+            }
+
+            if (definition.close) {
+                closing = definition.close;
+            } else {
+                closing = wiocclDefinition.keyword.close.replace('%i', name);
+            }
+
+            return opening + closing;
+        },
+
+        getFunctionTemplate: function(name) {
+            let text = "Introdueix un nom de funció vàlid: " + this.getFunctionNames().join(', ');
+            while (!name) {
+                name = prompt(text, 'STR_REPLACE').toUpperCase();
+
+                if (!wiocclDefinition.function.defs[name]) {
+                    name = false;
+                    console.warn("Function not found:", name);
+                }
+            }
+
+            // no incluim els paràmetres agafaran els valors per defecte si escau
+            return wiocclDefinition.function.open + name + wiocclDefinition.function.close.replace('%s', '');
+
+        },
+
+        getFieldTemplate: function() {
+            let field = prompt("Introdueix el nom del field", "field");
+            return `{##${field}##}`;
+        },
+
+        getContentTemplate: function() {
+            return prompt("Introdueix el nom del field", "contingut");
+        },
+
         getKeywordDefinition: function (name) {
             // console.log(name, wiocclDefinition.keyword.defs);
 

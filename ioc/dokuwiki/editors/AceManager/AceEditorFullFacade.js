@@ -242,6 +242,10 @@ define([
 
         hasFocus: function() {
             return this.editor.hasFocus();
+        },
+
+        insert: function(text, force) {
+            this.editor.insert(text, force)
         }
 
     });

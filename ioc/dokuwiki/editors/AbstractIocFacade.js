@@ -116,6 +116,16 @@ define([
 
         getContentFormat: function () {
             return this.editor.getContentFormat();
+        },
+
+        /**
+         * Inserta el text a la posició del cursor.
+         *
+         * @param text
+         * @param force inserta el text encara que l'editor sea readonly
+         */
+        insert: function(text, force) {
+            throw new Error('Method not implemented');
         }
     });
 

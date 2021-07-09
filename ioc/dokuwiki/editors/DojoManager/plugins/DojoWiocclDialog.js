@@ -69,6 +69,29 @@ define([
             // ens assegurem que es false al començar, pot ser que hagi canviat
             // durant la inicialització
             this.dirty = false;
+
+
+            // Iniciem els botons per inserir elements wioccl a l'editor
+            jQuery(this.insertWiocclBtnNode).on('click', function() {
+                let code = context.structure.getKeywordTemplate();
+                context.editor.insert(code, true);
+            });
+
+            jQuery(this.insertFieldBtnNode).on('click', function() {
+                let code = context.structure.getFieldTemplate();
+                context.editor.insert(code, true);
+            });
+
+            jQuery(this.insertFunctionBtnNode).on('click', function() {
+                let code = context.structure.getFunctionTemplate();
+                context.editor.insert(code, true);
+            });
+
+            jQuery(this.insertContentBtnNode).on('click', function() {
+                let code = context.structure.getContentTemplate();
+                context.editor.insert(code, true);
+            });
+
         },
 
         show: function () {
@@ -1167,7 +1190,10 @@ define([
             editor.on('change', function (e) {
                 // console.log("Changes detected", e, context.updating);
 
-                if (context.updating || !context.editor.hasFocus()) {
+                // Si el focus es troba a un element amb data-wioccl-btn és que ha modificat l'editor i per tant
+                // cal actualitzar
+                if (context.updating || (!context.editor.hasFocus()
+                    && jQuery(document.activeElement).attr('data-wioccl-btn') === undefined)) {
                     return;
                 }
 
