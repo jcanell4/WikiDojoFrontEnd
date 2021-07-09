@@ -255,71 +255,77 @@ define([
                 IF: {
                     attrs: [
                         {name: 'condition', type: '*'}
-                    ],
-                    template: ''
+                    ]
                 },
                 FOREACH: {
                     attrs: [
-                        {name: 'TODO', type: '*'}
+                        {name: 'var', type: 'string'},
+                        {name: 'array', type: 'array'},
+                        {name: 'counter', type: 'string', optional: true},
+                        {name: 'counterFromZero', type: 'bool', optional: true},
+                        {name: 'filter', type: 'string', optional: true},
                     ],
-                    template: ''
                 },
                 FOR: {
                     attrs: [
-                        {name: 'TODO', type: '*'}
+                        {name: 'from', type: 'int'},
+                        {name: 'to', type: 'int'},
+                        {name: 'step', type: 'int'},
+                        {name: 'counter', type: 'string'},
+                        {name: 'counterFromZero', type: 'bool'},
                     ],
-                    template: ''
                 },
                 SUBSET: {
                     attrs: [
-                        {name: 'TODO', type: '*'}
+                        {name: 'subsetvar', type: 'string'},
+                        {name: 'array', type: 'array'},
+                        {name: 'arrayitem', type: 'string'},
+                        {name: 'filter', type: 'string'},
+                        {name: 'field', type: 'string'},
                     ],
-                    template: ''
                 },
                 SET: {
                     attrs: [
-                        {name: 'var', type: '*'},
-                        {name: 'type', type: '*'},
+                        {name: 'var', type: 'string'},
+                        {name: 'type', type: 'string'},
                         {name: 'value', type: '*'},
+                        {name: 'map', type: 'array'},
                     ],
-                    template: ''
                 },
                 CONDSET: {
                     attrs: [
-                        {name: 'TODO', type: '*'}
+                        {name: 'condition', type: 'string'},
+                        {name: 'var', type: 'string'},
+                        {name: 'type', type: 'string', optional: true},
+                        {name: 'map', type: 'array'},
+                        {name: 'value', type: 'string'},
                     ],
-                    template: ''
                 },
                 RESET: {
-                    attrs: [
-                        {name: 'TODO', type: '*'}
-                    ],
-                    template: ''
+                    attrs: [],
                 },
                 CASE: {
                     attrs: [
-                        {name: 'TODO', type: '*'}
+                        {name: 'relation', type: 'string', optional: true},
+                        {name: 'forchoose', type: 'string'},
+                        {name: 'lExpression', type: 'string', optional: true},
+                        {name: 'RExpression', type: 'string', optional: true},
                     ],
-                    template: ''
                 },
                 DEFAULTCASE: {
                     attrs: [
-                        {name: 'TODO', type: '*'}
+                        {name: 'forchoose', type: 'string'},
                     ],
-                    template: ''
                 },
                 REPARSE: {
-                    attrs: [
-                        {name: 'TODO', type: '*'}
-                    ],
-                    template: ''
+                    attrs: [],
                 },
-                REPARSESET: {
-                    attrs: [
-                        {name: 'TODO', type: '*'}
-                    ],
-                    template: ''
-                },
+                // ALERTA[Xavi] Aquesta instrucció existeix? no està definida la classe wiocclreparseset
+                // REPARSESET: {
+                //     attrs: [
+                //         {name: 'TODO', type: '*'}
+                //     ],
+                // },
                 READONLY_OPEN: {
                     open: ':###',
                     close: '',
