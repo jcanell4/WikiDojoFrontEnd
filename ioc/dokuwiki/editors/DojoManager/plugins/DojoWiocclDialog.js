@@ -74,23 +74,58 @@ define([
             // Iniciem els botons per inserir elements wioccl a l'editor
             jQuery(this.insertWiocclBtnNode).on('click', function () {
                 let code = context.structure.getKeywordTemplate();
-                context.editor.insert(code, true);
+                context._insertCode(code);
             });
 
             jQuery(this.insertFieldBtnNode).on('click', function () {
                 let code = context.structure.getFieldTemplate();
-                context.editor.insert(code, true);
+                context._insertCode(code);
             });
 
             jQuery(this.insertFunctionBtnNode).on('click', function () {
                 let code = context.structure.getFunctionTemplate();
-                context.editor.insert(code, true);
+                context._insertCode(code);
             });
 
             jQuery(this.insertContentBtnNode).on('click', function () {
                 let code = context.structure.getContentTemplate();
-                context.editor.insert(code, true);
+                context._insertCode(code);
             });
+        },
+
+        _insertCode: function (code) {
+            // this._moveCursorToInsertPosition();
+
+            let pos = this._getInsertPosition();
+            this.editor.insertIntoPos(pos, code, true);
+        },
+
+        // _moveCursorToInsertPosition() {
+        //
+        //     let cursor = this._getInsertPosition();
+        //     console.log("Expected position:", cursor)
+        //     this.editor.setPosition(cursor);
+        //
+        //     console.log("New position:", this.editor.getPosition());
+        //
+        // },
+
+        _getInsertPosition() {
+            let currentPosition = this.editor.getPosition();
+            let pos = this.editor.getPositionAsIndex();
+
+            let node = this.structure._getNodeForPos(pos);
+
+            if (node.type === 'content') {
+                return currentPosition;
+            }
+
+            let nearestPos = this.structure.getNearestPos(pos);
+
+            let cursorPosition = this.editor.getIndexAsPosition(nearestPos);
+
+
+            return cursorPosition;
 
         },
 
@@ -434,11 +469,9 @@ define([
                 paramMap.set(functionDefinition.params[i].name, functionDefinition.params[i]);
             }
 
-            console.log("Rebuilding", fields, paramMap);
-
             // for (let field in fields) {
             for (let [field, param] of paramMap) {
-                console.log("Processing ", field, param);
+                // console.log("Processing ", field, param);
 
                 // let types = paramMap.get(field).type;
                 let types = param.type;

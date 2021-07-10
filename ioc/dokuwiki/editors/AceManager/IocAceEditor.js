@@ -1449,6 +1449,15 @@ define([
                 }
             },
 
+            insertIntoPos: function (cursor, text, force) {
+                // console.log(cursor, text);
+                // en alguns casos l'editor pot ser readonly però volem poder inserir externament
+                if (!this.readonly || force) {
+                    this.getSession().insert(cursor, text);
+                    this.emit('change', {});
+                }
+            },
+
             /**
              * Mou el cursor a la posició especificada per argument.
              *
@@ -1674,6 +1683,12 @@ define([
                 return editor.session.doc.positionToIndex(editor.getSelection().getCursor());
             },
 
+            getIndexAsPosition: function (index) {
+
+                let editor = this.getEditor();
+                return editor.session.doc.indexToPosition(index);
+            },
+
             hasFocus: function() {
                 let editor = this.getEditor();
 
@@ -1686,7 +1701,6 @@ define([
             },
 
             setPosition: function(cursor) {
-                // console.log("setting cursor position to", cursor);
                 this.getEditor().moveCursorToPosition(cursor);
             },
 

@@ -76,6 +76,10 @@ define([
             return this.editor.getPositionAsIndex(ignoreIfSelecting);
         },
 
+        getIndexAsPosition: function (index) {
+            return this.editor.getIndexAsPosition(index);
+        },
+
         getPosition: function() {
             return this.editor.cursor_position();
         },
@@ -246,6 +250,10 @@ define([
 
         insert: function(text, force) {
             this.editor.insert(text, force)
+        },
+
+        insertIntoPos: function (cursor, text, force) {
+            this.editor.insertIntoPos(cursor, text, force)
         }
 
     });

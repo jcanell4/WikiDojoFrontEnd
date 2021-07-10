@@ -823,6 +823,7 @@ define([
 
         },
 
+        // TODO: Canviar el nom per eliminar _, no és privada
         _getNodeForPos: function (pos) {
             // console.log("pos, chunkmap?", pos, this.posMap);
 
@@ -852,6 +853,68 @@ define([
             }
 
             return candidate;
+        },
+
+        // retorna la posició com a index
+        getNearestPos: function (pos) {
+
+            if (this.posMap.size===0) {
+                return 0;
+            }
+
+            // Cerquem el node corresponent
+            let candidate;
+            let found;
+            // let first;
+            let last;
+
+            // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
+            // S'agafarà l'anterior
+            for (let [start, node] of this.posMap) {
+
+                last = node;
+
+                if (start > pos && candidate) {
+                    found = true;
+                    break;
+                }
+
+                // s'estableix a la següent iteració
+                candidate = node;
+            }
+
+            if (!found) {
+                candidate = last;
+            }
+
+            // console.log("Candidate:", candidate, last);
+
+            // En el cas de que només hi hagi una instrucció no existeix el startIndex/lastIndex, l'hem de generar
+            if (candidate.startIndex === undefined) {
+                candidate.startIndex = 0;
+                candidate.lastIndex = this.getCode(candidate).length;
+            }
+
+
+
+            let posStart = candidate.startIndex;
+            let posEnd = candidate.lastIndex + 1;
+
+            // Calculem el punt central entre el principi i el final per determinar si la posició
+            // està més a prop del principi o del final
+            let diff = Math.floor((posEnd - posStart)/2);
+            let posMid = posStart + diff;
+
+            // console.log(`[${pos}]`, posStart, posMid, posEnd);
+
+            if (pos<posMid) {
+                // console.log("START", posStart);
+                return posStart;
+            } else {
+                // console.log("END", posEnd);
+                return posEnd;
+            }
+
         },
 
         _purge: function (node) {
@@ -1231,6 +1294,7 @@ define([
             text = text.replaceAll(/\\>/gsm, '&mark;');
 
             // ALERTA: això suposa un canvi en el recompte de caràcteres, perquè les posicions no corresponen
+
 
             let tokens = [];
             let xArray;
