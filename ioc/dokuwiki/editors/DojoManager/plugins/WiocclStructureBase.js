@@ -7,6 +7,8 @@ define([
 
     // TODO: Solució temporal, en lloc de rebre la definició de WIOCC des del servidor la establim aquí
 
+    // ALERTA! es contempla l'opció de que els parámetres siguin opcionals, però cal tenir en compte que un parámetre
+    // opcional obligaria a escriure els anteriors perque la posició a la llista de paràmetres canviarà
     let wiocclDefinition = {
         function: {
             open: "{#_",
@@ -209,6 +211,7 @@ define([
                         {name: "search", type: ["string", "array"]},
                         {name: "replace", type: ["string", "array"]},
                         {name: "subject", type: "string"},
+                        // {name: "subject", type: "string", optional: true},
                         {name: "count", type: "int"},
                     ]
                 },

@@ -72,22 +72,22 @@ define([
 
 
             // Iniciem els botons per inserir elements wioccl a l'editor
-            jQuery(this.insertWiocclBtnNode).on('click', function() {
+            jQuery(this.insertWiocclBtnNode).on('click', function () {
                 let code = context.structure.getKeywordTemplate();
                 context.editor.insert(code, true);
             });
 
-            jQuery(this.insertFieldBtnNode).on('click', function() {
+            jQuery(this.insertFieldBtnNode).on('click', function () {
                 let code = context.structure.getFieldTemplate();
                 context.editor.insert(code, true);
             });
 
-            jQuery(this.insertFunctionBtnNode).on('click', function() {
+            jQuery(this.insertFunctionBtnNode).on('click', function () {
                 let code = context.structure.getFunctionTemplate();
                 context.editor.insert(code, true);
             });
 
-            jQuery(this.insertContentBtnNode).on('click', function() {
+            jQuery(this.insertContentBtnNode).on('click', function () {
                 let code = context.structure.getContentTemplate();
                 context.editor.insert(code, true);
             });
@@ -195,7 +195,6 @@ define([
             }
 
             let fields;
-
 
 
             switch (wiocclNode.type) {
@@ -435,9 +434,14 @@ define([
                 paramMap.set(functionDefinition.params[i].name, functionDefinition.params[i]);
             }
 
-            for (let field in fields) {
+            console.log("Rebuilding", fields, paramMap);
 
-                let types = paramMap.get(field).type;
+            // for (let field in fields) {
+            for (let [field, param] of paramMap) {
+                console.log("Processing ", field, param);
+
+                // let types = paramMap.get(field).type;
+                let types = param.type;
 
                 if (Array.isArray(types)) {
                     types = types.join('|');
@@ -445,7 +449,17 @@ define([
 
                 // Es necessari eliminar el escape de les dobles cometes
                 // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
-                let value = fields[field].replaceAll('\"', '&quot;');
+
+                let value;
+
+                if (fields[field]) {
+                    value = fields[field].replaceAll('\"', '&quot;');
+                } else if (param.default) {
+                    value = param.default;
+                } else {
+                    value = '';
+                }
+
 
                 let isStringField = value.startsWith('"{##') || value.startsWith("''{##");
 
@@ -457,8 +471,13 @@ define([
                     value = `''${value}''`;
                 }
 
+                let optional = '';
+                if (param.optional) {
+                    optional = '[opcional]';
+                }
+
                 html += '<div class="wioccl-field" data-attr-field="' + field + '">';
-                html += `<label>${field} <span>(${types})</span></label>`;
+                html += `<label>${field} <span>(${types})${optional}</span></label>`;
                 html += '<input type="text" name="' + field + '" value="' + value + '"/>';
                 html += '<button data-button-edit>wioccl</button>';
                 html += '</div>';
@@ -523,7 +542,7 @@ define([
             html += '<div class="wioccl-textarea" data-inner-field="inner">';
             // html += `<label>${field} <span>(${types})</span></label>`;
             html += `<label>Contingut intern<span>(prem el botó per editar)</span></label>`;
-            html += '<textarea type="text" name="inner" disabled title="Per editar el contingut prem el botó">' + value +'</textarea>';
+            html += '<textarea type="text" name="inner" disabled title="Per editar el contingut prem el botó">' + value + '</textarea>';
             html += '<button data-button-edit>editar</button>';
             html += '</div>';
 
@@ -1041,16 +1060,35 @@ define([
 
             // TODO: fer un rebuild dels paràmetres, afegint les '' segons el type i assignar el valor de fiels[name] si e stroba
 
-            // console.log("Rebuilding", fields, type, paramMap);
-            for (let name in fields) {
+            console.log("Rebuilding", fields, paramMap);
+
+            for (let [name, param] of paramMap) {
+                console.log("Processing ", name, param);
+
+                // Si és opcinal i el camp és buit, no afegim res
+                if (param.optional && (!fields[name] || fields[name].length === 0)) {
+                    continue;
+                }
+
+                // for (let name in fields) {
                 if (first) {
                     first = false;
                 } else {
                     rebuild += ',';
                 }
 
-                console.error("TODO: no dependre dels noms del camp, s'han de recorre els paràmetres de la definició")
-                let value = fields[name];
+                let value;
+
+                if (fields[name]) {
+                    value = fields[name];
+                } else if (param.default) {
+                    value = param.default;
+                } else {
+                    value = '';
+                }
+
+
+                // let value = fields[name];
 
                 let types = Array.isArray(paramMap.get(name).type) ? paramMap.get(name).type : [paramMap.get(name).type];
 
@@ -1125,7 +1163,7 @@ define([
             for (let [name, attr] of attrsMap) {
 
                 // Si és opcinal i el camp és buit, no afegim res
-                if (attr.optional && (!fields[name] || fields[name].length ===0)) {
+                if (attr.optional && (!fields[name] || fields[name].length === 0)) {
                     continue;
                 }
 
