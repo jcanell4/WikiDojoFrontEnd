@@ -990,149 +990,179 @@ define([
 
             let type = wiocclNode.type;
             let rebuild = '';
-            let first = true;
-            let instruction;
 
             // console.log('type', wiocclNode.type);
 
             switch (type) {
 
                 case 'content':
-                    // és content, no cal fer res
+                    rebuild = this._rebuildAttrsContent(fields, wiocclNode);
                     break;
 
                 case 'field':
-                    rebuild = fields['field'];
+                    rebuild = this._rebuildAttrsField(fields, wiocclNode);
                     break;
 
                 case 'function':
 
-                    instruction = this.structure.getInstructionName(wiocclNode);
-                    let functionDefinition = this.structure.getFunctionDefinition(instruction);
-
-                    let paramMap = new Map();
-                    for (let i = 0; i < functionDefinition.params.length; i++) {
-                        paramMap.set(functionDefinition.params[i].name, functionDefinition.params[i]);
-                    }
-
-                    // TODO: fer un rebuild dels paràmetres, afegint les '' segons el type i assignar el valor de fiels[name] si e stroba
-
-                    // console.log("Rebuilding", fields, type, paramMap);
-                    for (let name in fields) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            rebuild += ',';
-                        }
-
-                        let value = fields[name];
-
-                        let types = Array.isArray(paramMap.get(name).type) ? paramMap.get(name).type : [paramMap.get(name).type];
-
-                        if (value.startsWith('[') && value.endsWith(']')) {
-                            // És un array, comprovem que sigui un tipus vàlid
-                            if (!types.includes("array")) {
-                                console.error("S'ha detectat un array però el camp no accepta aquest tipus. Tipus acceptats:", types);
-                                alert("S'ha detectat un array però el camp " + name + " no accepta aquest tipus. Tipus acceptats:" + types);
-                            }
-
-                        } else if ((value.startsWith('{##') && value.endsWith('##}'))
-                            || (value.startsWith("''{##") && value.endsWith("##}'"))
-                            || (value.startsWith('"{##') && value.endsWith('##}"'))
-                        ) {
-                            // És un camp, no podem saber si és un array o un string, en cas de ser un string s'han
-                            // d'afegir manualment les dobles cometes
-
-                            // Normalitzem l'ús de les cometes dobles
-                            let isString = value.startsWith("''") || value.startsWith("");
-                            value = value.replace(/^("+|'{2,})+/g, '');
-                            value = value.replace(/("+|'{2,})+$/g, '');
-
-                            if (isString) {
-                                value = `''${value}''`;
-                            }
-
-
-                        } else {
-                            // Comprovem els tipus de camp i si el valor és un string o date i afegim les dobles cometes
-
-                            // Eliminem les "* i les ''* del principi i del final
-                            value = value.replace(/^("+|'{2,})+/g, '');
-                            value = value.replace(/("+|'{2,})+$/g, '');
-
-                            // console.log("[**]:", name, types, value)
-                            for (let i = 0; i < types.length; i++) {
-
-                                if (types[i] === 'string'
-                                    || types[i] === 'date') {
-                                    value = "''" + value + "''";
-                                    // console.log("[**]Afegides cometes:", value);
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        rebuild += value;
-                    }
+                    rebuild = this._rebuildAttrsFunction(fields, wiocclNode);
 
                     break;
 
                 default:
                     // Instrucció
-
-                    instruction = this.structure.getInstructionName(wiocclNode);
-                    let keywordDefinition = this.structure.getKeywordDefinition(instruction);
-
-                    let attrsMap = new Map();
-                    for (let i = 0; i < keywordDefinition.attrs.length; i++) {
-                        attrsMap.set(keywordDefinition.attrs[i].name, keywordDefinition.attrs[i]);
-                    }
-
-                    // Differencia amb la gestió de funcions: no s'han de fer servir cometes i en lloc de separar per ,
-                    // es separa per espais
-
-
-                    // TODO: ALERTA! La reconstrucció s'ha de fer (a function també) a partir dels atributs definits
-                    // no dels camps!!
-
-                    for (let [name, attr] of attrsMap) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            rebuild += ' ';
-                        }
-
-                        let value;
-
-                        if (fields[name]) {
-                            value = fields[name];
-                        } else {
-                            value = '';
-                        }
-
-
-                        let types = Array.isArray(attr.type) ? attr.type : [attr.type];
-
-                        if (value.startsWith('[') && value.endsWith(']')) {
-                            // És un array, comprovem que sigui un tipus vàlid
-                            if (!types.includes("array")) {
-                                console.error("S'ha detectat un array però el camp no accepta aquest tipus. Tipus acceptats:", types);
-                                alert("S'ha detectat un array però el camp " + name + " no accepta aquest tipus. Tipus acceptats:" + types);
-                            }
-
-                        }
-
-                        // rebuild += value;
-
-                        rebuild += name + '=\"' + value + '\"';
-                    }
+                    rebuild = this._rebuildAttrsKeyword(fields, wiocclNode);
 
             }
 
             // console.log("fields rebuilt:", rebuild);
             return rebuild;
         },
+
+        _rebuildAttrsContent: function (fields, wiocclNode) {
+            // és content, no cal fer res
+            return '';
+        },
+
+        _rebuildAttrsField: function (fields, wiocclNode) {
+            return fields['field'];
+        },
+
+        _rebuildAttrsFunction: function (fields, wiocclNode) {
+            let rebuild = '';
+            let first = true;
+            let instruction = this.structure.getInstructionName(wiocclNode);
+            let functionDefinition = this.structure.getFunctionDefinition(instruction);
+
+            let paramMap = new Map();
+            for (let i = 0; i < functionDefinition.params.length; i++) {
+                paramMap.set(functionDefinition.params[i].name, functionDefinition.params[i]);
+            }
+
+            // TODO: fer un rebuild dels paràmetres, afegint les '' segons el type i assignar el valor de fiels[name] si e stroba
+
+            // console.log("Rebuilding", fields, type, paramMap);
+            for (let name in fields) {
+                if (first) {
+                    first = false;
+                } else {
+                    rebuild += ',';
+                }
+
+                console.error("TODO: no dependre dels noms del camp, s'han de recorre els paràmetres de la definició")
+                let value = fields[name];
+
+                let types = Array.isArray(paramMap.get(name).type) ? paramMap.get(name).type : [paramMap.get(name).type];
+
+                if (value.startsWith('[') && value.endsWith(']')) {
+                    // És un array, comprovem que sigui un tipus vàlid
+                    if (!types.includes("array")) {
+                        console.error("S'ha detectat un array però el camp no accepta aquest tipus. Tipus acceptats:", types);
+                        alert("S'ha detectat un array però el camp " + name + " no accepta aquest tipus. Tipus acceptats:" + types);
+                    }
+
+                } else if ((value.startsWith('{##') && value.endsWith('##}'))
+                    || (value.startsWith("''{##") && value.endsWith("##}'"))
+                    || (value.startsWith('"{##') && value.endsWith('##}"'))
+                ) {
+                    // És un camp, no podem saber si és un array o un string, en cas de ser un string s'han
+                    // d'afegir manualment les dobles cometes
+
+                    // Normalitzem l'ús de les cometes dobles
+                    let isString = value.startsWith("''") || value.startsWith("");
+                    value = value.replace(/^("+|'{2,})+/g, '');
+                    value = value.replace(/("+|'{2,})+$/g, '');
+
+                    if (isString) {
+                        value = `''${value}''`;
+                    }
+
+
+                } else {
+                    // Comprovem els tipus de camp i si el valor és un string o date i afegim les dobles cometes
+
+                    // Eliminem les "* i les ''* del principi i del final
+                    value = value.replace(/^("+|'{2,})+/g, '');
+                    value = value.replace(/("+|'{2,})+$/g, '');
+
+                    // console.log("[**]:", name, types, value)
+                    for (let i = 0; i < types.length; i++) {
+
+                        if (types[i] === 'string'
+                            || types[i] === 'date') {
+                            value = "''" + value + "''";
+                            // console.log("[**]Afegides cometes:", value);
+
+                            break;
+                        }
+                    }
+                }
+
+                rebuild += value;
+            }
+
+            return rebuild;
+        },
+
+        _rebuildAttrsKeyword: function (fields, wiocclNode) {
+            let rebuild = '';
+            let first = true;
+            let instruction = this.structure.getInstructionName(wiocclNode);
+            let keywordDefinition = this.structure.getKeywordDefinition(instruction);
+
+            let attrsMap = new Map();
+            for (let i = 0; i < keywordDefinition.attrs.length; i++) {
+                attrsMap.set(keywordDefinition.attrs[i].name, keywordDefinition.attrs[i]);
+            }
+
+            // Differencia amb la gestió de funcions: no s'han de fer servir cometes i en lloc de separar per ,
+            // es separa per espais
+
+
+            // TODO: ALERTA! La reconstrucció s'ha de fer (a function també) a partir dels atributs definits
+            // no dels camps!!
+
+            for (let [name, attr] of attrsMap) {
+
+                // Si és opcinal i el camp és buit, no afegim res
+                if (attr.optional && !fields[name] || fields[name].length ===0) {
+                    continue;
+                }
+
+                if (first) {
+                    first = false;
+                } else {
+                    rebuild += ' ';
+                }
+
+                let value;
+
+                if (fields[name]) {
+                    value = fields[name];
+                } else {
+                    value = '';
+                }
+
+
+                let types = Array.isArray(attr.type) ? attr.type : [attr.type];
+
+                if (value.startsWith('[') && value.endsWith(']')) {
+                    // És un array, comprovem que sigui un tipus vàlid
+                    if (!types.includes("array")) {
+                        console.error("S'ha detectat un array però el camp no accepta aquest tipus. Tipus acceptats:", types);
+                        alert("S'ha detectat un array però el camp " + name + " no accepta aquest tipus. Tipus acceptats:" + types);
+                    }
+
+                }
+
+                // rebuild += value;
+
+                rebuild += name + '=\"' + value + '\"';
+            }
+
+            return rebuild;
+        },
+
 
         createEditor: function () {
             let suffixId = (this.args.id + Date.now() + Math.random()).replace('.', '-'); // id única

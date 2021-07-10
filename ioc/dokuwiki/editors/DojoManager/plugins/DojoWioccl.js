@@ -276,7 +276,7 @@ define([
 
             let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
             this.setData(structure.getNodeById(structure.root), wiocclNode);
-
+            this.editor.resetOriginalContentState();
             structure.updating = false;
         },
 
