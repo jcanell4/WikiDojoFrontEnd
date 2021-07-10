@@ -1125,7 +1125,7 @@ define([
             for (let [name, attr] of attrsMap) {
 
                 // Si és opcinal i el camp és buit, no afegim res
-                if (attr.optional && !fields[name] || fields[name].length ===0) {
+                if (attr.optional && (!fields[name] || fields[name].length ===0)) {
                     continue;
                 }
 
