@@ -388,7 +388,7 @@ define([
         },
 
         _updateDetail: function (wiocclNode, ignoreFields) {
-
+            console.log("Updating wiocclNode", wiocclNode)
             if (this.updating) {
                 return;
             }
@@ -402,6 +402,7 @@ define([
 
 
             let auxContent = this.structure.getCode(wiocclNode);
+
             // let auxContent = this.source.getCode(item, this.structure);
             this.editor.setValue(auxContent);
             this.dirty = true;
@@ -771,7 +772,8 @@ define([
             if (!this._pendingChanges_Field2Detail) {
                 return;
             }
-            // console.log("updatePendingChanges_Field2Detail");
+            console.log("updatePendingChanges_Field2Detail: siblings?", this.structure.siblings);
+            console.log("updatePendingChanges_Field2Detail: selectedWioccl?", this.selectedWiocclNode);
 
             let $attrContainer = jQuery(this.attrContainerNode);
 
@@ -884,7 +886,7 @@ define([
 
 
         _selectWiocclNode(wiocclNode) {
-            // console.error('selecting wioccl:', wiocclNode);
+            console.error('selecting wioccl:', wiocclNode);
 
             this._updateLegend(wiocclNode);
             this._updateInstructionHtml(wiocclNode);
@@ -1096,7 +1098,7 @@ define([
             console.log("Rebuilding", fields, paramMap);
 
             for (let [name, param] of paramMap) {
-                console.log("Processing ", name, param);
+                // console.log("Processing ", name, param);
 
                 // Si és opcinal i el camp és buit, no afegim res
                 if (param.optional && (!fields[name] || fields[name].length === 0)) {

@@ -665,7 +665,7 @@ define([
         },
 
         getCode: function (node) {
-            // console.log("getCode:", node);
+            console.log("getCode", node);
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -691,11 +691,17 @@ define([
                 }
 
                 code += this.getCode(child, this.structure);
+
+                console.log("getCode:", node, code);
             }
 
             if (node.close !== null) {
                 code += node.close;
             }
+
+
+
+            code = this._addSiblingsToCode(node, code);
 
 
             // console.log("Code rebuilt:", code);
@@ -704,7 +710,7 @@ define([
 
         // En lloc de generar el codi pels childs es reemplaça pel inner passat com argument
         getCodeWithInner: function (node, inner) {
-            // console.log("Rebuilding wioccl:", data, structure);
+            console.log("getCodeWithInner", node, inner);
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -719,35 +725,154 @@ define([
 
             code += inner;
 
-            // // console.log("Comprovant childrens:", data.children);
-            // for (let i = 0; i < node.children.length; i++) {
-            //
-            //     // let node = typeof data.children[i] === 'object' ? data.children[i] : this.getStructure()[data.children[i]];
-            //     // Si com a fill hi ha un node és una copia, cal recuperar-lo de la estructura sempre
-            //     let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
-            //     // console.log("Quin node s'intenta comprovar?", id);
-            //     let child = this.structure[id];
-            //
-            //     // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
-            //     // per exemple perquè és genera amb un for o foreach
-            //     if (child.isClone) {
-            //         continue;
-            //     }
-            //
-            //     code += this.getCode(child, this.structure);
-            // }
-
             if (node.close !== null) {
                 code += node.close;
             }
 
+            this._addSiblingsToCode(node, code);
 
-            // console.log("Rebuild:", wioccl);
+            // // Comprovem si te siblings (mateix parent), i si es així en quina posició es troben al posmap (abans o després que aquest)
+            // console.log("siblings candidats?",this.structure.siblings)
+            // let siblings = {};
+            // let testCounter =0;
+            //
+            // for (let siblingId of this.structure.siblings) {
+            //     if (this.structure[siblingId].parent == this.node.parent) {
+            //         console.log("trobat sigling:", this.structure[siblingId])
+            //         siblings[singlinbId] = this.structure[siblingId];
+            //         testCounter++;
+            //     } else {
+            //         console.warn("descartat sibling:", this.structure[siblingId])
+            //     }
+            // }
+            //
+            // let after = false;
+            //
+            // for (let [start, mappedNode] in this.posMap) {
+            //
+            //     if (mappedNode.id === node.id) {
+            //         after = true;
+            //         continue;
+            //     }
+            //
+            //     if (siblings[mappedNode.id]) {
+            //         // l'eliminem per no repetirlo, la majoria d'etiquetes s'afegeixen 2 vegades, una per l'apertura i una altra pel tancament
+            //         delete(siblings[mappedNode.id]);
+            //         testCounter--;
+            //
+            //         let siblingCode = this.getCode(mappedNode.id);
+            //         if (after) {
+            //             code += siblingCode;
+            //         } else {
+            //             code = siblingCode + code ;
+            //         }
+            //     }
+            //
+            // }
+            //
+            // console.log("Procesats tots els siblings?", testCounter === 0, testCounter);
+            //
+            //
+            // console.log("Rebuild amb siblings:", code);
+
+            return code;
+        },
+
+        _hasChild: function(parent, child) {
+            if (typeof parent !== 'object') {
+                parent = this.structure[parent];
+            }
+
+            let childId;
+            if (typeof child === 'object') {
+                childId = child.id;
+            } else {
+                childId = child;
+            }
+
+            for (let childInParent of parent.children) {
+                let childInParentId = typeof childInParent === 'object' ? childInParent.id : childInParent;
+                if (childInParentId === childId) {
+                    console.log(`${childId} found on parent`, parent, childInParent)
+                    return true;
+                }
+            }
+
+            console.error("Child not found in parent", parent, child);
+            return false;
+        },
+
+        // Es consideran només els siblings del node no afegits al parent (perquè s'han afegit a l'editor i encara no s'han desat els canvis)
+        _addSiblingsToCode: function(node, code) {
+            // Comprovem si te siblings (mateix parent), i si es així en quina posició es troben al posmap (abans o després que aquest)
+            console.log("siblings candidats?",node, this.siblings)
+            let siblings = {};
+            let testCounter =0;
+
+            // Si no es control·la aquest es produeix un loop infinit
+            if (this.siblings.includes(node.id)) {
+                console.log("El node és un sibling, no cal afegir-res");
+
+                return code;
+            }
+
+            if (!this.posMap) {
+                console.log("No hi ha posMap. Retornant");
+                return code;
+            }
+
+
+            for (let siblingId of this.siblings) {
+                // if (this.structure[siblingId].parent === node.parent && !this._hasChild(node.parent, siblingId)) {
+                if (this.structure[siblingId].parent === node.parent) {
+                    console.log("trobat sigling:", this.structure[siblingId])
+                    siblings[siblingId] = this.structure[siblingId];
+                    testCounter++;
+                } else {
+                    console.warn("descartat sibling:", this.structure[siblingId])
+                }
+            }
+
+            let after = false;
+
+            for (let [start, mappedNode] of this.posMap) {
+
+                if (mappedNode.id === node.id) {
+                    console.log("trobat el node original, saltant");
+                    after = true;
+                    continue;
+                }
+
+                if (siblings[mappedNode.id]) {
+                    // l'eliminem per no repetirlo, la majoria d'etiquetes s'afegeixen 2 vegades, una per l'apertura i una altra pel tancament
+                    delete(siblings[mappedNode.id]);
+                    testCounter--;
+
+                    let siblingCode = this.getCode(mappedNode);
+                    if (after) {
+                        console.log("afegit després", siblingCode);
+                        code += siblingCode;
+                    } else {
+                        console.log("afegit abans", siblingCode);
+                        code = siblingCode + code ;
+                    }
+                } else {
+                    console.log("No es troba ", mappedNode.id, " a siblings", siblings);
+                }
+
+            }
+
+            console.log("Procesats tots els siblings?", testCounter === 0, testCounter);
+
+
+            console.log("Rebuild amb siblings:", code);
+
             return code;
         },
 
         // retorna el contingut d'un node, és a dir, el codi corresponent als nodes fills
         getInner: function(node) {
+            console.warn("getInner", node);
             let code = '';
 
             for (let i=0; i<node.children.length; i++) {
