@@ -477,12 +477,18 @@ define([
             this.structure[node.id].close = closing;
         },
 
-        getKeywordTemplate: function(name) {
+        getKeywordTemplate: function (name) {
 
             // TODO: cal implementar un dialeg per seleccionar-lo
             let text = "Introdueix un nom d'instrucció vàlid: " + this.getKeywordNames().join(', ');
             while (!name) {
-                name = prompt(text, 'IF').toUpperCase();
+                name = prompt(text, 'IF');
+
+                if (name) {
+                    name = name.toUpperCase();
+                } else {
+                    return "";
+                }
 
                 if (!wiocclDefinition.keyword.defs[name]) {
                     name = false;
@@ -510,10 +516,19 @@ define([
             return opening + closing;
         },
 
-        getFunctionTemplate: function(name) {
+        getFunctionTemplate: function (name) {
             let text = "Introdueix un nom de funció vàlid: " + this.getFunctionNames().join(', ');
             while (!name) {
-                name = prompt(text, 'STR_REPLACE').toUpperCase();
+
+
+                name = prompt(text, 'STR_REPLACE');
+
+                if (name) {
+                    name = name.toUpperCase();
+                } else {
+                    return "";
+                }
+
 
                 if (!wiocclDefinition.function.defs[name]) {
                     name = false;
@@ -526,12 +541,17 @@ define([
 
         },
 
-        getFieldTemplate: function() {
+        getFieldTemplate: function () {
             let field = prompt("Introdueix el nom del field", "field");
+
+            if (field===null) {
+                return "";
+            }
+
             return `{##${field}##}`;
         },
 
-        getContentTemplate: function() {
+        getContentTemplate: function () {
             return prompt("Introdueix el nom del field", "contingut");
         },
 
@@ -665,7 +685,7 @@ define([
         },
 
         getCode: function (node) {
-            console.log("getCode", node);
+            // console.log("getCode", node);
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -698,7 +718,6 @@ define([
             if (node.close !== null) {
                 code += node.close;
             }
-
 
 
             code = this._addSiblingsToCode(node, code);
@@ -778,7 +797,7 @@ define([
             return code;
         },
 
-        _hasChild: function(parent, child) {
+        _hasChild: function (parent, child) {
             if (typeof parent !== 'object') {
                 parent = this.structure[parent];
             }
@@ -803,11 +822,11 @@ define([
         },
 
         // Es consideran només els siblings del node no afegits al parent (perquè s'han afegit a l'editor i encara no s'han desat els canvis)
-        _addSiblingsToCode: function(node, code) {
+        _addSiblingsToCode: function (node, code) {
             // Comprovem si te siblings (mateix parent), i si es així en quina posició es troben al posmap (abans o després que aquest)
-            console.log("siblings candidats?",node, this.siblings)
+            // console.log("siblings candidats?", node, this.siblings)
             let siblings = {};
-            let testCounter =0;
+            let testCounter = 0;
 
             // Si no es control·la aquest es produeix un loop infinit
             if (this.siblings.includes(node.id)) {
@@ -838,32 +857,32 @@ define([
             for (let [start, mappedNode] of this.posMap) {
 
                 if (mappedNode.id === node.id) {
-                    console.log("trobat el node original, saltant");
+                    // console.log("trobat el node original, saltant");
                     after = true;
                     continue;
                 }
 
                 if (siblings[mappedNode.id]) {
                     // l'eliminem per no repetirlo, la majoria d'etiquetes s'afegeixen 2 vegades, una per l'apertura i una altra pel tancament
-                    delete(siblings[mappedNode.id]);
+                    delete (siblings[mappedNode.id]);
                     testCounter--;
 
                     let siblingCode = this.getCode(mappedNode);
                     if (after) {
-                        console.log("afegit després", siblingCode);
+                        // console.log("afegit després", siblingCode);
                         code += siblingCode;
                     } else {
-                        console.log("afegit abans", siblingCode);
-                        code = siblingCode + code ;
+                        // console.log("afegit abans", siblingCode);
+                        code = siblingCode + code;
                     }
                 } else {
-                    console.log("No es troba ", mappedNode.id, " a siblings", siblings);
+                    // console.log("No es troba ", mappedNode.id, " a siblings", siblings);
                 }
 
             }
 
-            console.log("Procesats tots els siblings?", testCounter === 0, testCounter);
-
+            // console.log("Procesats tots els siblings?", testCounter === 0, testCounter);
+            //
 
             console.log("Rebuild amb siblings:", code);
 
@@ -871,11 +890,11 @@ define([
         },
 
         // retorna el contingut d'un node, és a dir, el codi corresponent als nodes fills
-        getInner: function(node) {
+        getInner: function (node) {
             console.warn("getInner", node);
             let code = '';
 
-            for (let i=0; i<node.children.length; i++) {
+            for (let i = 0; i < node.children.length; i++) {
                 let child = typeof node.children[i] === 'object' ? node.children[i] : this.structure[node.children[i]];
                 code += this.getCode(child);
             }
@@ -983,7 +1002,7 @@ define([
         // retorna la posició com a index
         getNearestPos: function (pos) {
 
-            if (this.posMap.size===0) {
+            if (this.posMap.size === 0) {
                 return 0;
             }
 
@@ -1021,18 +1040,17 @@ define([
             }
 
 
-
             let posStart = candidate.startIndex;
             let posEnd = candidate.lastIndex + 1;
 
             // Calculem el punt central entre el principi i el final per determinar si la posició
             // està més a prop del principi o del final
-            let diff = Math.floor((posEnd - posStart)/2);
+            let diff = Math.floor((posEnd - posStart) / 2);
             let posMid = posStart + diff;
 
             // console.log(`[${pos}]`, posStart, posMid, posEnd);
 
-            if (pos<posMid) {
+            if (pos < posMid) {
                 // console.log("START", posStart);
                 return posStart;
             } else {
@@ -1230,7 +1248,6 @@ define([
                 outTokens[i].children = [];
 
 
-
                 if (outTokens[i].value.startsWith('</WIOCCL:')) {
                     // console.log("Tancant", outTokens[i].value)
                     outTokens[i].type = "wioccl";
@@ -1350,13 +1367,7 @@ define([
 
                 // TODO[Xavi] eliminar el root.isNull i el outRoot, no s'ha de fer servir, tots els nodes han de penjar d'un pare
                 if (first && root.type !== 'temp') {
-                    if (root.isNull) {
-                        outRoot = outTokens[i];
-                        this.structure[nextKey] = outTokens[i];
-                        nextKey = (Number(nextKey) + 1) + "";
-                    } else {
-                        this.structure[root.id] = outTokens[i];
-                    }
+                    this.structure[root.id] = outTokens[i];
                     first = false;
 
                 } else {
@@ -1365,19 +1376,32 @@ define([
                 }
 
 
-                // ALERTA[Xavi] Si s'afegeixen siblings a un element que penji directament del root aquest es descartaran
-                // Si es detecta cap error
-                if (siblings > 1 && Number(root.id) === Number(this.root)
-                    && Number(this.structure[root.id]['parent']) !== 0 && stack.length > 0) {
-                    // console.log("structure siblings (id i parent):", this.siblings);
-                    // for (let childId of this.siblings) {
-                    //     let child = this.structure[childId];
-                    //     console.log(child.id, child.parent);
-                    // }
 
+                // Si comprovem el node actual en lloc del parent es pot actualitzar l'arbre del diàleg (però falla
+                // la resposta del servidor, el contingut no és correcte)
+
+                let checkId = this.structure[root.id]['parent'] ? this.structure[root.id]['parent'] : '0';
+
+
+                let siblingsAddedToThisNode = siblings > 1 && Number(root.id) === Number(this.root);
+
+                console.log("checkid, siblings added to this node?", checkId, siblingsAddedToThisNode, stack.length)
+
+                // if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length > 0) {
+
+                if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length ===0 ) {
                     root.addedsiblings = true;
-                }
+                } else if (siblingsAddedToThisNode && Number(checkId)===0 && stack.length === 0) {
 
+                    // ALERTA! si permetem modificar les branques directes del root retornaria el document complet del
+                    // servidor i actualment el retorn no és correcte. A més a més es perd qualsevol canvi fet no desat
+                    // de tot el document, no només del diàleg
+
+                    alert("Error non recuperable: no es poden afegir elements germans en aquest nivell, utilitza els botons de l'editor principal per insertar-los");
+                    console.error("No esta permés afegir siblings al root ni als seus descendents directes.");
+                    errorDetected = true;
+
+                }
 
             }
 
@@ -1387,18 +1411,19 @@ define([
                 root.addedsiblings = false;
             }
 
-            // console.log("hi ha outRoot?", outRoot);
-            if (outRoot !== null) {
-                console.error("esborrar això");
-                alert("ERROR, això s'executa??");
-                Object.assign(root, outRoot);
-                delete root.isNull;
-            }
+
+
 
             this.structure.next = Number(nextKey);
 
             // actualitzem el root, es passa com a referència
-            root = this.structure[root.id];
+            if (root.addedsiblings) {
+                root = this.structure[root.parent];
+                this.root = root.id;
+                alert("changed root");
+            } else {
+                root = this.structure[root.id];
+            }
         },
 
         _tokenize(text) {
@@ -1590,6 +1615,15 @@ define([
             return this.structure.next + '';
         },
 
+
+        canInsert: function(pos, node) {
+            if (node.id === "0" || node.parent === "0") {
+                console.warn("No es pot inserir, el node és root o fill directe");
+                return false;
+            }
+
+            return true;
+        }
 
     });
 });

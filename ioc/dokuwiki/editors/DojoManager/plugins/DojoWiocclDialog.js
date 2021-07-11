@@ -93,6 +93,21 @@ define([
             });
         },
 
+        updateInsertButtons: function() {
+            let pos = this._getInsertPosition()
+            let canInsert = this.structure.canInsert(pos, this.selectedWiocclNode);
+
+            console.log("Can insert?", canInsert, pos, this.selectedWiocclNode);
+
+            jQuery(this.insertWiocclBtnNode).prop('disabled', !canInsert);
+
+            jQuery(this.insertFieldBtnNode).prop('disabled', !canInsert);
+
+            jQuery(this.insertFunctionBtnNode).prop('disabled', !canInsert);
+
+            jQuery(this.insertContentBtnNode).prop('disabled', !canInsert);
+        },
+
         _insertCode: function (code) {
             // this._moveCursorToInsertPosition();
 
@@ -886,7 +901,7 @@ define([
 
 
         _selectWiocclNode(wiocclNode) {
-            console.error('selecting wioccl:', wiocclNode);
+            // console.error('selecting wioccl:', wiocclNode);
 
             this._updateLegend(wiocclNode);
             this._updateInstructionHtml(wiocclNode);
@@ -1293,6 +1308,8 @@ define([
             editor.on('change', function (e) {
                 // console.log("Changes detected", e, context.updating);
 
+                context.updateInsertButtons();
+
                 // Si el focus es troba a un element amb data-wioccl-btn és que ha modificat l'editor i per tant
                 // cal actualitzar
                 if (context.updating || (!context.editor.hasFocus()
@@ -1320,6 +1337,7 @@ define([
 
                 context.lastPos = context.editor.getPositionAsIndex(false);
 
+
                 let candidateWiocclNode = context.structure._getNodeForPos(context.lastPos);
 
                 // console.error("Focus! canviant el selected per", candidate);
@@ -1338,6 +1356,8 @@ define([
                 // context._rebuildPosMap(context.source.getStructure()[editor.wioccl.id]);
                 let wiocclNode = context.structure._getNodeForPos(context.lastPos);
                 context._selectWiocclNode(wiocclNode);
+
+                context.updateInsertButtons();
             });
 
             editor.on('changeCursor', function (e) {
@@ -1371,6 +1391,8 @@ define([
                 context._selectWiocclNode(candidateWiocclNode);
                 // context._setFields(auxFields);
                 context._updateFields(candidateWiocclNode);
+
+                context.updateInsertButtons();
 
             });
 
@@ -1424,7 +1446,8 @@ define([
 
             this.treeWidget.set('path', path);
 
-        }
+        },
+
     });
 
     return DojoWioccDialog;
