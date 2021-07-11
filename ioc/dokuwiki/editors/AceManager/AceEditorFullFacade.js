@@ -222,17 +222,21 @@ define([
         hideToolbar: function () {
             var $toolbar = jQuery('#' + this.toolbarId);
 
-            this._originalToolbarDisplayStyle = $toolbar.css('display');
-            $toolbar.css('display', 'none')
+            // this._originalToolbarDisplayStyle = $toolbar.css('display');
+            // $toolbar.css('display', 'invisible')
+            $toolbar.css('visibility', 'hidden')
         },
 
         showToolbar: function () {
-            if (this._originalToolbarDisplayStyle) {
-                jQuery('#' + this.toolbarId).css('display', this._originalToolbarDisplayStyle);
-            } else {
-                jQuery('#' + this.toolbarId).css('display', 'inherit');
-            }
+            // ALERTA[Xavi] per evitar haver de tractar excepcions i evitar que l'editor es mogui quan es mostra/oculta
+            // la barra canviem el display per visibilitiy
 
+            // if (this._originalToolbarDisplayStyle && this._originalToolbarDisplayStyle && this._originalToolbarDisplayStyle != 'none') {
+            //     jQuery('#' + this.toolbarId).css('display', this._originalToolbarDisplayStyle);
+            // } else {
+            //     jQuery('#' + this.toolbarId).css('display', 'inherit');
+                jQuery('#' + this.toolbarId).css('visibility', 'visible');
+            // }
         },
 
         getCurrentRow: function() {

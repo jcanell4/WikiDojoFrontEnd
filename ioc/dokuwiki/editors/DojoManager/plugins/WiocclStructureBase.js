@@ -712,7 +712,7 @@ define([
 
                 code += this.getCode(child, this.structure);
 
-                console.log("getCode:", node, code);
+                // console.log("getCode:", node, code);
             }
 
             if (node.close !== null) {
@@ -836,7 +836,7 @@ define([
             }
 
             if (!this.posMap) {
-                console.log("No hi ha posMap. Retornant");
+                // console.log("No hi ha posMap. Retornant");
                 return code;
             }
 
@@ -884,14 +884,14 @@ define([
             // console.log("Procesats tots els siblings?", testCounter === 0, testCounter);
             //
 
-            console.log("Rebuild amb siblings:", code);
+            // console.log("Rebuild amb siblings:", code);
 
             return code;
         },
 
         // retorna el contingut d'un node, és a dir, el codi corresponent als nodes fills
         getInner: function (node) {
-            console.warn("getInner", node);
+            // console.warn("getInner", node);
             let code = '';
 
             for (let i = 0; i < node.children.length; i++) {
@@ -1385,7 +1385,7 @@ define([
 
                 let siblingsAddedToThisNode = siblings > 1 && Number(root.id) === Number(this.root);
 
-                console.log("checkid, siblings added to this node?", checkId, siblingsAddedToThisNode, stack.length)
+                // console.log("checkid, siblings added to this node?", checkId, siblingsAddedToThisNode, stack.length)
 
                 // if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length > 0) {
 
@@ -1417,10 +1417,11 @@ define([
             this.structure.next = Number(nextKey);
 
             // actualitzem el root, es passa com a referència
+            // ALERTA[Xavi] canviar el node pel parent i establir el root com el nou id és el que fa que en actualitzar
+            // s'actualitzi l'arbre
             if (root.addedsiblings) {
                 root = this.structure[root.parent];
                 this.root = root.id;
-                alert("changed root");
             } else {
                 root = this.structure[root.id];
             }

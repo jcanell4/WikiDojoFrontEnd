@@ -97,7 +97,13 @@ define([
             let pos = this._getInsertPosition()
             let canInsert = this.structure.canInsert(pos, this.selectedWiocclNode);
 
-            console.log("Can insert?", canInsert, pos, this.selectedWiocclNode);
+            if (canInsert) {
+                this.editor.unlockEditor();
+            } else {
+                this.editor.lockEditor();
+            }
+
+            // console.log("Can insert?", canInsert, pos, this.selectedWiocclNode);
 
             jQuery(this.insertWiocclBtnNode).prop('disabled', !canInsert);
 
@@ -403,7 +409,7 @@ define([
         },
 
         _updateDetail: function (wiocclNode, ignoreFields) {
-            console.log("Updating wiocclNode", wiocclNode)
+            // console.log("Updating wiocclNode", wiocclNode)
             if (this.updating) {
                 return;
             }
