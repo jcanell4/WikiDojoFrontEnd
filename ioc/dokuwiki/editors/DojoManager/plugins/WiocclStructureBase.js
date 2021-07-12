@@ -255,6 +255,14 @@ define([
                     close: '',
                     hidden: true
                 },
+                // VOID és un tipus especial utilitzat internament per les estructures temporals, no permet afegir siblings
+                // i es reemplaçat pel contingut en afegir-lo al document
+                VOID: {
+                    attrs: [],
+                    open: '',
+                    close: '',
+                    hidden: true
+                },
                 IF: {
                     attrs: [
                         {name: 'condition', type: '*'}
@@ -685,7 +693,7 @@ define([
         },
 
         getCode: function (node) {
-            // console.log("getCode", node);
+            console.log("getCode", node);
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -1118,6 +1126,10 @@ define([
 
             let outTokens = this._tokenize(text);
 
+            console.log("node?", node);
+            console.log("tokens?", outTokens)
+
+
 
             // text és el text a parsejar
             // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
@@ -1187,7 +1199,7 @@ define([
         // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
 
-            // console.error("_createTree", outTokens);
+            console.error("_createTree",root, outTokens);
 
             this.discardSiblings();
 
@@ -1222,7 +1234,7 @@ define([
             let errorDetected = false;
 
             for (let i in outTokens) {
-                // console.log(i, stack);
+                console.log(i, stack);
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 // Si l'arrel és temporal el primer token és fill de l'arrel
@@ -1230,8 +1242,21 @@ define([
                 // if (root.type === 'temp' && stack.length === 0) {
                 // TODO: Alerta, això correspon a WiocclStructureTemp, però llavors cal copiar tota la funció canviant
                 // només aquest cas
-                if (root.type === 'temp' && stack.length === 0) {
 
+                // ALERTA! Gestionar el void! considerar separar en les classes temp i void!!
+
+                console.log("S'afegeix correctament com a fill del root??", root.type, stack.length);
+                if (root.type === 'void' && stack.length === 0) {
+                    // només pot haver 1 node, no s'accepten siblings, es sustitueix el root per aquest
+                    // Alerta, com es reemplaça el root, el element deixa de ser 'void' i es comporta com
+                    // un node normal
+                    outTokens[i].id = root.id;
+                    outTokens[i].parent = root.parent;
+                    root = outTokens[i];
+
+                } if (root.type === 'temp' && stack.length === 0) {
+
+                    alert("Stop! afegint com a child del root, està funcionant??");
                     outTokens[i].id = nextKey;
                     root.children.push(outTokens[i].id);
                     outTokens[i].parent = root.id;
@@ -1267,7 +1292,6 @@ define([
                 }
 
 
-                // Aqui es fa la gestió dels childrens, però sembla que no funciona
                 if (stack.length > 0) {
                     stack[stack.length - 1].children.push(nextKey);
                     outTokens[i].parent = stack[stack.length - 1].id
@@ -1616,6 +1640,103 @@ define([
             return this.structure.next + '';
         },
 
+        // increaseNextKey: function() {
+        //     this.structure.next++;
+        // },
+
+
+        createNode: function(type, parent, key) {
+
+            if (!key) {
+                key = this.structure.next++;
+            }
+
+            let node = {
+                "type": type,
+                "value": "",
+                "attrs": "",
+                "open": "",
+                "close": "",
+                "id": key + "",
+                "parent:" : parent ? parent + "" : undefined,
+                "children": [],
+            };
+
+
+            return node;
+        },
+
+        // alerta, si el node ja existeix es sobreescriu, es controla que el id no sigui posterior al nextkey
+        addNode(node, afterId) {
+            if (Number(node)>this.structure.next) {
+                alert("No es pot afegir el node, l'identificador es major que la próxima clau");
+                return;
+            }
+
+
+
+            // L'afegim com a child del parent si no és null
+            if (node.parent !== undefined) {
+
+                if (!this.structure[node.parent]) {
+                    console.error("El parent indicat (" + node.parent + ") no es troba a l'estructura, no es pot afegir el node");
+                    return;
+                }
+
+                // PROBLEMA: no és suficient amb inserir el node en qualsevol lloc, s'ha de determinar entre
+                // quins childrens va
+                // - si no es posa res, es col·loca al principi (opcional afterId)
+                // - ALERTA! Només poden afegir-se com afills directes del root
+
+
+                // hem de comprovar que no es trobi ja afegit (per haver sobreescrit a l'anterior)
+
+
+                // 1: eliminem el child si ja es troba a la llista
+                for (let i=0; i<this.structure[node.parent].children; i++) {
+                    let childId = typeof child === 'object' ? child.id : child;
+
+                    if (childId === node.id) {
+                        this.structure[node.parent].children.splice(i, 1);
+                        break;
+                    }
+                }
+
+                // 2: cerquem el punt d'inserció
+                let found = false;
+
+                if (!afterId) {
+                    this.structure[node.parent].children.unshift(node.id);
+                } else {
+                    for (let i=0; i<this.structure[node.parent].children; i++) {
+                        let child = this.structure[node.parent].children[i];
+                        let childId = typeof child === 'object' ? child.id : child;
+
+                        if (childId === afterId) {
+                            found = true;
+                            this.structure[node.parent].children.splice(i, 0, node.id);
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        alert("No es pot afegir el node, el punt d'inserció no és fill del parent");
+                        console.error("Error: el node no s'ha afegit com a fill. no el punt d'inserció no es fill del parent:", afterId, this.structure[node.parent]);
+                        return;
+                    }
+                }
+            }
+
+            this.structure[node.id] = node;
+
+            // L'afegim com a pare de tots els seus childs
+            for (let i=0; i<node.children.length; i++) {
+
+                let childId = typeof node.children[i] === 'object'? node.children[i].id : node.children[i];
+                this.structure[childId].parent = node.id;
+            }
+
+        },
+
 
         canInsert: function(pos, node) {
             if (node.id === "0" || node.parent === "0") {
@@ -1624,7 +1745,7 @@ define([
             }
 
             return true;
-        }
+        },
 
     });
 });

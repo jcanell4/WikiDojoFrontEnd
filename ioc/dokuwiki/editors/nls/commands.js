@@ -34,10 +34,10 @@ define({ root:
         // IOC Sound Plugin
         'ioc-sound-button': 'Add sound',
         'ioc-sound-sample': 'sound identifier:key',
-        
+
         // IOC Video Plugin
 
-        
+
         // Latex Preview Plugin
         'ioc-latex-preview': 'Latex preview',
 
@@ -92,7 +92,7 @@ define({ root:
         'ioc-insert-underline-button' : 'Underline',
         'ioc-insert-underline-sample' : 'Underline',
         'ioc-insert-monospace-button' : 'Monospace',
-        'ioc-insert-monospace-sample' : 'Monospace',        
+        'ioc-insert-monospace-sample' : 'Monospace',
         'ioc-insert-code-button' : 'Code',
         'ioc-insert-code-sample' : 'Code',
         'ioc-insert-strikethrough-button' : 'Strikethrough',
@@ -118,7 +118,7 @@ define({ root:
         'ioc-insert-header6-button': 'Header sintax level 6',
 
         'ioc-readonly-toggle': 'Toggle readonly blocks',
-        
+
         'ioc-table-editor':  'Table editor',
         'ioc-table-editor-multiline':  'Multiline table editor',
         'ioc-table-editor-accounting':  'Accounting table editor',
@@ -178,7 +178,7 @@ define({ root:
         'quiz-choice' : 'Quiz: choice',
         'quiz-relations' : 'Quiz: relations',
         'quiz-complete' : 'Quiz: autocomplete',
-
+            'wioccl': 'Insert wioccl'
 
 
     }),

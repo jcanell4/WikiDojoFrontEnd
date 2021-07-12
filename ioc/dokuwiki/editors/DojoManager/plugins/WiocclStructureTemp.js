@@ -11,16 +11,10 @@ define([
 
         constructor: function (config) {
 
+            let node = this.createNode('temp');
+
             this.structure = {
-                "0": {
-                    "type": "temp",
-                    "value": "",
-                    "attrs": "",
-                    "open": "",
-                    "close": "",
-                    "id": "0",
-                    "children": [],
-                },
+                "0": node,
                 next: "1",
                 temp: true
             };

@@ -480,12 +480,16 @@ define([
             + "</tr>"
         },
 
+        // Aquest plugin no te botó
         'DojoWioccl': {
             type: 'Wioccl',
             title: localization["wioccl"],
             icon: 'IocQuizVF',
-            tag: 'wioccl'
+            // tag: 'wioccl',
+            htmlTemplate: '<span data-wioccl-ref="%s" data-wioccl-state="open" contenteditable="false"></span>'
         },
+
+
 
         'IocComment': {
             type: 'IocComment',

@@ -7,7 +7,7 @@ define(
         'switch-editor-ace': 'Canviar a editor ACE',
         'switch-editor-dojo': 'Canviar a editor HTML',
         'enable-ace': 'Activar/Desactivar ACE',
-        'enable-wrapper' : 'Activar/Desactivar embolcall',
+        'enable-wrapper': 'Activar/Desactivar embolcall',
 
         // Categories
         'category-ioc': 'Elements',
@@ -22,10 +22,10 @@ define(
         // 'addcommentbutton': 'Afegir',
         // 'addcommenttitle': 'Afegir un comentari',
         'ioc-comment-resolve-title': 'Elimina el comentari',
-        'ioc-comment-resolve-button' : 'Resol',
-        'ioc-comment-textarea-placeholder' : 'Escriu un comentari',
-        'ioc-comment-reply-title' : 'Afegir un comentari',
-        'ioc-comment-reply-button' : "Respon",
+        'ioc-comment-resolve-button': 'Resol',
+        'ioc-comment-textarea-placeholder': 'Escriu un comentari',
+        'ioc-comment-reply-title': 'Afegir un comentari',
+        'ioc-comment-reply-button': "Respon",
         'ioc-comment-save-button': 'Desar',
         'ioc-comment-cancel-button': 'Cancel·lar',
 
@@ -44,9 +44,9 @@ define(
 
         'ioc-insert-figure-button': 'Afegir figura',
         'ioc-insert-figure-sample': 'Incloure la figura',
-        
-        'ioc-include-page-button':'Incloure document',
-        'ioc-include-section-button':'Incloure secció',
+
+        'ioc-include-page-button': 'Incloure document',
+        'ioc-include-section-button': 'Incloure secció',
 
         'ioc-insert-figure-link-button': 'Enllaç a figura',
         'ioc-insert-figure-link-sample': 'Incloure enllaç a figura',
@@ -82,23 +82,23 @@ define(
         // 'ioc-insert-accounting-sample': 'Incloure la sintaxis d\'un assentament contable',
 
         // Basic toolbar butons
-        'ioc-insert-bold-button' : 'Negreta',
-        'ioc-insert-bold-sample' : 'Negreta',
-        'ioc-insert-italic-button' : 'Cursiva',
-        'ioc-insert-italic-sample' : 'Cursiva',
-        'ioc-insert-underline-button' : 'Subratllat',
-        'ioc-insert-underline-sample' : 'Subratllat',
-        'ioc-insert-monospace-button' : 'Monoespai',
-        'ioc-insert-monospace-sample' : 'Monoespai',
-        'ioc-insert-code-button' : 'Bloc de Codi',
-        'ioc-insert-code-sample' : 'Bloc de Codi',
-        'ioc-insert-strikethrough-button' : 'Text barrat',
-        'ioc-insert-strikethrough-sample' : 'Text barrat',
-        'ioc-insert-link-button' : 'Enllaç intern',
-        'ioc-insert-link-sample' : 'Enllaç intern',
-        'ioc-insert-link-external-button' : 'Enllaç extern',
-        'ioc-insert-link-external-sample' : 'Enllaç extern',
-        'ioc-insert-include-button' : 'Inclou una pàgina',
+        'ioc-insert-bold-button': 'Negreta',
+        'ioc-insert-bold-sample': 'Negreta',
+        'ioc-insert-italic-button': 'Cursiva',
+        'ioc-insert-italic-sample': 'Cursiva',
+        'ioc-insert-underline-button': 'Subratllat',
+        'ioc-insert-underline-sample': 'Subratllat',
+        'ioc-insert-monospace-button': 'Monoespai',
+        'ioc-insert-monospace-sample': 'Monoespai',
+        'ioc-insert-code-button': 'Bloc de Codi',
+        'ioc-insert-code-sample': 'Bloc de Codi',
+        'ioc-insert-strikethrough-button': 'Text barrat',
+        'ioc-insert-strikethrough-sample': 'Text barrat',
+        'ioc-insert-link-button': 'Enllaç intern',
+        'ioc-insert-link-sample': 'Enllaç intern',
+        'ioc-insert-link-external-button': 'Enllaç extern',
+        'ioc-insert-link-external-sample': 'Enllaç extern',
+        'ioc-insert-include-button': 'Inclou una pàgina',
 
         'ioc-insert-special-character-button': 'Caràcters especials',
         'ioc-insert-media-button': 'Afegeix imatges',
@@ -115,15 +115,15 @@ define(
 
         'ioc-readonly-toggle': 'Activa/Desactiva blocs de només lectura',
 
-        'ioc-table-editor':  'Editor de taules',
-        'ioc-table-editor-multiline':  'Editor de taules multilínia',
-        'ioc-table-editor-accounting':  'Editor de taules accounting',
+        'ioc-table-editor': 'Editor de taules',
+        'ioc-table-editor-multiline': 'Editor de taules multilínia',
+        'ioc-table-editor-accounting': 'Editor de taules accounting',
 
         'table-insert': 'Insertar taula',
-        'table-toggle-header' : 'Alternar entre cel·la i capçalera',
-        'table-align-right' : 'Aliniar cel·la a la dreta',
-        'table-align-left' : 'Aliniar cel·la a la esquerra',
-        'table-align-center' : 'Aliniar cel·la al centre',
+        'table-toggle-header': 'Alternar entre cel·la i capçalera',
+        'table-align-right': 'Aliniar cel·la a la dreta',
+        'table-align-left': 'Aliniar cel·la a la esquerra',
+        'table-align-center': 'Aliniar cel·la al centre',
         'merge-cells': 'Fusionar cel·les',
         'table-delete': 'Eliminar taula',
 
@@ -152,7 +152,7 @@ define(
 
         'ioc-insert-accounting-prompt': 'Introdueix les dades de la taula de contabilitat:',
 
-        'ioc-insert-text-prompt' : 'Introdueix el títol:',
+        'ioc-insert-text-prompt': 'Introdueix el títol:',
         'ioc-insert-text-large-prompt': 'Introdueix el títol:',
         'ioc-insert-example-prompt': 'Introdueix el títol:',
 
@@ -163,16 +163,18 @@ define(
         'ioc-insert-figure-link-prompt': 'Afegeix un enllaç a una figura.',
         'ioc-insert-table-link-prompt': 'Afegeix un enllaç a una taula.',
 
-        'clear-format' : 'Elimina el format',
+        'clear-format': 'Elimina el format',
 
-        'ioc-action-add-paragraph' : 'Afegeix paràgraf buit',
-        'ioc-action-add-paragraph-placeholder' : '',
+        'ioc-action-add-paragraph': 'Afegeix paràgraf buit',
+        'ioc-action-add-paragraph-placeholder': '',
 
-        'quiz' : 'Exercicis',
-        'quiz-vf' : 'Exercici: vertader/fals',
-        'quiz-choice' : "Exercici: tria l'opció correcta",
-        'quiz-relations' : 'Exercici: relacionar',
-        'quiz-complete' : 'Exercici: autocompletar'
+        'quiz': 'Exercicis',
+        'quiz-vf': 'Exercici: vertader/fals',
+        'quiz-choice': "Exercici: tria l'opció correcta",
+        'quiz-relations': 'Exercici: relacionar',
+        'quiz-complete': 'Exercici: autocompletar',
+
+        'wioccl': 'Inserir wioccl'
     })
 );
 

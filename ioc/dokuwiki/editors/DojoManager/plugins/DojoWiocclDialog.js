@@ -966,22 +966,28 @@ define([
 
             let html = '';
 
-            html += '<div class="wioccl-field">';
-            html += '<label>Type:</label>';
-            // html += '<input type="text" name="' + instruction + '" value="' + instruction + '"/>';
-            html += '<select name="' + instruction + '">';
+            let def = this.structure.getKeywordDefinition(instruction);
+            console.log("Definition?", def);
 
-            let keywordNames = this.structure.getKeywordNames();
-            // console.log("Function names:", functionNames);
-            for (let name of keywordNames) {
-                let selected = name === instruction ? 'selected' : '';
-                html += `<option value="${name}" ${selected}>${name}</option>`;
+            if (!def.hidden) {
+                html += '<div class="wioccl-field">';
+                html += '<label>Type:</label>';
+                // html += '<input type="text" name="' + instruction + '" value="' + instruction + '"/>';
+                html += '<select name="' + instruction + '">';
+
+                let keywordNames = this.structure.getKeywordNames();
+                // console.log("Function names:", functionNames);
+                for (let name of keywordNames) {
+                    let selected = name === instruction ? 'selected' : '';
+                    html += `<option value="${name}" ${selected}>${name}</option>`;
+                }
+
+
+                html += '</select>';
+                // html += '<button data-button-edit>change</button>';
+                html += '</div>';
             }
 
-
-            html += '</select>';
-            // html += '<button data-button-edit>change</button>';
-            html += '</div>';
 
             let $instruction = jQuery(this.wiocclInstruction);
             $instruction.html(html);
@@ -1018,23 +1024,28 @@ define([
 
 
             let instruction = this.structure.getInstructionName(wiocclNode);
+            let def = this.structure.getFunctionDefinition(instruction);
 
 
             let html = '';
 
-            html += '<div class="wioccl-field">';
-            html += '<label>' + wiocclNode.type + ':</label>';
-            // html += '<input type="text" name="' + instruction + '" value="' + instruction + '"/>';
-            html += '<select name="' + instruction + '">';
+            console.log("Definition?", def);
+            if (!def.hidden) {
+                html += '<div class="wioccl-field">';
+                html += '<label>' + wiocclNode.type + ':</label>';
+                // html += '<input type="text" name="' + instruction + '" value="' + instruction + '"/>';
+                html += '<select name="' + instruction + '">';
 
-            let functionNames = this.structure.getFunctionNames();
-            for (let name of functionNames) {
-                let selected = name === instruction ? 'selected' : '';
-                html += `<option value="${name}" ${selected}>${name}</option>`;
+                let functionNames = this.structure.getFunctionNames();
+                for (let name of functionNames) {
+                    let selected = name === instruction ? 'selected' : '';
+                    html += `<option value="${name}" ${selected}>${name}</option>`;
+                }
+
+                html += '</select>';
+                html += '</div>';
             }
 
-            html += '</select>';
-            html += '</div>';
 
             let $instruction = jQuery(this.wiocclInstruction);
             $instruction.html(html);
