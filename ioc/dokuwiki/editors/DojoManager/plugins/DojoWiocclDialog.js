@@ -781,7 +781,7 @@ define([
         },
 
         setData: function (rootWiocclNode, selectedWiocclNode, ignoreRebranch) {
-            console.log('setData', rootWiocclNode, selectedWiocclNode);
+            // console.log('setData', rootWiocclNode, selectedWiocclNode);
 
             if (!ignoreRebranch) {
 
@@ -837,16 +837,13 @@ define([
             if (!this._pendingChanges_Field2Detail) {
                 return;
             }
-            console.log("updatePendingChanges_Field2Detail: siblings?", this.structure.siblings);
-            console.log("updatePendingChanges_Field2Detail: selectedWioccl?", this.selectedWiocclNode);
 
             let $attrContainer = jQuery(this.attrContainerNode);
 
             // let context = this;
 
             let extractedFields = this._extractFieldsFromWiocclNode(this.selectedWiocclNode);
-
-            console.log("ExtractedFields:", extractedFields);
+            // console.log("ExtractedFields:", extractedFields);
 
             $attrContainer.find('[data-attr-field] input').each(function () {
 
@@ -855,12 +852,8 @@ define([
                 let attrValue = $fieldContainer.find('input').val();
 
 
-                // let extractedFields = context._extractFields(context.selectedWioccl.attrs,
-                //     context.selectedWioccl.type);
-
                 // Reemplacem l'atribut
                 extractedFields[attrField] = attrValue;
-                console.log("Reemplacem atribut", attrValue);
             });
 
             let innerValue;
@@ -881,19 +874,10 @@ define([
             }
 
             // Refresquem el wioccl associat a l'editor amb el valor actual
-            console.log("Alerta, s'assigna com a wioccl de l'editor el node actualitzat de l'editor:")
             this.editor.wioccl = this.structure.getNodeById(this.editor.wioccl.id);
 
 
             if (innerValue) {
-                // TODO: com ho fem?
-                //  aquesta funció tracta amb la modificació dels nodes per passar a reconstruir el text de l'editor
-                //  a partir d'aquesta:
-                //      - Eliminem els fills del node
-                //      - els reconstruim a partir de ¿?¿
-
-                // reemplaçem les entitats html que puguin haver-se desat
-                // console.log("childcontent amb htmlentities:", innerValue);
                 let code = this.structure.getCodeWithInner(this.selectedWiocclNode, innerValue);
                 this.structure.parse(code, this.selectedWiocclNode);
 
@@ -902,8 +886,6 @@ define([
                 this.selectedWiocclNode = this.structure.getNodeById(this.selectedWiocclNode.id);
                 this.editor.wioccl = this.structure.getNodeById(this.editor.wioccl.id);
             }
-
-            // this._updateDetail(this.editor.wioccl, true);
 
             // Cal actualitzar el node a la estructura
             this.structure.setNode(this.selectedWiocclNode);
@@ -960,7 +942,7 @@ define([
 
 
         _selectWiocclNode(wiocclNode) {
-            console.warn('selecting wioccl:', wiocclNode);
+            // console.warn('selecting wioccl:', wiocclNode);
 
             this._updateLegend(wiocclNode);
             this._updateInstructionHtml(wiocclNode);

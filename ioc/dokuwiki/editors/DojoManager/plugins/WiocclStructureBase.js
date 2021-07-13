@@ -737,7 +737,7 @@ define([
 
         // En lloc de generar el codi pels childs es reemplaça pel inner passat com argument
         getCodeWithInner: function (node, inner) {
-            console.log("getCodeWithInner", node, inner);
+            // console.log("getCodeWithInner", node, inner);
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
