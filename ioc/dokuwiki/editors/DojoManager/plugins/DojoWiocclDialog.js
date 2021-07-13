@@ -95,7 +95,20 @@ define([
 
         updateInsertButtons: function() {
             let pos = this._getInsertPosition()
-            let canInsert = this.structure.canInsert(pos, this.structure.getNodeById(this.selectedWiocclNode.id));
+            // let currentWiocclNode = this.structure.getNodeById(this.selectedWiocclNode.id);
+            let currentWiocclNode = this._getWiocclForCurrentPos();
+            if (currentWiocclNode.id !== this.selectedWiocclNode.id) {
+                this._selectWiocclNode(currentWiocclNode);
+            }
+
+            // if (!currentWiocclNode) {
+            //     this.structure.rebuildPosMap(this.structure.getNodeById(this.editor.wioccl.id));
+            //     console.log("Nou mapa:", this.structure.)
+            //     currentWiocclNode = this.structure.getNodeById(this.selectedWiocclNode.id);
+            // }
+
+
+            let canInsert = this.structure.canInsert(pos, currentWiocclNode);
 
             // El void sempre es bloqueja per obligar a inserir utilitzant els botons
             if (canInsert && !this.selectedWiocclNode.solo) {
@@ -768,13 +781,14 @@ define([
         },
 
         setData: function (rootWiocclNode, selectedWiocclNode, ignoreRebranch) {
-            // console.log(root, selected);
+            console.log('setData', rootWiocclNode, selectedWiocclNode);
 
             if (!ignoreRebranch) {
 
                 let tree = [];
 
                 if (selectedWiocclNode.addedsiblings) {
+                    console.log("Hi ha siblings, canviem el rootnode");
                     // console.error("root.parent ", rootWiocclNode.parent, "old root", rootWiocclNode, "expected root", this.structure.getNodeById(rootWiocclNode.parent));
                     // root = this.structure[root.parent];
                     rootWiocclNode = this.structure.getNodeById(rootWiocclNode.parent);
@@ -789,8 +803,6 @@ define([
                 // això cal canviar-ho si no és un rebranch?
                 rootWiocclNode.name = rootWiocclNode.type ? rootWiocclNode.type : rootWiocclNode.open;
 
-                this.structure._getChildrenNodes(rootWiocclNode.children, rootWiocclNode.id);
-
                 rootWiocclNode.children = this.structure._getChildrenNodes(rootWiocclNode.children, rootWiocclNode.id);
 
                 tree.push(rootWiocclNode);
@@ -803,6 +815,7 @@ define([
             // ALERTA! és diferent fer això que agafar el selected, ja que el selected era l'element original que hara
             // pot trobar-se dividit en múltiples tokens
             this._updateDetail(this.structure.getNodeById(selectedWiocclNode.id));
+
             // this.wiocclDialog._updateDetail(structure[selected.id]);
         },
 
@@ -829,9 +842,11 @@ define([
 
             let $attrContainer = jQuery(this.attrContainerNode);
 
-            let context = this;
+            // let context = this;
 
-            let extractedFields = context._extractFieldsFromWiocclNode(this.selectedWiocclNode);
+            let extractedFields = this._extractFieldsFromWiocclNode(this.selectedWiocclNode);
+
+            console.log("ExtractedFields:", extractedFields);
 
             $attrContainer.find('[data-attr-field] input').each(function () {
 
@@ -845,6 +860,7 @@ define([
 
                 // Reemplacem l'atribut
                 extractedFields[attrField] = attrValue;
+                console.log("Reemplacem atribut", attrValue);
             });
 
             let innerValue;
@@ -855,7 +871,7 @@ define([
             });
 
             // reconstruim els atributs com a string
-            let rebuildAttrs = context._rebuildAttrs(extractedFields, context.selectedWiocclNode);
+            let rebuildAttrs = this._rebuildAttrs(extractedFields, this.selectedWiocclNode);
             // Re assignem els nous atributs
             this.selectedWiocclNode.attrs = rebuildAttrs;
 
@@ -865,6 +881,7 @@ define([
             }
 
             // Refresquem el wioccl associat a l'editor amb el valor actual
+            console.log("Alerta, s'assigna com a wioccl de l'editor el node actualitzat de l'editor:")
             this.editor.wioccl = this.structure.getNodeById(this.editor.wioccl.id);
 
 
@@ -880,15 +897,20 @@ define([
                 let code = this.structure.getCodeWithInner(this.selectedWiocclNode, innerValue);
                 this.structure.parse(code, this.selectedWiocclNode);
 
+
                 // restablim els nodes, perquè s'ha modificat a l'estructura
                 this.selectedWiocclNode = this.structure.getNodeById(this.selectedWiocclNode.id);
                 this.editor.wioccl = this.structure.getNodeById(this.editor.wioccl.id);
             }
 
             // this._updateDetail(this.editor.wioccl, true);
+
+            // Cal actualitzar el node a la estructura
+            this.structure.setNode(this.selectedWiocclNode);
+
             this._updateDetail(this.editor.wioccl, true);
 
-            context._pendingChanges_Field2Detail = false;
+            this._pendingChanges_Field2Detail = false;
 
             clearInterval(this.timerId_Field2Detail);
         },
@@ -938,7 +960,7 @@ define([
 
 
         _selectWiocclNode(wiocclNode) {
-            // console.error('selecting wioccl:', wiocclNode);
+            console.warn('selecting wioccl:', wiocclNode);
 
             this._updateLegend(wiocclNode);
             this._updateInstructionHtml(wiocclNode);
