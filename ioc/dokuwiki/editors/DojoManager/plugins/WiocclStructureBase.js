@@ -1245,12 +1245,10 @@ define([
 
                 // ALERTA! Gestionar el void! considerar separar en les classes temp i void!!
 
-                console.log("S'afegeix correctament com a fill del root??", root.type, stack.length);
                 if (root.type === 'void' && stack.length === 0) {
                     // només pot haver 1 node, no s'accepten siblings, es sustitueix el root per aquest
                     // Alerta, com es reemplaça el root, el element deixa de ser 'void' i es comporta com
                     // un node normal
-                    console.log("Root.parent?", root.parent);
 
                     outTokens[i].id = root.id;
                     outTokens[i].parent = root.parent;
@@ -1261,7 +1259,6 @@ define([
 
                 } if (root.type === 'temp' && stack.length === 0) {
 
-                    alert("Stop! afegint com a child del root, està funcionant??");
                     outTokens[i].id = nextKey;
                     root.children.push(outTokens[i].id);
                     outTokens[i].parent = root.id;
@@ -1680,24 +1677,17 @@ define([
                 "children": [],
             };
 
-            // Alerta, s'afegeix al final de l'structura, això és correcte pels elements que s'insereixe directament
-            // a l'editor Dojo perquè la posició depén del span, però no pels que es generan dins de l'editor.
-            if (this.structure[node.parent]) {
-                this.structure[node.parent].children.push(node.id);
-            } else {
-                console.error("El parent indicat no existeix a l'estructura:", node.parent, this.structure);
-            }
-
             return node;
         },
 
         // alerta, si el node ja existeix es sobreescriu, es controla que el id no sigui posterior al nextkey
+        // pels nodes inserits directament desde l'editor dojo no cal respectar l'ordre perquè depenen de la posició
+        // de l'span al document.
         addNode(node, afterId) {
             if (Number(node)>this.structure.next) {
                 alert("No es pot afegir el node, l'identificador es major que la próxima clau");
                 return;
             }
-
 
 
             // L'afegim com a child del parent si no és null

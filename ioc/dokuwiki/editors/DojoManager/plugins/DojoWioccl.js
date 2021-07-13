@@ -90,6 +90,7 @@ define([
         process: function () {
 
             let node = this.structure.createNode('void', '0');
+            this.structure.addNode(node);
 
             // console.log("next key:", this.structure.getNextKey(), this.structure);
 
@@ -474,6 +475,12 @@ define([
                 context.originalStructure.setStructure(target, context.originalStructure.root);
                 // Afegim els handlers (ara s'afegeixen com a resposta al emit)
                 // context._addHandlers($nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'), context);
+
+                // console.log("estructura a l'editor abans?", context.pluginEditor.extra.wioccl_structure.structure)
+                // alert("stop");
+                context.pluginEditor.extra.wioccl_structure.structure = target;
+                // console.log("estructura a l'editor despres?", context.pluginEditor.extra.wioccl_structure.structure)
+                // alert("stop");
                 context.pluginEditor.emit('import');
                 context.pluginEditor.forceChange();
 
@@ -493,8 +500,14 @@ define([
 
             console.warn("TODO: determinar si es pot o no inserir. No es pot inserir si es troba dintre d'un bloc !contenteditable")
 
-            console.log('Current node state', this.editor.getCurrentNode());
+            let $node = this.editor.getCurrentNode();
+            console.log('Current node state', $node);
 
+            if ($node.attr('contenteditable') === "false" || $node.attr('data-wioccl-ref')) {
+                this.button.setDisabled(true);
+            } else {
+                this.button.setDisabled(false);
+            }
 
             // No es pot aplicar format dins d'un block de codi
             // if (e.state.indexOf('pre') > -1) {

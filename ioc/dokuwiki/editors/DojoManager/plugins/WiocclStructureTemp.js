@@ -11,15 +11,19 @@ define([
 
         constructor: function (config) {
 
-            let node = this.createNode('temp');
-
             this.structure = {
-                "0": node,
-                next: "1",
+                next: 0,
                 temp: true
             };
 
-            this.root = "0";
+            let node = this.createNode('temp');
+            this.addNode(node);
+
+            this.root = node.id;
+
+            if (this.root !== '0') {
+                console.log("Error, el primer element de la estructura ha de tenir id 0");
+            }
 
             // console.log("estructura temporal");
 
