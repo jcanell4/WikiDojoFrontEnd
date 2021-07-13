@@ -484,7 +484,7 @@ define([
         'DojoWioccl': {
             type: 'Wioccl',
             title: localization["wioccl"],
-            icon: 'IocQuizVF',
+            icon: 'IocWioccl',
             // tag: 'wioccl',
             htmlTemplate: '<span data-wioccl-ref="%s" data-wioccl-state="open" contenteditable="false"></span>'
         },

@@ -4,7 +4,8 @@ define([
     "dojo/_base/lang",
     "dijit/_editor/_Plugin",
     "dojo/string",
-    "dijit/form/ToggleButton",
+    // "dijit/form/ToggleButton",
+    "dijit/form/Button",
     "dojo/dom-construct",
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoWiocclDialog',
     "dijit/registry",
@@ -88,20 +89,17 @@ define([
 
         process: function () {
 
-
             let node = this.structure.createNode('void', '0');
 
-            console.log("next key:", this.structure.getNextKey(), this.structure);
+            // console.log("next key:", this.structure.getNextKey(), this.structure);
 
             console.log(node);
             let html = this.htmlTemplate.replace('%s', node.id);
 
-            console.warn ("Falta el títol!");
-            console.log("template:", html);
+            // console.log("template:", html);
 
-
-            console.log('Current node state', this.editor.getCurrentNodeState());
-            console.log('Current node state', this.editor.getCurrentNode());
+            // console.log('Current node state', this.editor.getCurrentNodeState());
+            // console.log('Current node state', this.editor.getCurrentNode());
 
 
             // ALERTA[Xavi]: com només es pot inserir nous elements que penjin de l'arrel i la posició ja la
@@ -117,16 +115,16 @@ define([
 
             this.structure.addNode(node, afterId);
 
-
             let $node = DojoEditorUtils.insertHtmlInline(html, this.editor);
 
             this._addHandlers($node, this);
 
             this.editor.forceChange();
 
-
+            console.log("Node es jquery?", $node);
+            // simulem un click per obrir-lo automàticament
+            $node.trigger('click');
         },
-
 
         getNodeById: function (refId) {
             return this.structure.getNodeById(refId)

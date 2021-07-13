@@ -95,21 +95,33 @@ define([
 
         updateInsertButtons: function() {
             let pos = this._getInsertPosition()
-            let canInsert = this.structure.canInsert(pos, this.selectedWiocclNode);
+            let canInsert = this.structure.canInsert(pos, this.structure.getNodeById(this.selectedWiocclNode.id));
 
-            if (canInsert) {
+            console.log("can insert?", canInsert);
+
+            // El void sempre es bloqueja per obligar a inserir utilitzant els botons
+            if (canInsert && !this.selectedWiocclNode.solo) {
                 this.editor.unlockEditor();
             } else {
-                this.editor.lockEditor();
+                this.editor.
+                lockEditor();
             }
 
             // console.log("Can insert?", canInsert, pos, this.selectedWiocclNode);
 
+            // Els botons pel void sí que han d'estar activats per inserir l'element
+            if (this.selectedWiocclNode.type === 'void') {
+                canInsert = true;
+            }
+
             jQuery(this.insertWiocclBtnNode).prop('disabled', !canInsert);
-
             jQuery(this.insertFieldBtnNode).prop('disabled', !canInsert);
-
             jQuery(this.insertFunctionBtnNode).prop('disabled', !canInsert);
+
+            // Si el tipus és void o solo no pot inserirse content, el content s'ha d'inserir editant el "inner content"
+            if (this.selectedWiocclNode.type === 'void' || this.selectedWiocclNode.solo) {
+                canInsert = false;
+            }
 
             jQuery(this.insertContentBtnNode).prop('disabled', !canInsert);
         },
@@ -117,8 +129,29 @@ define([
         _insertCode: function (code) {
             // this._moveCursorToInsertPosition();
 
+            let wasVoid = this.selectedWiocclNode.type === 'void';
+            let id= this.selectedWiocclNode.id;
+
             let pos = this._getInsertPosition();
             this.editor.insertIntoPos(pos, code, true);
+
+
+            // Si es tracta d'un void fem un update per refrescar l'arbre;
+
+            // ALERTA! Aquest codi es prácticament igual que el del botó update
+            if (wasVoid) {
+                this.structure.updating = true;
+                this.structure.discardSiblings();
+                this.structure.updating = false;
+                this.structure.parse(this.editor.getValue(), this.editor.wioccl);
+                let node = this.structure.getNodeById(id)
+                console.log("node?", node);
+                this.setData(node, node);
+
+                this.updateInsertButtons();
+            }
+
+
         },
 
         // _moveCursorToInsertPosition() {
@@ -1323,7 +1356,7 @@ define([
 
 
             editor.on('change', function (e) {
-                // console.log("Changes detected", e, context.updating);
+                console.log("Changes detected", e, context.updating);
 
                 context.updateInsertButtons();
 

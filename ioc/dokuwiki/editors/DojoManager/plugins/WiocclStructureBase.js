@@ -1199,7 +1199,7 @@ define([
         // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
 
-            console.error("_createTree",root, outTokens);
+            // console.log("_createTree",root, outTokens);
 
             this.discardSiblings();
 
@@ -1250,9 +1250,14 @@ define([
                     // només pot haver 1 node, no s'accepten siblings, es sustitueix el root per aquest
                     // Alerta, com es reemplaça el root, el element deixa de ser 'void' i es comporta com
                     // un node normal
+                    console.log("Root.parent?", root.parent);
+
                     outTokens[i].id = root.id;
                     outTokens[i].parent = root.parent;
+                    outTokens[i].solo = true; // això ens permet identificar que aquest node ha d'anar sol (deshabilita els botons d'insert)
                     root = outTokens[i];
+
+
 
                 } if (root.type === 'temp' && stack.length === 0) {
 
@@ -1297,7 +1302,9 @@ define([
                     outTokens[i].parent = stack[stack.length - 1].id
                 } else if (root != null) {
                     // Si no hi ha cap element a l'estack es que es troba al mateix nivell que l'element root
+
                     outTokens[i].parent = root.parent;
+                    console.log("Es canvia el root pel del pare");
                 } else {
                     outTokens[i].parent = -1;
                 }
@@ -1389,17 +1396,20 @@ define([
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
 
-                // TODO[Xavi] eliminar el root.isNull i el outRoot, no s'ha de fer servir, tots els nodes han de penjar d'un pare
+
+
+
                 if (first && root.type !== 'temp') {
+
                     this.structure[root.id] = outTokens[i];
+                    console.log("S'ha afegit el token a l'estructura?", this.structure[root.id]);
+
                     first = false;
 
                 } else {
                     this.structure[nextKey] = outTokens[i];
                     nextKey = (Number(nextKey) + 1) + "";
                 }
-
-
 
                 // Si comprovem el node actual en lloc del parent es pot actualitzar l'arbre del diàleg (però falla
                 // la resposta del servidor, el contingut no és correcte)
@@ -1413,15 +1423,21 @@ define([
 
                 // if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length > 0) {
 
+
+                // ALERTA! Cal controlar que no s'afegeixin siblings al tipus void
+
+                console.log("siblingsaddedtothisnode", siblingsAddedToThisNode, checkId !== 0, stack.length == 0);
+
                 if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length ===0 ) {
                     root.addedsiblings = true;
+
                 } else if (siblingsAddedToThisNode && Number(checkId)===0 && stack.length === 0) {
 
                     // ALERTA! si permetem modificar les branques directes del root retornaria el document complet del
                     // servidor i actualment el retorn no és correcte. A més a més es perd qualsevol canvi fet no desat
                     // de tot el document, no només del diàleg
 
-                    alert("Error non recuperable: no es poden afegir elements germans en aquest nivell, utilitza els botons de l'editor principal per insertar-los");
+                    alert("Error no recuperable: no es poden afegir elements germans en aquest nivell, utilitza els botons de l'editor principal per insertar-los");
                     console.error("No esta permés afegir siblings al root ni als seus descendents directes.");
                     errorDetected = true;
 
@@ -1578,7 +1594,7 @@ define([
             let ids = [];
 
             if (!node) {
-                console.error("Node no trobat", id, node, inStructure);
+                console.error("Node no trobat", id, node, this.structure);
             }
 
             if (!node.children) {
@@ -1644,7 +1660,9 @@ define([
         //     this.structure.next++;
         // },
 
-
+        // ALERTA! no utilitzar per afegir nodes als diàlegs, els dialegs utilitzan el sistema de parser
+        // i s'insereixen a la posició correcta dels childs. Aquesta versio només s'ha de fer servir
+        // per crear nodes per incrustar directament a l'editor dojo.
         createNode: function(type, parent, key) {
 
             if (!key) {
@@ -1658,10 +1676,17 @@ define([
                 "open": "",
                 "close": "",
                 "id": key + "",
-                "parent:" : parent ? parent + "" : undefined,
+                "parent" : parent ? parent + "" : undefined,
                 "children": [],
             };
 
+            // Alerta, s'afegeix al final de l'structura, això és correcte pels elements que s'insereixe directament
+            // a l'editor Dojo perquè la posició depén del span, però no pels que es generan dins de l'editor.
+            if (this.structure[node.parent]) {
+                this.structure[node.parent].children.push(node.id);
+            } else {
+                console.error("El parent indicat no existeix a l'estructura:", node.parent, this.structure);
+            }
 
             return node;
         },
@@ -1739,8 +1764,9 @@ define([
 
 
         canInsert: function(pos, node) {
-            if (node.id === "0" || node.parent === "0") {
-                console.warn("No es pot inserir, el node és root o fill directe");
+            console.log("Node?", node);
+            if (node.id === "0" || node.parent === "0" || node.solo) {
+                console.warn("No es pot inserir, el node és root, fill directe o solo");
                 return false;
             }
 
