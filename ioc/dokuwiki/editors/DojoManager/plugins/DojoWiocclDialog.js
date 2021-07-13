@@ -97,8 +97,6 @@ define([
             let pos = this._getInsertPosition()
             let canInsert = this.structure.canInsert(pos, this.structure.getNodeById(this.selectedWiocclNode.id));
 
-            console.log("can insert?", canInsert);
-
             // El void sempre es bloqueja per obligar a inserir utilitzant els botons
             if (canInsert && !this.selectedWiocclNode.solo) {
                 this.editor.unlockEditor();
@@ -145,7 +143,7 @@ define([
                 this.structure.updating = false;
                 this.structure.parse(this.editor.getValue(), this.editor.wioccl);
                 let node = this.structure.getNodeById(id)
-                console.log("node?", node);
+                // console.log("node?", node);
                 this.setData(node, node);
 
                 this.updateInsertButtons();
@@ -1000,7 +998,7 @@ define([
             let html = '';
 
             let def = this.structure.getKeywordDefinition(instruction);
-            console.log("Definition?", def);
+            // console.log("Definition?", def);
 
             if (!def.hidden) {
                 html += '<div class="wioccl-field">';
@@ -1356,7 +1354,7 @@ define([
 
 
             editor.on('change', function (e) {
-                console.log("Changes detected", e, context.updating);
+                // console.log("Changes detected", e, context.updating);
 
                 context.updateInsertButtons();
 

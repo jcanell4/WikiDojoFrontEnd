@@ -693,7 +693,7 @@ define([
         },
 
         getCode: function (node) {
-            console.log("getCode", node);
+            // console.log("getCode", node);
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -1126,10 +1126,7 @@ define([
 
             let outTokens = this._tokenize(text);
 
-            console.log("node?", node);
-            console.log("tokens?", outTokens)
-
-
+            // console.log("node?", node);
 
             // text és el text a parsejar
             // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
@@ -1234,7 +1231,7 @@ define([
             let errorDetected = false;
 
             for (let i in outTokens) {
-                console.log(i, stack);
+                // console.log(i, stack);
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 // Si l'arrel és temporal el primer token és fill de l'arrel
@@ -1301,7 +1298,7 @@ define([
                     // Si no hi ha cap element a l'estack es que es troba al mateix nivell que l'element root
 
                     outTokens[i].parent = root.parent;
-                    console.log("Es canvia el root pel del pare");
+                    // console.log("Es canvia el root pel del pare");
                 } else {
                     outTokens[i].parent = -1;
                 }
@@ -1399,7 +1396,7 @@ define([
                 if (first && root.type !== 'temp') {
 
                     this.structure[root.id] = outTokens[i];
-                    console.log("S'ha afegit el token a l'estructura?", this.structure[root.id]);
+                    // console.log("S'ha afegit el token a l'estructura?", this.structure[root.id]);
 
                     first = false;
 
@@ -1423,7 +1420,6 @@ define([
 
                 // ALERTA! Cal controlar que no s'afegeixin siblings al tipus void
 
-                console.log("siblingsaddedtothisnode", siblingsAddedToThisNode, checkId !== 0, stack.length == 0);
 
                 if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length ===0 ) {
                     root.addedsiblings = true;
@@ -1754,7 +1750,7 @@ define([
 
 
         canInsert: function(pos, node) {
-            console.log("Node?", node);
+            // console.log("Node?", node);
             if (node.id === "0" || node.parent === "0" || node.solo) {
                 console.warn("No es pot inserir, el node és root, fill directe o solo");
                 return false;

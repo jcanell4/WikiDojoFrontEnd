@@ -92,26 +92,10 @@ define([
             let node = this.structure.createNode('void', '0');
             this.structure.addNode(node);
 
-            // console.log("next key:", this.structure.getNextKey(), this.structure);
-
-            console.log(node);
             let html = this.htmlTemplate.replace('%s', node.id);
 
-            // console.log("template:", html);
 
-            // console.log('Current node state', this.editor.getCurrentNodeState());
-            // console.log('Current node state', this.editor.getCurrentNode());
-
-
-            // ALERTA[Xavi]: com només es pot inserir nous elements que penjin de l'arrel i la posició ja la
-            // tenim per insertar el node, no cal respectar l'ordre dels
-            // let $domNode = this.editor.getCurrentNode();
-            // console.log("Quin és el node wioccl més proper?", $domNode);
-            // console.log("Quin és el node wioccl més proper?", $domNode.prev('[data-wioccl-ref]'), $domNode.prev());
-            // console.log("Quin és el node wioccl més proper?", $domNode.parent('[data-wioccl-ref]'), $domNode.parent());
-            // console.log("Quin és el node wioccl més proper?", $domNode.closest('[data-wioccl-ref]'), $domNode.closest());
-
-            // TODO: aquesta ha de ser la id del node anterior al node clicat
+            // Com es tracta d'un node que penja del root no cal indicar el afterId, la posició dependrà del span
             let afterId = 0;
 
             this.structure.addNode(node, afterId);
@@ -122,7 +106,6 @@ define([
 
             this.editor.forceChange();
 
-            console.log("Node es jquery?", $node);
             // simulem un click per obrir-lo automàticament
             $node.trigger('click');
         },
@@ -332,14 +315,13 @@ define([
 
             // this.wiocclDialog.setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
 
-            console.log("contingut de l'editor?", editor.getValue(), editor.wioccl)
-            console.log("check");
+            // console.log("contingut de l'editor?", editor.getValue(), editor.wioccl)
+            // console.log("check");
 
             let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
 
-            console.log("editor.wioccl", editor.wioccl);
-            console.log("WiocclNode", wiocclNode);
-
+            // console.log("editor.wioccl", editor.wioccl);
+            // console.log("WiocclNode", wiocclNode);
 
 
             // No refem les branques
@@ -385,7 +367,7 @@ define([
                 sectok: this.editor.dispatcher.getSectok()
             };
 
-            console.log("Data to send:", dataToSend);
+            // console.log("Data to send:", dataToSend);
 
             // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo al document editat (cal indicar el punt d'inserció)
 
@@ -403,8 +385,7 @@ define([
             }
 
             ajax.send(dataToSend).then(function (data) {
-                console.log("data:", data);
-
+                // console.log("data:", data);
 
 
                 // fem que l'editor dispari un event, això ho fa servir el DojoReadonlyToggle
@@ -427,13 +408,13 @@ define([
                 let target = context.originalStructure.getRaw();
 
                 let removedIds = structure._removeChildren(rootRef);
-                console.log("ids de nodes per eliminar:", removedIds);
+                // console.log("ids de nodes per eliminar:", removedIds);
 
                 for (let id of removedIds) {
                     // console.log("Buscant node:", id)
                     let $node = context.$document.find('[data-wioccl-ref="' + id + '"]');
                     $node.remove();
-                    console.log("Eliminat:", $node);
+                    // console.log("Eliminat:", $node);
                 }
 
                 // Cal eliminar també les referències al node arrel (poden ser múltiple en el cas del foreach)
@@ -441,22 +422,13 @@ define([
                 let $rootNodes = context.$document.find('[data-wioccl-ref="' + rootRef + '"]');
 
                 // console.log("Eliminant root nodes", rootRef, $rootNodes);
-
-
                 // 5 inserir el html que ha arribat del servidor
                 // Afegim les noves i eliminem el cursor
                 let $nouRoot = jQuery(data[0].value.content);
 
-                // ho controlem a dalt
-                // if (dataToSend.rootRef === "0") {
-                //     alert("Alerta! es reemplaça tot el document").
-                //         // s'ha reemplaçat tot el document
-                //         context.editor.setValue(data[0].value.content);
-                // } else {
-                    console.log("S'inserta el nou contingut abans de:", $rootNodes.get(0))
-                    console.log("quin és el $nouroot??", $nouRoot);
-                    jQuery($rootNodes.get(0)).before($nouRoot);
-                // }
+                // console.log("S'inserta el nou contingut abans de:", $rootNodes.get(0))
+                // console.log("quin és el $nouroot??", $nouRoot);
+                jQuery($rootNodes.get(0)).before($nouRoot);
 
                 // Elimem les referencies
                 $rootNodes.remove();
@@ -473,14 +445,9 @@ define([
 
                 // ALERTA! aquesta es la estructura associada al plugin, no al diàleg
                 context.originalStructure.setStructure(target, context.originalStructure.root);
-                // Afegim els handlers (ara s'afegeixen com a resposta al emit)
-                // context._addHandlers($nouRoot.find("[data-wioccl-ref]").addBack('[data-wioccl-ref]'), context);
 
-                // console.log("estructura a l'editor abans?", context.pluginEditor.extra.wioccl_structure.structure)
-                // alert("stop");
+                // Actualitzem la estructura de l'editor perque és la que utilitza el BasicEditorSubclass quan desa
                 context.pluginEditor.extra.wioccl_structure.structure = target;
-                // console.log("estructura a l'editor despres?", context.pluginEditor.extra.wioccl_structure.structure)
-                // alert("stop");
                 context.pluginEditor.emit('import');
                 context.pluginEditor.forceChange();
 
@@ -498,10 +465,8 @@ define([
 
         updateCursorState: function (e) {
 
-            console.warn("TODO: determinar si es pot o no inserir. No es pot inserir si es troba dintre d'un bloc !contenteditable")
-
             let $node = this.editor.getCurrentNode();
-            console.log('Current node state', $node);
+            // console.log('Current node state', $node);
 
             if ($node.attr('contenteditable') === "false" || $node.attr('data-wioccl-ref')) {
                 this.button.setDisabled(true);
@@ -509,22 +474,6 @@ define([
                 this.button.setDisabled(false);
             }
 
-            // No es pot aplicar format dins d'un block de codi
-            // if (e.state.indexOf('pre') > -1) {
-            //     this.button.setDisabled(true);
-            //     this.button.set('checked', false);
-            //     return;
-            //
-            // } else {
-            //     this.button.setDisabled(false);
-            // }
-            //
-            //
-            // if (e.state.indexOf(this.tag) > -1) {
-            //     this.button.set('checked', true);
-            // } else {
-            //     this.button.set('checked', false);
-            // }
         },
     });
 
