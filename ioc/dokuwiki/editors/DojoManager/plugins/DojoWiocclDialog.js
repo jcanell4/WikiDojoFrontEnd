@@ -981,6 +981,7 @@ define([
             switch (wiocclNode.type) {
                 case 'function':
                     this._updateFunctionHtml(wiocclNode);
+                    break;
 
                 case 'field':
                 case 'content':
