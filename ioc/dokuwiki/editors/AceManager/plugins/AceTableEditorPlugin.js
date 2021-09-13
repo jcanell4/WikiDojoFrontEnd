@@ -75,11 +75,9 @@ define([
 
         _getEditor: function () {
             var dispatcher = this.editor.dispatcher;
-            var id = dispatcher.getGlobalState().getCurrentId(),
-                contentTool = dispatcher.getContentCache(id).getMainContentTool();
-
+            var id = dispatcher.getGlobalState().getCurrentId();
+            var contentTool = dispatcher.getContentCache(id).getMainContentTool();
             return contentTool.getCurrentEditor();
-
         },
 
 
@@ -155,13 +153,13 @@ define([
 
 
         changeEditorCallback: function (e) {
-
-            var cursor = this.editor.editor.getCursorPosition();
+            var ed = this._getEditor().editor;
+            var cursor = ed.cursor_position();
 
             if (cursor.row >= this.lastRange.start.row && cursor.row <= this.lastRange.end.row) {
                 return;
             }
-            this._getEditor().editor.remove_marker(this.marker);
+            ed.remove_marker(this.marker);
             clearTimeout(this.timerId);
         },
 

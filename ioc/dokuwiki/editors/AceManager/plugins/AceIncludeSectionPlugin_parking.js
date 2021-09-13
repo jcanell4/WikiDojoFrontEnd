@@ -229,7 +229,8 @@ define([
 
         insert: function (value) {
             var data = {id: value};
-            this.editor.session.insert(this.editor.editor.getCursorPosition(), string.substitute(this.template, data));
+            var ed = this._getEditor().editor;
+            ed.session.insert(ed.cursor_position(), string.substitute(this.template, data));
         }
 
     });

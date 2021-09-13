@@ -98,11 +98,8 @@ define([
         },
 
         insert: function (value) {
-
             var reg = new RegExp('{{:(.*)\\?');
             var file = value.match(reg);
-
-
             var chunks = file[1].split('|');
             var ns = chunks[0];
 
@@ -110,12 +107,12 @@ define([
             if (ns.indexOf(':') === -1) {
                 ns = ':' + ns;
             }
-
             var data = {
                 id : ns
             };
 
-            this.editor.session.insert(this.editor.editor.getCursorPosition(), string.substitute(this.template, data));
+            var ed = this._getEditor().editor;
+            ed.session.insert(ed.cursor_position(), string.substitute(this.template, data));
 
         },
 

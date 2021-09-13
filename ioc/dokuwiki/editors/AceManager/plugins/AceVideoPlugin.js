@@ -36,72 +36,57 @@ define([
                     for (var origin in this.origins) {
                         this.data[i].options.push(origin);
                     }
-
                     break;
                 }
             }
-
-
 
             var config = JSON.parse(JSON.stringify(args));
             if (args.icon.indexOf(".png") === -1) {
                 config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
             }
-
             this.addButton(config, this.process);
-
             this.enabled = true;
-
         },
 
         _getEditor: function () {
             var dispatcher = this.editor.dispatcher;
-            var id = dispatcher.getGlobalState().getCurrentId(),
-                contentTool = dispatcher.getContentCache(id).getMainContentTool();
-
+            var id = dispatcher.getGlobalState().getCurrentId();
+            var contentTool = dispatcher.getContentCache(id).getMainContentTool();
             return contentTool.getCurrentEditor();
-
         },
 
 
         _processFull: function () {
-
             if (!this.canInsert()) {
                 alert("No es pot inserir un video en aquest punt del document");
                 return;
             }
-
             this._showDialog(this.data);
-
         },
 
         canInsert: function () {
             var editor = this._getEditor().editor;
-
             return !(editor.isReadonlySection() || editor.getReadOnly());
-
         },
 
         changeEditorCallback: function (e) {
-
-            var cursor = this.editor.editor.getCursorPosition();
+            var ed = this._getEditor().editor;
+            var cursor = ed.cursor_position();
 
             if (cursor.row >= this.lastRange.start.row && cursor.row <= this.lastRange.end.row) {
                 return;
             }
-            this._getEditor().editor.remove_marker(this.marker);
+            ed.remove_marker(this.marker);
             clearTimeout(this.timerId);
         },
 
         _showDialog: function (data) {
-
-
             var dialogManager = this.editor.dispatcher.getDialogManager();
+            var ed = this._getEditor().editor;
             var context = this;
 
             var saveCallback = function (data) {
-                context._getEditor().editor.session.insert(context.editor.editor.getCursorPosition(), string.substitute(context.template, data));
-
+                ed.session.insert(ed.cursor_position(), string.substitute(context.template, data));
             };
 
             var dialog = dialogManager.getDialog('form', this.editor.id, {
@@ -116,7 +101,6 @@ define([
                 },
                 callback: saveCallback
             });
-
 
             var $dialog = jQuery(dialog.domNode);
 
@@ -150,7 +134,6 @@ define([
             });
 
             dialog.show();
-
         }
 
     });
