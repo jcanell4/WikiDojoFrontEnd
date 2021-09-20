@@ -14,7 +14,7 @@ define([
          */
         addButton: function (args, callback) {
 
-            toolbarManager.setDispatcher(this.editor.dispatcher);
+            toolbarManager.setDispatcher(this.dispatcher);
 
             switch (args.type) {
                 case 'format':

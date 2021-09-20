@@ -37,9 +37,8 @@ define([
         },
 
         _getEditor: function () {
-            var dispatcher = this.editor.dispatcher;
-            var id = dispatcher.getGlobalState().getCurrentId();
-            var contentTool = dispatcher.getContentCache(id).getMainContentTool();
+            var id = this.dispatcher.getGlobalState().getCurrentId();
+            var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
             return contentTool.getCurrentEditor();
         },
 

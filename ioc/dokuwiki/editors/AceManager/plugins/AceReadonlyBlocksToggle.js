@@ -33,23 +33,21 @@ define([
 
 
         _processFull: function () {
-            var dispatcher = this.editor.dispatcher;
-
-            var id = dispatcher.getGlobalState().getCurrentId(),
-                editor = dispatcher.getContentCache(id).getMainContentTool().getEditor();
+            var id = this.dispatcher.getGlobalState().getCurrentId(),
+                editor = this.dispatcher.getContentCache(id).getMainContentTool().getEditor();
 
             this._toggleReadOnlyBlocksManager(editor);
 
         },
 
         _processPartial: function () {
-            var dispatcher = this.editor.dispatcher;
 
-            var chunk = dispatcher.getGlobalState().getCurrentElementId(),
-                id = dispatcher.getGlobalState().getCurrentId();
+            var chunk = this.dispatcher.getGlobalState().getCurrentElementId(),
+                id = this.dispatcher.getGlobalState().getCurrentId();
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
-            var editor = dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
+            // TODO[Xavi] això es pot obtenir amb el _getEditorFacade
+            var editor = this.dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
 
             this._toggleReadOnlyBlocksManager(editor);
 

@@ -21,7 +21,7 @@ define([
             //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
             // };
 
-            this.documentPreviewComponent = new DocumentPreviewComponent(this.editor.dispatcher);
+            this.documentPreviewComponent = new DocumentPreviewComponent(this.dispatcher);
 
             this.addButton(config, this.process);
         },

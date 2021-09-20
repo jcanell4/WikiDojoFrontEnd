@@ -9,7 +9,7 @@ define([
     return declare([AbstractAcePlugin, RenderizablePlugin], {
 
         init: function () {
-            this.latexPreviewComponent = new LatexPreviewComponent(this.editor.dispatcher);
+            this.latexPreviewComponent = new LatexPreviewComponent(this.dispatcher);
             this.addEditorListener('change, changeCursor', this.process.bind(this));
             this._update = _.debounce(this._update, 1000).bind(this);
         },

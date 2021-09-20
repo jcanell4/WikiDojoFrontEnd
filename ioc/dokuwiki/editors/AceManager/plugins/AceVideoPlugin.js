@@ -49,9 +49,8 @@ define([
         },
 
         _getEditor: function () {
-            var dispatcher = this.editor.dispatcher;
-            var id = dispatcher.getGlobalState().getCurrentId();
-            var contentTool = dispatcher.getContentCache(id).getMainContentTool();
+            var id = this.dispatcher.getGlobalState().getCurrentId();
+            var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
             return contentTool.getCurrentEditor();
         },
 
@@ -81,7 +80,7 @@ define([
         },
 
         _showDialog: function (data) {
-            var dialogManager = this.editor.dispatcher.getDialogManager();
+            var dialogManager = this.dispatcher.getDialogManager();
             var ed = this._getEditor().editor;
             var context = this;
 

@@ -12,7 +12,7 @@ define([
                 return;
             }
 
-            this.switchEditorComponent= new SwitchEditorComponent(this.editor.dispatcher);
+            this.switchEditorComponent= new SwitchEditorComponent(this.dispatcher);
 
             var config = JSON.parse(JSON.stringify(args));
 

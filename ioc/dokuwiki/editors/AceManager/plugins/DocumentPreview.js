@@ -36,9 +36,8 @@ define([
 
         // El context és el mateix plugin
         _processFull: function () {
-            var dispatcher = this.editor.dispatcher;
-            var id = dispatcher.getGlobalState().getCurrentId(),
-                contentTool = dispatcher.getContentCache(id).getMainContentTool(),
+            var id = this.dispatcher.getGlobalState().getCurrentId(),
+                contentTool = this.dispatcher.getContentCache(id).getMainContentTool(),
                 dataToSend = contentTool.requester.get("dataToSend"),
                 urlBase = contentTool.requester.get("urlBase");
 
@@ -54,10 +53,9 @@ define([
         },
 
         _processPartial: function () {
-            var dispatcher = this.editor.dispatcher;
-            var chunk = dispatcher.getGlobalState().getCurrentElementId(),
-                id = dispatcher.getGlobalState().getCurrentId(),
-                contentTool = dispatcher.getContentCache(id).getMainContentTool(),
+            var chunk = this.dispatcher.getGlobalState().getCurrentElementId(),
+                id = this.dispatcher.getGlobalState().getCurrentId(),
+                contentTool = this.dispatcher.getContentCache(id).getMainContentTool(),
                 dataToSend = contentTool.requester.get("dataToSend"),
                 urlBase = contentTool.requester.get("urlBase");
 

@@ -24,22 +24,20 @@ define([
         },
 
         _processFull: function () {
-            var dispatcher = this.editor.dispatcher;
 
-            var id = dispatcher.getGlobalState().getCurrentId(),
-                editor = dispatcher.getContentCache(id).getMainContentTool().getEditor();
+            var id = this.dispatcher.getGlobalState().getCurrentId(),
+                editor = this.dispatcher.getContentCache(id).getMainContentTool().getEditor();
             editor.toggleEditor();
 
         },
 
         _processPartial: function () {
-            var dispatcher = this.editor.dispatcher;
 
-            var chunk = dispatcher.getGlobalState().getCurrentElementId(),
-                id = dispatcher.getGlobalState().getCurrentId();
+            var chunk = this.dispatcher.getGlobalState().getCurrentElementId(),
+                id = this.dispatcher.getGlobalState().getCurrentId();
             chunk = chunk.replace(id + "_", "");
             chunk = chunk.replace("container_", "");
-            var editor = dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
+            var editor = this.dispatcher.getContentCache(id).getMainContentTool().getEditor(chunk);
 
             editor.toggleEditor();
 

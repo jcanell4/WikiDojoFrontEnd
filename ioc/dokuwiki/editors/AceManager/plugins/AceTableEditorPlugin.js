@@ -74,9 +74,8 @@ define([
         },
 
         _getEditor: function () {
-            var dispatcher = this.editor.dispatcher;
-            var id = dispatcher.getGlobalState().getCurrentId();
-            var contentTool = dispatcher.getContentCache(id).getMainContentTool();
+            var id = this.dispatcher.getGlobalState().getCurrentId();
+            var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
             return contentTool.getCurrentEditor();
         },
 
@@ -258,7 +257,7 @@ define([
             // Alerta, el value ha de ser un objecte JSON amb els valors i la estructura de la taula
 
 
-            var dialogManager = this.editor.dispatcher.getDialogManager();
+            var dialogManager = this.editor.getDialogManager();
             var context = this;
 
             var saveCallback = function () {

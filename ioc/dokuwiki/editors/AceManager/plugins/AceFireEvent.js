@@ -23,7 +23,7 @@ define([
 
             this.events = args.event;
 
-            this.fireEventComponent = new FireEventComponent(this.editor.dispatcher);
+            this.fireEventComponent = new FireEventComponent(this.dispatcher);
 
             this.addButton(config, this.process);
         },
