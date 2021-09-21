@@ -62,8 +62,19 @@ define([
         },
 
         _update: function () {
-            // console.log("AceLatexPreview#_update");
+            // console.error("AceLatexPreview#_update");
             var context = this;
+
+            // ALERTA! Un cop s'inicia el plugin aquest continuarà actualitzant-se encara que es tanqui l'editor
+            // així doncs, si canviem a una pestanya amb un altre tipus d'error es produirà un error
+
+            // solució provicional: comprovem que l'editor tingi el mètode getPosition()
+            // TODO: afegir una propietat o getter que retorni el tipus d'editor?
+            if (!this.getEditor().getPosition) {
+                return;
+            }
+
+
 
             var end, end_state, it, pos, start, start_state, state, text, url;
             // pos = this.editor.cursor_position();

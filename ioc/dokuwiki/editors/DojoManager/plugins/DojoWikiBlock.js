@@ -123,11 +123,13 @@ define([
 
         _callback: function (data) {
 
-            for (var i = 0; i < this.requiredData.length; i++) {
-                var key = this.requiredData[i];
-                if (data[key] === undefined) {
-                    console.warn('Missing data: ' + key);
-                    return;
+            if (this.requiredData) {
+                for (var i = 0; i < this.requiredData.length; i++) {
+                    var key = this.requiredData[i];
+                    if (data[key] === undefined) {
+                        console.warn('Missing required data: ' + key);
+                        return;
+                    }
                 }
             }
 

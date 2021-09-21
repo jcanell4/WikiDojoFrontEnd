@@ -623,7 +623,6 @@ define([
 
                 // ALERTA[Xavi] Codi afegit pels plugins de l'IOC
 
-
                 plugin.setEditor(this);
 
                 if (plugin.init) {

@@ -952,6 +952,7 @@ define([
             },
 
             removePlugins: function () {
+                console.log("Removing plugins?", this.plugins);
                 for (var i = 0; i < this.plugins.length; i++) {
 
                     this.plugins[i].destroy();

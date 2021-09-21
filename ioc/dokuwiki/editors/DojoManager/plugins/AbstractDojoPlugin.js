@@ -33,6 +33,15 @@ define([
             this.inherited(arguments);
 
             //TODO: Remember to destroy the toolbar you created.
+        },
+
+        setEditor: function (editor) {
+            this.editor = editor;
+            // this.dispatcher = editor.dispatcher;
+        },
+
+        getEditor: function () {
+            return this.editor;
         }
 
     });
@@ -42,6 +51,7 @@ define([
     // _Plugin.registry["abstract"] = function () {
     //     return new AbstractDojoPlugin({command: "abstract"});
     // };
+
 
     return AbstractDojoPlugin;
 

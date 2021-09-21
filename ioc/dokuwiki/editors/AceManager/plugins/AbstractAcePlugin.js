@@ -44,6 +44,20 @@ define([
             return this.getEditor().editor;
         },
 
+        /**
+         * Estableix l'editor utilitzat durant l'inicialització del plugin
+         * Es necessari perquè en aquest punt el content tool pot ser que no s'hagi afegit
+         * al ContentCache. Aquesta versió de l'editor correspondria a l'editor INTERN
+         *
+         * ALERTA! aquest editor només es fiable durant l'inicialització: handlers i botons
+         * Un cop inicialitzat s'ha de cridar a getEditor() o getInnerEditor() segons el cas
+         *
+         * @param editor
+         */
+        _setEditor: function (editor) {
+            this.setupEditor = editor;
+            this.dispatcher = editor.dispatcher;
+        },
     });
 
 });

@@ -528,7 +528,6 @@ define([
             },
 
             setEditor: function(editor){
-                console.log("Editor?", editor);
                 this.editor = editor;
                 this.editor.customUndo = true;
                 this.inherited(arguments);
