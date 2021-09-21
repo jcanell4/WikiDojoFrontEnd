@@ -113,7 +113,7 @@
     return declare([IocPlugin], {
 
         init: function () {
-            this.preview = new LatexPreviewPlugin({ace: this.editor});
+            this.preview = new LatexPreviewPlugin({ace: this.setupEditor});
             this.process();
         },
 

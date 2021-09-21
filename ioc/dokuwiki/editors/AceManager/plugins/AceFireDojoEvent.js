@@ -23,7 +23,7 @@ define([
             // };
 
             this.event = args.customEvent;
-            this.fireEventComponent = new FireDojoEventComponent(this.editor);
+            this.fireEventComponent = new FireDojoEventComponent(this.setupEditor);
 
             this.addButton(config, this.process);
         },

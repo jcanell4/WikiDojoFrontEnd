@@ -47,7 +47,7 @@ define([
             // ALERTA[Xavi] El callback només cal disparar-lo pel tipus original, s'utilizan diferents plugins només per crear els botons
             this.triggerState = 'edittable';
 
-            this.editor.addReadonlyBlock(this.triggerState, this.editTableCallback.bind(this), true);
+            this.setupEditor.addReadonlyBlock(this.triggerState, this.editTableCallback.bind(this), true);
 
             var config = JSON.parse(JSON.stringify(args));
             if (args.icon.indexOf(".png") === -1) {
@@ -69,15 +69,15 @@ define([
 
             this.enabled = true;
 
-            this.editor.readOnlyBlocksManager.enabled = this.enabled;
+            this.setupEditor.readOnlyBlocksManager.enabled = this.enabled;
 
         },
-
-        _getEditor: function () {
-            var id = this.dispatcher.getGlobalState().getCurrentId();
-            var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
-            return contentTool.getCurrentEditor();
-        },
+        //
+        // _getEditor: function () {
+        //     var id = this.dispatcher.getGlobalState().getCurrentId();
+        //     var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
+        //     return contentTool.getCurrentEditor();
+        // },
 
 
         _buildDefaultTable: function () {
@@ -131,7 +131,7 @@ define([
                 return;
             }
 
-            var editor = this._getEditor();
+            var editor = this.getEditor();
 
             var pos = {row: editor.getCurrentRow(), col: 0};
             var range = {start: pos, end: pos};
@@ -144,49 +144,49 @@ define([
         },
 
         canInsert: function () {
-            var editor = this._getEditor().editor;
+            var innerEditor = this.getInnerEditor();
 
-            return !(editor.isReadonlySection() || editor.getReadOnly());
+            return !(innerEditor.isReadonlySection() || innerEditor.getReadOnly());
 
         },
 
 
         changeEditorCallback: function (e) {
-            var ed = this._getEditor().editor;
-            var cursor = ed.cursor_position();
+            var innerEditor = this.getInnerEditor();
+            var cursor = innerEditor.cursor_position();
 
             if (cursor.row >= this.lastRange.start.row && cursor.row <= this.lastRange.end.row) {
                 return;
             }
-            ed.remove_marker(this.marker);
+            innerEditor.remove_marker(this.marker);
             clearTimeout(this.timerId);
         },
 
 
         editTableCallback: function (range, blockContent) {
 
-            var editor = this._getEditor().editor;
+            let innerEditor = this.getInnerEditor();
 
-            editor.getSession().removeMarker(this.previousMarker);
+            innerEditor.getSession().removeMarker(this.previousMarker);
 
             // this.previousMarker = this.editor.getSession().addMarker(range, 'edittable-highlight');
 
             this.lastRange = range;
 
 
-            editor.remove_marker(this.marker);
+            innerEditor.remove_marker(this.marker);
 
             var context = this;
 
             clearTimeout(this.timerId);
 
             if (!this.initializedChangeDetection) {
-                editor.on('changeCursor', this.changeEditorCallback.bind(this));
+                innerEditor.on('changeCursor', this.changeEditorCallback.bind(this));
                 this.initializedChangeDetection = true;
             }
 
 
-            this.marker = this.editor.add_marker(
+            this.marker = innerEditor.add_marker(
                 {
                     start_row: range.start.row,
 
@@ -209,7 +209,8 @@ define([
                         attributes = "class=\"zoom\" style=\"" + style + "\"";
                         attributes += 'data-zoom-icon-id="' + icon_id + '"';
 
-                        if (context._getEditor().editor.getReadOnly()) {
+                        // if (context._getEditor().editor.getReadOnly()) {
+                        if (context.getInnerEditor().getReadOnly()) {
                             return '';
                         }
 
@@ -257,7 +258,7 @@ define([
             // Alerta, el value ha de ser un objecte JSON amb els valors i la estructura de la taula
 
 
-            var dialogManager = this.editor.getDialogManager();
+            var dialogManager = this.dispatcher.getDialogManager();
             var context = this;
 
             var saveCallback = function () {
@@ -269,11 +270,12 @@ define([
                             dokuwikiTable.unshift('<' + context.triggerState + '>');
                             dokuwikiTable.push('</' + context.triggerState + '>');
 
-                            var editor = context._getEditor();
+                            // var editor = context._getEditor();
+                            var innerEditor = context.getInnerEditor();
 
-                            editor.editor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
-                            editor.editor.emit('update', {
-                                editor: editor.editor,
+                            innerEditor.replace_lines(range.start.row, range.end.row, dokuwikiTable);
+                            innerEditor.emit('update', {
+                                editor: innerEditor,
                                 start: range.start.row,
                                 end: range.start.row + (dokuwikiTable.length - 1),
                                 block: true
@@ -654,7 +656,8 @@ define([
                 width: DIALOG_DEFAULT_WIDTH
             };
 
-            var dialog = dialogManager.getDialog(dialogManager.type.DEFAULT, this.editor.ns, dialogParams);
+            let editor = this.getEditor();
+            let dialog = dialogManager.getDialog(dialogManager.type.DEFAULT, editor.ns, dialogParams);
 
             dialog.show();
 

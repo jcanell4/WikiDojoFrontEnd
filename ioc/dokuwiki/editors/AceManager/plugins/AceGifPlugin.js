@@ -29,13 +29,13 @@ define([
 
         },
 
-        _getEditor: function () {
-            var id = this.dispatcher.getGlobalState().getCurrentId(),
-                contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
-
-            return contentTool.getCurrentEditor();
-
-        },
+        // _getEditor: function () {
+        //     var id = this.dispatcher.getGlobalState().getCurrentId(),
+        //         contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
+        //
+        //     return contentTool.getCurrentEditor();
+        //
+        // },
 
         _showDialog: function () {
             //this.documentPreviewComponent.send();
@@ -43,7 +43,7 @@ define([
 
             // obtenir el id del document
 
-            var edid = 'textarea_' + this._getEditor().id + '_media';
+            var edid = 'textarea_' + this.getEditor().id + '_media';
 
 
             // eliminem qualsevol textarea anterior. Alternativa: si existeix deixar aquest i no crear cap de nou
@@ -110,8 +110,8 @@ define([
                 id : ns
             };
 
-            var ed = this._getEditor().editor;
-            ed.session.insert(ed.cursor_position(), string.substitute(this.template, data));
+            var innerEditor = this.getInnerEditor();
+            innerEditor.session.insert(innerEditor.cursor_position(), string.substitute(this.template, data));
 
         },
 

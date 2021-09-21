@@ -16,20 +16,20 @@ define([
 
         process: function () {
             // console.log("LatexPreviewPlugin#process", this);
-            this.editor.remove_marker(this.marker);
+            this.setupEditor.remove_marker(this.marker);
             this._update();
         },
 
         _states_iterator: function (pos, backwards, test) {
             var index, row, states;
             index = row = states = null;
-            var editor = this.editor;
+            var innerEditor = this.getInnerEditor();
 
             return function () {
                 var i, state, _i, _len;
                 if (index == null) {
                     row = pos.row;
-                    states = editor.get_line_states_preview(row, true);
+                    states = innerEditor.get_line_states_preview(row, true);
                     for (i = _i = 0, _len = states.length; _i < _len; i = ++_i) {
 
                         state = states[i];
@@ -44,11 +44,11 @@ define([
                     index += 1;
                 } else if (backwards && row > 0) {
                     row -= 1;
-                    states = editor.get_line_states_preview(row, true);
+                    states = innerEditor.get_line_states_preview(row, true);
                     index = states.length - 1;
-                } else if (!backwards && row + 1 < editor.get_length()) {
+                } else if (!backwards && row + 1 < innerEditor.get_length()) {
                     row += 1;
-                    states = editor.get_line_states_preview(row, true);
+                    states = innerEditor.get_line_states_preview(row, true);
                     index = 0;
                 } else {
                     return;
@@ -66,7 +66,8 @@ define([
             var context = this;
 
             var end, end_state, it, pos, start, start_state, state, text, url;
-            pos = this.editor.cursor_position();
+            // pos = this.editor.cursor_position();
+            pos = this.getEditor().getPosition();
             it = this._states_iterator(pos, false, function (state) {
                 return /\blatex\b/.test(state.name);
             });
@@ -91,13 +92,15 @@ define([
                 row: end_state.row,
                 column: end_state.end
             };
-            text = this.editor.get_text_range(start, end);
+
+            let innerEditor = this.getInnerEditor();
+            text = innerEditor.get_text_range(start, end);
 
             this.start = start;
             this.end = end;
 
             this.latexPreviewComponent.send({text:text}).then(function (data) {
-                context.editor.remove_marker(this.marker);
+                innerEditor.remove_marker(this.marker);
                 if (!data) {
                     return;
                 }
@@ -107,8 +110,9 @@ define([
         },
 
         render: function (data) {
+            let innerEditor = this.getInnerEditor();
 
-            this.marker = this.editor.add_marker({
+            this.marker = innerEditor.add_marker({
                 start_row: this.start.row,
                 start_column: this.start.column,
                 end_row: this.end.row,

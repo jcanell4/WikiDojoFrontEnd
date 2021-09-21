@@ -23,14 +23,16 @@ define([
             // this.addButton(config);
 
             this.previousMarker = null;
-            this.editor.addReadonlyBlock('readonly', this.editTableCallback.bind(this));
-            this.editor.addReadonlyBlock('protectedcontent');
+
+            this.setupEditor.addReadonlyBlock('readonly', this.editTableCallback.bind(this));
+            this.setupEditor.addReadonlyBlock('protectedcontent');
         },
 
         editTableCallback: function(range, blockContent) {
             //console.log(range);
-            this.editor.session.removeMarker(this.previousMarker);
-            this.previousMarker = this.editor.session.addMarker(range, 'readonly-highlight');
+            let editor = this.getInnerEditor();
+            editor.session.removeMarker(this.previousMarker);
+            this.previousMarker = editor.session.addMarker(range, 'readonly-highlight');
             //editor.selection.setRange(range);
             alert("Click a secció readonly, contingut:\n\n" + blockContent);
         }

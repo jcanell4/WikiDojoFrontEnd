@@ -48,11 +48,11 @@ define([
             this.enabled = true;
         },
 
-        _getEditor: function () {
-            var id = this.dispatcher.getGlobalState().getCurrentId();
-            var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
-            return contentTool.getCurrentEditor();
-        },
+        // _getEditor: function () {
+        //     var id = this.dispatcher.getGlobalState().getCurrentId();
+        //     var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
+        //     return contentTool.getCurrentEditor();
+        // },
 
 
         _processFull: function () {
@@ -64,31 +64,31 @@ define([
         },
 
         canInsert: function () {
-            var editor = this._getEditor().editor;
+            var editor = this.getInnerEditor();
             return !(editor.isReadonlySection() || editor.getReadOnly());
         },
 
         changeEditorCallback: function (e) {
-            var ed = this._getEditor().editor;
-            var cursor = ed.cursor_position();
+            var innerEditor = this.getInnerEditor();
+            var cursor = innerEditor.cursor_position();
 
             if (cursor.row >= this.lastRange.start.row && cursor.row <= this.lastRange.end.row) {
                 return;
             }
-            ed.remove_marker(this.marker);
+            innerEditor.remove_marker(this.marker);
             clearTimeout(this.timerId);
         },
 
         _showDialog: function (data) {
             var dialogManager = this.dispatcher.getDialogManager();
-            var ed = this._getEditor().editor;
+            var innerEditor = this.getInnerEditor();
             var context = this;
 
             var saveCallback = function (data) {
-                ed.session.insert(ed.cursor_position(), string.substitute(context.template, data));
+                innerEditor.session.insert(innerEditor.cursor_position(), string.substitute(context.template, data));
             };
 
-            var dialog = dialogManager.getDialog('form', this.editor.id, {
+            var dialog = dialogManager.getDialog('form', this.getEditor().id, {
                 title: this.title,
                 message: this.prompt, // TODO: localitzar
                 data: data,

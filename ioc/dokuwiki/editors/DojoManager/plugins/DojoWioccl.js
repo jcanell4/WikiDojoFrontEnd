@@ -56,15 +56,22 @@ define([
                 onClick: lang.hitch(this, "process")
             };
 
-            this.addButton(config);
-
-            this.editor.on('changeCursor', this.updateCursorState.bind(this));
-            this.editor.on('import', this.updateHandlers.bind(this));
 
             // ALERTA! this.editor fa referència a l'editor dojo
 
             // Aquesta és l'estructura que s'utilitza quan es fa mouseover un element
-            this.structure = new WiocclStructureClone({structure: this.editor.extra.wioccl_structure.structure});
+            if (this.editor.extra && this.editor.extra.wioccl_structure) {
+                this.structure = new WiocclStructureClone({structure: this.editor.extra.wioccl_structure.structure});
+                this.addButton(config);
+
+                this.editor.on('changeCursor', this.updateCursorState.bind(this));
+                this.editor.on('import', this.updateHandlers.bind(this));
+
+            } else {
+                // aquest document no te estructura wioccl, ha de ser un document normal
+                // així que no afegim els botons ni controlem la posició del cursor
+            }
+
 
             // console.log("wioccl structure:", this.editor.extra.wioccl_structure.structure);
         },

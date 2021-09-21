@@ -36,16 +36,16 @@ define([
             this.enabled = true;
         },
 
-        _getEditor: function () {
-
-            var id = this.dispatcher.getGlobalState().getCurrentId();
-            var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
-            return contentTool.getCurrentEditor();
-        },
+        // _getEditor: function () {
+        //
+        //     var id = this.dispatcher.getGlobalState().getCurrentId();
+        //     var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
+        //     return contentTool.getCurrentEditor();
+        // },
 
         _showDialog: function () {
             var self = this;
-            var ed = this._getEditor();
+            var editor = this.getEditor();
             var selectedPage = {};
             var dialog = registry.byId("includePageSyntaxDocumentDlg");
 
@@ -54,7 +54,7 @@ define([
                     id: "includePageSyntaxDocumentDlg",
                     title: "Cerca de la secció d'una pàgina a incloure",
                     style: "width: 540px; height: 350px;",
-                    page: ed.id
+                    page: editor.id
                 });
 
                 dialog.on('hide', function () {
@@ -197,8 +197,8 @@ define([
 
         insert: function (value) {
             var data = {id: value};
-            var ed = this._getEditor().editor;
-            ed.session.insert(ed.cursor_position(), string.substitute(this.template, data));
+            var innerEditor = this.getInnerEditor();
+            innerEditor.session.insert(innerEditor.cursor_position(), string.substitute(this.template, data));
         }
 
     });

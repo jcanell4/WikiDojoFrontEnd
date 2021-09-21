@@ -44,7 +44,9 @@ define([
 
             this._createStandbyObject();
 
-            if (this._standby) {
+
+            // Pot ser que existeixi el _standby però no s'hagi fer un setStandbyId, llavors fallaria
+            if (this._standby && this._standby.target) {
                 this._standby.show();
             }
 
@@ -71,7 +73,9 @@ define([
                 },
 
                 complete: function() {
-                    context._standby.hide();
+                    if (context._standby && context._standby.target) {
+                        context._standby.hide();
+                    }
                 }
             });
 

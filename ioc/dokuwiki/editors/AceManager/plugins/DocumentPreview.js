@@ -19,7 +19,9 @@ define([
 
 
         process: function () {
-            switch (this.editor.TOOLBAR_ID) {
+            let editor = this.getEditor();
+
+            switch (editor.TOOLBAR_ID) {
                 case 'full-editor':
                     this._processFull();
                     break;
@@ -29,7 +31,7 @@ define([
                     break;
 
                 default:
-                    throw new Error("Tipus d'editor no reconegut: " + this.editor.TOOLBAR_ID);
+                    throw new Error("Tipus d'editor no reconegut: " + editor.TOOLBAR_ID);
             }
         },
 

@@ -8,7 +8,7 @@ define([
 
         init: function (args) {
 
-            if (!this.editor.ALLOW_SWITCH_EDITOR) {
+            if (!this.setupEditor.ALLOW_SWITCH_EDITOR) {
                 return;
             }
 
