@@ -9,7 +9,7 @@ define([
     return declare([WiocclStructureBase], {
 
 
-        constructor: function (config) {
+        constructor: function (config, dispatcher) {
 
             this.structure = {
                 next: 0,

@@ -103,7 +103,14 @@ define([
 
         _addSectionSingleColumn: function() {
             for (var i = 0; i < this.sections.length; i++) {
-                var divSection = domConstruct.create("div", {class:""});
+                let cssClass = "";
+
+                console.log("mínimal?", this.minimal);
+                if (this.minimal) {
+                    cssClass = "minimal";
+                }
+
+                var divSection = domConstruct.create("div", {class: cssClass});
 
                 this.sectionsNode.appendChild(divSection);
 
@@ -121,7 +128,14 @@ define([
 
         _addSectionsTwoColumns: function() {
             for (var i = 0; i < this.sections.length; i++) {
-                var divSection = domConstruct.create("div", {class:"sectionNode"});
+
+                let cssClass ="";
+                console.log("mínimal?", this.minimal);
+                if (this.minimal) {
+                    cssClass = " minimal";
+                }
+
+                var divSection = domConstruct.create("div", {class:"sectionNode" + cssClass});
                 var divContent = domConstruct.create("div", {class:"content"});
                 divSection.appendChild(divContent);
                 this.sectionsNode.appendChild(divSection);

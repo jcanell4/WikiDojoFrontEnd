@@ -73,8 +73,13 @@ define([
 
             // Iniciem els botons per inserir elements wioccl a l'editor
             jQuery(this.insertWiocclBtnNode).on('click', function () {
-                let code = context.structure.getKeywordTemplate();
-                context._insertCode(code);
+                let callback = function(code) {
+                    context._insertCode(code);
+                    context.dirty = true;
+                };
+                // let code = context.structure.getKeywordTemplate(callback);
+                context.structure.getKeywordTemplate(callback);
+
             });
 
             jQuery(this.insertFieldBtnNode).on('click', function () {
@@ -684,7 +689,7 @@ define([
                 let $input = jQuery(this).siblings('input, textarea');
                 let value = $input.val();
 
-                let structure = new WiocclStructureTemp();
+                let structure = new WiocclStructureTemp({}, context.dispatcher);
                 let rootWiocclNode = structure.getRoot();
 
                 structure.parse(value, rootWiocclNode);
@@ -901,7 +906,6 @@ define([
 
             // console.warn("desactivat Detail2Field");
             // return;
-
 
             if (!this._pendingChanges_Detail2Field) {
                 return;
@@ -1365,12 +1369,14 @@ define([
 
                 // Si el focus es troba a un element amb data-wioccl-btn és que ha modificat l'editor i per tant
                 // cal actualitzar
-                if (context.updating || (!context.editor.hasFocus()
+                // Afegida la comprovació de dirty perque si no no poden inserir-se elements desde un custom dialog
+                if (context.updating || (!context.dirty && !context.editor.hasFocus()
                     && jQuery(document.activeElement).attr('data-wioccl-btn') === undefined)) {
                     return;
                 }
 
                 if (UPDATE_TIME === 0) {
+
                     context._updatePendingChanges_Detail2Field();
 
                 } else if (!context._pendingChanges_Detail2Field) {

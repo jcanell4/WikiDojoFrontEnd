@@ -23,7 +23,8 @@ define([
                 LOCKED_DIFF: 'locked_diff',
                 INFO: 'info',
                 LOCK_WARNING: 'lock_warning',
-                FORM: 'form'
+                FORM: 'form',
+                DROPDOWN: 'dropdown'
             },
 
             constructor: function (args) {
@@ -104,6 +105,10 @@ define([
                         dialogBuilder = this._getFormDialog(refId, params);
                         break;
 
+                    case this.type.DROPDOWN:
+                        dialogBuilder = this._getDropdownDialog(refId, params);
+                        break;
+
                     default:
                         throw new DialogManagerException("El tipus de dialeg no existeix: ", type);
                 }
@@ -156,7 +161,8 @@ define([
                         dispatcher: this.dispatcher,
                         height: params.height,
                         width: params.width,
-                        single: params.single
+                        single: params.single,
+                        minimal: params.minimal
                     }, dialogBuilder = new DialogBuilder(dialogParams);
 
                 dialogBuilder.addButtons(params.buttons);
@@ -377,6 +383,41 @@ define([
 
                 // TODO: afegir la secció del formulari construida a partir de params.data
                 dialogBuilder.addForm(params.data);
+
+                return dialogBuilder;
+            },
+
+            _getDropdownDialog: function (refId, params) {
+                // console.error("_getDroopdownDialog", params);
+
+                //params.single = true;
+
+                params.minimal = true;
+                params.buttons =[
+                    {
+                        id: refId +'_ok',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    {
+                        id: refId +'_cancel',
+                        buttonType: this.type.DEFAULT,
+                        description: params.cancel.text,
+                        callback: function(){
+                            // no cal fer res, cal declarar-la?
+                            //console.log("Cridat el close del dialog")
+                        }
+                    }
+                ];
+
+                var dialogBuilder = this._getDefaultDialog(refId, params);
+
+                // TODO: afegir la secció del formulari construida a partir de params.data
+                dialogBuilder.addSelect(params.data);
 
                 return dialogBuilder;
             },

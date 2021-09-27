@@ -61,7 +61,10 @@ define([
 
             // Aquesta és l'estructura que s'utilitza quan es fa mouseover un element
             if (this.editor.extra && this.editor.extra.wioccl_structure) {
-                this.structure = new WiocclStructureClone({structure: this.editor.extra.wioccl_structure.structure});
+                this.structure = new WiocclStructureClone(
+                    {
+                        structure: this.editor.extra.wioccl_structure.structure
+                    }, this.editor.dispatcher);
                 this.addButton(config);
 
                 this.editor.on('changeCursor', this.updateCursorState.bind(this));
@@ -248,7 +251,9 @@ define([
                 // l'estructura original en cap moment (s'actualitzarà amb la resposta del servidor si escau)
 
                 // ALERTA! no l'objecte structure conté {structure, root}, és la configuració que espera rebre el constructor
-                let structure = new WiocclStructureClone(context.structure);
+
+                let structure = new WiocclStructureClone(context.structure, context.editor.dispatcher);
+
 
 
                 let wiocclDialog = new Dialog({

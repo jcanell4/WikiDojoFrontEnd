@@ -122,6 +122,21 @@ define([
             return this;
         },
 
+        addSelect: function (data) {
+
+            // var $node = jQuery('<form>');
+            // var $fields = jQuery('<ul>');
+
+            let $node = this._createSelect(data);
+
+            $node.addClass('ioc-bootstrap form-dialog')
+            $node.addClass('row');
+
+            this._addSection($node);
+            $node.find('select').val(data.selected ? data.selected : data.options[0]);
+            return this;
+        },
+
         _createInput: function (item) {
             return jQuery('<label for="' + item.name + '">' + item.label + ':</label><input name="' + item.name + '" placeholder="' + item.placeholder + '" class="form-control" value="' + item.value + '"/>');
         },
@@ -138,11 +153,13 @@ define([
             }
 
             for (var i = 0; i < item.options.length || 0; i++) {
+
                 if (item.options[i] === item.placeholder) {
                     continue;
                 }
 
                 $option = jQuery('<option value="' + item.options[i] + '">' + item.options[i] + '</option>');
+
                 $select.append($option);
             }
 

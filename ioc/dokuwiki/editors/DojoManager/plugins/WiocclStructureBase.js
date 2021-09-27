@@ -388,15 +388,17 @@ define([
          * @param {bool} [config.clone=true] -  indica si s'ha d'enllaçar la estructura passada com argument.
          *                                      (els canvis s'aplicaràn sobre aquesta).
          */
-        constructor: function (config) {
+        constructor: function (config, dispatcher) {
             // console.log(config);
             // Aquí no fem res perquè cada subclasse ha d'implementar la seva propia lògica
+
+            this.dispatcher = dispatcher;
 
             this.siblings = [];
         },
 
         setStructure: function (structure, root) {
-            throw error('This methos must be implemented by subclasses');
+            throw error('This method must be implemented by subclasses');
         },
 
         getRaw: function () {
@@ -485,46 +487,98 @@ define([
             this.structure[node.id].close = closing;
         },
 
-        getKeywordTemplate: function (name) {
+
+        getKeywordTemplate: function (callback) {
+
+            // TODO: crear un dialeg amb un combobox
+
+            let context = this;
+
+            let options = [];
+            for (let keyword of this.getKeywordNames()) {
+                options.push(keyword);
+            }
+
+            let data = {
+                name: 'keywords',
+                label: 'Paraula clau',
+                options: options
+            }
+
+            let auxId = this.dispatcher.getGlobalState().getCurrentId();
+            let dialog = this.dispatcher.getDialogManager().getDialog('dropdown', auxId, {
+                title: 'Inserir wioccl',
+                message: "Selecciona una paraula clau wioccl per inserir.", // TODO: localitzar
+                data: data,
+                ok: {
+                    text: 'Inserir' // localitzar
+                },
+                cancel: {
+                    text: 'Cancel·lar' // localitzar
+                },
+                callback: function(name) {
+                    // console.log("que ha retornat el dialeg en tancar-se?", name);
+                    let definition = context.getKeywordDefinition(name);
+                    let opening = '';
+                    let closing = '';
+
+                    if (definition.open) {
+                        opening = definition.open;
+                    } else {
+                        opening = wiocclDefinition.keyword.open.replace('%i', name).replace('%s', '');
+                    }
+
+                    if (definition.close) {
+                        closing = definition.close;
+                    } else {
+                        closing = wiocclDefinition.keyword.close.replace('%i', name);
+                    }
+
+                    callback(opening + closing);
+                }
+            });
+
+            dialog.show();
+
 
             // TODO: cal implementar un dialeg per seleccionar-lo
-            let text = "Introdueix un nom d'instrucció vàlid: " + this.getKeywordNames().join(', ');
-            while (!name) {
-                name = prompt(text, 'IF');
+            // let text = "Introdueix un nom d'instrucció vàlid: " + this.getKeywordNames().join(', ');
+            // while (!name) {
+            //     name = prompt(text, 'IF');
+            //
+            //     if (name) {
+            //         name = name.toUpperCase();
+            //     } else {
+            //         return "";
+            //     }
+            //
+            //     if (!wiocclDefinition.keyword.defs[name]) {
+            //         name = false;
+            //         console.warn("Keyword not found:", name);
+            //     }
+            // }
 
-                if (name) {
-                    name = name.toUpperCase();
-                } else {
-                    return "";
-                }
 
-                if (!wiocclDefinition.keyword.defs[name]) {
-                    name = false;
-                    console.warn("Keyword not found:", name);
-                }
-            }
-
-
-            let definition = this.getKeywordDefinition(name);
-            let opening = '';
-            let closing = '';
-
-            if (definition.open) {
-                opening = definition.open;
-            } else {
-                opening = wiocclDefinition.keyword.open.replace('%i', name).replace('%s', '');
-            }
-
-            if (definition.close) {
-                closing = definition.close;
-            } else {
-                closing = wiocclDefinition.keyword.close.replace('%i', name);
-            }
-
-            return opening + closing;
+            // let definition = this.getKeywordDefinition(name);
+            // let opening = '';
+            // let closing = '';
+            //
+            // if (definition.open) {
+            //     opening = definition.open;
+            // } else {
+            //     opening = wiocclDefinition.keyword.open.replace('%i', name).replace('%s', '');
+            // }
+            //
+            // if (definition.close) {
+            //     closing = definition.close;
+            // } else {
+            //     closing = wiocclDefinition.keyword.close.replace('%i', name);
+            // }
+            //
+            // return opening + closing;
         },
 
-        getFunctionTemplate: function (name) {
+        getFunctionTemplate: function (name, callback) {
             let text = "Introdueix un nom de funció vàlid: " + this.getFunctionNames().join(', ');
             while (!name) {
 
@@ -1105,9 +1159,11 @@ define([
         },
 
         _backup: function (node) {
-            // console.error("_backup", node);
+
             let id = typeof node === 'object' ? node.id : node;
             // let backup = JSON.parse(JSON.stringify(this.structure[node.id]));
+
+            // console.log("que hi ha a la posició?", node, this.structure, id, this.structure[id]);
             let backup = JSON.parse(JSON.stringify(this.structure[id]));
 
             for (let i = 0; i < backup.children.length; i++) {
