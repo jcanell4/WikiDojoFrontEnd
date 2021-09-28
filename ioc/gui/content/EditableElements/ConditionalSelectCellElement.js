@@ -14,6 +14,41 @@ define([
     document.head.appendChild(cssStyle);
 
     var lastFocusedElement;
+    
+    var isCompliant = function(value1, value2, relation){
+        let compliant = false;
+        switch (relation){
+            case "=":
+            case "==":
+                compliant = value1 == value2;
+                break;
+            case "!=":
+                compliant = value1 != value2;
+                break;
+            case ">":
+                compliant = value1 > value2;
+                break;
+            case "<":
+                compliant = value1 < value2;
+                break;
+            case ">=":
+                compliant = value1 >= value2;
+                break;
+            case "<=":
+                compliant = value1 <= value2;
+                break;
+            default :
+                let match = [...relation.matchAll(/(.*)\((.*?)\)/g)];
+                if(match[0][1] == "is_in"){
+                    const arrayValue2 = value2.split(RegExp("["+match[0][2]+"]"));
+                    compliant = arrayValue2.includes(value1);
+                }else if(match[0][1] == "includes"){
+                    const arrayValue1 = value1.split(RegExp("["+match[0][2]+"]"));
+                    compliant = arrayValue1.includes(value2);
+                }
+        }  
+        return compliant;
+    }
 
     return declare([ZoomableFormElement],
         {
@@ -58,8 +93,14 @@ define([
                     var compliant = true;
                     if(Array.isArray(config.filterByKeySource)){
                         for(var j=0; j<config.filterByKeySource.length; j++){
-                            compliant = compliant && fieldSource[i][config.filterByKeySource[j]] == rowOwn[config.filterByKeyOwn[j]];
+                            if(config.filterCompliantRelation){
+                                compliant = compliant && isCompliant(fieldSource[i][config.filterByKeySource[j]],rowOwn[config.filterByKeyOwn[j]],config.filterCompliantRelation[j]);
+                            }else{
+                                compliant = compliant && fieldSource[i][config.filterByKeySource[j]] == rowOwn[config.filterByKeyOwn[j]];
+                            }
                         }
+                    }else if(config.filterCompliantRelation){
+                        compliant = isCompliant(fieldSource[i][config.filterByKeySource], rowOwn[config.filterByKeyOwn], config.filterCompliantRelation);
                     }else{
                         compliant = fieldSource[i][config.filterByKeySource] == rowOwn[config.filterByKeyOwn];
                     }
@@ -122,8 +163,8 @@ define([
                         if (auxOptions[i].value == selectedOptions[j]) {
                             auxOptions[i].selected = true;
                         }
-                        optionsToUpdate.push(auxOptions);
                     }
+                    optionsToUpdate.push(auxOptions);
                 }
 
                 checkMultiSelectWidget.updateOption(optionsToUpdate);
