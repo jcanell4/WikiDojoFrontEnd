@@ -556,6 +556,8 @@ define([
 
             let auxId = this.dispatcher.getGlobalState().getCurrentId();
             let dialog = this.dispatcher.getDialogManager().getDialog('dropdown', auxId, {
+                // title: 'Inserir funció',
+                // message: "Selecciona una funció wioccl per inserir.", // TODO: localitzartitle: 'Inserir funció',
                 title: 'Inserir funció',
                 message: "Selecciona una funció wioccl per inserir.", // TODO: localitzar
                 data: data,

@@ -24,7 +24,8 @@ define([
                 INFO: 'info',
                 LOCK_WARNING: 'lock_warning',
                 FORM: 'form',
-                DROPDOWN: 'dropdown'
+                DROPDOWN: 'dropdown',
+                COMBOBOX: 'combobox'
             },
 
             constructor: function (args) {
@@ -107,6 +108,10 @@ define([
 
                     case this.type.DROPDOWN:
                         dialogBuilder = this._getDropdownDialog(refId, params);
+                        break;
+
+                    case this.type.COMBOBOX:
+                        dialogBuilder = this._getComboBoxDialog(refId, params);
                         break;
 
                     default:
@@ -411,7 +416,92 @@ define([
                             // no cal fer res, cal declarar-la?
                             //console.log("Cridat el close del dialog")
                         }
-                    }
+                    },
+                    // TEST! Eliminar
+                    {
+                        id: refId +'_TEST-3',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    {
+                        id: refId +'_TEST-2',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    // TEST! Eliminar
+                    {
+                        id: refId +'_TEST-1',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    // TEST! Eliminar
+                    {
+                        id: refId +'_TEST0',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    // TEST! Eliminar
+                    {
+                        id: refId +'_TEST1',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    {
+                        id: refId +'_TEST2',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    {
+                        id: refId +'_TEST3',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    {
+                        id: refId +'_TEST4',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    {
+                        id: refId +'_TEST5',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
                 ];
 
                 var dialogBuilder = this._getDefaultDialog(refId, params);
@@ -422,6 +512,40 @@ define([
                 return dialogBuilder;
             },
 
+            _getComboBoxDialog: function (refId, params) {
+                // console.error("_getDroopdownDialog", params);
+
+                //params.single = true;
+
+                params.minimal = true;
+                params.buttons =[
+                    {
+                        id: refId +'_ok',
+                        buttonType: this.type.DEFAULT,
+                        description: params.ok.text,
+                        callback: function(aux){
+                            let value = jQuery(this.domNode).find('select').val();
+                            params.callback(value);
+                        }
+                    },
+                    {
+                        id: refId +'_cancel',
+                        buttonType: this.type.DEFAULT,
+                        description: params.cancel.text,
+                        callback: function(){
+                            // no cal fer res, cal declarar-la?
+                            //console.log("Cridat el close del dialog")
+                        }
+                    }
+                ];
+
+                var dialogBuilder = this._getDefaultDialog(refId, params);
+
+                // TODO: afegir la secció del formulari construida a partir de params.data
+                dialogBuilder.addComboBox(params.data);
+
+                return dialogBuilder;
+            },
             /**
              *
              * @param paramsNeeded array de cadenes amb els noms de les propietats a comprovar

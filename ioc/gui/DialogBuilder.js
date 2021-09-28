@@ -130,9 +130,31 @@ define([
             let $node = this._createSelect(data);
 
             $node.addClass('ioc-bootstrap form-dialog')
+            // $node.addClass('row');
+
+            this._addSection($node);
+            $node.find('select').val(data.selected ? data.selected : data.options[0]);
+            return this;
+        },
+
+        addComboBox: function (data) {
+
+            // var $node = jQuery('<form>');
+            // var $fields = jQuery('<ul>');
+
+            // TODO: crear nova funcio que retorni un widget de dojo de tipus combobox
+            // ALERTA! aquí es farà servir un widget
+            let $node = this._createSelect(data);
+
+            $node.addClass('ioc-bootstrap form-dialog')
             $node.addClass('row');
 
             this._addSection($node);
+            // this._addSection({
+            //     widget: ??? // els widgets van dintre d'una propietat anomenada widget,a així es discrimina
+            // });
+
+
             $node.find('select').val(data.selected ? data.selected : data.options[0]);
             return this;
         },
@@ -438,12 +460,21 @@ define([
         build: function () {
             var style = '';
 
+
             if (this.params.height) {
-                style += 'height:' + this.params.height + "px;";
+                style += 'height:' + this.params.height ;
+                if (this.params.height !== "auto") {
+                    style += "px";
+                }
+                style+= ";";
             }
 
             if (this.params.width) {
-                style += 'width:' + this.params.width + "px";
+                style += 'width:' + this.params.width;
+                if (this.params.width !== "auto") {
+                    style += "px";
+                }
+                style+= ";";
             }
 
             this.params['style'] = style;

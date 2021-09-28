@@ -7,14 +7,17 @@ define([
     'dojo/dom-construct',
     'ioc/wiki30/manager/EventObservable',
     'ioc/wiki30/manager/EventObserver',
-    'dijit/form/Button'
-], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable, EventObserver, Button) {
+    'dijit/form/Button',
+    "dojo/dom-style", // domStyle.set
+], function (TemplatedMixin, WidgetsInTemplateMixin, declare, Dialog, template, domConstruct, EventObservable, EventObserver, Button, domStyle) {
 
     return declare("ioc.gui.CustomDialog", [Dialog, TemplatedMixin, WidgetsInTemplateMixin, EventObservable, EventObserver], {
 
         templateString: template,
 
         constructor: function () {
+
+
             this.initFunctions = [];
             this.sections = [];
             this.nextDialogs = {};
@@ -22,7 +25,14 @@ define([
 
             declare.safeMixin(this, arguments);
 
-            this.style = "width: " + this.width + "px";
+            console.log(this.style);
+            // El dialog builder ja afegeix el width i el height
+            if (!this.style) {
+                this.style = "width:" + this.width + "px;";
+            }
+
+            // ALERTA! Només accepta l'alçada i amplada, la resta d'estils com min-width, min-height, etc. són descartats
+            // Cal manipular-lo al startup
 
             this.eventManager = this.dispatcher.getEventManager();
         },
@@ -38,6 +48,10 @@ define([
             this._initNextCallbacks();
             this._initFunctions();
             this._initTimer();
+
+            // Ajustem la mida mínima segons el nombre de botons (65px per botó)
+            jQuery(this.domNode).find('.dijitDialogPaneContent').css('min-width', (this.buttons.length * 65) + "px");
+
         },
 
         _initTimer: function () {
