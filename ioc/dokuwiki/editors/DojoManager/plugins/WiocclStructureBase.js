@@ -489,9 +489,6 @@ define([
 
 
         getKeywordTemplate: function (callback) {
-
-            // TODO: crear un dialeg amb un combobox
-
             let context = this;
 
             let options = [];
@@ -541,10 +538,48 @@ define([
             dialog.show();
 
 
-            // TODO: cal implementar un dialeg per seleccionar-lo
-            // let text = "Introdueix un nom d'instrucció vàlid: " + this.getKeywordNames().join(', ');
+        },
+
+        getFunctionTemplate: function (callback) {
+            // let context = this;
+
+            let options = [];
+            for (let func of this.getFunctionNames()) {
+                options.push(func);
+            }
+
+            let data = {
+                name: 'functions',
+                label: 'Funció',
+                options: options
+            }
+
+            let auxId = this.dispatcher.getGlobalState().getCurrentId();
+            let dialog = this.dispatcher.getDialogManager().getDialog('dropdown', auxId, {
+                title: 'Inserir funció',
+                message: "Selecciona una funció wioccl per inserir.", // TODO: localitzar
+                data: data,
+                ok: {
+                    text: 'Inserir' // localitzar
+                },
+                cancel: {
+                    text: 'Cancel·lar' // localitzar
+                },
+                callback: function(name) {
+                    callback(wiocclDefinition.function.open + name + wiocclDefinition.function.close.replace('%s', ''));
+
+                }
+            });
+
+            dialog.show();
+
+
+            //
+            // let text = "Introdueix un nom de funció vàlid: " + this.getFunctionNames().join(', ');
             // while (!name) {
-            //     name = prompt(text, 'IF');
+            //
+            //
+            //     name = prompt(text, 'STR_REPLACE');
             //
             //     if (name) {
             //         name = name.toUpperCase();
@@ -552,54 +587,15 @@ define([
             //         return "";
             //     }
             //
-            //     if (!wiocclDefinition.keyword.defs[name]) {
+            //
+            //     if (!wiocclDefinition.function.defs[name]) {
             //         name = false;
-            //         console.warn("Keyword not found:", name);
+            //         console.warn("Function not found:", name);
             //     }
             // }
 
-
-            // let definition = this.getKeywordDefinition(name);
-            // let opening = '';
-            // let closing = '';
-            //
-            // if (definition.open) {
-            //     opening = definition.open;
-            // } else {
-            //     opening = wiocclDefinition.keyword.open.replace('%i', name).replace('%s', '');
-            // }
-            //
-            // if (definition.close) {
-            //     closing = definition.close;
-            // } else {
-            //     closing = wiocclDefinition.keyword.close.replace('%i', name);
-            // }
-            //
-            // return opening + closing;
-        },
-
-        getFunctionTemplate: function (name, callback) {
-            let text = "Introdueix un nom de funció vàlid: " + this.getFunctionNames().join(', ');
-            while (!name) {
-
-
-                name = prompt(text, 'STR_REPLACE');
-
-                if (name) {
-                    name = name.toUpperCase();
-                } else {
-                    return "";
-                }
-
-
-                if (!wiocclDefinition.function.defs[name]) {
-                    name = false;
-                    console.warn("Function not found:", name);
-                }
-            }
-
             // no incluim els paràmetres agafaran els valors per defecte si escau
-            return wiocclDefinition.function.open + name + wiocclDefinition.function.close.replace('%s', '');
+            // return wiocclDefinition.function.open + name + wiocclDefinition.function.close.replace('%s', '');
 
         },
 

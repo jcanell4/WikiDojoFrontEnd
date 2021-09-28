@@ -77,7 +77,6 @@ define([
                     context._insertCode(code);
                     context.dirty = true;
                 };
-                // let code = context.structure.getKeywordTemplate(callback);
                 context.structure.getKeywordTemplate(callback);
 
             });
@@ -88,8 +87,11 @@ define([
             });
 
             jQuery(this.insertFunctionBtnNode).on('click', function () {
-                let code = context.structure.getFunctionTemplate();
-                context._insertCode(code);
+                let callback = function(code) {
+                    context._insertCode(code);
+                    context.dirty = true;
+                };
+                context.structure.getFunctionTemplate(callback);
             });
 
             jQuery(this.insertContentBtnNode).on('click', function () {
