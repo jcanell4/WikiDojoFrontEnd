@@ -99,9 +99,9 @@ define([
             }
             return ret;
         },
-        copy: function (defaultValue, previousField) {
+        copy: function (params /*defaultValue*/, previousField) {
             var ret;
-
+            let defaultValue = params[0];
             if (!previousField) {
                 console.warn("No s'ha trobat el valor previ del camp");
                 return defaultValue;
@@ -109,8 +109,9 @@ define([
 
             return previousField;
         },
-        inc: function (defaultValue, previousField) {
+        inc: function (params /*defaultValue, [String regex, int groupToIncrement, Array groupsToCopy]*/, previousField) {
             var ret;
+            let defaultValue = params[0];
 
             if (!previousField) {
                 console.warn("No s'ha trobat el valor previ del camp");
@@ -118,12 +119,32 @@ define([
             }
 
             if (typeof previousField === "string") {
-                var numberRegex = /(\d)+/gi;
-                var matches = previousField.match(numberRegex);
-                if (matches != null) {
-                    ret = Number(matches[0]) + 1;
-                } else {
-                    ret = defaultValue;
+                if(params.length===1){
+                    var numberRegex = /(\d)+/gi;
+                    var matches = previousField.match(numberRegex);
+                    if (matches != null) {
+                        if(params.length==1){
+                            ret = Number(matches[matches.length-1]) + 1;
+                        }else{
+                            ret = Number(matches[matches.length-1]) + 1;
+                        }
+                    } else {
+                        ret = defaultValue;
+                    }
+                }else{
+                    var numberRegex = new RegExp(params[1], "gi");                    
+                    var matches = numberRegex.exec(previousField);
+                    if (matches != null) {
+                        ret = "";
+                        if(params.length===4){
+                            for(var i=0; i<params[3]; i++){
+                                ret += matches[params[3][i]];
+                            }
+                        }
+                        ret += Number(matches[params[2]]) + 1;
+                    } else {
+                        ret = defaultValue;
+                    }
                 }
             } else if (typeof previousField === "number") {
                 ret = previousField + 1;
@@ -841,7 +862,7 @@ define([
                     case 'inc':
                         // Si hi ha una fila anterior cerquem el valor anterior
                         if (lastRow) {
-                            parsedValue = wiocclFunctions[func](params[0], lastRow);
+                            parsedValue = wiocclFunctions[func](params, lastRow);
                         } else {
                             // El paràmetre és el valor per defecte per la primera fila
                             parsedValue = params[0];
