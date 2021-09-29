@@ -82,8 +82,14 @@ define([
             });
 
             jQuery(this.insertFieldBtnNode).on('click', function () {
-                let code = context.structure.getFieldTemplate();
-                context._insertCode(code);
+                // let code = context.structure.getFieldTemplate();
+                // context._insertCode(code);
+
+                let callback = function(code) {
+                    context._insertCode(code);
+                    context.dirty = true;
+                };
+                context.structure.getFieldTemplate(callback);
             });
 
             jQuery(this.insertFunctionBtnNode).on('click', function () {
