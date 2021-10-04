@@ -154,7 +154,7 @@ define([
                 options.push({name: option, id: option.replace(' ', '_')});
             }
 
-            let stateStore = new Memory({
+            let optionsStore = new Memory({
                 data: options
                 // data: [
                 //     {name:"Alabama", id:"AL"},
@@ -176,9 +176,10 @@ define([
             let comboBox = new ComboBox({
                 id: "cb_field",
                 name: "cb_field",
-                value: options[0].name,
-                store: stateStore,
-                searchAttr: "name"
+                value: options.length >0 ? options[0].name : '',
+                store: optionsStore,
+                searchAttr: "name",
+                style: {width: "100%"},
             }, "stateSelect");
 
 

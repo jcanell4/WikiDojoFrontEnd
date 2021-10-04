@@ -526,6 +526,8 @@ define([
                     return this._generateHtmlForParams(fields, wiocclNode);
 
                 case 'field':
+                    // TODO: els camps han de fer servir un combobox, però aquest
+                    // sistema no està preparat per treballar amb widgets, només amb html
                 case 'content':
                     return this._generateHtmlForGenerics(fields, wiocclNode);
 

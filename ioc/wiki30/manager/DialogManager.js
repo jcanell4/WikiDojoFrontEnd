@@ -440,7 +440,7 @@ define([
                         buttonType: this.type.DEFAULT,
                         description: params.ok.text,
                         callback: function(aux){
-                            let value = jQuery(this.domNode).find('select').val();
+                            let value = jQuery(this.domNode).find('input.dijitInputInner').val();
                             params.callback(value);
                         }
                     },

@@ -589,11 +589,13 @@ define([
             //     options.push(func);
             // }
 
+            // TODO: les possibles noms dels camps han d'arribar des del servidor
+            // per determinar com els obtenim aqui
             let data = {
                 name: 'field',
                 label: 'Camp o variable',
                 options: [
-                    'fieldA', 'variable1', 'test zero'
+                    // 'fieldA', 'variable1', 'test zero'
                 ]
             }
 
@@ -609,8 +611,6 @@ define([
                     text: 'Cancel·lar' // localitzar
                 },
                 callback: function(field) {
-                    console.error("Field:", field);
-                    alert("Aquí és el problema, no arriba res al field, suposo que s'esperava un .val de jquery i aixó és a un widget");
                     if (!field) {
                         callback('');
                     } else {
