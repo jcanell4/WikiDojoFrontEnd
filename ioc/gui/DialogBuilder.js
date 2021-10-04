@@ -2,8 +2,10 @@ define([
     "dojo/_base/declare",
     "ioc/gui/CustomDialog",
     "ioc/gui/jsdifflib/jsdifflib-amd",
-    "ioc/functions/jsProjectDiff"
-], function (declare, CustomDialog, jsdifflib, jsProjectDiff) {
+    "ioc/functions/jsProjectDiff",
+    "dojo/store/Memory",
+    "dijit/form/ComboBox"
+], function (declare, CustomDialog, jsdifflib, jsProjectDiff, Memory, ComboBox) {
 
     var DialogBuilderException = function (message) {
         this.message = message;
@@ -144,18 +146,52 @@ define([
 
             // TODO: crear nova funcio que retorni un widget de dojo de tipus combobox
             // ALERTA! aquí es farà servir un widget
-            let $node = this._createSelect(data);
+            // let $node = this._createSelect(data);
 
-            $node.addClass('ioc-bootstrap form-dialog')
-            $node.addClass('row');
+            let options = [];
 
-            this._addSection($node);
-            // this._addSection({
-            //     widget: ??? // els widgets van dintre d'una propietat anomenada widget,a així es discrimina
-            // });
+            for (let option of data.options) {
+                options.push({name: option, id: option.replace(' ', '_')});
+            }
+
+            let stateStore = new Memory({
+                data: options
+                // data: [
+                //     {name:"Alabama", id:"AL"},
+                //     {name:"Alaska", id:"AK"},
+                //     {name:"American Samoa", id:"AS"},
+                //     {name:"Arizona", id:"AZ"},
+                //     {name:"Arkansas", id:"AR"},
+                //     {name:"Armed Forces Europe", id:"AE"},
+                //     {name:"Armed Forces Pacific", id:"AP"},
+                //     {name:"Armed Forces the Americas", id:"AA"},
+                //     {name:"California", id:"CA"},
+                //     {name:"Colorado", id:"CO"},
+                //     {name:"Connecticut", id:"CT"},
+                //     {name:"Delaware", id:"DE"}
+                // ]
+            });
+
+            // TEST! deixem els valors per defecte per comprovar que funciona
+            let comboBox = new ComboBox({
+                id: "cb_field",
+                name: "cb_field",
+                value: options[0].name,
+                store: stateStore,
+                searchAttr: "name"
+            }, "stateSelect");
 
 
-            $node.find('select').val(data.selected ? data.selected : data.options[0]);
+            // $node.addClass('ioc-bootstrap form-dialog')
+            // $node.addClass('row');
+
+            // this._addSection($node);
+            this._addSection({
+                widget: comboBox // els widgets van dintre d'una propietat anomenada widget,a així es discrimina
+            });
+
+
+            // $node.find('select').val(data.selected ? data.selected : data.options[0]);
             return this;
         },
 

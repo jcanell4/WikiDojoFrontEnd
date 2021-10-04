@@ -718,7 +718,12 @@ define([
                     escapeHTMLInData: false,
                     // height: "500px",
                     height: height + 'px', // la alçada de cada fila
-                    sourceId: args.data.id
+                    sourceId: args.data.id,
+                    // @override
+                    // fem que cap columna es pugui ordenar
+                    canSort: function(col) {
+                        return false;
+                    }
                 });
 
 

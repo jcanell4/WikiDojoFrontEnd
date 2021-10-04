@@ -24,9 +24,10 @@ define([
 
             getSortProps: function (inSortInfo) {
 
-                var ret = this.inherited(arguments);
+                let ret = this.inherited(arguments);
 
                 if (this.addingRow) {
+                    // ALERTA! això fa que en inserir una fila es mostra l'ordre real
                     return {};
                 }
 

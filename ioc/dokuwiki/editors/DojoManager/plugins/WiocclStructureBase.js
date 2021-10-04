@@ -574,41 +574,53 @@ define([
             });
 
             dialog.show();
-
-
-            //
-            // let text = "Introdueix un nom de funció vàlid: " + this.getFunctionNames().join(', ');
-            // while (!name) {
-            //
-            //
-            //     name = prompt(text, 'STR_REPLACE');
-            //
-            //     if (name) {
-            //         name = name.toUpperCase();
-            //     } else {
-            //         return "";
-            //     }
-            //
-            //
-            //     if (!wiocclDefinition.function.defs[name]) {
-            //         name = false;
-            //         console.warn("Function not found:", name);
-            //     }
-            // }
-
-            // no incluim els paràmetres agafaran els valors per defecte si escau
-            // return wiocclDefinition.function.open + name + wiocclDefinition.function.close.replace('%s', '');
-
         },
 
-        getFieldTemplate: function () {
-            let field = prompt("Introdueix el nom del field", "field");
+        getFieldTemplate: function (callback) {
+            // let field = prompt("Introdueix el nom del field", "field");
+            //
+            // if (field===null) {
+            //     return "";
+            // }
+            //
+            // return `{##${field}##}`;
+            // let options = [];
+            // for (let func of this.getFunctionNames()) {
+            //     options.push(func);
+            // }
 
-            if (field===null) {
-                return "";
+            let data = {
+                name: 'field',
+                label: 'Camp o variable',
+                options: [
+                    'fieldA', 'variable1', 'test zero'
+                ]
             }
 
-            return `{##${field}##}`;
+            let auxId = this.dispatcher.getGlobalState().getCurrentId();
+            let dialog = this.dispatcher.getDialogManager().getDialog('combobox', auxId, {
+                title: 'Inserir camp o variable',
+                message: "Entra o selecciona el nom del camp o variable.", // TODO: localitzar
+                data: data,
+                ok: {
+                    text: 'Inserir' // localitzar
+                },
+                cancel: {
+                    text: 'Cancel·lar' // localitzar
+                },
+                callback: function(field) {
+                    console.error("Field:", field);
+                    alert("Aquí és el problema, no arriba res al field, suposo que s'esperava un .val de jquery i aixó és a un widget");
+                    if (!field) {
+                        callback('');
+                    } else {
+                        callback(`{##${field}##}`);
+                    }
+
+                }
+            });
+
+            dialog.show();
         },
 
         getContentTemplate: function () {
