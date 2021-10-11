@@ -739,6 +739,7 @@ define([
 
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
 
+                // console.log(id, children, parent);
                 if (this.structure[id].isClone) {
                     // if (context.getStructure()[id].isClone) {
                     continue;
@@ -984,7 +985,7 @@ define([
 
 
         rebuildPosMap: function (item) {
-            console.error("Rebuilding chunkmap for", item);
+            // console.error("Rebuilding chunkmap for", item);
             let outChunkMap = new Map();
 
             // s'han de tenir en compte els siblings temporals
@@ -1210,6 +1211,7 @@ define([
             // alerta! cal conservar els childrens en algun cas?
 
 
+            // console.warn(node);
             if (node.parent && node.type !== 'wrapper') {
                 this._removeChildren(node.id);
 
@@ -1263,7 +1265,7 @@ define([
         // i els tokens passats que són un vector d'elements que calr estructurar en forma d'arbre segons si es troben
         // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
-            console.log("_createTree",root, outTokens);
+            // console.log("_createTree",root, outTokens);
 
 
             // TODO: Determinar si hi ha algún cas en que no s'hagin d'eliminar
@@ -1309,7 +1311,7 @@ define([
             }
 
             for (let i in outTokens) {
-                console.log(i, outTokens[i]);
+                // console.log(i, outTokens[i]);
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 // Si l'arrel és temporal el primer token és fill de l'arrel
@@ -1344,7 +1346,7 @@ define([
                     // this.root = tokens[i].id;
 
                 } else {
-                    console.log(outTokens, stack);
+                    // console.log(outTokens, stack);
                     outTokens[i].id = nextKey;
                 }
 
@@ -1387,7 +1389,12 @@ define([
                         }
                     } else {
                         console.error("alerta! reemplaçat el parent pel parent del root");
+                        console.log("root:", root);
+                        console.log("outTokens:", outTokens);
+                        console.log(i);
+                        console.log(this.structure);
                         outTokens[i].parent = root.parent;
+                        alert("Error");
                     }
 
                     // console.log("Es canvia el root pel del pare");
@@ -1555,9 +1562,6 @@ define([
 
             // Actualitzem el root
             this.structure[root.id] = root;
-
-            // Problema: sembla que els valors de la estructura no s'actualitzan amb els valor del root, conserva el child original
-            console.log("tokens? quin és el parent? perquè no hi ha child?", root, this.structure, outTokens);
         },
 
         _tokenize(text) {

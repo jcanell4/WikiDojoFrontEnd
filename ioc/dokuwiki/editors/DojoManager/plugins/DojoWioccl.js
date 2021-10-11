@@ -277,7 +277,8 @@ define([
                         id: 'wioccl-dialog' + counter,
                         value: structure.getCode(tree[0])
                     },
-                    wioccl: wiocclNode,
+                    //wioccl: wiocclNode, // incorrecte! aquest és el node de la estructura original, no de la nova creada, per exemple el wrapper
+                    wioccl: structure.getNodeById(wiocclNode.id),
                     structure: structure,
                     tree: tree,
                     refId: refId,
@@ -292,6 +293,7 @@ define([
                 });
 
                 context.wiocclDialog = wiocclDialog;
+
                 wiocclDialog.startup();
 
                 wiocclDialog.show();

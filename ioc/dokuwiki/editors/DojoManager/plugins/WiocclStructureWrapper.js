@@ -26,6 +26,7 @@ define([
 
             let key = Number(this.structure.next);
             this.structure.next = (key + 1) + "";
+            key += "";
 
             let wrapper = {
                 id: root,
@@ -42,6 +43,10 @@ define([
             this.structure[root].id = key;
             this.structure[key] = this.structure[root];
             this.structure[root] = wrapper;
+
+            for (let child in this.structure[key].children) {
+                this.structure[child].parent = key;
+            }
 
             // siblings és un array d'ids de nodes temporals afegits
             this.siblings = [];

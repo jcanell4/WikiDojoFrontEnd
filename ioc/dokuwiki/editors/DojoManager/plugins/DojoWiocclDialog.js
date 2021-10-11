@@ -63,7 +63,10 @@ define([
             // });
 
             this.structure.on('structure_change', function() {
+                // console.log("structure_change");
+                // alert("structure_change");
                 context.updateCallback(context.editor);
+
             });
 
             $saveButton.on('click', function () {
@@ -271,7 +274,7 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    // console.log("item clicat:", item);
+                    console.log("item clicat:", item);
 
                     // actualitzem qualsevol canvi pendent abans
                     context._updatePendingChanges_Field2Detail()
@@ -473,7 +476,9 @@ define([
 
         _updateDetail: function (wiocclNode, ignoreFields) {
             // console.log("Updating wiocclNode", wiocclNode)
+
             if (this.updating) {
+                // console.log("Returning");
                 return;
             }
 
@@ -503,7 +508,6 @@ define([
                 jQuery(this.detailContainerNode).css('opacity', '1');
             }
 
-            this.emit('structure_change');
         },
 
         // ALERTA! aquesta funció es crida automáticament quan canvia la mida de la finestra del navegador o es fa scroll
@@ -806,7 +810,7 @@ define([
         },
 
         setData: function (rootWiocclNode, selectedWiocclNode, ignoreRebranch) {
-            console.error('setData', rootWiocclNode, selectedWiocclNode);
+            // console.error('setData', rootWiocclNode, selectedWiocclNode);
 
             if (!ignoreRebranch) {
 
@@ -862,6 +866,8 @@ define([
             if (!this._pendingChanges_Field2Detail) {
                 return;
             }
+
+
 
             let $attrContainer = jQuery(this.attrContainerNode);
 
@@ -959,7 +965,10 @@ define([
             this._selectWiocclNode(updatedWioccl);
             this._updateFields(updatedWioccl);
 
+            this.structure.emit('structure_change');
             this.updating = false;
+
+
 
         },
 
@@ -1374,6 +1383,8 @@ define([
             // this.source.dialogEditor = editor;
 
             // Per defecte s'assigna el primer node
+
+
             editor.wioccl = this.wioccl;
 
             this.editor = editor;
@@ -1504,7 +1515,7 @@ define([
 
         // es crida desde DojoWioccl
         updateTree: function (tree, root, selected) {
-            console.log("updateTree", tree);
+            // console.log("updateTree", tree);
             this.treeWidget.destroyRecursive();
 
             this.createTree(tree, root.id);
