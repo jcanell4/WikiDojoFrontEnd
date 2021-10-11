@@ -41,6 +41,7 @@ define([
             this.createTree(this.tree, this.refId, this.structure);
 
             let wiocclNode = this.structure.getNodeById(this.refId);
+
             // let wioccl = this.structure[this.refId];
 
             // let wioccl = this.source.getStructure()[this.refId];
@@ -51,13 +52,17 @@ define([
             // this._rebuildPosMap(this.source.getStructure()[this.refId]);
             this.structure.rebuildPosMap(wiocclNode);
             // this._rebuildPosMap(wioccl);
-            let $updateButton = jQuery(this.updateButtonNode);
+            // let $updateButton = jQuery(this.updateButtonNode);
             let $saveButton = jQuery(this.saveButtonNode);
 
             let context = this;
 
-            $updateButton.on('click', function () {
-                // Alerta, el context d'execució en afegir el callback al objecte de configuració
+            // $updateButton.on('click', function () {
+            //     // Alerta, el context d'execució en afegir el callback al objecte de configuració
+            //     context.updateCallback(context.editor);
+            // });
+
+            this.structure.on('structure_change', function() {
                 context.updateCallback(context.editor);
             });
 
@@ -104,6 +109,7 @@ define([
                 let code = context.structure.getContentTemplate();
                 context._insertCode(code);
             });
+
         },
 
         updateInsertButtons: function() {
@@ -497,6 +503,7 @@ define([
                 jQuery(this.detailContainerNode).css('opacity', '1');
             }
 
+            this.emit('structure_change');
         },
 
         // ALERTA! aquesta funció es crida automáticament quan canvia la mida de la finestra del navegador o es fa scroll
@@ -746,6 +753,7 @@ define([
                     },
                     // saveCallback : context._save.bind(context),
                     updateCallback: function (editor) {
+                        console.log("Updating Callback")
                         // this.source.parse(editor.getValue(), editor.wioccl, this.getStructure());
                         // this és correcte, fa referència al nou dialog que s'instància
                         this.structure.updating = true;
@@ -757,6 +765,8 @@ define([
 
                         this.structure.parse(editor.getValue(), editor.wioccl);
 
+                        console.log("Com ha quedat la estructura?", this.structure);
+                        alert("stop");
                         this.setData(this.structure.getNodeById(refId), rootWiocclNode);
                     }
 
@@ -796,7 +806,7 @@ define([
         },
 
         setData: function (rootWiocclNode, selectedWiocclNode, ignoreRebranch) {
-            // console.log('setData', rootWiocclNode, selectedWiocclNode);
+            console.error('setData', rootWiocclNode, selectedWiocclNode);
 
             if (!ignoreRebranch) {
 
@@ -948,7 +958,6 @@ define([
             let updatedWioccl = this._getWiocclForCurrentPos();
             this._selectWiocclNode(updatedWioccl);
             this._updateFields(updatedWioccl);
-
 
             this.updating = false;
 
@@ -1495,7 +1504,7 @@ define([
 
         // es crida desde DojoWioccl
         updateTree: function (tree, root, selected) {
-            // console.log("updateTree", tree, root, selected);
+            console.log("updateTree", tree);
             this.treeWidget.destroyRecursive();
 
             this.createTree(tree, root.id);

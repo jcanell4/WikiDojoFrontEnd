@@ -15,11 +15,13 @@ define([
     'dijit/place',
     'dojo/mouse',
     'ioc/dokuwiki/editors/DojoManager/plugins/WiocclStructureClone',
+    'ioc/dokuwiki/editors/DojoManager/plugins/WiocclStructureWrapper',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoEditorUtils',
 
 
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, string, Button, domConstruct,
-             Dialog, registry, dom, Tooltip, on, place, mouse, WiocclStructureClone, DojoEditorUtils) {
+             Dialog, registry, dom, Tooltip, on, place, mouse, WiocclStructureClone, WiocclStructureWrapper,
+             DojoEditorUtils) {
 
     let counter = 0;
 
@@ -238,7 +240,8 @@ define([
 
                 context.structure.root = refId;
 
-                let tree = context.structure.getTreeFromNode(refId, true);
+                let structure = new WiocclStructureWrapper(context.structure, context.editor.dispatcher);
+                let tree = structure.getTreeFromNode(refId, true);
 
                 let oldDialog = registry.byId('wioccl-dialog' + counter);
 
@@ -252,7 +255,8 @@ define([
 
                 // ALERTA! no l'objecte structure conté {structure, root}, és la configuració que espera rebre el constructor
 
-                let structure = new WiocclStructureClone(context.structure, context.editor.dispatcher);
+                // let structure = new WiocclStructureClone(context.structure, context.editor.dispatcher);
+                // let structure = new WiocclStructureWrapper(context.structure, context.editor.dispatcher);
 
 
 

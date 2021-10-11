@@ -187,8 +187,6 @@ define([
             /** @type {object} arguments que s'han passat al constructor per configurar-lo */
             _args: {},
 
-            editorType: 'ACE',
-
             /**
              * Aquests plugins es carregaran per tots els editors
              */

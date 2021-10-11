@@ -2,7 +2,8 @@
 // les funcions per gestionar-les i modificar-les des del plugin per Dojo Editor DojoWioccl i DojoWiocclDialog
 define([
     'dojo/_base/declare',
-], function (declare) {
+    'dojo/Evented'
+], function (declare, Evented) {
 
 
     // TODO: Solució temporal, en lloc de rebre la definició de WIOCC des del servidor la establim aquí
@@ -263,6 +264,13 @@ define([
                     close: '',
                     hidden: true
                 },
+                // WRAPPER és un tipus especial utilitzat internament per les estructures temporals <-- TODO:Valorar si es pot utilitzar TEMP
+                WRAPPER: {
+                    attrs: [],
+                    open: '',
+                    close: '',
+                    hidden: true
+                },
                 IF: {
                     attrs: [
                         {name: 'condition', type: '*'}
@@ -352,7 +360,7 @@ define([
 
     };
 
-    return declare([], {
+    return declare([Evented], {
 
         /**
          * @namespace
@@ -379,9 +387,6 @@ define([
 
         /**
          *
-         * TODO: crear subclasses de manera que no calgui
-         *
-         *
          * Opcions de configuració:
          * @param {object} config.structure -   objecte literal amb la estructura wioccl (enviada des del servidor). Si
          *                                      no es passa es crea una estructura temporal automàticament.
@@ -391,6 +396,8 @@ define([
         constructor: function (config, dispatcher) {
             // console.log(config);
             // Aquí no fem res perquè cada subclasse ha d'implementar la seva propia lògica
+
+            // console.error("WiocclStructureBase");
 
             this.dispatcher = dispatcher;
 
@@ -916,7 +923,7 @@ define([
             for (let siblingId of this.siblings) {
                 // if (this.structure[siblingId].parent === node.parent && !this._hasChild(node.parent, siblingId)) {
                 if (this.structure[siblingId].parent === node.parent) {
-                    console.log("trobat sigling:", this.structure[siblingId])
+                    console.log("trobat sibling:", this.structure[siblingId])
                     siblings[siblingId] = this.structure[siblingId];
                     testCounter++;
                 } else {
@@ -977,7 +984,7 @@ define([
 
 
         rebuildPosMap: function (item) {
-            // console.error("Rebuilding chunkmap for", item);
+            console.error("Rebuilding chunkmap for", item);
             let outChunkMap = new Map();
 
             // s'han de tenir en compte els siblings temporals
@@ -1041,7 +1048,6 @@ define([
 
         // TODO: Canviar el nom per eliminar _, no és privada
         _getNodeForPos: function (pos) {
-            // console.log("pos, chunkmap?", pos, this.posMap);
 
             // Cerquem el node corresponent
             let candidate;
@@ -1190,9 +1196,8 @@ define([
 
         parse: function (text, node) {
 
-            let outTokens = this._tokenize(text);
 
-            // console.log("node?", node);
+            let outTokens = this._tokenize(text);
 
             // text és el text a parsejar
             // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
@@ -1200,15 +1205,12 @@ define([
             // si hi han nous node s'han d'afegir a partir d'aquest index
             // let lastIndex = structure.length;
 
-
-            // Reordenació dels nodes:
-            //      - posem com false tots els nodes fills actuals ALERTA no els eliminem perquè canviaria l'ordre de tots
-            //      - els elements de la estructura i les referencies del document ja no serien correctes.
-
-
             // En el cas de l'arrel d'un subdialeg no existeix el parent
 
-            if (node.parent) {
+            // alerta! cal conservar els childrens en algun cas?
+
+
+            if (node.parent && node.type !== 'wrapper') {
                 this._removeChildren(node.id);
 
                 // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
@@ -1261,8 +1263,13 @@ define([
         // i els tokens passats que són un vector d'elements que calr estructurar en forma d'arbre segons si es troben
         // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
+            console.log("_createTree",root, outTokens);
 
-            // console.log("_createTree",root, outTokens);
+
+            // TODO: Determinar si hi ha algún cas en que no s'hagin d'eliminar
+            if (root.type === 'wrapper') {
+                this._removeChildren(root.id);
+            }
 
             this.discardSiblings();
 
@@ -1296,8 +1303,13 @@ define([
 
             let errorDetected = false;
 
+            // Si el root és temporal o wrapper eliminem els fills
+            if (root.type === 'temp' || root.type === 'wrapper') {
+                root.children = [];
+            }
+
             for (let i in outTokens) {
-                // console.log(i, stack);
+                console.log(i, outTokens[i]);
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 // Si l'arrel és temporal el primer token és fill de l'arrel
@@ -1320,7 +1332,7 @@ define([
 
 
 
-                } if (root.type === 'temp' && stack.length === 0) {
+                } if ((root.type === 'temp' || root.type === 'wrapper') && stack.length === 0) {
 
                     outTokens[i].id = nextKey;
                     root.children.push(outTokens[i].id);
@@ -1332,6 +1344,7 @@ define([
                     // this.root = tokens[i].id;
 
                 } else {
+                    console.log(outTokens, stack);
                     outTokens[i].id = nextKey;
                 }
 
@@ -1363,7 +1376,20 @@ define([
                 } else if (root != null) {
                     // Si no hi ha cap element a l'estack es que es troba al mateix nivell que l'element root
 
-                    outTokens[i].parent = root.parent;
+                    // ALERTA[Xavi]! amb la implementació del sistema de wrappers el root serà el del wrapper,
+                    // aquest cas ja no es pot donar
+
+                    if (root.type === 'temp' || root.type === 'wrapper') {
+                        // S'ha assignat abans, codi per assegurar que és així
+                        if (outTokens[i].parent !== root.id) {
+                            console.error("check");
+                            alert("Comprovar perquè no s'ha assignat el parent");
+                        }
+                    } else {
+                        console.error("alerta! reemplaçat el parent pel parent del root");
+                        outTokens[i].parent = root.parent;
+                    }
+
                     // console.log("Es canvia el root pel del pare");
                 } else {
                     outTokens[i].parent = -1;
@@ -1459,7 +1485,7 @@ define([
 
 
 
-                if (first && root.type !== 'temp') {
+                if (first && (root.type !== 'temp' && root.type !== 'wrapper')) {
 
                     this.structure[root.id] = outTokens[i];
                     // console.log("S'ha afegit el token a l'estructura?", this.structure[root.id]);
@@ -1518,12 +1544,20 @@ define([
             // actualitzem el root, es passa com a referència
             // ALERTA[Xavi] canviar el node pel parent i establir el root com el nou id és el que fa que en actualitzar
             // s'actualitzi l'arbre
-            if (root.addedsiblings) {
-                root = this.structure[root.parent];
-                this.root = root.id;
-            } else {
-                root = this.structure[root.id];
-            }
+
+            // ALERTA[Xavi] com sempre tractem amb wrappers això ja no és necessari
+            // if (root.addedsiblings) {
+            //     root = this.structure[root.parent];
+            //     this.root = root.id;
+            // } else {
+            //     root = this.structure[root.id];
+            // }
+
+            // Actualitzem el root
+            this.structure[root.id] = root;
+
+            // Problema: sembla que els valors de la estructura no s'actualitzan amb els valor del root, conserva el child original
+            console.log("tokens? quin és el parent? perquè no hi ha child?", root, this.structure, outTokens);
         },
 
         _tokenize(text) {

@@ -25,11 +25,11 @@ define([
 
             declare.safeMixin(this, arguments);
 
-            console.log(this.style);
+            // console.log(this.style);
             // El dialog builder ja afegeix el width i el height
-            if (!this.style) {
-                this.style = "width:" + this.width + "px;";
-            }
+            // if (!this.style) {
+            //     this.style = "width:" + this.width + "px;";
+            // }
 
             // ALERTA! Només accepta l'alçada i amplada, la resta d'estils com min-width, min-height, etc. són descartats
             // Cal manipular-lo al startup

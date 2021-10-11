@@ -11,6 +11,7 @@ define([
 
         constructor: function (config, dispatcher) {
 
+            // console.error("WiocclStructureClone");
             this.setStructure(config.structure, config.root);
             this.dispatcher = dispatcher;
         },
