@@ -44,8 +44,13 @@ define([
             this.structure[key] = this.structure[root];
             this.structure[root] = wrapper;
 
-            for (let child in this.structure[key].children) {
-                this.structure[child].parent = key;
+            let children = this.structure[key].children;
+            console.log(children);
+            for (let child of children) {
+                let childId = typeof child == "string" ? child : child.id;
+                this.structure[childId].parent = key;
+                console.log("key", key);
+                console.log("Updated child:", childId,this.structure[childId]);
             }
 
             // siblings és un array d'ids de nodes temporals afegits
@@ -55,13 +60,13 @@ define([
         },
 
 
-        _createTree(root, outTokens) {
-            // console.log("_createTree, alerta! es el wrapper i NO s'està eliminant el root");
-
-            //this._removeChildren(root.id);
-
-            this.inherited(arguments);
-        },
+        // _createTree(root, outTokens) {
+        //     // console.log("_createTree, alerta! es el wrapper i NO s'està eliminant el root");
+        //
+        //     //this._removeChildren(root.id);
+        //
+        //     this.inherited(arguments);
+        // },
 
         canInsert: function(pos, node) {
             // console.log("Node?", node);

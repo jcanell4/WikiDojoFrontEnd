@@ -739,7 +739,7 @@ define([
 
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
 
-                // console.log(id, children, parent);
+                console.log(id, children, parent, this.structure);
                 if (this.structure[id].isClone) {
                     // if (context.getStructure()[id].isClone) {
                     continue;
@@ -1008,7 +1008,7 @@ define([
         // el pos map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
         _createPosMap: function (node, pos, outPosMap) {
 
-            // console.error("_createPosMap", item, pos);
+            // console.error("_createPosMap", node, pos);
             // Cal fer la conversió de &escapedgt; per \>
             let attrs = node.attrs;
             attrs = attrs.replaceAll('&escapedgt;', '\\>');
@@ -1211,48 +1211,49 @@ define([
             // alerta! cal conservar els childrens en algun cas?
 
 
+            // ALERTA! Això forma part del codi pels siblings (l'index era el punt d'inserció)
             // console.warn(node);
-            if (node.parent && node.type !== 'wrapper') {
-                this._removeChildren(node.id);
-
-                // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
-                let found = false;
-
-                for (let i = 0; i < this.structure[node.parent].children.length; i++) {
-
-                    // Cal tenir en compte els dos casos (chidlren com id o com nodes) ja que un cop es fa
-                    // a un update tots els childrens hauran canviat a nodes
-                    if (this.structure[node.parent].children[i] === node.id || this.structure[node.parent].children[i].id === node.id) {
-                        // console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
-                        this.structure[node.parent].children.splice(i, 1);
-                        node.index = i;
-                        found = true;
-                        break;
-                    }
-                }
-
-                // perquè passa això de vegades?
-                if (!found) {
-                    console.error("no s'ha trobat aquest node al propi pare");
-                    console.log(this.structure, node);
-                    alert("node no trobat al pare");
-                }
-
-                if (text.length === 0) {
-
-                    if (Number(node.id) === Number(this.root)) {
-                        alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
-                        // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
-                        console.error("TODO: determinar que fer amb això, el this.root no és correcte, era el this.root del DojoWioccl")
-                        this.root = node.parent;
-                    } else {
-                        alert("La branca s'ha eliminat.");
-                    }
-
-                    node = this.structure[node.parent];
-                    outTokens = [];
-                }
-            }
+            // if (node.parent && node.type !== 'wrapper') {
+            //     this._removeChildren(node.id);
+            //
+            //     // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
+            //     let found = false;
+            //
+            //     for (let i = 0; i < this.structure[node.parent].children.length; i++) {
+            //
+            //         // Cal tenir en compte els dos casos (chidlren com id o com nodes) ja que un cop es fa
+            //         // a un update tots els childrens hauran canviat a nodes
+            //         if (this.structure[node.parent].children[i] === node.id || this.structure[node.parent].children[i].id === node.id) {
+            //             // console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
+            //             this.structure[node.parent].children.splice(i, 1);
+            //             node.index = i;
+            //             found = true;
+            //             break;
+            //         }
+            //     }
+            //
+            //     // perquè passa això de vegades?
+            //     if (!found) {
+            //         console.error("no s'ha trobat aquest node al propi pare");
+            //         console.log(this.structure, node);
+            //         alert("node no trobat al pare");
+            //     }
+            //
+            //     if (text.length === 0) {
+            //
+            //         if (Number(node.id) === Number(this.root)) {
+            //             alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
+            //             // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
+            //             console.error("TODO: determinar que fer amb això, el this.root no és correcte, era el this.root del DojoWioccl")
+            //             this.root = node.parent;
+            //         } else {
+            //             alert("La branca s'ha eliminat.");
+            //         }
+            //
+            //         node = this.structure[node.parent];
+            //         outTokens = [];
+            //     }
+            // }
 
 
             this._createTree(node, outTokens, this.structure);
@@ -1265,13 +1266,9 @@ define([
         // i els tokens passats que són un vector d'elements que calr estructurar en forma d'arbre segons si es troben
         // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
-            // console.log("_createTree",root, outTokens);
+            console.log("_createTree",root, outTokens);
 
 
-            // TODO: Determinar si hi ha algún cas en que no s'hagin d'eliminar
-            if (root.type === 'wrapper') {
-                this._removeChildren(root.id);
-            }
 
             this.discardSiblings();
 
@@ -1282,6 +1279,23 @@ define([
 
 
             let stack = [];
+
+
+
+            let parent = root ? this.getNodeById(root.parent) : false;
+
+            if (root.type === 'wrapper') {
+                stack.push(root);
+                this._removeChildren(root.id);
+                root.children = [];
+            } else if (parent) {
+                // Eliminem del parent aquest node
+                // ALERTA! això no és correcte, perquè llavors es perd l'ordre
+                //this._removeNode(root.id);
+                stack.push(parent);
+            } else {
+                this._removeChildren(root.id);
+            }
 
             // ALERTA! TODO: Cal gestionar el token inicial, aquest no s'ha d'afegira l'arbre
             // i el seu tancament tampoc
@@ -1294,7 +1308,7 @@ define([
             let first = true;
 
             /// Aquest serà el valor a retornar si el root es null inicialment
-            let outRoot = null;
+            // let outRoot = null;
 
             // Si l'últim token és un salt de linia ho afegim al token anterior
             if (outTokens.length > 1 && outTokens[outTokens.length - 1].value === "\n") {
@@ -1306,9 +1320,13 @@ define([
             let errorDetected = false;
 
             // Si el root és temporal o wrapper eliminem els fills
-            if (root.type === 'temp' || root.type === 'wrapper') {
-                root.children = [];
-            }
+            // hi ha algun cas en que s'hagi de conservar els fills encara que no sigui temp ni wrapper?
+            // TODO: aplicar a tots els casos?
+            // if (root.type === 'temp' || root.type === 'wrapper') {
+            //     console.log("root", root);
+            //     this._removeChildren(root.id);
+                // root.children = [];
+            // }
 
             for (let i in outTokens) {
                 // console.log(i, outTokens[i]);
@@ -1322,32 +1340,40 @@ define([
 
                 // ALERTA! Gestionar el void! considerar separar en les classes temp i void!!
 
+                let currentId;
                 if (root.type === 'void' && stack.length === 0) {
                     // només pot haver 1 node, no s'accepten siblings, es sustitueix el root per aquest
                     // Alerta, com es reemplaça el root, el element deixa de ser 'void' i es comporta com
                     // un node normal
 
-                    outTokens[i].id = root.id;
+                    currentId = root.id;
+                    outTokens[i].id = currentId;
                     outTokens[i].parent = root.parent;
                     outTokens[i].solo = true; // això ens permet identificar que aquest node ha d'anar sol (deshabilita els botons d'insert)
                     root = outTokens[i];
 
 
 
-                } if ((root.type === 'temp' || root.type === 'wrapper') && stack.length === 0) {
+                } if ((root.type === 'temp' && stack.length === 0)  // TODO: Determinar si el temp serà length 0 o 1
+                    || (root.type === 'wrapper' && stack.length === 1)) {
 
-                    outTokens[i].id = nextKey;
+                    currentId = nextKey;
+                    outTokens[i].id = currentId;
                     root.children.push(outTokens[i].id);
                     outTokens[i].parent = root.id;
 
                 } else if (i === '0') {
-                    outTokens[i].id = root.id;
+
+                    currentId = root.id;
+                    outTokens[i].id = currentId;
                     outTokens[i].parent = root.parent;
                     // this.root = tokens[i].id;
 
                 } else {
                     // console.log(outTokens, stack);
-                    outTokens[i].id = nextKey;
+
+                    currentId = nextKey;
+                    outTokens[i].id = currentId;
                 }
 
                 outTokens[i].children = [];
@@ -1357,6 +1383,10 @@ define([
                     // console.log("Tancant", outTokens[i].value)
                     outTokens[i].type = "wioccl";
                     let top = stack.pop();
+
+                    // Com que sempre hi ha un node root que no es pot tancar (temp, wrapper, etc.) no cal control·lar si hi ha parent
+
+                    outTokens[i].parent = stack.id;
 
                     if (!top) {
                         // Aquest error es produeix quan s'afegeix l'apertura d'una instrucció però encara no s'ha
@@ -1371,11 +1401,37 @@ define([
                     continue;
                 }
 
-
                 if (stack.length > 0) {
-                    stack[stack.length - 1].children.push(nextKey);
-                    outTokens[i].parent = stack[stack.length - 1].id
-                } else if (root != null) {
+
+                    console.log("parent anterior:", outTokens[i].parent);
+                    console.log("parent nou:", stack[stack.length-1].id);
+                    outTokens[i].parent = stack[stack.length-1].id;
+
+                    let lastChildren = stack[stack.length - 1].children;
+
+                    // els childs poden ser objectes o strings
+
+                    // si no es troba entre els children l'afegim al final
+                    let filter = (element) => {
+                        let id =  typeof element === 'string' ? element : element.id;
+                        return id === currentId;
+                    };
+
+                    if (!lastChildren.some(filter)) {
+                        console.log("Afegint child", currentId);
+                        stack[stack.length - 1].children.push(currentId);
+                    } else {
+                        console.log("Trobat child amb id (no afegim)", currentId);
+                    }
+                } else if (root !== null) {
+
+                    // cas 1: s'ha seleccionat el wrapper (root és el wrapper)
+                    //      * hem de fer push d'aquest element als childrens del wrapper
+                    //      !!! si el parent del node és el wrapper s'ha d'afegir aquest a l'stack <-- fet a sobre
+                    // cas 2: s'ha seleccionat un fill directe del wrapper
+
+
+
                     // Si no hi ha cap element a l'estack es que es troba al mateix nivell que l'element root
 
                     // ALERTA[Xavi]! amb la implementació del sistema de wrappers el root serà el del wrapper,
@@ -1408,6 +1464,7 @@ define([
                 // console.log(root !== null,  root.index,  outTokens[i].parent, root.parent);
 
 
+                // TODO: arreglar aixo
                 if (root !== null && root.index !== undefined && outTokens[i].parent === root.parent
                     && (Number(i) < outTokens.length - 1 || outTokens[i].value !== "\n")) {
                     let id = outTokens[i].id;
@@ -1491,26 +1548,23 @@ define([
 
 
 
+                this.structure[currentId] = outTokens[i];
 
                 if (first && (root.type !== 'temp' && root.type !== 'wrapper')) {
-
-                    this.structure[root.id] = outTokens[i];
-                    // console.log("S'ha afegit el token a l'estructura?", this.structure[root.id]);
 
                     first = false;
 
                 } else {
-                    this.structure[nextKey] = outTokens[i];
                     nextKey = (Number(nextKey) + 1) + "";
                 }
 
                 // Si comprovem el node actual en lloc del parent es pot actualitzar l'arbre del diàleg (però falla
                 // la resposta del servidor, el contingut no és correcte)
 
-                let checkId = this.structure[root.id]['parent'] ? this.structure[root.id]['parent'] : '0';
+                // let checkId = this.structure[root.id]['parent'] ? this.structure[root.id]['parent'] : '0';
 
 
-                let siblingsAddedToThisNode = siblings > 1 && Number(root.id) === Number(this.root);
+                // let siblingsAddedToThisNode = siblings > 1 && Number(root.id) === Number(this.root);
 
                 // console.log("checkid, siblings added to this node?", checkId, siblingsAddedToThisNode, stack.length)
 
@@ -1520,20 +1574,20 @@ define([
                 // ALERTA! Cal controlar que no s'afegeixin siblings al tipus void
 
 
-                if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length ===0 ) {
-                    root.addedsiblings = true;
-
-                } else if (siblingsAddedToThisNode && Number(checkId)===0 && stack.length === 0) {
-
-                    // ALERTA! si permetem modificar les branques directes del root retornaria el document complet del
-                    // servidor i actualment el retorn no és correcte. A més a més es perd qualsevol canvi fet no desat
-                    // de tot el document, no només del diàleg
-
-                    alert("Error no recuperable: no es poden afegir elements germans en aquest nivell, utilitza els botons de l'editor principal per insertar-los");
-                    console.error("No esta permés afegir siblings al root ni als seus descendents directes.");
-                    errorDetected = true;
-
-                }
+                // if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length ===0 ) {
+                //     root.addedsiblings = true;
+                //
+                // } else if (siblingsAddedToThisNode && Number(checkId)===0 && stack.length === 0) {
+                //
+                //     // ALERTA! si permetem modificar les branques directes del root retornaria el document complet del
+                //     // servidor i actualment el retorn no és correcte. A més a més es perd qualsevol canvi fet no desat
+                //     // de tot el document, no només del diàleg
+                //
+                //     alert("Error no recuperable: no es poden afegir elements germans en aquest nivell, utilitza els botons de l'editor principal per insertar-los");
+                //     console.error("No esta permés afegir siblings al root ni als seus descendents directes.");
+                //     errorDetected = true;
+                //
+                // }
 
             }
 
@@ -1552,7 +1606,7 @@ define([
             // ALERTA[Xavi] canviar el node pel parent i establir el root com el nou id és el que fa que en actualitzar
             // s'actualitzi l'arbre
 
-            // ALERTA[Xavi] com sempre tractem amb wrappers això ja no és necessari
+            // ALERTA[Xavi] com sempre tractem amb wrappers això ja no és necessari. NO FEM LA PUJADA DEL ROOT
             // if (root.addedsiblings) {
             //     root = this.structure[root.parent];
             //     this.root = root.id;
@@ -1710,6 +1764,7 @@ define([
                 //     $node.remove();
                 // }
 
+                console.log("Eliminant element de l'estructura", childId);
                 delete (this.structure[childId]);
             }
 

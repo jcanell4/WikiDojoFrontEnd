@@ -63,9 +63,19 @@ define([
             // });
 
             this.structure.on('structure_change', function() {
-                // console.log("structure_change");
+                console.log("structure_change");
                 // alert("structure_change");
-                context.updateCallback(context.editor);
+                // això crida al DojoWioccl._update
+                //context.updateCallback(context.editor);
+
+
+                let wiocclNode = context.structure.getNodeById(context.editor.wioccl.id);
+                context.structure.updating = true;
+                // la diferència amb el _update és que no fem el parse, i ho fem sobre la estructura wrappeada
+                context.setData(context.structure.getNodeById(context.structure.root), wiocclNode);
+                context.editor.resetOriginalContentState();
+                context.structure.updating = false;
+
 
             });
 
@@ -279,24 +289,29 @@ define([
                     // actualitzem qualsevol canvi pendent abans
                     context._updatePendingChanges_Field2Detail()
 
-                    if (context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges) {
-                        let descartar = confirm("S'han detectat canvis, vols descartar-los?");
-                        if (!descartar) {
-                            return false;
-                        }
+                    // No restaurem les dades, qualsevol canvi és per manent, es descarten si es tanca
+                    // el dialeg sense desar (ja no hi ha botó d'actualitzar)
 
-                        structure.restore();
-
-                        context._fieldChanges = false;
-
-                    }
+                    // if (context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges) {
+                    //     let descartar = confirm("S'han detectat canvis, vols descartar-los?");
+                    //     if (!descartar) {
+                    //         return false;
+                    //     }
+                    //
+                    //     structure.restore();
+                    //
+                    //     context._fieldChanges = false;
+                    //
+                    // }
 
                     // Alerta! aquest és l'item seleccionat, no correspón amb el restaurat i sobreescriu el backup
                     // ALERTA[Xavi] no es pot fer servir el item directament, tot i que el backup crea una copia,
                     // cal recuperar l'element de la estructura.
 
                     let wiocclNode = structure.getNodeById(item.id);
-                    structure.backup(wiocclNode);
+
+                    // No fem backup perquè sempre apliquem els canvis
+                    // structure.backup(wiocclNode);
 
                     structure.rebuildPosMap(wiocclNode);
 
@@ -767,10 +782,10 @@ define([
 
                         this.structure.updating = false;
 
+                        // TODO: revisar si no cal fer el parse perquè ja es fa automàticament, es la raó per la que s'ha cridat
+                        // al callback?
                         this.structure.parse(editor.getValue(), editor.wioccl);
 
-                        console.log("Com ha quedat la estructura?", this.structure);
-                        alert("stop");
                         this.setData(this.structure.getNodeById(refId), rootWiocclNode);
                     }
 
@@ -836,7 +851,7 @@ define([
 
                 tree.push(rootWiocclNode);
 
-                // console.log(tree, root, selected);
+                console.log(tree, rootWiocclNode, selectedWiocclNode);
                 this.updateTree(tree, rootWiocclNode, selectedWiocclNode);
             }
 
@@ -905,6 +920,8 @@ define([
             }
 
             // Refresquem el wioccl associat a l'editor amb el valor actual
+            console.log("wioccl a l'editor:", this.editor.wioccl)
+            console.log("wioccl a l'estructura:", this.structure.getNodeById(this.editor.wioccl.id));
             this.editor.wioccl = this.structure.getNodeById(this.editor.wioccl.id);
 
 
