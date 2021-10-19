@@ -45,12 +45,12 @@ define([
             this.structure[root] = wrapper;
 
             let children = this.structure[key].children;
-            console.log(children);
+            // console.log(children);
             for (let child of children) {
                 let childId = typeof child == "string" ? child : child.id;
                 this.structure[childId].parent = key;
-                console.log("key", key);
-                console.log("Updated child:", childId,this.structure[childId]);
+                // console.log("key", key);
+                // console.log("Updated child:", childId,this.structure[childId]);
             }
 
             // siblings és un array d'ids de nodes temporals afegits

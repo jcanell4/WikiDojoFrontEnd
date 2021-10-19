@@ -739,7 +739,7 @@ define([
 
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
 
-                console.log(id, children, parent, this.structure);
+                // console.log(id, children, parent, this.structure);
                 if (this.structure[id].isClone) {
                     // if (context.getStructure()[id].isClone) {
                     continue;
@@ -1266,7 +1266,7 @@ define([
         // i els tokens passats que són un vector d'elements que calr estructurar en forma d'arbre segons si es troben
         // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
-            console.log("_createTree",root, outTokens);
+            // console.log("_createTree",root, outTokens);
 
 
 
@@ -1329,7 +1329,7 @@ define([
             // }
 
             for (let i in outTokens) {
-                // console.log(i, outTokens[i]);
+                console.log(i, outTokens[i]);
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 // Si l'arrel és temporal el primer token és fill de l'arrel
@@ -1403,8 +1403,8 @@ define([
 
                 if (stack.length > 0) {
 
-                    console.log("parent anterior:", outTokens[i].parent);
-                    console.log("parent nou:", stack[stack.length-1].id);
+                    // console.log("parent anterior:", outTokens[i].parent);
+                    // console.log("parent nou:", stack[stack.length-1].id);
                     outTokens[i].parent = stack[stack.length-1].id;
 
                     let lastChildren = stack[stack.length - 1].children;
@@ -1418,10 +1418,10 @@ define([
                     };
 
                     if (!lastChildren.some(filter)) {
-                        console.log("Afegint child", currentId);
+                        // console.log("Afegint child", currentId);
                         stack[stack.length - 1].children.push(currentId);
                     } else {
-                        console.log("Trobat child amb id (no afegim)", currentId);
+                        // console.log("Trobat child amb id (no afegim)", currentId);
                     }
                 } else if (root !== null) {
 
@@ -1464,7 +1464,7 @@ define([
                 // console.log(root !== null,  root.index,  outTokens[i].parent, root.parent);
 
 
-                // TODO: arreglar aixo
+                // TODO: arreglar aixo <-- sembla que no es crida, ja no es fa servir?
                 if (root !== null && root.index !== undefined && outTokens[i].parent === root.parent
                     && (Number(i) < outTokens.length - 1 || outTokens[i].value !== "\n")) {
                     let id = outTokens[i].id;
@@ -1478,7 +1478,7 @@ define([
                         if (this.siblings === undefined) {
                             this.siblings = [];
                         }
-                        // console.log("Afegint sibling", id);
+                        console.log("Afegint sibling", id);
                         this.siblings.push(id);
                     }
 
@@ -1613,6 +1613,8 @@ define([
             // } else {
             //     root = this.structure[root.id];
             // }
+
+
 
             // Actualitzem el root
             this.structure[root.id] = root;

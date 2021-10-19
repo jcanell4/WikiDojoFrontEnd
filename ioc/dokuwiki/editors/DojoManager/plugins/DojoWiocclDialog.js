@@ -52,32 +52,45 @@ define([
             // this._rebuildPosMap(this.source.getStructure()[this.refId]);
             this.structure.rebuildPosMap(wiocclNode);
             // this._rebuildPosMap(wioccl);
-            // let $updateButton = jQuery(this.updateButtonNode);
+            let $updateButton = jQuery(this.updateButtonNode);
             let $saveButton = jQuery(this.saveButtonNode);
 
             let context = this;
 
-            // $updateButton.on('click', function () {
-            //     // Alerta, el context d'execució en afegir el callback al objecte de configuració
-            //     context.updateCallback(context.editor);
-            // });
-
-            this.structure.on('structure_change', function() {
-                console.log("structure_change");
-                // alert("structure_change");
-                // això crida al DojoWioccl._update
-                //context.updateCallback(context.editor);
-
-
-                let wiocclNode = context.structure.getNodeById(context.editor.wioccl.id);
-                context.structure.updating = true;
-                // la diferència amb el _update és que no fem el parse, i ho fem sobre la estructura wrappeada
-                context.setData(context.structure.getNodeById(context.structure.root), wiocclNode);
-                context.editor.resetOriginalContentState();
-                context.structure.updating = false;
-
-
+            $updateButton.on('click', function () {
+                // Alerta, el context d'execució en afegir el callback al objecte de configuració (pel principal és DojoWioccl)
+                context.updateCallback(context.editor);
             });
+
+            // this.structure.on('structure_change', function() {
+            //     console.log("structure_change");
+            //     // alert("structure_change");
+            //     // això crida al DojoWioccl._update
+            //     //context.updateCallback(context.editor);
+            //
+            //
+            //     let wiocclNode = context.structure.getNodeById(context.editor.wioccl.id);
+            //     console.log("node que reconstruim?", wiocclNode, context.structure);
+            //     context.structure.updating = true;
+            //     // la diferència amb el _update és que no fem el parse, i ho fem sobre la estructura wrappeada
+            //     context.setData(context.structure.getNodeById(context.structure.root), wiocclNode);
+            //
+            //
+            //
+            //     let auxContent = context.structure.getCode(wiocclNode);
+            //     console.log(context.editor.getPosition());
+            //     let cursor = context.editor.getPosition();
+            //     // let auxContent = this.source.getCode(item, this.structure);
+            //     console.log("quine és el codi a assignar??", auxContent);
+            //
+            //     // alert("Stop, check content");
+            //     context.editor.setValue(auxContent);
+            //     context.editor.setPosition(cursor);
+            //
+            //
+            //     context.structure.updating = false;
+            //     context.editor.resetOriginalContentState();
+            // });
 
             $saveButton.on('click', function () {
                 // Alerta, el context d'execució en afegir el callback al objecte de configuració
@@ -289,8 +302,8 @@ define([
                     // actualitzem qualsevol canvi pendent abans
                     context._updatePendingChanges_Field2Detail()
 
-                    // No restaurem les dades, qualsevol canvi és per manent, es descarten si es tanca
-                    // el dialeg sense desar (ja no hi ha botó d'actualitzar)
+                    // No restaurem les dades, qualsevol canvi a l'estructura és permanent, es descarten si es tanca
+                    // el dialeg sense desar
 
                     // if (context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges) {
                     //     let descartar = confirm("S'han detectat canvis, vols descartar-los?");
@@ -784,6 +797,7 @@ define([
 
                         // TODO: revisar si no cal fer el parse perquè ja es fa automàticament, es la raó per la que s'ha cridat
                         // al callback?
+                        this.structure.restore();
                         this.structure.parse(editor.getValue(), editor.wioccl);
 
                         this.setData(this.structure.getNodeById(refId), rootWiocclNode);
@@ -962,6 +976,7 @@ define([
 
 
             let value = this.editor.getValue();
+            console.log("Value del que es fa el parse??", value);
 
             if (value.length === 0) {
                 // TODO: buidar els atributs

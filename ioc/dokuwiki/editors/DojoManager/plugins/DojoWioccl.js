@@ -307,10 +307,14 @@ define([
         },
 
         _update: function (editor) {
+            console.log("Update!");
             // Referència a la estructura del diàleg
             let structure = this.structure;
             structure.updating = true;
             structure.discardSiblings();
+
+            // TEST: restaurar la estructura abans de fer el parse
+            structure.restore();
 
             let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
             this.setData(structure.getNodeById(structure.root), wiocclNode);
