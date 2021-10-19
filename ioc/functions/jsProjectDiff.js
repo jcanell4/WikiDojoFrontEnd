@@ -115,7 +115,11 @@ define([], function () {
         
         parseStringToArrayOrObject: function(elem) {
             try {
-                ret = JSON.parse(elem);
+                if(elem){
+                    ret = JSON.parse(elem);
+                }else{
+                    ret = "";
+                }
             }catch(err) {
                 ret = (elem===undefined) ? "" : elem;
             }
