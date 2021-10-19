@@ -55,6 +55,7 @@ define([
             }
 
             this.tableType = args.tableType;
+            this.pluginType = args.tableType;
 
             // var config = {
             //     type: args.type,
@@ -139,6 +140,11 @@ define([
 
             if (value != null) {
                 this._showDialog(value, range);
+
+                // Restablim el tipus quan s'ha fet click al botó
+                // ALERTA! dins de _showDialog el tipus canvia segons el valor, i per defecte mai és multiline
+                this.tableType = this.pluginType;
+
             }
 
         },
@@ -254,6 +260,7 @@ define([
         },
 
         _showDialog: function (value, range) {
+
             // console.log("Range:", range, "Value:", value);
             // Alerta, el value ha de ser un objecte JSON amb els valors i la estructura de la taula
 
@@ -668,7 +675,10 @@ define([
             standby.startup();
             standby.show();
 
+            // ALERTA![Xavi] quan es crida a parseContentData s'identifica si comença amb [ i s'assigna el tipus multilinia
+            // Aquest valor és sobreescrit si s'ha premut el botó (al processFull)
             var contentData = this.parseContentData(value);
+            // console.log("Post parseContentData", this.tableType, this.pluginType);
 
             var store = new ItemFileWriteStore({data: contentData.data});
             var layout = contentData.layout;
@@ -1123,7 +1133,7 @@ define([
          * @returns {Array}
          */
         parseData: function (items, layout, removedColumns) {
-
+            // console.log("parseData, tableType?", this.tableType);
             // console.log(items, layout, removedColumns);
 
 
@@ -1281,10 +1291,11 @@ define([
             var rowsCounter = 0;
             var columns = 0;
 
-            if (!this.tableType) {
+
+            // Si no és accounting l'establim com a normal per defecte
+            if (this.tableType !== ACCOUNTING) {
                 this.tableType = NORMAL;
             }
-
 
             for (var i = 0; i < lines.length; i++) {
 

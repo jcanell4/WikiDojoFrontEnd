@@ -119,7 +119,7 @@ define([
             for (var i = 0; i < this.sections.length; i++) {
                 let cssClass = "";
 
-                console.log("mínimal?", this.minimal);
+                // console.log("mínimal?", this.minimal);
                 if (this.minimal) {
                     cssClass = "minimal";
                 }
