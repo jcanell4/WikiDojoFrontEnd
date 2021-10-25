@@ -154,7 +154,9 @@ define([
                 for (var i = 0; i < auxOptions.length; i++) {
                     auxOptions[i].selected = false;
                 }
-                var selectedOptions = this.$field.val().split(config.outputSeparator);
+
+                var separator = config.outputSeparatorSplitter ? new RegExp(config.outputSeparatorSplitter) : config.outputSeparator;
+                var selectedOptions = this.$field.val().split(separator);
                 var optionsToUpdate = [];
 
                 for (var i = 0; i < auxOptions.length; i++) {

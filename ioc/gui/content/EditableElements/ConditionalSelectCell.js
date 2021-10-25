@@ -40,7 +40,8 @@ define([
                     return;
                 }
 
-                var tokens = jQuery(this).val().split(config.outputSeparator)
+                var separator = config.outputSeparatorSplitter ? new RegExp(config.outputSeparatorSplitter) : config.outputSeparator;
+                var tokens = jQuery(this).val().split(separator)
 
                 var validated = true;
 
