@@ -53,6 +53,10 @@ define([
                         target: tds + (self.getSectok ? self.getSectok() : '0')+"/"+self._updateParams(),
 
                         getChildren: function (object) {
+                            if (!object.id) {
+                                return [];
+                            }
+
                             return this.get(object.id).then(
                                 function (fullObject) {
                                     return fullObject.children;
