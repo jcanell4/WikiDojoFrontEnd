@@ -1284,6 +1284,20 @@ define([
 
             let parent = root ? this.getNodeById(root.parent) : false;
 
+            // Si els children del parent o el root són objectes es guarda la informació antiga,
+            // cal canviar-los per ids
+            for (let i=0; i<parent.children.length; i++){
+                if (typeof parent.children[i] !== "string") {
+                    parent.children[i] = parent.children[i].id;
+                }
+            }
+
+            for (let i=0; i<root.children.length; i++){
+                if (typeof root.children[i] !== "string") {
+                    root.children[i] = root.children[i].id;
+                }
+            }
+
             if (root.type === 'wrapper') {
                 stack.push(root);
                 this._removeChildren(root.id);
@@ -1368,6 +1382,8 @@ define([
                     outTokens[i].id = currentId;
                     outTokens[i].parent = root.parent;
                     // this.root = tokens[i].id;
+                    // Reemplaçem el root
+                    root = outTokens[i];
 
                 } else {
                     // console.log(outTokens, stack);
