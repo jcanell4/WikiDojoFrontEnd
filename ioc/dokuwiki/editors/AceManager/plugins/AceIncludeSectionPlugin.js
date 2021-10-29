@@ -10,11 +10,12 @@ define([
     "dijit/layout/ContentPane",
     "dijit/form/Form",
     "dijit/form/TextBox",
+    "dijit/form/CheckBox",
     "dijit/form/Button",
     "ioc/gui/NsTreeContainer",
     "ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin"
-], function (declare,registry,on,dom,domConstruct,string,Dialog,BorderContainer,ContentPane,Form,TextBox,Button,
-             NsTreeContainer,AbstractAcePlugin) {
+], function (declare,registry,on,dom,domConstruct,string,Dialog,BorderContainer,ContentPane,
+             Form,TextBox,CheckBox,Button,NsTreeContainer,AbstractAcePlugin) {
 
     var request;
 
@@ -36,13 +37,6 @@ define([
             this.enabled = true;
         },
 
-        // _getEditor: function () {
-        //
-        //     var id = this.dispatcher.getGlobalState().getCurrentId();
-        //     var contentTool = this.dispatcher.getContentCache(id).getMainContentTool();
-        //     return contentTool.getCurrentEditor();
-        // },
-
         _showDialog: function () {
             var self = this;
             var editor = this.getEditor();
@@ -53,7 +47,7 @@ define([
                 dialog = new Dialog({
                     id: "includePageSyntaxDocumentDlg",
                     title: "Cerca de la secció d'una pàgina a incloure",
-                    style: "width: 540px; height: 350px;",
+                    style: "height: 410px; width: 540px;",
                     page: editor.id
                 });
 
@@ -68,7 +62,7 @@ define([
 
                 //Creació del marc contenidor del diàleg
                 var bc = new BorderContainer({
-                    style: "height: 300px; width: 520px;"
+                    style: "height: 360px; width: 520px;"
                 });
 
                 // create a ContentPane as the left pane in the BorderContainer
@@ -81,7 +75,7 @@ define([
                 //Creació del marc de la dreta
                 var bcDreta = new BorderContainer({
                     region: "right",
-                    style: "height: 300px; width: 260px;"
+                    style: "height: 360px; width: 260px;"
                 });
                 bc.addChild(bcDreta);
 
@@ -95,7 +89,7 @@ define([
                 // ContentPane a la part inferior del BorderContainer
                 var cpBottom = new ContentPane({
                     region: "bottom",
-                    style: "height:70px; width:245px"
+                    style: "height:130px; width:245px"
                 });
                 bcDreta.addChild(cpBottom);
 
@@ -148,13 +142,61 @@ define([
 
                 var form = new Form({id:"formIncludeSyntaxDialog"}).placeAt(divdretabaixa);
 
+                //Checkbox 'amagar Dates'
+                var divAmagarDates = domConstruct.create('div', {
+                    className: 'divAmagarDates'
+                },form.containerNode);
+
+                var AmagarDates = new CheckBox({
+                    id: 'chkAmagarDates',
+                    value: 'nomdate,nodate',
+                    checked: false
+                }).placeAt(divAmagarDates);
+                dialog.chkAmagarDates = AmagarDates;
+
+                domConstruct.create('label', {
+                    innerHTML: ' amagar Dates'
+                },divAmagarDates);
+
+                //Checkbox 'amagar Títol'
+                var divAmagarTitol = domConstruct.create('div', {
+                    className: 'divAmagarTitol'
+                },form.containerNode);
+
+                var AmagarTitol = new CheckBox({
+                    id: 'chkAmagarTitol',
+                    value: 'noheader',
+                    checked: false
+                }).placeAt(divAmagarTitol);
+                dialog.chkAmagarTitol = AmagarTitol;
+
+                domConstruct.create('label', {
+                    innerHTML: ' amagar Títol'
+                },divAmagarTitol);
+
+                //Checkbox 'amagar Apartats'
+                var divAmagarApartats = domConstruct.create('div', {
+                    className: 'divAmagarApartats'
+                },form.containerNode);
+
+                var AmagarApartats = new CheckBox({
+                    id: 'chkAmagarApartats',
+                    value: 'firstsectiononly',
+                    checked: false
+                }).placeAt(divAmagarApartats);
+                dialog.chkAmagarApartats = AmagarApartats;
+
+                domConstruct.create('label', {
+                    innerHTML: ' amagar Apartats'
+                },divAmagarApartats);
+
                 //Un camp de text per inclore la ruta de la pàgina#secció
                 var divPageSectionName = domConstruct.create('div', {
                     className: 'divPageSectionName'
                 },form.containerNode);
 
                 domConstruct.create('label', {
-                    innerHTML: 'Pàgina i secció seleccionada'
+                    innerHTML: '<br>Pàgina i secció seleccionades'
                 },divPageSectionName);
 
                 var PageSectionName = new TextBox({
@@ -176,7 +218,14 @@ define([
                     label: 'Acceptar',
                     onClick: function(){
                         dialog.hide();
-                        self.insert(selectedPage.section);
+                        var response = selectedPage.section + "&";
+                        registry.toArray().forEach(function(widget) {
+                            if (widget.type === 'checkbox' && widget.checked === true) {
+                                response += widget.value + ",";
+                            }
+                        });
+                        response = response.replace(/[&,]?$/, ""); //elimina el '&' o la ',' del final
+                        self.insert(response);
                     }
                 }).placeAt(botons);
 
