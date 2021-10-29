@@ -218,13 +218,17 @@ define([
                     label: 'Acceptar',
                     onClick: function(){
                         dialog.hide();
-                        var response = selectedPage.section + "&";
+                        var response = "";
                         registry.toArray().forEach(function(widget) {
                             if (widget.type === 'checkbox' && widget.checked === true) {
                                 response += widget.value + ",";
                             }
                         });
-                        response = response.replace(/[&,]?$/, ""); //elimina el '&' o la ',' del final
+                        if (response !== "") {
+                            response = response.replace(/,?$/, ""); //elimina la ',' del final
+                            response = "&flags=" + response;
+                        }
+                        response = selectedPage.section + response;
                         self.insert(response);
                     }
                 }).placeAt(botons);
