@@ -149,7 +149,7 @@ define([
 
                 var AmagarDates = new CheckBox({
                     id: 'chkAmagarDates',
-                    value: 'nomdate,nodate',
+                    value: 'nomdate&nodate',
                     checked: false
                 }).placeAt(divAmagarDates);
                 dialog.chkAmagarDates = AmagarDates;
@@ -187,7 +187,7 @@ define([
                 dialog.chkAmagarApartats = AmagarApartats;
 
                 domConstruct.create('label', {
-                    innerHTML: ' amagar Apartats'
+                    innerHTML: ' amagar Subapartats'
                 },divAmagarApartats);
 
                 //Un camp de text per inclore la ruta de la pàgina#secció
@@ -218,17 +218,13 @@ define([
                     label: 'Acceptar',
                     onClick: function(){
                         dialog.hide();
-                        var response = "";
+                        var response = selectedPage.section + "&";
                         registry.toArray().forEach(function(widget) {
                             if (widget.type === 'checkbox' && widget.checked === true) {
-                                response += widget.value + ",";
+                                response += widget.value + "&";
                             }
                         });
-                        if (response !== "") {
-                            response = response.replace(/,?$/, ""); //elimina la ',' del final
-                            response = "&flags=" + response;
-                        }
-                        response = selectedPage.section + response;
+                        response = response.replace(/[&,]?$/, ""); //elimina el '&' o la ',' del final
                         self.insert(response);
                     }
                 }).placeAt(botons);
