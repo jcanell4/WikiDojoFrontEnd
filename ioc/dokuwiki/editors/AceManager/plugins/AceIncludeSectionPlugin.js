@@ -224,7 +224,7 @@ define([
                                 response += widget.value + "&";
                             }
                         });
-                        response = response.replace(/[&,]?$/, ""); //elimina el '&' o la ',' del final
+                        response = response.replace(/&?$/, ""); //elimina el '&' del final
                         self.insert(response);
                     }
                 }).placeAt(botons);
