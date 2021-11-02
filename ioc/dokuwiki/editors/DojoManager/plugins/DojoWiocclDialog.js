@@ -22,6 +22,22 @@ define([
 
     let counter = 0;
 
+    // TODO: Extreure a algun lloc més adient
+    function setCursorPosition(element, pos) {
+        if (element.setSelectionRange) {
+            element.setSelectionRange(pos, pos);
+        } else if (element.createTextRange) {
+            let range = element.createTextRange();
+            range.collapse(true);
+            if(pos < 0) {
+                pos = $(element).val().length + pos;
+            }
+            range.moveEnd('character', pos);
+            range.moveStart('character', pos);
+            range.select();
+        }
+    }
+
     // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
     require(["ioc/dokuwiki/editors/AceManager/AceEditorFullFacade"], function (AuxClass) {
         AceFacade = AuxClass;
@@ -611,8 +627,13 @@ define([
             // let auxContent = this.source.getCode(item, this.structure);
 
             if (this.editor.getValue() !== auxContent) {
+                // ALERTA! Això es va afegir per intentar restaurar el focus als inputs, però no funciona
+                // let focusedElement = jQuery(document.activeElement);
+                // let cursorPosition = focusedElement.get(0).selectionStart;
                 this.editor.setValue(auxContent);
                 this.dirty = true;
+                // focusedElement.focus();
+                // setCursorPosition(focusedElement.get(0), cursorPosition);
 
                 this.editor.resetOriginalContentState();
             }
@@ -912,23 +933,34 @@ define([
             });
 
 
-            $fields.find('input, textarea').on('input change', function (e) {
+            $fields.find('input, textarea').on('change', function (e) {
+            // $fields.find('input, textarea').on('input change', function (e) {
                 context._fieldChanges = true;
 
-                // console.log("es input o es change?",e.type );
-                if (UPDATE_TIME === 0 || e.type === 'change') {
-                    context._updatePendingChanges_Field2Detail();
+                // ALERTA! Descartada l'actualització mitjançant el timer (i l'input),
+                // ara només respon al change, perquè amb el input es perd
+                // el focus real quan s'actualitza el detall però no es dispara l'esdeveniment blur per
+                // detectar-lo i no es pot fer un refocus (ho ignora)
 
-                } else {
-                    // } else if (!context._pendingChanges_Field2Detail) {
-                    // Refresquem el timer per evitar la perdua de focus
-                    clearTimeout(context.timerId_Field2Detail);
-                    context.timerId_Field2Detail = setTimeout(context._updatePendingChanges_Field2Detail.bind(context), UPDATE_TIME);
-                    context._pendingChanges_Field2Detail = true;
-                }
+                // console.log("es input o es change?",e.type );
+                // if (UPDATE_TIME === 0 || (e.type === 'change' && !this.updatingFields)) {
+
+                context._pendingChanges_Field2Detail = true
+                context._updatePendingChanges_Field2Detail();
+
+                // ALERTA! Descartada l'actualització mitjançant el timer,
+                // ara només respon al change, perquè amb el input es perd
+                // el focus real quan s'actualitza el detall però no es dispara l'esdeveniment blur per
+                // detectar-lo i no es pot fer un refocus (ho ignora)
                 // } else {
-                //     // console.log('pending changes?', context._pendingChanges_Field2Detail);
+                //     // } else if (!context._pendingChanges_Field2Detail) {
+                //     // Refresquem el timer per evitar la perdua de focus
+                //     console.log("reset timeout");
+                //     clearTimeout(context.timerId_Field2Detail);
+                //     context.timerId_Field2Detail = setTimeout(context._updatePendingChanges_Field2Detail.bind(context), UPDATE_TIME);
+                //     context._pendingChanges_Field2Detail = true;
                 // }
+
             });
 
             $attrContainer.append($fields);
@@ -995,7 +1027,11 @@ define([
             }
 
 
+
+
             let $attrContainer = jQuery(this.attrContainerNode);
+
+
 
             // let context = this;
 
@@ -1051,10 +1087,10 @@ define([
 
             this._updateDetail(this.editor.wioccl, true);
 
-
             this._pendingChanges_Field2Detail = false;
 
             clearInterval(this.timerId_Field2Detail);
+
         },
 
         _updatePendingChanges_Detail2Field: function () {
