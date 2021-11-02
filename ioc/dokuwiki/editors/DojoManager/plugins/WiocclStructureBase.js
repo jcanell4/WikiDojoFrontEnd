@@ -742,7 +742,7 @@ define([
 
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
 
-                // console.log(id, children, parent, this.structure);
+                console.log(id, children, parent, this.structure);
                 if (this.structure[id].isClone) {
                     // if (context.getStructure()[id].isClone) {
                     continue;
@@ -1009,7 +1009,7 @@ define([
             let auxParent;
 
             // Si el item seleccionat és el wrapper no cal cercar el parent, aquest és el node que conté tot
-            if (item.type === "wrapper") {
+            if (item.type === "wrapper" || item.type === "temp") {
                 auxParent = item;
             } else {
                 auxParent = this.getNodeById(item.parent);
@@ -1188,13 +1188,15 @@ define([
         },
 
         _purge: function (node) {
-            // console.log("purging:", node);
+            console.log("purging:", node);
             for (let i = 0; i < node.children.length; i++) {
                 let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
                 // console.log("child id:", id, structure);
                 this._purge(this.structure[id]);
             }
             delete (this.structure[node.id]);
+
+            console.log("s'ha eliminat?",this.structure[node.id]);
         },
 
 
@@ -1211,19 +1213,23 @@ define([
         },
 
         restore: function () {
-            // console.log("Restoring");
+            console.log("Restoring");
             if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop, perquè és recursiu, sobre l'element que conté els childs actualment
                 this.discardSiblings();
                 this._purge(this.structure[this.structure.backupNode.id]);
 
                 this._restore(this.structure.backupNode);
-                // console.log("Restaurat:", this.structure.backupNode.id, this.structure);
+
 
                 // ALERTA! No ho esborrem porquè hi ha casos en que cal restaurar (per exemple en fer click a diferents nodes)
                 // i no te sentit fer un nou backup
                 this.dirtyStructure = false;
+
+            } else {
+                console.log("no hi havia backup");
             }
+
         },
 
         _backup: function (node) {
@@ -1276,15 +1282,18 @@ define([
 
 
 
-            let parent = root ? this.getNodeById(root.parent) : false;
+            let parent = root && root.parent ? this.getNodeById(root.parent) : false;
 
             // Si els children del parent o el root són objectes es guarda la informació antiga,
             // cal canviar-los per ids
-            for (let i=0; i<parent.children.length; i++){
-                if (typeof parent.children[i] !== "string") {
-                    parent.children[i] = parent.children[i].id;
+            if (parent) {
+                for (let i=0; i<parent.children.length; i++){
+                    if (typeof parent.children[i] !== "string") {
+                        parent.children[i] = parent.children[i].id;
+                    }
                 }
             }
+
 
             for (let i=0; i<root.children.length; i++){
                 if (typeof root.children[i] !== "string") {
