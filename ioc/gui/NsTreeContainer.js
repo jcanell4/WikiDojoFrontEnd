@@ -11,6 +11,7 @@ define([
     "dojo/NodeList-dom" // NodeList.style
 ], function (declare, template, ContentPane, _LayoutWidget, _TemplatedMixin, 
                 JsonRest, Observable, Tree, ObjectStoreModel) {
+
     /**
      * Aquest widget afegeix un panell amb un arbre.
      *
@@ -53,10 +54,6 @@ define([
                         target: tds + (self.getSectok ? self.getSectok() : '0')+"/"+self._updateParams(),
 
                         getChildren: function (object) {
-                            if (!object.id) {
-                                return [];
-                            }
-
                             return this.get(object.id).then(
                                 function (fullObject) {
                                     return fullObject.children;
@@ -180,6 +177,9 @@ define([
          * @override
          */
         refresh: function () {
+            // TODO[Xavi] revisar, produeix l'error inicial en refrescar el tree (quan es passa per paràmetre)
+            console.warn("Alerta! aquí es produeix l'error inicial de Dojo");
+
             // Destruct the references to any selected nodes so that
             // the refreshed tree will not attempt to unselect destructed nodes
             // when a new selection is made.

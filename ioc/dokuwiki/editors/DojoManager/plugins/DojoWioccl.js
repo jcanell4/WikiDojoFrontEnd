@@ -307,7 +307,7 @@ define([
         },
 
         _update: function (editor) {
-            console.log("Update!");
+            // console.log("Update!");
             // Referència a la estructura del diàleg
             let structure = this.structure;
             structure.updating = true;
@@ -317,7 +317,12 @@ define([
             structure.restore();
 
             let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
+
+            // console.log("estructure root?", structure.root);
+            // console.log("wiocclnode?", wiocclNode);
+
             this.setData(structure.getNodeById(structure.root), wiocclNode);
+
             this.editor.resetOriginalContentState();
             structure.updating = false;
         },

@@ -104,7 +104,7 @@ define([
 
             // Iniciem els botons per inserir elements wioccl a l'editor
             jQuery(this.insertWiocclBtnNode).on('click', function () {
-                let callback = function(code) {
+                let callback = function (code) {
                     context._insertCode(code);
                     context.dirty = true;
                 };
@@ -116,7 +116,7 @@ define([
                 // let code = context.structure.getFieldTemplate();
                 // context._insertCode(code);
 
-                let callback = function(code) {
+                let callback = function (code) {
                     context._insertCode(code);
                     context.dirty = true;
                 };
@@ -124,7 +124,7 @@ define([
             });
 
             jQuery(this.insertFunctionBtnNode).on('click', function () {
-                let callback = function(code) {
+                let callback = function (code) {
                     context._insertCode(code);
                     context.dirty = true;
                 };
@@ -138,7 +138,7 @@ define([
 
         },
 
-        updateInsertButtons: function() {
+        updateInsertButtons: function () {
             let pos = this._getInsertPosition()
             // let currentWiocclNode = this.structure.getNodeById(this.selectedWiocclNode.id);
             let currentWiocclNode = this._getWiocclForCurrentPos();
@@ -159,8 +159,7 @@ define([
             if (canInsert && !this.selectedWiocclNode.solo) {
                 this.editor.unlockEditor();
             } else {
-                this.editor.
-                lockEditor();
+                this.editor.lockEditor();
             }
 
             // console.log("Can insert?", canInsert, pos, this.selectedWiocclNode);
@@ -186,11 +185,11 @@ define([
             // this._moveCursorToInsertPosition();
 
             let wasVoid = this.selectedWiocclNode.type === 'void';
-            let id= this.selectedWiocclNode.id;
+            let id = this.selectedWiocclNode.id;
 
             let pos = this._getInsertPosition();
             this.editor.insertIntoPos(pos, code, true);
-
+            this.dirty = true;
 
             // Si es tracta d'un void fem un update per refrescar l'arbre;
 
@@ -221,10 +220,11 @@ define([
         // },
 
         _getInsertPosition() {
+
             let currentPosition = this.editor.getPosition();
             let pos = this.editor.getPositionAsIndex();
-
             let node = this.structure._getNodeForPos(pos);
+
 
             if (node.type === 'content') {
                 return currentPosition;
@@ -262,6 +262,7 @@ define([
         },
 
         createTree: function (tree, refId) {
+
             let store = new Memory({
                 // data: this.tree,
                 data: tree,
@@ -297,25 +298,115 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    console.log("item clicat:", item);
+                    // console.log("item clicat:", item);
 
                     // actualitzem qualsevol canvi pendent abans
                     context._updatePendingChanges_Field2Detail()
 
-                    // No restaurem les dades, qualsevol canvi a l'estructura és permanent, es descarten si es tanca
-                    // el dialeg sense desar
 
-                    // if (context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges) {
-                    //     let descartar = confirm("S'han detectat canvis, vols descartar-los?");
-                    //     if (!descartar) {
-                    //         return false;
-                    //     }
-                    //
-                    //     structure.restore();
-                    //
-                    //     context._fieldChanges = false;
-                    //
-                    // }
+                    let isDirty = structure.dirtyStructure || context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges;
+
+                    ///////////////// COMPROVACIO DE BRANQUES SIMILARS //////////////////
+                    if (isDirty) {
+                        // Comprovem si realment el contingut del backup és diferent al que hi ha
+                        // esperem que només canviin els identificadors, la resta ha de ser idèntica
+
+                        // PAS 1: agafar el wrapper
+                        let getWrapper = function (node) {
+                            if (node.type === "wrapper") {
+                                return node;
+                            } else if (node.parent) {
+                                return getWrapper(structure.getNodeById(node.parent));
+                            }
+
+                            return null;
+                        }
+
+                        let wrapper = getWrapper(item);
+
+                        // PAS 2: trobar el node corresponent al backup node
+                        let getNode = function (node, id) {
+                            if (node.id === id) {
+                                return node;
+                            }
+
+                            for (let child of node.children) {
+                                let found = getNode(child, id);
+                                if (found) {
+                                    return found;
+                                }
+                            }
+
+                            return false;
+                        };
+
+                        let backupWrapper = getNode(structure.structure.backupNode, wrapper.id);
+
+                        // Pas 3: recorrer tots els childrens al wrapper i al backupWrapper:
+                        // TODO: moure això al WiocclStructureBase
+
+                        // ALERTA! el currentNode sempre ha de ser el mapejat a la estructura i s'han de restaurar
+                        // completament els childs (excepte el primer)
+                        let areNodesSimilar = function (currentNode, backupNode) {
+                            // console.log("Comparant", currentNode, backupNode);
+                            let similar = currentNode.attrs === backupNode.attrs && currentNode.type === backupNode.type
+                                && currentNode.open === backupNode.open && currentNode.close === backupNode.close
+                                && currentNode.children.length === backupNode.children.length;
+
+                            // Si no són similars no cal comprovar els fills
+                            if (!similar) {
+                                // console.log("Detectat no similar", currentNode, backupNode);
+                                return false;
+                            }
+
+                            for (let i = 0; i < currentNode.children.length; i++) {
+                                // Alerta, la estructua s'agafa de fora de la funció!
+                                let currentNodeChild = typeof currentNode.children[i] === 'string' ? structure.getNodeById(currentNode.children[i]) : currentNode.children[i];
+
+                                let childSimilars = areNodesSimilar(currentNodeChild, backupNode.children[i]);
+                                if (!childSimilars) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        }
+
+                        let areSimilar = areNodesSimilar(wrapper, backupWrapper);
+                        // console.log("Són similars?", areSimilar, wrapper, backupWrapper);
+
+                        // Restaurem automàticament sense avisar
+                        if (areSimilar) {
+                            structure.restore();
+                        }
+
+                        isDirty = !areSimilar;
+
+                    } else {
+                        // console.log("No dirty (tots són fals");
+                        // console.log("dirtyStructure", structure.dirtyStructure);
+                        // console.log("isChanged", context.editor.isChanged());
+                        // console.log("pendingChanges_Field2Detail", context._pendingChanges_Field2Detail);
+                        // console.log("fieldChanges", context._fieldChanges);
+
+                    }
+
+
+                    if (isDirty) {
+                        // if (structure.dirtyStructure || context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges) {
+                        let descartar = confirm("S'han detectat canvis, vols descartar-los?");
+
+                        if (!descartar) {
+                            return false;
+                        }
+
+                        structure.restore();
+
+                        context._fieldChanges = false;
+
+                    } else {
+                        // console.log("No hi ha canvis");
+                    }
 
                     // Alerta! aquest és l'item seleccionat, no correspón amb el restaurat i sobreescriu el backup
                     // ALERTA[Xavi] no es pot fer servir el item directament, tot i que el backup crea una copia,
@@ -477,7 +568,7 @@ define([
 
         // todo: determinar si es necessari el ignore detal
         _updateFields: function (wiocclNode, ignoreDetail) {
-            //
+            // console.log("update fields");
 
 
             // type: wioccl o content.
@@ -521,10 +612,13 @@ define([
             let auxContent = this.structure.getCode(wiocclNode);
 
             // let auxContent = this.source.getCode(item, this.structure);
-            this.editor.setValue(auxContent);
-            this.dirty = true;
+            if (this.editor.getValue() !== auxContent) {
+                this.editor.setValue(auxContent);
+                this.dirty = true;
 
-            this.editor.resetOriginalContentState();
+                this.editor.resetOriginalContentState();
+            }
+
 
             this.editor.wioccl = wiocclNode;
 
@@ -565,8 +659,8 @@ define([
                     return this._generateHtmlForParams(fields, wiocclNode);
 
                 case 'field':
-                    // TODO: els camps han de fer servir un combobox, però aquest
-                    // sistema no està preparat per treballar amb widgets, només amb html
+                // TODO: els camps han de fer servir un combobox, però aquest
+                // sistema no està preparat per treballar amb widgets, només amb html
                 case 'content':
                     return this._generateHtmlForGenerics(fields, wiocclNode);
 
@@ -826,12 +920,16 @@ define([
                 if (UPDATE_TIME === 0 || e.type === 'change') {
                     context._updatePendingChanges_Field2Detail();
 
-                } else if (!context._pendingChanges_Field2Detail) {
+                } else {
+                    // } else if (!context._pendingChanges_Field2Detail) {
+                    // Refresquem el timer per evitar la perdua de focus
+                    clearTimeout(context.timerId_Field2Detail);
                     context.timerId_Field2Detail = setTimeout(context._updatePendingChanges_Field2Detail.bind(context), UPDATE_TIME);
                     context._pendingChanges_Field2Detail = true;
-                } else {
-                    // console.log('pending changes?', context._pendingChanges_Field2Detail);
                 }
+                // } else {
+                //     // console.log('pending changes?', context._pendingChanges_Field2Detail);
+                // }
             });
 
             $attrContainer.append($fields);
@@ -864,8 +962,9 @@ define([
                 rootWiocclNode.children = this.structure._getChildrenNodes(rootWiocclNode.children, rootWiocclNode.id);
 
                 tree.push(rootWiocclNode);
+                // console.log("node afegit al tree:", rootWiocclNode);
 
-                console.log(tree, rootWiocclNode, selectedWiocclNode);
+                // console.log(tree, rootWiocclNode, selectedWiocclNode);
                 this.updateTree(tree, rootWiocclNode, selectedWiocclNode);
             }
 
@@ -895,7 +994,6 @@ define([
             if (!this._pendingChanges_Field2Detail) {
                 return;
             }
-
 
 
             let $attrContainer = jQuery(this.attrContainerNode);
@@ -934,8 +1032,8 @@ define([
             }
 
             // Refresquem el wioccl associat a l'editor amb el valor actual
-            console.log("wioccl a l'editor:", this.editor.wioccl)
-            console.log("wioccl a l'estructura:", this.structure.getNodeById(this.editor.wioccl.id));
+            // console.log("wioccl a l'editor:", this.editor.wioccl)
+            // console.log("wioccl a l'estructura:", this.structure.getNodeById(this.editor.wioccl.id));
             this.editor.wioccl = this.structure.getNodeById(this.editor.wioccl.id);
 
 
@@ -952,7 +1050,12 @@ define([
             // Cal actualitzar el node a la estructura
             this.structure.setNode(this.selectedWiocclNode);
 
-            this._updateDetail(this.editor.wioccl, true);
+            if (!this.updatingDetail) {
+                this.updatingFields = true;
+                this._updateDetail(this.editor.wioccl, true);
+                this.updatingFields = false;
+            }
+
 
             this._pendingChanges_Field2Detail = false;
 
@@ -976,7 +1079,6 @@ define([
 
 
             let value = this.editor.getValue();
-            console.log("Value del que es fa el parse??", value);
 
             if (value.length === 0) {
                 // TODO: buidar els atributs
@@ -989,17 +1091,24 @@ define([
             this.setData(this.structure.getNodeById(this.structure.root), wiocclNode, true);
 
 
+            // ALERTA! si s'ha afegit un sibbling anterior this.editor.wioccl ja no conté suficient informació!!
+
+
             let candidateWiocclNode = this.structure.getNodeById(this.editor.wioccl.id);
             // this._rebuildPosMap(this.source.getStructure()[this.selectedWioccl.id]);
             this.structure.rebuildPosMap(candidateWiocclNode);
 
             let updatedWioccl = this._getWiocclForCurrentPos();
             this._selectWiocclNode(updatedWioccl);
-            this._updateFields(updatedWioccl);
+
+            if (!this.updatingFields) {
+                this.updatingDetail = true;
+                this._updateFields(updatedWioccl);
+                this.updatingDetail = false;
+            }
 
             this.structure.emit('structure_change');
             this.updating = false;
-
 
 
         },
@@ -1129,7 +1238,6 @@ define([
 
             let html = '';
 
-            console.log("Definition?", def);
             if (!def.hidden) {
                 html += '<div class="wioccl-field">';
                 html += '<label>' + wiocclNode.type + ':</label>';
@@ -1455,7 +1563,7 @@ define([
             // efectivament s'ha fet click, però es dispara abans de que s'estableixi
             // la posició??
             editor.on('focus', function (e) {
-
+                // console.log("focusing");
                 context.lastPos = context.editor.getPositionAsIndex(false);
 
 
@@ -1482,7 +1590,6 @@ define([
             });
 
             editor.on('changeCursor', function (e) {
-
                 // Problema, això fa que s'ignori la carrega i quan es fa a clic
                 // però si no es fica es dispara quan es modifica el valor directament amb set value
                 if (!editor.hasFocus()) {
@@ -1502,7 +1609,7 @@ define([
                     context.dirty = false;
                 }
 
-                if (context.selectedWiocclNode === candidateWiocclNode) {
+                if (context.selectedWiocclNode === candidateWiocclNode && pos === this.prevPos) {
                     // console.log("El seleccionat és el mateix que el actual? (no fem el extract)", context.selectedWioccl, candidate)
                     return;
                 }
@@ -1514,6 +1621,7 @@ define([
                 context._updateFields(candidateWiocclNode);
 
                 context.updateInsertButtons();
+                this.prevPos = pos;
 
             });
 
@@ -1547,7 +1655,7 @@ define([
 
         // es crida desde DojoWioccl
         updateTree: function (tree, root, selected) {
-            // console.log("updateTree", tree);
+            // console.error("updateTree", tree);
             this.treeWidget.destroyRecursive();
 
             this.createTree(tree, root.id);

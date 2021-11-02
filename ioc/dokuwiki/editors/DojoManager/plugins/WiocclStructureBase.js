@@ -385,6 +385,9 @@ define([
         /** @type {string[]} siblings creats temporalment **/
         siblings: null,
 
+        /** indica que la estructura ha canviat */
+        dirtyStructure: false,
+
         /**
          *
          * Opcions de configuració:
@@ -986,6 +989,7 @@ define([
 
         rebuildPosMap: function (item) {
             // console.error("Rebuilding chunkmap for", item);
+
             let outChunkMap = new Map();
 
             // s'han de tenir en compte els siblings temporals
@@ -1000,9 +1004,47 @@ define([
 
             wrapper.children.unshift(item);
 
+            // Cerquem els sibligs del node seleccionat. Això s'ha d'establir aqui
+            // perquè el _createPosMap es crida recursivament
+            let auxParent;
+
+            // Si el item seleccionat és el wrapper no cal cercar el parent, aquest és el node que conté tot
+            if (item.type === "wrapper") {
+                auxParent = item;
+            } else {
+                auxParent = this.getNodeById(item.parent);
+            }
+
+
+
+
+            // Pasem els childs a string si hi ha. ALERTA! Això está duplicat en altes punts
+            for (let i=0; i<auxParent.children.length; i++){
+                if (typeof auxParent.children[i] !== "string") {
+                    auxParent.children[i] = auxParent.children[i].id;
+                }
+            }
+
+            let auxRootSibblings = [];
+
+            if (!this.editorNodes) {
+                this.editorNodes = [item];
+            }
+
+            for (let node of this.editorNodes) {
+                // console.log("Checking " + node.id);
+                if (auxParent.children.includes(node.id)) {
+                    // console.log("Contingut al parent");
+                    auxRootSibblings.push(node);
+                }
+            }
+
+            // console.log("Root Siblings:", auxRootSibblings);
+
             let rebuild = this._createPosMap(wrapper, 0, outChunkMap);
             this.posMap = outChunkMap;
 
+            this.dirtyStructure = true;
         },
 
         // el pos map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
@@ -1042,6 +1084,8 @@ define([
                 outPosMap.set(cursorPos, node);
                 code += node.close;
             }
+
+            outPosMap.length = cursorPos;
 
             return code;
 
@@ -1093,22 +1137,32 @@ define([
 
             // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
             // S'agafarà l'anterior
-            for (let [start, node] of this.posMap) {
+            // console.log(this.posMap);
+            // console.log(this.posMap.length);
 
+            let startPos = 0;
+            // Propietat afegida per nosaltres al Map
+            let endPos = this.posMap.length;
+
+            for (let [start, node] of this.posMap) {
                 last = node;
 
                 if (start > pos && candidate) {
-                    found = true;
+                    endPos = start;
                     break;
+                } else {
+                    // s'estableix a la següent iteració
+                    startPos = start;
+                    candidate = node;
                 }
-
-                // s'estableix a la següent iteració
-                candidate = node;
             }
+
 
             if (!found) {
                 candidate = last;
             }
+
+            // console.warn(startPos, endPos);
 
             // console.log("Candidate:", candidate, last);
 
@@ -1117,24 +1171,18 @@ define([
                 candidate.startIndex = 0;
                 candidate.lastIndex = this.getCode(candidate).length;
             }
-
-
-            let posStart = candidate.startIndex;
-            let posEnd = candidate.lastIndex + 1;
-
             // Calculem el punt central entre el principi i el final per determinar si la posició
             // està més a prop del principi o del final
-            let diff = Math.floor((posEnd - posStart) / 2);
-            let posMid = posStart + diff;
 
-            // console.log(`[${pos}]`, posStart, posMid, posEnd);
+            let diff = Math.floor((endPos - startPos) / 2);
+            let posMid = startPos + diff;
 
             if (pos < posMid) {
-                // console.log("START", posStart);
-                return posStart;
+                // console.log("START", startPos);
+                return startPos;
             } else {
-                // console.log("END", posEnd);
-                return posEnd;
+                // console.log("END", endPos);
+                return endPos;
             }
 
         },
@@ -1152,9 +1200,10 @@ define([
 
         _restore: function (node) {
             // console.log("Restoring node id", node.id);
+            // Restaurem una copia del node
+            let clonedNode = JSON.parse(JSON.stringify(node));
 
-            // console.log("Restaurant:", node.id, node);
-            this.structure[node.id] = node;
+            this.structure[node.id] = clonedNode;
             for (let i = 0; i < node.children.length; i++) {
                 let child = node.children[i];
                 this._restore(child);
@@ -1162,7 +1211,7 @@ define([
         },
 
         restore: function () {
-
+            // console.log("Restoring");
             if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop, perquè és recursiu, sobre l'element que conté els childs actualment
                 this.discardSiblings();
@@ -1170,12 +1219,15 @@ define([
 
                 this._restore(this.structure.backupNode);
                 // console.log("Restaurat:", this.structure.backupNode.id, this.structure);
-                delete (this.structure.backupNode);
 
+                // ALERTA! No ho esborrem porquè hi ha casos en que cal restaurar (per exemple en fer click a diferents nodes)
+                // i no te sentit fer un nou backup
+                this.dirtyStructure = false;
             }
         },
 
         _backup: function (node) {
+
 
             let id = typeof node === 'object' ? node.id : node;
             // let backup = JSON.parse(JSON.stringify(this.structure[node.id]));
@@ -1197,65 +1249,7 @@ define([
 
         parse: function (text, node) {
 
-
             let outTokens = this._tokenize(text);
-
-            // text és el text a parsejar
-            // wioccl és el node actual que cal reescriure, és a dir, tot el que es parseji reemplaça al id d'aquest node
-
-            // si hi han nous node s'han d'afegir a partir d'aquest index
-            // let lastIndex = structure.length;
-
-            // En el cas de l'arrel d'un subdialeg no existeix el parent
-
-            // alerta! cal conservar els childrens en algun cas?
-
-
-            // ALERTA! Això forma part del codi pels siblings (l'index era el punt d'inserció)
-            // console.warn(node);
-            // if (node.parent && node.type !== 'wrapper') {
-            //     this._removeChildren(node.id);
-            //
-            //     // ALERTA! un cop eliminat els fills cal desvincular també aquest element, ja que s'afegirà automàticament al parent si escau
-            //     let found = false;
-            //
-            //     for (let i = 0; i < this.structure[node.parent].children.length; i++) {
-            //
-            //         // Cal tenir en compte els dos casos (chidlren com id o com nodes) ja que un cop es fa
-            //         // a un update tots els childrens hauran canviat a nodes
-            //         if (this.structure[node.parent].children[i] === node.id || this.structure[node.parent].children[i].id === node.id) {
-            //             // console.log("eliminat el ", wioccl.id, " de ", structure[wioccl.parent].children, " per reafegir-lo");
-            //             this.structure[node.parent].children.splice(i, 1);
-            //             node.index = i;
-            //             found = true;
-            //             break;
-            //         }
-            //     }
-            //
-            //     // perquè passa això de vegades?
-            //     if (!found) {
-            //         console.error("no s'ha trobat aquest node al propi pare");
-            //         console.log(this.structure, node);
-            //         alert("node no trobat al pare");
-            //     }
-            //
-            //     if (text.length === 0) {
-            //
-            //         if (Number(node.id) === Number(this.root)) {
-            //             alert("L'arrel s'ha eliminat, es mostrarà la branca superior.");
-            //             // si aquest és el node arrel de l'arbre cal actualitzar l'arrel també
-            //             console.error("TODO: determinar que fer amb això, el this.root no és correcte, era el this.root del DojoWioccl")
-            //             this.root = node.parent;
-            //         } else {
-            //             alert("La branca s'ha eliminat.");
-            //         }
-            //
-            //         node = this.structure[node.parent];
-            //         outTokens = [];
-            //     }
-            // }
-
-
             this._createTree(node, outTokens, this.structure);
 
             return node;
@@ -1303,9 +1297,6 @@ define([
                 this._removeChildren(root.id);
                 root.children = [];
             } else if (parent) {
-                // Eliminem del parent aquest node
-                // ALERTA! això no és correcte, perquè llavors es perd l'ordre
-                //this._removeNode(root.id);
                 stack.push(parent);
             } else {
                 this._removeChildren(root.id);
@@ -1342,8 +1333,12 @@ define([
                 // root.children = [];
             // }
 
+            // Guardem la llista de nodes parsejats
+            this.editorNodes = [];
+
+            // console.log("Preparat this.editorNodes", this.editorNodes);
             for (let i in outTokens) {
-                console.log(i, outTokens[i]);
+                // console.log(i, outTokens[i]);
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
                 // Si l'arrel és temporal el primer token és fill de l'arrel
@@ -1483,6 +1478,8 @@ define([
                 // TODO: arreglar aixo <-- sembla que no es crida, ja no es fa servir?
                 if (root !== null && root.index !== undefined && outTokens[i].parent === root.parent
                     && (Number(i) < outTokens.length - 1 || outTokens[i].value !== "\n")) {
+                    console.log("Es fa servir?");
+                    alert("Es fa servir?");
                     let id = outTokens[i].id;
                     this.structure[root.parent].children.splice(root.index + siblings, 0, id);
                     // console.log("Reafegit a la posició:", root.index + siblings, " amb id:", id);
@@ -1573,6 +1570,10 @@ define([
                 } else {
                     nextKey = (Number(nextKey) + 1) + "";
                 }
+
+
+                this.editorNodes.push(outTokens[i]);
+                // console.log("Afegit node a this.editorNodes", this.editorNodes);
 
                 // Si comprovem el node actual en lloc del parent es pot actualitzar l'arbre del diàleg (però falla
                 // la resposta del servidor, el contingut no és correcte)
@@ -1782,7 +1783,6 @@ define([
                 //     $node.remove();
                 // }
 
-                console.log("Eliminant element de l'estructura", childId);
                 delete (this.structure[childId]);
             }
 
@@ -1814,6 +1814,10 @@ define([
         },
 
         discardSiblings: function () {
+            // TODO: determinar si això es pot eliminar
+            if (this.siblings && this.siblings.length >0) {
+                console.warn("Sibblings en us!", this.siblings);
+            }
 
             for (let i = this.siblings.length - 1; i >= 0; i--) {
                 this._removeNode(this.siblings[i]);
