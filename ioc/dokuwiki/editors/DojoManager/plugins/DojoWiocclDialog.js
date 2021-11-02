@@ -106,7 +106,6 @@ define([
             jQuery(this.insertWiocclBtnNode).on('click', function () {
                 let callback = function (code) {
                     context._insertCode(code);
-                    context.dirty = true;
                 };
                 context.structure.getKeywordTemplate(callback);
 
@@ -118,7 +117,6 @@ define([
 
                 let callback = function (code) {
                     context._insertCode(code);
-                    context.dirty = true;
                 };
                 context.structure.getFieldTemplate(callback);
             });
@@ -126,7 +124,6 @@ define([
             jQuery(this.insertFunctionBtnNode).on('click', function () {
                 let callback = function (code) {
                     context._insertCode(code);
-                    context.dirty = true;
                 };
                 context.structure.getFunctionTemplate(callback);
             });
@@ -186,10 +183,10 @@ define([
 
             let wasVoid = this.selectedWiocclNode.type === 'void';
             let id = this.selectedWiocclNode.id;
-
+            this.dirty = true;
             let pos = this._getInsertPosition();
             this.editor.insertIntoPos(pos, code, true);
-            this.dirty = true;
+
 
             // Si es tracta d'un void fem un update per refrescar l'arbre;
 
@@ -612,6 +609,7 @@ define([
             let auxContent = this.structure.getCode(wiocclNode);
 
             // let auxContent = this.source.getCode(item, this.structure);
+
             if (this.editor.getValue() !== auxContent) {
                 this.editor.setValue(auxContent);
                 this.dirty = true;
@@ -1050,11 +1048,7 @@ define([
             // Cal actualitzar el node a la estructura
             this.structure.setNode(this.selectedWiocclNode);
 
-            if (!this.updatingDetail) {
-                this.updatingFields = true;
-                this._updateDetail(this.editor.wioccl, true);
-                this.updatingFields = false;
-            }
+            this._updateDetail(this.editor.wioccl, true);
 
 
             this._pendingChanges_Field2Detail = false;
@@ -1063,7 +1057,7 @@ define([
         },
 
         _updatePendingChanges_Detail2Field: function () {
-
+            // console.log("_updatePendingChanges_Detail2Field");
             // console.warn("desactivat Detail2Field");
             // return;
 
@@ -1101,11 +1095,7 @@ define([
             let updatedWioccl = this._getWiocclForCurrentPos();
             this._selectWiocclNode(updatedWioccl);
 
-            if (!this.updatingFields) {
-                this.updatingDetail = true;
-                this._updateFields(updatedWioccl);
-                this.updatingDetail = false;
-            }
+            this._updateFields(updatedWioccl);
 
             this.structure.emit('structure_change');
             this.updating = false;
@@ -1542,18 +1532,18 @@ define([
                 // Afegida la comprovació de dirty perque si no no poden inserir-se elements desde un custom dialog
                 if (context.updating || (!context.dirty && !context.editor.hasFocus()
                     && jQuery(document.activeElement).attr('data-wioccl-btn') === undefined)) {
+                    // no s'actualitza l'editor, rao:
                     return;
                 }
 
                 if (UPDATE_TIME === 0) {
-
                     context._updatePendingChanges_Detail2Field();
 
                 } else if (!context._pendingChanges_Detail2Field) {
                     context.timerId_Detail2Field = setTimeout(context._updatePendingChanges_Detail2Field.bind(context), UPDATE_TIME);
                     context._pendingChanges_Detail2Field = true;
                 } else {
-                    // console.log('pending changes?', context._pendingChanges_Detail2Field);
+                    // console.log('no pending changes?', context._pendingChanges_Detail2Field);
                 }
 
             });
