@@ -862,7 +862,7 @@ define([
                     tree: tree,
                     refId: refId,
                     saveCallback: function () {
-                        console.log("Subdialeg saveCallback");
+                        // console.log("Subdialeg saveCallback");
 
                         // this és correcte, fa referència al nou dialog que s'instància
                         this.structure.parse(this.editor.getValue(), this.editor.wioccl);
@@ -877,7 +877,7 @@ define([
                     },
                     // saveCallback : context._save.bind(context),
                     updateCallback: function (editor) {
-                        console.log("Subdialeg updateCallback");
+                        // console.log("Subdialeg updateCallback");
                         // this.source.parse(editor.getValue(), editor.wioccl, this.getStructure());
                         // this és correcte, fa referència al nou dialog que s'instància
                         this.structure.updating = true;
@@ -887,23 +887,12 @@ define([
 
                         this.structure.updating = false;
 
-                        // TODO: revisar si no cal fer el parse perquè ja es fa automàticament, es la raó per la que s'ha cridat
-                        // al callback?
                         this.structure.restore();
 
                         // actulitzem el node de l'editor amb el restaurat
                         editor.wioccl = this.structure.getNodeById(editor.wioccl.id);
-                        // console.log("Que hi ha al editor.wioccl?", editor.wioccl);
-                        // console.log("Que hi ha a l'estructura?", this.structure);
-                        // alert("Stop, check antes del parse");
-
                         this.structure.parse(editor.getValue(), editor.wioccl);
 
-                        // console.log("Que hi ha al editor.wioccl?", editor.wioccl);
-                        // console.log("Que hi ha a l'estructura?", this.structure);
-                        // alert("Stop, check després del parse");
-
-                        console.log(refId, this.structure.getNodeById(refId), rootWiocclNode);
                         this.setData(this.structure.getNodeById(refId), rootWiocclNode);
                     }
 

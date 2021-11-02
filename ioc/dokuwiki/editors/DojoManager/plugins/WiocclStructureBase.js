@@ -742,7 +742,6 @@ define([
 
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
 
-                console.log(id, children, parent, this.structure);
                 if (this.structure[id].isClone) {
                     // if (context.getStructure()[id].isClone) {
                     continue;
@@ -1188,7 +1187,7 @@ define([
         },
 
         _purge: function (node) {
-            console.log("purging:", node);
+            // console.log("purging:", node);
             for (let i = 0; i < node.children.length; i++) {
                 let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
                 // console.log("child id:", id, structure);
@@ -1196,7 +1195,6 @@ define([
             }
             delete (this.structure[node.id]);
 
-            console.log("s'ha eliminat?",this.structure[node.id]);
         },
 
 
@@ -1213,7 +1211,7 @@ define([
         },
 
         restore: function () {
-            console.log("Restoring");
+            // console.log("Restoring");
             if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop, perquè és recursiu, sobre l'element que conté els childs actualment
                 this.discardSiblings();
@@ -1942,7 +1940,7 @@ define([
         canInsert: function(pos, node) {
             // console.log("Node?", node);
             if (node.id === "0" || node.parent === "0" || node.solo) {
-                console.warn("No es pot inserir, el node és root, fill directe o solo");
+                //console.warn("No es pot inserir, el node és root, fill directe o solo");
                 return false;
             }
 
