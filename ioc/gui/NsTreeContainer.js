@@ -95,8 +95,6 @@ define([
 
             this.tree.getIconClassOrig = this.tree.getIconClass;
 
-            var self = this;
-
             this.tree.getIconClass = function(item, opened) {
                 var ret = this.getIconClassOrig(item, opened);
                 var type = item.type.split("#");
@@ -118,6 +116,11 @@ define([
             this.inherited(arguments);
             this.tree.placeAt(this.id + "_tree");
             this.tree.startup();
+        },
+
+        // Inhibe(true)/Establece(false) la selección múltiple de los elementos del árbol
+        setMultipleSelect: function(select) {
+            this.tree.dndController.singular = select;
         },
 
         getProcessOnClickAndOpenOnClick: function(parm) {
