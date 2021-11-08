@@ -101,11 +101,8 @@ define([
 
         process: function () {
 
-            console.log("Quin és el next de la estructura?", this.structure.structure.next, this.structure.structure);
             let node = this.structure.createNode('void', '0');
-
             let html = this.htmlTemplate.replace('%s', node.id);
-
 
             // Com es tracta d'un node que penja del root no cal indicar el afterId, la posició dependrà del span
             let afterId = 0;
@@ -413,7 +410,6 @@ define([
             ajax.send(dataToSend).then(function (data) {
                 // console.log("data:", data);
 
-
                 // fem que l'editor dispari un event, això ho fa servir el DojoReadonlyToggle
 
                 // retorn:
@@ -437,10 +433,8 @@ define([
                 // console.log("ids de nodes per eliminar:", removedIds);
 
                 for (let id of removedIds) {
-                    console.log("Buscant node:", id)
                     let $node = context.$document.find('[data-wioccl-ref="' + id + '"]');
                     $node.remove();
-                    console.log("Eliminat:", $node);
                 }
 
                 // Cal eliminar també les referències al node arrel (poden ser múltiple en el cas del foreach)
@@ -450,10 +444,7 @@ define([
                 // console.log("Eliminant root nodes", rootRef, $rootNodes);
                 // 5 inserir el html que ha arribat del servidor
                 // Afegim les noves i eliminem el cursor
-                console.log("Afegim nou node:", data[0].value.content);
                 let $nouRoot = jQuery(data[0].value.content);
-                console.log("S'ha creat el node?", $nouRoot);
-
 
                 // console.log("S'inserta el nou contingut abans de:", $rootNodes.get(0))
                 // console.log("quin és el $nouroot??", $nouRoot);

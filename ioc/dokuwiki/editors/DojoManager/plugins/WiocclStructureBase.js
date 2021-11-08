@@ -397,7 +397,7 @@ define([
          *                                      (els canvis s'aplicaràn sobre aquesta).
          */
         constructor: function (config, dispatcher) {
-            console.error(config);
+            // console.error(config);
             // Aquí no fem res perquè cada subclasse ha d'implementar la seva propia lògica
 
             // console.error("WiocclStructureBase");
@@ -1208,7 +1208,6 @@ define([
 
         restore: function () {
             console.log("Restoring");
-            console.log("Next ABANS DEL RESTORE: ", this.structure.next);
             if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop, perquè és recursiu, sobre l'element que conté els childs actualment
                 this.discardSiblings();
@@ -1224,8 +1223,6 @@ define([
             } else {
                 console.log("no hi havia backup");
             }
-
-            console.log("Next DESPRÉS DEL RESTORE: ", this.structure.next);
         },
 
         _backup: function (node) {
@@ -1299,11 +1296,6 @@ define([
                 this._removeChildren(root.id);
             }
 
-            // ALERTA! TODO: Cal gestionar el token inicial, aquest no s'ha d'afegira l'arbre
-            // i el seu tancament tampoc
-
-
-            console.log("Next key (current):", this.structure.next);
             let nextKey = this.structure.next + "";
 
             let siblings = 0;
@@ -1571,38 +1563,6 @@ define([
 
 
                 this.editorNodes.push(outTokens[i]);
-                // console.log("Afegit node a this.editorNodes", this.editorNodes);
-
-                // Si comprovem el node actual en lloc del parent es pot actualitzar l'arbre del diàleg (però falla
-                // la resposta del servidor, el contingut no és correcte)
-
-                // let checkId = this.structure[root.id]['parent'] ? this.structure[root.id]['parent'] : '0';
-
-
-                // let siblingsAddedToThisNode = siblings > 1 && Number(root.id) === Number(this.root);
-
-                // console.log("checkid, siblings added to this node?", checkId, siblingsAddedToThisNode, stack.length)
-
-                // if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length > 0) {
-
-
-                // ALERTA! Cal controlar que no s'afegeixin siblings al tipus void
-
-
-                // if (siblingsAddedToThisNode && Number(checkId) !== 0 && stack.length ===0 ) {
-                //     root.addedsiblings = true;
-                //
-                // } else if (siblingsAddedToThisNode && Number(checkId)===0 && stack.length === 0) {
-                //
-                //     // ALERTA! si permetem modificar les branques directes del root retornaria el document complet del
-                //     // servidor i actualment el retorn no és correcte. A més a més es perd qualsevol canvi fet no desat
-                //     // de tot el document, no només del diàleg
-                //
-                //     alert("Error no recuperable: no es poden afegir elements germans en aquest nivell, utilitza els botons de l'editor principal per insertar-los");
-                //     console.error("No esta permés afegir siblings al root ni als seus descendents directes.");
-                //     errorDetected = true;
-                //
-                // }
 
             }
 
@@ -1612,25 +1572,7 @@ define([
                 root.addedsiblings = false;
             }
 
-
-
-            console.log("Next before: ", this.structure.next);
             this.structure.next = Number(nextKey);
-            console.log("Next after: ", this.structure.next);
-
-            // actualitzem el root, es passa com a referència
-            // ALERTA[Xavi] canviar el node pel parent i establir el root com el nou id és el que fa que en actualitzar
-            // s'actualitzi l'arbre
-
-            // ALERTA[Xavi] com sempre tractem amb wrappers això ja no és necessari. NO FEM LA PUJADA DEL ROOT
-            // if (root.addedsiblings) {
-            //     root = this.structure[root.parent];
-            //     this.root = root.id;
-            // } else {
-            //     root = this.structure[root.id];
-            // }
-
-
 
             // Actualitzem el root
             this.structure[root.id] = root;
@@ -1816,6 +1758,7 @@ define([
             // TODO: determinar si això es pot eliminar
             if (this.siblings && this.siblings.length >0) {
                 console.warn("Sibblings en us!", this.siblings);
+                alert("sibblings");
             }
 
             for (let i = this.siblings.length - 1; i >= 0; i--) {
@@ -1841,16 +1784,8 @@ define([
 
             if (!key) {
                 key = Number(this.structure.next);
-                if (key < 1000) {
-                    console.error(this.structure);
-                    alert("Key reemplaçada!")
-                }
-                console.log("Next before: ", this.structure.next);
                 this.structure.next = (Number(this.structure.next) + 1) + "";
-                console.log("Next after: ", this.structure.next);
             }
-
-            console.log("Creant node type/parent/key: ", type, parent, key);
 
             let node = {
                 "type": type,
