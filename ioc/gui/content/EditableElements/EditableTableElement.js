@@ -529,6 +529,9 @@ define([
                 }
 
                 for (var j = 1; j < matches.length; j++) {
+                    if(matches[j]==undefined){
+                        matches[j]="";
+                    }
                     cols.push(matches[j]);
                 }
 
