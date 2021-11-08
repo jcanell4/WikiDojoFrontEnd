@@ -1207,7 +1207,7 @@ define([
         },
 
         restore: function () {
-            console.log("Restoring");
+            // console.log("Restoring");
             if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop, perquè és recursiu, sobre l'element que conté els childs actualment
                 this.discardSiblings();

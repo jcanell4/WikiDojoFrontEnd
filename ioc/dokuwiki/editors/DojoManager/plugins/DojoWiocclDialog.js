@@ -22,6 +22,11 @@ define([
 
     let counter = 0;
 
+    // Aquest és el comportament normal, no és pot editar directament, només mitjançant els botons.
+    // Es pot posar com a false per testejar, o podem parametritzar-lo segons el tipus d'usuari (només avanaçats).
+    const ALWAYS_LOCKED = true;
+
+
     // TODO: Extreure a algun lloc més adient
     function setCursorPosition(element, pos) {
         if (element.setSelectionRange) {
@@ -51,9 +56,24 @@ define([
         lastCursor: null,
         wasFocused: null,
 
+        lockEditor: function() {
+            this.editor.lockEditor();
+        },
+
+        unlockEditor: function() {
+            if (!ALWAYS_LOCKED) {
+                this.editor.unlockEditor();
+            }
+        },
+
         startup: function () {
             this.inherited(arguments);
             this.createEditor();
+
+            if (ALWAYS_LOCKED) {
+                this.lockEditor();
+            }
+
             this.createTree(this.tree, this.refId, this.structure);
 
             let wiocclNode = this.structure.getNodeById(this.refId);
@@ -169,10 +189,11 @@ define([
             let canInsert = this.structure.canInsert(pos, currentWiocclNode);
 
             // El void sempre es bloqueja per obligar a inserir utilitzant els botons
+
             if (canInsert && !this.selectedWiocclNode.solo) {
-                this.editor.unlockEditor();
+                this.unlockEditor();
             } else {
-                this.editor.lockEditor();
+                this.lockEditor();
             }
 
             // console.log("Can insert?", canInsert, pos, this.selectedWiocclNode);
@@ -633,16 +654,18 @@ define([
                 this.editor.resetOriginalContentState();
             }
 
-
             this.editor.wioccl = wiocclNode;
 
             if (wiocclNode.id === 0) {
-                this.editor.lockEditor();
+                this.lockEditor();
                 jQuery(this.detailContainerNode).css('opacity', '0.5');
             } else {
-                this.editor.unlockEditor();
+                this.unlockEditor();
                 jQuery(this.detailContainerNode).css('opacity', '1');
             }
+
+            // ALERTA[Xavi]! l'editor sempre ha d'estar bloquejat, s'ha de manipular mitjançant els camps
+
 
         },
 
@@ -855,7 +878,7 @@ define([
                 let tree = structure.getTreeFromNode(refId, true);
 
                 let wiocclDialog = new DojoWioccDialog({
-                    title: 'Edició wioccl',
+                    title: 'Edició wioccl (subdiàleg)',
                     // style: 'width:auto',
                     style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
                     // style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 100%; max-height: 100%;',
@@ -887,7 +910,7 @@ define([
 
 
                         $input.val(text);
-                        $input.trigger('input');
+                        $input.trigger('change');
 
                         wiocclDialog.destroyRecursive();
                     },
