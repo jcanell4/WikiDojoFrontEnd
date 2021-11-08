@@ -471,6 +471,21 @@ define([
                 context.pluginEditor.emit('import');
                 context.pluginEditor.forceChange();
 
+                // ALERTA! Això és un arreglo per fer netejar dels nodes de contingut orfes (siblings inicial i final
+                // d'un parse de wioccl parcial
+                let $textNodes = context.$document.find('[data-text-node]');
+
+                $textNodes.each(function() {
+                   // PAS: afegim els nodes com a nodes de text
+                    let $this = jQuery(this);
+                    let text = $this.text();
+                    var textNode = document.createTextNode(text);
+                    $this.before(textNode);
+                });
+                // PAS2: eliminar els spans
+                $textNodes.remove();
+
+
                 context.$document.find('[data-wioccl-ref="' + originalRefId + '"]')[0].scrollIntoView();
 
             });
