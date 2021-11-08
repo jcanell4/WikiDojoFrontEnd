@@ -142,6 +142,22 @@ define([
 
                 var form = new Form({id:"formIncludeSyntaxDialog"}).placeAt(divdretabaixa);
 
+                //Checkbox 'mostrar data de creació'
+                var divMostrarDataCrea = domConstruct.create('div', {
+                    className: 'divMostrarDataCrea'
+                },form.containerNode);
+
+                var MostrarDataCrea = new CheckBox({
+                    id: 'chkMostrarDataCrea',
+                    value: 'date',
+                    checked: false
+                }).placeAt(divMostrarDataCrea);
+                dialog.chkMostrarDataCrea = MostrarDataCrea;
+
+                domConstruct.create('label', {
+                    innerHTML: ' mostrar la data de creació'
+                },divMostrarDataCrea);
+
                 //Checkbox 'amagar Dates'
                 var divAmagarDates = domConstruct.create('div', {
                     className: 'divAmagarDates'
@@ -149,13 +165,13 @@ define([
 
                 var AmagarDates = new CheckBox({
                     id: 'chkAmagarDates',
-                    value: 'nomdate&nodate',
+                    value: 'nomdate',
                     checked: false
                 }).placeAt(divAmagarDates);
                 dialog.chkAmagarDates = AmagarDates;
 
                 domConstruct.create('label', {
-                    innerHTML: ' amagar Dates'
+                    innerHTML: ' amagar data de modificació'
                 },divAmagarDates);
 
                 //Checkbox 'amagar Títol'
@@ -217,6 +233,9 @@ define([
                 new Button({
                     label: 'Acceptar',
                     onClick: function(){
+                        if(!dialog.chkMostrarDataCrea.checked && dialog.chkAmagarDates.checked){
+                            dialog.chkAmagarDates.value = dialog.chkAmagarDates.value + "&no" + dialog.chkMostrarDataCrea.value;
+                        }
                         dialog.hide();
                         var response = selectedPage.section + "&";
                         registry.toArray().forEach(function(widget) {
