@@ -11,22 +11,23 @@ define([
 
         constructor: function (config, dispatcher) {
 
-            // console.error("WiocclStructureWrapper");
+            console.error("WiocclStructureWrapper", config);
             this.setStructure(config.structure, config.root);
             this.dispatcher = dispatcher;
         },
 
         setStructure: function(structure, root) {
 
-            // console.log("setStructure:", structure);
+            console.log("setStructure:", structure);
 
             // La estructura sempre és completa, el root és el que determina quina és l'arrel de l'arbre
             this.structure = JSON.parse(JSON.stringify(structure));
 
-
+            console.log("Next before: ", this.structure.next);
             let key = Number(this.structure.next);
             this.structure.next = (key + 1) + "";
             key += "";
+            console.log("Next after: ", this.structure.next);
 
             let wrapper = {
                 id: root,

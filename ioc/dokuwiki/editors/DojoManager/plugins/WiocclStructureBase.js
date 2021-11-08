@@ -397,7 +397,7 @@ define([
          *                                      (els canvis s'aplicaràn sobre aquesta).
          */
         constructor: function (config, dispatcher) {
-            // console.log(config);
+            console.error(config);
             // Aquí no fem res perquè cada subclasse ha d'implementar la seva propia lògica
 
             // console.error("WiocclStructureBase");
@@ -1183,14 +1183,11 @@ define([
                 // console.log("END", endPos);
                 return endPos;
             }
-
         },
 
         _purge: function (node) {
-            // console.log("purging:", node);
             for (let i = 0; i < node.children.length; i++) {
                 let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
-                // console.log("child id:", id, structure);
                 this._purge(this.structure[id]);
             }
             delete (this.structure[node.id]);
@@ -1199,7 +1196,6 @@ define([
 
 
         _restore: function (node) {
-            // console.log("Restoring node id", node.id);
             // Restaurem una copia del node
             let clonedNode = JSON.parse(JSON.stringify(node));
 
@@ -1211,7 +1207,8 @@ define([
         },
 
         restore: function () {
-            // console.log("Restoring");
+            console.log("Restoring");
+            console.log("Next ABANS DEL RESTORE: ", this.structure.next);
             if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop, perquè és recursiu, sobre l'element que conté els childs actualment
                 this.discardSiblings();
@@ -1228,6 +1225,7 @@ define([
                 console.log("no hi havia backup");
             }
 
+            console.log("Next DESPRÉS DEL RESTORE: ", this.structure.next);
         },
 
         _backup: function (node) {
@@ -1266,20 +1264,13 @@ define([
         _createTree(root, outTokens) {
             // console.log("_createTree",root, outTokens);
 
-
-
             this.discardSiblings();
-
 
             // Només hi ha un tipus open/close, que son els que poden tenir fills:
             //      OPEN: comencen per "<WIOCCL:"
             //      CLOSE: comencen per "</WIOCCL:"
 
-
             let stack = [];
-
-
-
             let parent = root && root.parent ? this.getNodeById(root.parent) : false;
 
             // Si els children del parent o el root són objectes es guarda la informació antiga,
@@ -1291,7 +1282,6 @@ define([
                     }
                 }
             }
-
 
             for (let i=0; i<root.children.length; i++){
                 if (typeof root.children[i] !== "string") {
@@ -1312,7 +1302,8 @@ define([
             // ALERTA! TODO: Cal gestionar el token inicial, aquest no s'ha d'afegira l'arbre
             // i el seu tancament tampoc
 
-            // console.log("Next key:", structure.next);
+
+            console.log("Next key (current):", this.structure.next);
             let nextKey = this.structure.next + "";
 
             let siblings = 0;
@@ -1623,8 +1614,9 @@ define([
 
 
 
-
+            console.log("Next before: ", this.structure.next);
             this.structure.next = Number(nextKey);
+            console.log("Next after: ", this.structure.next);
 
             // actualitzem el root, es passa com a referència
             // ALERTA[Xavi] canviar el node pel parent i establir el root com el nou id és el que fa que en actualitzar
@@ -1846,9 +1838,19 @@ define([
         // per crear nodes per incrustar directament a l'editor dojo.
         createNode: function(type, parent, key) {
 
+
             if (!key) {
-                key = this.structure.next++;
+                key = Number(this.structure.next);
+                if (key < 1000) {
+                    console.error(this.structure);
+                    alert("Key reemplaçada!")
+                }
+                console.log("Next before: ", this.structure.next);
+                this.structure.next = (Number(this.structure.next) + 1) + "";
+                console.log("Next after: ", this.structure.next);
             }
+
+            console.log("Creant node type/parent/key: ", type, parent, key);
 
             let node = {
                 "type": type,

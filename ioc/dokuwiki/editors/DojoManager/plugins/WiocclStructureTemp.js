@@ -10,7 +10,7 @@ define([
 
 
         constructor: function (config, dispatcher) {
-            // console.error("WiocclStructureTemp");
+            console.error("WiocclStructureTemp", config);
 
             this.structure = {
                 next: 0,

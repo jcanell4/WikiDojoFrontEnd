@@ -11,14 +11,22 @@ define([
 
         constructor: function (config, dispatcher) {
 
-            // console.error("WiocclStructureClone");
+            console.error("WiocclStructureClone", config);
             this.setStructure(config.structure, config.root);
             this.dispatcher = dispatcher;
         },
 
         setStructure: function(structure, root) {
 
-            // console.log("setStructure:", structure);
+            console.log("setStructure:", structure);
+
+            if (this.structure) {
+                console.log("quin és el next abans del parse?", this.structure.next);
+            } else {
+                console.log("No hi ha estructura");
+            }
+
+
 
             this.structure = JSON.parse(JSON.stringify(structure));
 
@@ -30,6 +38,8 @@ define([
             // siblings és un array d'ids de nodes temporals afegits
             this.siblings = [];
             this.root =root;
+
+            console.log("quin és el next després del set?", this.structure.next);
 
         }
 

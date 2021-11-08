@@ -208,13 +208,33 @@ define([
 
             // ALERTA! Aquest codi es prácticament igual que el del botó update
             if (wasVoid) {
-                this.structure.updating = true;
-                this.structure.discardSiblings();
-                this.structure.updating = false;
-                this.structure.parse(this.editor.getValue(), this.editor.wioccl);
-                let node = this.structure.getNodeById(id)
-                // console.log("node?", node);
-                this.setData(node, node);
+
+                // PROBLEMA AQUI, el update s'ha modificat però això continua igual que abans'
+                // el id del node es improbable que sigui correcte perquè el posMap modifica tots els nodes excepte el wrapper
+
+                // this.structure.updating = true;
+                // this.structure.discardSiblings();
+                // this.structure.updating = false;
+                // this.structure.parse(this.editor.getValue(), this.editor.wioccl);
+                // let node = this.structure.getNodeById(id)
+                // // console.log("node?", node);
+                // this.setData(node, node);
+
+                let structure = this.structure;
+                structure.updating = true;
+                structure.discardSiblings();
+
+                // Restaurem la estructura abans de fer el parse
+                structure.restore();
+
+                let editor = this.editor;
+                console.log("hi ha editor?", editor);
+                let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
+
+                // console.log("estructure root?", structure.root);
+                // console.log("wiocclnode?", wiocclNode);
+
+                this.setData(structure.getNodeById(structure.root), wiocclNode);
 
                 this.updateInsertButtons();
             }

@@ -101,8 +101,8 @@ define([
 
         process: function () {
 
+            console.log("Quin és el next de la estructura?", this.structure.structure.next, this.structure.structure);
             let node = this.structure.createNode('void', '0');
-            this.structure.addNode(node);
 
             let html = this.htmlTemplate.replace('%s', node.id);
 
@@ -259,7 +259,6 @@ define([
                 // let structure = new WiocclStructureWrapper(context.structure, context.editor.dispatcher);
 
 
-
                 let wiocclDialog = new Dialog({
                     title: 'Edició wioccl',
                     // style: 'width:auto',
@@ -313,7 +312,7 @@ define([
             structure.updating = true;
             structure.discardSiblings();
 
-            // TEST: restaurar la estructura abans de fer el parse
+            // Restaurem la estructura abans de fer el parse
             structure.restore();
 
             let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
@@ -333,7 +332,7 @@ define([
 
         // Si aquest no és el root, cal cercar el parent que té com a parent el node 0
         _save: function (editor) {
-            // console.log("Estructura original:", this.editor.extra.wioccl_structure.structure);
+            // console.log("Estructura original:", this.editor.extra.wioccl_structure);
 
             let context = this;
             // 0 actualitzar el contingut actual
@@ -438,10 +437,10 @@ define([
                 // console.log("ids de nodes per eliminar:", removedIds);
 
                 for (let id of removedIds) {
-                    // console.log("Buscant node:", id)
+                    console.log("Buscant node:", id)
                     let $node = context.$document.find('[data-wioccl-ref="' + id + '"]');
                     $node.remove();
-                    // console.log("Eliminat:", $node);
+                    console.log("Eliminat:", $node);
                 }
 
                 // Cal eliminar també les referències al node arrel (poden ser múltiple en el cas del foreach)
@@ -451,7 +450,10 @@ define([
                 // console.log("Eliminant root nodes", rootRef, $rootNodes);
                 // 5 inserir el html que ha arribat del servidor
                 // Afegim les noves i eliminem el cursor
+                console.log("Afegim nou node:", data[0].value.content);
                 let $nouRoot = jQuery(data[0].value.content);
+                console.log("S'ha creat el node?", $nouRoot);
+
 
                 // console.log("S'inserta el nou contingut abans de:", $rootNodes.get(0))
                 // console.log("quin és el $nouroot??", $nouRoot);
