@@ -323,6 +323,13 @@ define([
                 RESET: {
                     attrs: [],
                 },
+                CHOOSE: {
+                    attrs: [
+                        {name: 'id', type: 'string'},
+                        {name: 'lExpression', type: 'string', optional: true},
+                        {name: 'rExpression', type: 'string', optional: true},
+                    ],
+                },
                 CASE: {
                     attrs: [
                         {name: 'relation', type: 'string', optional: true},
@@ -975,7 +982,7 @@ define([
 
 
         rebuildPosMap: function (item) {
-            // console.error("Rebuilding chunkmap for", item);
+            console.error("Rebuilding chunkmap for", item);
 
             let outChunkMap = new Map();
 
@@ -1725,7 +1732,9 @@ define([
             // console.log("Fent remove node de id", node.id, node.parent);
 
             if (!node.parent) {
+                // Això es correcte quan s'intenta eliminar un node temporal com els wrappers
                 console.error("no hi ha parent?", node.children);
+                return;
             }
 
             let parent = this.structure[node.parent];
