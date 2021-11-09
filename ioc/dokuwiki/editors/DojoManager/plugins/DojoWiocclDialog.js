@@ -154,7 +154,7 @@ define([
                 let callback = function (code) {
                     context._insertCode(code);
                 };
-                context.structure.getFieldTemplate(callback);
+                context.structure.getFieldTemplate(callback, context.fields);
             });
 
             jQuery(this.insertFunctionBtnNode).on('click', function () {
@@ -322,6 +322,7 @@ define([
             this.treeWidget = new Tree({
                 id: Date.now(),
                 model: model,
+                fields: this.fields,
                 onOpenClick: true,
                 onLoad: function () {
                     // dom.byId('image').src = '../resources/images/root.jpg';

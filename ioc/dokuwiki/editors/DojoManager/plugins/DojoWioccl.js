@@ -255,9 +255,9 @@ define([
                 // let structure = new WiocclStructureClone(context.structure, context.editor.dispatcher);
                 // let structure = new WiocclStructureWrapper(context.structure, context.editor.dispatcher);
 
-
                 let wiocclDialog = new Dialog({
                     title: 'Edició wioccl',
+                    fields: context.editor.extra.wioccl_structure.fields,
                     // style: 'width:auto',
                     style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
                     onHide: function (e) { // Es dispara quan es tanca el diàleg

@@ -586,27 +586,15 @@ define([
             dialog.show();
         },
 
-        getFieldTemplate: function (callback) {
-            // let field = prompt("Introdueix el nom del field", "field");
-            //
-            // if (field===null) {
-            //     return "";
-            // }
-            //
-            // return `{##${field}##}`;
-            // let options = [];
-            // for (let func of this.getFunctionNames()) {
-            //     options.push(func);
-            // }
+        getFieldTemplate: function (callback, fields) {
+
 
             // TODO: les possibles noms dels camps han d'arribar des del servidor
             // per determinar com els obtenim aqui
             let data = {
                 name: 'field',
                 label: 'Camp o variable',
-                options: [
-                    // 'fieldA', 'variable1', 'test zero'
-                ]
+                options: fields
             }
 
             let auxId = this.dispatcher.getGlobalState().getCurrentId();
