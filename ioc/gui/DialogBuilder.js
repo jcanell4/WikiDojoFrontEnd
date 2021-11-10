@@ -497,21 +497,14 @@ define([
         build: function () {
             var style = '';
 
-
             if (this.params.height) {
-                style += 'height:' + this.params.height ;
-                if (this.params.height !== "auto") {
-                    style += "px";
-                }
-                style+= ";";
+                style += 'height:' + this.params.height;
+                style += isNaN(this.params.height) ? ";" : "px;";
             }
 
             if (this.params.width) {
                 style += 'width:' + this.params.width;
-                if (this.params.width !== "auto") {
-                    style += "px";
-                }
-                style+= ";";
+                style += isNaN(this.params.width) ? ";" : "px;";
             }
 
             this.params['style'] = style;
