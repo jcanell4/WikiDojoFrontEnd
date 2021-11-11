@@ -57,7 +57,7 @@ define([], function () {
         
         construyeDesdeObjeto: function(k, arrL, arrR, level) {
             var key, itemL, itemR;
-            var taula = this.construye("fila "+(k+1), "", "", level, "diffkeycolor");
+            var taula = this.construye("fila "+(k+1), "", "", level);
             
             for (key in arrL) {
                 itemL = this.parseStringToArrayOrObject(arrL[key]);
@@ -89,8 +89,9 @@ define([], function () {
             return taula;
         },
         
-        construye: function(key, itemL, itemR, level, keycolor) {
+        construye: function(key, itemL, itemR, level) {
             var taula = "";
+            var keycolor = "diffkeycolor";
             var ch = (itemL !== itemR) ? this.clCH : this.fiCH;
 
             var dvCl = this.divCol + this.colorL + ch,  //div column left
