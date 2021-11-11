@@ -34,7 +34,7 @@ define([
         } else if (element.createTextRange) {
             let range = element.createTextRange();
             range.collapse(true);
-            if(pos < 0) {
+            if (pos < 0) {
                 pos = $(element).val().length + pos;
             }
             range.moveEnd('character', pos);
@@ -56,11 +56,11 @@ define([
         lastCursor: null,
         wasFocused: null,
 
-        lockEditor: function() {
+        lockEditor: function () {
             this.editor.lockEditor();
         },
 
-        unlockEditor: function() {
+        unlockEditor: function () {
             if (!ALWAYS_LOCKED) {
                 this.editor.unlockEditor();
             }
@@ -85,9 +85,8 @@ define([
             this._selectWiocclNode(wiocclNode)
             // this.selectedWioccl = wioccl;
 
-            // this._rebuildPosMap(this.source.getStructure()[this.refId]);
             this.structure.rebuildPosMap(wiocclNode);
-            // this._rebuildPosMap(wioccl);
+            let $deleteButton = jQuery(this.deleteButtonNode);
             let $updateButton = jQuery(this.updateButtonNode);
             let $saveButton = jQuery(this.saveButtonNode);
 
@@ -98,35 +97,24 @@ define([
                 context.updateCallback(context.editor);
             });
 
-            // this.structure.on('structure_change', function() {
-            //     console.log("structure_change");
-            //     // alert("structure_change");
-            //     // això crida al DojoWioccl._update
-            //     //context.updateCallback(context.editor);
-            //
-            //
-            //     let wiocclNode = context.structure.getNodeById(context.editor.wioccl.id);
-            //     console.log("node que reconstruim?", wiocclNode, context.structure);
-            //     context.structure.updating = true;
-            //     // la diferència amb el _update és que no fem el parse, i ho fem sobre la estructura wrappeada
-            //     context.setData(context.structure.getNodeById(context.structure.root), wiocclNode);
-            //
-            //
-            //
-            //     let auxContent = context.structure.getCode(wiocclNode);
-            //     console.log(context.editor.getPosition());
-            //     let cursor = context.editor.getPosition();
-            //     // let auxContent = this.source.getCode(item, this.structure);
-            //     console.log("quine és el codi a assignar??", auxContent);
-            //
-            //     // alert("Stop, check content");
-            //     context.editor.setValue(auxContent);
-            //     context.editor.setPosition(cursor);
-            //
-            //
-            //     context.structure.updating = false;
-            //     context.editor.resetOriginalContentState();
-            // });
+            $deleteButton.on('click', function () {
+                // Alerta, el context d'execució en afegir el callback al objecte de configuració (pel principal és DojoWioccl)
+
+                // TODO: demanar confirmació
+
+                context.editor.setValue('');
+                $updateButton.trigger('click');
+                let newNode = context.structure.getNodeById(context.editor.wioccl.id);
+                context._updateFields(newNode);
+                // context._updateLegend(newNode);
+                context._selectWiocclNode(newNode);
+            });
+
+            // Als subdialegs no s'ha de mostrar el botó d'eliminar nodes
+            if (!context.enabledDelete) {
+                $deleteButton.attr('disabled', 'true');
+                $deleteButton.css('opacity', '0.5');
+            }
 
             $saveButton.on('click', function () {
                 // Alerta, el context d'execució en afegir el callback al objecte de configuració
@@ -154,7 +142,7 @@ define([
                 let callback = function (code) {
                     context._insertCode(code);
                 };
-                context.structure.getFieldTemplate(callback);
+                context.structure.getFieldTemplate(callback, context.fields);
             });
 
             jQuery(this.insertFunctionBtnNode).on('click', function () {
@@ -178,13 +166,6 @@ define([
             if (currentWiocclNode.id !== this.selectedWiocclNode.id) {
                 this._selectWiocclNode(currentWiocclNode);
             }
-
-            // if (!currentWiocclNode) {
-            //     this.structure.rebuildPosMap(this.structure.getNodeById(this.editor.wioccl.id));
-            //     console.log("Nou mapa:", this.structure.)
-            //     currentWiocclNode = this.structure.getNodeById(this.selectedWiocclNode.id);
-            // }
-
 
             let canInsert = this.structure.canInsert(pos, currentWiocclNode);
 
@@ -228,22 +209,28 @@ define([
             // Si es tracta d'un void fem un update per refrescar l'arbre;
 
             // ALERTA! Aquest codi es prácticament igual que el del botó update
+
+            let structure = this.structure;
+            structure.updating = true;
+            structure.discardSiblings();
+
+            // Restaurem la estructura abans de fer el parse
+            structure.restore();
+
+            let editor = this.editor;
+            let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
+            structure.updating = false;
+
             if (wasVoid) {
 
-                let structure = this.structure;
-                structure.updating = true;
-                structure.discardSiblings();
-
-                // Restaurem la estructura abans de fer el parse
-                structure.restore();
-
-                let editor = this.editor;
-                let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
-
                 this.setData(structure.getNodeById(structure.root), wiocclNode);
-
-                this.updateInsertButtons();
             }
+
+            this.updateInsertButtons();
+
+
+            // Forcem un update, això dispararà la detecció de siblings
+            //this._updateDetail(wiocclNode, true);
 
 
         },
@@ -322,6 +309,7 @@ define([
             this.treeWidget = new Tree({
                 id: Date.now(),
                 model: model,
+                fields: this.fields,
                 onOpenClick: true,
                 onLoad: function () {
                     // dom.byId('image').src = '../resources/images/root.jpg';
@@ -333,7 +321,14 @@ define([
                     context._updatePendingChanges_Field2Detail()
 
 
-                    let isDirty = structure.dirtyStructure || context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges;
+                    let isDirty = structure.dirtyStructure || context.editor.isChanged()
+                        || context._pendingChanges_Field2Detail || context._fieldChanges;
+
+                    // console.log("Es dirty?", isDirty);
+                    // console.log("structure.dirtyStructure", structure.dirtyStructure);
+                    // console.log("context.editor.isChanged()", context.editor.isChanged());
+                    // console.log("context._pendingChanges_Field2Detail", context._pendingChanges_Field2Detail);
+                    // console.log("context._fieldChanges", context._fieldChanges);
 
                     ///////////////// COMPROVACIO DE BRANQUES SIMILARS //////////////////
                     if (isDirty) {
@@ -342,6 +337,9 @@ define([
 
                         // PAS 1: agafar el wrapper
                         let getWrapper = function (node) {
+                            if (!node) {
+                                return false;
+                            }
                             if (node.type === "wrapper" || node.type === "temp") {
                                 return node;
                             } else if (node.parent) {
@@ -351,7 +349,9 @@ define([
                             return null;
                         }
 
+                        // Si no s'ha trobat és que hi han hagut canvis i ha canviat el posmap
                         let wrapper = getWrapper(item);
+
 
                         // PAS 2: trobar el node corresponent al backup node
                         let getNode = function (node, id) {
@@ -401,7 +401,7 @@ define([
                             return true;
                         }
 
-                        let areSimilar = areNodesSimilar(wrapper, backupWrapper);
+                        let areSimilar = wrapper ? areNodesSimilar(wrapper, backupWrapper) : false;
                         // console.log("Són similars?", areSimilar, wrapper, backupWrapper);
 
                         // Restaurem automàticament sense avisar
@@ -597,8 +597,6 @@ define([
 
         // todo: determinar si es necessari el ignore detal
         _updateFields: function (wiocclNode, ignoreDetail) {
-            // console.log("update fields");
-
 
             // type: wioccl o content.
             // todo: fer un tractament diferent per cada tipus, actualment es modifica el wiocclNode per tractar
@@ -613,7 +611,6 @@ define([
                 // case 'wioccl':
                 default:
                     let fields = this._extractFieldsFromWiocclNode(wiocclNode);
-                    // console.log("_updateFields", fields);
                     this._setAttrs(fields, wiocclNode);
                     break;
 
@@ -623,7 +620,7 @@ define([
         },
 
         _updateDetail: function (wiocclNode, ignoreFields) {
-            // console.log("Updating wiocclNode", wiocclNode)
+            // console.log("Updating wiocclNode", wiocclNode, this.updating, ignoreFields)
 
             if (this.updating) {
                 // console.log("Returning");
@@ -771,7 +768,7 @@ define([
         },
 
         _generateHtmlForAttrs: function (fields, wiocclNode) {
-
+            // console.log("_generateHtmlForAttrs", fields, wiocclNode);
             let html = '';
 
             let attrsMap = new Map();
@@ -813,22 +810,29 @@ define([
                 html += '</div>';
             }
 
+
+            // ALERTA[Xavi] Prova reconstrucció dels siblings indirecte
+            // Això fa que s'afegeixin els siblings correctament
+            this.structure.getInner(wiocclNode)
+
+
             // Afegim un botó adicional per editar el contingut
             // TODO: això no és un field, és el valor rebuild dels children
 
-            let value = this.structure.getInner(wiocclNode);
+            // let value = this.structure.getInner(wiocclNode);
 
             // ALERTA! el codi intern contè < i >, s'han de reemplaçar
-            value = value.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+            // value = value.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
             // console.log("inner amb htmlentities:", value);
 
-            html += '<div class="wioccl-textarea" data-inner-field="inner">';
-            // html += `<label>${field} <span>(${types})</span></label>`;
-            html += `<label>Contingut intern<span>(prem el botó per editar)</span></label>`;
-            html += '<textarea type="text" name="inner" disabled title="Per editar el contingut prem el botó">' + value + '</textarea>';
-            html += '<button data-button-edit>editar</button>';
-            html += '</div>';
+            // Amb la implementació actual això no te sentit, es pot editar utilitzant el botó wioccl o inserir
+            // nous elements mitjançant els altres botons
+            // html += '<div class="wioccl-textarea" data-inner-field="inner">';
+            // html += `<label>Contingut intern<span>(prem el botó per editar)</span></label>`;
+            // html += '<textarea type="text" name="inner" disabled title="Per editar el contingut prem el botó">' + value + '</textarea>';
+            // html += '<button data-button-edit>editar</button>';
+            // html += '</div>';
 
             return html;
         },
@@ -848,6 +852,10 @@ define([
                 html += '<button data-button-edit>wioccl</button>';
                 html += '</div>';
             }
+
+            // ALERTA[Xavi] Prova reconstrucció dels siblings indirecte
+            // Això fa que s'afegeixin els siblings correctament
+            this.structure.getInner(wiocclNode)
 
             return html;
         },
@@ -930,10 +938,10 @@ define([
 
                         // actulitzem el node de l'editor amb el restaurat
                         editor.wioccl = this.structure.getNodeById(editor.wioccl.id);
-                        this.structure.parse(editor.getValue(), editor.wioccl);
 
                         this.setData(this.structure.getNodeById(refId), rootWiocclNode);
-                    }
+                    },
+                    enabledDelete: false
 
                 });
 
@@ -952,7 +960,7 @@ define([
 
 
             $fields.find('input, textarea').on('change', function (e) {
-            // $fields.find('input, textarea').on('input change', function (e) {
+                // $fields.find('input, textarea').on('input change', function (e) {
                 context._fieldChanges = true;
 
                 // ALERTA! Descartada l'actualització mitjançant el timer (i l'input),
@@ -992,6 +1000,7 @@ define([
 
                 let tree = [];
 
+                // TODO: Eliminar, això ja no fa falta
                 if (selectedWiocclNode.addedsiblings) {
                     console.log("Hi ha siblings, canviem el rootnode");
                     // console.error("root.parent ", rootWiocclNode.parent, "old root", rootWiocclNode, "expected root", this.structure.getNodeById(rootWiocclNode.parent));
@@ -1045,10 +1054,7 @@ define([
             }
 
 
-
-
             let $attrContainer = jQuery(this.attrContainerNode);
-
 
 
             // let context = this;
@@ -1112,7 +1118,7 @@ define([
         },
 
         _updatePendingChanges_Detail2Field: function () {
-            // console.log("_updatePendingChanges_Detail2Field");
+            console.log("_updatePendingChanges_Detail2Field");
             // console.warn("desactivat Detail2Field");
             // return;
 
@@ -1144,7 +1150,6 @@ define([
 
 
             let candidateWiocclNode = this.structure.getNodeById(this.editor.wioccl.id);
-            // this._rebuildPosMap(this.source.getStructure()[this.selectedWioccl.id]);
             this.structure.rebuildPosMap(candidateWiocclNode);
 
             let updatedWioccl = this._getWiocclForCurrentPos();
@@ -1152,7 +1157,6 @@ define([
 
             this._updateFields(updatedWioccl);
 
-            this.structure.emit('structure_change');
             this.updating = false;
 
 
@@ -1578,7 +1582,7 @@ define([
 
 
             editor.on('change', function (e) {
-                // console.log("Changes detected", e, context.updating);
+                console.log("Changes detected", e, context.updating);
 
                 context.updateInsertButtons();
 
@@ -1587,7 +1591,7 @@ define([
                 // Afegida la comprovació de dirty perque si no no poden inserir-se elements desde un custom dialog
                 if (context.updating || (!context.dirty && !context.editor.hasFocus()
                     && jQuery(document.activeElement).attr('data-wioccl-btn') === undefined)) {
-                    // no s'actualitza l'editor, rao:
+                    // no s'actualitza l'editor
                     return;
                 }
 
@@ -1627,7 +1631,6 @@ define([
                 // S'ha de reconstruir el map aquí, per no modificar el selected mentre
                 // s'edita el camp
                 context.structure.rebuildPosMap(context.structure.getNodeById(editor.wioccl.id));
-                // context._rebuildPosMap(context.source.getStructure()[editor.wioccl.id]);
                 let wiocclNode = context.structure._getNodeForPos(context.lastPos);
                 context._selectWiocclNode(wiocclNode);
 

@@ -323,6 +323,13 @@ define([
                 RESET: {
                     attrs: [],
                 },
+                CHOOSE: {
+                    attrs: [
+                        {name: 'id', type: 'string'},
+                        {name: 'lExpression', type: 'string', optional: true},
+                        {name: 'rExpression', type: 'string', optional: true},
+                    ],
+                },
                 CASE: {
                     attrs: [
                         {name: 'relation', type: 'string', optional: true},
@@ -586,27 +593,15 @@ define([
             dialog.show();
         },
 
-        getFieldTemplate: function (callback) {
-            // let field = prompt("Introdueix el nom del field", "field");
-            //
-            // if (field===null) {
-            //     return "";
-            // }
-            //
-            // return `{##${field}##}`;
-            // let options = [];
-            // for (let func of this.getFunctionNames()) {
-            //     options.push(func);
-            // }
+        getFieldTemplate: function (callback, fields) {
+
 
             // TODO: les possibles noms dels camps han d'arribar des del servidor
             // per determinar com els obtenim aqui
             let data = {
                 name: 'field',
                 label: 'Camp o variable',
-                options: [
-                    // 'fieldA', 'variable1', 'test zero'
-                ]
+                options: fields
             }
 
             let auxId = this.dispatcher.getGlobalState().getCurrentId();
@@ -987,7 +982,7 @@ define([
 
 
         rebuildPosMap: function (item) {
-            // console.error("Rebuilding chunkmap for", item);
+            console.error("Rebuilding chunkmap for", item);
 
             let outChunkMap = new Map();
 
@@ -1737,7 +1732,9 @@ define([
             // console.log("Fent remove node de id", node.id, node.parent);
 
             if (!node.parent) {
+                // Això es correcte quan s'intenta eliminar un node temporal com els wrappers
                 console.error("no hi ha parent?", node.children);
+                return;
             }
 
             let parent = this.structure[node.parent];

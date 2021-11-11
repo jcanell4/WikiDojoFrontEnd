@@ -255,9 +255,9 @@ define([
                 // let structure = new WiocclStructureClone(context.structure, context.editor.dispatcher);
                 // let structure = new WiocclStructureWrapper(context.structure, context.editor.dispatcher);
 
-
                 let wiocclDialog = new Dialog({
                     title: 'Edició wioccl',
+                    fields: context.editor.extra.wioccl_structure.fields,
                     // style: 'width:auto',
                     style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
                     onHide: function (e) { // Es dispara quan es tanca el diàleg
@@ -280,6 +280,7 @@ define([
                     refId: refId,
                     saveCallback: context._save,
                     updateCallback: context._update,
+                    enabledDelete: true,
 
                     // ALERTA[Xavi], aquesta propietat no és utilitzada pel dialeg, la injectem per poder-la utilitzar
                     // al saveCallback
@@ -312,7 +313,26 @@ define([
             // Restaurem la estructura abans de fer el parse
             structure.restore();
 
-            let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
+            let wiocclNode;
+
+            let content = editor.getValue();
+            if (content) {
+                console.log("Parsing")
+                wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
+            } else {
+                console.log("Eliminant");
+                // this.structure.restore();
+                this.structure._removeChildren(editor.wioccl.id);
+                if (editor.wioccl.type !== 'wrapper') {
+                    let currentNode = structure.getNodeById(editor.wioccl.id);
+                    wiocclNode = structure.getNodeById(currentNode.parent);
+                    this.structure._removeNode(currentNode.id);
+                } else {
+                    wiocclNode = structure.getNodeById(structure.root);
+                }
+
+            }
+
 
             // console.log("estructure root?", structure.root);
             // console.log("wiocclnode?", wiocclNode);

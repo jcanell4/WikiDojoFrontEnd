@@ -834,29 +834,36 @@ span[data-wioccl-state] {
     width: 15px;
     height: 15px;
     display:inline-block;
+    margin: 1px;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 
 [data-wioccl-state="open"][data-wioccl-ref] {
-    background-color: #aaaaFF;
+    /*background-color: #aaaaFF;*/
+    background-image: url("./images/edit-solid.svg");
 }
 
 [data-wioccl-state="close"][data-wioccl-ref] {
-    background-color: blue;
+    /*background-color: blue;*/
+    background-image: url("./images/edit-solid.svg");
 }
 
 
 [data-wioccl-xtype="readonly"][data-wioccl-state="open"] {
-    background-color: red;
+    /*background-color: red;*/
+    background-image: url("./images/lock-open.svg") !important;
 }
 
 [data-wioccl-xtype="readonly"][data-wioccl-state="close"] {
-    background-color: #6c0000;
+    /*background-color: #6c0000;*/
+    background-image: url("./images/lock-close.svg") !important;
 }
 
 
 [data-wioccl-ref] {
-    background-color: greenyellow;
+    background-color: #d1fd8f;
     cursor: pointer;
 }
 
