@@ -23,17 +23,15 @@ define([
             process: function (value, dispatcher) {
                 this.dispatcher = dispatcher;
                 // console.log("DraftProcessor#process", value);
-                    this._processDialog(value, dispatcher);
+                this._processDialog(value, dispatcher);
             },
 
             /**
              * Configura el dialeg amb el text passat com argument i el mostra.
-             *
              * @private
              */
             _processDialog: function (value, dispatcher) {
                 //console.log("DraftProcessor#_processDialog", value);
-
                 this.eventManager = dispatcher.getEventManager();
                 this.dialogManager = dispatcher.getDialogManager();
                 this.draftManager = dispatcher.getDraftManager();
@@ -50,9 +48,8 @@ define([
 
             _showDiffDialog: function (value) {
                 // console.log("DraftProcessor#_showDiffDialog", value);
-
-                var data = this._extractData(value),
-                    dialogParams;
+                var data = this._extractData(value);
+                var dialogParams, dialog;
 
                 if (data.document.content === data.draft.content) {
 
@@ -65,7 +62,6 @@ define([
                     console.warn("El content i el draft son iguals");
                     return;
                 }
-
 
                 dialogParams = {
                     id: 'diff',
@@ -83,7 +79,6 @@ define([
                                 eventType: this._getActionType(),
                                 dataToSend: this._getDocumentQuery()
                             }
-
                         },
                         {
                             id: 'open_draft',
@@ -95,16 +90,28 @@ define([
                                 dataToSend: this._getDraftQuery()
                             }
                         }
-                    ],
-                    diff: {
+                    ]
+                };
+
+                if (value.params.projectType) {
+                    dialogParams.diff = {
+                        formDocum: data.document.content,
+                        formDraft: data.draft.content,
+                        labelDocum: 'Document (' + data.document.date + ')',
+                        labelDraft: 'Esborrany (' + data.draft.date + ')'
+                    };
+                    dialog = this.dialogManager.getDialog(this.dialogManager.type.PROJECT_DIFF, this.docId, dialogParams);
+                }
+                else {
+                    dialogParams.diff = {
                         text1: data.document.content,
                         text2: data.draft.content,
                         text1Label: 'Document (' + data.document.date + ')',
                         text2Label: 'Esborrany (' + data.draft.date + ')'
-                    }
-                };
+                    };
+                    dialog = this.dialogManager.getDialog(this.dialogManager.type.LOCKED_DIFF, this.docId, dialogParams);
+                }
 
-                var dialog = this.dialogManager.getDialog(this.dialogManager.type.LOCKED_DIFF, this.docId, dialogParams);
                 dialog.show();
             },
 
@@ -156,9 +163,7 @@ define([
                 } else {
                     return this.DEFAULT_DRAFT;
                 }
-
             },
-
 
             _buildQuery: function (value) {
                 // console.log("DraftProcessor#_buildQuery", value);
@@ -175,11 +180,8 @@ define([
                             + '&section_id=' + value.params.selected
                             + '&editing_chunks=' + value.params.editing_chunks;
                 }
-
                 query += this._getProjectParams();
-
                 query += '&editorType=' + this.dispatcher.getGlobalState().userState['editor'];
-
                 // console.log("Query built: ", query);
                 return query;
             },
@@ -191,29 +193,25 @@ define([
                 if (this.isLocalDraft) {
                     query += '&recover_local_draft=true';
                 }
-
                 return query + '&recover_draft=true';
             },
 
             _getProjectParams: function() {
-
                 var params = '';
-
                 var contentCache = this.dispatcher.getGlobalState().getContent(this.docId);
 
                 if (contentCache.projectOwner) {
                     params += "&projectOwner=" + contentCache.projectOwner;
                     params += "&projectSourceType=" + contentCache.projectSourceType;
+                }else if (contentCache.projectType) {
+                    params += "&projectType=" + contentCache.projectType;
                 }
-
                 return params;
             },
 
             _getDocumentQuery: function () {
-
                 // return this.query + '&recover_draft=false&editorType=' + this.dispatcher.getGlobalState().userState['editor'];
                 return this.query + '&recover_draft=false';
-
             },
 
             _setActionType: function (value) {
