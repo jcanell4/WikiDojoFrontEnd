@@ -213,13 +213,11 @@ define([
         },
 
         _addListerners: function () {
-            var $button;
-
+            //var $button;
             if (!this.buttons) {
                 return;
             }
             var buttonId;
-
             var context = this;
 
             for (var i = 0; i < this.buttons.length; i++) {
@@ -230,10 +228,8 @@ define([
                     this.buttons[i].widget._callbackDlg = [];
                     this.buttons[i].widget._removeDlg = this.remove.bind(this);
                     for (var j = 0; j < this.buttons[i].callback.length; j++) {
-
                         this.buttons[i].widget._callbackDlg.push(this.buttons[i].callback[j]);
                     }
-
 
                     this.buttons[i].widget.onClick = function(){
                         for (var j = 0; j < this._callbackDlg.length; j++) {

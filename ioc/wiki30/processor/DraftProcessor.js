@@ -145,7 +145,6 @@ define([
                     case 'full_document': //falling-through intencionat
                         return {content: draft.full.content, date: draft.full.date};
                     case 'partial_document':
-
                         if (draft.structured.content[value.selected]) {
                             return {
                                 content: draft.structured.content[value.selected],
@@ -153,7 +152,6 @@ define([
                             };
                         }
                 }
-
                 return this.DEFAULT_DRAFT;
             },
 
@@ -170,6 +168,7 @@ define([
                 var query = '';
 
                 switch (value.params.type) {
+                    case 'project':
                     case 'full_document':
                         query += 'id=' + value.ns + (value.rev ? '&rev=' + value.rev : '');
                         break;
