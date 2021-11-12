@@ -183,9 +183,18 @@ define([
         getCurrentContent: function () {
             // Genera diccionari id:valor
             var currentContent = {};
+            var items = ['input[type="text"]',
+                         'input[type="hidden"]',
+                         'input[type="string"]',
+                         'input[type="number"]',
+                         'input[type="decimal"]',
+                         'input[type="date"]',
+                         'input[type="checkbox"]',
+                         'input[type="boolean"]',
+                         'select',
+                         'textarea'];
             var $form = jQuery('form[id="form_' + this.id + '"]');
-            var $input = $form.find('input[type="text"], input[type="hidden"], input[type="string"], input[type="number"], input[type="date"], select, textarea');
-
+            var $input = $form.find(items.join());
             var context = this;
             var valor;
 
@@ -197,7 +206,6 @@ define([
                         valor = (this.value) ? this.value : "";
                         currentContent[this.name] = valor;
                     }
-
                 }
             });
 
