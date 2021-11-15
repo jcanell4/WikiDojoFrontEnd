@@ -14,12 +14,15 @@ define([], function () {
         clCH: " itemProjectChanged'>",
         
         compara: function (arrL, arrR, titleL, titleR) {
-            var key, itemL, itemR, taula,
+            var key, itemL, itemR, taula, compuestos, atmp,
                 inHl = this.divCol + this.colorL + "'>" + titleL + this.fiDiv,
                 inHr = this.divCol + this.colorR + "'>" + titleR + this.fiDiv;
                 
             taula = this.divMain + this.divRow + inHl + inHr + this.fiDiv;
             for (key in arrL) {
+                if (key.indexOf("#") !== -1) {
+                    atmp = key.split("#");
+                }
                 itemL = this.parseStringToArrayOrObject(arrL[key]);
                 itemR = this.parseStringToArrayOrObject(arrR[key]);
                 if (Array.isArray(itemL)) {
