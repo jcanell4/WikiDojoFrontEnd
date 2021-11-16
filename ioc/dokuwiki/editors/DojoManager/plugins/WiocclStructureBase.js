@@ -994,7 +994,7 @@ define([
             console.warn("IDEA1: comprovar com s'ha fet al createTree <--- aquesta ha de ser la clau")
             console.warn("IDEA2: comprovem si els nodes que hi ha al item.parent són els correctes <-- això no ho veig clar" +
                 ", mass problemes")
-            alert("Stop!")
+            // alert("Stop!")
 
 
             // s'han de tenir en compte els siblings temporals
@@ -1004,10 +1004,10 @@ define([
                 close: '',
                 attrs: '',
                 // ALERTA! Cal crear una copia perquè si no es modifiquen els siblings!!
-                children: this.siblings ? JSON.parse(JSON.stringify(this.siblings)) : []
+                // children: this.siblings ? JSON.parse(JSON.stringify(this.siblings)) : []
             }
 
-            wrapper.children.unshift(item);
+            // wrapper.children.unshift(item);
 
             // Cerquem els sibligs del node seleccionat. Això s'ha d'establir aqui
             // perquè el _createPosMap es crida recursivament
@@ -1020,6 +1020,7 @@ define([
                 auxParent = this.getNodeById(item.parent);
             }
 
+            wrapper.children = JSON.parse(JSON.stringify(auxParent.children));
 
 
 
@@ -1253,6 +1254,9 @@ define([
         },
 
         parse: function (text, node) {
+            // abans de fer el parse fem un restore
+            this.restore();
+
 
             let outTokens = this._tokenize(text);
             this._createTree(node, outTokens, this.structure);

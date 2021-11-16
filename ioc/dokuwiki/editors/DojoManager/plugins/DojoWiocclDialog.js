@@ -24,7 +24,7 @@ define([
 
     // Aquest és el comportament normal, no és pot editar directament, només mitjançant els botons.
     // Es pot posar com a false per testejar, o podem parametritzar-lo segons el tipus d'usuari (només avanaçats).
-    const ALWAYS_LOCKED = true;
+    const ALWAYS_LOCKED = false;
 
 
     // TODO: Extreure a algun lloc més adient
