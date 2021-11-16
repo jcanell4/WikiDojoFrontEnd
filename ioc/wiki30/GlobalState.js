@@ -231,7 +231,8 @@ define([
         },
 
         getCurrentNs: function () {
-            return this.currentTabId.split('_').join(':');
+            return this.pages[this.currentTabId].ns
+            // return this.currentTabId.split('_').join(':');
         },
 
         // ALERTA[Xavi] en molts punts s'assigna aquest valor directament

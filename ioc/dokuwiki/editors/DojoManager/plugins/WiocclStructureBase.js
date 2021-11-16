@@ -986,6 +986,17 @@ define([
 
             let outChunkMap = new Map();
 
+
+
+            console.warn("TODO: repassar que pasa amb els children, aquí el que s'esta fent és posar com a childs " +
+                "un clone de this.siblings, però això no funciona perquè no sempre estan actualitzats, hem de fer " +
+                "la cerca dels childs aqui (en lloc de al createTree")
+            console.warn("IDEA1: comprovar com s'ha fet al createTree <--- aquesta ha de ser la clau")
+            console.warn("IDEA2: comprovem si els nodes que hi ha al item.parent són els correctes <-- això no ho veig clar" +
+                ", mass problemes")
+            alert("Stop!")
+
+
             // s'han de tenir en compte els siblings temporals
             // creem un nou item que els contingui i aquest és el que reconstruim
             let wrapper = {

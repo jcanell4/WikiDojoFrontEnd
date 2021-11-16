@@ -885,17 +885,21 @@ define([
 
                 let tree = structure.getTreeFromNode(refId, true);
 
+                let depth = context.depth ? context.depth * 3 : 0;
+
                 let wiocclDialog = new DojoWioccDialog({
                     title: 'Edició wioccl (subdiàleg)',
-                    // style: 'width:auto',
-                    style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
-                    // style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 100%; max-height: 100%;',
+                    // style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
+                    // No es pot desplaçar perquè es calcula automàticament la posició i ajusta el top, left, etc.
+                    // així que canviem la mida segons la profunditat;
+                    style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: ' + (77 - depth) + '%; max-height: ' + (77 - depth) + '%;',
+                    depth: context.depth ? context.depth + 1 : 1,
+
                     onHide: function (e) { //Voliem detectar el event onClose i hem hagut de utilitzar onHide
                         this.destroyRecursive();
                         context.backup = null;
                     },
                     id: 'wioccl-dialog_inner' + counter,
-                    draggable: false,
                     firstResize: true,
                     dispatcher: context.dispatcher,
                     args: {
