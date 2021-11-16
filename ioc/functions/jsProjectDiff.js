@@ -14,15 +14,12 @@ define([], function () {
         clCH: " itemProjectChanged'>",
         
         compara: function (arrL, arrR, titleL, titleR) {
-            var key, itemL, itemR, taula, compuestos, atmp,
+            var key, itemL, itemR, taula,
                 inHl = this.divCol + this.colorL + "'>" + titleL + this.fiDiv,
                 inHr = this.divCol + this.colorR + "'>" + titleR + this.fiDiv;
-                
+
             taula = this.divMain + this.divRow + inHl + inHr + this.fiDiv;
             for (key in arrL) {
-                if (key.indexOf("#") !== -1) {
-                    atmp = key.split("#");
-                }
                 itemL = this.parseStringToArrayOrObject(arrL[key]);
                 itemR = this.parseStringToArrayOrObject(arrR[key]);
                 if (Array.isArray(itemL)) {
@@ -119,16 +116,12 @@ define([], function () {
         
         parseStringToArrayOrObject: function(elem) {
             try {
-                if(elem){
-                    ret = JSON.parse(elem);
-                }else{
-                    ret = "";
-                }
+                ret = (elem) ? JSON.parse(elem) : "";
             }catch(err) {
                 ret = (elem===undefined) ? "" : elem;
             }
             return ret;
-        }
+                    }
         
     };
     
