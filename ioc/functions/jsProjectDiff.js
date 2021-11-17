@@ -92,7 +92,7 @@ define([], function () {
         construye: function(key, itemL, itemR, level) {
             var taula = "";
             var keycolor = "diffkeycolor";
-            var ch = (itemL !== itemR) ? this.clCH : this.fiCH;
+            var ch = (itemL != itemR) ? this.clCH : this.fiCH;
 
             var dvCl = this.divCol + this.colorL + ch,  //div column left
                 dvCr = this.divCol + this.colorR + ch,  //div column right
