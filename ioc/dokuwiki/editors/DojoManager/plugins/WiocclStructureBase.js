@@ -982,19 +982,10 @@ define([
 
 
         rebuildPosMap: function (item) {
-            console.error("Rebuilding chunkmap for", item);
+            console.error("Rebuilding chunkmap for", item, this.structure);
 
             let outChunkMap = new Map();
 
-
-
-            console.warn("TODO: repassar que pasa amb els children, aquí el que s'esta fent és posar com a childs " +
-                "un clone de this.siblings, però això no funciona perquè no sempre estan actualitzats, hem de fer " +
-                "la cerca dels childs aqui (en lloc de al createTree")
-            console.warn("IDEA1: comprovar com s'ha fet al createTree <--- aquesta ha de ser la clau")
-            console.warn("IDEA2: comprovem si els nodes que hi ha al item.parent són els correctes <-- això no ho veig clar" +
-                ", mass problemes")
-            // alert("Stop!")
 
 
             // s'han de tenir en compte els siblings temporals
@@ -1020,7 +1011,48 @@ define([
                 auxParent = this.getNodeById(item.parent);
             }
 
+            // creem una copia dels children
             wrapper.children = JSON.parse(JSON.stringify(auxParent.children));
+
+            // L'editor pot estar mostrant 1 node + nous siblings, per aquest motiu recuperavem els "siblings"
+            // que són els fills del parent.
+            // però això no és correcte, l'editor mostra només els siblings que encara no s'han afegit definitivament
+            // és a dir, els siblings que no es troben al backup!
+            //
+            // cal recorrer aquests children i conservar només:
+            // el item
+            // els que no es trobin al backup:
+            //   - agafem el parent del backup (sempre ha d'existir? COMPROVAR AMB EL ROOT REAL)
+
+            //   - recorrem els childs i comprovem si són similars, si es troba similar es descarta
+            //          - Les posicions han de ser les mateixes
+
+            // PROBLEMA: el backupNode conté la estructura de l'arbre, així que per trobar el node corresponent
+            // al node editat cal recorrer totes les branques fins trobar-lo
+
+            for (let i=wrapper.children.length-1; i>=0; i--) {
+
+                let child = wrapper.children[i];
+                let id = typeof child === "string" ? child : child.id;
+
+                if (id === item.id) {
+                    continue;
+                }
+
+                if (this.structure.backupIndex[id] !== undefined) {
+                    console.log("eliminat node del wrapper:", wrapper.children[i]);
+                    console.log(wrapper.children.splice(i, 1));
+                }
+            }
+
+            console.log("Childrens filtrats:", wrapper.children);
+
+
+
+
+            console.log("que hi ha al backup", this.structure.backupNode);
+            console.log("que hi ha a l'índex", this.structure.backupIndex);
+
 
 
 
@@ -1038,8 +1070,9 @@ define([
             }
 
             for (let node of this.editorNodes) {
-                // console.log("Checking " + node.id);
-                if (auxParent.children.includes(node.id)) {
+                console.log("Checking " + node.id, this.editorNodes);
+                // ALERT! no és el mateix que el wrapper.children? el wrapper és un clone del auxParent
+                if (auxParent.children.includes(node.id) && wrapper.children.includes(node.id)) {
                     // console.log("Contingut al parent");
                     auxRootSibblings.push(node);
                 }
@@ -1069,11 +1102,11 @@ define([
             let cursorPos = pos + code.length;
 
             for (let i = 0; i < node.children.length; i++) {
-
                 let child = typeof node.children[i] === 'object' ? node.children[i] : this.structure[node.children[i]];
 
                 // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
                 // per exemple perquè és genera amb un for o foreach
+
                 if (child.isClone) {
                     continue;
                 }
@@ -1108,6 +1141,7 @@ define([
 
             // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
             // S'agafarà l'anterior
+            console.warn("posMap:", this.posMap);
             for (let [start, node] of this.posMap) {
 
                 last = node;
@@ -1232,7 +1266,7 @@ define([
             }
         },
 
-        _backup: function (node) {
+        _backup: function (node, index) {
 
 
             let id = typeof node === 'object' ? node.id : node;
@@ -1241,21 +1275,32 @@ define([
             // console.log("que hi ha a la posició?", node, this.structure, id, this.structure[id]);
             let backup = JSON.parse(JSON.stringify(this.structure[id]));
 
+            // afegim el node al mapa
+            // console.log(index, id);
+            index[id] = backup;
+
             for (let i = 0; i < backup.children.length; i++) {
                 // Canviem els ids per la copia de l'objecte
                 let id = typeof backup.children[i] === 'object' ? backup.children[i].id : backup.children[i];
-                backup.children[i] = this._backup(this.structure[id]);
+                // backup.children[id] = this._backup(this.structure[id]);
+                backup.children[i] = this._backup(this.structure[id], index);
             }
             return backup;
         },
 
         backup: function (node) {
-            this.structure.backupNode = this._backup(node);
+            this.structure.backupIndex = {};
+            this.structure.backupIndex[node.id] = JSON.parse(JSON.stringify(node));
+            this.structure.backupNode = this._backup(node, this.structure.backupIndex);
+
         },
 
         parse: function (text, node) {
-            // abans de fer el parse fem un restore
+            // abans de fer el parse fem un restore per aplicar els canvis sobre els originals
+            // de manera que es descarten els children generats anteriorment
             this.restore();
+
+            console.log("Parse a partir del node:", node);
 
 
             let outTokens = this._tokenize(text);
@@ -1266,7 +1311,7 @@ define([
         },
 
         // TODO: Refactoritzar i canviar el nom, això no crea un arbre, actualitza l'estructura a partir del node root
-        // i els tokens passats que són un vector d'elements que calr estructurar en forma d'arbre segons si es troben
+        // i els tokens passats que són un vector d'elements que cal estructurar en forma d'arbre segons si es troben
         // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
             // console.log("_createTree",root, outTokens);
@@ -1895,6 +1940,31 @@ define([
 
             return true;
         },
+
+        areNodesSimilar: function (currentNode, backupNode) {
+            // console.log("Comparant", currentNode, backupNode);
+            let similar = currentNode.attrs === backupNode.attrs && currentNode.type === backupNode.type
+                && currentNode.open === backupNode.open && currentNode.close === backupNode.close
+                && currentNode.children.length === backupNode.children.length;
+
+            // Si no són similars no cal comprovar els fills
+            if (!similar) {
+                // console.log("Detectat no similar", currentNode, backupNode);
+                return false;
+            }
+
+            for (let i = 0; i < currentNode.children.length; i++) {
+                // Alerta, la estructua s'agafa de fora de la funció!
+                let currentNodeChild = typeof currentNode.children[i] === 'string' ? this.getNodeById(currentNode.children[i]) : currentNode.children[i];
+
+                let childSimilars = this.areNodesSimilar(currentNodeChild, backupNode.children[i]);
+                if (!childSimilars) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
     });
 });

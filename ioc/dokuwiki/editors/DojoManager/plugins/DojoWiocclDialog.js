@@ -197,10 +197,15 @@ define([
         },
 
         _insertCode: function (code) {
+
             // this._moveCursorToInsertPosition();
 
             let wasVoid = this.selectedWiocclNode.type === 'void';
             let id = this.selectedWiocclNode.id;
+
+            console.log("node a l'editor?", this.selectedWiocclNode);
+
+
             this.dirty = true;
             let pos = this._getInsertPosition();
             this.editor.insertIntoPos(pos, code, true);
@@ -215,6 +220,7 @@ define([
             structure.discardSiblings();
 
             // Restaurem la estructura abans de fer el parse
+            // TODO: provar a eliminar-lo, ara sempre es fa un restore abans del parse
             structure.restore();
 
             let editor = this.editor;
@@ -241,6 +247,8 @@ define([
             let pos = this.editor.getPositionAsIndex();
             let node = this.structure._getNodeForPos(pos);
 
+            console.log("Node por position?", node, pos);
+            // alert("check node at position")
 
             if (node.type === 'content') {
                 return currentPosition;
@@ -315,7 +323,7 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    // console.log("item clicat:", item);
+                    console.log("item clicat:", item);
 
                     // actualitzem qualsevol canvi pendent abans
                     context._updatePendingChanges_Field2Detail()
@@ -402,6 +410,16 @@ define([
                         }
 
                         let areSimilar = wrapper ? areNodesSimilar(wrapper, backupWrapper) : false;
+
+                        // TODO: eliminar, validació de que la funció interna i la extreta funcionen igual
+                        let validation = structure.areNodesSimilar(wrapper, backupWrapper) === areNodesSimilar(wrapper, backupWrapper);
+                        if (!validation) {
+                            console.error("Validation fail, les funcions no retornent el mateix:");
+                        } else {
+                            console.log("validates");
+                        }
+
+
                         // console.log("Són similars?", areSimilar, wrapper, backupWrapper);
 
                         // Restaurem automàticament sense avisar
