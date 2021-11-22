@@ -203,7 +203,7 @@ define([
             let wasVoid = this.selectedWiocclNode.type === 'void';
             let id = this.selectedWiocclNode.id;
 
-            console.log("node a l'editor?", this.selectedWiocclNode);
+            // console.log("node a l'editor?", this.selectedWiocclNode);
 
 
             this.dirty = true;
@@ -247,7 +247,7 @@ define([
             let pos = this.editor.getPositionAsIndex();
             let node = this.structure._getNodeForPos(pos);
 
-            console.log("Node por position?", node, pos);
+            // console.log("Node por position?", node, pos);
             // alert("check node at position")
 
             if (node.type === 'content') {
@@ -323,7 +323,7 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    console.log("item clicat:", item);
+                    // console.log("item clicat:", item);
 
                     // actualitzem qualsevol canvi pendent abans
                     context._updatePendingChanges_Field2Detail()
@@ -384,40 +384,40 @@ define([
 
                         // ALERTA! el currentNode sempre ha de ser el mapejat a la estructura i s'han de restaurar
                         // completament els childs (excepte el primer)
-                        let areNodesSimilar = function (currentNode, backupNode) {
-                            // console.log("Comparant", currentNode, backupNode);
-                            let similar = currentNode.attrs === backupNode.attrs && currentNode.type === backupNode.type
-                                && currentNode.open === backupNode.open && currentNode.close === backupNode.close
-                                && currentNode.children.length === backupNode.children.length;
+                        // let areNodesSimilar = function (currentNode, backupNode) {
+                        //     // console.log("Comparant", currentNode, backupNode);
+                        //     let similar = currentNode.attrs === backupNode.attrs && currentNode.type === backupNode.type
+                        //         && currentNode.open === backupNode.open && currentNode.close === backupNode.close
+                        //         && currentNode.children.length === backupNode.children.length;
+                        //
+                        //     // Si no són similars no cal comprovar els fills
+                        //     if (!similar) {
+                        //         // console.log("Detectat no similar", currentNode, backupNode);
+                        //         return false;
+                        //     }
+                        //
+                        //     for (let i = 0; i < currentNode.children.length; i++) {
+                        //         // Alerta, la estructua s'agafa de fora de la funció!
+                        //         let currentNodeChild = typeof currentNode.children[i] === 'string' ? structure.getNodeById(currentNode.children[i]) : currentNode.children[i];
+                        //
+                        //         let childSimilars = areNodesSimilar(currentNodeChild, backupNode.children[i]);
+                        //         if (!childSimilars) {
+                        //             return false;
+                        //         }
+                        //     }
+                        //
+                        //     return true;
+                        // }
 
-                            // Si no són similars no cal comprovar els fills
-                            if (!similar) {
-                                // console.log("Detectat no similar", currentNode, backupNode);
-                                return false;
-                            }
-
-                            for (let i = 0; i < currentNode.children.length; i++) {
-                                // Alerta, la estructua s'agafa de fora de la funció!
-                                let currentNodeChild = typeof currentNode.children[i] === 'string' ? structure.getNodeById(currentNode.children[i]) : currentNode.children[i];
-
-                                let childSimilars = areNodesSimilar(currentNodeChild, backupNode.children[i]);
-                                if (!childSimilars) {
-                                    return false;
-                                }
-                            }
-
-                            return true;
-                        }
-
-                        let areSimilar = wrapper ? areNodesSimilar(wrapper, backupWrapper) : false;
+                        let areSimilar = wrapper ? structure.areNodesSimilar(wrapper, backupWrapper) : false;
 
                         // TODO: eliminar, validació de que la funció interna i la extreta funcionen igual
-                        let validation = structure.areNodesSimilar(wrapper, backupWrapper) === areNodesSimilar(wrapper, backupWrapper);
-                        if (!validation) {
-                            console.error("Validation fail, les funcions no retornent el mateix:");
-                        } else {
-                            console.log("validates");
-                        }
+                        // let validation = structure.areNodesSimilar(wrapper, backupWrapper) === areNodesSimilar(wrapper, backupWrapper);
+                        // if (!validation) {
+                        //     console.error("Validation fail, les funcions no retornent el mateix:");
+                        // } else {
+                        //     console.log("validates");
+                        // }
 
 
                         // console.log("Són similars?", areSimilar, wrapper, backupWrapper);
@@ -466,8 +466,16 @@ define([
 
                     structure.rebuildPosMap(wiocclNode);
 
+                    context.editor.setPosition({col: 0, column: 0});
+
+
+
                     context._updateDetail(wiocclNode);
+                    // TODO: cal el select? o és suficient amb l'uptade de la posició 0?
                     context._selectWiocclNode(wiocclNode);
+                    context._updateNodeForPosition();
+                    // reseteem el cursor
+
                 }
             });
 
@@ -638,7 +646,7 @@ define([
         },
 
         _updateDetail: function (wiocclNode, ignoreFields) {
-            // console.log("Updating wiocclNode", wiocclNode, this.updating, ignoreFields)
+            // console.log("_updateDetail", wiocclNode, this.updating, ignoreFields)
 
             if (this.updating) {
                 // console.log("Returning");
@@ -1140,7 +1148,7 @@ define([
         },
 
         _updatePendingChanges_Detail2Field: function () {
-            console.log("_updatePendingChanges_Detail2Field");
+            // console.log("_updatePendingChanges_Detail2Field");
             // console.warn("desactivat Detail2Field");
             // return;
 
@@ -1604,7 +1612,7 @@ define([
 
 
             editor.on('change', function (e) {
-                console.log("Changes detected", e, context.updating);
+                // console.log("Changes detected", e, context.updating);
 
                 context.updateInsertButtons();
 
@@ -1633,31 +1641,8 @@ define([
             // Cal fer un tractament diferent pel focus, aquest només es dispara quan
             // efectivament s'ha fet click, però es dispara abans de que s'estableixi
             // la posició??
-            editor.on('focus', function (e) {
-                // console.log("focusing");
-                context.lastPos = context.editor.getPositionAsIndex(false);
-
-
-                let candidateWiocclNode = context.structure._getNodeForPos(context.lastPos);
-
-                // console.error("Focus! canviant el selected per", candidate);
-
-                // let auxFields = context._extractFieldsFromWiocclNode(candidateWiocclNode);
-
-                context._selectWiocclNode(candidateWiocclNode);
-                // context._setFields(auxFields);
-                context._updateFields(candidateWiocclNode);
-
-
-                // *********************** //
-                // S'ha de reconstruir el map aquí, per no modificar el selected mentre
-                // s'edita el camp
-                context.structure.rebuildPosMap(context.structure.getNodeById(editor.wioccl.id));
-                let wiocclNode = context.structure._getNodeForPos(context.lastPos);
-                context._selectWiocclNode(wiocclNode);
-
-                context.updateInsertButtons();
-            });
+            // ALERTA! si no és fa el bind, la referència a _updateNodeForPosition és l'editor
+            editor.on('focus', context._updateNodeForPosition.bind(context));
 
             editor.on('changeCursor', function (e) {
                 // Problema, això fa que s'ignori la carrega i quan es fa a clic
@@ -1679,7 +1664,7 @@ define([
                     context.dirty = false;
                 }
 
-                if (context.selectedWiocclNode === candidateWiocclNode && pos === this.prevPos) {
+                if (context.selectedWiocclNode === candidateWiocclNode && pos === context.prevPos) {
                     // console.log("El seleccionat és el mateix que el actual? (no fem el extract)", context.selectedWioccl, candidate)
                     return;
                 }
@@ -1696,6 +1681,25 @@ define([
             });
 
             this._updateEditorHeight();
+        },
+
+        _updateNodeForPosition: function (e) {
+            this.lastPos = this.editor.getPositionAsIndex(false);
+            let candidateWiocclNode = this.structure._getNodeForPos(this.lastPos);
+
+            this._selectWiocclNode(candidateWiocclNode);
+            // context._setFields(auxFields);
+            this._updateFields(candidateWiocclNode);
+
+
+            // *********************** //
+            // S'ha de reconstruir el map aquí, per no modificar el selected mentre
+            // s'edita el camp
+            this.structure.rebuildPosMap(this.structure.getNodeById(this.editor.wioccl.id));
+            let wiocclNode = this.structure._getNodeForPos(this.lastPos);
+            this._selectWiocclNode(wiocclNode);
+
+            this.updateInsertButtons();
         },
 
         _getWiocclForCurrentPos: function () {

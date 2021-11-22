@@ -316,7 +316,7 @@ define([
 
             let content = editor.getValue();
             if (content) {
-                console.log("Parsing")
+                // console.log("Parsing")
                 wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
             } else {
                 console.log("Eliminant");

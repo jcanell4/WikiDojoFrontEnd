@@ -766,6 +766,13 @@ define([
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
+
+            // ALERTA: hi ha algun cas en el que falla i el node no té attrs
+            // cal localitzar aquest cas
+            if (!node || !node.attrs) {
+                console.error("getCode", node);
+            }
+
             node.attrs = node.attrs.replaceAll('&escapedgt;', '\\>');
             node.attrs = node.attrs.replaceAll('&mark;', '\\>');
             node.attrs = node.attrs.replaceAll('&markn;', "\n>");
@@ -982,10 +989,12 @@ define([
 
 
         rebuildPosMap: function (item) {
-            console.error("Rebuilding chunkmap for", item, this.structure);
+            // console.error("Rebuilding chunkmap for", item, this.structure);
 
             let outChunkMap = new Map();
 
+            // Referència per determinar quin item ha de persistir en el filtre
+            let auxId = item.id
 
 
             // s'han de tenir en compte els siblings temporals
@@ -1007,6 +1016,8 @@ define([
             // Si el item seleccionat és el wrapper no cal cercar el parent, aquest és el node que conté tot
             if (item.type === "wrapper" || item.type === "temp") {
                 auxParent = item;
+                // si el seleccionat és el wrapper s'han de conservar tots els childs
+                auxId = null;
             } else {
                 auxParent = this.getNodeById(item.parent);
             }
@@ -1023,6 +1034,7 @@ define([
             // el item
             // els que no es trobin al backup:
             //   - agafem el parent del backup (sempre ha d'existir? COMPROVAR AMB EL ROOT REAL)
+            //      * quins childrens ha de contenir si s'ha clicat el wrapper?
 
             //   - recorrem els childs i comprovem si són similars, si es troba similar es descarta
             //          - Les posicions han de ser les mateixes
@@ -1035,26 +1047,15 @@ define([
                 let child = wrapper.children[i];
                 let id = typeof child === "string" ? child : child.id;
 
-                if (id === item.id) {
+                if (auxId === null || id === auxId) {
                     continue;
                 }
+                wrapper.children.splice(i, 1);
 
-                if (this.structure.backupIndex[id] !== undefined) {
-                    console.log("eliminat node del wrapper:", wrapper.children[i]);
-                    console.log(wrapper.children.splice(i, 1));
-                }
             }
 
-            console.log("Childrens filtrats:", wrapper.children);
-
-
-
-
-            console.log("que hi ha al backup", this.structure.backupNode);
-            console.log("que hi ha a l'índex", this.structure.backupIndex);
-
-
-
+            // console.log("que hi ha al backup", this.structure.backupNode);
+            // console.log("que hi ha a l'índex", this.structure.backupIndex);
 
             // Pasem els childs a string si hi ha. ALERTA! Això está duplicat en altes punts
             for (let i=0; i<auxParent.children.length; i++){
@@ -1070,7 +1071,6 @@ define([
             }
 
             for (let node of this.editorNodes) {
-                console.log("Checking " + node.id, this.editorNodes);
                 // ALERT! no és el mateix que el wrapper.children? el wrapper és un clone del auxParent
                 if (auxParent.children.includes(node.id) && wrapper.children.includes(node.id)) {
                     // console.log("Contingut al parent");
@@ -1141,7 +1141,6 @@ define([
 
             // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
             // S'agafarà l'anterior
-            console.warn("posMap:", this.posMap);
             for (let [start, node] of this.posMap) {
 
                 last = node;
@@ -1300,8 +1299,7 @@ define([
             // de manera que es descarten els children generats anteriorment
             this.restore();
 
-            console.log("Parse a partir del node:", node);
-
+            // console.log("Parse a partir del node:", node);
 
             let outTokens = this._tokenize(text);
             this._createTree(node, outTokens, this.structure);
