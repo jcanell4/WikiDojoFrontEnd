@@ -769,7 +769,7 @@ define([
 
             // ALERTA: hi ha algun cas en el que falla i el node no té attrs
             // cal localitzar aquest cas
-            if (!node || !node.attrs) {
+            if (!node || node.attrs === undefined) {
                 console.error("getCode", node);
             }
 
@@ -1047,10 +1047,12 @@ define([
                 let child = wrapper.children[i];
                 let id = typeof child === "string" ? child : child.id;
 
-                if (auxId === null || id === auxId) {
+                if (auxId === null || id === auxId || !this.structure.backupIndex[id]) {
+                    console.log("conservant node pel posMap (per això funciona el root probablement, no elimina cap", child)
                     continue;
                 }
-                wrapper.children.splice(i, 1);
+                let eliminat = wrapper.children.splice(i, 1);
+                console.log("descartant node pel posMap:", auxId, id, this.structure.backupIndex[id], eliminat);
 
             }
 
