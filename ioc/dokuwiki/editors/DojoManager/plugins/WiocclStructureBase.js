@@ -791,6 +791,7 @@ define([
 
                 // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
                 // per exemple perquè és genera amb un for o foreach
+                // console.log(id, child);
                 if (child.isClone) {
                     continue;
                 }
@@ -1074,20 +1075,11 @@ define([
                 this.editorNodes = [item];
             }
 
-            // Això sembla que no fa falta
-
-            // for (let node of this.editorNodes) {
-            //     // ALERT! no és el mateix que el wrapper.children? el wrapper és un clone del auxParent
-            //     if (auxParent.children.includes(node.id) && wrapper.children.includes(node.id)) {
-            //         console.log("Contingut al parent");
-            //         auxRootSibblings.push(node);
-            //     }
-            // }
-
-            // console.log("Root Siblings:", auxRootSibblings);
 
             let rebuild = this._createPosMap(wrapper, 0, outChunkMap);
             this.posMap = outChunkMap;
+
+            // console.log("posMap refet:", this.posMap);
 
             this.dirtyStructure = true;
         },
@@ -1386,6 +1378,8 @@ define([
             this.editorNodes = [];
 
             // console.log("Preparat this.editorNodes", this.editorNodes);
+            let puntInsercio = 0;
+
             for (let i in outTokens) {
                 // console.log(i, outTokens[i]);
 
@@ -1436,7 +1430,6 @@ define([
                     outTokens[i].id = currentId;
                 }
 
-                let puntInsercio = 0;
 
                 if (stack.length > 0 && stack[stack.length - 1].children.includes(root.id)) {
                     puntInsercio =  stack[stack.length - 1].children.indexOf(root.id) +1;
@@ -1488,9 +1481,13 @@ define([
 
                     if (!lastChildren.some(filter)) {
                         // console.log("Afegint child", currentId);
-                        // TODO: cal fer un splice amb al punt d'inserció i actualitzar-lo
+                        // Cal fer un splice amb al punt d'inserció i actualitzar-lo
+                        // console.log("Inserint node a posició:", puntInsercio, currentId)
+                        // console.log("node anterior:", stack[stack.length - 1].children[puntInsercio])
                         stack[stack.length - 1].children.splice(puntInsercio, 0, currentId);
                         puntInsercio++;
+                        // console.log("ordre final:", stack[stack.length - 1].children);
+
                         // stack[stack.length - 1].children.push(currentId);
                     } else {
                         // console.log("Trobat child amb id (no afegim)", currentId);
@@ -1822,6 +1819,7 @@ define([
                     parent.children.splice(i, 1);
                     break;
                 }
+
                 delete (this.structure[id]);
             }
 

@@ -157,6 +157,31 @@ define([
                 context._insertCode(code);
             });
 
+            jQuery(this.deleteBtnNode).on('click', function () {
+                // let code = context.structure.getContentTemplate();
+                let pos = context.editor.getPositionAsIndex();
+                let node = context.structure._getNodeForPos(pos);
+
+                context.structure._removeNode(node.id);
+                let currentWiocclNode = context.structure.getNodeById(context.editor.wioccl.id);
+                context._updateDetail(currentWiocclNode, false);
+                // context._selectWiocclNode(currentWiocclNode);
+
+
+                // TEST: això està copiat del insert code
+                context.structure.restore();
+
+                let editor = context.editor;
+                context.structure.updating = true;
+                let wiocclNode = context.structure.parse(editor.getValue(), editor.wioccl);
+                context.structure.updating = false;
+
+                context.updateInsertButtons();
+
+                // console.log("node a l'editor", context.editor.wioccl);
+                // console.log("s'ha d'eliminar el node a la posició:", pos, node, context.structure.posMap);
+            });
+
         },
 
         updateInsertButtons: function () {
@@ -323,7 +348,7 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    // console.log("item clicat:", item);
+                    console.log("item clicat:", item, structure);
 
                     // actualitzem qualsevol canvi pendent abans
                     context._updatePendingChanges_Field2Detail()
@@ -662,6 +687,7 @@ define([
 
 
             let auxContent = this.structure.getCode(wiocclNode);
+            // console.log("Nou content:", auxContent);
 
             // let auxContent = this.source.getCode(item, this.structure);
 
