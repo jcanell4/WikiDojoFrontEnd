@@ -1048,11 +1048,12 @@ define([
                 let id = typeof child === "string" ? child : child.id;
 
                 if (auxId === null || id === auxId || !this.structure.backupIndex[id]) {
-                    console.log("conservant node pel posMap (per això funciona el root probablement, no elimina cap", child)
+                    // console.log("conservant node pel posMap (per això funciona el root probablement, no elimina cap", child)
                     continue;
                 }
-                let eliminat = wrapper.children.splice(i, 1);
-                console.log("descartant node pel posMap:", auxId, id, this.structure.backupIndex[id], eliminat);
+                wrapper.children.splice(i, 1);
+                // let eliminat = wrapper.children.splice(i, 1);
+                // console.log("descartant node pel posMap:", auxId, id, this.structure.backupIndex[id], eliminat);
 
             }
 
