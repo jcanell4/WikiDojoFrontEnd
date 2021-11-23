@@ -712,6 +712,7 @@ define([
             // }
 
             node.name = node.type ? node.type : node.open;
+
             tree.push(node);
 
             tree[0].children = this._getChildrenNodes(tree[0].children, tree[0].id);
@@ -1067,19 +1068,21 @@ define([
                 }
             }
 
-            let auxRootSibblings = [];
+            // let auxRootSibblings = [];
 
             if (!this.editorNodes) {
                 this.editorNodes = [item];
             }
 
-            for (let node of this.editorNodes) {
-                // ALERT! no és el mateix que el wrapper.children? el wrapper és un clone del auxParent
-                if (auxParent.children.includes(node.id) && wrapper.children.includes(node.id)) {
-                    // console.log("Contingut al parent");
-                    auxRootSibblings.push(node);
-                }
-            }
+            // Això sembla que no fa falta
+
+            // for (let node of this.editorNodes) {
+            //     // ALERT! no és el mateix que el wrapper.children? el wrapper és un clone del auxParent
+            //     if (auxParent.children.includes(node.id) && wrapper.children.includes(node.id)) {
+            //         console.log("Contingut al parent");
+            //         auxRootSibblings.push(node);
+            //     }
+            // }
 
             // console.log("Root Siblings:", auxRootSibblings);
 
@@ -1433,6 +1436,15 @@ define([
                     outTokens[i].id = currentId;
                 }
 
+                let puntInsercio = 0;
+
+                if (stack.length > 0 && stack[stack.length - 1].children.includes(root.id)) {
+                    puntInsercio =  stack[stack.length - 1].children.indexOf(root.id) +1;
+                } else if (stack.length>0) {
+                    stack[stack.length - 1].children.length;
+                }
+
+
                 outTokens[i].children = [];
 
 
@@ -1476,7 +1488,10 @@ define([
 
                     if (!lastChildren.some(filter)) {
                         // console.log("Afegint child", currentId);
-                        stack[stack.length - 1].children.push(currentId);
+                        // TODO: cal fer un splice amb al punt d'inserció i actualitzar-lo
+                        stack[stack.length - 1].children.splice(puntInsercio, 0, currentId);
+                        puntInsercio++;
+                        // stack[stack.length - 1].children.push(currentId);
                     } else {
                         // console.log("Trobat child amb id (no afegim)", currentId);
                     }
