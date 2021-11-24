@@ -29,7 +29,7 @@ define([
     let ajax = null;
     require(["ioc/dokuwiki/editors/Components/AjaxComponent"], function (AjaxComponent) {
         ajax = new AjaxComponent(); //ajax.send(urlBase, dataToSend, type)
-        ajax.urlBase = '/lib/exe/ioc_ajax.php?call=wioccl&format=html';
+        ajax.urlBase = 'lib/exe/ioc_ajax.php?call=wioccl&format=html';
         ajax.method = 'post';
     });
 
@@ -266,7 +266,6 @@ define([
                         // context.backupStructure = null;
                     },
                     id: 'wioccl-dialog' + counter,
-                    draggable: false,
                     firstResize: true,
                     dispatcher: context.editor.dispatcher,
                     args: {
@@ -317,7 +316,7 @@ define([
 
             let content = editor.getValue();
             if (content) {
-                console.log("Parsing")
+                // console.log("Parsing")
                 wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
             } else {
                 console.log("Eliminant");

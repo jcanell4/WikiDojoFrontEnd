@@ -195,6 +195,17 @@ define([
                          'textarea'];
             var $form = jQuery('form[id="form_' + this.id + '"]');
             var $input = $form.find(items.join());
+
+            // TODO: els tipus d'inputs continuant creixent, cal afegir un mecanisme per recuperar la llista automàticament
+            // - crear 2 mètodes aquí:
+            //  - addInputType(string element, string type) // el type serà opcional. S'afegeix l'element a un Set (sense duplicats)
+            //  - getInputTypes() // retorna string amb el text similar al que tenim ara a $form.find()
+            // el mètode addInputType() serà cridat desde el _editFormRenderEngine (revisar si cal a altres classes o super classe), i afegirà
+            // els nous tipus a mesura que s'afegeixin elements al formulari, de manera que getInputTypes() retornarà un
+            // string per fer el Query i obtenir tots els elements del formulari.
+            // ALERTA! el problema original era filtrar els button i el type="submit", calia comprovar els checkbox
+            // i radiobuttons? no s'agafa correctament el valor de l'input? cal comprovar si estàn o no marcats?
+
             var context = this;
             var valor;
 
