@@ -9,11 +9,12 @@ define([
     'dijit/layout/ContentPane',
     'dijit/form/Form',
     'dijit/form/TextBox',
+    "dijit/form/CheckBox",
     'dijit/form/Button',
     'ioc/gui/NsTreeContainer',
     'ioc/dokuwiki/editors/AceManager/plugins/AbstractAcePlugin'
-], function (declare,registry,dom,domConstruct,string,
-             Dialog,BorderContainer,ContentPane,Form,TextBox,Button,NsTreeContainer,AbstractAcePlugin) {
+], function (declare,registry,dom,domConstruct,string, Dialog,BorderContainer,
+             ContentPane,Form,TextBox,CheckBox,Button,NsTreeContainer,AbstractAcePlugin) {
 
     return declare([AbstractAcePlugin], {
 
@@ -109,6 +110,23 @@ define([
 
                 var form = new Form({id:"formIncludeSyntaxDialog"}).placeAt(divdreta);
                 
+                //Un camp de text per inclore la ruta de la pàgina
+                var divPageName = domConstruct.create('div', {
+                    className: 'divPageName'
+                },form.containerNode);
+
+                domConstruct.create('label', {
+                    innerHTML: 'Pàgina seleccionada<br>'
+                },divPageName);
+
+                var PageName = new TextBox({
+                    id: 'textBoxPageName',
+                    name: 'PageName',
+                    readOnly: true,
+                    style: 'width: 100%;'
+                }).placeAt(divPageName);
+                dialog.textBoxPageName = PageName;
+
                  //Checkbox 'mostrar data de creació'
                 var divMostrarDataCrea = domConstruct.create('div', {
                     className: 'divMostrarDataCrea'
@@ -140,24 +158,6 @@ define([
                 domConstruct.create('label', {
                     innerHTML: ' amagar data de modificació'
                 },divAmagarDates);
-
-                //Un camp de text per inclore la ruta de la pàgina
-                var divPageName = domConstruct.create('div', {
-                    className: 'divPageName'
-                },form.containerNode);
-
-                domConstruct.create('label', {
-                    innerHTML: 'Pàgina seleccionada<br>'
-                },divPageName);
-
-                var PageName = new TextBox({
-                    id: 'textBoxPageName',
-                    name: 'PageName',
-                    readOnly: true,
-                    style: 'width: 100%;'
-                }).placeAt(divPageName);
-                dialog.textBoxPageName = PageName;
-
 
                 // ----- Botons generals del formulari ------
                 var botons = domConstruct.create('div', {
