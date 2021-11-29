@@ -659,7 +659,7 @@ define([
 
             // així es crida en iniciar el diàleg principal
             node = JSON.parse(JSON.stringify(this.getNodeById(refId)));
-            node.name = node.type ? node.type : node.open;
+            node.name = node.name? node.name : (node.type ? node.type : node.open);
 
             tree.push(node);
             tree[0].children = this._getChildrenNodes(tree[0].children, tree[0].id);
