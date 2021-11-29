@@ -87,7 +87,7 @@ define([
         process: function () {
 
             let node = this.structure.createNode('void', '0');
-            node.name = "temporal";
+            node.name = "buit";
             let html = this.htmlTemplate.replace('%s', node.id);
 
             // Com es tracta d'un node que penja del root no cal indicar el afterId, la posició dependrà del span

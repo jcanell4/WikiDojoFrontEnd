@@ -692,7 +692,7 @@ define([
                     console.error("Node not found:", id);
                 }
 
-                node.name = node.type ? node.type : node.open;
+                node.name = node.name? node.name : (node.type ? node.type : node.open);
                 node.parent = parent;
 
                 if (node.children.length > 0) {

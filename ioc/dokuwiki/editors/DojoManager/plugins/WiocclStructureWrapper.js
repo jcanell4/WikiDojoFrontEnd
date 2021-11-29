@@ -22,7 +22,7 @@ define([
             let wrapper = {
                 id: root,
                 open : '',
-                name: 'temporal',
+                name: 'arrel',
                 type : 'wrapper',
                 close :'',
                 children: [key],

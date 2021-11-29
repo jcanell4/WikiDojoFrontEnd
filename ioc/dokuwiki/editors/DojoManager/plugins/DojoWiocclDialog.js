@@ -241,7 +241,6 @@ define([
         },
 
         createTree: function (tree, refId) {
-
             let store = new Memory({
                 data: tree,
                 getChildren: function (object) {
@@ -769,7 +768,7 @@ define([
 
                 let tree = [];
 
-                rootWiocclNode.name = rootWiocclNode.type ? rootWiocclNode.type : rootWiocclNode.open;
+                rootWiocclNode.name = rootWiocclNode.name? rootWiocclNode.name : (rootWiocclNode.type ? rootWiocclNode.type : rootWiocclNode.open);
                 rootWiocclNode.children = this.structure._getChildrenNodes(rootWiocclNode.children, rootWiocclNode.id);
                 tree.push(rootWiocclNode);
                 this.updateTree(tree, rootWiocclNode, selectedWiocclNode);

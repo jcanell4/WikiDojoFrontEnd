@@ -15,6 +15,7 @@ define([
             };
 
             let node = this.createNode('temp');
+            node.name = "arrel";
             this.addNode(node);
 
             this.root = node.id;
