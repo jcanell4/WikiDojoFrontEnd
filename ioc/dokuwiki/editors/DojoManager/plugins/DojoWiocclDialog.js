@@ -125,7 +125,6 @@ define([
             jQuery(this.deleteBtnNode).on('click', function () {
                 let pos = context.editor.getPositionAsIndex();
                 let node = context.structure._getNodeForPos(pos);
-
                 let editor = context.editor;
 
                 if (node.children.length === 0) {

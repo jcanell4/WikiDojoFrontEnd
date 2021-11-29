@@ -416,8 +416,11 @@ define([
         },
 
         parse: function () {
-            let $nodes = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]');
+            let $content = jQuery(this.editor.iframe).contents();
+            let $nodes = $content.find('[data-wioccl-ref]');
+
             this._addHandlers($nodes, this)
+            $content.find('[data-wioccl-ref="0"]').css('display', 'none');
         },
 
         updateCursorState: function (e) {
