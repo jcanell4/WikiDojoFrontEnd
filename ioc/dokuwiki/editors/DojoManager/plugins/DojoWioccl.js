@@ -264,7 +264,6 @@ define([
             // Referència a la estructura del diàleg
             let structure = this.structure;
             structure.updating = true;
-            structure.discardSiblings();
 
             // Restaurem la estructura abans de fer el parse
             structure.restore();

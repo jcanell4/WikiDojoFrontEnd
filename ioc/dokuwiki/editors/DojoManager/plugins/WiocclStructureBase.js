@@ -1064,7 +1064,6 @@ define([
             if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop, perquè és recursiu,
                 // sobre l'element que conté els childs actualment
-                this.discardSiblings();
                 this._purge(this.structure[this.structure.backupNode.id]);
                 this._restore(this.structure.backupNode);
                 this.dirtyStructure = false;
@@ -1112,8 +1111,6 @@ define([
         // d'elements que cal estructurar en forma d'arbre segons si es troben
         // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
-            this.discardSiblings();
-
             // Només hi ha un tipus open/close, que son els que poden tenir fills:
             //      OPEN: comencen per "<WIOCCL:"
             //      CLOSE: comencen per "</WIOCCL:"
@@ -1148,7 +1145,6 @@ define([
             }
 
             let nextKey = this.structure.next + "";
-            let siblings = 0;
             let first = true;
 
             // Si l'últim token és un salt de linia ho afegim al token anterior
@@ -1506,19 +1502,6 @@ define([
 
                 delete (this.structure[id]);
             }
-        },
-
-        discardSiblings: function () {
-            // TODO: determinar si això es pot eliminar
-            if (this.siblings && this.siblings.length >0) {
-                console.warn("Sibblings en us!", this.siblings);
-                alert("sibblings");
-            }
-
-            for (let i = this.siblings.length - 1; i >= 0; i--) {
-                this._removeNode(this.siblings[i]);
-            }
-            this.siblings = [];
         },
 
         // les claus són a l'estructura i només es manipulan en aquesta classe

@@ -182,7 +182,6 @@ define([
             // ALERTA! Aquest codi es semblant al del botó update
             let structure = this.structure;
             structure.updating = true;
-            structure.discardSiblings();
 
             let editor = this.editor;
             let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
@@ -728,9 +727,6 @@ define([
                     },
                     updateCallback: function (editor) {
                         // this és correcte, fa referència al nou dialog que s'instància
-                        this.structure.updating = true;
-                        this.structure.discardSiblings();
-                        this.structure.updating = false;
                         this.structure.restore();
 
                         // actulitzem el node de l'editor amb el restaurat
