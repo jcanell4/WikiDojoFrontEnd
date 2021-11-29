@@ -78,6 +78,7 @@ define([
 
             // Als subdialegs no s'ha de mostrar el botó d'eliminar nodes
             let $deleteButton = jQuery(this.deleteBtnNode);
+
             if (!context.enabledDelete) {
                 $deleteButton.prop('disabled', 'true');
             } else {
@@ -125,12 +126,20 @@ define([
                 let pos = context.editor.getPositionAsIndex();
                 let node = context.structure._getNodeForPos(pos);
 
-                context.structure._removeNode(node.id);
-                let currentWiocclNode = context.structure.getNodeById(context.editor.wioccl.id);
-                context._updateDetail(currentWiocclNode, false);
-                context.structure.dirtyStructure = true;
-
                 let editor = context.editor;
+
+                if (node.children.length === 0) {
+                    // Les fulles donen error amb el mètode normal
+                    // (el node no es troba a la estructura), però podem
+                    // establir l'editor buit i en fer el parse s'elimina
+                    editor.setValue('');
+                } else {
+                    context.structure._removeNode(node.id);
+                    let currentWiocclNode = context.structure.getNodeById(context.editor.wioccl.id);
+                    context._updateDetail(currentWiocclNode, false);
+                    context.structure.dirtyStructure = true;
+                }
+
                 context.structure.updating = true;
                 context.structure.parse(editor.getValue(), editor.wioccl);
                 context.structure.updating = false;
