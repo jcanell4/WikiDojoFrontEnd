@@ -390,9 +390,6 @@ define([
         // TODO: Canviar el nom per selected root per no confondre amb l'arrel real ('0') de la estructura
         root: '',
 
-        /** @type {string[]} siblings creats temporalment **/
-        siblings: null,
-
         /** indica que la estructura ha canviat */
         dirtyStructure: false,
 
@@ -406,7 +403,6 @@ define([
          */
         constructor: function (config, dispatcher) {
             this.dispatcher = dispatcher;
-            this.siblings = [];
         },
 
         setStructure: function (structure, root) {
@@ -745,7 +741,6 @@ define([
                 code += node.close;
             }
 
-            code = this._addSiblingsToCode(node, code);
             return code;
         },
 
@@ -764,8 +759,6 @@ define([
             if (node.close !== null) {
                 code += node.close;
             }
-
-            this._addSiblingsToCode(node, code);
 
             return code;
         },
@@ -794,63 +787,6 @@ define([
             return false;
         },
 
-        // Es consideran només els siblings del node no afegits al parent (perquè s'han afegit
-        // a l'editor i encara no s'han desat els canvis)
-        _addSiblingsToCode: function (node, code) {
-            // Comprovem si te siblings (mateix parent), i si es així en quina posició es troben al posmap (abans o després que aquest)
-            // console.log("siblings candidats?", node, this.siblings)
-            let siblings = {};
-            let testCounter = 0;
-
-            // Si no es control·la aquest es produeix un loop infinit
-            if (this.siblings.includes(node.id)) {
-                console.log("El node és un sibling, no cal afegir-res");
-
-                return code;
-            }
-
-            if (!this.posMap) {
-                // console.log("No hi ha posMap. Retornant");
-                return code;
-            }
-
-            for (let siblingId of this.siblings) {
-                if (this.structure[siblingId].parent === node.parent) {
-                    console.log("trobat sibling:", this.structure[siblingId])
-                    siblings[siblingId] = this.structure[siblingId];
-                    testCounter++;
-                } else {
-                    console.warn("descartat sibling:", this.structure[siblingId])
-                }
-            }
-
-            let after = false;
-
-            for (let [start, mappedNode] of this.posMap) {
-
-                if (mappedNode.id === node.id) {
-                    after = true;
-                    continue;
-                }
-
-                if (siblings[mappedNode.id]) {
-                    // l'eliminem per no repetirlo, la majoria d'etiquetes s'afegeixen 2 vegades,
-                    // una per l'apertura i una altra pel tancament
-                    delete (siblings[mappedNode.id]);
-                    testCounter--;
-
-                    let siblingCode = this.getCode(mappedNode);
-                    if (after) {
-                        code += siblingCode;
-                    } else {
-                        code = siblingCode + code;
-                    }
-                }
-            }
-
-            return code;
-        },
-
         // retorna el contingut d'un node, és a dir, el codi corresponent als nodes fills
         getInner: function (node) {
             let code = '';
@@ -870,7 +806,6 @@ define([
             // Referència per determinar quin item ha de persistir en el filtre
             let auxId = item.id
 
-            // s'han de tenir en compte els siblings temporals
             // creem un nou item que els contingui i aquest és el que reconstruim
             let wrapper = {
                 open: '',
@@ -1341,7 +1276,8 @@ define([
 
             // Si es produeix cap error ho descartem
             if (errorDetected) {
-                root.addedsiblings = false;
+                // TODO: mostrar un missatge d'error concret si és rellevant, actualment no s'han de produir
+                console.error("Error desconegut a _createTree");
             }
 
             this.structure.next = Number(nextKey);

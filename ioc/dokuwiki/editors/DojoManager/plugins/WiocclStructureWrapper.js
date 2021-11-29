@@ -40,8 +40,6 @@ define([
                 this.structure[childId].parent = key;
             }
 
-            // siblings és un array d'ids de nodes temporals afegits
-            this.siblings = [];
             this.root = root;
         },
 

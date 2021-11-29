@@ -20,8 +20,6 @@ define([
             this.structure['0'].type = 'root';
             this.structure['0'].close = '';
 
-            // siblings és un array d'ids de nodes temporals afegits
-            this.siblings = [];
             this.root = root;
         }
 
