@@ -88,12 +88,11 @@ define([
             var localDraftTimes = this.getLastLocalDraftTime(docId, docNs, chunkId),
                 param = '';
 
-            if (localDraftTimes !== null) {
+            if (localDraftTimes && localDraftTimes !== null && Object.keys(localDraftTimes).length === 0) {
                 for (var type in localDraftTimes) {
                     param += '&' + type + '_last_local_draft_time=' + localDraftTimes[type];
                 }
             }
-
             return param;
         },
 

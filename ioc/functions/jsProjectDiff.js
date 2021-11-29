@@ -17,7 +17,7 @@ define([], function () {
             var key, itemL, itemR, taula,
                 inHl = this.divCol + this.colorL + "'>" + titleL + this.fiDiv,
                 inHr = this.divCol + this.colorR + "'>" + titleR + this.fiDiv;
-                
+
             taula = this.divMain + this.divRow + inHl + inHr + this.fiDiv;
             for (key in arrL) {
                 itemL = this.parseStringToArrayOrObject(arrL[key]);
@@ -92,7 +92,7 @@ define([], function () {
         construye: function(key, itemL, itemR, level) {
             var taula = "";
             var keycolor = "diffkeycolor";
-            var ch = (itemL !== itemR) ? this.clCH : this.fiCH;
+            var ch = (itemL != itemR) ? this.clCH : this.fiCH;
 
             var dvCl = this.divCol + this.colorL + ch,  //div column left
                 dvCr = this.divCol + this.colorR + ch,  //div column right
@@ -116,11 +116,7 @@ define([], function () {
         
         parseStringToArrayOrObject: function(elem) {
             try {
-                if(elem){
-                    ret = JSON.parse(elem);
-                }else{
-                    ret = "";
-                }
+                ret = (elem) ? JSON.parse(elem) : "";
             }catch(err) {
                 ret = (elem===undefined) ? "" : elem;
             }
