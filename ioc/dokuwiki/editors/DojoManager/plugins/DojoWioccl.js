@@ -339,6 +339,7 @@ define([
             this.setData(structure.getNodeById(structure.root), wiocclNode);
 
             this.editor.resetOriginalContentState();
+            this.dirtyStructure = false;
             structure.updating = false;
         },
 

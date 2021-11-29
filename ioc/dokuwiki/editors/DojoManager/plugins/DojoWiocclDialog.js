@@ -24,7 +24,7 @@ define([
 
     // Aquest és el comportament normal, no és pot editar directament, només mitjançant els botons.
     // Es pot posar com a false per testejar, o podem parametritzar-lo segons el tipus d'usuari (només avanaçats).
-    const ALWAYS_LOCKED = false;
+    const ALWAYS_LOCKED = true;
 
 
     // TODO: Extreure a algun lloc més adient
@@ -356,7 +356,7 @@ define([
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
                 onClick: function (item) {
-                    console.log("item clicat:", item, structure);
+                    // console.log("item clicat:", item, structure);
 
                     // actualitzem qualsevol canvi pendent abans
                     context._updatePendingChanges_Field2Detail()
@@ -366,11 +366,11 @@ define([
                     let isDirty = structure.dirtyStructure || context._pendingChanges_Field2Detail
                         || context._fieldChanges;
 
-                    console.log("Es dirty?", isDirty);
-                    console.log("structure.dirtyStructure", structure.dirtyStructure);
-                    console.log("** context.editor.isChanged() **", context.editor.isChanged());
-                    console.log("context._pendingChanges_Field2Detail", context._pendingChanges_Field2Detail);
-                    console.log("context._fieldChanges", context._fieldChanges);
+                    // console.log("Es dirty?", isDirty);
+                    // console.log("structure.dirtyStructure", structure.dirtyStructure);
+                    // console.log("** context.editor.isChanged() **", context.editor.isChanged());
+                    // console.log("context._pendingChanges_Field2Detail", context._pendingChanges_Field2Detail);
+                    // console.log("context._fieldChanges", context._fieldChanges);
 
                     ///////////////// COMPROVACIO DE BRANQUES SIMILARS //////////////////
                     if (isDirty && !hasChanges) {
@@ -709,7 +709,7 @@ define([
 
 
             let auxContent = this.structure.getCode(wiocclNode);
-            console.log("Nou content:", auxContent);
+            // console.log("Nou content:", auxContent);
 
             // let auxContent = this.source.getCode(item, this.structure);
 
@@ -727,9 +727,9 @@ define([
 
             this.editor.wioccl = wiocclNode;
 
-            console.log("check, s'ha actualitzat el node a la estructura?",
-                this.structure.getNodeById(wiocclNode.id), wiocclNode);
-            console.log("Que hi ha a la estructura?", this.structure);
+            // console.log("check, s'ha actualitzat el node a la estructura?",
+            //     this.structure.getNodeById(wiocclNode.id), wiocclNode);
+            // console.log("Que hi ha a la estructura?", this.structure);
 
             if (wiocclNode.id === 0) {
                 this.lockEditor();

@@ -684,7 +684,7 @@ define([
 
                 default:
                     // Instruccions
-                    console.log(node);
+                    // console.log(node);
                     instruction = node.type.toUpperCase();
             }
 
@@ -1246,7 +1246,7 @@ define([
         },
 
         restore: function () {
-            console.error("Restoring");
+            // console.error("Restoring");
             if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop, perquè és recursiu, sobre l'element que conté els childs actualment
                 this.discardSiblings();
@@ -1301,7 +1301,7 @@ define([
             let dirty = this.dirtyStructure;
             this.restore();
             this.dirtyStructure = dirty;
-            console.log("Dirty?", dirty);
+            // console.log("Dirty?", dirty);
 
             // console.log("Parse a partir del node:", node);
 
@@ -1962,7 +1962,7 @@ define([
         },
 
         areNodesSimilar: function (currentNode, backupNode) {
-            console.log("Comparant", currentNode, backupNode);
+            // console.log("Comparant", currentNode, backupNode);
             // El nombre de fills és correcte, surten més nodes perquè són clones!
             // alert("STOP: revisar, això no sembla funcionar bé, surten 40 childs del foreach (en un segon reintent, al primer suposo que menys), i tot i així no posa que siguin diferent <-- al backup surt la mateia quantitat de nodes!")
             let similar = currentNode.attrs === backupNode.attrs && currentNode.type === backupNode.type
@@ -1987,7 +1987,7 @@ define([
                 }
             }
 
-            console.log("són similars:", currentNode, backupNode);
+            // console.log("són similars:", currentNode, backupNode);
             return true;
         }
 
