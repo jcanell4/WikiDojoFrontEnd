@@ -95,6 +95,7 @@ define([
             $updateButton.on('click', function () {
                 // Alerta, el context d'execució en afegir el callback al objecte de configuració (pel principal és DojoWioccl)
                 context.updateCallback(context.editor);
+                context.structure.dirtyStructure = true;
             });
 
             $deleteButton.on('click', function () {
@@ -108,6 +109,7 @@ define([
                 context._updateFields(newNode);
                 // context._updateLegend(newNode);
                 context._selectWiocclNode(newNode);
+                context.structure.dirtyStructure = true;
             });
 
             // Als subdialegs no s'ha de mostrar el botó d'eliminar nodes
@@ -169,7 +171,9 @@ define([
 
 
                 // TEST: això està copiat del insert code
-                context.structure.restore();
+                // context.structure.restore();
+
+                context.structure.dirtyStructure = true;
 
                 let editor = context.editor;
                 context.structure.updating = true;
@@ -177,6 +181,9 @@ define([
                 context.structure.updating = false;
 
                 context.updateInsertButtons();
+
+
+                console.log("Es dirty la estructura?", context.structure.dirtyStructure);
 
                 // console.log("node a l'editor", context.editor.wioccl);
                 // console.log("s'ha d'eliminar el node a la posició:", pos, node, context.structure.posMap);
@@ -259,6 +266,7 @@ define([
 
             this.updateInsertButtons();
 
+            this.structure.dirtyStructure = true;
 
             // Forcem un update, això dispararà la detecció de siblings
             //this._updateDetail(wiocclNode, true);
@@ -354,17 +362,18 @@ define([
                     context._updatePendingChanges_Field2Detail()
 
 
-                    let isDirty = structure.dirtyStructure || context.editor.isChanged()
-                        || context._pendingChanges_Field2Detail || context._fieldChanges;
+                    let hasChanges = context.editor.isChanged();
+                    let isDirty = structure.dirtyStructure || context._pendingChanges_Field2Detail
+                        || context._fieldChanges;
 
-                    // console.log("Es dirty?", isDirty);
-                    // console.log("structure.dirtyStructure", structure.dirtyStructure);
-                    // console.log("context.editor.isChanged()", context.editor.isChanged());
-                    // console.log("context._pendingChanges_Field2Detail", context._pendingChanges_Field2Detail);
-                    // console.log("context._fieldChanges", context._fieldChanges);
+                    console.log("Es dirty?", isDirty);
+                    console.log("structure.dirtyStructure", structure.dirtyStructure);
+                    console.log("** context.editor.isChanged() **", context.editor.isChanged());
+                    console.log("context._pendingChanges_Field2Detail", context._pendingChanges_Field2Detail);
+                    console.log("context._fieldChanges", context._fieldChanges);
 
                     ///////////////// COMPROVACIO DE BRANQUES SIMILARS //////////////////
-                    if (isDirty) {
+                    if (isDirty && !hasChanges) {
                         // Comprovem si realment el contingut del backup és diferent al que hi ha
                         // esperem que només canviin els identificadors, la resta ha de ser idèntica
 
@@ -386,23 +395,24 @@ define([
                         let wrapper = getWrapper(item);
 
 
-                        // PAS 2: trobar el node corresponent al backup node
-                        let getNode = function (node, id) {
-                            if (node.id === id) {
-                                return node;
-                            }
+                        // PAS 2: trobar el node corresponent dins del backup node
+                        // let getNode = function (node, id) {
+                        //     if (node.id === id) {
+                        //         return node;
+                        //     }
+                        //
+                        //     for (let child of node.children) {
+                        //         let found = getNode(child, id);
+                        //         if (found) {
+                        //             return found;
+                        //         }
+                        //     }
+                        //
+                        //     return false;
+                        // };
 
-                            for (let child of node.children) {
-                                let found = getNode(child, id);
-                                if (found) {
-                                    return found;
-                                }
-                            }
-
-                            return false;
-                        };
-
-                        let backupWrapper = getNode(structure.structure.backupNode, wrapper.id);
+                        // let backupWrapper = getNode(structure.structure.backupNode, wrapper.id);
+                        let backupWrapper = structure.structure.backupIndex[wrapper.id];
 
                         // Pas 3: recorrer tots els childrens al wrapper i al backupWrapper:
                         // TODO: moure això al WiocclStructureBase
@@ -434,8 +444,20 @@ define([
                         //     return true;
                         // }
 
+                        // console.log("wrapper, backupwrapper", wrapper, backupWrapper);
+                        // console.log("structure, structure.index", structure, structure.structure.index);
+                        // alert("stop check if they are similar");
+
+                        // ALERTA! La comprovació del contingut de l'editor no es té en compte a l'hora de comprovar els nodes
+
                         let areSimilar = wrapper ? structure.areNodesSimilar(wrapper, backupWrapper) : false;
 
+
+                        // console.log(structure);
+                        // console.log(context.structure);
+                        // són el mateix??
+                        // console.log("és el mateix?", structure, context.structure);
+                        // alert("El node 93 està actualitzat?");
                         // TODO: eliminar, validació de que la funció interna i la extreta funcionen igual
                         // let validation = structure.areNodesSimilar(wrapper, backupWrapper) === areNodesSimilar(wrapper, backupWrapper);
                         // if (!validation) {
@@ -464,7 +486,7 @@ define([
                     }
 
 
-                    if (isDirty) {
+                    if (isDirty || hasChanges) {
                         // if (structure.dirtyStructure || context.editor.isChanged() || context._pendingChanges_Field2Detail || context._fieldChanges) {
                         let descartar = confirm("S'han detectat canvis, vols descartar-los?");
 
@@ -687,7 +709,7 @@ define([
 
 
             let auxContent = this.structure.getCode(wiocclNode);
-            // console.log("Nou content:", auxContent);
+            console.log("Nou content:", auxContent);
 
             // let auxContent = this.source.getCode(item, this.structure);
 
@@ -704,6 +726,10 @@ define([
             }
 
             this.editor.wioccl = wiocclNode;
+
+            console.log("check, s'ha actualitzat el node a la estructura?",
+                this.structure.getNodeById(wiocclNode.id), wiocclNode);
+            console.log("Que hi ha a la estructura?", this.structure);
 
             if (wiocclNode.id === 0) {
                 this.lockEditor();

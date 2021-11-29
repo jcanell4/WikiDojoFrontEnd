@@ -684,6 +684,7 @@ define([
 
                 default:
                     // Instruccions
+                    console.log(node);
                     instruction = node.type.toUpperCase();
             }
 
@@ -1081,7 +1082,7 @@ define([
 
             // console.log("posMap refet:", this.posMap);
 
-            this.dirtyStructure = true;
+
         },
 
         // el pos map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
@@ -1245,7 +1246,7 @@ define([
         },
 
         restore: function () {
-            // console.log("Restoring");
+            console.error("Restoring");
             if (this.structure.backupNode) {
                 // El purge s'ha de cridar només un cop, perquè és recursiu, sobre l'element que conté els childs actualment
                 this.discardSiblings();
@@ -1295,7 +1296,12 @@ define([
         parse: function (text, node) {
             // abans de fer el parse fem un restore per aplicar els canvis sobre els originals
             // de manera que es descarten els children generats anteriorment
+
+            // Conseverm l'estat dirty (el restore l'elimina)
+            let dirty = this.dirtyStructure;
             this.restore();
+            this.dirtyStructure = dirty;
+            console.log("Dirty?", dirty);
 
             // console.log("Parse a partir del node:", node);
 
@@ -1956,7 +1962,9 @@ define([
         },
 
         areNodesSimilar: function (currentNode, backupNode) {
-            // console.log("Comparant", currentNode, backupNode);
+            console.log("Comparant", currentNode, backupNode);
+            // El nombre de fills és correcte, surten més nodes perquè són clones!
+            // alert("STOP: revisar, això no sembla funcionar bé, surten 40 childs del foreach (en un segon reintent, al primer suposo que menys), i tot i així no posa que siguin diferent <-- al backup surt la mateia quantitat de nodes!")
             let similar = currentNode.attrs === backupNode.attrs && currentNode.type === backupNode.type
                 && currentNode.open === backupNode.open && currentNode.close === backupNode.close
                 && currentNode.children.length === backupNode.children.length;
@@ -1970,13 +1978,16 @@ define([
             for (let i = 0; i < currentNode.children.length; i++) {
                 // Alerta, la estructua s'agafa de fora de la funció!
                 let currentNodeChild = typeof currentNode.children[i] === 'string' ? this.getNodeById(currentNode.children[i]) : currentNode.children[i];
+                let backupNodeChildId = typeof backupNode.children[i] === 'string' ? backupNode.children[i] : backupNode.children[i].id;
 
-                let childSimilars = this.areNodesSimilar(currentNodeChild, backupNode.children[i]);
+
+                let childSimilars = this.areNodesSimilar(currentNodeChild, this.structure.backupIndex[backupNodeChildId]);
                 if (!childSimilars) {
                     return false;
                 }
             }
 
+            console.log("són similars:", currentNode, backupNode);
             return true;
         }
 
