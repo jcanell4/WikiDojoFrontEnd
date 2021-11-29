@@ -35,11 +35,9 @@ define([
 
     // No funciona si es carrega directament, hem de fer la inicialització quan cal utilitzar-lo
 
-
     let WiocclButton = declare(AbstractParseableDojoPlugin, {
 
         // S'assigna quan es crea el diàleg
-
         wiocclDialog: null,
 
         init: function (args) {
@@ -60,7 +58,6 @@ define([
 
 
             // ALERTA! this.editor fa referència a l'editor dojo
-
             // Aquesta és l'estructura que s'utilitza quan es fa mouseover un element
             if (this.editor.extra && this.editor.extra.wioccl_structure) {
                 this.structure = new WiocclStructureClone(
@@ -76,9 +73,6 @@ define([
                 // aquest document no te estructura wioccl, ha de ser un document normal
                 // així que no afegim els botons ni controlem la posició del cursor
             }
-
-
-            // console.log("wioccl structure:", this.editor.extra.wioccl_structure.structure);
         },
 
         addButton: function (config) {
@@ -89,15 +83,6 @@ define([
             // console.log("updating handlers", jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'));
             this._addHandlers(jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]'), this);
         },
-
-        // updateCursorState: function (e) {
-        //
-        //     if (e.state.indexOf(this.tag) > -1) {
-        //         this.button.set('checked', true);
-        //     } else {
-        //         this.button.set('checked', false);
-        //     }
-        // },
 
         process: function () {
 
@@ -123,9 +108,7 @@ define([
             return this.structure.getNodeById(refId)
         },
 
-
         _addHandlers: function ($domNode, context) {
-            // console.log("$node", $node);
 
             $domNode.off('click');
 
@@ -141,7 +124,6 @@ define([
                 if (!isParent) {
                     $relatedNodes.addClass('child');
                 }
-
 
                 let wiocclNode = context.getNodeById(ref);
 
@@ -165,8 +147,6 @@ define([
                 }
 
                 for (let child of wiocclNode.children) {
-                    // let childId = typeof child === 'object' ? child.id : child;
-
                     if (typeof child === 'object') {
                         console.log(child, this.structure);
                     }
@@ -200,7 +180,6 @@ define([
             let _hideTooltip = function (e) {
                 let $this = jQuery(this);
                 let refId = $this.attr('data-wioccl-ref');
-                // console.log("hide", refId);
 
                 if ($this.attr('data-tooltip')) {
                     $this.removeAttr('title');
@@ -208,22 +187,18 @@ define([
                 }
 
                 _disableHighlight(refId);
-
             };
 
             $domNode.on('mouseout', _hideTooltip);
-
             $domNode.on('mouseout', _hideTooltip);
 
             $domNode.on('click', function (e) {
-
                 let $item = jQuery(this);
 
                 e.preventDefault();
                 e.stopPropagation();
 
                 let refId = $item.attr('data-wioccl-ref');
-
                 let wiocclNode = context.getNodeById(refId);
 
                 if (wiocclNode.isClone) {
@@ -247,23 +222,12 @@ define([
                     counter++;
                 }
 
-                // Es crearà una copia només per l'editor amb la estructura original, així ens assegurem que no s'altera
-                // l'estructura original en cap moment (s'actualitzarà amb la resposta del servidor si escau)
-
-                // ALERTA! no l'objecte structure conté {structure, root}, és la configuració que espera rebre el constructor
-
-                // let structure = new WiocclStructureClone(context.structure, context.editor.dispatcher);
-                // let structure = new WiocclStructureWrapper(context.structure, context.editor.dispatcher);
-
                 let wiocclDialog = new Dialog({
                     title: 'Edició wioccl',
                     fields: context.editor.extra.wioccl_structure.fields,
-                    // style: 'width:auto',
                     style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
                     onHide: function (e) { // Es dispara quan es tanca el diàleg
-
                         this.destroyRecursive();
-                        // context.backupStructure = null;
                     },
                     id: 'wioccl-dialog' + counter,
                     firstResize: true,
@@ -272,7 +236,6 @@ define([
                         id: 'wioccl-dialog' + counter,
                         value: structure.getCode(tree[0])
                     },
-                    //wioccl: wiocclNode, // incorrecte! aquest és el node de la estructura original, no de la nova creada, per exemple el wrapper
                     wioccl: structure.getNodeById(wiocclNode.id),
                     structure: structure,
                     tree: tree,
@@ -291,19 +254,13 @@ define([
                 context.wiocclDialog = wiocclDialog;
 
                 wiocclDialog.startup();
-
                 wiocclDialog.show();
-
                 wiocclDialog._updateFields(tree[0]);
-                // wiocclDialog._setFields(wiocclDialog._extractFields(tree[0].attrs, tree[0].type));
                 wiocclDialog._updateDetail(tree[0]);
-
-
             });
         },
 
         _update: function (editor) {
-            // console.log("Update!");
             // Referència a la estructura del diàleg
             let structure = this.structure;
             structure.updating = true;
@@ -316,11 +273,8 @@ define([
 
             let content = editor.getValue();
             if (content) {
-                // console.log("Parsing")
                 wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
             } else {
-                console.log("Eliminant");
-                // this.structure.restore();
                 this.structure._removeChildren(editor.wioccl.id);
                 if (editor.wioccl.type !== 'wrapper') {
                     let currentNode = structure.getNodeById(editor.wioccl.id);
@@ -329,12 +283,7 @@ define([
                 } else {
                     wiocclNode = structure.getNodeById(structure.root);
                 }
-
             }
-
-
-            // console.log("estructure root?", structure.root);
-            // console.log("wiocclnode?", wiocclNode);
 
             this.setData(structure.getNodeById(structure.root), wiocclNode);
 
@@ -343,46 +292,26 @@ define([
             structure.updating = false;
         },
 
-        // Enviar el text
-        // en aquest cas s'envia el text reconstruit a partir dels nodes i el rootRef, només cal fer la traducció
-        // i reemplaçar les nodes
-
+        // Enviar el text: s'envia el text reconstruit a partir dels nodes i el rootRef, només cal fer la traducció
+        // i reemplaçar les nodes.
         // Si aquest no és el root, cal cercar el parent que té com a parent el node 0
         _save: function (editor) {
-            // console.log("Estructura original:", this.editor.extra.wioccl_structure);
-
             let context = this;
+
             // 0 actualitzar el contingut actual
-
             let structure = this.structure;
-
-            // this.wiocclDialog.setData(structure[this.root], wioccl, structure, dialog, ignoreRebranch);
-
-            // console.log("contingut de l'editor?", editor.getValue(), editor.wioccl)
-            // console.log("check");
-
             let wiocclNode = structure.parse(editor.getValue(), editor.wioccl);
-
-            // console.log("editor.wioccl", editor.wioccl);
-            // console.log("WiocclNode", wiocclNode);
-
 
             // No refem les branques
             this.setData(structure.getNodeById(structure.root), wiocclNode, true);
 
-            // this.parse(editor.getValue(), editor.wioccl, this.getStructure(), this.wiocclDialog);
-
-            // 1 reconstruir el wioccl del node pare (this._getStructure()[this.root], això és el que s'ha d'enviar al servidor
-            // ALERTA! no cal enviar el text, cal enviar la estructura i el node a partir del qual s'ha de regenerar el codi wioccl
-
-
+            // 1 reconstruir el wioccl del node pare (que serà el wrapper i serà descartat), això és
+            // el que s'ha d'enviar al servidor
             let rootRef = structure.root;
 
-            // console.log("Rootref:", rootRef, structure);
             // Cal tenir en compte que el rootRef podria ser el node arrel i en aquest cas no cal cerca més
             while (structure.getNodeById(rootRef).id > 0 && structure.getNodeById(rootRef).parent > 0) {
                 rootRef = structure.getNodeById(rootRef).parent;
-                // console.log("Rootref (new):", rootRef);
             }
 
             // cal desar el parent per restaurar-lo, el que retorna del servidor no te cap parent assignat
@@ -394,16 +323,11 @@ define([
 
             // 2 enviar al servidor juntament amb el id del projecte per poder carregar el datasource, cal enviar també
             //      la propera referència, que serà la posició per inserir els nodes nous
-
             let globalState = this.dispatcher.getGlobalState();
-
-            // ALERTA! aquesta informació és necessaria perquè s'han d'afegir els spans amb la referència
-            // let next = structure['next'];
 
             let dataToSend = {
                 content: text,
                 rootRef: rootRef,
-                // nextRef: structure['next'],
                 nextRef: structure.getNextKey(),
                 projectOwner: globalState.getContent(globalState.currentTabId).projectOwner,
                 projectSourceType: globalState.getContent(globalState.currentTabId).projectSourceType,
@@ -412,24 +336,15 @@ define([
 
             // console.log("Data to send:", dataToSend);
 
-            // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo al document editat (cal indicar el punt d'inserció)
-
+            // 3 al servidor fer el parser wioccl, traduir a html i retornar-lo per inserir-lo
+            // al document editat (cal indicar el punt d'inserció).
             // Fem servir ajax perquè això no ha de passar pel processor
 
             ajax.setStandbyId(jQuery('body').get(0));
 
             this.hide();
 
-            if (dataToSend.rootRef === "0") {
-                // s'ha reemplaçat tot el document
-                alert("Error irrecuperable: es reemplaçaria tot el document. Descartem els canvis");
-                console.log('Error irrecuperable: es reemplaçaria tot el document. Descartem els canvis');
-                return;
-            }
-
             ajax.send(dataToSend).then(function (data) {
-                // console.log("data:", data);
-
                 // fem que l'editor dispari un event, això ho fa servir el DojoReadonlyToggle
 
                 // retorn:
@@ -439,18 +354,14 @@ define([
                 // [1] jsinfo
                 // [n...] extraContentState
 
-                // console.log(data[0].value.content);
-                // console.log(data[0].value.extra.wioccl_structure.structure);
-
-                // 4 eliminar tots els nodes que penjaven originalment de  this.root
-                //      alerta! no es guarantit que els nodes del backupstructure siguin els mateixos
+                // 4 eliminar tots els nodes que penjaven originalment de this.root
+                //      alerta! no es segur que els nodes del backupstructure siguin els mateixos
                 //      que retorna el servidor, així que fem servir els valors retornats.
 
                 // aquesta es la estructura original.
                 let target = context.originalStructure.getRaw();
 
                 let removedIds = structure._removeChildren(rootRef);
-                // console.log("ids de nodes per eliminar:", removedIds);
 
                 for (let id of removedIds) {
                     let $node = context.$document.find('[data-wioccl-ref="' + id + '"]');
@@ -461,13 +372,9 @@ define([
                 // Cal inserir una marca pel node root
                 let $rootNodes = context.$document.find('[data-wioccl-ref="' + rootRef + '"]');
 
-                // console.log("Eliminant root nodes", rootRef, $rootNodes);
-                // 5 inserir el html que ha arribat del servidor
-                // Afegim les noves i eliminem el cursor
+                // 5 inserir el html que ha arribat del servidor. Afegim les noves i eliminem el cursor
                 let $nouRoot = jQuery(data[0].value.content);
 
-                // console.log("S'inserta el nou contingut abans de:", $rootNodes.get(0))
-                // console.log("quin és el $nouroot??", $nouRoot);
                 jQuery($rootNodes.get(0)).before($nouRoot);
 
                 // Elimem les referencies
@@ -475,7 +382,6 @@ define([
 
                 // Actualitzem la estructura
                 let source = data[0].value.extra.wioccl_structure.structure;
-
 
                 // fusió del original i l'anterior
                 Object.assign(target, source);
@@ -491,20 +397,19 @@ define([
                 context.pluginEditor.emit('import');
                 context.pluginEditor.forceChange();
 
-                // ALERTA! Això és un arreglo per fer netejar dels nodes de contingut orfes (siblings inicial i final
+                // ALERTA! Això és un arreglo per fer netejaa dels nodes de contingut orfes (siblings inicial i final
                 // d'un parse de wioccl parcial
                 let $textNodes = context.$document.find('[data-text-node]');
 
                 $textNodes.each(function() {
-                   // PAS: afegim els nodes com a nodes de text
+                   // PAS 1: afegim els nodes com a nodes de text
                     let $this = jQuery(this);
                     let text = $this.text();
                     var textNode = document.createTextNode(text);
                     $this.before(textNode);
                 });
-                // PAS2: eliminar els spans
+                // PAS 2: eliminar els spans
                 $textNodes.remove();
-
 
                 context.$document.find('[data-wioccl-ref="' + originalRefId + '"]')[0].scrollIntoView();
 
@@ -512,27 +417,21 @@ define([
         },
 
         parse: function () {
-
             let $nodes = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref]');
-
             this._addHandlers($nodes, this)
         },
 
         updateCursorState: function (e) {
-
             let $node = this.editor.getCurrentNode();
-            // console.log('Current node state', $node);
 
             if ($node.attr('contenteditable') === "false" || $node.attr('data-wioccl-ref')) {
                 this.button.setDisabled(true);
             } else {
                 this.button.setDisabled(false);
             }
-
         },
     });
 
-    // Register this plugin.
     _Plugin.registry["insert_wioccl"] = function () {
         return new WiocclButton({command: "insert_wioccl"});
     };

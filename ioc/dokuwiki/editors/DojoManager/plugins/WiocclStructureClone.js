@@ -1,5 +1,3 @@
-// Aquesta classe és un wrapper per les estructures wioccl enviades des del servidor que incluen
-// les funcions per gestionar-les i modificar-les des del plugin per Dojo Editor DojoWioccl i DojoWiocclDialog
 define([
     'dojo/_base/declare',
     'ioc/dokuwiki/editors/DojoManager/plugins/WiocclStructureBase',
@@ -10,16 +8,11 @@ define([
 
 
         constructor: function (config, dispatcher) {
-
-            // console.error("WiocclStructureClone", config);
             this.setStructure(config.structure, config.root);
             this.dispatcher = dispatcher;
         },
 
         setStructure: function (structure, root) {
-
-            // console.log("setStructure:", structure);
-
             this.structure = JSON.parse(JSON.stringify(structure));
 
             // Ajustem l'arrel

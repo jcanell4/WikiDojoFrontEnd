@@ -1301,7 +1301,6 @@ define([
             let dirty = this.dirtyStructure;
             this.restore();
             this.dirtyStructure = dirty;
-            // console.log("Dirty?", dirty);
 
             // console.log("Parse a partir del node:", node);
 
