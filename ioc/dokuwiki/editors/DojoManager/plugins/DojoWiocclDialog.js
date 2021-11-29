@@ -64,7 +64,6 @@ define([
             this._selectWiocclNode(wiocclNode)
 
             this.structure.rebuildPosMap(wiocclNode);
-            let $deleteButton = jQuery(this.deleteButtonNode);
             let $updateButton = jQuery(this.updateButtonNode);
             let $saveButton = jQuery(this.saveButtonNode);
 
@@ -77,24 +76,12 @@ define([
                 context.structure.dirtyStructure = false;
             });
 
-            $deleteButton.on('click', function () {
-                // Alerta, el context d'execució en afegir el callback al objecte de
-                // configuració (pel principal és DojoWioccl)
-
-                // TODO: demanar confirmació
-
-                context.editor.setValue('');
-                $updateButton.trigger('click');
-                let newNode = context.structure.getNodeById(context.editor.wioccl.id);
-                context._updateFields(newNode);
-                context._selectWiocclNode(newNode);
-                context.structure.dirtyStructure = true;
-            });
-
             // Als subdialegs no s'ha de mostrar el botó d'eliminar nodes
+            let $deleteButton = jQuery(this.deleteBtnNode);
             if (!context.enabledDelete) {
-                $deleteButton.attr('disabled', 'true');
-                $deleteButton.css('opacity', '0.5');
+                $deleteButton.prop('disabled', 'true');
+            } else {
+                $deleteButton.prop('disabled', '');
             }
 
             $saveButton.on('click', function () {

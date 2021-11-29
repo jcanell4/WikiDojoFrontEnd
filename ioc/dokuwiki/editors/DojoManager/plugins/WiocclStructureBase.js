@@ -9,7 +9,7 @@ define([
     // TODO: Solució temporal, en lloc de rebre la definició de WIOCC des del servidor la establim aquí
 
     // ALERTA! es contempla l'opció de que els parámetres siguin opcionals, però cal tenir en compte que un parámetre
-    // opcional obligaria a escriure els anteriors perque la posició a la llista de paràmetres canviarà
+    // opcional obligaria a escriure els anteriors, perque la posició a la llista de paràmetres canviarà
     let wiocclDefinition = {
         function: {
             open: "{#_",
@@ -243,6 +243,7 @@ define([
                 },
             }
         },
+
         // template serà el template a inserir quan s'afegeixi aquesta instrucció
         keyword: {
             // %i es reemplaça pel nom de l'instrucció
@@ -264,7 +265,7 @@ define([
                     close: '',
                     hidden: true
                 },
-                // WRAPPER és un tipus especial utilitzat internament per les estructures temporals <-- TODO:Valorar si es pot utilitzar TEMP
+                // WRAPPER és un tipus especial utilitzat internament per les estructures temporals
                 WRAPPER: {
                     attrs: [],
                     open: '',
@@ -404,13 +405,7 @@ define([
          *                                      (els canvis s'aplicaràn sobre aquesta).
          */
         constructor: function (config, dispatcher) {
-            // console.error(config);
-            // Aquí no fem res perquè cada subclasse ha d'implementar la seva propia lògica
-
-            // console.error("WiocclStructureBase");
-
             this.dispatcher = dispatcher;
-
             this.siblings = [];
         },
 
@@ -442,36 +437,17 @@ define([
         },
 
         getFunctionNames: function () {
-            // actualment no ni ha cap funció oculta, així que no és necessari
-            // let names = [];
-
-            // for (let key in wiocclDefinition.function.defs) {
-            //     let def = wiocclDefinition.function.defs[key];
-            //
-            //     console.log(def);
-            //     if (def.hidden) {
-            //         continue;
-            //     }
-            //
-            //     names.push(key);
-            // }
-            // return names.sort();
-
             return Object.keys(wiocclDefinition.function.defs).sort();
-
         },
 
         updateFunctionName(node, value) {
-            // console.log(wiocclNode);
             let open = wiocclDefinition.function.open + value + wiocclDefinition.function.close;
             this.structure[node.id].open = open;
         },
 
         updateKeywordName(node, value) {
-            // console.log(node, value);
             let trailingOpenNewLine = node.open.endsWith("\n");
             let trailingCloseNewLine = node.close.endsWith("\n");
-
 
             let instruction = value;
 
@@ -504,7 +480,6 @@ define([
             this.structure[node.id].close = closing;
         },
 
-
         getKeywordTemplate: function (callback) {
             let context = this;
 
@@ -531,7 +506,6 @@ define([
                     text: 'Cancel·lar' // localitzar
                 },
                 callback: function(name) {
-                    // console.log("que ha retornat el dialeg en tancar-se?", name);
                     let definition = context.getKeywordDefinition(name);
                     let opening = '';
                     let closing = '';
@@ -553,13 +527,9 @@ define([
             });
 
             dialog.show();
-
-
         },
 
         getFunctionTemplate: function (callback) {
-            // let context = this;
-
             let options = [];
             for (let func of this.getFunctionNames()) {
                 options.push(func);
@@ -573,8 +543,6 @@ define([
 
             let auxId = this.dispatcher.getGlobalState().getCurrentId();
             let dialog = this.dispatcher.getDialogManager().getDialog('dropdown', auxId, {
-                // title: 'Inserir funció',
-                // message: "Selecciona una funció wioccl per inserir.", // TODO: localitzartitle: 'Inserir funció',
                 title: 'Inserir funció',
                 message: "Selecciona una funció wioccl per inserir.", // TODO: localitzar
                 data: data,
@@ -586,7 +554,6 @@ define([
                 },
                 callback: function(name) {
                     callback(wiocclDefinition.function.open + name + wiocclDefinition.function.close.replace('%s', ''));
-
                 }
             });
 
@@ -594,10 +561,6 @@ define([
         },
 
         getFieldTemplate: function (callback, fields) {
-
-
-            // TODO: les possibles noms dels camps han d'arribar des del servidor
-            // per determinar com els obtenim aqui
             let data = {
                 name: 'field',
                 label: 'Camp o variable',
@@ -621,7 +584,6 @@ define([
                     } else {
                         callback(`{##${field}##}`);
                     }
-
                 }
             });
 
@@ -633,8 +595,6 @@ define([
         },
 
         getKeywordDefinition: function (name) {
-            // console.log(name, wiocclDefinition.keyword.defs);
-
             if (wiocclDefinition.keyword.defs[name]) {
                 return wiocclDefinition.keyword.defs[name]
             } else {
@@ -655,7 +615,6 @@ define([
             }
 
             return names;
-            // return Object.keys(wiocclDefinition.keyword.defs).sort();
         },
 
         getInstructionName: function (node) {
@@ -663,7 +622,6 @@ define([
 
             switch (node.type) {
                 case 'function':
-
                     let pattern = new RegExp('{#_(.*?)\\(');
                     let match = pattern.exec(node.open);
 
@@ -684,12 +642,10 @@ define([
 
                 default:
                     // Instruccions
-                    // console.log(node);
                     instruction = node.type.toUpperCase();
             }
 
             return instruction;
-
         },
 
         getNodeById: function (id) {
@@ -704,21 +660,13 @@ define([
             let tree = [];
 
             let node;
-            // if (asClone) {
+
             // així es crida en iniciar el diàleg principal
             node = JSON.parse(JSON.stringify(this.getNodeById(refId)));
-            // } else {
-            //     // així es crida en iniciar un subdiàleg
-            //     node = this.structure[refId];
-            // }
-
             node.name = node.type ? node.type : node.open;
 
             tree.push(node);
-
             tree[0].children = this._getChildrenNodes(tree[0].children, tree[0].id);
-
-            // console.log("Tree?", tree);
 
             return tree;
         },
@@ -736,11 +684,9 @@ define([
             let nodes = [];
 
             for (let i = 0; i < children.length; i++) {
-
                 let id = typeof children[i] === 'object' ? children[i].id : children[i];
 
                 if (this.structure[id].isClone) {
-                    // if (context.getStructure()[id].isClone) {
                     continue;
                 }
 
@@ -749,9 +695,10 @@ define([
                 if (!node) {
                     console.error("Node not found:", id);
                 }
-                node.name = node.type ? node.type : node.open;
 
+                node.name = node.type ? node.type : node.open;
                 node.parent = parent;
+
                 if (node.children.length > 0) {
                     node.children = this._getChildrenNodes(node.children, node.id);
                 }
@@ -759,12 +706,10 @@ define([
                 nodes.push(node);
             }
 
-
             return nodes;
         },
 
         getCode: function (node) {
-            // console.log("getCode", node);
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -781,42 +726,31 @@ define([
 
             code += node.open.replace('%s', node.attrs);
 
-            // console.log("Comprovant childrens:", node.children);
             for (let i = 0; i < node.children.length; i++) {
 
-                // let node = typeof data.children[i] === 'object' ? data.children[i] : this.getStructure()[data.children[i]];
-                // Si com a fill hi ha un node és una copia, cal recuperar-lo de la estructura sempre
+                // Si com a fill hi ha un node és una copia, sempre cal recuperar-lo de la estructura
                 let id = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
-                // console.log("Quin node s'intenta comprovar?", id);
                 let child = this.structure[id];
 
                 // al servidor s'afegeix clone al item per indicar que aquest element es clonat i no cal reafegirlo
                 // per exemple perquè és genera amb un for o foreach
-                // console.log(id, child);
                 if (child.isClone) {
                     continue;
                 }
 
                 code += this.getCode(child, this.structure);
-
-                // console.log("getCode:", node, code);
             }
 
             if (node.close !== null) {
                 code += node.close;
             }
 
-
             code = this._addSiblingsToCode(node, code);
-
-
-            // console.log("Code rebuilt:", code);
             return code;
         },
 
         // En lloc de generar el codi pels childs es reemplaça pel inner passat com argument
         getCodeWithInner: function (node, inner) {
-            // console.log("getCodeWithInner", node, inner);
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
@@ -825,10 +759,6 @@ define([
             node.attrs = node.attrs.replaceAll('&markn;', "\n>");
 
             code += node.open.replace('%s', node.attrs);
-
-
-            // invertim el canvi que es fa en obtenir l'inner
-
             code += inner;
 
             if (node.close !== null) {
@@ -836,50 +766,6 @@ define([
             }
 
             this._addSiblingsToCode(node, code);
-
-            // // Comprovem si te siblings (mateix parent), i si es així en quina posició es troben al posmap (abans o després que aquest)
-            // console.log("siblings candidats?",this.structure.siblings)
-            // let siblings = {};
-            // let testCounter =0;
-            //
-            // for (let siblingId of this.structure.siblings) {
-            //     if (this.structure[siblingId].parent == this.node.parent) {
-            //         console.log("trobat sigling:", this.structure[siblingId])
-            //         siblings[singlinbId] = this.structure[siblingId];
-            //         testCounter++;
-            //     } else {
-            //         console.warn("descartat sibling:", this.structure[siblingId])
-            //     }
-            // }
-            //
-            // let after = false;
-            //
-            // for (let [start, mappedNode] in this.posMap) {
-            //
-            //     if (mappedNode.id === node.id) {
-            //         after = true;
-            //         continue;
-            //     }
-            //
-            //     if (siblings[mappedNode.id]) {
-            //         // l'eliminem per no repetirlo, la majoria d'etiquetes s'afegeixen 2 vegades, una per l'apertura i una altra pel tancament
-            //         delete(siblings[mappedNode.id]);
-            //         testCounter--;
-            //
-            //         let siblingCode = this.getCode(mappedNode.id);
-            //         if (after) {
-            //             code += siblingCode;
-            //         } else {
-            //             code = siblingCode + code ;
-            //         }
-            //     }
-            //
-            // }
-            //
-            // console.log("Procesats tots els siblings?", testCounter === 0, testCounter);
-            //
-            //
-            // console.log("Rebuild amb siblings:", code);
 
             return code;
         },
@@ -908,7 +794,8 @@ define([
             return false;
         },
 
-        // Es consideran només els siblings del node no afegits al parent (perquè s'han afegit a l'editor i encara no s'han desat els canvis)
+        // Es consideran només els siblings del node no afegits al parent (perquè s'han afegit
+        // a l'editor i encara no s'han desat els canvis)
         _addSiblingsToCode: function (node, code) {
             // Comprovem si te siblings (mateix parent), i si es així en quina posició es troben al posmap (abans o després que aquest)
             // console.log("siblings candidats?", node, this.siblings)
@@ -927,9 +814,7 @@ define([
                 return code;
             }
 
-
             for (let siblingId of this.siblings) {
-                // if (this.structure[siblingId].parent === node.parent && !this._hasChild(node.parent, siblingId)) {
                 if (this.structure[siblingId].parent === node.parent) {
                     console.log("trobat sibling:", this.structure[siblingId])
                     siblings[siblingId] = this.structure[siblingId];
@@ -944,41 +829,30 @@ define([
             for (let [start, mappedNode] of this.posMap) {
 
                 if (mappedNode.id === node.id) {
-                    // console.log("trobat el node original, saltant");
                     after = true;
                     continue;
                 }
 
                 if (siblings[mappedNode.id]) {
-                    // l'eliminem per no repetirlo, la majoria d'etiquetes s'afegeixen 2 vegades, una per l'apertura i una altra pel tancament
+                    // l'eliminem per no repetirlo, la majoria d'etiquetes s'afegeixen 2 vegades,
+                    // una per l'apertura i una altra pel tancament
                     delete (siblings[mappedNode.id]);
                     testCounter--;
 
                     let siblingCode = this.getCode(mappedNode);
                     if (after) {
-                        // console.log("afegit després", siblingCode);
                         code += siblingCode;
                     } else {
-                        // console.log("afegit abans", siblingCode);
                         code = siblingCode + code;
                     }
-                } else {
-                    // console.log("No es troba ", mappedNode.id, " a siblings", siblings);
                 }
-
             }
-
-            // console.log("Procesats tots els siblings?", testCounter === 0, testCounter);
-            //
-
-            // console.log("Rebuild amb siblings:", code);
 
             return code;
         },
 
         // retorna el contingut d'un node, és a dir, el codi corresponent als nodes fills
         getInner: function (node) {
-            // console.warn("getInner", node);
             let code = '';
 
             for (let i = 0; i < node.children.length; i++) {
@@ -986,19 +860,15 @@ define([
                 code += this.getCode(child);
             }
 
-            // console.log("Inner:", code);
             return code;
         },
 
 
         rebuildPosMap: function (item) {
-            // console.error("Rebuilding chunkmap for", item, this.structure);
-
             let outChunkMap = new Map();
 
             // Referència per determinar quin item ha de persistir en el filtre
             let auxId = item.id
-
 
             // s'han de tenir en compte els siblings temporals
             // creem un nou item que els contingui i aquest és el que reconstruim
@@ -1006,14 +876,8 @@ define([
                 open: '',
                 close: '',
                 attrs: '',
-                // ALERTA! Cal crear una copia perquè si no es modifiquen els siblings!!
-                // children: this.siblings ? JSON.parse(JSON.stringify(this.siblings)) : []
             }
 
-            // wrapper.children.unshift(item);
-
-            // Cerquem els sibligs del node seleccionat. Això s'ha d'establir aqui
-            // perquè el _createPosMap es crida recursivament
             let auxParent;
 
             // Si el item seleccionat és el wrapper no cal cercar el parent, aquest és el node que conté tot
@@ -1028,40 +892,17 @@ define([
             // creem una copia dels children
             wrapper.children = JSON.parse(JSON.stringify(auxParent.children));
 
-            // L'editor pot estar mostrant 1 node + nous siblings, per aquest motiu recuperavem els "siblings"
-            // que són els fills del parent.
-            // però això no és correcte, l'editor mostra només els siblings que encara no s'han afegit definitivament
-            // és a dir, els siblings que no es troben al backup!
-            //
-            // cal recorrer aquests children i conservar només:
-            // el item
-            // els que no es trobin al backup:
-            //   - agafem el parent del backup (sempre ha d'existir? COMPROVAR AMB EL ROOT REAL)
-            //      * quins childrens ha de contenir si s'ha clicat el wrapper?
-
-            //   - recorrem els childs i comprovem si són similars, si es troba similar es descarta
-            //          - Les posicions han de ser les mateixes
-
-            // PROBLEMA: el backupNode conté la estructura de l'arbre, així que per trobar el node corresponent
-            // al node editat cal recorrer totes les branques fins trobar-lo
-
+            // Comprovem si els nodes es troben al backup i si no és així els intercalem on correspong
             for (let i=wrapper.children.length-1; i>=0; i--) {
 
                 let child = wrapper.children[i];
                 let id = typeof child === "string" ? child : child.id;
 
                 if (auxId === null || id === auxId || !this.structure.backupIndex[id]) {
-                    // console.log("conservant node pel posMap (per això funciona el root probablement, no elimina cap", child)
                     continue;
                 }
                 wrapper.children.splice(i, 1);
-                // let eliminat = wrapper.children.splice(i, 1);
-                // console.log("descartant node pel posMap:", auxId, id, this.structure.backupIndex[id], eliminat);
-
             }
-
-            // console.log("que hi ha al backup", this.structure.backupNode);
-            // console.log("que hi ha a l'índex", this.structure.backupIndex);
 
             // Pasem els childs a string si hi ha. ALERTA! Això está duplicat en altes punts
             for (let i=0; i<auxParent.children.length; i++){
@@ -1070,25 +911,16 @@ define([
                 }
             }
 
-            // let auxRootSibblings = [];
-
             if (!this.editorNodes) {
                 this.editorNodes = [item];
             }
 
-
             let rebuild = this._createPosMap(wrapper, 0, outChunkMap);
             this.posMap = outChunkMap;
-
-            // console.log("posMap refet:", this.posMap);
-
-
         },
 
-        // el pos map és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
+        // El posMap és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
         _createPosMap: function (node, pos, outPosMap) {
-
-            // console.error("_createPosMap", node, pos);
             // Cal fer la conversió de &escapedgt; per \>
             let attrs = node.attrs;
             attrs = attrs.replaceAll('&escapedgt;', '\\>');
@@ -1115,10 +947,8 @@ define([
                 cursorPos += childCode.length;
             }
 
-            // console.log("item", item);
             if (node.close !== undefined && node.close.length > 0) {
-                // si hi ha un close en clicar a sobre d'aquest també es seleccionarà l'item
-                // console.log("Afegint posició al close per:", item.close, cursorPos);
+                // si hi ha un close en clicar a sobre d'aquest també es seleccionarà l'item corresponent
                 outPosMap.set(cursorPos, node);
                 code += node.close;
             }
@@ -1126,7 +956,6 @@ define([
             outPosMap.length = cursorPos;
 
             return code;
-
         },
 
         // TODO: Canviar el nom per eliminar _, no és privada
@@ -1138,10 +967,9 @@ define([
             // let first;
             let last;
 
-            // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
-            // S'agafarà l'anterior
+            // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició
+            // superior al punt que hem clicat. S'agafarà l'anterior
             for (let [start, node] of this.posMap) {
-
                 last = node;
 
                 if (start > pos && candidate) {
@@ -1160,9 +988,8 @@ define([
             return candidate;
         },
 
-        // retorna la posició com a index
+        // Retorna la posició com a index
         getNearestPos: function (pos) {
-
             if (this.posMap.size === 0) {
                 return 0;
             }
@@ -1170,13 +997,10 @@ define([
             // Cerquem el node corresponent
             let candidate;
             let found;
-            // let first;
             let last;
 
             // Recorrem el mapa (que ha d'estar ordenat) fins que trobem una posició superior al punt que hem clicat
             // S'agafarà l'anterior
-            // console.log(this.posMap);
-            // console.log(this.posMap.length);
 
             let startPos = 0;
             // Propietat afegida per nosaltres al Map
@@ -1195,31 +1019,24 @@ define([
                 }
             }
 
-
             if (!found) {
                 candidate = last;
             }
-
-            // console.warn(startPos, endPos);
-
-            // console.log("Candidate:", candidate, last);
 
             // En el cas de que només hi hagi una instrucció no existeix el startIndex/lastIndex, l'hem de generar
             if (candidate.startIndex === undefined) {
                 candidate.startIndex = 0;
                 candidate.lastIndex = this.getCode(candidate).length;
             }
+
             // Calculem el punt central entre el principi i el final per determinar si la posició
             // està més a prop del principi o del final
-
             let diff = Math.floor((endPos - startPos) / 2);
             let posMid = startPos + diff;
 
             if (pos < posMid) {
-                // console.log("START", startPos);
                 return startPos;
             } else {
-                // console.log("END", endPos);
                 return endPos;
             }
         },
@@ -1230,9 +1047,7 @@ define([
                 this._purge(this.structure[id]);
             }
             delete (this.structure[node.id]);
-
         },
-
 
         _restore: function (node) {
             // Restaurem una copia del node
@@ -1246,41 +1061,26 @@ define([
         },
 
         restore: function () {
-            // console.error("Restoring");
             if (this.structure.backupNode) {
-                // El purge s'ha de cridar només un cop, perquè és recursiu, sobre l'element que conté els childs actualment
+                // El purge s'ha de cridar només un cop, perquè és recursiu,
+                // sobre l'element que conté els childs actualment
                 this.discardSiblings();
                 this._purge(this.structure[this.structure.backupNode.id]);
-
                 this._restore(this.structure.backupNode);
-
-
-                // ALERTA! No ho esborrem porquè hi ha casos en que cal restaurar (per exemple en fer click a diferents nodes)
-                // i no te sentit fer un nou backup
                 this.dirtyStructure = false;
-
-            } else {
-                console.log("no hi havia backup");
             }
         },
 
         _backup: function (node, index) {
-
-
             let id = typeof node === 'object' ? node.id : node;
-            // let backup = JSON.parse(JSON.stringify(this.structure[node.id]));
-
-            // console.log("que hi ha a la posició?", node, this.structure, id, this.structure[id]);
             let backup = JSON.parse(JSON.stringify(this.structure[id]));
 
             // afegim el node al mapa
-            // console.log(index, id);
             index[id] = backup;
 
             for (let i = 0; i < backup.children.length; i++) {
                 // Canviem els ids per la copia de l'objecte
                 let id = typeof backup.children[i] === 'object' ? backup.children[i].id : backup.children[i];
-                // backup.children[id] = this._backup(this.structure[id]);
                 backup.children[i] = this._backup(this.structure[id], index);
             }
             return backup;
@@ -1290,11 +1090,10 @@ define([
             this.structure.backupIndex = {};
             this.structure.backupIndex[node.id] = JSON.parse(JSON.stringify(node));
             this.structure.backupNode = this._backup(node, this.structure.backupIndex);
-
         },
 
         parse: function (text, node) {
-            // abans de fer el parse fem un restore per aplicar els canvis sobre els originals
+            // Abans de fer el parse fem un restore per aplicar els canvis sobre els originals
             // de manera que es descarten els children generats anteriorment
 
             // Conseverm l'estat dirty (el restore l'elimina)
@@ -1302,21 +1101,17 @@ define([
             this.restore();
             this.dirtyStructure = dirty;
 
-            // console.log("Parse a partir del node:", node);
-
             let outTokens = this._tokenize(text);
             this._createTree(node, outTokens, this.structure);
 
             return node;
-
         },
 
-        // TODO: Refactoritzar i canviar el nom, això no crea un arbre, actualitza l'estructura a partir del node root
-        // i els tokens passats que són un vector d'elements que cal estructurar en forma d'arbre segons si es troben
+        // TODO: Refactoritzar i canviar el nom, això no crea un arbre, actualitza
+        // l'estructura a partir del node root i els tokens passats que són un vector
+        // d'elements que cal estructurar en forma d'arbre segons si es troben
         // dintre d'instruccions wioccl
         _createTree(root, outTokens) {
-            // console.log("_createTree",root, outTokens);
-
             this.discardSiblings();
 
             // Només hi ha un tipus open/close, que son els que poden tenir fills:
@@ -1353,13 +1148,8 @@ define([
             }
 
             let nextKey = this.structure.next + "";
-
             let siblings = 0;
-
             let first = true;
-
-            /// Aquest serà el valor a retornar si el root es null inicialment
-            // let outRoot = null;
 
             // Si l'últim token és un salt de linia ho afegim al token anterior
             if (outTokens.length > 1 && outTokens[outTokens.length - 1].value === "\n") {
@@ -1367,36 +1157,14 @@ define([
                 outTokens.pop();
             }
 
-
             let errorDetected = false;
-
-            // Si el root és temporal o wrapper eliminem els fills
-            // hi ha algun cas en que s'hagi de conservar els fills encara que no sigui temp ni wrapper?
-            // TODO: aplicar a tots els casos?
-            // if (root.type === 'temp' || root.type === 'wrapper') {
-            //     console.log("root", root);
-            //     this._removeChildren(root.id);
-                // root.children = [];
-            // }
 
             // Guardem la llista de nodes parsejats
             this.editorNodes = [];
 
-            // console.log("Preparat this.editorNodes", this.editorNodes);
             let puntInsercio = 0;
 
             for (let i in outTokens) {
-                // console.log(i, outTokens[i]);
-
-                // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
-                // Si l'arrel és temporal el primer token és fill de l'arrel
-
-                // if (root.type === 'temp' && stack.length === 0) {
-                // TODO: Alerta, això correspon a WiocclStructureTemp, però llavors cal copiar tota la funció canviant
-                // només aquest cas
-
-                // ALERTA! Gestionar el void! considerar separar en les classes temp i void!!
-
                 let currentId;
                 if (root.type === 'void' && stack.length === 0) {
                     // només pot haver 1 node, no s'accepten siblings, es sustitueix el root per aquest
@@ -1408,9 +1176,6 @@ define([
                     outTokens[i].parent = root.parent;
                     outTokens[i].solo = true; // això ens permet identificar que aquest node ha d'anar sol (deshabilita els botons d'insert)
                     root = outTokens[i];
-
-
-
                 } if ((root.type === 'temp' && stack.length === 0)  // TODO: Determinar si el temp serà length 0 o 1
                     || (root.type === 'wrapper' && stack.length === 1)) {
 
@@ -1418,23 +1183,16 @@ define([
                     outTokens[i].id = currentId;
                     root.children.push(outTokens[i].id);
                     outTokens[i].parent = root.id;
-
                 } else if (i === '0') {
-
                     currentId = root.id;
                     outTokens[i].id = currentId;
                     outTokens[i].parent = root.parent;
-                    // this.root = tokens[i].id;
                     // Reemplaçem el root
                     root = outTokens[i];
-
                 } else {
-                    // console.log(outTokens, stack);
-
                     currentId = nextKey;
                     outTokens[i].id = currentId;
                 }
-
 
                 if (stack.length > 0 && stack[stack.length - 1].children.includes(root.id)) {
                     puntInsercio =  stack[stack.length - 1].children.indexOf(root.id) +1;
@@ -1442,17 +1200,14 @@ define([
                     stack[stack.length - 1].children.length;
                 }
 
-
                 outTokens[i].children = [];
 
-
                 if (outTokens[i].value.startsWith('</WIOCCL:')) {
-                    // console.log("Tancant", outTokens[i].value)
                     outTokens[i].type = "wioccl";
                     let top = stack.pop();
 
-                    // Com que sempre hi ha un node root que no es pot tancar (temp, wrapper, etc.) no cal control·lar si hi ha parent
-
+                    // Com que sempre hi ha un node root que no es pot tancar (temp,
+                    // wrapper, etc.) no cal control·lar si hi ha parent
                     outTokens[i].parent = stack.id;
 
                     if (!top) {
@@ -1469,15 +1224,11 @@ define([
                 }
 
                 if (stack.length > 0) {
-
-                    // console.log("parent anterior:", outTokens[i].parent);
-                    // console.log("parent nou:", stack[stack.length-1].id);
                     outTokens[i].parent = stack[stack.length-1].id;
 
                     let lastChildren = stack[stack.length - 1].children;
 
                     // els childs poden ser objectes o strings
-
                     // si no es troba entre els children l'afegim al final
                     let filter = (element) => {
                         let id =  typeof element === 'string' ? element : element.id;
@@ -1485,26 +1236,15 @@ define([
                     };
 
                     if (!lastChildren.some(filter)) {
-                        // console.log("Afegint child", currentId);
                         // Cal fer un splice amb al punt d'inserció i actualitzar-lo
-                        // console.log("Inserint node a posició:", puntInsercio, currentId)
-                        // console.log("node anterior:", stack[stack.length - 1].children[puntInsercio])
                         stack[stack.length - 1].children.splice(puntInsercio, 0, currentId);
                         puntInsercio++;
-                        // console.log("ordre final:", stack[stack.length - 1].children);
-
-                        // stack[stack.length - 1].children.push(currentId);
-                    } else {
-                        // console.log("Trobat child amb id (no afegim)", currentId);
                     }
                 } else if (root !== null) {
-
                     // cas 1: s'ha seleccionat el wrapper (root és el wrapper)
                     //      * hem de fer push d'aquest element als childrens del wrapper
                     //      !!! si el parent del node és el wrapper s'ha d'afegir aquest a l'stack <-- fet a sobre
                     // cas 2: s'ha seleccionat un fill directe del wrapper
-
-
 
                     // Si no hi ha cap element a l'estack es que es troba al mateix nivell que l'element root
 
@@ -1532,36 +1272,8 @@ define([
                     outTokens[i].parent = -1;
                 }
 
-                // Si fem servir push s'afegeixen al final, això no serveix perquè cal inserir els nous nodes a la posició original (emmagatzemada a root.index)
-                // si no hi ha root.index no cal reordenar, això passa amb un parse de múltiples tokens temporals
-
-                // console.log(root !== null,  root.index,  outTokens[i].parent, root.parent);
-
-
-                // TODO: arreglar aixo <-- sembla que no es crida, ja no es fa servir?
-                if (root !== null && root.index !== undefined && outTokens[i].parent === root.parent
-                    && (Number(i) < outTokens.length - 1 || outTokens[i].value !== "\n")) {
-                    console.log("Es fa servir?");
-                    alert("Es fa servir?");
-                    let id = outTokens[i].id;
-                    this.structure[root.parent].children.splice(root.index + siblings, 0, id);
-                    // console.log("Reafegit a la posició:", root.index + siblings, " amb id:", id);
-                    ++siblings;
-
-                    // el root.id és l'element seleccionat, aquest no cal marcar-lo com a sibling perquè
-                    // existeix a l'estructura
-                    if (!this.updating && id !== root.id) {
-                        if (this.siblings === undefined) {
-                            this.siblings = [];
-                        }
-                        console.log("Afegint sibling", id);
-                        this.siblings.push(id);
-                    }
-
-                }
 
                 // No cal gestionar el type content perquè s'assigna al tokenizer
-
                 if (outTokens[i].value.startsWith('<WIOCCL:')) {
                     let pattern = /<WIOCCL:.*? (.*?)>/gsm;
 
@@ -1574,7 +1286,6 @@ define([
                     }
 
                     pattern = /(<WIOCCL:.*?)[ >]/gsm;
-
                     matches = pattern.exec(outTokens[i].value);
                     outTokens[i].open = matches[1] + ' %s>';
 
@@ -1621,24 +1332,16 @@ define([
                 }
 
                 // Cal un tractament especial per l'arrel perquè s'ha de col·locar a la posició del node arrel original
-
-
-
                 this.structure[currentId] = outTokens[i];
 
                 if (first && (root.type !== 'temp' && root.type !== 'wrapper')) {
-
                     first = false;
-
                 } else {
                     nextKey = (Number(nextKey) + 1) + "";
                 }
 
-
                 this.editorNodes.push(outTokens[i]);
-
             }
-
 
             // Si es produeix cap error ho descartem
             if (errorDetected) {
@@ -1652,7 +1355,6 @@ define([
         },
 
         _tokenize(text) {
-            // console.log("Text rebut:", text);
             //  Dividim en en els 4 tipus:
             //      Open wioccl
             //      Close wioccl
@@ -1662,35 +1364,32 @@ define([
             let pattern = /<WIOCCL:.*?>|<\/WIOCCL:.*?>|{##.*?##}|{#_.*?_#}/gsm;
 
 
-            // PROBLEMA: no podem capturar > sense capturar \>, fem una conversió de \> abans de fer el parse i ho restaurem després
-            // Hi han dos casos, amb salt de línia i sense, per poder restaurar-los fem servir dues marques diferents: &markn; i &mark;
-            // let originalText = text;
+            // PROBLEMA: no podem capturar > sense capturar \>, fem una conversió de \> abans de
+            // fer el parse i ho restaurem després.
+            // Hi han dos casos, amb salt de línia i sense, per poder restaurar-los fem servir
+            // dues marques diferents: &markn; i &mark;
             text = text.replaceAll(/\\[\n]>/gsm, '&markn;');
             text = text.replaceAll(/\\>/gsm, '&mark;');
 
-            // ALERTA: això suposa un canvi en el recompte de caràcteres, perquè les posicions no corresponen
-
-
+            // ALERTA: això pot suposar un canvi en el recompte de caràcteres, perquè les posicions no corresponen
             let tokens = [];
             let xArray;
             while (xArray = pattern.exec(text)) {
-
                 let value = xArray[0];
 
                 // Actualitzem el valor del token
                 let token = {};
                 token.startIndex = xArray.index;
                 token.lastIndex = pattern.lastIndex - 1; // El lastIndex sembla correspondre a la posició on comença el token següent
-
                 token.value = value;
+
                 tokens.push(token);
-
-                // console.log(token);
-
             }
 
-            // Si aquesta llista es vàlida cal extreure d'aquí el content (diferencia de lastindex i index del següent token
-            // Cal recorrer l'array des del final, ja que cal afegir (si escau) el token de content a la posició de l'index
+            // Si aquesta llista es vàlida cal extreure d'aquí el content (diferencia de
+            // lastindex i index del següent token.
+            // Cal recorrer l'array des del final, ja que cal afegir (si escau) el token
+            // de content a la posició de l'index
             let currentPos = text.length - 1;
 
             if (tokens.length > 0) {
@@ -1707,14 +1406,10 @@ define([
                     token.lastIndex = currentPos;
                     tokens.push(token);
                 }
-
             }
 
             for (let i = tokens.length - 1; i >= 0; --i) {
-
-
                 if (tokens[i].lastIndex === currentPos || i === tokens.length - 1) {
-                    // console.log("** consecutiu: ");
                     // és consecutiu, no hi ha content entre aquest element i el següent
                 } else {
                     let token = {};
@@ -1723,8 +1418,6 @@ define([
                     token.attrs = '';
                     token.open = token.value;
                     token.close = '';
-
-                    // Això no és realment necessari
                     token.startIndex = tokens[i].lastIndex + 1;
                     token.lastIndex = currentPos;
 
@@ -1744,8 +1437,6 @@ define([
                 token.attrs = '';
                 token.open = text;
                 token.close = '';
-
-                // Això no és realment necessari
                 token.startIndex = 0;
                 token.lastIndex = currentPos;
                 tokens.push(token);
@@ -1759,15 +1450,12 @@ define([
                     token.attrs = '';
                     token.open = token.value;
                     token.close = '';
-
-                    // Això no és realment necessari
                     token.startIndex = 0;
                     token.lastIndex = currentPos;
                     tokens.unshift(token);
                 }
 
             }
-
 
             return tokens;
         },
@@ -1789,14 +1477,6 @@ define([
                 let childId = typeof node.children[i] === 'object' ? node.children[i].id : node.children[i];
                 ids.push(childId);
                 ids = ids.concat(this._removeChildren(childId));
-                // inStructure[childId] = false;
-
-                // ALERTA! això no es fa a aquesta classe, per això retornem un array amb els ids
-                // if (removeNode) {
-                //     let $node = jQuery(this.editor.iframe).contents().find('[data-wioccl-ref="' + childId + '"]');
-                //     $node.remove();
-                // }
-
                 delete (this.structure[childId]);
             }
 
@@ -1807,7 +1487,6 @@ define([
 
         _removeNode: function (id) {
             let node = this.structure[id];
-            // console.log("Fent remove node de id", node.id, node.parent);
 
             if (!node.parent) {
                 // Això es correcte quan s'intenta eliminar un node temporal com els wrappers
@@ -1827,7 +1506,6 @@ define([
 
                 delete (this.structure[id]);
             }
-
         },
 
         discardSiblings: function () {
@@ -1848,16 +1526,10 @@ define([
             return this.structure.next + '';
         },
 
-        // increaseNextKey: function() {
-        //     this.structure.next++;
-        // },
-
         // ALERTA! no utilitzar per afegir nodes als diàlegs, els dialegs utilitzan el sistema de parser
         // i s'insereixen a la posició correcta dels childs. Aquesta versio només s'ha de fer servir
         // per crear nodes per incrustar directament a l'editor dojo.
         createNode: function(type, parent, key) {
-
-
             if (!key) {
                 key = Number(this.structure.next);
                 this.structure.next = (Number(this.structure.next) + 1) + "";
@@ -1877,15 +1549,15 @@ define([
             return node;
         },
 
-        // alerta, si el node ja existeix es sobreescriu, es controla que el id no sigui posterior al nextkey
-        // pels nodes inserits directament desde l'editor dojo no cal respectar l'ordre perquè depenen de la posició
+        // ALERTA! si el node ja existeix es sobreescriu, es controla que
+        // l'id no sigui posterior al nextkey pels nodes inserits directament
+        // desde l'editor dojo no cal respectar l'ordre perquè depenen de la posició
         // de l'span al document.
         addNode(node, afterId) {
             if (Number(node)>this.structure.next) {
                 alert("No es pot afegir el node, l'identificador es major que la próxima clau");
                 return;
             }
-
 
             // L'afegim com a child del parent si no és null
             if (node.parent !== undefined) {
@@ -1900,9 +1572,7 @@ define([
                 // - si no es posa res, es col·loca al principi (opcional afterId)
                 // - ALERTA! Només poden afegir-se com afills directes del root
 
-
                 // hem de comprovar que no es trobi ja afegit (per haver sobreescrit a l'anterior)
-
 
                 // 1: eliminem el child si ja es troba a la llista
                 for (let i=0; i<this.structure[node.parent].children; i++) {
@@ -1946,14 +1616,10 @@ define([
                 let childId = typeof node.children[i] === 'object'? node.children[i].id : node.children[i];
                 this.structure[childId].parent = node.id;
             }
-
         },
 
-
         canInsert: function(pos, node) {
-            // console.log("Node?", node);
             if (node.id === "0" || node.parent === "0" || node.solo) {
-                //console.warn("No es pot inserir, el node és root, fill directe o solo");
                 return false;
             }
 
@@ -1961,24 +1627,20 @@ define([
         },
 
         areNodesSimilar: function (currentNode, backupNode) {
-            // console.log("Comparant", currentNode, backupNode);
-            // El nombre de fills és correcte, surten més nodes perquè són clones!
-            // alert("STOP: revisar, això no sembla funcionar bé, surten 40 childs del foreach (en un segon reintent, al primer suposo que menys), i tot i així no posa que siguin diferent <-- al backup surt la mateia quantitat de nodes!")
             let similar = currentNode.attrs === backupNode.attrs && currentNode.type === backupNode.type
                 && currentNode.open === backupNode.open && currentNode.close === backupNode.close
                 && currentNode.children.length === backupNode.children.length;
 
             // Si no són similars no cal comprovar els fills
             if (!similar) {
-                // console.log("Detectat no similar", currentNode, backupNode);
                 return false;
             }
 
             for (let i = 0; i < currentNode.children.length; i++) {
-                // Alerta, la estructua s'agafa de fora de la funció!
-                let currentNodeChild = typeof currentNode.children[i] === 'string' ? this.getNodeById(currentNode.children[i]) : currentNode.children[i];
-                let backupNodeChildId = typeof backupNode.children[i] === 'string' ? backupNode.children[i] : backupNode.children[i].id;
-
+                let currentNodeChild = typeof currentNode.children[i] === 'string' ?
+                    this.getNodeById(currentNode.children[i]) : currentNode.children[i];
+                let backupNodeChildId = typeof backupNode.children[i] === 'string' ?
+                    backupNode.children[i] : backupNode.children[i].id;
 
                 let childSimilars = this.areNodesSimilar(currentNodeChild, this.structure.backupIndex[backupNodeChildId]);
                 if (!childSimilars) {
@@ -1986,9 +1648,7 @@ define([
                 }
             }
 
-            // console.log("són similars:", currentNode, backupNode);
             return true;
         }
-
     });
 });
