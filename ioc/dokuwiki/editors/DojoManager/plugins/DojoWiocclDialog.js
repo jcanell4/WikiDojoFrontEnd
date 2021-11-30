@@ -606,6 +606,8 @@ define([
                 html += `<label>${field} <span>(${types})${optional}</span></label>`;
                 html += '<input type="text" name="' + field + '" value="' + value + '"/>';
                 html += '<button data-button-edit>wioccl</button>';
+                // aquest botó no fa res, però en clicar-lo es perd el focus així que s'actualitza
+                html += '<button>actualitzar</button>';
                 html += '</div>';
             }
 
@@ -649,6 +651,8 @@ define([
                 html += `<label>${name} <span>(${types})${optional}</span></label>`;
                 html += '<input type="text" name="' + name + '" value="' + value + '"/>';
                 html += '<button data-button-edit>wioccl</button>';
+                // aquest botó no fa res, però en clicar-lo es perd el focus així que s'actualitza
+                html += '<button>actualitzar</button>';
                 html += '</div>';
             }
 
@@ -659,14 +663,24 @@ define([
             let html = '';
             for (let field in fields) {
 
+
+
                 // Es necessari eliminar el escape de les dobles cometes
                 // TODO: ALERTA! Caldrà tornar-lo a afegir abans d'enviar-lo
                 let valor = fields[field].replaceAll('\"', '&quot;');
 
                 html += '<div class="wioccl-field" data-attr-field="' + field + '">';
                 html += `<label>${field}</label>`;
-                html += '<input type="text" name="' + field + '" value="' + valor + '"/>';
+
+                if (field === 'content') {
+                    html += '<textarea name="' + field + '">' + valor + '</textarea>';
+                } else {
+                    html += '<input type="text" name="' + field + '" value="' + valor + '"/>';
+                }
+
                 html += '<button data-button-edit>wioccl</button>';
+                // aquest botó no fa res, però en clicar-lo es perd el focus així que s'actualitza
+                html += '<button>actualitzar</button>';
                 html += '</div>';
             }
 
@@ -788,7 +802,6 @@ define([
         },
 
         _updatePendingChanges_Field2Detail: function () {
-
             if (!this._pendingChanges_Field2Detail) {
                 return;
             }
@@ -798,10 +811,10 @@ define([
             let extractedFields = this._extractFieldsFromWiocclNode(this.selectedWiocclNode);
 
 
-            $attrContainer.find('[data-attr-field] input').each(function () {
+            $attrContainer.find('[data-attr-field] input, [data-attr-field] textarea').each(function () {
                 let $fieldContainer = jQuery(this).closest('[data-attr-field]');
                 let attrField = $fieldContainer.attr('data-attr-field');
-                let attrValue = $fieldContainer.find('input').val();
+                let attrValue = $fieldContainer.find('input, textarea').val();
                 // Reemplacem l'atribut
                 extractedFields[attrField] = attrValue;
             });
