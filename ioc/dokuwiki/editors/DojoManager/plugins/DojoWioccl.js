@@ -114,6 +114,16 @@ define([
 
             $domNode.off('click');
 
+            // ALERTA! aquests botons realment no tenen handler, es dispara perquè es troben dins del TR que és
+            // el node que sí que es troba al $domNode.
+            let wiocclRows = jQuery(context.editor.iframe).contents().find('tr[data-wioccl-ref]');
+            wiocclRows.each(function() {
+                let $this = jQuery(this);
+                let $icon = jQuery('<span data-wioccl-state="open"></span>');
+                $this.append($icon);
+                $icon.attr('data-wioccl-ref', $this.attr('data-wioccl-ref'));
+            });
+
             // ALERTA[Xavi] ho posem com una variable i no com una propietat perquè necessitem
             // accés al context (aquesta classe) i al this (el node on es dispara l'event) i
             // una referència per poder fer un off per no reafegir-lo
@@ -433,6 +443,9 @@ define([
 
             this._addHandlers($nodes, this)
             $content.find('[data-wioccl-ref="0"]').css('display', 'none');
+
+
+
         },
 
         updateCursorState: function (e) {
