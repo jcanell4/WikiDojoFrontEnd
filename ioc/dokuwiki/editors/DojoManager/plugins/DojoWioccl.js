@@ -23,6 +23,7 @@ define([
              Dialog, registry, dom, Tooltip, on, place, mouse, WiocclStructureClone, WiocclStructureWrapper,
              DojoEditorUtils) {
 
+    let REFRESH_TIMEOUT = 10000; // refresc automàtic de l'editor per evitar que es tanqui, temps en ms
     let counter = 0;
 
     // // ALERTA! Aquestes classes no carregan correctament a la capçalera, cal fer un segon require
@@ -228,6 +229,7 @@ define([
                     fields: context.editor.extra.wioccl_structure.fields,
                     style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
                     onHide: function (e) { // Es dispara quan es tanca el diàleg
+                        clearTimeout(refreshTimerId);
                         this.destroyRecursive();
                     },
                     id: 'wioccl-dialog' + counter,
@@ -251,6 +253,15 @@ define([
                     $document: jQuery(context.editor.iframe).contents(),
                     pluginEditor: context.editor
                 });
+
+                // només cal refrescar mentre estigui obert el dialog principal
+                // TODO: canviar per un sistema que detecti canvis al dialeg i afegeixi un throttle per no enviar
+                // en cada canvi
+                let refreshTimerId = setInterval(function() {
+                        context.editor.refresh();
+                    },
+                    REFRESH_TIMEOUT
+                );
 
                 context.wiocclDialog = wiocclDialog;
 

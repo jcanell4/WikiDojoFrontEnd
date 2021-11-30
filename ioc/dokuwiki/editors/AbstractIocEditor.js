@@ -92,6 +92,10 @@ define([
             } else {
                 return this.editorType;
             }
+        },
+
+        refresh: function() {
+            this.emit('refresh');
         }
 
     });

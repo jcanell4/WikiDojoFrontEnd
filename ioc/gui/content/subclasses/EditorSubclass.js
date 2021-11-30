@@ -85,26 +85,34 @@ define([
             },
 
             /**
-             * Es registra als esdeveniments i activa la detecció de canvis, copiar, enganxar i pijar tecles dins
+             * Es registra als esdeveniments i activa la detecció de canvis, copiar, enganxar i pitjar tecles dins
              * del node on es troba quest ContentTool.
              * Realitza l'enregistrament al ChangesManager.
              * @override
              */
             postAttach: function () {
-                this.registerObserverToEvent(this, this.eventName.REFRESH_EDITION, this._refreshEdition.bind(this)); // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                // Alerta[Xavi] Necessari per redimensionar correctament l'editor quan es recarrega amb més d'una pestanya
+                this.registerObserverToEvent(this, this.eventName.REFRESH_EDITION, this._refreshEdition.bind(this));
                 this.registerToChangesManager();
                 this.editor.on('change', this._checkChanges.bind(this));
+                this.editor.on('refreshFacade', this._refreshEdition.bind(this));
+
                 this.inherited(arguments);
                 this.lockDocument(); // Lock i Draft  [JOSEP]:Ara no cal això, ja que es bloqueja des del servidor en fer la petició d'edició
                 this._checkChanges();
             },
 
             _refreshEdition: function (event) {
-                this.eventManager.fireEvent(this.eventManager.eventName.EDIT,
-                                            {
-                                                id: this.id,
-                                                dataToSend: "id=" + this.ns + "&refresh=true"
-                                            });
+                // ALERTA[Xavi] No trobo que _refreshEdition es cridés enlloc, però this.eventManager era
+                // undefined, així que no funcionava. Canviat per obternir-lo des del dispatcher.
+                var eventManager = this.dispatcher.getEventManager();
+
+                eventManager.fireEvent(eventManager.eventName.EDIT,
+                // this.eventManager.fireEvent(this.eventManager.eventName.EDIT,
+                    {
+                        id: this.id,
+                        dataToSend: "id=" + this.ns + "&refresh=true"
+                    });
             },
 
 

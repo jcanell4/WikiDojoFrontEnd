@@ -70,6 +70,9 @@ define([
                 this.emit('changeCursor', e);
             }.bind(this));
 
+            // ALERTA! si no es posa fa el bind el context de _refreshFacade serà l'editor i no el facade
+            this.editor.on('refresh', this._refreshFacade.bind(this));
+
         },
 
         getPositionAsIndex: function (ignoreIfSelecting) {

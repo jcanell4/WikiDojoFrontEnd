@@ -126,7 +126,14 @@ define([
          */
         insert: function(text, force) {
             throw new Error('Method not implemented');
-        }
+        },
+
+        // Aquesta funció ha de ser cridada automáticament quan es dispara l'esdeveniment 'refresh' des de l'editor
+        _refreshFacade: function() {
+            this.emit('refreshFacade');
+        },
+
+        FACADE: true
     });
 
 });

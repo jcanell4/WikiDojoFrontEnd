@@ -755,7 +755,8 @@ define([
                 // buit, això és el que fa que es perdin totes les etiquetes buides a l'editor en teoría, es conserva
                 // al HTML però no es mostren a l'editor
                 return node;
-            }
+            },
+
         }
     );
 });

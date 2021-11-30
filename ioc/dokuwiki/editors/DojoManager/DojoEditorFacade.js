@@ -73,6 +73,9 @@ define([
                 this.emit('change', {newContent: newContent});
             }.bind(this));
 
+            // ALERTA! si no es posa fa el bind el context de _refreshFacade serà l'editor i no el facade
+            this.editor.on('refresh', this._refreshFacade.bind(this));
+
             this.editor.startup();
             this.editor.focus();
 
