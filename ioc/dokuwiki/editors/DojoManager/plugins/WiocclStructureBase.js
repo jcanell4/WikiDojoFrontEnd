@@ -1050,6 +1050,8 @@ define([
             //      OPEN: comencen per "<WIOCCL:"
             //      CLOSE: comencen per "</WIOCCL:"
 
+
+
             let stack = [];
             let parent = root && root.parent ? this.getNodeById(root.parent) : false;
 
@@ -1077,6 +1079,10 @@ define([
                 stack.push(parent);
             } else {
                 this._removeChildren(root.id);
+                // ALERTA! removeChildren elimina els fills de la estructura però del node de la estructura
+                // el root que tenim fins aquí no és fiable, pot ser una copia o una referència, així
+                // que buidel l'array
+                root.children = [];
             }
 
             let nextKey = this.structure.next + "";

@@ -737,7 +737,9 @@ define([
                     refId: refId,
                     saveCallback: function () {
                         // this és correcte, fa referència al nou dialog que s'instància
-                        this.structure.parse(this.editor.getValue(), this.editor.wioccl);
+                        let node = this.structure.getNodeById(this.editor.wioccl.id)
+                        // this.structure.parse(this.editor.getValue(), this.editor.wioccl);
+                        this.structure.parse(this.editor.getValue(), node);
                         let text = this.structure.getCode(this.structure.getNodeById(refId));
 
 
