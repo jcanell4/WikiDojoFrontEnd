@@ -392,7 +392,7 @@ define([
         },
 
         _extractField: function (wiocclNode) {
-            let attrs = wiocclNode.attrs.replace('&escapedgt;', '\\>');
+            let attrs = wiocclNode.attrs.replace('&mark;', '\\>');
 
             return {
                 'field': attrs
@@ -411,8 +411,12 @@ define([
             let tokens = attrs.match(paramsPattern);
 
             if (tokens === null) {
-                // això és pot produir si s'esborren les dobles cometes d'un camp per exemple
-                console.error("S'ha produit un error, no és possible parsejar els camps actuals");
+
+                if (wiocclNode.type !== 'function') {
+                    // això és pot produir si s'esborren les dobles cometes d'un camp per exemple
+                    console.error("S'ha produit un error, no és possible parsejar els camps actuals");
+                }
+
                 return {};
             }
 
@@ -706,7 +710,11 @@ define([
                 let structure = new WiocclStructureTemp({}, context.dispatcher);
                 let rootWiocclNode = structure.getRoot();
 
-                structure.parse(value, rootWiocclNode);
+                // Hem de fer un unsanitize perquè els &mark; que es trobaven com atribut ara
+                // es poden trobar al content
+                value = structure._unsanitize(value);
+
+                structure.parse(value, rootWiocclNode, true);
                 let refId = rootWiocclNode.id;
 
                 let tree = structure.getTreeFromNode(refId, true);
@@ -739,7 +747,8 @@ define([
                         // this és correcte, fa referència al nou dialog que s'instància
                         let node = this.structure.getNodeById(this.editor.wioccl.id)
                         // this.structure.parse(this.editor.getValue(), this.editor.wioccl);
-                        this.structure.parse(this.editor.getValue(), node);
+                        // S'ha d'ignorar el sanitize
+                        this.structure.parse(this.editor.getValue(), node, true);
                         let text = this.structure.getCode(this.structure.getNodeById(refId));
 
 
