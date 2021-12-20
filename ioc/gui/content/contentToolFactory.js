@@ -286,7 +286,8 @@ define([
                 STRUCTURED_DOCUMENT: 'structured_document',
                 NOTIFICATION: 'notification',
                 RECENTS: 'recents',
-                META_DOKUWIKI_NS_TREE: 'meta_dokuwiki_ns_tree'
+                META_DOKUWIKI_NS_TREE: 'meta_dokuwiki_ns_tree',
+                HTML_FORM: 'html_form'
             },
 
             /**
@@ -480,6 +481,7 @@ define([
                         break;
 
                     case this.generation.RECENTS:
+                    case this.generation.HTML_FORM:
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass)
                             .createSubclass(AjaxLinkSubclass)
