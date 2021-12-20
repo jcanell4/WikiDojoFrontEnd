@@ -128,14 +128,15 @@ define([
                     // automàticament amb la reconstrucció del wioccl
 
                     // console.log($node);
-                    if (Number(refId) === NaN) {
-                        console.log($node);
+                    if (isNaN(Number(refId))) {
+                        console.error("isNan", refId, $node);
                         return true;
 
                     }
 
                     // console.log(refId, Number(refId), structure);
                     // console.log(structure[Number(refId)]);
+                    // console.log(refId, Number(refId));
                     if ($node.attr('data-wioccl-state') === 'open' && structure[Number(refId)].parent === '0') {
 
                         // console.log("Comprovant node d'apertura per saltar:", refId, structure[Number(refId)]);
