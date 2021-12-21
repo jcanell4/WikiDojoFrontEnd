@@ -110,6 +110,8 @@ define([
                 $value.find('.no-render').remove();
                 // Cal eliminar
                 $value.find('[data-wioccl-xtype="readonly"]').remove();
+                $value.find('[data-wioccl-xtype="ignore"]').remove();
+
 
                 $value.find('[data-wioccl-ref]').each(function() {
                     let $node = jQuery(this);
