@@ -42,7 +42,6 @@ define([
         wiocclDialog: null,
 
         init: function (args) {
-            console.log("init?");
             this.inherited(arguments);
 
             this.htmlTemplate = args.htmlTemplate;
@@ -123,7 +122,6 @@ define([
                 let $icon = jQuery('<span data-wioccl-state="open"></span>');
                 $this.append($icon);
                 $icon.attr('data-wioccl-ref', $this.attr('data-wioccl-ref'));
-                // $icon.attr('data-wioccl-xtype', 'readonly');
                 $icon.attr('data-wioccl-xtype', 'ignore');
             });
 
