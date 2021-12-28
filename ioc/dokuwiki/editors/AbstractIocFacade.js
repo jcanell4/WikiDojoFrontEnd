@@ -7,7 +7,7 @@ define([
     // Patch per ignorar l'alignment de tots els elements media
     if (!window['dw_mediamanager_item_select_without_align']) {
         window['dw_mediamanager_item_select_without_align'] = function(edid, mediaid, opts, align, keepopen) {
-            console.log('align:',align);
+            // console.log('align:',align);
 
             if (align===false) {
                 align = 1;

@@ -81,7 +81,7 @@ define([
 
         _showDialog: function (data, previousId) {
 
-            console.log("Data del dialog?", data);
+            console.log("Data del dialog", data);
 
             var dialogManager = this.editor.dispatcher.getDialogManager();
 
