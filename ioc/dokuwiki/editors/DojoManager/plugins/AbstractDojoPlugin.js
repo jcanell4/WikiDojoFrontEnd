@@ -10,6 +10,8 @@ define([
 
     var AbstractDojoPlugin = declare([_Plugin, AbstractIocPlugin], {
 
+        test : "AbstractDojoPlugin",
+
         strings : i18n.getLocalization("ioc.dokuwiki.editors", "commands"),
 
         iconClassPrefix: 'dijitIocIcon',
@@ -42,6 +44,34 @@ define([
 
         getEditor: function () {
             return this.editor;
+        },
+
+        // El execCommand normal no funciona a chrome en alguns casos, el codi html es malconfigura
+        // un exemple: https://stackoverflow.com/questions/66272074/weird-behaviour-with-document-execcommandinserthtml
+        fixedInsertHtml: function(html) {
+            var $html = jQuery(html);
+
+            $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
+            var id = $html.attr('data-ioc-id');
+            //var id = jQuery(html).attr('data-ioc-id');
+
+            // ALERTA[Xavi] utilitzar el execCommand no sempre funciona a Chrome, normalment es trenca
+            // la estructura inserida. Per solventar-lo afegim amb execcommand un àncora amb un id
+            // que capturem amb jQuery un cop inserida i la reemplaçem amb el node de jQuery generat
+            // correctament.
+
+            // fem servir div perquè les figures sempre són blocs
+            let anchor = '<em id="anchor_' + id + '">@</em>';
+            // ALERTA
+            this.editor.execCommand('inserthtml', anchor);
+            // this.editor.execCommand('inserthtml', html);
+
+            let $anchor = jQuery(this.editor.iframe).contents().find('#anchor_' + id);
+
+            $anchor.after($html);
+            $anchor.remove();
+
+            return $html;
         }
 
     });

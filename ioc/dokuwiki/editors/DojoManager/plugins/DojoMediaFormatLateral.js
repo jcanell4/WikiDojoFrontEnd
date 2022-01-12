@@ -27,9 +27,11 @@ define([
     var WikiMediaFormatLateral = declare([AbstractParseableDojoPlugin, DojoMediaFormatFigure], {
 
         init: function (args) {
+
             this.inherited(arguments);
             // this.button.set('disabled', false);
         },
+
 
         _callback: function (data) {
             // console.log("data", data);
@@ -51,23 +53,14 @@ define([
             data.image = jQuery(data.image).attr('src');
 
             var html = string.substitute(this.htmlTemplate, data);
+            // console.log("Template substituit:", html);
 
-            var $html = jQuery(html);
+            let $html = this.fixedInsertHtml(html);
 
-            $html.attr('data-ioc-id', this.normalize($html.attr('data-ioc-id')));
-            var id = jQuery(html).attr('data-ioc-id');
+            $html.attr('contenteditable', false);
+            $html.find('.title').attr('contenteditable', true);
 
-
-
-
-            this.editor.execCommand('inserthtml', html);
-
-            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id + '"]');
-            $node.attr('contenteditable', false);
-            $node.find('.title').attr('contenteditable', true);
-
-
-            this._addHandlers($node);
+            this._addHandlers($html);
 
 
             if (volatileId) {
@@ -78,7 +71,7 @@ define([
         parse: function () {
 
             // var $nodes = jQuery(this.editor.iframe).contents().find('[data-ioc-block-' + this.normalize(this.title) + ']');
-                var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-lateral="image"]');
+            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-lateral="image"]');
 
 
             // console.log("Query cercat:", '[data-ioc-block-' + this.normalize(this.title) + ']');

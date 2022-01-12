@@ -133,17 +133,17 @@ define([
                 return false;
 
             } else if (state.indexOf('editable-text') !== -1 || state.indexOf('textarea') !== -1) {
-                console.log("és un text editable o textarea", state);
+                // console.log("és un text editable o textarea", state);
                 return true;
 
                 // } else if (state.indexOf('table') === -1 && !isIocInfo) {
             } else if (state.indexOf('table') === -1) {
-                console.log("no és una taula", state);
+                // console.log("no és una taula", state);
 
                 return this.inherited(arguments);
 
             } else {
-                console.log("cap coincidencia");
+                // console.log("cap coincidencia");
                 return true;
             }
 

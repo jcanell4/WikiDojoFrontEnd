@@ -716,9 +716,10 @@ define([
                 console.error("getCode", node);
             }
 
-            node.attrs = node.attrs.replaceAll('&escapedgt;', '\\>');
-            node.attrs = node.attrs.replaceAll('&mark;', '\\>');
-            node.attrs = node.attrs.replaceAll('&markn;', "\n>");
+            node.attrs = this._unsanitize(node.attrs);
+            // node.attrs = node.attrs.replaceAll('&escapedgt;', '\\>');
+            // node.attrs = node.attrs.replaceAll('&mark;', '\\>');
+            // node.attrs = node.attrs.replaceAll('&markn;', "\n>");
 
             code += node.open.replace('%s', node.attrs);
 
@@ -749,9 +750,10 @@ define([
             let code = "";
 
             // Cal fer la conversió de &escapedgt; per \>
-            node.attrs = node.attrs.replaceAll('&escapedgt;', '\\>');
-            node.attrs = node.attrs.replaceAll('&mark;', '\\>');
-            node.attrs = node.attrs.replaceAll('&markn;', "\n>");
+            node.attrs = this._unsanitize(node.attrs);
+            // node.attrs = node.attrs.replaceAll('&escapedgt;', '\\>');
+            // node.attrs = node.attrs.replaceAll('&mark;', '\\>');
+            // node.attrs = node.attrs.replaceAll('&markn;', "\n>");
 
             code += node.open.replace('%s', node.attrs);
             code += inner;
@@ -854,13 +856,35 @@ define([
             this.posMap = outChunkMap;
         },
 
+        _sanitize: function(text) {
+            text = text.replaceAll(/\n>/gsm, '&markn;');
+            // text = text.replaceAll(/\\[\n]>/gsm, '&markn;');
+            text = text.replaceAll(/\\>/gsm, '&mark;');
+
+            // let attrs = node.attrs;
+            // attrs = attrs.replaceAll('\\>', '&escapedgt;');
+            // attrs = attrs.replaceAll('\\>', '&mark;');
+            // attrs = attrs.replaceAll("\n>", '&markn;');
+            // return attrs;
+            return text;
+        },
+
+        _unsanitize: function (text) {
+            text = text.replaceAll('&escapedgt;', '\\>');
+            text = text.replaceAll('&mark;', '\\>');
+            text = text.replaceAll('&markn;', "\n>");
+
+            return text;
+        },
+
         // El posMap és un mapa que indica en quina posició comença una línia wioccl: map<int pos, int ref>
         _createPosMap: function (node, pos, outPosMap) {
             // Cal fer la conversió de &escapedgt; per \>
-            let attrs = node.attrs;
-            attrs = attrs.replaceAll('&escapedgt;', '\\>');
-            attrs = attrs.replaceAll('&mark;', '\\>');
-            attrs = attrs.replaceAll('&markn;', "\n>");
+            let attrs = this._unsanitize(node.attrs);
+            // let attrs = node.attrs;
+            // attrs = attrs.replaceAll('&escapedgt;', '\\>');
+            // attrs = attrs.replaceAll('&mark;', '\\>');
+            // attrs = attrs.replaceAll('&markn;', "\n>");
 
             let code = node.open.replace('%s', attrs);
             outPosMap.set(pos, node);
@@ -1026,7 +1050,7 @@ define([
             this.structure.backupNode = this._backup(node, this.structure.backupIndex);
         },
 
-        parse: function (text, node) {
+        parse: function (text, node, ignoreSanitize) {
             // Abans de fer el parse fem un restore per aplicar els canvis sobre els originals
             // de manera que es descarten els children generats anteriorment
 
@@ -1035,7 +1059,7 @@ define([
             this.restore();
             this.dirtyStructure = dirty;
 
-            let outTokens = this._tokenize(text);
+            let outTokens = this._tokenize(text, ignoreSanitize);
             this._createTree(node, outTokens, this.structure);
 
             return node;
@@ -1292,7 +1316,10 @@ define([
             this.structure[root.id] = root;
         },
 
-        _tokenize(text) {
+        _tokenize(text, ignoreSanitize) {
+            // Hi ha algun cas en que cal ignorar el sanitize, per exemple als subdialegs
+            // perquè els atributs poden incloure condicionals que passaran al content
+
             //  Dividim en en els 4 tipus:
             //      Open wioccl
             //      Close wioccl
@@ -1306,8 +1333,12 @@ define([
             // fer el parse i ho restaurem després.
             // Hi han dos casos, amb salt de línia i sense, per poder restaurar-los fem servir
             // dues marques diferents: &markn; i &mark;
-            text = text.replaceAll(/\\[\n]>/gsm, '&markn;');
-            text = text.replaceAll(/\\>/gsm, '&mark;');
+            if (!ignoreSanitize) {
+                text = this._sanitize(text)
+            }
+
+            // text = text.replaceAll(/\\[\n]>/gsm, '&markn;');
+            // text = text.replaceAll(/\\>/gsm, '&mark;');
 
             // ALERTA: això pot suposar un canvi en el recompte de caràcteres, perquè les posicions no corresponen
             let tokens = [];

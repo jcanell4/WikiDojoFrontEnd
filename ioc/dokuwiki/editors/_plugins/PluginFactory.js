@@ -897,7 +897,7 @@ define([
             prompt: localization["ioc-insert-figure-prompt"],
             sample: localization["ioc-insert-figure-sample"],
             // htmlTemplate: '<div class="iocgif"><img src="${url}" alt="${title}" title="${title}" width="${width}" height="${height}"/></div>',
-            htmlTemplate: '<div class="iocgif"><img src="${url}" alt="${title}" title="${title}" data-dw-ns="${ns}" data-ioc-id="${id}"/></div>',
+            htmlTemplate: '<div class="iocgif" contenteditable="false"><img src="${url}" alt="${title}" title="${title}" data-dw-ns="${ns}" data-ioc-id="${id}"/></div>',
             icon: 'IocGif',
             category: localization["category-ioc"]
         },
