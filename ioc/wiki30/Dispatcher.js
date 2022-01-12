@@ -62,7 +62,8 @@ define([
     "ioc/wiki30/processor/ProjectRequireContentProcessor",
     "ioc/wiki30/processor/ProjectPartialContentProcessor",
     "ioc/wiki30/processor/MetaErrorProcessor",
-    "ioc/wiki30/processor/HtmlFormProcessor"
+    "ioc/wiki30/processor/HtmlFormProcessor",
+    "ioc/wiki30/processor/HtmlResponseFormProcessor"
 ], function (declare, registry, Dialog, lang, array, GlobalState, SectokManager,
              AlertProcessor, MediaProcessor, MetaInfoProcessor, MetaMediaInfoProcessor,
              MediaDetailsProcessor, MetaMediaDetailsInfoProcessor, DataContentProcessor,
@@ -78,7 +79,7 @@ define([
              PrintProcessor, ContentToolTimerProcessor, UserStateProcessor,
              UpdateLocalDraftsProcessor, UserProfileProcessor, ProjectEditContentProcessor,
              ProjectViewContentProcessor, ProjectDiffContentProcessor, ProjectRequireContentProcessor,
-             ProjectPartialContentProcessor, MetaErrorProcessor, HtmlFormProcessor) {
+             ProjectPartialContentProcessor, MetaErrorProcessor, HtmlFormProcessor, HtmlResponseFormProcessor) {
 
     /** @typedef {object} DijitWidget widget */
     /** @typedef {object} DijitContainer contenidor */
@@ -211,6 +212,7 @@ define([
                 this.processors["tab"] = new TabResponseProcessor();
                 this.processors["recents"] = new RecentsProcessor();
                 this.processors["html_form"] = new HtmlFormProcessor();
+                this.processors["html_response_form"] = new HtmlResponseFormProcessor();
                 this.processors["meta_form"] = new MetaFormProcessor();
                 this.processors["print"] = new PrintProcessor();
                 this.processors["contentTool_timer"] = new ContentToolTimerProcessor();
