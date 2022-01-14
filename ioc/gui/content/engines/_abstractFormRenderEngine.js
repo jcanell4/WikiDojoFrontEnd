@@ -241,8 +241,6 @@ define([
         },
 
         renderFieldDefault: function (field, fvalues) {
-
-
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
                 $input = jQuery('<input>'),
@@ -251,7 +249,6 @@ define([
             if (Array.isArray(value)) {
                 value = JSON.stringify(value);
             }
-
 
             if (field.type !== 'hidden') {
                 $label.html(field.label);
@@ -385,13 +382,9 @@ define([
         },
 
         renderFieldTextarea: function (field, fvalues) {
-
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
                 $textarea = jQuery('<textarea>');
-
-
-
 
             $label.html(field.label);
 
@@ -411,7 +404,6 @@ define([
             if (field.rows) {
                 $textarea.attr('rows', field.rows);
             }
-
 
             if (field.props) {
                 this.addPropsToInput(field.props, $textarea);
@@ -588,7 +580,6 @@ define([
                 }
 
                 for (var key=0; key<data[i].length; key++) {
-
                     var colNumber = key;
 
                     if(field.config.typeDef==="date"){
@@ -597,11 +588,9 @@ define([
                         dato = data[i][key];
                     }
                     //tratamiento especial para los campos de fecha de las tablas
-
                     $cols[colNumber].attr('data-field', "col"+key);
                     $cols[colNumber].attr('data-originalValue', data[i][key]);
                     $cols[colNumber].html(dato);
-
                     //$col = jQuery('<td data-field="'+key+'" data-originalvalue="' + data[i][key] + '">' + dato + '</td>');
                 }
 
@@ -654,17 +643,11 @@ define([
 
                 if (field.config.display_fields) {
                     // en aquest cas key és l'index, hem de fer la conversió
-
                     key = headerRow[key];
-
-                } else {
-
                 }
 
                 var fieldName = this.getDataFieldNameIfExists(headerRow, key, field.config.layout) || key;
-
                 fieldToCol[key] = colCounter++;
-
                 var extra = '';
 
                 if (fieldName) {
@@ -678,7 +661,6 @@ define([
                 if(witdth){
                     $col.css("width", witdth);
                 }
-
                 //var $col = jQuery('<th >' + key + '</th>');
 
                 // ALERTA[Xavi]! Posem la primera fila com a readonly manualment.
@@ -696,9 +678,7 @@ define([
             // Afegim les files
             for (var i = 0; i < data.length; i++) {
                 $row = jQuery('<tr></tr>');
-
                 var $cols = [];
-
 
                 // Creem una cel·la buida per cada columna
                 for (var j =0; j<colCounter; j++) {
@@ -706,16 +686,12 @@ define([
                     $cols.push($col);
                 }
 
-
                 for (key in data[i]) {
-
                     var colNumber = fieldToCol[key];
-
                     if (colNumber === undefined) {
                         // Si no s'ha afegit la columna s'ignora la dada
                         continue;
                     }
-
 
                     if (!field.config.fields[key]) {
                         console.error("Key " + key + " not found.", field.config.fields);
@@ -728,11 +704,9 @@ define([
                         dato = data[i][key];
                     }
                     //tratamiento especial para los campos de fecha de las tablas
-
                     $cols[colNumber].attr('data-field', key);
                     $cols[colNumber].attr('data-originalValue', data[i][key]);
                     $cols[colNumber].html(dato);
-
                     //$col = jQuery('<td data-field="'+key+'" data-originalvalue="' + data[i][key] + '">' + dato + '</td>');
                 }
 
@@ -752,11 +726,31 @@ define([
             return $table;
         },
 
-        getLayoudDataIfExists: function(fieldKey, layout, layoutKey) {
+        renderButton: function (field, fvalues) {
+            var $field = jQuery('<div>'),
+                $label = jQuery('<label>'),
+                $data = jQuery('<span>');
 
+            if (field.type !== 'hidden') {
+                $label.html(field.label);
+                $field.append($label)
+                    .append($data);
+
+                $data.attr('name', field.name)
+                    .addClass('view-field')
+                    .attr('title', field.label);
+
+                $data.html(fvalues[field.name]);
+            }
+            if (field.props) {
+                this.addPropsToInput(field.props, $data);
+            }
+            return $field;
+        },
+
+        getLayoudDataIfExists: function(fieldKey, layout, layoutKey) {
             // Si no existeix el layout el cerca al config
             if (!layout) {
-
                 return false;
             }
 

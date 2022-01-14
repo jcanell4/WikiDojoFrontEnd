@@ -131,26 +131,9 @@ define([
                 return $field;
             },
 
+            // @overwrite
             renderButton: function (field, fvalues) {
-                var $field = jQuery('<div>'),
-                    $label = jQuery('<label>'),
-                    $data = jQuery('<span>');
-
-                if (field.type !== 'hidden') {
-                    $label.html(field.label);
-                    $field.append($label)
-                        .append($data);
-
-                    $data.attr('name', field.name)
-                        .addClass('view-field')
-                        .attr('title', field.label);
-
-                    $data.html(fvalues[field.name]);
-                }
-                if (field.props) {
-                    this.addPropsToInput(field.props, $data);
-                }
-
+                var $field = jQuery('<div>');
                 return $field;
             },
             
