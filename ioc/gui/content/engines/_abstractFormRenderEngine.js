@@ -729,7 +729,7 @@ define([
         renderButton: function (field, fvalues) {
             var $field = jQuery('<div>'),
                 $label = jQuery('<label>'),
-                $data = jQuery('<span>');
+                $data = jQuery('<button>');
 
             if (field.type !== 'hidden') {
                 $label.html(field.label);
@@ -737,7 +737,7 @@ define([
                     .append($data);
 
                 $data.attr('name', field.name)
-                    .addClass('view-field')
+                    .addClass('form-control')
                     .attr('title', field.label);
 
                 $data.html(fvalues[field.name]);
@@ -746,6 +746,16 @@ define([
                 this.addPropsToInput(field.props, $data);
             }
             return $field;
+        },
+
+        renderSubmitButton: function () {
+            var $button = jQuery('<div>'),
+                $submit = jQuery('<input>');
+
+            $button.addClass('col-sm-offset-5 col-xs-2') // Offset 5 i amplada del botó del botó 2
+                .append($submit);
+
+            return $button;
         },
 
         getLayoudDataIfExists: function(fieldKey, layout, layoutKey) {
@@ -784,7 +794,7 @@ define([
 
                 for (var j=0; j<layout[i].cells.length; j++) {
                     if (layout[i].cells[j].field === fieldKey && layout[i].cells[j].name !== undefined) {
-                        return layout[i].cells[j].name
+                        return layout[i].cells[j].name;
                     }
                 }
             }
@@ -817,9 +827,7 @@ define([
                 $image.css('height', height);
             }
 
-
-
-            return $field;                
+            return $field;
         },
 
         addPropsToInput: function (props, $input) {
@@ -873,31 +881,19 @@ define([
             return $row;
         },
 
-        // ALERTA[Xavi] Això sembla que no es fa servir en lloc, eliminar?
-        renderSubmitButton: function () {
-            var $button = jQuery('<div>'),
-                $submit = jQuery('<input>');
-
-            $button.addClass('col-sm-offset-5 col-xs-2') // Offset 5 i amplada del botó del botó 2
-                .append($submit);
-
-            return $button;
-        },
-
         render: function (data, context, $content) {
-
             throw new Error("El mètode render ha de ser implementat per les subclasses");
         },
 
         _setCollapseAllAndExpandAllButtons: function($doc, $collapse, $expand){            
             $collapse.addClass("collapseAll-icon");
-            $collapse.attr('title', "compacta tots els grups de dades originalment compactats")
+            $collapse.attr('title', "compacta tots els grups de dades originalment compactats");
             $collapse.click(function(event){
                 $collapse.parent().parent().find(".collapse-icon span[data-collapsed=true]").not(".collapsed").trigger("click");
             });
             $doc.append($collapse);
             $expand.addClass("expandAll-icon");
-            $expand.attr('title', "expandeix tots els grups de dades")
+            $expand.attr('title', "expandeix tots els grups de dades");
             $expand.click(function(event){
                 $expand.parent().parent().find(".collapse-icon span.collapsed").trigger("click");
             });
