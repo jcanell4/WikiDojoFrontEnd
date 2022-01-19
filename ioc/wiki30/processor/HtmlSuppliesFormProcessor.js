@@ -19,6 +19,7 @@ define([
                         closable:   true,
                         dispatcher: dispatcher,
                         type:       this.type,
+                        params:     content.params,
                         aRequestFormArgs: content.aRequestFormArgs,
                         requestLinkArgs:  content.requestLinkArgs
                     };
@@ -35,6 +36,7 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
+                dispatcher.getGlobalState().getContent(value.id)["params"] = value.params;
                 dispatcher.getGlobalState().getContent(value.id)["action"] = this.type;
             }
 
