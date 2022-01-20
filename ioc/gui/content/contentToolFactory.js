@@ -287,9 +287,8 @@ define([
                 NOTIFICATION: 'notification',
                 RECENTS: 'recents',
                 META_DOKUWIKI_NS_TREE: 'meta_dokuwiki_ns_tree',
-                HTML_FORM: 'html_form',
-                HTML_RESPONSE_FORM: 'html_response_form',
-                HTML_SUPPLIES_FORM: 'html_supplies_form'
+                HTML_SUPPLIES_FORM: 'html_supplies_form',
+                HTML_RESPONSE_FORM: 'html_response_form'
             },
 
             /**
@@ -484,7 +483,6 @@ define([
                         break;
 
                     case this.generation.RECENTS:
-                    case this.generation.HTML_FORM:
                     case this.generation.HTML_SUPPLIES_FORM:
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass)

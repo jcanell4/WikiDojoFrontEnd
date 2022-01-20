@@ -19,7 +19,6 @@ define([
                         closable:   true,
                         dispatcher: dispatcher,
                         type:       this.type,
-                        params:     content.params,
                         aRequestFormArgs: content.aRequestFormArgs,
                         requestLinkArgs:  content.requestLinkArgs
                     };
@@ -28,15 +27,12 @@ define([
             },
             
             /** @override
-             * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument, i afegeix
-             * el valor de la acció a "view".
-             *
+             * Actualitza els valors del GlobalState fent servir el valor passat com argument.
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @param {{id: string, ns: string, title: string, content: string}} value
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
-                dispatcher.getGlobalState().getContent(value.id)["params"] = value.params;
                 dispatcher.getGlobalState().getContent(value.id)["action"] = this.type;
             }
 
