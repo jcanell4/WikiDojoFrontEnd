@@ -874,3 +874,9 @@ span[data-wioccl-state] {
 [data-test="**"] {
     background-color: purple;
 }
+
+
+[contenteditable="false"] {
+    background-color: #f8d7da;
+    color: #721c24;
+}

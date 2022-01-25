@@ -1000,6 +1000,10 @@ define([
                     originalValue = this.args.data.value;
                 }
                 //originalValue.push(row); //WARNING: esto no tiene sentido!!! row no es una fila, solo es un string = el valor del último campo procesado
+                if (!originalValue) {
+                    originalValue = [];
+                }
+
                 originalValue.push(parsedRow);
                 this.args.data.value = originalValue;
 
