@@ -676,7 +676,7 @@ define([
 
             var dato;
             // Afegim les files
-            for (var i = 0; i < data.length; i++) {
+            for (var i = 0; data && i < data.length; i++) {
                 $row = jQuery('<tr></tr>');
                 var $cols = [];
 

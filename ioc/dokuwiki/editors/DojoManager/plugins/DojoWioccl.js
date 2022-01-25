@@ -235,8 +235,17 @@ define([
                     counter++;
                 }
 
+
+                // check readonly
+                let $node = context.editor.getCurrentNode();
+
+                // if ($node.attr('contenteditable') === "false" || $node.attr('data-wioccl-ref')) {
+                let readonly =  $node.attr('contenteditable') === "false";
+                // console.log("És wioccl en readonly?", readonly);
+
+
                 let wiocclDialog = new Dialog({
-                    title: 'Edició wioccl',
+                    title: 'Edició wioccl' + (readonly? ' (només lectura)' : ''),
                     fields: context.editor.extra.wioccl_structure.fields,
                     style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
                     onHide: function (e) { // Es dispara quan es tanca el diàleg
@@ -262,7 +271,8 @@ define([
                     // al saveCallback
                     originalStructure: context.structure,
                     $document: jQuery(context.editor.iframe).contents(),
-                    pluginEditor: context.editor
+                    pluginEditor: context.editor,
+                    readonly: readonly
                 });
 
                 // només cal refrescar mentre estigui obert el dialog principal

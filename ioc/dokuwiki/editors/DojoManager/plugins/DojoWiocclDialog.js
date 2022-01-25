@@ -66,8 +66,13 @@ define([
             this.structure.rebuildPosMap(wiocclNode);
             let $updateButton = jQuery(this.updateButtonNode);
             let $saveButton = jQuery(this.saveButtonNode);
+            let $cancelButton = jQuery(this.cancelButtonNode);
 
             let context = this;
+
+            $cancelButton.on('click', function () {
+                context.destroyRecursive();
+            });
 
             $updateButton.on('click', function () {
                 // Alerta, el context d'execució en afegir el callback al objecte de
@@ -145,6 +150,11 @@ define([
 
                 context.updateInsertButtons();
             });
+
+
+            if (this.readonly) {
+                jQuery(this.titleBar).css('background-color', 'pink');
+            }
         },
 
         updateInsertButtons: function () {
@@ -154,8 +164,9 @@ define([
                 this._selectWiocclNode(currentWiocclNode);
             }
 
-            let canInsert = this.structure.canInsert(pos, currentWiocclNode);
+            let canInsert = this.structure.canInsert(pos, currentWiocclNode) && !this.readonly;
 
+            // console.log("és readonly?", this.readonly);
             if (canInsert && !this.selectedWiocclNode.solo) {
                 this.unlockEditor();
             } else {
@@ -170,6 +181,13 @@ define([
             jQuery(this.insertWiocclBtnNode).prop('disabled', !canInsert);
             jQuery(this.insertFieldBtnNode).prop('disabled', !canInsert);
             jQuery(this.insertFunctionBtnNode).prop('disabled', !canInsert);
+            jQuery(this.deleteBtnNode).prop('disabled', !canInsert);
+
+            //jQuery(this.updateButtonNode).prop('disabled', this.readonly);
+            //jQuery(this.saveButtonNode).prop('disabled', this.readonly);
+            jQuery(this.updateButtonNode).css('display', this.readonly ? 'none' : 'inherited');
+            jQuery(this.saveButtonNode).css('display', this.readonly ? 'none': 'inherited');
+            jQuery(this.attrHeaderContainer).prop('disabled', this.readonly);
 
             // Si el tipus és void o solo no pot inserir-se content,
             // el content s'ha d'inserir editant el "inner content"
@@ -766,7 +784,8 @@ define([
                         this.setData(this.structure.getNodeById(refId), rootWiocclNode);
                     },
 
-                    enabledDelete: false
+                    enabledDelete: false,
+                    readonly: context.readonly
                 });
 
                 counter++;
