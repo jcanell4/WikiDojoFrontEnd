@@ -880,3 +880,13 @@ span[data-wioccl-state] {
     background-color: #f8d7da;
     color: #721c24;
 }
+
+/* include */
+.iocinclude {
+    position: relative;
+    padding: 15px;
+}
+
+.iocinclude .no-render.action {
+    top: -23px;
+}

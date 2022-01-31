@@ -8,22 +8,20 @@ define([
     'ioc/dokuwiki/editors/Components/ShowIncludePageComponent',
     'ioc/dokuwiki/editors/Components/ShowIncludeSectionComponent',
     "dojo/string",
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoActions',
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, DojoEditorUtils,
-             ShowIncludePageComponent, ShowIncludeSectionComponent, string) {
+             ShowIncludePageComponent, ShowIncludeSectionComponent, string, dojoActions) {
 
 
 
     var DojoInclude = declare(AbstractParseableDojoPlugin, {
 
         init: function (args) {
-            console.log("Test", args.htmlTemplate);
 
             this.inherited(arguments);
 
             this.includeType = args.includeType;
             this.htmlTemplate = args.htmlTemplate;
-
-            console.log("s'assigna el template al parent?", this.htmlTemplate, this.includeType);
 
             var config = {
                 label: args.title,
@@ -81,8 +79,23 @@ define([
             this._addHandlers($node);
         },
 
+        addActionButtons: function ($node) {
+
+            var $aux = dojoActions.getActionContainer($node);
+
+            $aux.empty();
+
+            dojoActions.addParagraphAfterAction($node, this.editor);
+            dojoActions.addParagraphBeforeAction($node, this.editor);
+            dojoActions.deleteAction($node, this.editor, 'include');
+            dojoActions.setupContainer($node, $node.find('.no-render.action'));
+
+        },
+
+
 
         _addHandlers: function ($node) {
+            this.addActionButtons($node);
 
             // var context = this;
             //
@@ -105,10 +118,11 @@ define([
         },
 
         parse: function () {
-            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-type="internal_link"]');
+            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-include]');
             var context = this;
 
             $nodes.each(function () {
+                console.log("Afegint handlers a ", jQuery(this));
                 context._addHandlers(jQuery(this)/*, context*/);
             });
 
