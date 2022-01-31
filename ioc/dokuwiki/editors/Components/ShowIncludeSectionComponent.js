@@ -246,6 +246,10 @@ define([
             }
             dialog.show();
             return false;
+        },
+
+        setValue: function(value) {
+            dom.byId('textBoxPageSectionName').value = value;
         }
 
     });

@@ -44,26 +44,34 @@ define([
 
         _processFull: function () {
             console.log("TODO processar!", this.htmlTemplate);
+            this._openDialog(this.insertHtml.bind(this));
+        },
+
+        _openDialog: function(callback) {
+
+            let includeComponent = null;
 
             switch (this.includeType) {
                 case "page":
-                    new ShowIncludePageComponent().show(this.getEditor(), this.insertHtml.bind(this));
+                    includeComponent = ShowIncludePageComponent();
+                    includeComponent.show(this.getEditor(), callback);
                     break;
 
                 case "section":
-                    new ShowIncludeSectionComponent().show(this.getEditor(), this.insertHtml.bind(this));
+                    includeComponent = new ShowIncludeSectionComponent();
+                    includeComponent.show(this.getEditor(), callback);
                     break;
 
                 default:
                     console.error("Tipus de include desconegut: ", this.includeType);
             }
 
-            // this._openEditor();
+            return includeComponent;
         },
 
 
         insertHtml: function (value) {
-            // console.log("Value retornat:", value);
+            console.log("Value retornat:", value);
 
             var html = string.substitute(this.htmlTemplate, {ns : value, include : "incloent: " +  value});
 
@@ -74,9 +82,9 @@ define([
             // ALERTA: Per alguna raó el .find() no troba els id normals d'html, per això es fa servir atribut propi
             var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id +'"]');
 
-            // TODO: Afegir aquí els botons que calguin
-
             this._addHandlers($node);
+
+            this.editor.forceChange();
         },
 
         addActionButtons: function ($node) {
@@ -92,33 +100,47 @@ define([
 
         },
 
-
-
         _addHandlers: function ($node) {
             this.addActionButtons($node);
 
-            // var context = this;
-            //
-            // $node.on('dblclick', function (e) {
-            //     e.preventDefault();
-            //     e.stopPropagation();
-            //
-            //     var $this = jQuery(this);
-            //
-            //     if (!dw_linkwiz.$entry) {
-            //         dw_linkwiz.$entry = jQuery('<input>');
-            //     }
-            //
-            //     // Només s'afegeix el valor si es troba dins d'un espai de noms
-            //     var value = $this.attr('data-dw-ns');
-            //     dw_linkwiz.$entry.val(value.indexOf(':') === -1 ? '' : value);
-            //
-            //     context._openEditor();
-            // })
+            var context = this;
+
+            $node.on('dblclick', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                console.log(jQuery(this));
+                let $node = jQuery(this);
+
+                // TODO: determinar com establir la ruta original!
+                let includeComponent = context._openDialog((value) => {
+                    console.log("Callback del update");
+                    $node.attr('data-dw-include', value);
+                    $node.html('incloent ' + context.includeType + ": " + value);
+                    context.editor.forceChange();
+                }
+
+                );
+                includeComponent.setValue($node.attr('data-dw-include'));
+
+                /*
+                var $this = jQuery(this);
+
+                if (!dw_linkwiz.$entry) {
+                    dw_linkwiz.$entry = jQuery('<input>');
+                }
+
+                // Només s'afegeix el valor si es troba dins d'un espai de noms
+                var value = $this.attr('data-dw-ns');
+                dw_linkwiz.$entry.val(value.indexOf(':') === -1 ? '' : value);
+                */
+
+
+            })
         },
 
         parse: function () {
-            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-include]');
+            var $nodes = jQuery(this.editor.iframe).contents().find('[data-dw-include-type="' + this.includeType + '"]');
             var context = this;
 
             $nodes.each(function () {

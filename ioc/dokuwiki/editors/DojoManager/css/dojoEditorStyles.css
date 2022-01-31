@@ -885,6 +885,7 @@ span[data-wioccl-state] {
 .iocinclude {
     position: relative;
     padding: 15px;
+    cursor: pointer;
 }
 
 .iocinclude .no-render.action {

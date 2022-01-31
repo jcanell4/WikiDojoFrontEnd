@@ -186,7 +186,10 @@ define([
             }
             dialog.show();
             return false;
-        }
+        },
 
+        setValue: function(value) {
+            dom.byId('textBoxPageName').value = value;
+        }
     });
 });
