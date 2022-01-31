@@ -256,7 +256,10 @@ define([
                     'DojoQuizComplete',
 
                     'DojoWioccl',
-                    'ReadonlyBlocksToggle'
+                    'ReadonlyBlocksToggle',
+
+                    'InsertIncludePage',
+                    'InsertIncludeSection',
 
 
                 ]);
