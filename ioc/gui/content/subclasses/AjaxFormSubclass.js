@@ -18,7 +18,6 @@ define([
          * @see contentToolFactory.generate()
          */
         {
-
             /**
              * Afegeix la substitució d'enviament de formularis per una crida ajax
              * cuando el tipo que tiene el ContentTool es "revisions", este formulario se crea previamente en ioc/gui/content/engines/revisionRenderEngine.js
@@ -27,50 +26,46 @@ define([
             postRender: function () {
                 this.inherited(arguments);
                 
-                if(!this.aRequestFormArgs){
+                if (!this.aRequestFormArgs){
                     this._configureRequestForm();
-                }else if(!Array.isArray(this.aRequestFormArgs)){
-                    this._configureRequestForm(this.aRequestFormArgs.formId, this.aRequestFormArgs.urlBase);
+                }else if (!Array.isArray(this.aRequestFormArgs)){
+                    this._configureRequestForm(this.aRequestFormArgs.formId, this.aRequestFormArgs.urlBase, this.aRequestFormArgs.query);
                 }else{
                     for(var i=0; this.aRequestFormArgs; ++i){
-                        this._configureRequestForm(this.aRequestFormArgs[i].formId, this.aRequestFormArgs[i].urlBase);
+                        this._configureRequestForm(this.aRequestFormArgs[i].formId, this.aRequestFormArgs[i].urlBase, this.aRequestFormArgs[i].query);
                     }
                 }
-
             },
             
-            _configureRequestForm: function(formId, urlBase){
+            _configureRequestForm: function(formId, urlBase, query){
                 var $form, targetId, self;
 
                 targetId = this.domNode;
                 self = this;
                 
-                if(formId){
+                if (formId){
                     $form = jQuery(this.domNode).find('#' + formId);
                 }else{
                     $form = jQuery(this.domNode).find('form');                    
                 }
 
-
                 $form.on('submit', function(event) {
-
                     event.preventDefault();
                     var $this = jQuery( this ),
                         $button = jQuery(document.activeElement),
                         params = $this.serialize() + "&"+$button.attr('name')+'='+encodeURIComponent($button.val()),
 
-
-
                     request = self.requester;
-                    if(urlBase){
-                        request.urlBase = urlBase;
+                    if ($button.attr('data-query')) {
+                        request.urlBase = urlBase + $button.attr('data-query');
+                    }else if (urlBase){
+                        request.urlBase = urlBase + (query==unknown) ? "" : query;
                     }else{ 
                         request.urlBase = $this.attr('action');
                     }                    
                     request.setStandbyId(targetId);
                     request.sendRequest(params);
                     request.on('completed', function(e) {
-
                         if (e.status == 'success' && e.data[0].type !="error") {
                             $form.each(function() {
                                 this.reset();
@@ -81,14 +76,10 @@ define([
                                     this.setAttribute('checked', true);
                                 }
                             });
-
-
-                        } else {
-                                console.error("S'ha produit un error en enviar el formulari", e);
-
+                        }else {
+                            console.error("S'ha produit un error en enviar el formulari", e);
                         }
-
-                    })
+                    });
 
                 });
             }

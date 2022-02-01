@@ -8,26 +8,23 @@ define([
             type: "html_supplies_form",
             
             process: function (value, dispatcher) {
-                var $boto, self, targetId;
                 this.inherited(arguments);
-
-                self = this;
-                targetId = this.domNode;
-                
-                $boto = jQuery("#btn_cerca");
-                $boto.on('click', function(event) {
-                    var $this, request, call, urlBase, aHref, params;
-                    request = self.requester;
-                    $this = jQuery(this);
-                    call = $this.attr('data-call');
-                    aHref = $this.attr('href').split('?');
-                    urlBase = request.defaultUrlBase?request.defaultUrlBase:aHref[0];
-
-                    params = "call="+call+ (aHref.length>1?"&"+aHref[1]:"");
-                    request.urlBase = urlBase;
-                    request.setStandbyId(targetId);
-                    request.sendRequest(params);
-                });
+//                var $boto, self, targetId;
+//                self = this;
+//                targetId = this.domNode;
+//
+//                $boto = jQuery("#btn_cerca");
+//                $boto.on('click', function(event) {
+//                    var $this, request, call, urlBase, params;
+//                    request = self.requester;
+//                    $this = jQuery(this);
+//                    call = $this.attr('data-query');
+//                    urlBase = value.aRequestFormArgs.urlBase.split('?');
+//                    params = "call="+call;
+//                    request.urlBase = urlBase[0];
+//                    request.setStandbyId(targetId);
+//                    request.sendRequest(params);
+//                });
             },
 
             createContentTool: function (content, dispatcher) {
