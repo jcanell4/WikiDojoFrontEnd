@@ -895,3 +895,8 @@ span[data-wioccl-state] {
 [data-dw-highlighted="true"] {
     border: dotted;
 }
+
+.divPageName label {
+    font-weight: bold;
+}
+

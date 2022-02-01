@@ -98,6 +98,26 @@ define([
 
                 var form = new Form({id: "formIncludeSyntaxDialog"}).placeAt(divdreta);
 
+                // Aquest només s'utilitza pel editor Dojo
+                if (canBeHighlighted) {
+                    let divMostrarHighlight = domConstruct.create('div', {
+                        className: 'divMostrarHighlight'
+                    }, form.containerNode);
+
+                    let mostrarHighlight = new CheckBox({
+                        id: 'chkMostrarHighlight',
+                        value: 'highlight',
+                        checked: false,
+                        ignored: true
+                    }).placeAt(divMostrarHighlight);
+                    dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
+
+                    domConstruct.create('label', {
+                        innerHTML: ' afegir ressaltat'
+                    }, divMostrarHighlight);
+                }
+
+
                 //Un camp de text per inclore la ruta de la pàgina
                 var divPageName = domConstruct.create('div', {
                     className: 'divPageName'
@@ -148,24 +168,7 @@ define([
                 }, divAmagarDates);
 
 
-                // Aquest només s'utilitza pel editor Dojo
-                if (canBeHighlighted) {
-                    let divMostrarHighlight = domConstruct.create('div', {
-                        className: 'divMostrarHighlight'
-                    }, form.containerNode);
 
-                    let mostrarHighlight = new CheckBox({
-                        id: 'chkMostrarHighlight',
-                        value: 'highlight',
-                        checked: false,
-                        ignored: true
-                    }).placeAt(divMostrarHighlight);
-                    dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
-
-                    domConstruct.create('label', {
-                        innerHTML: ' afegir ressaltat'
-                    }, divMostrarHighlight);
-                }
 
 
                 // ----- Botons generals del formulari ------

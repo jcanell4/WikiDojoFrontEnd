@@ -70,14 +70,14 @@ define([
                 // ContentPane a la part superior del BorderContainer
                 var cpTop = new ContentPane({
                     region: "top",
-                    style: "height:135px; width:245px"
+                    style: "height:125px; width:245px"
                 });
                 bcDreta.addChild(cpTop);
 
                 // ContentPane a la part inferior del BorderContainer
                 var cpBottom = new ContentPane({
                     region: "bottom",
-                    style: "height:175px; width:245px"
+                    style: "height:185px; width:245px"
                 });
                 bcDreta.addChild(cpBottom);
 
@@ -197,25 +197,6 @@ define([
                     innerHTML: ' amagar Subapartats'
                 },divAmagarApartats);
 
-                // Aquest només s'utilitza pel editor Dojo
-                if (canBeHighlighted) {
-                    let divMostrarHighlight = domConstruct.create('div', {
-                        className: 'divMostrarHighlight'
-                    }, form.containerNode);
-
-                    let mostrarHighlight = new CheckBox({
-                        id: 'chkMostrarHighlight',
-                        value: 'highlight',
-                        checked: false,
-                        ignored: true
-                    }).placeAt(divMostrarHighlight);
-                    dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
-
-                    domConstruct.create('label', {
-                        innerHTML: ' afegir ressaltat'
-                    }, divMostrarHighlight);
-                }
-
 
                 //Un camp de text per inclore la ruta de la pàgina#secció
                 var divPageSectionName = domConstruct.create('div', {
@@ -234,7 +215,24 @@ define([
                 }).placeAt(divPageSectionName);
                 dialog.textBoxPageSectionName = PageSectionName;
 
+                // Aquest només s'utilitza pel editor Dojo
+                if (canBeHighlighted) {
+                    let divMostrarHighlight = domConstruct.create('div', {
+                        className: 'divMostrarHighlight'
+                    }, form.containerNode);
 
+                    let mostrarHighlight = new CheckBox({
+                        id: 'chkMostrarHighlight',
+                        value: 'highlight',
+                        checked: false,
+                        ignored: true
+                    }).placeAt(divMostrarHighlight);
+                    dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
+
+                    domConstruct.create('label', {
+                        innerHTML: ' afegir ressaltat'
+                    }, divMostrarHighlight);
+                }
 
                 // ----- Botons generals del formulari ------
                 var botons = domConstruct.create('div', {
