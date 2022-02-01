@@ -19,7 +19,7 @@ define([
                         closable:   true,
                         dispatcher: dispatcher,
                         type:       this.type,
-                        extra:      content.extra,
+                        extra:      content.extra
                     };
 
                 return contentToolFactory.generate(contentToolFactory.generation.HTML_RESPONSE_FORM, args);

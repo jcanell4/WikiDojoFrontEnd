@@ -482,8 +482,13 @@ define([
                             .createSubclass(AjaxLinkSubclass);
                         break;
 
-                    case this.generation.RECENTS:
                     case this.generation.HTML_SUPPLIES_FORM:
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(AjaxFormSubclass);
+                        break;
+
+                    case this.generation.RECENTS:
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass)
                             .createSubclass(AjaxLinkSubclass)
