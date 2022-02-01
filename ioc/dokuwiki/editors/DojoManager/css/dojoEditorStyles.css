@@ -891,3 +891,7 @@ span[data-wioccl-state] {
 .iocinclude .no-render.action {
     top: -23px;
 }
+
+[data-dw-highlighted="true"] {
+    border: dotted;
+}

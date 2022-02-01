@@ -909,10 +909,7 @@ define([
 
         'InsertIncludePage': {
             title: localization["ioc-insert-include-page-button"],
-            // prompt: localization["ioc-insert-figure-prompt"],
-            // sample: localization["ioc-insert-figure-sample"],
-            //htmlTemplate: '<div class="iocinclude" contenteditable="false"><img src="${url}" alt="${title}" title="${title}" data-dw-ns="${ns}" data-ioc-id="${id}"/></div>',
-            htmlTemplate: '<div class="iocinclude" data-dw-include="${ns}" data-dw-include-type="page" contenteditable="false">${include}</div>',
+            htmlTemplate: '<div class="iocinclude" data-dw-include="${ns}" data-dw-include-type="page" contenteditable="false" data-dw-highlighted="${highlighted}" ${extra}><span>${include}</span></div>',
             icon: 'IocIncludePage',
             category: localization["category-include"],
             includeType: "page"
@@ -920,10 +917,7 @@ define([
 
         'InsertIncludeSection': {
             title: localization["ioc-insert-include-section-button"],
-            // prompt: localization["ioc-insert-figure-prompt"],
-            // sample: localization["ioc-insert-figure-sample"],
-            //htmlTemplate: '<div class="iocinclude" contenteditable="false"><img src="${url}" alt="${title}" title="${title}" data-dw-ns="${ns}" data-ioc-id="${id}"/></div>',
-            htmlTemplate: '<div class="iocinclude" data-dw-include="${ns}" data-dw-include-type="section" contenteditable="false">${include}</div>',
+            htmlTemplate: '<div class="iocinclude" data-dw-include="${ns}" data-dw-include-type="section" contenteditable="false"  data-dw-highlighted="${highlighted}" ${extra}><span>${include}</span></div>',
             icon: 'IocIncludeSection',
             category: localization["category-include"],
             includeType: "section"

@@ -24,7 +24,7 @@ define([
         //     this.context = context;
         // },
 
-        show: function (editor, callback) {
+        show: function (editor, callback, canBeHighlighted) {
             // var context = this;
             // var editor = this.getEditor();
             var selectedPage = {};
@@ -147,6 +147,27 @@ define([
                     innerHTML: ' amagar data de modificació'
                 }, divAmagarDates);
 
+
+                // Aquest només s'utilitza pel editor Dojo
+                if (canBeHighlighted) {
+                    let divMostrarHighlight = domConstruct.create('div', {
+                        className: 'divMostrarHighlight'
+                    }, form.containerNode);
+
+                    let mostrarHighlight = new CheckBox({
+                        id: 'chkMostrarHighlight',
+                        value: 'highlight',
+                        checked: false,
+                        ignored: true
+                    }).placeAt(divMostrarHighlight);
+                    dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
+
+                    domConstruct.create('label', {
+                        innerHTML: ' afegir ressaltat'
+                    }, divMostrarHighlight);
+                }
+
+
                 // ----- Botons generals del formulari ------
                 var botons = domConstruct.create('div', {
                     className: 'botons',
@@ -164,13 +185,22 @@ define([
                             dialog.chkAmagarDates.value = dialog.chkAmagarDates.value + "&no" + dialog.chkMostrarDataCrea.value;
                         }
                         dialog.hide();
-                        var response = selectedPage.id;
+                        let response;
+
+
+                        if (selectedPage.id) {
+                            response = selectedPage.id;
+                        } else {
+                            response = dom.byId('textBoxPageName').value;
+                        }
+
                         registry.toArray().forEach(function (widget) {
-                            if (widget.type === 'checkbox' && widget.checked === true) {
+                            if (widget.type === 'checkbox' && widget.checked === true && !widget.ignored) {
                                 response += "&" + widget.value;
                             }
                         });
-                        callback(response);
+
+                        callback(response, dialog.chkMostrarHighlight.get('checked'));
                         // context.insert(response);
                     }
                 }).placeAt(botons);
@@ -188,8 +218,9 @@ define([
             return false;
         },
 
-        setValue: function(value) {
+        setValue: function(value, checked) {
             dom.byId('textBoxPageName').value = value;
+            registry.byId('chkMostrarHighlight').set('checked', checked);
         }
     });
 });

@@ -27,7 +27,7 @@ define([
 
     return declare([AbstractIocComponent], {
 
-        show: function (editor, callback) {
+        show: function (editor, callback, canBeHighlighted) {
             var selectedPage = {};
             var dialog = registry.byId("includePageSyntaxDocumentDlg");
 
@@ -70,14 +70,14 @@ define([
                 // ContentPane a la part superior del BorderContainer
                 var cpTop = new ContentPane({
                     region: "top",
-                    style: "height:180px; width:245px"
+                    style: "height:135px; width:245px"
                 });
                 bcDreta.addChild(cpTop);
 
                 // ContentPane a la part inferior del BorderContainer
                 var cpBottom = new ContentPane({
                     region: "bottom",
-                    style: "height:130px; width:245px"
+                    style: "height:175px; width:245px"
                 });
                 bcDreta.addChild(cpBottom);
 
@@ -99,7 +99,6 @@ define([
                 dialog.dialogTree = dialogTree;
 
                 dialogTree.tree.onClick = function(item) {
-
                     if (item.type === "f") {
                         selectedPage.id = item.id;
                         request.dataToSend = {id: item.id};
@@ -121,7 +120,10 @@ define([
                 var getTocAreaHandler = on(document, "#idTocArea a:click", function(evt){
                     selectedPage.section = selectedPage.id + "#" + evt.target.innerText;
                     dom.byId('textBoxPageSectionName').value = selectedPage.section;
-                    getTocAreaHandler.remove();
+                    // ALERTA[Xavi] perquè es treia el handler? si es treu un cop hem fet
+                    // clic en un element ja no podem canviar-lo i no s'actualiza el
+                    // input. Pendent de valorar si realment és necessari.
+                    // getTocAreaHandler.remove();
                 });
 
                 // Creació del formulari
@@ -195,6 +197,26 @@ define([
                     innerHTML: ' amagar Subapartats'
                 },divAmagarApartats);
 
+                // Aquest només s'utilitza pel editor Dojo
+                if (canBeHighlighted) {
+                    let divMostrarHighlight = domConstruct.create('div', {
+                        className: 'divMostrarHighlight'
+                    }, form.containerNode);
+
+                    let mostrarHighlight = new CheckBox({
+                        id: 'chkMostrarHighlight',
+                        value: 'highlight',
+                        checked: false,
+                        ignored: true
+                    }).placeAt(divMostrarHighlight);
+                    dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
+
+                    domConstruct.create('label', {
+                        innerHTML: ' afegir ressaltat'
+                    }, divMostrarHighlight);
+                }
+
+
                 //Un camp de text per inclore la ruta de la pàgina#secció
                 var divPageSectionName = domConstruct.create('div', {
                     className: 'divPageSectionName'
@@ -213,6 +235,7 @@ define([
                 dialog.textBoxPageSectionName = PageSectionName;
 
 
+
                 // ----- Botons generals del formulari ------
                 var botons = domConstruct.create('div', {
                     className: 'botons',
@@ -226,14 +249,23 @@ define([
                             dialog.chkAmagarDates.value = dialog.chkAmagarDates.value + "&no" + dialog.chkMostrarDataCrea.value;
                         }
                         dialog.hide();
-                        var response = selectedPage.section + "&";
+
+                        let response;
+
+                        if (selectedPage.section) {
+                            response = selectedPage.section + "&";
+                        } else {
+                            response = dom.byId('textBoxPageSectionName').value;
+                        }
+
                         registry.toArray().forEach(function(widget) {
-                            if (widget.type === 'checkbox' && widget.checked === true) {
+                            if (widget.type === 'checkbox' && widget.checked === true && !widget.ignored) {
                                 response += widget.value + "&";
                             }
                         });
                         response = response.replace(/&?$/, ""); //elimina el '&' del final
-                        callback(response);
+                        // callback(response);
+                        callback(response, dialog.chkMostrarHighlight.get('checked'));
                     }
                 }).placeAt(botons);
 
@@ -248,8 +280,9 @@ define([
             return false;
         },
 
-        setValue: function(value) {
+        setValue: function(value, checked) {
             dom.byId('textBoxPageSectionName').value = value;
+            registry.byId('chkMostrarHighlight').set('checked', checked);
         }
 
     });

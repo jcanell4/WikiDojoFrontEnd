@@ -12,7 +12,7 @@ define([
 ], function (declare, AbstractParseableDojoPlugin, lang, _Plugin, DojoEditorUtils,
              ShowIncludePageComponent, ShowIncludeSectionComponent, string, dojoActions) {
 
-
+    let idCounter = 0;
 
     var DojoInclude = declare(AbstractParseableDojoPlugin, {
 
@@ -43,23 +43,22 @@ define([
 
 
         _processFull: function () {
-            console.log("TODO processar!", this.htmlTemplate);
             this._openDialog(this.insertHtml.bind(this));
         },
 
-        _openDialog: function(callback) {
+        _openDialog: function (callback) {
 
             let includeComponent = null;
 
             switch (this.includeType) {
                 case "page":
                     includeComponent = ShowIncludePageComponent();
-                    includeComponent.show(this.getEditor(), callback);
+                    includeComponent.show(this.getEditor(), callback, true);
                     break;
 
                 case "section":
                     includeComponent = new ShowIncludeSectionComponent();
-                    includeComponent.show(this.getEditor(), callback);
+                    includeComponent.show(this.getEditor(), callback, true);
                     break;
 
                 default:
@@ -70,17 +69,27 @@ define([
         },
 
 
-        insertHtml: function (value) {
-            console.log("Value retornat:", value);
+        insertHtml: function (value, isHighlighted) {
+            // console.log("Value retornat:", value, isHighlighted);
 
-            var html = string.substitute(this.htmlTemplate, {ns : value, include : "incloent: " +  value});
+            isHighlighted = isHighlighted ? "true" : "false";
 
-            // var html = this.wikiImageToHTML(value);
+            let includeId = 'include-' + idCounter;
+            idCounter++;
+
+            let html = string.substitute(this.htmlTemplate,
+                {
+                    ns: value,
+                    include: "incloent [" + this.includeType + "]: " + value,
+                    highlighted: isHighlighted,
+                    extra: " data-ioc-id=\"" + includeId + "\""
+                });
+
             this.editor.execCommand('inserthtml', html);
-            var id = jQuery(html).attr('data-ioc-id');
 
             // ALERTA: Per alguna raó el .find() no troba els id normals d'html, per això es fa servir atribut propi
-            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + id +'"]');
+            var $node = jQuery(this.editor.iframe).contents().find('[data-ioc-id="' + includeId + '"]');
+
 
             this._addHandlers($node);
 
@@ -109,34 +118,25 @@ define([
                 e.preventDefault();
                 e.stopPropagation();
 
-                console.log(jQuery(this));
                 let $node = jQuery(this);
 
-                // TODO: determinar com establir la ruta original!
-                let includeComponent = context._openDialog((value) => {
-                    console.log("Callback del update");
-                    $node.attr('data-dw-include', value);
-                    $node.html('incloent ' + context.includeType + ": " + value);
-                    context.editor.forceChange();
-                }
+                let includeComponent = context._openDialog((value, isHighlighted) => {
+                        // console.log(value, isHighlighted);
 
+                        $node.attr('data-dw-include', value);
+                        if (isHighlighted) {
+                            $node.attr('data-dw-highlighted', isHighlighted);
+                        } else {
+                            $node.removeAttr("data-dw-highlighted");
+                        }
+
+                        // Capturem les accions perquè en substituir el html es perd el node
+                        $node.find('span').get(0).innerHTML = 'incloent ' + context.includeType + ": " + value;
+                        context.editor.forceChange();
+                    }
                 );
-                includeComponent.setValue($node.attr('data-dw-include'));
-
-                /*
-                var $this = jQuery(this);
-
-                if (!dw_linkwiz.$entry) {
-                    dw_linkwiz.$entry = jQuery('<input>');
-                }
-
-                // Només s'afegeix el valor si es troba dins d'un espai de noms
-                var value = $this.attr('data-dw-ns');
-                dw_linkwiz.$entry.val(value.indexOf(':') === -1 ? '' : value);
-                */
-
-
-            })
+                includeComponent.setValue($node.attr('data-dw-include'), $node.attr('data-dw-highlighted') === "true");
+            });
         },
 
         parse: function () {
@@ -144,7 +144,6 @@ define([
             var context = this;
 
             $nodes.each(function () {
-                console.log("Afegint handlers a ", jQuery(this));
                 context._addHandlers(jQuery(this)/*, context*/);
             });
 
