@@ -38,10 +38,9 @@ define([
             },
             
             _configureRequestForm: function(formId, urlBase, query){
-                var $form, targetId, self;
-
-                targetId = this.domNode;
-                self = this;
+                var $form;
+                var targetId = this.domNode;
+                var self = this;
                 
                 if (formId){
                     $form = jQuery(this.domNode).find('#' + formId);
@@ -51,15 +50,16 @@ define([
 
                 $form.on('submit', function(event) {
                     event.preventDefault();
-                    var $this = jQuery( this ),
-                        $button = jQuery(document.activeElement),
-                        params = $this.serialize() + "&"+$button.attr('name')+'='+encodeURIComponent($button.val()),
+                    var $this = jQuery(this);
+                    var $button = jQuery(document.activeElement);
+                    var params = $this.serialize() + "&"+$button.attr('name')+'='+encodeURIComponent($button.val()),
 
                     request = self.requester;
                     if ($button.attr('data-query')) {
                         request.urlBase = urlBase + $button.attr('data-query');
                     }else if (urlBase){
-                        request.urlBase = urlBase + (query==unknown) ? "" : query;
+                        query = (query==undefined) ? "" : query;
+                        request.urlBase = urlBase + query;
                     }else{ 
                         request.urlBase = $this.attr('action');
                     }                    

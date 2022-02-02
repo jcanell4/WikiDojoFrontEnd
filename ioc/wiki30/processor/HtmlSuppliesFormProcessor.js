@@ -9,22 +9,6 @@ define([
             
             process: function (value, dispatcher) {
                 this.inherited(arguments);
-//                var $boto, self, targetId;
-//                self = this;
-//                targetId = this.domNode;
-//
-//                $boto = jQuery("#btn_cerca");
-//                $boto.on('click', function(event) {
-//                    var $this, request, call, urlBase, params;
-//                    request = self.requester;
-//                    $this = jQuery(this);
-//                    call = $this.attr('data-query');
-//                    urlBase = value.aRequestFormArgs.urlBase.split('?');
-//                    params = "call="+call;
-//                    request.urlBase = urlBase[0];
-//                    request.setStandbyId(targetId);
-//                    request.sendRequest(params);
-//                });
             },
 
             createContentTool: function (content, dispatcher) {
@@ -35,8 +19,7 @@ define([
                         closable:   true,
                         dispatcher: dispatcher,
                         type:       this.type,
-                        aRequestFormArgs: content.aRequestFormArgs,
-                        requestLinkArgs:  content.requestLinkArgs
+                        aRequestFormArgs: content.aRequestFormArgs
                     };
 
                 return contentToolFactory.generate(contentToolFactory.generation.HTML_SUPPLIES_FORM, args);
