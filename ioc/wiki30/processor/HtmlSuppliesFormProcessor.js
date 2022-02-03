@@ -5,7 +5,7 @@ define([
 ], function (declare, ContentProcessor, contentToolFactory) {
     var ret = declare([ContentProcessor],
         {
-            type: "html_form",
+            type: "html_supplies_form",
             
             process: function (value, dispatcher) {
                 this.inherited(arguments);
@@ -23,13 +23,11 @@ define([
                         requestLinkArgs:  content.requestLinkArgs
                     };
 
-                return contentToolFactory.generate(contentToolFactory.generation.HTML_FORM, args);
+                return contentToolFactory.generate(contentToolFactory.generation.HTML_SUPPLIES_FORM, args);
             },
             
             /** @override
-             * Actualitza els valors del dispatcher i el GlobalState fent servir el valor passat com argument, i afegeix
-             * el valor de la acció a "view".
-             *
+             * Actualitza els valors del GlobalState fent servir el valor passat com argument.
              * @param {ioc.wiki30.Dispatcher} dispatcher
              * @param {{id: string, ns: string, title: string, content: string}} value
              */
