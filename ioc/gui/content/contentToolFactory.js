@@ -407,9 +407,14 @@ define([
                         break;
 
                     case this.generation.DOCUMENT:
-                    case this.generation.HTML_RESPONSE_FORM:
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass);
+                        break;
+
+                    case this.generation.HTML_RESPONSE_FORM:
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(AjaxLinkSubclass);
                         break;
 
                     case this.generation.EDITOR:

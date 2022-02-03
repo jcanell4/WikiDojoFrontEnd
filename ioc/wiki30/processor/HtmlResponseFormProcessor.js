@@ -19,6 +19,7 @@ define([
                         closable:   true,
                         dispatcher: dispatcher,
                         type:       this.type,
+                        requestLinkArgs: content.requestLinkArgs,
                         extra:      content.extra
                     };
 
