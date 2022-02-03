@@ -13,6 +13,7 @@ define([
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormatGif',
     // 'ioc/dokuwiki/editors/DojoManager/plugins/DojoMediaFormat',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoInternalLink',
+    'ioc/dokuwiki/editors/DojoManager/plugins/DojoIncludeLink',
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoPicker',
 
     'ioc/dokuwiki/editors/DojoManager/plugins/DojoTableCellMerge',
@@ -76,7 +77,9 @@ define([
              DojoMediaFormatFigure,
              DojoMediaFormatLateral,
              DojoMediaFormatGif,
-             DojoInternalLink, DojoPicker,
+             DojoInternalLink,
+             DojoInsertIncludeLink,
+             DojoPicker,
              DojoTableCellMerge, DojoTableDelete,
              DojoTableInsert, DojoToggleTableHeader,
              DojoTableAlign,
@@ -164,6 +167,8 @@ define([
 
             // 'InsertMediaSyntax': DojoMediaFormat,
             'InsertInternalLinkSyntax': DojoInternalLink,
+            'InsertIncludePage': DojoInsertIncludeLink,
+            'InsertIncludeSection': DojoInsertIncludeLink,
             'InsertSpecialCharacter': DojoPicker,
             'InsertHrSyntax': DojoFormatBlock,
 
@@ -902,6 +907,22 @@ define([
             category: localization["category-ioc"]
         },
 
+        'InsertIncludePage': {
+            title: localization["ioc-insert-include-page-button"],
+            htmlTemplate: '<div class="iocinclude" data-dw-include="${ns}" data-dw-include-type="page" contenteditable="false" data-dw-highlighted="${highlighted}" ${extra}><span>${include}</span></div>',
+            icon: 'IocIncludePage',
+            category: localization["category-include"],
+            includeType: "page"
+        },
+
+        'InsertIncludeSection': {
+            title: localization["ioc-insert-include-section-button"],
+            htmlTemplate: '<div class="iocinclude" data-dw-include="${ns}" data-dw-include-type="section" contenteditable="false"  data-dw-highlighted="${highlighted}" ${extra}><span>${include}</span></div>',
+            icon: 'IocIncludeSection',
+            category: localization["category-include"],
+            includeType: "section"
+        },
+
         'IocIncludePageButton': {
             title: localization["ioc-include-page-button"],
             type: 'IncludePagePlugin',
@@ -1101,6 +1122,8 @@ define([
             icon: 'IocInsertQuoteSyntax',
             category: localization["category-ioc-style"]
         },
+
+
 
         'DojoSafePaste': {
             type: 'DojoSafePaste',

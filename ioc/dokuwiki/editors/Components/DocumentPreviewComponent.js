@@ -1,11 +1,12 @@
 define([
     'dojo/_base/declare',
     'ioc/dokuwiki/editors/Components/RequestComponent',
-    'dojo/cookie'
-], function (declare, RequestComponent, cookie) {
+    'dojo/cookie',
+    'ioc/dokuwiki/editors/Components/AbstractIocComponent'
+], function (declare, RequestComponent, cookie, AbstractIocComponent) {
 
 
-    return declare(RequestComponent, {
+    return declare([AbstractIocComponent, RequestComponent], {
 
 
         send: function (extraData) {
