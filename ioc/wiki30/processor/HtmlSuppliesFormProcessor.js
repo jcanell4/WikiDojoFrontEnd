@@ -32,7 +32,16 @@ define([
              */
             updateState: function (dispatcher, value) {
                 this.inherited(arguments);
+                //recoge todos los inputs del formulario y los convierte en una cadena para enviar por POST (para F5 reload)
+                var parms = "";
+                var $form = jQuery('#'+value.aRequestFormArgs.formId)[0];
+                for (var i=0; i<$form.length; i++){
+                    if ($form[i].name == "grups" || ($form[i].type !== "hidden" && $form[i].type !== "submit")) {
+                        parms += "&" + $form[i].name + "=" + $form[i].value;
+                    }
+                };
                 dispatcher.getGlobalState().getContent(value.id)["action"] = this.type;
+                dispatcher.getGlobalState().getContent(value.id)["parms"] = parms;
             }
 
         });
