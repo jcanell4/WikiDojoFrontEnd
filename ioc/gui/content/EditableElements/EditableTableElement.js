@@ -1381,6 +1381,7 @@ Segur que voleu crear de nou la taula?");
                         };
                         cell.formatter = function (datum) {
                             // Format the value in store, so as to be displayed.
+                            if (datum) datum = datum.replace(/-/g, "/");
                             var d = !datum ? (new Date()) : dojo.date.locale.parse(datum, {
                                 selector: 'date',
                                 datePattern: DATA_STORE_PATTERN
