@@ -13,7 +13,6 @@ define([
 
             init: function (args) {
 
-                // console.log("init args:", args);
                 // alert("stop");
                 this.context = args.context;
                 this.$node = jQuery(args.node);

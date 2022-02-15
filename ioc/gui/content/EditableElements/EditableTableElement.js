@@ -22,6 +22,7 @@ define([
     "dojo/text!./templates/importTableDialog.html",
     // "dojo/i18n!./nls/TableDialog",
     "dojo/on",
+    "ioc/gui/content/EditableElements/TreeCell",
     // Carregats pel template
     "dijit/form/TextBox",
     "dijit/form/Textarea",
@@ -30,7 +31,8 @@ define([
 ], function (declare, AbstractEditableElement, DataGrid, cells, cellsDijit, Memory, 
                     ObjectStore, Button, GridEvents, NumberTextBox, NumberSpinner, 
                     ZoomableCell, ConditionalSelectCell, Dialog, _TemplatedMixin, 
-                    _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings,*/ on
+                    _WidgetsInTemplateMixin, insertTableTemplate, /* tableDialogStrings,*/ on,
+             TreeCell
 ) {
 
     var ADD_IMPORT = "add_import",
@@ -428,7 +430,7 @@ define([
 
             for (var key in this.table.args.fields) {
 
-                // console.log("Field data:", key, this.table.args.fields[key]);
+                console.log("Field data:", key, this.table.args.fields[key]);
 
                 if (j === cols.length) {
                     console.error("Import error: missing value for field [" + key + "]. Aborting.");
@@ -486,7 +488,11 @@ define([
                         value = value.split("\\\\ ").join("\n");
                         break;
 
+                    case "tree":
+                        console.log("Trobat tree:", this.table.args.fields[key]);
+
                     case "string": // intentional fall-through
+
                     default:
                     // si es tipus string sempre es correcte
                 }
@@ -563,10 +569,7 @@ define([
             actionData: {},
 
             init: function (args) {
-                // console.error("EditableTableElement#init: formValues", args.context.formValues);
-
                 this.dataSource = args.context;
-
 
                 this.inherited(arguments);
                 this.fieldToCol = {};
@@ -574,10 +577,7 @@ define([
                 this.colToName = {};
                 this.actionData = {};
 
-                // this.defaultDisplay = 'table';
-
                 this.initializeCallbacks();
-
 
             },
 
@@ -1430,7 +1430,6 @@ Segur que voleu crear de nou la taula?");
                             return ret;
                         };
                         break;                                
-                        break;
 
                     case 'conditionalselect':
                         cell.type = cells._Widget;
@@ -1440,6 +1439,27 @@ Segur que voleu crear de nou la taula?");
                     case 'boolean':
                     case 'bool':
                         cell.type = dojox.grid.cells.Bool;
+                        break;
+
+                    case 'tree':
+                        console.log("detectat tree", type, layout, i, options);
+                        cell.type = cells._Widget;
+                        // cell.widgetClass = TreeCell;
+                        cell.type = cells._Widget;
+                        cell.widgetClass = ZoomableCell;
+                        cell.getValue = function () {
+                            // Override the default getValue function for dojox.grid.cells.DateTextBox
+                            var ret = this.widget.get("value");
+                            // console.log(ret);
+                            return  ret.split("<br>").join("\n");
+                        };
+                        cell.formatter = function (datum) {
+                            // console.log("Formatter:", datum);
+                            // Format the value in store, so as to be displayed.
+                            var ret = !datum ? "" : datum.split("\n").join("<br>");
+                            return ret;
+                        };
+
                         break;
 
                     default:
@@ -1719,13 +1739,13 @@ Segur que voleu crear de nou la taula?");
             },
 
             _htmlToJsonFromObjectArray: function ($table) {
-
                 var data = {
                     columns: [],
                     rows: []
                 };
 
                 var $rows = $table.find('tr');
+
                 var $columns = jQuery($rows[0]).children();
                 
                 // La primera columna són les capçáleres
@@ -1765,19 +1785,18 @@ Segur que voleu crear de nou la taula?");
                         // var colKey = 'col' + j;
                         var key = this.colToField[colKey];
 
-
                         row[colKey] = this.normalizeValueForKey(key, jQuery($columns[j]).attr("data-originalvalue")) || '';
-
                     }
 
                     data.rows.push(row);
                 }
 
-
                 return data;
             },
 
             normalizeValue: function (value, type) {
+                // console.error(type, value);
+
                 var normalizedValue;
                 switch (type) {
                     case 'bool':
@@ -1917,7 +1936,6 @@ Segur que voleu crear de nou la taula?");
                 var data = [];
 
                 var updatedData = this.dataStore.objectStore.data;
-
 
                 for (var i = 0; i < updatedData.length; i++) {
                     var newItem = {};

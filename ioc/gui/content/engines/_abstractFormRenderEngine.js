@@ -146,7 +146,8 @@ define([
         },
 
         renderField: function (field, fvalues) {
-            // console.log("_abstractFormRenderEngine#RenderField:", field, fvalues);
+            // console.log("_abstractFormRenderEngine#RenderField:", field.type, fvalues);
+
             var $field,
                 cols = field.columns || 12;
 
@@ -698,14 +699,21 @@ define([
                         continue;
                     }
 
-                    if (field.config.fields[key].type === "date") {
+                    let fieldType = field.config.fields[key].type;
+                    if (fieldType === "date") {
                         dato = this.convertToDateDMY(data[i][key]);
+                    } else if (fieldType === "tree") {
+                        dato = JSON.stringify(data[i][key]);
                     }else {
                         dato = data[i][key];
                     }
+
                     //tratamiento especial para los campos de fecha de las tablas
                     $cols[colNumber].attr('data-field', key);
-                    $cols[colNumber].attr('data-originalValue', data[i][key]);
+
+                    let originalValue = typeof data[i][key] === "object" ? JSON.stringify(data[i][key]) : data[i][key];
+                    $cols[colNumber].attr('data-originalValue', originalValue);
+                    // $cols[colNumber].attr('data-originalValue', data[i][key]);
                     $cols[colNumber].html(dato);
                     //$col = jQuery('<td data-field="'+key+'" data-originalvalue="' + data[i][key] + '">' + dato + '</td>');
                 }

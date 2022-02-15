@@ -138,7 +138,7 @@ define([
             },
             
             render: function (data, context, $content) {
-                // console.log(data, context, $content);
+                console.log("render original:", data, context, $content);
 
                 var $doc = jQuery('<div>'),
                     $form = jQuery('<div>');
