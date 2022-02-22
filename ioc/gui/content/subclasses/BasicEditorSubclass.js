@@ -113,6 +113,8 @@ define([
                 $value.find('[data-wioccl-xtype="ignore"]').remove();
 
 
+                console.log("Estructura:", structure);
+
                 $value.find('[data-wioccl-ref]').each(function() {
                     let $node = jQuery(this);
                     let refId = $node.attr('data-wioccl-ref');
@@ -139,15 +141,19 @@ define([
                     // console.log(refId, Number(refId), structure);
                     // console.log(structure[Number(refId)]);
                     // console.log(refId, Number(refId));
-                    if ($node.attr('data-wioccl-state') === 'open' && structure[Number(refId)].parent === '0') {
-
-                        // console.log("Comprovant node d'apertura per saltar:", refId, structure[Number(refId)]);
+                    let wiocclState = $node.attr('data-wioccl-state');
+                    if (wiocclState === 'open' && structure[Number(refId)].parent === '0') {
+                        console.log("Comprovant node d'apertura per saltar:", refId, structure[Number(refId)]);
                         // comprovació!
                         if (structure[Number(refId)].id !== refId) {
                             console.error(structure[Number(refId)].id, refId);
                             alert("Error amb la referència a dels identificadors, el index de l'array no es correspon amb el refId")
                         }
                         return;
+                    } else if (!wiocclState && structure[Number(refId)].parent === '0') {
+                        // Es tracta d'un div especial, pot ser una caixa amb una taula, afegim un node per marcar-lo
+                        let html = `<span data-wioccl-ref="${refId}" data-wioccl-state="open"></span>`;
+                        jQuery(html).insertBefore($node);
                     }
 
 
@@ -166,6 +172,7 @@ define([
 
                     let debugText = $node.text();
 
+                    console.log("Eliminant ref:", refId);
                     removedRefs.add(refId);
 
                     // console.log("Parent tag & length:", $parent.prop("tagName").toLowerCase(), $parent.text().length, $parent);
