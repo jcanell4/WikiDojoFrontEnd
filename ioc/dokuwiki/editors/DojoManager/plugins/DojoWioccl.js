@@ -74,6 +74,8 @@ define([
                 // aquest document no te estructura wioccl, ha de ser un document normal
                 // així que no afegim els botons ni controlem la posició del cursor
             }
+
+            console.log(this.editor.extra.wioccl_structure.structure);
         },
 
         addButton: function (config) {
