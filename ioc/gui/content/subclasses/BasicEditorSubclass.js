@@ -113,18 +113,73 @@ define([
                 $value.find('[data-wioccl-xtype="ignore"]').remove();
 
 
-                console.log("Estructura:", structure);
+                // console.log("Estructura:", structure);
+
+                // ALERTA[Xavi] això és correcte, en el bucle anterior es reemplacen els trs amb wioccls per spans
+                // Hem de reemplaçar els discardables que no siguin buits per spans
+                // Aquestes son files que s'han afegit a la taula amb els refs abans de la primera columna
+                // i després de la darrera
+                //
+                // Aquest canvi s'ha de fer abans que la cerca per data-wioccl-ref perquè si no quan passa
+                // per aquí ja s'han fet canvis
+
+                $value.find('tr.discardable').each(function() {
+
+                    let $node = jQuery(this);
+                    // Alerta, el TR conté un td i dins es troben els spans.
+                    let $children = $node.find('span');
+
+
+                    $children.each(function() {
+                        let $child = jQuery(this);
+                        let ref = $child.attr('data-wioccl-ref');
+
+                        // console.log("Ref:", ref, "s'ha afegit anteriorment?", removedRefs.has(ref));
+
+                        if (removedRefs.has(ref)) {
+                            return true;
+                        }
+
+                        let state = $child.attr('data-wioccl-state');
+
+                        if (state==='open' && structure[Number(ref)].parent === '0'){
+                            $child.replaceWith('<span />');
+                            $child.attr('data-wioccl-ref', ref);
+                            $child.attr('data-wioccl-state', state);
+                            // Cal afegir alguna marca perquè no s'elimini en el següent pass
+                            $child.attr('data-wioccl-skip', true);
+                            $child.insertBefore($node);
+                            removedRefs.add(ref);
+                        }
+
+                    });
+
+                    // eliminem el parent TR
+                    $node.remove();
+                });
+
+
 
                 $value.find('[data-wioccl-ref]').each(function() {
                     let $node = jQuery(this);
                     let refId = $node.attr('data-wioccl-ref');
 
-                    // eliminen el content editable i el readonly, no són necessaries
-                    // pel parse i trencan el regex
-
                     $node.removeAttr('contenteditable');
                     $node.removeAttr('data-readonly');
                     $node.removeAttr('class');
+
+                    // Si s'ha afegit aquesst atribut el saltem
+                    if ($node.attr('data-wioccl-skip')) {
+                        $node.removeAttr('data-wioccl-skip');
+                        return;
+                    }
+
+                    // console.log("Ref:", refId, "s'ha afegit anteriorment?", removedRefs.has(refId));
+
+                    // eliminen el content editable i el readonly, no són necessaries
+                    // pel parse i trencan el regex
+
+
 
                     // console.log("comprovant node:", $node);
 
@@ -142,8 +197,12 @@ define([
                     // console.log(structure[Number(refId)]);
                     // console.log(refId, Number(refId));
                     let wiocclState = $node.attr('data-wioccl-state');
-                    if (wiocclState === 'open' && structure[Number(refId)].parent === '0') {
-                        console.log("Comprovant node d'apertura per saltar:", refId, structure[Number(refId)]);
+
+                    if (removedRefs.has(refId)) {
+                        // No cal comprovar res més, ja s'ha afegit
+                    }
+                    else if (wiocclState === 'open' && structure[Number(refId)].parent === '0') {
+                        // console.log("Comprovant node d'apertura per saltar:", refId, structure[Number(refId)]);
                         // comprovació!
                         if (structure[Number(refId)].id !== refId) {
                             console.error(structure[Number(refId)].id, refId);
@@ -155,8 +214,6 @@ define([
                         let html = `<span data-wioccl-ref="${refId}" data-wioccl-state="open"></span>`;
                         jQuery(html).insertBefore($node);
                     }
-
-
 
                     // Si el parent és un paràgraf i ha quedat buit l'eliminem
                     let $parent = $node.parent();
@@ -172,7 +229,7 @@ define([
 
                     let debugText = $node.text();
 
-                    console.log("Eliminant ref:", refId);
+                    // console.log("Eliminant ref:", refId);
                     removedRefs.add(refId);
 
                     // console.log("Parent tag & length:", $parent.prop("tagName").toLowerCase(), $parent.text().length, $parent);
@@ -195,7 +252,6 @@ define([
                     }
 
                 });
-
 
 
 

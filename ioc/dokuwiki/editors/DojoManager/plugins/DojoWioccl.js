@@ -75,7 +75,7 @@ define([
                 // així que no afegim els botons ni controlem la posició del cursor
             }
 
-            console.log(this.editor.extra.wioccl_structure.structure);
+            // console.log(this.editor.extra.wioccl_structure.structure);
         },
 
         addButton: function (config) {
