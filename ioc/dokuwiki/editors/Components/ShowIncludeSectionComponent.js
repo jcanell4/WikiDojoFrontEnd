@@ -21,7 +21,7 @@ define([
 
     var request;
 
-    require(["ioc/wiki30/Request"], function (Request) {
+    require(["ioc/wiki30/Request"], function(Request) {
         request = new Request({urlBase: "lib/exe/ioc_ajax.php?call=get_toc_page"});
     });
 
@@ -31,7 +31,7 @@ define([
             var selectedPage = {};
             var dialog = registry.byId("includePageSyntaxDocumentDlg");
 
-            if (!dialog) {
+            if (!dialog){
                 dialog = new Dialog({
                     id: "includePageSyntaxDocumentDlg",
                     title: "Cerca de la secció d'una pàgina a incloure",
@@ -87,7 +87,7 @@ define([
                 //L'arbre de navegació a la banda esquerra del quadre.
                 var divizquierda = domConstruct.create('div', {
                     className: 'izquierda'
-                }, cpEsquerra.containerNode);
+                },cpEsquerra.containerNode);
 
                 var dialogTree = new NsTreeContainer({
                     treeDataSource: 'lib/exe/ioc_ajaxrest.php/ns_tree_rest/',
@@ -98,7 +98,7 @@ define([
 
                 dialog.dialogTree = dialogTree;
 
-                dialogTree.tree.onClick = function (item) {
+                dialogTree.tree.onClick = function(item) {
                     if (item.type === "f") {
                         selectedPage.id = item.id;
                         request.dataToSend = {id: item.id};
@@ -110,14 +110,14 @@ define([
                 domConstruct.create('div', {
                     id: 'idTocArea',
                     className: 'divTocArea'
-                }, cpTop.containerNode);
+                },cpTop.containerNode);
 
                 request.responseHandler = function (data) {
                     this._stopStandby();
                     dom.byId('idTocArea').innerHTML = data.htmlTOC;
                 };
 
-                var getTocAreaHandler = on(document, "#idTocArea a:click", function (evt) {
+                var getTocAreaHandler = on(document, "#idTocArea a:click", function(evt){
                     selectedPage.section = selectedPage.id + "#" + evt.target.innerText;
                     dom.byId('textBoxPageSectionName').value = selectedPage.section;
                     // ALERTA[Xavi] perquè es treia el handler? si es treu un cop hem fet
@@ -129,14 +129,14 @@ define([
                 // Creació del formulari
                 var divdretabaixa = domConstruct.create('div', {
                     className: 'dretabaixa'
-                }, cpBottom.containerNode);
+                },cpBottom.containerNode);
 
-                var form = new Form({id: "formIncludeSyntaxDialog"}).placeAt(divdretabaixa);
+                var form = new Form({id:"formIncludeSyntaxDialog"}).placeAt(divdretabaixa);
 
                 //Checkbox 'mostrar data de creació'
                 var divMostrarDataCrea = domConstruct.create('div', {
                     className: 'divMostrarDataCrea'
-                }, form.containerNode);
+                },form.containerNode);
 
                 var MostrarDataCrea = new CheckBox({
                     id: 'chkMostrarDataCrea',
@@ -147,12 +147,12 @@ define([
 
                 domConstruct.create('label', {
                     innerHTML: ' mostrar la data de creació'
-                }, divMostrarDataCrea);
+                },divMostrarDataCrea);
 
                 //Checkbox 'amagar Dates'
                 var divAmagarDates = domConstruct.create('div', {
                     className: 'divAmagarDates'
-                }, form.containerNode);
+                },form.containerNode);
 
                 var AmagarDates = new CheckBox({
                     id: 'chkAmagarDates',
@@ -163,12 +163,12 @@ define([
 
                 domConstruct.create('label', {
                     innerHTML: ' amagar data de modificació'
-                }, divAmagarDates);
+                },divAmagarDates);
 
                 //Checkbox 'amagar Títol'
                 var divAmagarTitol = domConstruct.create('div', {
                     className: 'divAmagarTitol'
-                }, form.containerNode);
+                },form.containerNode);
 
                 var AmagarTitol = new CheckBox({
                     id: 'chkAmagarTitol',
@@ -179,12 +179,12 @@ define([
 
                 domConstruct.create('label', {
                     innerHTML: ' amagar Títol'
-                }, divAmagarTitol);
+                },divAmagarTitol);
 
                 //Checkbox 'amagar Apartats'
                 var divAmagarApartats = domConstruct.create('div', {
                     className: 'divAmagarApartats'
-                }, form.containerNode);
+                },form.containerNode);
 
                 var AmagarApartats = new CheckBox({
                     id: 'chkAmagarApartats',
@@ -195,17 +195,17 @@ define([
 
                 domConstruct.create('label', {
                     innerHTML: ' amagar Subapartats'
-                }, divAmagarApartats);
+                },divAmagarApartats);
 
 
                 //Un camp de text per inclore la ruta de la pàgina#secció
                 var divPageSectionName = domConstruct.create('div', {
                     className: 'divPageSectionName'
-                }, form.containerNode);
+                },form.containerNode);
 
                 domConstruct.create('label', {
                     innerHTML: '<br>Pàgina i secció seleccionades'
-                }, divPageSectionName);
+                },divPageSectionName);
 
                 var PageSectionName = new TextBox({
                     id: 'textBoxPageSectionName',
@@ -215,32 +215,35 @@ define([
                 }).placeAt(divPageSectionName);
                 dialog.textBoxPageSectionName = PageSectionName;
 
-                let divMostrarHighlight = domConstruct.create('div', {
-                    className: 'divMostrarHighlight'
-                }, form.containerNode);
+                // Aquest només s'utilitza pel editor Dojo
+                if (canBeHighlighted) {
+                    let divMostrarHighlight = domConstruct.create('div', {
+                        className: 'divMostrarHighlight'
+                    }, form.containerNode);
 
-                let mostrarHighlight = new CheckBox({
-                    id: 'chkMostrarHighlight',
-                    value: 'highlight',
-                    checked: false,
-                    ignored: true
-                }).placeAt(divMostrarHighlight);
-                dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
+                    let mostrarHighlight = new CheckBox({
+                        id: 'chkMostrarHighlight',
+                        value: 'highlight',
+                        checked: false,
+                        ignored: true
+                    }).placeAt(divMostrarHighlight);
+                    dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
 
-                domConstruct.create('label', {
-                    innerHTML: ' afegir ressaltat'
-                }, divMostrarHighlight);
+                    domConstruct.create('label', {
+                        innerHTML: ' afegir ressaltat'
+                    }, divMostrarHighlight);
+                }
 
                 // ----- Botons generals del formulari ------
                 var botons = domConstruct.create('div', {
                     className: 'botons',
                     style: "text-align:center;margin-top:10px;margin-bottom:0;"
-                }, form.containerNode);
+                },form.containerNode);
 
                 new Button({
                     label: 'Acceptar',
-                    onClick: function () {
-                        if (!dialog.chkMostrarDataCrea.checked && dialog.chkAmagarDates.checked) {
+                    onClick: function(){
+                        if(!dialog.chkMostrarDataCrea.checked && dialog.chkAmagarDates.checked){
                             dialog.chkAmagarDates.value = dialog.chkAmagarDates.value + "&no" + dialog.chkMostrarDataCrea.value;
                         }
                         dialog.hide();
@@ -253,22 +256,20 @@ define([
                             response = dom.byId('textBoxPageSectionName').value;
                         }
 
-                        registry.toArray().forEach(function (widget) {
+                        registry.toArray().forEach(function(widget) {
                             if (widget.type === 'checkbox' && widget.checked === true && !widget.ignored) {
                                 response += widget.value + "&";
                             }
                         });
                         response = response.replace(/&?$/, ""); //elimina el '&' del final
                         // callback(response);
-                        callback(response, dialog.chkMostrarHighlight.get('checked'));
+                        callback(response, dialog.chkMostrarHighlight ? dialog.chkMostrarHighlight.get('checked') : false);
                     }
                 }).placeAt(botons);
 
                 new Button({
                     label: 'Cancel·lar',
-                    onClick: function () {
-                        dialog.hide();
-                    }
+                    onClick: function(){dialog.hide();}
                 }).placeAt(botons);
 
                 form.startup();
@@ -277,7 +278,7 @@ define([
             return false;
         },
 
-        setValue: function (value, checked) {
+        setValue: function(value, checked) {
             dom.byId('textBoxPageSectionName').value = value;
             registry.byId('chkMostrarHighlight').set('checked', checked);
         }

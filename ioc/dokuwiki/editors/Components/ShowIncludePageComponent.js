@@ -98,21 +98,24 @@ define([
 
                 var form = new Form({id: "formIncludeSyntaxDialog"}).placeAt(divdreta);
 
-                let divMostrarHighlight = domConstruct.create('div', {
-                    className: 'divMostrarHighlight'
-                }, form.containerNode);
+                // Aquest només s'utilitza pel editor Dojo
+                if (canBeHighlighted) {
+                    let divMostrarHighlight = domConstruct.create('div', {
+                        className: 'divMostrarHighlight'
+                    }, form.containerNode);
 
-                let mostrarHighlight = new CheckBox({
-                    id: 'chkMostrarHighlight',
-                    value: 'highlight',
-                    checked: false,
-                    ignored: true
-                }).placeAt(divMostrarHighlight);
-                dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
+                    let mostrarHighlight = new CheckBox({
+                        id: 'chkMostrarHighlight',
+                        value: 'highlight',
+                        checked: false,
+                        ignored: true
+                    }).placeAt(divMostrarHighlight);
+                    dialog.chkMostrarHighlight = registry.byId('chkMostrarHighlight');
 
-                domConstruct.create('label', {
-                    innerHTML: ' afegir ressaltat'
-                }, divMostrarHighlight);
+                    domConstruct.create('label', {
+                        innerHTML: ' afegir ressaltat'
+                    }, divMostrarHighlight);
+                }
 
 
                 //Un camp de text per inclore la ruta de la pàgina
@@ -165,6 +168,9 @@ define([
                 }, divAmagarDates);
 
 
+
+
+
                 // ----- Botons generals del formulari ------
                 var botons = domConstruct.create('div', {
                     className: 'botons',
@@ -197,7 +203,7 @@ define([
                             }
                         });
 
-                        callback(response, dialog.chkMostrarHighlight.get('checked'));
+                        callback(response, dialog.chkMostrarHighlight ? dialog.chkMostrarHighlight.get('checked') : false);
                         // context.insert(response);
                     }
                 }).placeAt(botons);
@@ -215,7 +221,7 @@ define([
             return false;
         },
 
-        setValue: function (value, checked) {
+        setValue: function(value, checked) {
             dom.byId('textBoxPageName').value = value;
             registry.byId('chkMostrarHighlight').set('checked', checked);
         }
