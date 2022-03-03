@@ -945,7 +945,7 @@ define([
         //Convierte una fecha a formato "dd-mm-yyyy". El formato esperado es ISO "yyyy-mm-dd"
         convertToDateDMY: function(data) {
             function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
-            if (data === "") {
+            if (data === "" || data === null || data === undefined) {
                 return "dd-mm-aaaa";
             }else if (isNaN(data.substring(0,4))) {
                 sdata = data.split(/\/|-/);
