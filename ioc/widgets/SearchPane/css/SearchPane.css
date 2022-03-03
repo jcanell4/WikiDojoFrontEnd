@@ -20,6 +20,7 @@
 
 .search-users-pane .right {
     float: right;
+    margin-right: 10px;
 }
 
 .search-users-pane .wrapper {
