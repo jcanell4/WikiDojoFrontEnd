@@ -263,7 +263,7 @@ define([
                         });
                         response = response.replace(/&?$/, ""); //elimina el '&' del final
                         // callback(response);
-                        callback(response, dialog.chkMostrarHighlight.get('checked'));
+                        callback(response, dialog.chkMostrarHighlight ? dialog.chkMostrarHighlight.get('checked') : false);
                     }
                 }).placeAt(botons);
 

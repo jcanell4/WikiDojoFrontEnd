@@ -203,7 +203,7 @@ define([
                             }
                         });
 
-                        callback(response, dialog.chkMostrarHighlight.get('checked'));
+                        callback(response, dialog.chkMostrarHighlight ? dialog.chkMostrarHighlight.get('checked') : false);
                         // context.insert(response);
                     }
                 }).placeAt(botons);
