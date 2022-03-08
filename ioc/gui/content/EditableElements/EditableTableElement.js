@@ -1444,9 +1444,9 @@ Segur que voleu crear de nou la taula?");
                     case 'tree':
                         console.log("detectat tree", type, layout, i, options);
                         cell.type = cells._Widget;
-                        // cell.widgetClass = TreeCell;
-                        cell.type = cells._Widget;
-                        cell.widgetClass = ZoomableCell;
+                        cell.widgetClass = TreeCell;
+                        //cell.type = cells._Widget;
+                        //cell.widgetClass = ZoomableCell;
                         cell.getValue = function () {
                             // Override the default getValue function for dojox.grid.cells.DateTextBox
                             var ret = this.widget.get("value");

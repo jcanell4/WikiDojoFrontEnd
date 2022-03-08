@@ -177,6 +177,8 @@ define([
                 });
 
 
+                this.dispatcher = context.dispatcher;
+
                 this.$field = jQuery(args.node);
                 this.args = args;
 

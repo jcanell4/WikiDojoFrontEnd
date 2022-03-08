@@ -1,9 +1,10 @@
 define([
     "dojo/_base/declare", // declare
     "dijit/form/Textarea",
-    'ioc/gui/content/EditableElements/ConditionalSelectCellElement',
+    // 'ioc/gui/content/EditableElements/ConditionalSelectCellElement',
+    'ioc/gui/content/EditableElements/ZoomableCellTree',
     'dojo/dom-construct'
-], function (declare, TextArea, ConditionalSelectCellElement) {
+], function (declare, TextArea, ZoomableCellTree) {
 
     // module:
     //		dijit/form/Textarea
@@ -19,12 +20,12 @@ define([
         // },
 
         buildRendering: function () {
-            console.log("build rendering", this, arguments);
+            console.log("tree build rendering", this, arguments);
 
             this.inherited(arguments);
 
             // Aquest element s'injecta en lloc del textbox original
-            new ConditionalSelectCellElement({
+            new ZoomableCellTree({
                 node: this.textbox,
                 alwaysDisplayIcon: true,
                 src: this
@@ -35,31 +36,22 @@ define([
 
             jQuery(this.textbox).on('change input', function (e) {
 
+                // Validem que es tracta d'un jason correcte
+
+                let text = jQuery(this).val();
+                let validated = false;
+                try {
+                    JSON.parse(text);
+                    validated = true;
+                } catch {
+                    validated = false;
+                }
+
+                console.log("això és crida? serveix per alguna cosa?");
+
                 var config = context.gridData.cell.config;
+                console.log("Hi ha config a la cel·la? ens fa falta?", config);
 
-                // Cal fer la comprovació aquí perque el gridData no es disponible durant la creació del widget
-                if (!config.validationRegex) {
-                    return;
-                }
-
-                var separator = config.outputSeparatorSplitter ? new RegExp(config.outputSeparatorSplitter) : config.outputSeparator;
-                var tokens = jQuery(this).val().split(separator)
-
-                var validated = true;
-
-                for (var i = 0; i < tokens.length; i++) {
-
-                    if (tokens[i].length === 0) {
-                        continue;
-                    }
-
-                    var pattern = new RegExp(config.validationRegex, 'g');
-
-                    if (!pattern.test(tokens[i])) {
-                        validated = false;
-                        break;
-                    }
-                }
 
                 if (!validated) {
                     jQuery(context.domNode).css('border', '1px solid red');

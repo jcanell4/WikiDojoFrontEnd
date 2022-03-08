@@ -1,0 +1,44 @@
+<div class="dijitDialog background-white" role="dialog" aria-labelledby="diff-dialog_title">
+    <div data-dojo-attach-point="titleBar" class="dijitDialogTitleBar">
+		<span data-dojo-attach-point="titleNode" class="dijitDialogTitle" id="diff-dialog_title"
+              role="header" level="1"></span>
+        <span data-dojo-attach-point="closeButtonNode" class="dijitDialogCloseIcon"
+              data-dojo-attach-event="ondijitclick: onCancel" title="" role="button" tabIndex="-1">
+			<span data-dojo-attach-point="closeText" class="closeText" title="">x</span>
+		</span>
+    </div>
+
+    <div class="dijitDialogPaneContentArea wioccl-pane"  data-dojo-attach-point="paneContainerNode">
+
+        <div id="treeContainer_test" style="width:150px" class="wioccl-tree" data-dojo-attach-point="treeContainerNode"></div>
+        <div id="detailContainer_test" class="wioccl-detail" data-dojo-attach-point="detailContainerNode">
+            <div id="attrContainer_test" style="width:100%" class="wioccl-attr">
+                <fieldset class="wioccl-fields" data-dojo-attach-point="attrHeaderContainer">
+                    <legend data-dojo-attach-point="attrLegendNode">Atributs, nom de la variable o paràmetres (no es poden modificar, cal modificar el codi a l'editor)</legend>
+                    <div data-dojo-attach-point="wiocclInstruction"></div>
+                    <div data-dojo-attach-point="attrContainerNode">
+                    </div>
+                </fieldset>
+            </div>
+            <div id="contentContainer_test" style="width:100%" class="wioccl-content" data-dojo-attach-point="contentContainerNode">
+                <div data-dojo-attach-point="editorContainerNode"></div>
+                <div data-dojo-attach-point="wiocclToolbarNode">
+                    <button data-dojo-attach-point="insertWiocclBtnNode" data-wioccl-btn>Inserir wioccl</button>
+                    <button data-dojo-attach-point="insertFieldBtnNode" data-wioccl-btn>Inserir camp</button>
+                    <button data-dojo-attach-point="insertFunctionBtnNode" data-wioccl-btn>Inserir funció</button>
+                    <button data-dojo-attach-point="insertContentBtnNode" data-wioccl-btn>Inserir contingut</button>
+                    <button data-dojo-attach-point="deleteBtnNode" data-wioccl-btn>Eliminar node</button>
+                </div>
+                <div data-dojo-attach-point="toolbarNode"></div>
+<!--                <textarea data-dojo-attach-point="textareaNode"></textarea>-->
+            </div>
+        </div>
+
+    </div>
+    <div class="dijitDialogPaneActionBar" data-dojo-attach-point="buttonsNode">
+        <button class='wioccl-btn' data-dojo-attach-point="updateButtonNode">Actualitzar arbre</button>
+        <button class='wioccl-btn' data-dojo-attach-point="saveButtonNode">Desar i sortir</button>
+        <button class='wioccl-btn' data-dojo-attach-point="cancelButtonNode">Sortir</button>
+    </div>
+
+</div>
