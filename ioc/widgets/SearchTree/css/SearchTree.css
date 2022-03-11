@@ -1,0 +1,16 @@
+.search-tree-pane .wrapper {
+    width: 100%;
+    max-height:600px;
+    overflow-y: auto;
+}
+
+.search-tree-pane input[type="query"] {
+    width:290px;
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.search-tree-pane .right {
+    float: right;
+    margin-right: 10px;
+}
