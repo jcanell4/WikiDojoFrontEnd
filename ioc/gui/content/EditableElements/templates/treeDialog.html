@@ -17,17 +17,35 @@
                     <legend data-dojo-attach-point="attrLegendNode">Atributs, nom de la variable o paràmetres (no es poden modificar, cal modificar el codi a l'editor)</legend>
                     <div data-dojo-attach-point="wiocclInstruction"></div>
                     <div data-dojo-attach-point="attrContainerNode">
+                        <div data-dojo-attach-point="propertyContainer">
+                            <label data-dojo-attach-point="labelNode">Propietat:</label>
+                            <input type="text" data-dojo-attach-point="propertyNode" style="width:95%; display: block;" disabled="true"/>
+                        </div>
+                        <div data-dojo-attach-point="typeContainer">
+                            <label>Tipus:</label>
+<!--                            <input type="text" data-dojo-attach-point="typeNode" style="width:95%; display: block;" disabled="true"/>-->
+                            <select data-dojo-attach-point="typeNode" style="width:95%; display: block;">
+                                <option value="value">Valor</option>
+                                <option value="object">Objecte</option>
+                                <option value="array">Array</option>
+                            </select>
+                        </div>
+                        <div data-dojo-attach-point="valueContainer">
+                            <label>Valor:</label>
+                            <input type="text" data-dojo-attach-point="valueNode" style="width:95%; display: block;" disabled="true"/>
+                        </div>
                     </div>
                 </fieldset>
             </div>
             <div id="contentContainer_test" style="width:100%" class="wioccl-content" data-dojo-attach-point="contentContainerNode">
                 <div data-dojo-attach-point="editorContainerNode"></div>
                 <div data-dojo-attach-point="wiocclToolbarNode">
-                    <button data-dojo-attach-point="insertWiocclBtnNode" data-wioccl-btn>Inserir wioccl</button>
-                    <button data-dojo-attach-point="insertFieldBtnNode" data-wioccl-btn>Inserir camp</button>
-                    <button data-dojo-attach-point="insertFunctionBtnNode" data-wioccl-btn>Inserir funció</button>
-                    <button data-dojo-attach-point="insertContentBtnNode" data-wioccl-btn>Inserir contingut</button>
-                    <button data-dojo-attach-point="deleteBtnNode" data-wioccl-btn>Eliminar node</button>
+                    <button data-dojo-attach-point="insertPropertyBtnNode" data-wioccl-btn disabled="true">Afegir propietat</button>
+<!--                    <button data-dojo-attach-point="insertArrayBtnNode" data-wioccl-btn disabled="true">Afegir array</button>-->
+<!--                    <button data-dojo-attach-point="insertObjectBtnNode" data-wioccl-btn disabled="true">Afegir objecte</button>-->
+<!--                    <button data-dojo-attach-point="insertValueBtnNode" data-wioccl-btn disabled="true">Afegir valor</button>-->
+                    <button data-dojo-attach-point="insertElementBtnNode" data-wioccl-btn disabled="true">Afegir element</button>
+                    <button data-dojo-attach-point="deleteBtnNode" data-wioccl-btn disabled="true">Eliminar</button>
                 </div>
                 <div data-dojo-attach-point="toolbarNode"></div>
 <!--                <textarea data-dojo-attach-point="textareaNode"></textarea>-->

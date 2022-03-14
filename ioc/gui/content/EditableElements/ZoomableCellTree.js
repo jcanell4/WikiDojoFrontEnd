@@ -157,7 +157,7 @@ define([
                 let value;
                 try {
                     value = JSON.parse(this.$field.val());
-                    console.log("Value parsejat amb èxit:", value);
+                    // console.log("Value parsejat amb èxit:", value);
                 } catch {
                     value = {"error":"no s'ha pogut fer el parse"};
                 }

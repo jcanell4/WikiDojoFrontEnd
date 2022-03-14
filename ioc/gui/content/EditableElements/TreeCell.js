@@ -20,7 +20,6 @@ define([
         // },
 
         buildRendering: function () {
-            console.log("tree build rendering", this, arguments);
 
             this.inherited(arguments);
 
@@ -47,10 +46,8 @@ define([
                     validated = false;
                 }
 
-                console.log("això és crida? serveix per alguna cosa?");
-
                 var config = context.gridData.cell.config;
-                console.log("Hi ha config a la cel·la? ens fa falta?", config);
+                // console.log("Hi ha config a la cel·la? ens fa falta?", config);
 
 
                 if (!validated) {
