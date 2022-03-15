@@ -976,8 +976,7 @@ define([
                             // TODO: Eliminar el expando
                             let treeNodes = context.treeWidget.getNodesByItem(context.selected);
                             // només ha de retornar 1 node
-                            console.log(treeNodes[0]);
-                            treeNodes[0].expand();
+                            treeNodes[0].isExpandable = false;
 
                         } else {
                             // No fem cap canvi
@@ -1001,6 +1000,7 @@ define([
                     let treeNodes = context.treeWidget.getNodesByItem(context.selected);
                     // només ha de retornar 1 node
                     console.log(treeNodes[0]);
+
                     treeNodes[0].expand();
 
 
@@ -1112,11 +1112,14 @@ define([
             console.log("Decartant els fills de ", item);
             for (let child of this.store.getChildren(item)) {
                 this.discardChildren(child);
-                // ALERTA! El remove és amb la identitat i no de l'item
-                this.store.remove(this.store.getIdentity(child));
-                this.model.onDelete(child);
-
+                this.removeItem(child);
             }
+        },
+
+        removeItem: function(item) {
+            // ALERTA! El remove és amb la identitat i no de l'item
+            this.store.remove(this.store.getIdentity(item));
+            this.model.onDelete(item);
         },
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
