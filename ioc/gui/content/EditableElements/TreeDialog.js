@@ -130,12 +130,23 @@ define([
                     type: 'value'
                 };
 
+
                 context.store.put(childItem, {
                     overwrite: true,
                     parent: context.selected
                 });
 
+                console.warn("s'ha afegit?");
+                let children = context.store.getChildren(context.selected);
+                console.log("Childrens?", children);
+
+                // Es refresca l'arbre??
+                context.model.onChange(context.selected);
+                context.model.onChildrenChange(context.selected, context.store.getChildren(context.selected));
+
+                // No soluciona el problema, és igual que fer un put
                 // context.model.newItem(childItem, context.selected);
+
             });
 
             $insertElementButton.on('click', function () {
@@ -157,7 +168,17 @@ define([
 
                 // context.model.newItem(childItem, context.selected);
 
+                // Comprovem si s'ha afegit i el problema es troba en l'actualització de l'arbre
+                let children = context.store.getChildren(context.selected);
+                console.log("Childrens?", children);
 
+                context.model.onChange(context.selected);
+                context.model.onChildrenChange(context.selected, context.store.getChildren(context.selected));
+
+                let treeNodes = context.treeWidget.getNodesByItem(context.selected);
+                // només ha de retornar 1 node
+                console.log(treeNodes[0]);
+                treeNodes[0].expand();
 
                 // let callback = function (code) {
                 //     context._insertCode(code);
@@ -254,6 +275,7 @@ define([
             let disableInsertElement = true;
             let disableInsertDelete = true;
 
+            console.log("this?", this, this.selected);
 
             switch(this.selected.type) {
                 case 'value':
@@ -537,8 +559,10 @@ define([
                             name: i,
                             type: 'array',
                             parent: parent,
-                            children: this.dataToNode(clonedData[i], i, counter, id)
+                            // children: this.dataToNode(clonedData[i], i, counter, id)
                         }
+                        // Afegim els nodes com a fills, però sense atribut children
+                        this.dataToNode(clonedData[i], i, counter, id)
                     } else {
                         value = this.dataToNode(clonedData[i], i, counter, counter.count);
                     }
@@ -606,7 +630,7 @@ define([
                 data.id = id;
                 data.name = name;
                 data.type = 'object';
-                data.parent = parent;
+                // data.parent = parent;
 
                 return data;
             }
@@ -619,7 +643,7 @@ define([
                 id: counter.count++,
                 value: data,
                 name: Number.isInteger(name) ? data : name,
-                parent: parent,
+                // parent: parent,
                 type: 'value'
             };
 
@@ -629,10 +653,11 @@ define([
 
 
         DataToJSON: function (data) {
+            console.error("Alerta! això no pot ser correcte, les dades de parents/children es troben a l'store, no als nodes")
             // El primer element és el root
-            let aux = this.nodeToData(data[0]);
+            // let aux = this.nodeToData(data[0]);
 
-            console.log("Objecte reconstruit:", aux);
+            // console.log("Objecte reconstruit:", aux);
 
             return aux;
 
@@ -641,6 +666,8 @@ define([
 
 
         nodeToData: function (node) {
+
+            alert("Alerta! això no pot funcionar, el childrens no es treuen al item si no al store");
 
             let result;
 
@@ -727,12 +754,11 @@ define([
             console.log("store data:", storeData);
 
 
-            // TEST! la conversió invesrsa DataToJSON ha de retornar el mateix objecte
-            let checkJSON = this.DataToJSON(storeData);
-            console.log("rebuild data:", checkJSON);
-
+            // TODO: REFER EL TEST TEST! la conversió invesrsa DataToJSON ha de retornar el mateix objecte
+            // let checkJSON = this.DataToJSON(storeData);
+            // console.log("rebuild data:", checkJSON);
             // Comparem els dos objectes
-            console.log("Són iguals?", JSON.stringify(data).localeCompare(JSON.stringify(checkJSON)) === 0);
+            // console.log("Són iguals?", JSON.stringify(data).localeCompare(JSON.stringify(checkJSON)) === 0);
 
 
             let store = new Memory({
@@ -746,7 +772,7 @@ define([
 
                 // Aquest mostra els nous nodes afegits amb put
                 getChildren: function (object) {
-                    // console.log("object:", object);
+                    // console.log("object del que cerquem el parent:", object);
                     return this.query({parent: object.id});
                 },
 
@@ -760,7 +786,97 @@ define([
                 //     }
                 //         return object.children || [];
                 // }
+                mayHaveChildren: function (item) {
+                    console.log("S'ha cridat a mayHaveChildren (store)", item, item.type !== 'value');
+                    // Això només es crida quan es crea l'arbre, no quan volem afegir
+                    // PROVA: fer un put al store després de modificar el valor
+                    // return true;
+                    return item.type !== 'value';
+                },
+                // ALERTA[Xavi] Sobreescriptura amb la darrera versió a Github que inclou before per poder fer el
+                // seguiment
+                put: function(object, options){
+                    console.log("Cridat nou put");
+                    // summary:
+                    //		Stores an object
+                    // object: Object
+                    //		The object to store.
+                    // options: dojo/store/api/Store.PutDirectives?
+                    //		Additional metadata for storing the data.  Includes an "id"
+                    //		property if a specific id is to be used.
+                    // returns: Number
+                    var data = this.data;
+                    var index = this.index;
+                    var idProperty = this.idProperty;
+                    var id = object[idProperty] = (options && "id" in options) ?
+                        options.id : idProperty in object ? object[idProperty] : Math.random();
+                    var defaultDestination = data.length;
+                    var newIndex;
+                    var previousIndex;
+                    var eventType = id in index ? "update" : "add";
 
+                    if(eventType === "update"){
+                        if(options && options.overwrite === false){
+                            throw new Error("Object already exists");
+                        }
+                        else{
+                            previousIndex = index[id];
+                            defaultDestination = previousIndex;
+                        }
+                    }
+                    console.log("previous index", previousIndex);
+
+                    if(options && "before" in options){
+                        console.log("Before!");
+                        if(options.before == null){
+                            newIndex = data.length;
+                            if(eventType === "update"){
+                                --newIndex;
+                            }
+                        }
+                        else{
+                            newIndex = index[this.getIdentity(options.before)];
+                            console.log("new index", newIndex);
+                            // Account for the removed item
+                            if(previousIndex < newIndex){
+                                --newIndex;
+                            }
+                        }
+                    }
+                    else{
+                        newIndex = defaultDestination;
+                    }
+
+                    if(newIndex === previousIndex){
+                        data[newIndex] = object;
+                    }
+                    else{
+                        if(previousIndex !== undefined){
+                            console.log("Canviant el data")
+                            data.splice(previousIndex, 1);
+                        }
+                        data.splice(newIndex, 0, object);
+                        this._rebuildIndex(previousIndex === undefined ? newIndex : Math.min(previousIndex, newIndex));
+
+                    }
+
+                    return id;
+                },
+                _rebuildIndex: function(startIndex){
+                    var data = this.data;
+                    var dataLength = data.length;
+                    var i;
+
+                    startIndex = startIndex || 0;
+
+                    for(i = startIndex; i < dataLength; i++){
+                        console.log("Canviant ordre de " + data[i][this.idProperty] + " a " +i);
+                        this.index[data[i][this.idProperty]] = i;
+                    }
+
+                    console.log ("Index reordenats:", this.index);
+
+                }
             });
 
 
@@ -786,7 +902,7 @@ define([
                 store: store,
                 query: {id: 0},
                 mayHaveChildren: function (item) {
-                    console.log("S'ha cridat a mayHaeChildren", item);
+                    console.log("S'ha cridat a mayHaveChildren (model)", item);
                     // Això només es crida quan es crea l'arbre, no quan volem afegir
                     // PROVA: fer un put al store després de modificar el valor
                     // return true;
@@ -832,16 +948,123 @@ define([
 
             $type.on('change', function() {
                 console.log("Canvis al tipus");
+                let newValue = jQuery(this).val();
+
                 if (context.selected){
+
+                    if (context.selected.type === newValue) {
+                        return;
+                    }
+
                     // TODO: compte! en el cas dels elements dels arrays el nom del node és el valor!
-                    context.selected.type = jQuery(this).val();
+                    // context.selected.type = jQuery(this).val();
 
                     let parent = context.getNodeParent(context.selected.id);
 
+                    // Canviar el tipus no és suficient, perquè l'item es queda bloquejat sense el expando i no mostra els fills
+                    // encara que s'afegeixen al tree, així que el  reemplacem
+
+                    // TODO: això hauria de ser el normal, però només funciona amb un force refresh
+                    // Això canvia el tipus i actualtiza el store, però no permet que s'afegeixi res
+
+
+                    if (newValue === 'value') {
+                        if (confirm("Es perdran les propietats o elements. Estas segur que vols canviar el tipus a 'value'?")) {
+                            // descartem els fills
+                            context.discardChildren(context.selected);
+
+                            // TODO: Eliminar el expando
+                            let treeNodes = context.treeWidget.getNodesByItem(context.selected);
+                            // només ha de retornar 1 node
+                            console.log(treeNodes[0]);
+                            treeNodes[0].expand();
+
+                        } else {
+                            // No fem cap canvi
+                            jQuery(this).val(context.selected.type);
+                            return;
+                        }
+                    }
+
+
+
+                    context.selected.type = jQuery(this).val();
                     context.store.put(context.selected, {
-                        overwrite: true,
-                        parent: parent
+                        parent: parent,
+                        overwrite: true
                     });
+
+                    // Això no te cap efecte aquí
+                    context.model.onChange(context.selected);
+                    context.model.onChildrenChange(parent, context.store.getChildren(parent));
+
+                    let treeNodes = context.treeWidget.getNodesByItem(context.selected);
+                    // només ha de retornar 1 node
+                    console.log(treeNodes[0]);
+                    treeNodes[0].expand();
+
+
+                    // Aquesta idea era per inserir abans, però no funciona perquè el tree no s'actualitza sense
+                    // una reconstrucció
+
+                    //
+                    // console.log("Identity:", context.store.getIdentity(context.selected));
+                    // // console.log("Metadata:", context.store.getMetadata(context.selected));
+                    //
+                    // // això afegeix un node nou clonat, però sempre al final perquè Memory no implementa el before
+                    // let cloned = JSON.parse(JSON.stringify(context.selected));
+                    // cloned.type = jQuery(this).val();
+                    // cloned.id = Math.random();
+                    //
+                    // console.log("El posem before:", context.selected);
+                    // context.store.put(cloned, {
+                    //     parent: parent,
+                    //     before: context.selected
+                    // });
+                    //
+                    // console.log("no hi ha selected?", context.selected);
+
+                    // ALERTA! Això funciona! refresca l'arbre!
+                    // context.model.onChange(cloned);
+                    // console.log("Parent children:", context.store.getChildren(context.selected));
+                    // context.model.onChildrenChange(parent, context.store.getChildren(parent));
+
+
+
+
+                    // TODO: Extreure com a forceRefresh i afegir-lo al Tree
+                    /*
+                    // TEST: Reconstruir l'arbre HACK!
+                    context.treeWidget.dndController.selectNone(); // As per the answer below
+                    // Credit to this discussion: http://mail.dojotoolkit.org/pipermail/dojo-interest/2010-April/045180.html
+                    // Close the store (So that the store will do a new fetch()).
+                    // Això no funciona, no existeix el mètode close al store
+                    // context.treeWidget.model.store.clearOnClose = true;
+                    // context.store.close();
+
+
+                    // Completely delete every node from the dijit.Tree
+                    context.treeWidget._itemNodesMap = {};
+                    context.treeWidget.rootNode.state = "UNCHECKED";
+                    context.treeWidget.model.root.children = null;
+
+                    // Destroy the widget
+                    context.treeWidget.rootNode.destroyRecursive();
+
+                    // Recreate the model, (with the model again)
+                    context.treeWidget.model.constructor(context.model)
+
+                    // Rebuild the tree
+                    context.treeWidget.postMixInProperties();
+                    context.treeWidget._load();
+                    */
+                    // TODO: END forceRefresh
+
+
+
+                    // TODO: esborrar el selected i posar aquest com a selected
+                    //context.store.delete(context.selected)
+                    // seleccionar amb el path?? <-- cal recuperar tots els name? o ids? dels parents recursivament fins al root
                     // funciona: s'actualitza el valor de l'element a l'arbre
                 }
 
@@ -856,6 +1079,7 @@ define([
                 model: this.model,
                 fields: this.fields,
                 onOpenClick: true,
+                showRoot: false,
                 onLoad: function () {
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
@@ -876,86 +1100,23 @@ define([
                     $property.val(item.name);
                     $type.val(item.type);
 
+                },
 
-
-                    // actualitzem qualsevol canvi pendent abans
-                    // context._updatePendingChanges_Field2Detail()
-
-                    // let hasChanges = context.editor.isChanged();
-                    // let isDirty = structure.dirtyStructure || context._pendingChanges_Field2Detail
-                    //     || context._fieldChanges;
-
-                    // console.log("Es dirty?", isDirty);
-                    // console.log("structure.dirtyStructure", structure.dirtyStructure);
-                    // console.log("** context.editor.isChanged() **", context.editor.isChanged());
-                    // console.log("context._pendingChanges_Field2Detail", context._pendingChanges_Field2Detail);
-                    // console.log("context._fieldChanges", context._fieldChanges);
-
-                    ///////////////// COMPROVACIO DE BRANQUES SIMILARS //////////////////
-                    // if (isDirty && !hasChanges) {
-                    //     // Comprovem si realment el contingut del backup és diferent al que hi ha
-                    //     // esperem que només canviin els identificadors, la resta ha de ser idèntica
-                    //
-                    //     // PAS 1: agafar el wrapper
-                    //     let getWrapper = function (node) {
-                    //         if (!node) {
-                    //             return false;
-                    //         }
-                    //         if (node.type === "wrapper" || node.type === "temp") {
-                    //             return node;
-                    //         } else if (node.parent) {
-                    //             // return getWrapper(structure.getNodeById(node.parent));
-                    //         }
-                    //
-                    //         return null;
-                    //     }
-                    //
-                    //     // Si no s'ha trobat és que hi han hagut canvis i ha canviat el posmap
-                    //     // let wrapper = getWrapper(item);
-                    //
-                    //
-                    //     // PAS 2: trobar el node corresponent dins del backup node
-                    //     // let backupWrapper = structure.structure.backupIndex[wrapper.id];
-                    //
-                    //     // Pas 3: recorrer tots els childrens al wrapper i al backupWrapper:
-                    //     // let areSimilar = wrapper ? structure.areNodesSimilar(wrapper, backupWrapper) : false;
-                    //
-                    //     // Restaurem automàticament sense avisar
-                    //     if (areSimilar) {
-                    //         // structure.restore();
-                    //     }
-                    //
-                    //     isDirty = !areSimilar;
-                    //
-                    // }
-                    //
-                    // if (isDirty || hasChanges) {
-                    //     let descartar = confirm("S'han detectat canvis, vols descartar-los?");
-                    //
-                    //     if (!descartar) {
-                    //         return false;
-                    //     }
-                    //
-                    //     // structure.restore();
-                    //     context._fieldChanges = false;
-                    // }
-
-                    // Alerta! aquest és l'item seleccionat, no correspón amb el restaurat i sobreescriu el backup
-                    // ALERTA[Xavi] no es pot fer servir el item directament, tot i que el backup crea una copia,
-                    // cal recuperar l'element de la estructura.
-
-                    // let wiocclNode = structure.getNodeById(item.id);
-
-                    // structure.rebuildPosMap(wiocclNode);
-                    // context.editor.setPosition({col: 0, column: 0});
-                    // context._updateDetail(wiocclNode);
-                    // context._selectWiocclNode(wiocclNode);
-                    // context._updateNodeForPosition();
-                }
             });
 
             this.treeWidget.placeAt(this.treeContainerNode);
             this.treeWidget.startup();
+        },
+
+        discardChildren: function(item) {
+            console.log("Decartant els fills de ", item);
+            for (let child of this.store.getChildren(item)) {
+                this.discardChildren(child);
+                // ALERTA! El remove és amb la identitat i no de l'item
+                this.store.remove(this.store.getIdentity(child));
+                this.model.onDelete(child);
+
+            }
         },
 
         // TODO: Valorar si això és més adient aquí o al WiocclStructureBase
