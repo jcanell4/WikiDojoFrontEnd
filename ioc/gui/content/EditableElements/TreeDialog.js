@@ -80,9 +80,9 @@ define([
             $insertPropertyButton.on('click', function () {
                 // ALERTA! Igual que a property canviant el nom de l'element
                 var childItem = {
-                    name: "Nova propietat",
+                    name: "nova_propietat",
                     id: Math.random(),
-                    key: "Nova propietat",
+                    key: "nova_propietat",
                     type: 'value'
                 };
 
@@ -670,6 +670,7 @@ define([
                     let parent = context.getParentItem(context.selected);
                     let item = JSON.parse(JSON.stringify(context.selected));
                     item.name = jQuery(this).val();
+                    item.key = jQuery(this).val();
                     context.selected = item;
 
 
