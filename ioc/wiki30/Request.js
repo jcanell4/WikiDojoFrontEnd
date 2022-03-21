@@ -414,7 +414,7 @@ define([
                             + "height: 100%;'><span id='counter_" + self.standbyId
                             + "' style='font-size:" + (textSize) + "px;'>" + this.counter + "</span></div>"
                         );
-                        domConstruct.place(counterDiv, self.standbyId);
+                        domConstruct.place(counterDiv, self.standbyId, "first");
                     }
                 };
 
