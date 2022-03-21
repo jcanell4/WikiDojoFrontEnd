@@ -100,12 +100,13 @@ define([
             });
 
             $insertDeleteButton.on('click', function () {
-                console.log("TODO: Delete");
+                context.removeItem(context.selected);
             });
 
         },
 
         updateFieldsAndButtons: function () {
+            // console.log("Selected:", this.selected);
             // console.log("###UPDATING FIELDS AND BUTTONS###");
             let $insertPropertyButton = jQuery(this.insertPropertyBtnNode);
             let $insertElementButton = jQuery(this.insertElementBtnNode);
@@ -115,6 +116,7 @@ define([
             let disableInsertProperty = true;
             let disableInsertElement = true;
             let disableInsertDelete = true;
+            let lock = false;
 
             switch(this.selected.type) {
                 case 'value':
@@ -136,10 +138,12 @@ define([
             let parent = this.getParentItem(this.selected);
 
             if (parent === null) {
-                // console.log("Tot desactivat, és el root");
-                disableInsertProperty = true;
+                // Es permet afegir propietats
+                disableInsertProperty = false;
                 disableInsertElement = true;
                 disableInsertDelete = true;
+                // No permetem modificar es
+                lock = true;
             } else {
                 // console.log("No és root");
                 disableInsertDelete = false;
@@ -153,11 +157,6 @@ define([
             // FIELDS
             let parentType = parent ? parent.type : '';
 
-            let $value = jQuery(this.valueNode);
-            let $property = jQuery(this.propertyNode);
-            let $type = jQuery(this.typeNode);
-            let $label = jQuery(this.labelNode);
-
             let valueDisabled = true;
             let propertyDisabled = true;
             let typeDisabled = false;
@@ -170,18 +169,18 @@ define([
                     }
 
                     valueDisabled = false;
-                    $label.html("");
+                    this.$label.html("");
                     break;
 
                 case 'array':
                     if (this.selected.type === 'value') {
                         valueDisabled = false;
                     }
-                    $label.html("Índex:");
+                    this.$label.html("Índex:");
                     break;
 
                 case 'object':
-                    $label.html("Propietat:");
+                    this.$label.html("Propietat:");
                     propertyDisabled = false;
                     // valueDisabled = false;
                     break;
@@ -196,22 +195,22 @@ define([
             switch (parentType) {
                 case 'value':
                     // Aquest cas no s'ha de donar
-                    $label.html("");
+                    this.$label.html("");
                     break;
 
                 case 'array':
-                    $label.html("Índex:");
+                    this.$label.html("Índex:");
                     propertyDisabled = true;
                     break;
 
                 case 'object':
-                    $label.html("Propietat:");
+                    this.$label.html("Propietat:");
                     break;
             }
 
-            $value.prop('disabled', valueDisabled);
-            $property.prop('disabled', propertyDisabled);
-            $type.prop('disabled', typeDisabled);
+            this.$value.prop('disabled', lock || valueDisabled);
+            this.$property.prop('disabled', lock || propertyDisabled);
+            this.$type.prop('disabled', lock || typeDisabled);
 
         },
 
@@ -398,7 +397,7 @@ define([
 
             // console.log("Objecte reconstruit:", aux);
 
-            return aux;
+            //return aux;
 
 
         },
@@ -444,6 +443,10 @@ define([
         select: function (item) {
             this.selected = item;
 
+            this.$value.val(item.value);
+            this.$property.val(item.index !== undefined ? item.index : item.key);
+            this.$type.val(item.type);
+
             this.updateFieldsAndButtons();
         },
 
@@ -488,6 +491,11 @@ define([
 
 
         createTree: function (data) {
+
+            this.$value = jQuery(this.valueNode);
+            this.$property = jQuery(this.propertyNode);
+            this.$type = jQuery(this.typeNode);
+            this.$label = jQuery(this.labelNode);
 
             // console.log("base data:", data);
 
@@ -638,11 +646,11 @@ define([
 
             let context = this;
 
-            let $value = jQuery(this.valueNode);
-            let $property = jQuery(this.propertyNode);
-            let $type = jQuery(this.typeNode);
+            // let $value = jQuery(this.valueNode);
+            // let $property = jQuery(this.propertyNode);
+            // let $type = jQuery(this.typeNode);
 
-            $value.on('input change', function() {
+            this.$value.on('input change', function() {
                 // console.log("Canvis al valor");
                 if (context.selected){
                     // TODO: compte! en el cas dels elements dels arrays el nom del node és el valor!
@@ -663,7 +671,7 @@ define([
                 }
             })
 
-            $property.on('input change', function() {
+            this.$property.on('input change', function() {
                 console.log("Canvis al nom de la propietat");
                 if (context.selected){
 
@@ -685,7 +693,7 @@ define([
                 }
             })
 
-            $type.on('change', function() {
+            this.$type.on('change', function() {
                 // console.log("Canvis al tipus");
                 let newValue = jQuery(this).val();
 
@@ -726,7 +734,7 @@ define([
                         }
                     } else {
                         context.selected.value = "";
-                        $value.val("");
+                        context.$value.val("");
                     }
 
                     let item = JSON.parse(JSON.stringify(context.selected));
@@ -755,18 +763,25 @@ define([
                     console.log("item clicat:", item);
 
                     // TODO: revisar això del selected, ficar en el context.select(item)?
-                    context.select(item);
+                    context.selectItem(item);
 
-                    $value.val(item.value);
-                    $property.val(item.index !== undefined ? item.index : item.key);
-                    $type.val(item.type);
+                    // $value.val(item.value);
+                    // $property.val(item.index !== undefined ? item.index : item.key);
+                    // $type.val(item.type);
 
-                },
-
+                }
             });
 
             this.treeWidget.placeAt(this.treeContainerNode);
             this.treeWidget.startup();
+        },
+
+        selectItem: function(item) {
+            this.select(item);
+
+            this.$value.val(item.value);
+            this.$property.val(item.index !== undefined ? item.index : item.key);
+            this.$type.val(item.type);
         },
 
         discardChildren: function(item) {
@@ -778,9 +793,33 @@ define([
         },
 
         removeItem: function(item) {
-            // ALERTA! El remove és amb la identitat i no de l'item
+            console.log("Remove item", item);
+
+            // Probem a seleccionar un sibling
+            let treeNodes = this.treeWidget.getNodesByItem(item);
+            let node = treeNodes[0].getPreviousSibling()? treeNodes[0].getPreviousSibling() : treeNodes[0].getNextSibling();
+
+            if (!node) {
+                // Seleccionem el parent
+                // No hi ha sibling, seleccionem el parent
+                let parent = this.getParentItem(item);
+                let parentTreeNodes = this.treeWidget.getNodesByItem(parent);
+                node = parentTreeNodes[0];
+            }
+
+            this.selectNode(node);
+
+
+            // ALERTA! El remove és fa amb la identitat i no de l'item
             this.store.remove(this.store.getIdentity(item));
             this.model.onDelete(item);
+
+        },
+
+        selectNode: function(node) {
+            let path = node.getTreePath();
+            this.treeWidget.set('path', path);
+            this.selectItem(node.item);
         },
 
         fixChildNames: function (item) {
@@ -863,6 +902,15 @@ define([
             // només ha de retornar 1 node
             // console.log(treeNodes[0]);
             treeNodes[0].expand();
+
+            console.log("selected?", this.selected);
+            if (this.selected.key === 'root') {
+                console.log("Seleccionant el nou item");
+                // Seleccionem el nou node craat
+                let node = this.treeWidget.getNodesByItem(item)[0];
+                this.selectNode(node);
+            }
+
         },
 
 
