@@ -14,7 +14,6 @@ define([
         return declare([_WidgetBase, _TemplatedMixin], {
             templateString: template,
             baseClass: 'ioc-selected-item',
-            fieldId: null,  // {string} clau del camp a utilizar com identificador
 
             postCreate: function () {
                 this.inherited(arguments);
@@ -28,24 +27,13 @@ define([
 
             _fillValues: function() {
                 jQuery(this.selectedItemsNode).html('');
-                if (typeof this.value === 'string') {
-                    this.value = this._generateItemsFromString(this.value);
-                }
                 this._itemSelected(this.value);
             },
 
             _itemSelected: function (item) {
                 var newItem = jQuery('<span></span>');
-                newItem.html(item[this.fieldId]);
+                newItem.html(item);
                 jQuery(this.selectedItemsNode).append(newItem);
-            },
-
-            _generateItemsFromString: function(value) {
-                var item = {};
-                if (value.length !== 0) {
-                    item[this.fieldId] = value;
-                }
-                return item;
             }
 
         });
