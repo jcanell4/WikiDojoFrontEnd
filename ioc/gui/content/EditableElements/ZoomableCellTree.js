@@ -2,14 +2,12 @@ define([
     'dojo/_base/declare',
     'ioc/dokuwiki/editors/AceManager/AceEditorPartialFacade',
     'ioc/gui/content/EditableElements/ZoomableCellElement',
-    'ioc/dokuwiki/editors/AceManager/toolbarManager',
     'ioc/gui/content/EditableElements/TreeDialog',
 
 
-], function (declare, AceFacade, ZoomableCellElement, toolbarManager, Dialog/*, contentToolFactory*//**/) {
+], function (declare, AceFacade, ZoomableCellElement, Dialog/*, contentToolFactory*//**/) {
 
 
-    var lastFocusedElement;
 
     var DIALOG_DEFAULT_HEIGHT = 600;
     var DIALOG_DEFAULT_WIDTH = 800;
@@ -18,39 +16,23 @@ define([
 
     return declare([ZoomableCellElement],
         {
+            constructor: function (args) {
+                this.src = args.src;
+            },
 
             // TEST: herència, sense cap canvi, ha de funcionar normalment.
             _zoom: function (event) {
                 event.preventDefault();
+                console.log("Set edition state true!");
                 this.setEditionState(true);
+
                 var fieldId = this.$field.attr('data-form-editor-button') || Date.now();
 
-
-                // TODO: Afegir el treeDialog al dialogManager
-                //var dialogManager = this.context.dispatcher.getDialogManager();
-
-                // var args = {
-                //     id: "auxWidget" + fieldId,
-                //     title: this.context.title,
-                //     dispatcher: this.context.dispatcher,
-                // };
-                //
-                // var editorWidget = this.context.contentToolFactory.generate(this.context.contentToolFactory.generation.BASE, args);
-                // var toolbarId = 'DialogToolbar' + (Date.now() + Math.random()); // id única
-                //
-                //
-                // var $container = jQuery('<div>');
-                // var $toolbar = jQuery('<div id="toolbar_' + args.id + '"></div>');
-                // var $textarea = jQuery('<textarea id="textarea_' + args.id + '" style="width:100%;height:200px" name="wikitext"></textarea>');
-                //
-                // $textarea.css('display', 'none');
-                // $container.append($toolbar);
-                // $container.append($textarea);
+                // ALERTA! Això fa que la cel·la no es tanqui quan s'obre el diàleg
+                this.src.gridData.grid.ignoreApply = true;
 
 
-                let saveCallback = function () {
-                    var value = editor.getValue();
-
+                let saveCallback = function (value) {
 
                     if (this.args.saveCallback) {
                         this.args.saveCallback(value);
@@ -61,20 +43,20 @@ define([
                         this.$field.trigger('input');
                     }
 
+                    // Tanquem la edició de la cel·la
+                    this.src.gridData.grid.ignoreApply = false;
                     this.setEditionState(false);
-                    toolbarManager.delete(toolbarId);
-
-                    //this.clearExternalContent(); // Esborrant
+                    this.src.gridData.grid.edit.apply();
 
                     dialog.onHide();
-                    // console.log("Desant al node el nou contingut", editor.getValue(), this.$field, this.$field.val());
 
                 }.bind(this);
 
                 let cancelCallback = function () {
                     this.setEditionState(false);
-                    toolbarManager.delete(toolbarId);
+                    this.src.gridData.grid.ignoreApply = false;
 
+                    this.src.gridData.grid.edit.apply();
 
                     // això només es crida si es passa un cancelCallback com argument al constructor.
                     if (this.args.cancelCallback) {
@@ -163,7 +145,7 @@ define([
                 }
 
 
-                let wiocclDialog = new Dialog({
+                let dialog = new Dialog({
                     title: 'Edició arbre',
                     // fields: context.editor.extra.wioccl_structure.fields,
                     style: 'height:100%; width:100%; top:0; left:0; position:absolute; max-width: 80%; max-height: 80%;',
@@ -207,8 +189,8 @@ define([
 
                 // context.wiocclDialog = wiocclDialog;
 
-                wiocclDialog.startup();
-                wiocclDialog.show();
+                dialog.startup();
+                dialog.show();
                 // wiocclDialog._updateFields(tree[0]);
                 // wiocclDialog._updateDetail(tree[0]);
 

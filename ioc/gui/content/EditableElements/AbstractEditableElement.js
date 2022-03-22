@@ -93,7 +93,7 @@ define([
                 this.emit('show', {});
             },
 
-            setEditionState: function (state) { // Alerta[Xavi] es un booleà o un enum?
+            setEditionState: function (state) { // Alerta[Xavi] es un booleà o un enum? <-- bolean
                 this.editionState = state;
             },
 

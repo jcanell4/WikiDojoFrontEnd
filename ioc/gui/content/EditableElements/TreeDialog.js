@@ -53,12 +53,6 @@ define([
                 context.destroyRecursive();
             });
 
-            $updateButton.on('click', function () {
-                // Alerta, el context d'execució en afegir el callback al objecte de
-                // configuració (pel principal és DojoWioccl)
-                context.updateCallback(context.editor);
-            });
-
             // Als subdialegs no s'ha de mostrar el botó d'eliminar nodes
             let $deleteButton = jQuery(this.deleteBtnNode);
 
@@ -68,13 +62,89 @@ define([
                 $deleteButton.prop('disabled', '');
             }
 
+
             $saveButton.on('click', function () {
-                context.saveCallback(context.editor);
+                console.log("S'ha clicat el botó save");
+                let returnValue;
+
+                let root;
+                console.log("** BEFORE? **");
+
+                // Alerta[Xavi] Funciona mitjançant un callback
+                context.model.getRoot(function(item) {
+                    root = item;
+                    // NOTA: Els childrens d'aquest root NO és corresponen amb els que es mostren!
+
+                    // Generem la jerarquia del store des del root, consultant la jerarquia real
+                    let storeTree = buildHierarchy(root);
+
+                    // aquesta funció realitza la consulta pels fills, els childs assignats als nodes
+                    // obtinguts amb store.get() no són correctes.
+                    function buildHierarchy(node) {
+                        let nouNode = JSON.parse(JSON.stringify(node));
+
+                        let queryChildren = context.store.query({parent: node.id});
+                        if (queryChildren.length>0) {
+                            nouNode.children = [];
+                        }
+
+                        for (let i=0; i<queryChildren.length; i++) {
+                            let child = buildHierarchy(queryChildren[i]);
+                            nouNode.children.push(child);
+                            child.parent = nouNode;
+                        }
+
+                        return nouNode;
+                    }
+
+                    // l'arrel ha de ser un objecte o un array
+                    let object;
+                    if (storeTree.type==='object') {
+                        object = buildObject(storeTree)
+                    } else if (storeTree.type==='array') {
+                        object = [buildObject(storeTree)];
+                    } else {
+                        console.error("Error: l'arrel ha de ser un objecte o un array:", storeTree);
+                    }
+
+                    returnValue = JSON.stringify(object);
+
+                    function buildObject(node) {
+                        let value;
+
+                        switch (node.type) {
+                            case 'object':
+                                value = {};
+                                for (let i=0; i<node.children.length; i++) {
+                                    value[node.children[i].key] = buildObject(node.children[i]);
+                                }
+                                break;
+
+                            case 'array':
+                                value = []
+                                for (let i=0; i<node.children.length; i++) {
+                                    value.push(buildObject(node.children[i]));
+                                }
+                                break;
+
+                            case 'value':
+                                value = node.value;
+                                break;
+                        }
+
+                        return value;
+                    }
+
+                });
+
+                context.saveCallback(returnValue);
             });
 
             let $insertPropertyButton = jQuery(this.insertPropertyBtnNode);
             let $insertElementButton = jQuery(this.insertElementBtnNode);
             let $insertDeleteButton = jQuery(this.deleteBtnNode);
+            let $moveUpButton = jQuery(this.moveUpBtnNode);
+            let $moveDownButton = jQuery(this.moveDownBtnNode);
 
             // Iniciem els botons per inserir elements wioccl a l'editor
             $insertPropertyButton.on('click', function () {
@@ -103,6 +173,78 @@ define([
                 context.removeItem(context.selected);
             });
 
+
+            $moveUpButton.on('click', function () {
+                console.log("TODO: moveUp");
+                context.moveBefore(context.selected);
+            });
+
+            $moveDownButton.on('click', function () {
+                console.log("TODO: moveDown");
+                context.moveAfter(context.selected);
+                //context.removeItem(context.selected);
+            });
+
+        },
+
+        moveBefore: function (item) {
+            let treeNodes = this.treeWidget.getNodesByItem(item);
+            let destinationItem = treeNodes[0].getPreviousSibling().item;
+
+            this._moveItem(item, destinationItem)
+        },
+
+        moveAfter: function (item) {
+            let treeNodes = this.treeWidget.getNodesByItem(item);
+            let destinationItem = treeNodes[0].getNextSibling().item;
+
+            this._moveItem(item, destinationItem)
+        },
+
+        // Mou el item1 a la posició de l'item 2  <-- movem l'item 2 abans de l'item 1?
+        _moveItem(item1, item2) {
+            let parent = this.getParentItem(item1);
+            let children = this.store.getChildren(parent);
+
+            console.log("switch item1", item1);
+            console.log("switch item2", item2);
+            console.log("switch parent", parent);
+            console.log("children", children);
+
+
+            // El parent és el mateix
+            // TODO: podem obtenir el index?? <-- cercquem entre els children del parent la correspondencia amb el
+            // id del item2
+            let index = 0;
+            for (let i = 0; i < children.length; i++) {
+                if (children[i].id === item2.id) {
+                    index = i;
+                    break;
+                }
+            }
+
+            console.warn("TODO: continuar aquí")
+            // TODO: Continuar aquí, el pasteItem no funciona, mirar com estem fent la inserció i depurar
+            // per veure si és possible o no afegir-lo com a índex
+            // Solució pitjor: provar a eliminar tots els fills i reafegir-los
+            /*
+            console.log("Inserint a l'index:", index);
+            this.model.pasteItem(item1, parent, parent, false, index)
+
+             */
+
+
+
+            this.updateFieldsAndButtons();
+
+            // Cal actualitzar les etiquetes
+            // TODO: no està funcionant!
+            this.fixChildNames(parent);
+            // console.log("Avisant al model: onChange", item1);
+            // console.log("Avisant al model: onChildrenChange", parent, this.store.getChildren(parent));
+            // this.model.onChange(item1);
+            // this.model.onChildrenChange(parent, parent.children);
+            //pasteItem: function(/*Item*/ childItem, /*Item*/ oldParentItem, /*Item*/ newParentItem, /*Boolean*/ bCopy, /*int?*/ insertIndex, /*Item*/ before){
         },
 
         updateFieldsAndButtons: function () {
@@ -111,14 +253,18 @@ define([
             let $insertPropertyButton = jQuery(this.insertPropertyBtnNode);
             let $insertElementButton = jQuery(this.insertElementBtnNode);
             let $insertDeleteButton = jQuery(this.deleteBtnNode);
+            let $moveUpButton = jQuery(this.moveUpBtnNode);
+            let $moveDownButton = jQuery(this.moveDownBtnNode);
 
 
             let disableInsertProperty = true;
             let disableInsertElement = true;
             let disableInsertDelete = true;
             let lock = false;
+            let disableMoveUp = true;
+            let disableMoveDown = true;
 
-            switch(this.selected.type) {
+            switch (this.selected.type) {
                 case 'value':
                     // console.log("Valor");
                     // Tots els botons desactivats
@@ -132,6 +278,10 @@ define([
                 case 'array':
                     // console.log("Array");
                     disableInsertElement = false;
+
+                    // Activem els botons moveUp i moveDown només per arrays
+                    // Només s'activa si hi ha previous i next respectivament
+
                     break;
             }
 
@@ -153,7 +303,6 @@ define([
             $insertElementButton.prop('disabled', disableInsertElement);
             $insertDeleteButton.prop('disabled', disableInsertDelete);
 
-
             // FIELDS
             let parentType = parent ? parent.type : '';
 
@@ -161,10 +310,13 @@ define([
             let propertyDisabled = true;
             let typeDisabled = false;
 
+            // TODO: ALERTA! Aquest switch NO es pot combinar amb l'anterior??
+            // O s'ha d'eliminar perquè no és correcte?? perquè mirem aqui el parent si
+            // desprès es fa un switch amb el seu tipus??
             switch (this.selected.type) {
                 case 'value':
 
-                    if (parentType==='object') {
+                    if (parentType === 'object') {
                         propertyDisabled = false;
                     }
 
@@ -177,6 +329,8 @@ define([
                         valueDisabled = false;
                     }
                     this.$label.html("Índex:");
+
+
                     break;
 
                 case 'object':
@@ -185,6 +339,7 @@ define([
                     // valueDisabled = false;
                     break;
             }
+
 
             // console.log("Updating, disabled:", propertyDisabled, typeDisabled, valueDisabled);
 
@@ -201,6 +356,15 @@ define([
                 case 'array':
                     this.$label.html("Índex:");
                     propertyDisabled = true;
+
+                    let treeNodes = this.treeWidget.getNodesByItem(this.selected);
+                    if (treeNodes[0].getPreviousSibling()) {
+                        disableMoveUp = false;
+                    }
+
+                    if (treeNodes[0].getNextSibling()) {
+                        disableMoveDown = false;
+                    }
                     break;
 
                 case 'object':
@@ -212,25 +376,30 @@ define([
             this.$property.prop('disabled', lock || propertyDisabled);
             this.$type.prop('disabled', lock || typeDisabled);
 
+
+            $moveUpButton.prop('disabled', disableMoveUp);
+            $moveDownButton.prop('disabled', disableMoveDown);
+
+
         },
 
 
-        getParentItem: function(item) {
+        getParentItem: function (item) {
             // console.error("item?", item);
             let id = this.store.getIdentity(item)
             // console.log("id?", id);
             let context = this;
-            let parent = this.store.query(function(element) {
+            let parent = this.store.query(function (element) {
                 let children = context.store.getChildren(element);
-                for (let i = 0; i< children.length; i++) {
-                    if (children[i].id === id){
+                for (let i = 0; i < children.length; i++) {
+                    if (children[i].id === id) {
                         return true;
                     }
                 }
                 return false;
             });
 
-            return parent.length>0? parent[0] : null;
+            return parent.length > 0 ? parent[0] : null;
         },
 
         show: function () {
@@ -454,7 +623,7 @@ define([
         store: null,
         mode: null,
 
-        addDataToStore: function(data, store, counter, parent) {
+        addDataToStore: function (data, store, counter, parent) {
             // console.log("addDataToStore", data);
 
             // En principi això només es crida per l'arrel que és un node dins d'un array
@@ -526,8 +695,8 @@ define([
                 },
                 // ALERTA[Xavi] Sobreescriptura amb la darrera versió a Github que inclou before per poder fer el
                 // seguiment
-                put: function(object, options){
-                    // console.log("Cridat nou put");
+                put: function (object, options) {
+                    console.log("Cridat nou put");
                     // summary:
                     //		Stores an object
                     // object: Object
@@ -546,43 +715,39 @@ define([
                     var previousIndex;
                     var eventType = id in index ? "update" : "add";
 
-                    if(eventType === "update"){
-                        if(options && options.overwrite === false){
+                    if (eventType === "update") {
+                        if (options && options.overwrite === false) {
                             throw new Error("Object already exists");
-                        }
-                        else{
+                        } else {
                             previousIndex = index[id];
                             defaultDestination = previousIndex;
                         }
                     }
                     // console.log("previous index", previousIndex);
 
-                    if(options && "before" in options){
+                    if (options && "before" in options) {
                         console.log("Before!");
-                        if(options.before == null){
+                        if (options.before == null) {
                             newIndex = data.length;
-                            if(eventType === "update"){
+                            if (eventType === "update") {
                                 --newIndex;
                             }
-                        }
-                        else{
+                        } else {
                             newIndex = index[this.getIdentity(options.before)];
                             console.log("new index", newIndex);
                             // Account for the removed item
-                            if(previousIndex < newIndex){
+                            if (previousIndex < newIndex) {
                                 --newIndex;
                             }
                         }
-                    }
-                    else{
+                    } else {
                         newIndex = defaultDestination;
                     }
 
-                    if(newIndex === previousIndex){
+                    if (newIndex === previousIndex) {
                         data[newIndex] = object;
-                    }
-                    else{
-                        if(previousIndex !== undefined){
+                    } else {
+                        if (previousIndex !== undefined) {
                             console.log("Canviant el data")
                             data.splice(previousIndex, 1);
                         }
@@ -593,14 +758,14 @@ define([
 
                     return id;
                 },
-                _rebuildIndex: function(startIndex){
+                _rebuildIndex: function (startIndex) {
                     var data = this.data;
                     var dataLength = data.length;
                     var i;
 
                     startIndex = startIndex || 0;
 
-                    for(i = startIndex; i < dataLength; i++){
+                    for (i = startIndex; i < dataLength; i++) {
                         // console.log("Canviant ordre de " + data[i][this.idProperty] + " a " +i);
                         this.index[data[i][this.idProperty]] = i;
                     }
@@ -633,7 +798,47 @@ define([
                     // PROVA: fer un put al store després de modificar el valor
                     // return true;
                     return item.type !== 'value';
-                }
+                },
+                // ALERTA[Xavi] Això no funciona, no es pot modificar el store sobre els items perquè
+                // sembla que no estan lligats els items amb el store, no s'actualitzen les referències a l'arbre
+                /*
+                pasteItem: function (child, oldParent, newParent, bCopy, insertIndex) {
+                    // make this store available in all the inner functions
+                    //var store = store;
+                    // get the full oldParent object
+
+                    // Agafem el parent actualitzat. Determinar si és necessari
+                    oldParent = store.get(oldParent.id);
+                    newParent = store.get(newParent.id);
+
+                    // get the oldParent's children and scan through it find the child object
+                    var oldChildren = store.getChildren(oldParent);
+                    // això forma part de ES6
+                    oldChildren.some(function (oldChild, i) {
+                        //dojo.some(oldChildren, function (oldChild, i) {
+                        // it matches if the ids match
+                        if (oldChild.id == child.id) {
+                            // found the child, now remove it from the children array
+                            oldChildren.splice(i, 1);
+                            return true; // done, break out of the some() loop
+                        }
+                    });
+                    // do a put to save the oldParent with the modified childrens array
+                    store.put(oldParent, {overwrite: true});
+                    // now insert the child object into the new parent,
+                    // using the insertIndex if available
+                    newParent.children.splice(insertIndex || 0, 0, child);
+                    // save changes to the newParent
+                    store.put(newParent, {overwrite: true});
+
+                    // TODO: Alerta, el problema pot ser que no s'afegeix el node com a parent a les options del put
+                    // ni el oberwrie
+
+                    // Actualitzem l'arbre cridant al OnChange
+                    // this.onChange(child);
+                    this.onChange(newParent);
+                    this.onChildrenChange(newParent, store.getChildren(newParent));
+                }*/
 
             });
 
@@ -643,16 +848,15 @@ define([
             this.addDataToStore(storeData, store, {count: 0}, null);
 
 
-
             let context = this;
 
             // let $value = jQuery(this.valueNode);
             // let $property = jQuery(this.propertyNode);
             // let $type = jQuery(this.typeNode);
 
-            this.$value.on('input change', function() {
+            this.$value.on('input change', function () {
                 // console.log("Canvis al valor");
-                if (context.selected){
+                if (context.selected) {
                     // TODO: compte! en el cas dels elements dels arrays el nom del node és el valor!
 
                     let parent = context.getParentItem(context.selected);
@@ -671,9 +875,9 @@ define([
                 }
             })
 
-            this.$property.on('input change', function() {
+            this.$property.on('input change', function () {
                 console.log("Canvis al nom de la propietat");
-                if (context.selected){
+                if (context.selected) {
 
                     let parent = context.getParentItem(context.selected);
                     let item = JSON.parse(JSON.stringify(context.selected));
@@ -693,11 +897,11 @@ define([
                 }
             })
 
-            this.$type.on('change', function() {
+            this.$type.on('change', function () {
                 // console.log("Canvis al tipus");
                 let newValue = jQuery(this).val();
 
-                if (context.selected){
+                if (context.selected) {
 
                     if (context.selected.type === newValue) {
                         return;
@@ -754,7 +958,7 @@ define([
                 model: this.model,
                 fields: this.fields,
                 onOpenClick: true,
-                showRoot: false,
+                showRoot: true,
                 onLoad: function () {
                     // dom.byId('image').src = '../resources/images/root.jpg';
                 },
@@ -776,7 +980,7 @@ define([
             this.treeWidget.startup();
         },
 
-        selectItem: function(item) {
+        selectItem: function (item) {
             this.select(item);
 
             this.$value.val(item.value);
@@ -784,7 +988,7 @@ define([
             this.$type.val(item.type);
         },
 
-        discardChildren: function(item) {
+        discardChildren: function (item) {
             console.log("Decartant els fills de ", item);
             for (let child of this.store.getChildren(item)) {
                 this.discardChildren(child);
@@ -792,12 +996,12 @@ define([
             }
         },
 
-        removeItem: function(item) {
-            console.log("Remove item", item);
+        removeItem: function (item) {
+            // console.log("Remove item", item);
 
             // Probem a seleccionar un sibling
             let treeNodes = this.treeWidget.getNodesByItem(item);
-            let node = treeNodes[0].getPreviousSibling()? treeNodes[0].getPreviousSibling() : treeNodes[0].getNextSibling();
+            let node = treeNodes[0].getPreviousSibling() ? treeNodes[0].getPreviousSibling() : treeNodes[0].getNextSibling();
 
             if (!node) {
                 // Seleccionem el parent
@@ -807,16 +1011,14 @@ define([
                 node = parentTreeNodes[0];
             }
 
-            this.selectNode(node);
-
-
             // ALERTA! El remove és fa amb la identitat i no de l'item
             this.store.remove(this.store.getIdentity(item));
             this.model.onDelete(item);
 
+            this.selectNode(node);
         },
 
-        selectNode: function(node) {
+        selectNode: function (node) {
             let path = node.getTreePath();
             this.treeWidget.set('path', path);
             this.selectItem(node.item);
@@ -827,7 +1029,7 @@ define([
             // console.log("** Cercant els fills de **", item);
             let children = this.store.getChildren(item);
 
-            for (let i= 0; i<children.length; i++) {
+            for (let i = 0; i < children.length; i++) {
                 let child = children[i];
                 this.fixChildNames(child);
 
@@ -835,13 +1037,13 @@ define([
                 if (item.type === 'array') {
                     child.index = i;
                 } else {
-                    delete(child.index);
+                    delete (child.index);
                 }
 
-                if (item.type==='array' && child.type!=='value') {
+                if (item.type === 'array' && (child.type !== 'value' || child.value === undefined)) {
                     // console.log("assignant index", i);
                     child.name = i;
-                } else if (item.type==='object') {
+                } else if (item.type === 'object') {
                     // console.log("assignant propietat", child.key);
                     child.name = child.key;
                 } else {
@@ -855,7 +1057,7 @@ define([
 
         },
 
-        updateItem: function(item, parent) {
+        updateItem: function (item, parent) {
             this.store.put(item, {
                 parent: parent,
                 overwrite: true
@@ -874,12 +1076,12 @@ define([
             this.updateFieldsAndButtons();
         },
 
-        addItem: function(item, parent) {
+        addItem: function (item, parent) {
 
             // Si és un array el nom serà l'index de l'array
             let childrenCount;
             if (parent.type === 'array' && item.value !== 'value') {
-                childrenCount =this.store.getChildren(parent).length;
+                childrenCount = this.store.getChildren(parent).length;
                 item.index = childrenCount;
             }
 
