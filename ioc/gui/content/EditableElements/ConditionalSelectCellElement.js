@@ -85,6 +85,7 @@ define([
                 //     "validationRegex": ""
 
                 var config = this.src.gridData.cell.config;
+                console.log("Config", config);
                 var fieldSource = JSON.parse(this.src.datasource.getValue(config.fieldsource));
                 var fieldOwn = JSON.parse(this.src.datasource.getValue(this.src.gridData.grid.sourceId));
                 var rowOwn = fieldOwn[this.src.gridData.rowIndex];
