@@ -4,7 +4,7 @@ define([
 ], function (Timer, Request) {
 
     var request = new Request();
-    var timeout = 20 * 60 * 1000;
+    var timeout = 60 * 60 * 1000;
 
     initTimer = function(params) {
         this.timer = {
@@ -25,8 +25,9 @@ define([
     getQueryString = function(data) {
         return "moodleToken="+data;
     };
-    
+
     var ret = function(params) {
+        _doRefresh(params);
         initTimer(params);
     };
 
