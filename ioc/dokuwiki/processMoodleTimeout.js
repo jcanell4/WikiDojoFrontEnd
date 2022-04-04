@@ -27,7 +27,6 @@ define([
     };
 
     var ret = function(params) {
-        _doRefresh(params);
         initTimer(params);
     };
 
