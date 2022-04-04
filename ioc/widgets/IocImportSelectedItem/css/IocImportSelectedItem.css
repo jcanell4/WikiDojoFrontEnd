@@ -8,21 +8,8 @@
     background-color: #eee;
 }
 
-.ioc-selected-item div.entry {
-    position: relative;
-    padding: 0;
-    margin: 5px;
-    display: block;
-    color: grey;
-}
-
-.ioc-selected-item .query {
-    border: none;
-    font-size: 14px;
-}
-
 .ioc-selected-item span {
-    margin: 5px;
+    margin: 8px;
     display: block;
     font-size: 14px;
     color: #555555;
