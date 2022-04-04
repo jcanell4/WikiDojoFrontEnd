@@ -64,11 +64,11 @@ define([
 
 
             $saveButton.on('click', function () {
-                console.log("S'ha clicat el botó save");
+                // console.log("S'ha clicat el botó save");
                 let returnValue;
 
                 let root;
-                console.log("** BEFORE? **");
+                // console.log("** BEFORE? **");
 
                 // Alerta[Xavi] Funciona mitjançant un callback (coses de Dojo)
                 context.model.getRoot(function(item) {
@@ -114,7 +114,7 @@ define([
 
                         switch (node.type) {
                             case 'object':
-                                console.log("Node Object:", node);
+                                // console.log("Node Object:", node);
                                 value = {};
                                 for (let i=0; i<node.children.length; i++) {
                                     value[node.children[i].key] = buildObject(node.children[i]);
@@ -129,7 +129,7 @@ define([
                                 break;
 
                             case 'value':
-                                console.log("Node Value:", node);
+                                // console.log("Node Value:", node);
                                 value = node.value ? node.value : "";
                                 break;
                         }
@@ -152,21 +152,18 @@ define([
 
             // Iniciem els botons per inserir elements wioccl a l'editor
             $insertPropertyButton.on('click', function () {
-                // ALERTA! Igual que a property canviant el nom de l'element
                 let nameCounter = 0;
 
-
-
+                // Els children del selected no són vàlids, no s'actualitcen<-- provant a actualitzar-lo
+                let children = context.selected.children;
 
                 let ready = true;
 
                 do {
                     ready = true;
 
-                    for (let child of context.selected.children) {
-                        console.log("comprovant propietat: ", "nova_propietat" + nameCounter, " amb ", child);
+                    for (let child of children) {
                         if (child.key === "nova_propietat" + nameCounter) {
-                            console.log("propietat existent, breaking")
                             ready = false;
                             break;
                         }
@@ -192,10 +189,10 @@ define([
 
                 // Cal actualitzar el valor de context.selected perquè en afegir el child
                 // ja no conté la mateixa informació que el store
-                console.log("Context:", context.selected);
-                // no estroba al store!
-                console.log("Store", context.store.query({id: context.selected.id})[0]);
+                // console.log("Store", context.store.query({id: context.selected.id})[0]);
 
+                // Actualitzem els fills del seleccionat
+                context.selected.children = context.store.query({parent: context.selected.id});
 
 
             });
@@ -1021,7 +1018,7 @@ define([
                 },
 
                 onClick: function (item) {
-                    console.log("item clicat:", item);
+                    // console.log("item clicat:", item);
 
                     // TODO: revisar això del selected, ficar en el context.select(item)?
                     context.selectItem(item);
@@ -1162,9 +1159,9 @@ define([
             // console.log(treeNodes[0]);
             treeNodes[0].expand();
 
-            console.log("selected?", this.selected);
+            // console.log("selected?", this.selected);
             if (this.selected.key === 'root') {
-                console.log("Seleccionant el nou item");
+                // console.log("Seleccionant el nou item");
                 // Seleccionem el nou node craat
                 let node = this.treeWidget.getNodesByItem(item)[0];
                 this.selectNode(node);
