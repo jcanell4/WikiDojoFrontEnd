@@ -23,7 +23,7 @@ define([
             // TEST: herència, sense cap canvi, ha de funcionar normalment.
             _zoom: function (event) {
                 event.preventDefault();
-                console.log("Set edition state true!");
+                // console.log("Set edition state true!");
                 this.setEditionState(true);
 
                 var fieldId = this.$field.attr('data-form-editor-button') || Date.now();
@@ -33,6 +33,12 @@ define([
 
 
                 let saveCallback = function (value) {
+
+                    // Si el valor retornat és un objecte buit el reemplacem amb una cadena buida
+
+                    if (value === "{}"){
+                        value = "";
+                    }
 
                     if (this.args.saveCallback) {
                         this.args.saveCallback(value);
@@ -141,7 +147,8 @@ define([
                     value = JSON.parse(this.$field.val());
                     // console.log("Value parsejat amb èxit:", value);
                 } catch {
-                    value = {"error":"no s'ha pogut fer el parse"};
+                    // value = {"error":"no s'ha pogut fer el parse"};
+                    value = {};
                 }
 
 
