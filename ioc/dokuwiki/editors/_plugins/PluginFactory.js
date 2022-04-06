@@ -530,7 +530,8 @@ define([
         'ImagePreview': {
             type: 'ImagePreview',
             title: localization["ioc-image-preview"],
-            url: 'lib/exe/fetch.php'
+            url: 'lib/exe/fetch.php',
+            allowedTypes: ['iocgif'] // Alerta! específic per aquest plugin
         },
 
         'NewContent': {

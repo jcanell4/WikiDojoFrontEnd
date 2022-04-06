@@ -11,6 +11,7 @@ define([
 
         init: function (args) {
             this.url = args.url;
+            this.allowedTypes = args.allowedTypes;
             this.addEditorListener('change, changeCursor', this.process.bind(this));
             this._update = _.debounce(this._update, 1000).bind(this);
         },
@@ -38,6 +39,7 @@ define([
             let tokens = [];
             let token;
 
+
             let firstIndex, lastIndex;
 
             while (token = pattern.exec(line)) {
@@ -47,13 +49,38 @@ define([
                     startIndex: token.index,
                     endIndex: token.index + token[0].length - 1
                 }
-                tokens.push(newToken)
+
+                // Comprovem si hi ha tipus i si el tipus és vàlid
+                let typePattern = new RegExp("(.*?)\>.*");
+
+                let type = typePattern.exec(newToken.value);
+                type = type && type.length>0 ? type[1] : false;
+
+
+
+                // Ignorem els tipus no permesos, per exemple els vídeos
+                if (type && !this.allowedTypes.includes(type)) {
+                    // console.log("Tipus no permés");
+                    continue;
+                }
+
+
+                if (type) {
+                    // Ajustem el valor del token per excloure l'indicador del type
+                    newToken.value = newToken.value.substr(type.length+1);
+                    // console.log("Valor retallat:", newToken.value);
+                }
+
+
 
                 if (firstIndex === undefined) {
                     firstIndex = newToken.startIndex;
                 }
 
                 lastIndex = newToken.endIndex;
+
+                tokens.push(newToken)
+
             }
 
             // cas 1, no hi ha tokens així que no hi ha cap imatge
@@ -98,7 +125,7 @@ define([
 
             // això és el que retornava la petició, però ficant directament la URL
             let url = DOKU_BASE + this.url + "?media=" + imageName;
-            console.log("url creada:", url);
+            // console.log("url creada:", url);
             let template = '<div ${attributes}><img src="' + (encodeURI(url)) + '"/ style="max-width:'+MAX_WIDTH+'"></div>';
             this.render(template);
         },
