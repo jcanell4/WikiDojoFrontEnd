@@ -32,7 +32,6 @@ define([
 
             var context = this;
 
-
             jQuery(this.textbox).on('change input', function (e) {
 
                 // Validem que es tracta d'un jason correcte
@@ -42,7 +41,7 @@ define([
                 try {
                     JSON.parse(text);
                     validated = true;
-                } catch {
+                }catch(e) {
                     validated = false;
                 }
 
@@ -60,8 +59,7 @@ define([
 
             });
 
-
-        },
+        }
 
     });
 });

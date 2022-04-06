@@ -140,7 +140,7 @@ define([
                 try {
                     value = JSON.parse(this.$field.val());
                     // console.log("Value parsejat amb èxit:", value);
-                } catch {
+                }catch(e) {
                     value = {"error":"no s'ha pogut fer el parse"};
                 }
 
@@ -167,7 +167,7 @@ define([
                     // tree: tree,
                     // refId: refId,
                     saveCallback: saveCallback,
-                    cancelCallback: cancelCallback,
+                    cancelCallback: cancelCallback
                     // updateCallback: _update,
                     // enabledDelete: true,
 
@@ -199,8 +199,7 @@ define([
 
                 //this.context.setFireEventHandler('post_cancel_project', cancelCallback);
 
-
-            },
+            }
 
         });
 
