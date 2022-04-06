@@ -472,7 +472,7 @@ define([
             };
 
             let aux = [this.dataToNode(clonedData, 'root', counter)];
-            // console.log(aux);
+            // console.log("Dades generades per l'arbre:", aux);
 
             return aux;
         },
@@ -509,6 +509,14 @@ define([
                         }
                         if (!value.children) {
                             value.children = [];
+                        }
+
+                        // Assignem com a nom de cada element el seu index (utilitzat només la primera vegada que
+                        // es dibuixa el mapa
+                        for (let i=0; i<value.children.length; i++) {
+                            value.children[i].index = i;
+                            value.children[i].name = typeof value.children[i].value === 'string' && value.children[i].value.length > 0
+                                ? value.children[i].value : i;
                         }
 
                         // Afegim els nodes com a fills, però sense atribut children
@@ -1094,7 +1102,7 @@ define([
                     delete (child.index);
                 }
 
-                if (item.type === 'array' && (child.type !== 'value' || child.value === undefined)) {
+                if (item.type === 'array' && (child.value === undefined || child.type !== 'value' || child.value ==="")) {
                     // console.log("assignant index", i);
                     child.name = i;
                 } else if (item.type === 'object') {
