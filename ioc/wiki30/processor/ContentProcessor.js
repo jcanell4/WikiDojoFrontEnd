@@ -39,11 +39,13 @@ define([
                     clearDraft = false,
                     id = value.id;
 
-                if (value.discard_changes) {
+                if (! this._getLoginState()) {
+                    confirmation = false;
+                }else if (value.discard_changes) {
                     confirmation = true;
                 } else if (changesManager.isChanged(id)) {
                     confirmation = dispatcher.discardChanges();
-                    clearDraft=true;
+                    clearDraft = true;
                 } else {
                     confirmation = true;
                 }
@@ -55,14 +57,14 @@ define([
                         if (value.hasDraft){
                             //console.log("Eliminat esborrany");
                             dispatcher.getEventManager().fireEvent(
-                                   dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
-                                       id: value.id,
-                                       dataToSend: {
-                                           id: value.ns,
-                                           type:'full'
-                                       },
-                                       standbyId: dispatcher.containerNodeId
-                                   }
+                                dispatcher.getEventManager().eventName.REMOVE_DRAFT, {
+                                    id: value.id,
+                                    dataToSend: {
+                                        id: value.ns,
+                                        type:'full'
+                                    },
+                                    standbyId: dispatcher.containerNodeId
+                               }
                            );
                         }
                     }
@@ -85,6 +87,10 @@ define([
                 this.addContent(content, dispatcher, container);
 
                 this.inherited("process", args);
+            },
+
+            _getLoginState: function() {
+                return JSON.parse(localStorage.login).login;
             },
 
             /**
