@@ -546,7 +546,8 @@ define([
                             'IocIncludePageButton',
                             'IocIncludeSectionButton',
                             'DocumentPreviewButton',
-                            'LatexPreview',
+                            'LatexPreview', // TODO: Reactivar!
+                            'ImagePreview',
                             'TestReadonlyPlugin',
                             'TableEditor',
                             'TableEditorMultiline',

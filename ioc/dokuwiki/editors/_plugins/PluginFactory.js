@@ -50,6 +50,7 @@ define([
     'ioc/dokuwiki/editors/AceManager/plugins/AceEnableWrapper',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceLatexPreview',
+    'ioc/dokuwiki/editors/AceManager/plugins/AceMediaPreview',
 
     'ioc/dokuwiki/editors/AceManager/plugins/AceReadonlyBlocksToggle', // Test readonly
     'ioc/dokuwiki/editors/AceManager/plugins/AceTestReadonlyPlugin', // Test readonly
@@ -94,7 +95,9 @@ define([
              DojoQuiz,
              DojoWioccl,
              DojoReadonlyToggle,
-             AceEnableACE, AceEnableWrapper, AceLatexPreview, AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
+             AceEnableACE, AceEnableWrapper,
+             AceLatexPreview, AceMediaPreview,
+             AceReadonlyBlocksToggle, AceTestReadonlyPlugin,
              AceTableEditor,
              AceVideoPlugin,
              AceGifPlugin,
@@ -126,6 +129,7 @@ define([
             'EnableACE': AceEnableACE,
             'EnableWrapper': AceEnableWrapper,
             'LatexPreview': AceLatexPreview,
+            'ImagePreview': AceMediaPreview,
             'CancelDialogEditorButton': AceFireDojoEvent,
             'SaveDialogEditorButton': AceFireDojoEvent,
             'TestReadonlyPlugin': AceTestReadonlyPlugin,
@@ -519,7 +523,14 @@ define([
 
         'LatexPreview': {
             type: 'LatexPreview',
-            title: localization["latex-preview"],
+            title: localization["ioc-latex-preview"],
+            url: 'lib/plugins/aceeditor/preview.php'
+        },
+
+        'ImagePreview': {
+            type: 'ImagePreview',
+            title: localization["ioc-image-preview"],
+            url: 'lib/exe/fetch.php'
         },
 
         'NewContent': {
