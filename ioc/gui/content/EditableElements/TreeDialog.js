@@ -64,13 +64,13 @@ define([
 
 
             $saveButton.on('click', function () {
-                console.log("S'ha clicat el botó save");
+                // console.log("S'ha clicat el botó save");
                 let returnValue;
 
                 let root;
-                console.log("** BEFORE? **");
+                // console.log("** BEFORE? **");
 
-                // Alerta[Xavi] Funciona mitjançant un callback
+                // Alerta[Xavi] Funciona mitjançant un callback (coses de Dojo)
                 context.model.getRoot(function(item) {
                     root = item;
                     // NOTA: Els childrens d'aquest root NO és corresponen amb els que es mostren!
@@ -114,6 +114,7 @@ define([
 
                         switch (node.type) {
                             case 'object':
+                                // console.log("Node Object:", node);
                                 value = {};
                                 for (let i=0; i<node.children.length; i++) {
                                     value[node.children[i].key] = buildObject(node.children[i]);
@@ -128,7 +129,8 @@ define([
                                 break;
 
                             case 'value':
-                                value = node.value;
+                                // console.log("Node Value:", node);
+                                value = node.value ? node.value : "";
                                 break;
                         }
 
@@ -146,17 +148,53 @@ define([
             let $moveUpButton = jQuery(this.moveUpBtnNode);
             let $moveDownButton = jQuery(this.moveDownBtnNode);
 
+
+
             // Iniciem els botons per inserir elements wioccl a l'editor
             $insertPropertyButton.on('click', function () {
-                // ALERTA! Igual que a property canviant el nom de l'element
+                let nameCounter = 0;
+
+                // Els children del selected no són vàlids, no s'actualitcen<-- provant a actualitzar-lo
+                let children = context.selected.children;
+
+                let ready = true;
+
+                do {
+                    ready = true;
+
+                    for (let child of children) {
+                        if (child.key === "nova_propietat" + nameCounter) {
+                            ready = false;
+                            break;
+                        }
+                    }
+
+                    if (!ready) {
+                        nameCounter++;
+                    }
+
+
+                } while (!ready);
+
+
+
                 var childItem = {
-                    name: "nova_propietat",
+                    name: "nova_propietat" + nameCounter,
                     id: Math.random(),
-                    key: "nova_propietat",
+                    key: "nova_propietat" + nameCounter,
                     type: 'value'
                 };
 
                 context.addItem(childItem, context.selected);
+
+                // Cal actualitzar el valor de context.selected perquè en afegir el child
+                // ja no conté la mateixa informació que el store
+                // console.log("Store", context.store.query({id: context.selected.id})[0]);
+
+                // Actualitzem els fills del seleccionat
+                context.selected.children = context.store.query({parent: context.selected.id});
+
+
             });
 
             $insertElementButton.on('click', function () {
@@ -372,6 +410,8 @@ define([
                     break;
             }
 
+            // console.log("property està disabled??", propertyDisabled);
+
             this.$value.prop('disabled', lock || valueDisabled);
             this.$property.prop('disabled', lock || propertyDisabled);
             this.$type.prop('disabled', lock || typeDisabled);
@@ -432,7 +472,7 @@ define([
             };
 
             let aux = [this.dataToNode(clonedData, 'root', counter)];
-            // console.log(aux);
+            // console.log("Dades generades per l'arbre:", aux);
 
             return aux;
         },
@@ -464,10 +504,24 @@ define([
                             name: i,
                             type: 'array',
                             parent: parent,
+                            children: this.dataToNode(clonedData[i], i, counter, id)
                             // children: this.dataToNode(clonedData[i], i, counter, id)
                         }
+                        if (!value.children) {
+                            value.children = [];
+                        }
+
+                        // Assignem com a nom de cada element el seu index (utilitzat només la primera vegada que
+                        // es dibuixa el mapa
+                        for (let i=0; i<value.children.length; i++) {
+                            value.children[i].index = i;
+                            value.children[i].name = typeof value.children[i].value === 'string' && value.children[i].value.length > 0
+                                ? value.children[i].value : i;
+                        }
+
                         // Afegim els nodes com a fills, però sense atribut children
-                        this.dataToNode(clonedData[i], i, counter, id)
+                        // <-- perquè ho vam posar així??
+                        // this.dataToNode(clonedData[i], i, counter, id)
                     } else {
                         value = this.dataToNode(clonedData[i], i, counter, counter.count);
                     }
@@ -644,6 +698,8 @@ define([
                 parent: parent
             });
 
+            // console.log("Afegint data al store:", data.type, data.children);
+
             switch (data.type) {
                 case 'array':
                 case 'object':
@@ -696,7 +752,7 @@ define([
                 // ALERTA[Xavi] Sobreescriptura amb la darrera versió a Github que inclou before per poder fer el
                 // seguiment
                 put: function (object, options) {
-                    console.log("Cridat nou put");
+                    // console.log("Cridat nou put");
                     // summary:
                     //		Stores an object
                     // object: Object
@@ -863,6 +919,7 @@ define([
                     let item = JSON.parse(JSON.stringify(context.selected));
                     item.value = jQuery(this).val();
 
+
                     // if (parent.type==='object') {
                     //     $property.val(item.value);
                     //     item.name = item.value;
@@ -876,7 +933,7 @@ define([
             })
 
             this.$property.on('input change', function () {
-                console.log("Canvis al nom de la propietat");
+                // console.log("Canvis al nom de la propietat");
                 if (context.selected) {
 
                     let parent = context.getParentItem(context.selected);
@@ -939,6 +996,11 @@ define([
                     } else {
                         context.selected.value = "";
                         context.$value.val("");
+
+                        // S'ha canviat el tipus a object o array
+                        if (!context.selected.children) {
+                            context.selected.children = [];
+                        }
                     }
 
                     let item = JSON.parse(JSON.stringify(context.selected));
@@ -964,7 +1026,7 @@ define([
                 },
 
                 onClick: function (item) {
-                    console.log("item clicat:", item);
+                    // console.log("item clicat:", item);
 
                     // TODO: revisar això del selected, ficar en el context.select(item)?
                     context.selectItem(item);
@@ -1040,7 +1102,7 @@ define([
                     delete (child.index);
                 }
 
-                if (item.type === 'array' && (child.type !== 'value' || child.value === undefined)) {
+                if (item.type === 'array' && (child.value === undefined || child.type !== 'value' || child.value ==="")) {
                     // console.log("assignant index", i);
                     child.name = i;
                 } else if (item.type === 'object') {
@@ -1105,9 +1167,9 @@ define([
             // console.log(treeNodes[0]);
             treeNodes[0].expand();
 
-            console.log("selected?", this.selected);
+            // console.log("selected?", this.selected);
             if (this.selected.key === 'root') {
-                console.log("Seleccionant el nou item");
+                // console.log("Seleccionant el nou item");
                 // Seleccionem el nou node craat
                 let node = this.treeWidget.getNodesByItem(item)[0];
                 this.selectNode(node);

@@ -40,6 +40,7 @@ define({ root:
 
         // Latex Preview Plugin
         'ioc-latex-preview': 'Latex preview',
+        'ioc-image-preview': 'Image preview',
 
         // Botons Estils IOC
         'ioc-new-content-button': 'New content',

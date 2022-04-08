@@ -41,6 +41,7 @@ define(
 
         // Latex Preview Plugin
             'ioc-latex-preview': 'Previsualització Latex',
+            'ioc-image-preview': 'Previsualització imatge',
 
     // Botons Estils IOC
     'ioc-new-content-button'

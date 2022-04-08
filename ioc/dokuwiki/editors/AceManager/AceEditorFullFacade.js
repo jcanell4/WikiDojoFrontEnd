@@ -246,6 +246,9 @@ define([
             return this.editor.getCurrentRow();
         },
 
+        getRow: function(row) {
+            return this.editor.get_line(row);
+        },
 
         clearSelection: function() {
             this.editor.clearSelection();
