@@ -91,6 +91,7 @@ define([
                         for (let i = 0; i < queryChildren.length; i++) {
                             let child = buildHierarchy(queryChildren[i]);
                             nouNode.children.push(child);
+                            nouNode.children.sort((a,b) => a.order-b.order);
                             child.parent = nouNode;
                         }
 
@@ -211,14 +212,11 @@ define([
 
 
             $moveUpButton.on('click', function () {
-                console.log("TODO: moveUp");
                 context.moveBefore(context.selected);
             });
 
             $moveDownButton.on('click', function () {
-                console.log("TODO: moveDown");
                 context.moveAfter(context.selected);
-                //context.removeItem(context.selected);
             });
 
         },
@@ -239,43 +237,15 @@ define([
 
         // Mou el item1 a la posició de l'item 2  <-- movem l'item 2 abans de l'item 1?
         _moveItem(item1, item2) {
-            console.log("moveItem", item1, item2);
+            // console.log("moveItem", item1, item2);
             let parent = this.getParentItem(item1);
-            let children = this.store.getChildren(parent);
+            // let children = this.store.getChildren(parent);
 
             let oldOrder = item1.order;
             item1.order = item2.order;
             item2.order = oldOrder;
 
-
-            this.store.put(item1, {overwrite: true, parent: parent});
-            this.store.put(item2, {overwrite: true, parent: parent});
-
-
-
-            // console.log("switch item1", item1);
-            // console.log("switch item2", item2);
-            // console.log("switch parent", parent);
-            // console.log("children", children);
-
-            // console.log(this.treeWidget.getNodesByItem(item1));
-            // console.log(this.treeWidget.getNodesByItem(item1)[0].domNode);
-            // console.log(this.treeWidget.getNodesByItem(item2));
-            // console.log(this.treeWidget.getNodesByItem(item2)[0].domNode);
-
-            // això no està funcionant
-
-            //jQuery(this.treeWidget.getNodesByItem(item2)[0].domNode).before(this.treeWidget.getNodesByItem(item1)[0].domNode);
-
-
             parent.children.sort( (a, b)  => a.order - b.order);
-
-
-            console.log("Com ha quedat el parent ordenat?", parent.children);
-            console.log("Com es recuperen els childs del parent", this.store.getChildren(parent));
-
-            // console.log("this.store", this.store);
-            console.log("this.memory (ABANS)", this.memoryStore.data);
 
             // Provem a modificar directament el memoryStore
             let data1;
@@ -299,64 +269,28 @@ define([
                 }
             }
 
-            console.log(data1, index1, data2, index2);
+            // console.log(data1, index1, data2, index2);
             this.memoryStore.data[index1] = data2;
             this.memoryStore.data[index2] = data1;
 
-            console.log("Metodes Hi ha atributs 1?", this.memoryStore);
-            // console.log("Hi ha atributs 2?", this.memoryStore.getAttributes(item2));
+            this.updateFieldsAndButtons();
 
-            // console.log("parent:", parent);
+            // Quan es mou un element
+            // PROVES:
 
+            // No te cap efecte
             // this.store.put(parent, {
             //     id: parent.id,
             //     parent: this.getParentItem(parent)
             // });
 
-            // this.store._rebuildIndex(parent.id);
-
-            // console.log("parent.children", parent.children);
-
-
-            // alert("Order antes?");
-            console.log("this.memory AFTER", this.memoryStore.data);
-
-            // El parent és el mateix
-            // TODO: podem obtenir el index?? <-- cercquem entre els children del parent la correspondencia amb el
-            // id del item2
-            // let index = 0;
-            // for (let i = 0; i < children.length; i++) {
-            //     if (children[i].id === item2.id) {
-            //         index = i;
-            //         break;
-            //     }
-            // }
-
-            console.warn("TODO: comprovar si ha canviat l'ordre")
-            // TODO: Continuar aquí, el pasteItem no funciona, mirar com estem fent la inserció i depurar
-            // per veure si és possible o no afegir-lo com a índex
-            // Solució pitjor: provar a eliminar tots els fills i reafegir-los
-
-            // console.log("Inserint a l'index:", index);
-            // this.model.pasteItem(item1, parent, parent, false, index)
-
-
-
-            console.log("parent");
-
-            this.updateFieldsAndButtons();
-
             // Cal actualitzar les etiquetes
             // TODO: no està funcionant!
             this.fixChildNames(parent);
-            // this.treeWidget.sortTree("asc");
-            // console.log("Avisant al model: onChange", item1);
-            // console.log("Avisant al model: onChildrenChange", parent, this.store.getChildren(parent));
+
             this.model.onChange(item1);
             this.model.onChange(item2);
-            // this.model.onChange(parent);
             this.model.onChildrenChange(parent, parent.children);
-            // pasteItem: function(/*Item*/ childItem, /*Item*/ oldParentItem, /*Item*/ newParentItem, /*Boolean*/ bCopy, /*int?*/ insertIndex, /*Item*/ before){
         },
 
         updateFieldsAndButtons: function () {
@@ -557,8 +491,6 @@ define([
             // ha de ser un array
             aux = [aux];
 
-            console.log("Dades generades per l'arbre:", aux);
-
             return aux;
         },
 
@@ -610,12 +542,11 @@ define([
                         // this.dataToNode(clonedData[i], i, counter, id)
                     } else {
                         value = this.dataToNode(clonedData[i], i, counter, counter.count);
-                        console.log("No era un array, valor retornat:", value);
                         value.order = i;
-                        // Assignem l'ordre als children
 
                     }
 
+                    // Assignem l'ordre als children
                     if (value.children) {
                         for (let j = 0; j < value.children.length; j++) {
                             value.children[j].order = j;
@@ -834,9 +765,9 @@ define([
 
 
             let store = new Memory({
-                // Aquest mostra els nous nodes afegits amb put
+                // Aquest mostra els nous nodes afegits amb put. ALERTA! per que es mostrin els resultats
+                // ordenats a l'arbre, el que fem és retornar els children smpre ordenats
                 getChildren: function (object) {
-                    // console.log("object del que cerquem el parent:", object);
                     let result = this.query({parent: object.id});
                         result.sort( (a, b)  => a.order - b.order);
                     return result;
@@ -923,11 +854,8 @@ define([
                     startIndex = startIndex || 0;
 
                     for (i = startIndex; i < dataLength; i++) {
-                        // console.log("Canviant ordre de " + data[i][this.idProperty] + " a " +i);
                         this.index[data[i][this.idProperty]] = i;
                     }
-
-                    // console.log ("Index reordenats:", this.index);
 
                 }
             });
@@ -945,9 +873,7 @@ define([
             });
 
             this.memoryStore = store;
-
             store = new Observable(store);
-
 
             this.model = new ObjectStoreModel({
                 store: store,
@@ -1244,6 +1170,10 @@ define([
         },
 
         addItem: function (item, parent) {
+            // console.log("AddItem?", item, parent);
+
+            // ALERTA! cal afegir-la aqui per què s'actualitzin les dades de l'arbre
+            parent.children.push(item);
 
             // Si és un array el nom serà l'index de l'array
             let childrenCount;
@@ -1260,6 +1190,11 @@ define([
             this.store.put(item, {
                 overwrite: true,
                 parent: parent
+            });
+
+            this.store.put(parent, {
+                id: parent.id,
+                parent: this.getParentItem(parent)
             });
 
             // això fa que es refresqui l'arbre??
