@@ -71,7 +71,7 @@ define([
                 // console.log("** BEFORE? **");
 
                 // Alerta[Xavi] Funciona mitjançant un callback (coses de Dojo)
-                context.model.getRoot(function(item) {
+                context.model.getRoot(function (item) {
                     root = item;
                     // NOTA: Els childrens d'aquest root NO és corresponen amb els que es mostren!
 
@@ -84,11 +84,11 @@ define([
                         let nouNode = JSON.parse(JSON.stringify(node));
 
                         let queryChildren = context.store.query({parent: node.id});
-                        if (queryChildren.length>0) {
+                        if (queryChildren.length > 0) {
                             nouNode.children = [];
                         }
 
-                        for (let i=0; i<queryChildren.length; i++) {
+                        for (let i = 0; i < queryChildren.length; i++) {
                             let child = buildHierarchy(queryChildren[i]);
                             nouNode.children.push(child);
                             child.parent = nouNode;
@@ -99,9 +99,9 @@ define([
 
                     // l'arrel ha de ser un objecte o un array
                     let object;
-                    if (storeTree.type==='object') {
+                    if (storeTree.type === 'object') {
                         object = buildObject(storeTree)
-                    } else if (storeTree.type==='array') {
+                    } else if (storeTree.type === 'array') {
                         object = [buildObject(storeTree)];
                     } else {
                         console.error("Error: l'arrel ha de ser un objecte o un array:", storeTree);
@@ -116,14 +116,14 @@ define([
                             case 'object':
                                 // console.log("Node Object:", node);
                                 value = {};
-                                for (let i=0; i<node.children.length; i++) {
+                                for (let i = 0; i < node.children.length; i++) {
                                     value[node.children[i].key] = buildObject(node.children[i]);
                                 }
                                 break;
 
                             case 'array':
                                 value = []
-                                for (let i=0; i<node.children.length; i++) {
+                                for (let i = 0; i < node.children.length; i++) {
                                     value.push(buildObject(node.children[i]));
                                 }
                                 break;
@@ -147,7 +147,6 @@ define([
             let $insertDeleteButton = jQuery(this.deleteBtnNode);
             let $moveUpButton = jQuery(this.moveUpBtnNode);
             let $moveDownButton = jQuery(this.moveDownBtnNode);
-
 
 
             // Iniciem els botons per inserir elements wioccl a l'editor
@@ -175,7 +174,6 @@ define([
 
 
                 } while (!ready);
-
 
 
                 var childItem = {
@@ -241,48 +239,124 @@ define([
 
         // Mou el item1 a la posició de l'item 2  <-- movem l'item 2 abans de l'item 1?
         _moveItem(item1, item2) {
+            console.log("moveItem", item1, item2);
             let parent = this.getParentItem(item1);
             let children = this.store.getChildren(parent);
 
-            console.log("switch item1", item1);
-            console.log("switch item2", item2);
-            console.log("switch parent", parent);
-            console.log("children", children);
+            let oldOrder = item1.order;
+            item1.order = item2.order;
+            item2.order = oldOrder;
 
 
-            // El parent és el mateix
-            // TODO: podem obtenir el index?? <-- cercquem entre els children del parent la correspondencia amb el
-            // id del item2
-            let index = 0;
-            for (let i = 0; i < children.length; i++) {
-                if (children[i].id === item2.id) {
-                    index = i;
+            this.store.put(item1, {overwrite: true, parent: parent});
+            this.store.put(item2, {overwrite: true, parent: parent});
+
+
+
+            // console.log("switch item1", item1);
+            // console.log("switch item2", item2);
+            // console.log("switch parent", parent);
+            // console.log("children", children);
+
+            // console.log(this.treeWidget.getNodesByItem(item1));
+            // console.log(this.treeWidget.getNodesByItem(item1)[0].domNode);
+            // console.log(this.treeWidget.getNodesByItem(item2));
+            // console.log(this.treeWidget.getNodesByItem(item2)[0].domNode);
+
+            // això no està funcionant
+
+            //jQuery(this.treeWidget.getNodesByItem(item2)[0].domNode).before(this.treeWidget.getNodesByItem(item1)[0].domNode);
+
+
+            parent.children.sort( (a, b)  => a.order - b.order);
+
+
+            console.log("Com ha quedat el parent ordenat?", parent.children);
+            console.log("Com es recuperen els childs del parent", this.store.getChildren(parent));
+
+            // console.log("this.store", this.store);
+            console.log("this.memory (ABANS)", this.memoryStore.data);
+
+            // Provem a modificar directament el memoryStore
+            let data1;
+            let data2;
+            let index1;
+            let index2;
+
+            for (let i=0; i<this.memoryStore.data.length; i++) {
+                if (this.memoryStore.data[i].id === item1.id) {
+                    index1 = i;
+                    data1 = this.memoryStore.data[i];
+                }
+
+                if (this.memoryStore.data[i].id === item2.id) {
+                    index2 = i;
+                    data2 = this.memoryStore.data[i];
+                }
+
+                if (index1 && index2) {
                     break;
                 }
             }
 
-            console.warn("TODO: continuar aquí")
+            console.log(data1, index1, data2, index2);
+            this.memoryStore.data[index1] = data2;
+            this.memoryStore.data[index2] = data1;
+
+            console.log("Metodes Hi ha atributs 1?", this.memoryStore);
+            // console.log("Hi ha atributs 2?", this.memoryStore.getAttributes(item2));
+
+            // console.log("parent:", parent);
+
+            // this.store.put(parent, {
+            //     id: parent.id,
+            //     parent: this.getParentItem(parent)
+            // });
+
+            // this.store._rebuildIndex(parent.id);
+
+            // console.log("parent.children", parent.children);
+
+
+            // alert("Order antes?");
+            console.log("this.memory AFTER", this.memoryStore.data);
+
+            // El parent és el mateix
+            // TODO: podem obtenir el index?? <-- cercquem entre els children del parent la correspondencia amb el
+            // id del item2
+            // let index = 0;
+            // for (let i = 0; i < children.length; i++) {
+            //     if (children[i].id === item2.id) {
+            //         index = i;
+            //         break;
+            //     }
+            // }
+
+            console.warn("TODO: comprovar si ha canviat l'ordre")
             // TODO: Continuar aquí, el pasteItem no funciona, mirar com estem fent la inserció i depurar
             // per veure si és possible o no afegir-lo com a índex
             // Solució pitjor: provar a eliminar tots els fills i reafegir-los
-            /*
-            console.log("Inserint a l'index:", index);
-            this.model.pasteItem(item1, parent, parent, false, index)
 
-             */
+            // console.log("Inserint a l'index:", index);
+            // this.model.pasteItem(item1, parent, parent, false, index)
 
 
+
+            console.log("parent");
 
             this.updateFieldsAndButtons();
 
             // Cal actualitzar les etiquetes
             // TODO: no està funcionant!
             this.fixChildNames(parent);
+            // this.treeWidget.sortTree("asc");
             // console.log("Avisant al model: onChange", item1);
             // console.log("Avisant al model: onChildrenChange", parent, this.store.getChildren(parent));
-            // this.model.onChange(item1);
-            // this.model.onChildrenChange(parent, parent.children);
-            //pasteItem: function(/*Item*/ childItem, /*Item*/ oldParentItem, /*Item*/ newParentItem, /*Boolean*/ bCopy, /*int?*/ insertIndex, /*Item*/ before){
+            this.model.onChange(item1);
+            this.model.onChange(item2);
+            // this.model.onChange(parent);
+            this.model.onChildrenChange(parent, parent.children);
+            // pasteItem: function(/*Item*/ childItem, /*Item*/ oldParentItem, /*Item*/ newParentItem, /*Boolean*/ bCopy, /*int?*/ insertIndex, /*Item*/ before){
         },
 
         updateFieldsAndButtons: function () {
@@ -471,8 +545,19 @@ define([
                 count: 0
             };
 
-            let aux = [this.dataToNode(clonedData, 'root', counter)];
-            // console.log("Dades generades per l'arbre:", aux);
+            let aux = this.dataToNode(clonedData, 'root', counter);
+            aux.order = 0;
+
+            if (aux.children) {
+                for (let j = 0; j < aux.children.length; j++) {
+                    aux.children[j].order = j;
+                }
+            }
+
+            // ha de ser un array
+            aux = [aux];
+
+            console.log("Dades generades per l'arbre:", aux);
 
             return aux;
         },
@@ -490,21 +575,22 @@ define([
             }
 
             // Les dades són un array
-            if (Array.isArray(data)) {
+            if (Array.isArray(clonedData)) {
 
                 let aux = [];
 
-                for (let i = 0; i < data.length; i++) {
+                for (let i = 0; i < clonedData.length; i++) {
                     let value;
 
-                    if (Array.isArray(data[i])) {
+                    if (Array.isArray(clonedData[i])) {
                         let id = counter.count++;
                         value = {
                             id: id,
                             name: i,
                             type: 'array',
                             parent: parent,
-                            children: this.dataToNode(clonedData[i], i, counter, id)
+                            children: this.dataToNode(clonedData[i], i, counter, id),
+                            order: i
                             // children: this.dataToNode(clonedData[i], i, counter, id)
                         }
                         if (!value.children) {
@@ -513,10 +599,10 @@ define([
 
                         // Assignem com a nom de cada element el seu index (utilitzat només la primera vegada que
                         // es dibuixa el mapa
-                        for (let i=0; i<value.children.length; i++) {
-                            value.children[i].index = i;
-                            value.children[i].name = typeof value.children[i].value === 'string' && value.children[i].value.length > 0
-                                ? value.children[i].value : i;
+                        for (let j = 0; j < value.children.length; j++) {
+                            value.children[j].index = j;
+                            value.children[j].name = typeof value.children[j].value === 'string' && value.children[j].value.length > 0 ? value.children[j].value : j;
+                            value.children[j].order = j;
                         }
 
                         // Afegim els nodes com a fills, però sense atribut children
@@ -524,10 +610,22 @@ define([
                         // this.dataToNode(clonedData[i], i, counter, id)
                     } else {
                         value = this.dataToNode(clonedData[i], i, counter, counter.count);
+                        console.log("No era un array, valor retornat:", value);
+                        value.order = i;
+                        // Assignem l'ordre als children
+
+                    }
+
+                    if (value.children) {
+                        for (let j = 0; j < value.children.length; j++) {
+                            value.children[j].order = j;
+                        }
                     }
 
                     aux.push(value);
                 }
+
+
                 return aux;
             }
 
@@ -739,7 +837,10 @@ define([
                 // Aquest mostra els nous nodes afegits amb put
                 getChildren: function (object) {
                     // console.log("object del que cerquem el parent:", object);
-                    return this.query({parent: object.id});
+                    let result = this.query({parent: object.id});
+                        result.sort( (a, b)  => a.order - b.order);
+                    return result;
+                    // return this.query({parent: object.id});
                 },
 
                 mayHaveChildren: function (item) {
@@ -842,6 +943,8 @@ define([
                     return originalPut.call(store, obj, options);
                 }
             });
+
+            this.memoryStore = store;
 
             store = new Observable(store);
 
@@ -1015,6 +1118,8 @@ define([
 
             })
 
+
+
             this.treeWidget = new Tree({
                 id: Date.now(),
                 model: this.model,
@@ -1026,7 +1131,7 @@ define([
                 },
 
                 onClick: function (item) {
-                    // console.log("item clicat:", item);
+                    console.log("item clicat:", item);
 
                     // TODO: revisar això del selected, ficar en el context.select(item)?
                     context.selectItem(item);
@@ -1035,7 +1140,7 @@ define([
                     // $property.val(item.index !== undefined ? item.index : item.key);
                     // $type.val(item.type);
 
-                }
+                },
             });
 
             this.treeWidget.placeAt(this.treeContainerNode);
@@ -1102,7 +1207,7 @@ define([
                     delete (child.index);
                 }
 
-                if (item.type === 'array' && (child.value === undefined || child.type !== 'value' || child.value ==="")) {
+                if (item.type === 'array' && (child.value === undefined || child.type !== 'value' || child.value === "")) {
                     // console.log("assignant index", i);
                     child.name = i;
                 } else if (item.type === 'object') {
