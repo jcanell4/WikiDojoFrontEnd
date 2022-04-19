@@ -295,7 +295,6 @@ define([
 
         updateFieldsAndButtons: function () {
             // console.log("Selected:", this.selected);
-            // console.log("###UPDATING FIELDS AND BUTTONS###");
             let $insertPropertyButton = jQuery(this.insertPropertyBtnNode);
             let $insertElementButton = jQuery(this.insertElementBtnNode);
             let $insertDeleteButton = jQuery(this.deleteBtnNode);
@@ -305,8 +304,6 @@ define([
             let disableInsertElement = true;
             let disableInsertDelete = true;
             let lock = false;
-            let disableMoveUp = true;
-            let disableMoveDown = true;
 
             switch (this.selected.type) {
                 case 'value':
@@ -405,13 +402,11 @@ define([
                     break;
 
                 case 'object':
-                    propertyDisabled = true;
+                    propertyDisabled = false;
                     this.$label.html("Propietat:");
                     this._updateMoveButtons(this.selected);
                     break;
             }
-
-            // console.log("property està disabled??", propertyDisabled);
 
             this.$value.prop('disabled', lock || valueDisabled);
             this.$property.prop('disabled', lock || propertyDisabled);
@@ -1202,7 +1197,7 @@ define([
 
             // això fa que es refresqui l'arbre??
             // TODO: Comprovar si és necessari el onChange
-            this.model.onChange(item);
+            // this.model.onChange(item);
             this.model.onChildrenChange(parent, this.store.getChildren(parent));
 
             let treeNodes = this.treeWidget.getNodesByItem(parent);
