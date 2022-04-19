@@ -173,15 +173,16 @@ define([
                         nameCounter++;
                     }
 
-
                 } while (!ready);
 
+                console.log("El context selected te childrens?", children);
 
                 var childItem = {
                     name: "nova_propietat" + nameCounter,
                     id: Math.random(),
                     key: "nova_propietat" + nameCounter,
-                    type: 'value'
+                    type: 'value',
+                    order: children.length
                 };
 
                 context.addItem(childItem, context.selected);
@@ -237,7 +238,6 @@ define([
 
         // Mou el item1 a la posició de l'item 2  <-- movem l'item 2 abans de l'item 1?
         _moveItem(item1, item2) {
-            // console.log("moveItem", item1, item2);
             let parent = this.getParentItem(item1);
             // let children = this.store.getChildren(parent);
 
@@ -299,8 +299,6 @@ define([
             let $insertPropertyButton = jQuery(this.insertPropertyBtnNode);
             let $insertElementButton = jQuery(this.insertElementBtnNode);
             let $insertDeleteButton = jQuery(this.deleteBtnNode);
-            let $moveUpButton = jQuery(this.moveUpBtnNode);
-            let $moveDownButton = jQuery(this.moveDownBtnNode);
 
 
             let disableInsertProperty = true;
@@ -402,19 +400,14 @@ define([
                 case 'array':
                     this.$label.html("Índex:");
                     propertyDisabled = true;
+                    this._updateMoveButtons(this.selected);
 
-                    let treeNodes = this.treeWidget.getNodesByItem(this.selected);
-                    if (treeNodes[0].getPreviousSibling()) {
-                        disableMoveUp = false;
-                    }
-
-                    if (treeNodes[0].getNextSibling()) {
-                        disableMoveDown = false;
-                    }
                     break;
 
                 case 'object':
+                    propertyDisabled = true;
                     this.$label.html("Propietat:");
+                    this._updateMoveButtons(this.selected);
                     break;
             }
 
@@ -424,13 +417,29 @@ define([
             this.$property.prop('disabled', lock || propertyDisabled);
             this.$type.prop('disabled', lock || typeDisabled);
 
+            // $moveUpButton.prop('disabled', disableMoveUp);
+            // $moveDownButton.prop('disabled', disableMoveDown);
+        },
+
+        _updateMoveButtons: function(node) {
+            let $moveUpButton = jQuery(this.moveUpBtnNode);
+            let $moveDownButton = jQuery(this.moveDownBtnNode);
+
+            let disableMoveUp = true;
+            let disableMoveDown = true;
+
+            let treeNodes = this.treeWidget.getNodesByItem(node);
+            if (treeNodes[0].getPreviousSibling()) {
+                disableMoveUp = false;
+            }
+
+            if (treeNodes[0].getNextSibling()) {
+                disableMoveDown = false;
+            }
 
             $moveUpButton.prop('disabled', disableMoveUp);
             $moveDownButton.prop('disabled', disableMoveDown);
-
-
         },
-
 
         getParentItem: function (item) {
             // console.error("item?", item);
@@ -1057,15 +1066,8 @@ define([
                 },
 
                 onClick: function (item) {
-                    console.log("item clicat:", item);
-
-                    // TODO: revisar això del selected, ficar en el context.select(item)?
+                    // console.log("item clicat:", item);
                     context.selectItem(item);
-
-                    // $value.val(item.value);
-                    // $property.val(item.index !== undefined ? item.index : item.key);
-                    // $type.val(item.type);
-
                 },
             });
 
@@ -1171,6 +1173,7 @@ define([
 
         addItem: function (item, parent) {
             // console.log("AddItem?", item, parent);
+            item.order = parent.children.length;
 
             // ALERTA! cal afegir-la aqui per què s'actualitzin les dades de l'arbre
             parent.children.push(item);
