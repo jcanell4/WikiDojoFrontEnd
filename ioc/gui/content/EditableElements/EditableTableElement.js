@@ -1444,19 +1444,6 @@ Segur que voleu crear de nou la taula?");
                     case 'tree':
                         cell.type = cells._Widget;
                         cell.widgetClass = TreeCell;
-                        cell.getValue = function () {
-                            // Override the default getValue function for dojox.grid.cells.DateTextBox
-                            var ret = this.widget.get("value");
-                            // console.log(ret);
-                            return  ret.split("<br>").join("\n");
-                        };
-                        // cell.formatter = function (datum) {
-                        //     // console.log("Formatter:", datum);
-                        //     // Format the value in store, so as to be displayed.
-                        //     var ret = !datum ? "" : datum.split("\n").join("<br>");
-                        //     return ret;
-                        // };
-
                         break;
 
                     default:
