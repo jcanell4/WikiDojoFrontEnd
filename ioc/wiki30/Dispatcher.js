@@ -464,7 +464,7 @@ define([
              * @param {SyntaxError} error error per processar
              */
             processError: function (error) {
-                this._processError(error.response.text);
+                this._processError(error.response.text, error.response.status);
             },
 
             /**
@@ -521,9 +521,14 @@ define([
              * @param {string } errorMessage missatge d'error
              * @private
              */
-            _processError: function (errorMessage) {
-                if (!errorMessage) errorMessage = "Unknown error";
-                this.processors["error"].process({message: errorMessage}, this);
+            _processError: function (errorMessage, status) {
+                let mes = errorMessage.trim();
+                if(status == 403 && mes.charAt(0)=="[" && mes.charAt(mes.length-1)=="]"){
+                    this.processResponse(JSON.parse(mes));
+                }else{
+                    if (!errorMessage) errorMessage = "Unknown error";
+                    this.processors["error"].process({message: errorMessage}, this);
+                }
             },
 
             /**
