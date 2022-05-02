@@ -129,11 +129,14 @@ define([
             },
 
             _getDraft: function (value) {
-                if (value.local) {
-                    return this._getDraftLocal(value);
-                } else {
-                    return this._getDraftRemote(value);
-                }
+                // Sempre hem de recuperar el local perquè serà el més recent, podem ignorar el remote
+                return this._getDraftLocal(value);
+                // console.log("_getDraft, local?", value.local);
+                // if (value.local) {
+                //     return this._getDraftLocal(value);
+                // } else {
+                //     return this._getDraftRemote(value);
+                // }
             },
 
             _getDraftLocal: function (value) {
@@ -150,6 +153,19 @@ define([
                                 content: draft.structured.content[value.selected],
                                 date: draft.structured.date
                             };
+                        }
+                        break;
+                    case 'project':
+                        if (draft) {
+                            return {
+                                content: draft.project.main.content,
+                                date: draft.project.main.date
+                            }
+                        } else {
+                            return {
+                                content: "{}",
+                                date: -1
+                            }
                         }
                 }
                 return this.DEFAULT_DRAFT;
