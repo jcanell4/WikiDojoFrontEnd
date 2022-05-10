@@ -522,12 +522,11 @@ define([
              * @private
              */
             _processError: function (errorMessage, status) {
-                let mes = errorMessage.trim();
-                if(status == 403 && mes.charAt(0)=="[" && mes.charAt(mes.length-1)=="]"){
+                let mes = (errorMessage)?errorMessage.trim():"Unknown error";
+                if(!isNaN(status) && status >= 400 && mes.charAt(0)=="[" && mes.charAt(mes.length-1)=="]"){
                     this.processResponse(JSON.parse(mes));
                 }else{
-                    if (!errorMessage) errorMessage = "Unknown error";
-                    this.processors["error"].process({message: errorMessage}, this);
+                    this.processors["error"].process({message: mes}, this);
                 }
             },
 
