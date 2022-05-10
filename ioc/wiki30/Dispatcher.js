@@ -301,17 +301,6 @@ define([
              * @param {GlobalState} stateToLoad
              */
             reloadFromState: function (stateToLoad) {
-
-                let context = this;
-                // Afegim un delai de 0.1s a la recàrrega per donar temps a que s'iniciin els components
-                // correctament: si no es fa així de vegades falla la recàrrega de formularis en edició
-                setTimeout(function() {
-                    context._reloadFromState(stateToLoad);
-                }, 100);
-
-            },
-
-            _reloadFromState: function (stateToLoad) {
                 if (this.reloadStateHandlers) {
                     array.forEach(this.reloadStateHandlers, function (handler) {
                         handler.reload(stateToLoad);
