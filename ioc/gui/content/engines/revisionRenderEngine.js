@@ -74,6 +74,8 @@ define(function () {
         };
 
     return function (data, contentTool) {
+        console.log("revisionRenderEngine", data);
+
         data = JSON.parse(JSON.stringify(data)); // Com que data es un objecte hem de fer una copia per no modificar l'original
 
         var id = contentTool.docId,
@@ -101,6 +103,7 @@ define(function () {
 
         linkCurrent = '?id=' + ns;
 
+        console.log("Data position? (ha de ser superior a 0)", data.position)
         if (data.position && data.position > 0) {
             var lessButton = _generatePreviousButton(id, ns, Math.max(0, data.position - data.maxamount));
         }
