@@ -271,7 +271,7 @@ define([
             var ret;
             if(key===undefined){
                 ret = this.userState;
-            }else{
+            }else if(this.userState){
                 ret = this.userState[key];
             }
             return ret;

@@ -163,7 +163,13 @@ define([
                 var gSect = this.getSectok();
                 if (gSect) {
                     vUrl += linkChar + this.sectokParam + "=" + gSect;
+                    linkChar = "&";
                 }
+                
+                var moodleToken = this.dispatcher.getGlobalState().getUserState("moodleToken");
+                if(moodleToken && moodleToken!==""){
+                    vUrl += linkChar + "moodleToken=" + moodleToken;
+                }                
 
                 var resp;
                 var req = this;
@@ -245,8 +251,13 @@ define([
                 var gSect = this.getSectok();
                 if (gSect) {
                     vUrl += linkChar + this.sectokParam + "=" + gSect;
+                    linkChar = "&";
                 }
 
+                var moodleToken = this.dispatcher.getGlobalState().getUserState("moodleToken");
+                if(moodleToken && moodleToken!==""){
+                    vUrl += linkChar + "moodleToken=" + moodleToken;
+                }
 
 
                 // console.log("query", query, this.method, this.getPostData());
