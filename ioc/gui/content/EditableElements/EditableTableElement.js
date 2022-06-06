@@ -1732,7 +1732,7 @@ Segur que voleu crear de nou la taula?");
 
                 var $columns = jQuery($rows[0]).children();
                 
-                // La primera columna són les capçáleres
+                // La primera columna són les capçaleres
                 for (var i = 0; i < $columns.length; i++) {
 
                     var fieldData = {
