@@ -69,7 +69,7 @@ define([
             TAB:       'tab'
         },
 
-        /** @enum */
+
         decoration: {},
 
         /**

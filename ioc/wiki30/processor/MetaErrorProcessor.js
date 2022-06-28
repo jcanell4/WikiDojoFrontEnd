@@ -6,9 +6,7 @@ define([
     "ioc/wiki30/processor/ExtraMetaInfoProcessor"
 ], function (declare, registry, contentToolFactory, AbstractResponseProcessor, ExtraMetaInfoProcessor) {
 
-
-
-
+    // ALERTA[Xavi] No cal el AbstractRespnseProcessor perquè ja es troba a la jerarquia de classes
     return declare([AbstractResponseProcessor, ExtraMetaInfoProcessor], {
 
         // aquest és el tipus que es fa servir pel renderengine
