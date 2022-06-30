@@ -6,6 +6,7 @@ define([
     return declare([AbstractFormRenderEngine],
         {
             renderFieldDefault: function (field, fvalues) {
+
                 var $field = jQuery('<div>'),
                     $label = jQuery('<label>'),
                     $data = jQuery('<span>');

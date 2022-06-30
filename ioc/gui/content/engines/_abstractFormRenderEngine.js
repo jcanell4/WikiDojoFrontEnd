@@ -346,6 +346,10 @@ define([
 
             if (field.props) {
                 this.addPropsToInput(field.props, $select);
+
+                if (field.props.readonly) {
+                    $select.prop("disabled",true);
+                }
             }
 
             return $field;
@@ -415,6 +419,7 @@ define([
 
 
         renderFieldCheckbox: function (field, fvalues) {
+
             var $field = jQuery('<div>'),
                 $group = jQuery('<div>'),
                 $span = jQuery('<span>'),
@@ -450,6 +455,10 @@ define([
 
             if (field.props) {
                 this.addPropsToInput(field.props, $input);
+
+                if (field.props.readonly) {
+                    $input.prop("disabled",true);
+                }
             }
 
             return $field;
@@ -944,11 +953,20 @@ define([
 
         //Convierte una fecha a formato "dd-mm-yyyy". El formato esperado es ISO "yyyy-mm-dd"
         convertToDateDMY: function(data) {
-            function pad(s) { return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
+            let sdata;
+
+            function pad(s) {
+                return (s.length < 2 || s.toString().length < 2) ? '0' + s : s; }
             if (data === "" || data === null || data === undefined) {
                 return "dd-mm-aaaa";
             }else if (isNaN(data.substring(0,4))) {
                 sdata = data.split(/\/|-/);
+
+                // aquest cas es dona quan el format és incorrecte
+                if (sdata.length<3) {
+                    sdata = ["00", "00", "0000"];
+                }
+
                 return [pad(sdata[0]), pad(sdata[1]), sdata[2]].join('/');
             }else {
                 var d = new Date(data);
