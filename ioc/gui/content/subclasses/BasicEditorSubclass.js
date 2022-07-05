@@ -78,6 +78,7 @@ define([
             // per reconstruir el html adaptat, caldria afegir un _PreSave i algun sistema per
             // lligar plugins dels editors amb aquest _PreSave del ContentEditor
             _FixHtmlDocumentToSend: function (dataToSend) {
+                console.log("FixHTMLDocumentToSend");
                 let removedRefs = new Set();
                 let structure = this.editor.editor.extra.wioccl_structure.structure;
 
@@ -291,7 +292,10 @@ define([
                     containerId = this.id;
 
 
+                dataToSend.wikitext = this.editor.fixBeforeSave(dataToSend.wikitext );
+
                 if (this.editor.editor.extra && this.editor.editor.extra.wioccl_structure) {
+                    // Això no arregla els possibles problemes per l'editor Dojo
                     this._FixHtmlDocumentToSend(dataToSend);
                 }
 

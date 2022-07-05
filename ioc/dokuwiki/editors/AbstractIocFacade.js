@@ -133,6 +133,10 @@ define([
             this.emit('refreshFacade');
         },
 
+        fixBeforeSave: function(value) {
+            return value
+        },
+
         FACADE: true
     });
 

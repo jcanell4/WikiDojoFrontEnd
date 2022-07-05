@@ -150,6 +150,12 @@ define([
 
         resetValue: function () {
             this.setValue(this.getOriginalValue());
+        },
+
+        fixBeforeSave: function(value) {
+            let $value = jQuery('<div>').append(jQuery(value));
+            $value.find('.no-save').remove();
+            return $value.html();
         }
 
     });
