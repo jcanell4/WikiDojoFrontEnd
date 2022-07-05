@@ -152,11 +152,12 @@ define([
             this.setValue(this.getOriginalValue());
         },
 
-        fixBeforeSave: function(value) {
-            let $value = jQuery('<div>').append(jQuery(value));
-            $value.find('.no-save').remove();
-            return $value.html();
-        }
+        // Desactivat de moment, en fer-lo servir s'han trencat altres coses
+        // fixBeforeSave: function(value) {
+        //     let $value = jQuery('<div>').append(jQuery(value));
+        //     $value.find('.no-save').remove();
+        //     return $value.html();
+        // }
 
     });
 });
