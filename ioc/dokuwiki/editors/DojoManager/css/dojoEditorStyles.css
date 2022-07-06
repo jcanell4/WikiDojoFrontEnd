@@ -900,3 +900,7 @@ span[data-wioccl-state] {
     font-weight: bold;
 }
 
+[data-dw-field="title"] {
+    font-weight: bold;
+}
+

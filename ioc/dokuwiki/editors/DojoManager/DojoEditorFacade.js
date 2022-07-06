@@ -152,10 +152,15 @@ define([
             this.setValue(this.getOriginalValue());
         },
 
-        // Desactivat de moment, en fer-lo servir s'han trencat altres coses
+        // ALERTA[Xavi] Desactivat perquè es trenquen algunes instruccions.
+        //      - PROBLEMA: s'han fet servir DIVs dintre d'elements en línia, llavors quan es realitza
+        //      - la conversió jQuery tanca l'element en linia abans que el de bloc i això fa que es
+        //      - trenqui.
         // fixBeforeSave: function(value) {
+        //     console.log("BEFORE", value);
         //     let $value = jQuery('<div>').append(jQuery(value));
         //     $value.find('.no-save').remove();
+        //     console.log("AFTER", $value.html());
         //     return $value.html();
         // }
 
