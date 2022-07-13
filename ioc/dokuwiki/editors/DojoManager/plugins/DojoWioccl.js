@@ -61,6 +61,8 @@ define([
             // ALERTA! this.editor fa referència a l'editor dojo
             // Aquesta és l'estructura que s'utilitza quan es fa mouseover un element
             if (this.editor.extra && this.editor.extra.wioccl_structure) {
+                console.log("Estructura json:", this.editor.extra.wioccl_structure);
+
                 this.structure = new WiocclStructureClone(
                     {
                         structure: this.editor.extra.wioccl_structure.structure
