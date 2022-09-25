@@ -708,6 +708,8 @@ define([
 
 
         store: null,
+
+        // ALERTA[Xavi], crec que això ja no s'utilitza enlloc
         mode: null,
 
         addDataToStore: function (data, store, counter, parent) {
