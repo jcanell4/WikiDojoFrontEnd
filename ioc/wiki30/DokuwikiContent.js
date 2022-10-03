@@ -70,19 +70,6 @@ define([
                 return this.editor;
             },
 
-
-            // TODO[Xavi] No es crida enlloc? no ho he vist funcionar en més de 9 anys!
-            setDocumentHTML: function (content) {
-                alert("setDocumentHTML");
-                this.documentHTML = content.content;
-            },
-
-            // TODO[Xavi] No es crida enlloc? no ho he vist funcionar en més de 9 anys!
-            setDocumentWiki: function (content) {
-                alert("setDocumentWiki");
-                this.documentWiki = content.content;
-            },
-
             /**
              * TODO[Xavi] eliminar, ja no s'ha de controlar aqui
              * @returns {boolean}
