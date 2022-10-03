@@ -45,10 +45,19 @@ define([
 
         },
 
-        process: function (html) {
-            console.log("Que s'envia pere enganxar?", html);
+        process: function (text) {
+            console.log("Que s'envia per enganxar?", text);
 
-            // this.editor.execCommand('inserthtml', html);
+            // separem cada línia en un paràgraf
+            let regex = new RegExp('^.*$', 'gm');
+            let paragraphs = text.match(regex);
+            let html = "<p>";
+            html += paragraphs.join("</p><p>");
+            html += "</p>";
+
+
+            console.log("Salts reemplaçats?", html);
+
             this.editor.execCommand('inserthtml', html);
             this.editor.reparse();
         },
