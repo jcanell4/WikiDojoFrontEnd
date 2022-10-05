@@ -285,6 +285,12 @@ define([
                      */
                     _patchPasteText = function (func, selection, text, opts) {
 
+                        // Fix per eliminar l'addició d'un salt de línia en fer una selecció
+                        // amb triple click
+                        let regex = new RegExp("^(.*?)\n|\r (==+|\\*\\*|\/\/|__)$", "gs");
+                        text = text.replace(regex, "$1$2");
+
+
                         if (!opts) {
                             opts = {};
                         }
@@ -373,6 +379,8 @@ define([
                     _patchGetSelection = function (func, obj) {
                         var result, selection;
 
+
+
                         _switchContext(obj.id);
 
                         if (context && context.currentEditor === context.EDITOR.ACE && obj === context.$textarea.get(0)) {
@@ -387,6 +395,7 @@ define([
                             selection.obj = context.$textarea.get(0);
                             selection.start = result.start;
                             selection.end = result.end;
+
                             return selection;
 
                         } else {
