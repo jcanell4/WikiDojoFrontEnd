@@ -1143,9 +1143,7 @@ define([
             lines.push("::" + (this.tableType === 'accounting' ? 'accounting' : 'table') + ":" + this.$id.val());
 
 
-            if (this.$title.val().length > 0) {
-                lines.push("  :title:" + this.$title.val());
-            }
+            lines.push("  :title:" + this.$title.val());
 
             if (this.$footer.val().length > 0) {
                 lines.push("  :footer:" + this.$footer.val());
