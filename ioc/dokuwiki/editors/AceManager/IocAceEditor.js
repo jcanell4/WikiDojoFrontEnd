@@ -287,8 +287,10 @@ define([
 
                         // Fix per eliminar l'addició d'un salt de línia en fer una selecció
                         // amb triple click
-                        let regex = new RegExp("^(.*?)\n|\r (==+|\\*\\*|\/\/|__)$", "gs");
-                        text = text.replace(regex, "$1$2");
+                        if (text.startsWith("===")) {
+                            let regex = new RegExp("^(==+) (.*?)\\n(.*?) (==+)$", "gms");
+                            text = text.replace(regex, "$1 $2 $4\n$3");
+                        }
 
 
                         if (!opts) {
@@ -378,7 +380,6 @@ define([
                      */
                     _patchGetSelection = function (func, obj) {
                         var result, selection;
-
 
 
                         _switchContext(obj.id);
@@ -496,8 +497,6 @@ define([
                 this.containerId = id;
 
                 this.editor = ace.edit(id);
-
-
 
 
                 this.session = this.editor.getSession();
@@ -647,7 +646,7 @@ define([
             },
 
             removeFromRegistry: function (editor) {
-                delete(editorRegistry[editor.textareaId]);
+                delete (editorRegistry[editor.textareaId]);
             },
 
             initPlugins: function (plugins) {
@@ -706,7 +705,7 @@ define([
                 // in Firefox, keypress doesn't send the correct keycodes,
                 // in Opera, the default of keydown can't be prevented
                 //[Josep] Alerta jQuery.browser està deprecated!
-                 if (navigator.userAgent.search("Opera") >= 0) {    //[WIKI2015 -> if (jQuery.browser.opera) { ]
+                if (navigator.userAgent.search("Opera") >= 0) {    //[WIKI2015 -> if (jQuery.browser.opera) { ]
                     $editor.keypress(window.dw_editor.keyHandler);
                 } else {
                     $editor.keydown(window.dw_editor.keyHandler);
@@ -977,7 +976,6 @@ define([
                 plugin._setEditor(this);
                 plugin.init(_plugin.config);
             },
-
 
 
             // FUNCIONS ORIGINALMENT AL ACE WRAPPER
@@ -1358,10 +1356,10 @@ define([
 
             get_last_line_states: function () {
                 var session = this.getSession(),
-                    row = session.getLength()-1;
-                    // state = row > 0 ? session.getState(row - 1) : 'start',
-                    // state = 'start',
-                    // line = session.getLine(session.getLength()-1);
+                    row = session.getLength() - 1;
+                // state = row > 0 ? session.getState(row - 1) : 'start',
+                // state = 'start',
+                // line = session.getLine(session.getLength()-1);
 
 
                 return this.get_line_states_preview(row, true);
@@ -1698,7 +1696,7 @@ define([
                 return editor.session.doc.indexToPosition(index);
             },
 
-            hasFocus: function() {
+            hasFocus: function () {
                 let editor = this.getEditor();
 
                 // Ens seveixen tots dos mètodes
@@ -1709,7 +1707,7 @@ define([
                 return editor.textInput.getElement() === document.activeElement;
             },
 
-            setPosition: function(cursor) {
+            setPosition: function (cursor) {
                 this.getEditor().moveCursorToPosition(cursor);
             },
 
