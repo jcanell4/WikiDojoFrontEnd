@@ -166,8 +166,8 @@ define([
                     linkChar = "&";
                 }
                 
-                var moodleToken = this.dispatcher.getGlobalState().getUserState("moodleToken");
-                if(moodleToken && moodleToken!==""){
+                var moodleToken = this.dispatcher.getGlobalState().getLoginState("moodleToken");
+                if (moodleToken && moodleToken!=="" && moodleToken!==undefined){
                     vUrl += linkChar + "moodleToken=" + moodleToken;
                 }                
 
@@ -254,8 +254,8 @@ define([
                     linkChar = "&";
                 }
 
-                var moodleToken = this.dispatcher.getGlobalState().getUserState("moodleToken");
-                if(moodleToken && moodleToken!==""){
+                var moodleToken = this.dispatcher.getGlobalState().getLoginState("moodleToken");
+                if (moodleToken && moodleToken!==""){
                     vUrl += linkChar + "moodleToken=" + moodleToken;
                 }
 

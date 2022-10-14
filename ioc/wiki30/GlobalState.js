@@ -2,14 +2,13 @@ define([
     "dojo/_base/lang",
     "ioc/dokuwiki/dwPageUi",
     'ioc/wiki30/manager/StorageManager',
-    'dojo/cookie',
+    'dojo/cookie'
 ], function (lang, dwPageUi, storageManager, cookie) {
     /**
      * @class GlobalState
      */
 
     /** @typedef {{ns:string, mode:string, action:string}} Page */
-
 
     var globalStateId = new Date().getTime();
 
@@ -18,17 +17,14 @@ define([
     var isGlobalCookieSet = cookie('globalSessionStorage'),
         globalSessionStorageItems = ['requiredPages', 'changedPages', 'login'];
 
-
     if (!isGlobalCookieSet) {
         // console.log("No s'ha trobat la cookie global");
         cookie('globalSessionStorage', true);
 
         for (var i = 0; i < globalSessionStorageItems.length; i++) {
-
             storageManager.removeItem(globalSessionStorageItems[i], storageManager.type.LOCAL);
         }
     }
-
 
     var ret = {
         /**
@@ -40,9 +36,10 @@ define([
         permissions: {},
 
         extratabs:{},
-        
-        login: false,
 
+        login: false,
+        moodleToken: null,
+        
         info: "",
 
         currentTabId: null,
@@ -56,7 +53,7 @@ define([
         sectok: null,
 
         title: "",
-        
+
         userState: null,
         
         /** @type {InfoStorage} */
@@ -279,9 +276,8 @@ define([
 
         /**
          * Modifica el valor del magatzem del userState passat com argument com l'actual.
-         * @param {key} key del userSate
-         * @param {key} valor a modificar per la key passada
-         *
+         * @param key key del userSate
+         * @param value valor a modificar per la key passada
          */
         setUserState: function (key, value) {
             if(this.userState==null){
@@ -433,8 +429,6 @@ define([
                 }
 
                 this.requiredPages = storedPages.requiredPages;
-
-
                 this.updateRequiredPagesState(storedPages);
             }
         },
@@ -471,30 +465,21 @@ define([
                 isRequired;
             // console.log("GlobalState#isPageRequired", ns, id, storedPages.requiredPages[ns]);
 
-
             if (!this.userId) {
                 // L'usuari no es troba loginat, no pot modificar. ALERTA[Xavi] Això passa per algunes pestanyes sense cap efecte, per exemple la pestanya de dreceres
-
                 return true;
 
             } else if (storedPages && storedPages.userId === this.userId) {
                 // L'estore correspon a l'usuari actual
                 // console.log("TROBAT: Trobat storage per l'usuari actual");
-
-
             } else {
                 // console.log("REEMPLAÇ: L'storage no és de l'usuari o no existeix, el reemplacem");
-
                 // Si les págines guardades no són de l'usuari actual s'inicialitza l'storage
                 storageManager.setObject('requiredPages', {
                     userId: this.userId,
                     requiredPages: {}
                 }, storageManager.type.LOCAL);
             }
-
-
-
-
 
             if (id) {
                 isRequired = (storedPages && storedPages.requiredPages[ns] && storedPages.requiredPages[ns]['id'] === id) ? true : false;
@@ -506,46 +491,43 @@ define([
             var isPageRequiredByCurrentApp = storedPages && storedPages.requiredPages[ns] && storedPages.requiredPages[ns]['globalStateId'] === globalStateId;
 
             // console.log("Pàgina requerida?", !isPageRequiredByCurrentApp);
-
             return isRequired && !isPageRequiredByCurrentApp;
-
-            // return this.requiredPages[ns] ? true : false;
         },
 
+        getLoginState: function(key) {
+            var ret = null;
+            if (localStorage.login) {
+                var login = JSON.parse(localStorage.login);
+                ret = (key) ? login[key] : login;
+            }
+            return ret;
+        },
 
-        updateLoginState: function (userId, loginResult) {
+        updateLoginState: function (userId, loginResult, moodleToken) {
             this.userId = userId;
             this.login = loginResult;
+            this.moodleToken = moodleToken;
 
             // Afegim les dades noves que han de persistir entre sessions
-
-            storageManager.setObject('login', {
-                    userId: this.userId,
-                    login: this.login
-                },
-                storageManager.type.LOCAL);
-
-
+            storageManager.setObject('login',
+                                     {userId: this.userId,
+                                      login: this.login,
+                                      moodleToken: this.moodleToken
+                                     },
+                                     storageManager.type.LOCAL);
         },
 
         updateSessionStorage: function () {
-             // console.log("GlobalState#updateSessionStorage", this);
             // Update del sessionStorage, això és el que es fa ara en recarregar la pàgina
-
             if (this.pages && this.pages[""]) {
                 console.warn("S'ha trobat un pàgina amb id buit");
                 delete (this.pages[""]);
             }
-
             storageManager.setObject('globalState', this);
         },
 
-
-
         isAnyPageChanged: function () {
             var storedChangedPages = storageManager.getObject('changedPages', storageManager.type.LOCAL);
-
-
 
             if (this.userId && storedChangedPages && storedChangedPages.userId === this.userId) {
                 //console.log("GlobalState#isAnyPageChanged", Object.keys(storedChangedPages.pages).length > 0);

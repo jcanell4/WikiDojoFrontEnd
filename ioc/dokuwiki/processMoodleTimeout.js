@@ -1,7 +1,8 @@
 define([
     "ioc/wiki30/Timer",
-    "ioc/wiki30/Request"
-], function (Timer, Request) {
+    "ioc/wiki30/Request",
+    'ioc/wiki30/manager/StorageManager'
+], function (Timer, Request, storageManager) {
 
     var request = new Request();
     var timeout = 60 * 60 * 1000;
@@ -25,9 +26,16 @@ define([
     getQueryString = function(data) {
         return "moodleToken="+data;
     };
+    
+    _setMoodleToken = function(token) {
+        var login = storageManager.getObject('login', storageManager.type.LOCAL);
+        login['moodleToken'] = token;
+        storageManager.setObject('login', login, storageManager.type.LOCAL);
+    };
 
     var ret = function(params) {
         initTimer(params);
+        _setMoodleToken(params.moodleToken);
     };
 
     return ret;
