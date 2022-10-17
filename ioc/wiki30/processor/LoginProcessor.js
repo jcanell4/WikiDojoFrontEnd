@@ -49,7 +49,7 @@ define([
          * @param {{loginResult: string, userId: string}} value
          */
         updateState: function (dispatcher, value) {
-            var moodleToken = null;
+            var moodleToken = value.moodleToken;
             if (value.loginResult && localStorage.login) {
                 var login = JSON.parse(localStorage.login);
                 if (login && login.moodleToken)
