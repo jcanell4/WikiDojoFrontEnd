@@ -182,16 +182,20 @@ define([
              */
             updateState: function (dispatcher, value) {
                 var contentTool = registry.byId(value.id);
+                var globalState = dispatcher.getGlobalState();
+                var gContent = globalState.getContent(value.id);
                 this.inherited(arguments);
-                if(contentTool.hasEditors()){
-                    dispatcher.getGlobalState().getContent(value.id).action = "sec_edit"; // ALERTA[xavi] això quan es fa servir?                          
-                    if(!dispatcher.getGlobalState().getCurrentElementState() && value.selected){
+
+                if (contentTool.hasEditors()){
+                    gContent.action = "sec_edit"; // ALERTA[xavi] això quan es fa servir?
+                    if (!globalState.getCurrentElementState() && value.selected){
                         contentTool.setCurrentElement(value.selected);
                     }
                 }else{
-                    dispatcher.getGlobalState().getContent(value.id).action = "view"; // ALERTA[xavi] això quan es fa servir?
+                    gContent.action = "view"; // ALERTA[xavi] això quan es fa servir?
                 }
-                dispatcher.getGlobalState().getContent(value.id).rev = value.rev;
+                gContent.rev = value.rev;
+                gContent.perm = value.perm;
             },
 
             /**
