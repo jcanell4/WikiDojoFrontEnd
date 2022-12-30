@@ -15,12 +15,6 @@ define([
                 config.icon = "/iocjslib/ioc/gui/img/" + args.icon + ".png";
             }
 
-            // var config = {
-            //     type: args.type,
-            //     title: args.title,
-            //     icon: '/iocjslib/ioc/gui/img/' + args.icon + '.png',
-            // };
-
             this.events = args.event;
 
             this.fireEventComponent = new FireEventComponent(this.dispatcher);
