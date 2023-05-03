@@ -6,6 +6,7 @@ define([
     'ioc/dokuwiki/editors/AceManager/modes/mode-html',
     'ioc/dokuwiki/editors/AceManager/modes/mode-markdown',
     'ioc/dokuwiki/editors/AceManager/modes/mode-latex',
+    'ioc/dokuwiki/editors/AceManager/modes/mode-javascript',
     // 'ace-builds/mode-latex',
 
 ], function (declare, AbstractRuleSet) {
@@ -19,6 +20,7 @@ define([
          */
         {
             baseHighlighters: {
+                javascript:  ace.require("ace/mode/javascript_highlight_rules").JavaScriptHighlightRules,
                 java:  ace.require("ace/mode/java_highlight_rules").JavaHighlightRules,
 
                 php:  ace.require("ace/mode/php_highlight_rules").PhpHighlightRules,
