@@ -419,30 +419,29 @@ define([
 
 
         renderFieldCheckbox: function (field, fvalues) {
-
             var $field = jQuery('<div>'),
                 $group = jQuery('<div>'),
                 $span = jQuery('<span>'),
                 $input = jQuery('<input>'),
-                $label = jQuery('<input>'),
-                $nolabel = jQuery('<label>');
+                $title = jQuery('<input>'),
+                $label = jQuery('<label>');
         
-            $nolabel.html(" ");
-            $field.append($nolabel).append($group);
+            $label.html(field.label);
+            $field.append($label).append($group);
 
-            $label.attr('readonly', true)
+            $title.attr('readonly', true)
                 .addClass('form-control')
                 .addClass('check-label')
-                .val(field.label)
+                .val(field.props.title)
                 .attr('type', 'text')
-                .attr('title', field.label);
+                .attr('title', field.props.title);
 
             $span.addClass('input-group-addon')
                 .append($input);
 
             $group.addClass('input-group')
                 .append($span)
-                .append($label);
+                .append($title);
 
             $input.attr('type', field.type)
                 .attr('name', field.name)

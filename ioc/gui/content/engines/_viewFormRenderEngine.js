@@ -101,25 +101,25 @@ define([
                     $group = jQuery('<div>'),
                     $span = jQuery('<span>'),
                     $data = jQuery('<span>'),
-                    $label = jQuery('<input>'),
-                    $nolabel = jQuery('<label>');
+                    $input = jQuery('<input>'),
+                    $label = jQuery('<label>');
         
-                $nolabel.html(" ");
-                $field.append($nolabel).append($group);
+                $label.html(field.label);
+                $field.append($label).append($group);
 
-                $label.attr('readonly', true)
+                $input.attr('readonly', true)
                     .addClass('form-control')
                     .addClass('check-label')
-                    .val(field.label)
+                    .val(field.props.title)
                     .attr('type', 'text')
-                    .attr('title', field.label);
+                    .attr('title', field.props.title);
 
                 $span.addClass('input-group-addon')
                     .append($data);
 
                 $group.addClass('input-group')
                     .append($span)
-                    .append($label);
+                    .append($input);
 
                 $data.addClass('view-check');
                 if(fvalues[field.name]==="true" || fvalues[field.name]==="on" || fvalues[field.name]===true){
