@@ -5,3 +5,5 @@ shapes/*
 themes/*
 zazl/*
 *.*~
+.DS_Store
+.no_git
