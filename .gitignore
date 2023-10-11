@@ -7,3 +7,4 @@ zazl/*
 *.*~
 .DS_Store
 .no_git
+/nbproject/private/

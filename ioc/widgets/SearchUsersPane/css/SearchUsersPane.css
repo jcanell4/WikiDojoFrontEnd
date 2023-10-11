@@ -1,0 +1,29 @@
+.search-users-pane table {
+    width:100%;
+    margin-top: 10px;
+}
+
+.search-users-pane th {
+    width:45%;
+    font-weight: bold;
+}
+
+.search-users-pane th.check {
+    width:10%;
+}
+
+.search-users-pane input[type="query"] {
+    width:300px;
+    font-size: 15px;
+    margin-top: 2px;
+}
+
+.search-users-pane .right {
+    float: right;
+}
+
+.search-users-pane .wrapper {
+    width: 100%;
+    max-height:600px;
+    overflow-y: auto;
+}
