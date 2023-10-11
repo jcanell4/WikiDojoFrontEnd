@@ -288,7 +288,8 @@ define([
                 RECENTS: 'recents',
                 META_DOKUWIKI_NS_TREE: 'meta_dokuwiki_ns_tree',
                 HTML_SUPPLIES_FORM: 'html_supplies_form',
-                HTML_RESPONSE_FORM: 'html_response_form'
+                HTML_RESPONSE_FORM: 'html_response_form',
+                HTML_NEW_USER_TEACHERS_FORM: 'html_new_user_teachers_form'
             },
 
             /**
@@ -488,6 +489,12 @@ define([
                         break;
 
                     case this.generation.HTML_SUPPLIES_FORM:
+                        GeneratedContentTool = base
+                            .createSubclass(DocumentSubclass)
+                            .createSubclass(AjaxFormSubclass);
+                        break;
+
+                    case this.generation.HTML_NEW_USER_TEACHERS_FORM:
                         GeneratedContentTool = base
                             .createSubclass(DocumentSubclass)
                             .createSubclass(AjaxFormSubclass);
