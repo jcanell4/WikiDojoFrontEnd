@@ -95,7 +95,7 @@ define([
                 ['inline', ["(<)([0-9a-zA-Z!#$%&'*+/=?^_`{|}~-]+(?:\\.[0-9a-zA-Z!#$%&'*+\\/=?^_`{|}~-]+)*@(?:[0-9a-zA-Z][0-9a-zA-Z-]*\\.)+(?:[a-zA-Z]{2,4}|museum|travel))(>)", ["keyword.operator", "markup.underline", "keyword.operator"]]],
                 ['box', ["table", ["id", "title", "type", "footer", "widths", "large", "small", "vertical"]]],
                 ['box', ["accounting", ["id", "title", "type", "footer", "widths"]]],
-                ['box', ["figure", ["id", "title", "copyright", "license", "footer", "large"]]],
+                ['box', ["figure", ["id", "title", "description", "copyright", "license", "footer", "large"]]],
                 ['box', ["text", ["id", "offset", "title", "large"]]],
                 ['box', ["note", ["id", "offset"]]],
                 ['box', ["reference", ["id", "offset"]]],
