@@ -1033,7 +1033,7 @@ define([
                 'name': 'title',
                 'label': 'Títol',
                 'value': '',
-                'placeholder': 'Introduceix el títol'
+                'placeholder': 'Introdueix el títol'
             }],
             htmlTemplate: '<div class="ioctext" data-dw-box-text="text" data-ioc-id="ioc_text_${id}" data-ioc-text data-ioc-block-json="${json}">' +
             '<div class="ioccontent">' +
